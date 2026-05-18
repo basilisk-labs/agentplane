@@ -52,9 +52,9 @@ Rotation sequence:
 
 1. Generate a new Ed25519 key pair and assign a new date-based `key_id`.
 2. Store the private key as `RECIPES_INDEX_SIGNING_PRIVATE_KEY` in `agentplane-recipes`.
-3. Commit the public key in `agentplane-recipes/keys/` and add it to AgentPlane's trusted recipes
+3. Commit the public key in `agentplane-recipes/keys/` and add it to Agentplane's trusted recipes
    keyring.
-4. Publish an AgentPlane CLI release that contains the new trust-root before switching the default
+4. Publish an Agentplane CLI release that contains the new trust-root before switching the default
    remote catalog signature to the new `key_id`.
 5. Re-sign `agentplane-recipes/index.json` with the new `key_id`, publish the catalog, and verify a
    clean `agentplane recipes list-remote --refresh --yes` without key overrides.

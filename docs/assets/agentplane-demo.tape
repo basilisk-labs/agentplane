@@ -33,7 +33,7 @@ Type 'git init -q'
 Enter
 Sleep 150ms
 
-Type 'git config user.name "AgentPlane Demo" && git config user.email demo@example.local'
+Type 'git config user.name "Agentplane Demo" && git config user.email demo@example.local'
 Enter
 Sleep 150ms
 

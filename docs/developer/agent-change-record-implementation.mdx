@@ -1,11 +1,11 @@
 ---
 title: "ACR implementation plan"
-description: "How AgentPlane should implement Agent Change Record generation, validation, and merge-gate support."
+description: "How Agentplane should implement Agent Change Record generation, validation, and merge-gate support."
 ---
 
 ## Goal
 
-Implement Agent Change Record v0.1 as an AgentPlane producer and validator for repo-local evidence.
+Implement Agent Change Record v0.1 as an Agentplane producer and validator for repo-local evidence.
 
 ACR support must fit the existing lifecycle:
 
@@ -13,7 +13,7 @@ ACR support must fit the existing lifecycle:
 task -> plan -> approve -> start -> implement -> verify -> finish
 ```
 
-It must not create a parallel task source of truth. AgentPlane follows the vendor-neutral
+It must not create a parallel task source of truth. Agentplane follows the vendor-neutral
 `agent-change-record` v0.1 validation contract and derives records from task, approval,
 verification, policy, and Git state.
 
@@ -121,7 +121,7 @@ public, commit-safe evidence manifest, not a transcript archive.
 
 ## Error model
 
-ACR commands should reuse the existing AgentPlane exit code classes:
+ACR commands should reuse the existing Agentplane exit code classes:
 
 | Class                            | Exit code |
 | -------------------------------- | --------: |
@@ -193,7 +193,7 @@ The canonical record digest is `sha256` over RFC8785/JCS canonical JSON after se
 
 ## Tests
 
-Required AgentPlane tests:
+Required Agentplane tests:
 
 - `acr generate` creates a valid minimal ACR.
 - `acr validate` passes for a valid example.

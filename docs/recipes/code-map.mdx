@@ -3,7 +3,7 @@ title: "Code Map recipe"
 description: "Install the code-map recipe to add a lightweight code-map discipline to agent development work."
 ---
 
-`code-map@0.1.0` is the first production recipe in the signed AgentPlane recipe catalog.
+`code-map@0.1.0` is the first production recipe in the signed Agentplane recipe catalog.
 
 It adds a lightweight discipline for non-trivial coding tasks: inspect or refresh a compact project
 code map before implementation, then report whether the map informed the change.
@@ -57,7 +57,7 @@ After `recipes add`, the recipe package is copied into:
 .agentplane/recipes/packages/code-map/
 ```
 
-AgentPlane records the active recipe in:
+Agentplane records the active recipe in:
 
 ```text
 .agentplane/recipes/registry.json
@@ -86,4 +86,4 @@ architecture document.
 
 `code-map` does not run a separate hosted service and does not replace the normal task lifecycle. It
 changes project-local recipe assets and prompt behavior; task creation, verification, and finish
-still go through the standard AgentPlane commands.
+still go through the standard Agentplane commands.

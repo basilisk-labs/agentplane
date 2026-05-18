@@ -11,7 +11,7 @@ A pull request shows the diff. An Agent Change Record shows the execution eviden
 task intent, approved plan, agent/toolchain identity, Git commits, policy decisions, verification
 results, and merge readiness.
 
-The vendor-neutral standard lives in the Basilisk Labs `agent-change-record` repository. AgentPlane
+The vendor-neutral standard lives in the Basilisk Labs `agent-change-record` repository. Agentplane
 is one producer and validator for that standard, not the canonical store for the standard itself.
 
 ## Purpose
@@ -28,7 +28,7 @@ It answers seven review questions in one structured artifact:
 6. Which verification checks ran, passed, failed, or were waived?
 7. Is the change merge-ready under the repository policy?
 
-The default AgentPlane path is:
+The default Agentplane path is:
 
 ```text
 .agentplane/tasks/<task-id>/acr.json
@@ -96,7 +96,7 @@ does not match local task evidence is invalid.
 
 ACR v0.1 deliberately stays narrow:
 
-- It does not replace AgentPlane task records.
+- It does not replace Agentplane task records.
 - It does not store raw prompts by default.
 - It does not store raw model transcripts by default.
 - It does not store secrets, environment variables, credentials, or private tokens.
@@ -121,7 +121,7 @@ create a self-reference problem: the hash is unknown until after the ACR is comm
 
 ## CLI surface
 
-The AgentPlane command group is:
+The Agentplane command group is:
 
 ```bash
 agentplane acr generate <task-id> --work-commit <rev> --write
@@ -270,11 +270,11 @@ Allowed by default:
 Private evidence bundles may be added in a future version, but they must stay separate from the
 public ACR v0.1 record.
 
-## Integration with AgentPlane lifecycle
+## Integration with Agentplane lifecycle
 
 ACR maps onto existing lifecycle stages:
 
-| AgentPlane stage                  | ACR projection                                                 |
+| Agentplane stage                  | ACR projection                                                 |
 | --------------------------------- | -------------------------------------------------------------- |
 | `task new`                        | `task.task_id`, `task.title`, `task.intent`                    |
 | `task plan set`                   | `plan.artifact` and plan evidence                              |
@@ -290,17 +290,17 @@ remote metadata, or skipped checks must be represented explicitly as `unknown`, 
 
 ## Market-standard criteria
 
-For ACR to work beyond AgentPlane, the format needs these properties:
+For ACR to work beyond Agentplane, the format needs these properties:
 
 1. Git-native: a record can live in any Git repository and move with the codebase.
 2. Evidence-first: claims are backed by hashes, local paths, Git revisions, and policy decisions.
 3. Privacy-safe: the default public artifact is commit-safe.
-4. Producer-neutral: AgentPlane can produce ACR, but other tools can implement the same schema.
+4. Producer-neutral: Agentplane can produce ACR, but other tools can implement the same schema.
 5. Validator-friendly: schema validation is not enough; local and CI modes verify evidence.
 6. Extensible: reverse-DNS extensions allow vendors to add fields without changing core semantics.
 7. Reviewable: a human reviewer can read `acr explain` and inspect referenced artifacts.
 
 ## Related implementation details
 
-AgentPlane maintainer notes for the code-level rollout live in the direct-link developer docs and
+Agentplane maintainer notes for the code-level rollout live in the direct-link developer docs and
 are intentionally omitted from the public user path.

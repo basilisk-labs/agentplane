@@ -1,0 +1,96 @@
+---
+title: "Harness engineering for AI agents"
+description: "How Agentplane fits the harness engineering category: workflows, tools, context, checks, traces, and artifacts around agent runs."
+---
+
+import FurtherReading from "@site/src/components/FurtherReading";
+
+# Harness engineering for AI agents
+
+## Quick answer
+
+Harness engineering is the work of designing the code, configuration, workflows, tools, context,
+checks, and observability around an AI model so it can act as a reliable agent. Agentplane focuses
+on the operational harness: local workflows, traces, recipes, context, verification, and artifacts
+around agent runs.
+
+## What is a harness?
+
+A harness is the operational structure around a model or agent. It defines what the agent can see,
+which tools it can use, how work progresses, how outputs are checked, and which evidence remains
+after the run.
+
+## Why are raw models not enough?
+
+Raw models can produce useful steps, but long-running engineering work needs state, tool boundaries,
+verification, and reviewable records. Without a harness, evidence often remains in chat history,
+terminal scrollback, or an IDE session that cannot be audited later.
+
+## What belongs in an agent harness?
+
+- Workflow files.
+- Context boundaries.
+- Tool-call records.
+- Verification checks.
+- Run artifacts.
+- Traces.
+- Review evidence such as Agent Change Records.
+
+## Where does Agentplane fit?
+
+Agentplane does not try to be the model. It gives the model and the surrounding agent workflow a
+disciplined operating surface: workflow files, context boundaries, tool-call records, verification
+checks, run artifacts, and traces.
+
+```bash
+agentplane run ./agentplane.yaml
+agentplane trace open <run-id>
+agentplane acr generate <task-id> --work-commit HEAD --write
+```
+
+Example artifact trail:
+
+```text
+.agentplane/runs/run_01HX/
+.agentplane/traces/run_01HX.json
+.agentplane/exports/run_01HX.otel.json
+.agentplane/tasks/<task-id>/acr.json
+```
+
+## How is harness engineering different from context engineering?
+
+Context engineering controls what information is available to an agent. Harness engineering is
+broader: it also includes workflow, tools, checks, state, observability, and artifacts. Agentplane
+local context is one part of the harness, not the whole harness.
+
+## How is harness engineering different from agent frameworks?
+
+Agent frameworks define agent logic and application behavior. Agentplane coordinates the operational
+surface around agents: runs, traces, local context, recipes, verification, exports, and evidence.
+
+## Example: local agent run with trace and verification
+
+```yaml
+name: code-review-agent
+steps:
+  - id: load-context
+    type: context.load
+  - id: plan
+    type: agent.plan
+  - id: implement
+    type: agent.run
+  - id: verify
+    type: check.run
+    command: npm test
+  - id: export-trace
+    type: trace.export
+```
+
+<FurtherReading ids={[
+  "martin-fowler-harness-engineering",
+  "oreilly-agent-harness-engineering",
+  "anthropic-building-effective-agents",
+  "anthropic-writing-tools-for-agents",
+  "openai-routines-handoffs"
+]} />
+

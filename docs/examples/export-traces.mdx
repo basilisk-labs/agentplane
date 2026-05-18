@@ -1,0 +1,37 @@
+---
+title: "Export traces"
+description: "Export an Agentplane trace as JSON or OpenTelemetry-compatible JSON."
+---
+
+# Export traces
+
+## Outcome
+
+Export run evidence as a portable artifact that can be attached to review or inspected by another
+tool.
+
+Estimated time: 5 minutes.
+
+## Commands used
+
+```bash
+agentplane trace list
+agentplane trace export <run-id> --format json --out .agentplane/exports/<run-id>.json
+agentplane trace export <run-id> --format otel-json --out .agentplane/exports/<run-id>.otel.json
+```
+
+## Expected artifact
+
+```text
+.agentplane/exports/<run-id>.json
+.agentplane/exports/<run-id>.otel.json
+```
+
+## Troubleshooting
+
+If no run appears, run a local workflow first:
+
+```bash
+agentplane run ./agentplane.yaml
+```
+

@@ -1,116 +1,54 @@
 ---
-title: "AgentPlane Documentation"
-description: "Docs for AgentPlane, the Git-native evidence and local context layer for traceable AI work."
+title: "Agentplane Documentation"
+description: "Docs for Agentplane, the CLI-first operational workflow and observability layer for AI agents."
 ---
 
-# AgentPlane documentation
+# Agentplane documentation
 
-AgentPlane turns AI-agent work into reviewable Git evidence: task intent, plan, verification, local
-context, Agent Change Record, and closure.
-
-Humans install and initialize AgentPlane. Coding agents operate the lifecycle. Reviewers inspect the
-evidence in Git.
+Agentplane is a CLI-first operational workflow and observability layer for AI agents. It helps
+developers run local workflows, record traces, manage context, apply recipes, export artifacts, and
+keep agent work reproducible and inspectable.
 
 ## Start here
 
-1. [Overview](user/overview)
-2. [Setup](user/setup)
-3. [Hand off to an agent](user/agent-handoff)
-4. [Use with agents](workflow-guides)
-5. [Local context](user/local-context)
-6. [Agent Change Record](user/agent-change-record)
+1. [What is Agentplane?](user/overview)
+2. [Quickstart](start/quickstart)
+3. [First local run](start/first-local-run)
+4. [What files Agentplane writes](start/what-agentplane-writes)
+5. [Traces for AI agent runs](concepts/traces)
+6. [Local context](user/local-context)
 
-## Current docs map
+## Core concepts
 
-### Start
+- [Workflows](user/workflow)
+- [Traces](concepts/traces)
+- [Local context](user/local-context)
+- [Recipes](recipes)
+- [Agent Change Records](reference/acr)
 
-- [Overview](user/overview)
-- [Setup](user/setup)
-- [Hand off to an agent](user/agent-handoff)
-- [Prerequisites](user/prerequisites)
-- [Agent bootstrap](user/agent-bootstrap.generated)
-- [Compare](compare)
-- [Glossary](help/glossary)
+## Guides
 
-The default path is:
-
-```text
-install -> init -> context init -> hand off to an agent -> review task evidence
-```
-
-Manual CLI usage beyond setup and recovery is advanced.
-
-### Use with agents
-
-- [Use with agents overview](workflow-guides)
+- [Debug an agent run with traces](examples/debug-agent-run-with-traces)
+- [Export traces](examples/export-traces)
+- [TDD recipe](recipes/tdd)
+- [Security review recipe](recipes/security-review)
+- [Docs update recipe](recipes/docs-update)
 - [Claude Code](workflow-guides/claude-code)
 - [Codex](workflow-guides/codex)
 - [Cursor](workflow-guides/cursor)
 - [Aider](workflow-guides/aider)
-- [GitHub Actions](workflow-guides/github-actions)
 
-AgentPlane is agent-agnostic because it works through repository files, Git, and the universal
-`AGENTS.md` / `CLAUDE.md` policy gateway instead of depending on one model, IDE, or hosted agent
-platform.
-
-### Agent workflow model
-
-- [Workflow](user/workflow)
-- [Task lifecycle](user/task-lifecycle)
-- [Branching and PR artifacts](user/branching-and-pr-artifacts)
-- [Configuration](user/configuration)
-- [branch_pr workflow](workflow-guides/branch-pr)
-
-### Review agent work
-
-- [Agent Change Record](user/agent-change-record)
-- [Tasks and backends](user/tasks-and-backends)
-- [Commands](user/commands)
-
-The command guide and generated CLI reference are primarily for operators, recovery, and advanced
-manual inspection. Day-to-day task work should be agent-operated.
-
-### Local context
-
-- [Local context](user/local-context)
-- [Agent discovery](user/agent-discovery)
-- [Indexing and webmaster operations](user/indexing-and-webmaster-operations)
-
-Local context is the context-management surface for agents: raw sources, maintained wiki pages,
-sourced facts, graph edges, disposable projections, and verification gates for agent-maintained
-knowledge.
-
-### Team operations
-
-- [Backends](user/backends)
-- [Local backend](user/backends/local)
-- [Cloud backend](user/backends/cloud)
-- [Redmine backend](user/backends/redmine)
-- [Redmine guide](user/redmine)
-- [Agents](user/agents)
-
-### Recipes
-
-- [Recipes overview](recipes)
-- [Code Map recipe](recipes/code-map)
-
-### Upgrade & recover
-
-- [Breaking changes](user/breaking-changes)
-- [Workflow migration](user/workflow-migration)
-- [Upgrade recovery](help/legacy-upgrade-recovery)
-- [Broken workflow runbook](help/broken-workflow-runbook)
-- [Troubleshooting by symptom](help/troubleshooting-by-symptom)
-- [Troubleshooting](help/troubleshooting)
-
-### Reference
+## Reference
 
 - [CLI reference](user/cli-reference.generated)
-- [Generated package reference](reference/generated-reference)
-- [Listing submission profile](listing)
-- [Website IA](user/website-ia)
-- [Showcase](showcase)
+- [Workflow file reference](user/configuration)
+- [Trace schema](reference/trace-schema)
+- [ACR schema](reference/acr-schema)
 
-### Releases
+## Concepts
 
-- [Release notes](releases)
+- [Harness engineering](concepts/harness-engineering)
+- [Context engineering](concepts/context-engineering)
+- [Agent workflows](concepts/agent-workflows)
+- [OpenTelemetry for agent traces](concepts/traces)
+

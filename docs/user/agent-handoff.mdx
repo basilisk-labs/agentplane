@@ -1,13 +1,13 @@
 ---
 title: "Hand off to an agent"
-description: "Give a coding agent the repository after AgentPlane is installed and initialized."
+description: "Give a coding agent the repository after Agentplane is installed and initialized."
 ---
 
 ## Default usage model
 
-AgentPlane is designed for agent-operated repository work.
+Agentplane is designed for agent-operated repository work.
 
-Humans install and initialize AgentPlane. Coding agents operate the task lifecycle. Reviewers inspect
+Humans install and initialize Agentplane. Coding agents operate the task lifecycle. Reviewers inspect
 the evidence left in Git.
 
 ```text
@@ -16,11 +16,11 @@ install -> init -> context init -> hand off to an agent -> review task evidence
 
 Manual CLI operation after initialization is an advanced path for operators, maintainers, recovery,
 and debugging. The normal product path is to let the coding agent read the repository policy gateway
-and run the AgentPlane lifecycle around its own work.
+and run the Agentplane lifecycle around its own work.
 
 ## Agent-agnostic by design
 
-AgentPlane does not depend on one coding agent, model, IDE, or hosted agent platform.
+Agentplane does not depend on one coding agent, model, IDE, or hosted agent platform.
 
 It works at the repository boundary:
 
@@ -31,22 +31,22 @@ It works at the repository boundary:
 - Git stores the final diff, branches, commits, and review trail.
 
 Any agent that can read files, run shell commands, edit the repository, and respect `AGENTS.md` can
-work inside the AgentPlane contract.
+work inside the Agentplane contract.
 
 ## What to give the agent
 
 After setup, give your coding agent the repository and this instruction:
 
 ```text
-Use AgentPlane for this repository.
+Use Agentplane for this repository.
 
 Start with:
 agentplane quickstart
 agentplane role ORCHESTRATOR
 
 Follow AGENTS.md and the workflow mode in .agentplane/WORKFLOW.md.
-Create or reuse an AgentPlane task before mutating repository files.
-Record the plan, start-ready state, verification evidence, and finish state through AgentPlane.
+Create or reuse an Agentplane task before mutating repository files.
+Record the plan, start-ready state, verification evidence, and finish state through Agentplane.
 If the task needs reusable project knowledge, use the local context docs and context commands.
 ```
 
@@ -76,7 +76,7 @@ Use manual CLI docs when you are doing one of these:
 - Recovering a broken workflow or partial upgrade.
 - Inspecting configuration, task state, or generated evidence.
 - Operating backend sync.
-- Maintaining AgentPlane itself.
+- Maintaining Agentplane itself.
 
 For day-to-day feature work, bug fixes, documentation updates, and refactors, hand the repository to
 the coding agent and review the evidence it records.

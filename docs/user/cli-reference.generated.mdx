@@ -171,7 +171,7 @@ agentplane agents
 
 ### demo
 
-Create a safe first-success AgentPlane demo task with ACR evidence.
+Create a safe first-success Agentplane demo task with ACR evidence.
 
 Creates an inspectable demo task under .agentplane/tasks without touching user source files, network, or GitHub.
 
@@ -1870,7 +1870,7 @@ Options:
 - `--quick`: Alias for --init-mode quick. (default=false)
 - `--advanced`: Alias for --init-mode advanced. (default=false)
 - `--tool <codex|claude|cursor|windsurf|multiple|manual>`: AI surface that should read project instructions. Granular --policy-gateway/--ide flags override this mapping. (choices=codex|claude|cursor|windsurf|multiple|manual)
-- `--setup-profile <light|normal|full-harness>`: Setup profile preset. Preferred values: light, normal, full-harness. (choices=light|normal|full-harness|developer|vibecoder|manager|enterprise)
+- `--setup-profile <light|normal|full-harness>`: Setup profile preset. Preferred values: light, normal, full-harness. (choices=light|normal|full-harness|developer|vibecoder|manager)
 - `--policy-gateway <codex|claude>`: Policy gateway file to install (codex -&gt; AGENTS.md, claude -&gt; CLAUDE.md). (choices=codex|claude)
 - `--ide <codex|cursor|windsurf>`: IDE rules integration target (default: codex). (choices=codex|cursor|windsurf)
 - `--workflow <direct|branch_pr>`: Workflow mode (default: direct). (choices=direct|branch_pr)
@@ -1880,8 +1880,8 @@ Options:
 - `--require-plan-approval <true|false>`: Require explicit plan approval before starting work.
 - `--require-network-approval <true|false>`: Require explicit approval before any network operation.
 - `--require-verify-approval <true|false>`: Require explicit approval before recording verification.
-- `--feedback-github-issues <true|false>`: Opt in to AgentPlane GitHub issue prompts for internal AgentPlane errors (default: false).
-- `--feedback-anonymous-cloud <true|false>`: Allow anonymous AgentPlane Cloud issue intake fallback when GitHub issue publishing is unavailable (default: false).
+- `--feedback-github-issues <true|false>`: Opt in to Agentplane GitHub issue prompts for internal Agentplane errors (default: false).
+- `--feedback-anonymous-cloud <true|false>`: Allow anonymous Agentplane Cloud issue intake fallback when GitHub issue publishing is unavailable (default: false).
 - `--execution-profile <conservative|balanced|aggressive>`: Execution profile preset controlling autonomy, reasoning, and tool budgets. (choices=conservative|balanced|aggressive)
 - `--strict-unsafe-confirm <true|false>`: Require strict explicit confirmations for additional unsafe actions.
 - `--recipes <none|id1,id2,...>`: Optional cached recipes to vendor during init (comma-separated), or 'none'.
@@ -1924,7 +1924,7 @@ agentplane init --workflow direct --direct-close-dirty-policy strict --yes
 agentplane init --feedback-github-issues true --yes
 ```
 
-- Opt in to GitHub issue prompts for internal AgentPlane errors.
+- Opt in to GitHub issue prompts for internal Agentplane errors.
 
 ```sh
 agentplane init --force --yes
@@ -2100,7 +2100,7 @@ agentplane doctor git-locks --fix
 
 ### insights issue
 
-Create an opt-in GitHub issue with privacy-bounded AgentPlane diagnostics.
+Create an opt-in GitHub issue with privacy-bounded Agentplane diagnostics.
 
 Usage:
 
@@ -2110,18 +2110,18 @@ agentplane insights issue [options]
 
 Options:
 
-- `--title <title>`: Issue title. Defaults to an internal AgentPlane error report title.
+- `--title <title>`: Issue title. Defaults to an internal Agentplane error report title.
 - `--body <text>`: Optional short user-visible context to include before diagnostics.
 - `--agent-context <text>`: Sanitized agent-written diagnostic context to include in the public issue body.
 - `--agent-context-file <path>`: Read sanitized agent-written diagnostic context from a file before creating the issue.
 - `--allow-missing-agent-context`: Allow creating an E_INTERNAL issue without the recommended agent-written context. (default=false)
-- `--error-code <code>`: AgentPlane error code that triggered the report.
+- `--error-code <code>`: Agentplane error code that triggered the report.
 - `--failure-command <command>`: Privacy-safe command id associated with the failure, for example task start-ready.
 - `--failure-phase <phase>`: Privacy-safe lifecycle phase associated with the failure.
 - `--failure-reason-code <code>`: Privacy-safe reason code associated with the failure.
 - `--failure-message-class <class>`: Privacy-safe error message class, not the raw error message.
 - `--failure-argv-shape <token>`: Repeatable sanitized argv shape token; values must not include raw secrets. (repeatable)
-- `--transport <github|cloud|auto>`: Issue transport. github uses the user's gh auth, cloud uses anonymous AgentPlane intake, auto falls back to cloud when GitHub publishing fails. (choices=github|cloud|auto)
+- `--transport <github|cloud|auto>`: Issue transport. github uses the user's gh auth, cloud uses anonymous Agentplane intake, auto falls back to cloud when GitHub publishing fails. (choices=github|cloud|auto)
 - `--allow-disabled-feedback`: Allow this one issue creation when feedback.github_issues.enabled=false without modifying project config. (default=false)
 - `--dry-run`: Print the GitHub issue payload without creating an issue. (default=false)
 
@@ -2147,7 +2147,7 @@ agentplane insights issue --allow-disabled-feedback --error-code E_INTERNAL
 
 ### insights report
 
-Print a local-only privacy-bounded AgentPlane diagnostic report.
+Print a local-only privacy-bounded Agentplane diagnostic report.
 
 Usage:
 
@@ -2919,7 +2919,7 @@ Options:
 
 - `--work-commit <rev>`: Implementation revision.
 - `--base-commit <rev>`: Base revision override.
-- `--agent <id>`: AgentPlane role or agent id.
+- `--agent <id>`: Agentplane role or agent id.
 - `--agent-name <name>`: Human-readable agent name.
 - `--model-provider <provider>`: Model provider. (choices=anthropic|openai|cursor|aider|unknown|custom)
 - `--model-name <name>`: Model name.
@@ -3314,7 +3314,7 @@ Options:
 
 Initialize local context workspace and system manifest.
 
-Creates the local context workspace in an initialized AgentPlane project. When run in an empty standalone directory, it first initializes AgentPlane with safe non-interactive defaults, then writes the context workspace. Non-empty uninitialized directories must run agentplane init explicitly first.
+Creates the local context workspace in an initialized Agentplane project. When run in an empty standalone directory, it first initializes Agentplane with safe non-interactive defaults, then writes the context workspace. Non-empty uninitialized directories must run agentplane init explicitly first.
 
 Usage:
 
@@ -3443,7 +3443,7 @@ agentplane context show <source-ref>
 
 ### context wiki explain
 
-Print a wiki page's AgentPlane context frontmatter.
+Print a wiki page's Agentplane context frontmatter.
 
 Usage:
 
@@ -3483,7 +3483,7 @@ agentplane context wiki lint [<path>]
 
 ### context wiki new
 
-Create a wiki page with AgentPlane context frontmatter.
+Create a wiki page with Agentplane context frontmatter.
 
 Usage:
 

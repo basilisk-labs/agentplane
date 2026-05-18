@@ -1,0 +1,34 @@
+---
+title: "Debug an agent run with traces"
+description: "Use Agentplane traces to inspect a failed or confusing agent workflow run."
+---
+
+# Debug an agent run with traces
+
+## Outcome
+
+Open a trace, inspect spans, and identify the workflow step or tool call that explains the failure.
+
+Estimated time: 7 minutes.
+
+## Commands used
+
+```bash
+agentplane trace list
+agentplane trace open <run-id>
+agentplane trace export <run-id> --format json
+```
+
+## What to inspect
+
+- `context.load`: which repository rules and workflow state were available.
+- `tool.call`: which external command or tool ran.
+- `verification.check`: whether the check passed, failed, or was skipped.
+- `trace.export`: whether the trace was exported for review.
+
+## Expected artifact
+
+```text
+.agentplane/traces/<run-id>.json
+```
+

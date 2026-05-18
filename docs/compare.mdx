@@ -1,17 +1,17 @@
 ---
-title: "How AgentPlane compares"
-description: "AgentPlane compared with coding agents, AGENTS.md, Git-only workflows, and CI."
+title: "How Agentplane compares"
+description: "Agentplane compared with coding agents, AGENTS.md, Git-only workflows, and CI."
 ---
 
-# AgentPlane is not another coding agent
+# Agentplane is not another coding agent
 
-Claude Code, Codex, Cursor, Aider, and similar tools generate or edit code. AgentPlane records the
+Claude Code, Codex, Cursor, Aider, and similar tools generate or edit code. Agentplane records the
 evidence that makes their work reviewable: task scope, approved plan, role ownership, verification,
 branch handoff, closure, and Agent Change Record.
 
 ## Comparison matrix
 
-| Surface                              | Best at                            | Missing by itself              | AgentPlane adds                    |
+| Surface                              | Best at                            | Missing by itself              | Agentplane adds                    |
 | ------------------------------------ | ---------------------------------- | ------------------------------ | ---------------------------------- |
 | Claude Code / Codex / Cursor / Aider | Generating and editing code        | Durable task evidence          | Lifecycle records and ACR          |
 | `AGENTS.md` / `CLAUDE.md`            | Instructions and policy            | State, approvals, verification | Commands, gates, artifacts         |
@@ -21,10 +21,10 @@ branch handoff, closure, and Agent Change Record.
 
 ## Coding agents
 
-Coding agents are responsible for changing files. AgentPlane is responsible for making that work
+Coding agents are responsible for changing files. Agentplane is responsible for making that work
 traceable after the session is gone.
 
-Use AgentPlane when you need a reviewer to answer:
+Use Agentplane when you need a reviewer to answer:
 
 - What was the task?
 - Which plan constrained the work?
@@ -37,15 +37,15 @@ Use AgentPlane when you need a reviewer to answer:
 Instruction files describe policy. They do not record whether a specific agent task followed that
 policy.
 
-AgentPlane keeps the policy gateway, then adds task state, plan approval, verification, finish
+Agentplane keeps the policy gateway, then adds task state, plan approval, verification, finish
 metadata, PR artifacts, and ACR.
 
 ## Git-only workflows
 
-Git remains the source of truth for content and history. AgentPlane does not replace it.
+Git remains the source of truth for content and history. Agentplane does not replace it.
 
 The gap is that a commit hash does not describe the agent's task, plan, verification, or policy
-decisions. AgentPlane stores those records beside the commit so review and revert have enough
+decisions. Agentplane stores those records beside the commit so review and revert have enough
 context.
 
 ## CI
@@ -53,7 +53,7 @@ context.
 CI proves that configured checks ran. It usually does not know why the agent changed the files or
 which task evidence belongs to the pull request.
 
-AgentPlane can record verification as task evidence and use `agentplane acr check <task-id> --mode
+Agentplane can record verification as task evidence and use `agentplane acr check <task-id> --mode
 ci` as an ACR readiness gate.
 
 ## Hosted agent platforms
@@ -61,23 +61,23 @@ ci` as an ACR readiness gate.
 Hosted runtimes and dashboards are useful when you need remote execution, central queues, or sandbox
 management.
 
-AgentPlane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first Git evidence
+Agentplane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first Git evidence
 layer for AI work in repositories.
 
 Hosted dashboards are useful for team visibility, shared history, alerts, and governance.
-AgentPlane OSS keeps the durable evidence record in Git, so Cloud can sync and collaborate around
+Agentplane OSS keeps the durable evidence record in Git, so Cloud can sync and collaborate around
 the record without becoming the only source of truth.
 
-## When to use AgentPlane
+## When to use Agentplane
 
-Use AgentPlane when:
+Use Agentplane when:
 
 - your coding agent changes real repositories;
 - reviewers need task intent, plan, verification, and closure evidence;
 - AI-authored pull requests need a repeatable review contract;
 - you want durable artifacts in Git instead of transient chat history.
 
-Do not use AgentPlane when:
+Do not use Agentplane when:
 
 - you only need a prompt playground;
 - you want a hosted sandbox runtime;
@@ -87,7 +87,7 @@ Do not use AgentPlane when:
 ## Works with, not against
 
 Claude Code, Codex, Cursor, and Aider generate or edit code. Git stores the diff. CI runs checks.
-AgentPlane records the evidence around the work.
+Agentplane records the evidence around the work.
 
 ## Summary
 

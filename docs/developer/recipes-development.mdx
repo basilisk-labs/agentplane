@@ -54,11 +54,11 @@ description: "Practical workflow for authoring and validating recipes."
 - Bump recipe version on each behavioral change.
 - Keep backward-compatible upgrades when possible.
 - Avoid removing scenario ids without migration path.
-- Keep remote catalog signatures on the production `key_id` trusted by the current AgentPlane CLI.
+- Keep remote catalog signatures on the production `key_id` trusted by the current Agentplane CLI.
 - Store the recipes signing private key only in the `agentplane-recipes` GitHub Actions secret
   `RECIPES_INDEX_SIGNING_PRIVATE_KEY`; do not put it in `.env`, repository files, release assets, or
   long-lived local key paths.
-- Rotate signing keys by adding the new public key to AgentPlane, publishing a CLI release with that
+- Rotate signing keys by adding the new public key to Agentplane, publishing a CLI release with that
   trust-root, and only then switching the default remote catalog signature to the new `key_id`.
 
 ## Integration notes

@@ -1,17 +1,17 @@
 ---
 title: "Workflow"
-description: "How work moves from plan to completion in AgentPlane."
+description: "How work moves from plan to completion in Agentplane."
 ---
 
 ## Default path in this repository
 
-AgentPlane is a workflow layer around coding-agent work:
+Agentplane is a workflow layer around coding-agent work:
 
 ```text
 task -> plan -> approve -> implement -> verify -> finish
 ```
 
-Use Claude Code, Codex, Cursor, Aider, or another tool to edit code. Use AgentPlane to record the
+Use Claude Code, Codex, Cursor, Aider, or another tool to edit code. Use Agentplane to record the
 task state, plan, verification, and closure around those edits.
 
 This repository is configured for `branch_pr`, so the normal guarded route is:
@@ -74,7 +74,7 @@ When a repository intentionally operates in `direct`, the default happy path is 
 
 ## Harness engineering workflow style
 
-In AgentPlane, speed comes from reducing ambiguity rather than skipping controls:
+In Agentplane, speed comes from reducing ambiguity rather than skipping controls:
 
 - keep changes small and frequent;
 - run preflight/doctor early;
@@ -163,7 +163,7 @@ Subject format:
 
 Body format includes `Task`, `Primary`, `Status`, `Comment`.
 
-If `commit.dco.enabled=true`, AgentPlane appends the configured `Signed-off-by` trailer to repository-managed commits. Manual commits must include a valid `Signed-off-by` trailer, but it can belong to the actual human author instead of the configured AgentPlane default identity.
+If `commit.dco.enabled=true`, Agentplane appends the configured `Signed-off-by` trailer to repository-managed commits. Manual commits must include a valid `Signed-off-by` trailer, but it can belong to the actual human author instead of the configured Agentplane default identity.
 
 ## Verification model
 

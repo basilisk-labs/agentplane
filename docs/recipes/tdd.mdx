@@ -1,0 +1,73 @@
+---
+title: "TDD recipe"
+description: "Use a TDD workflow recipe for failing tests, implementation, verification, and trace export."
+---
+
+# TDD recipe
+
+## What does it do?
+
+The TDD recipe structures an agent run around failing tests, implementation, verification, and trace
+export. It is useful when you want the agent to work inside a tight feedback loop instead of
+producing a large unverified patch.
+
+## When should I use it?
+
+- You can express the desired behavior as tests.
+- The agent should make a small patch.
+- Verification evidence matters before review.
+
+## When should I not use it?
+
+- The work is exploratory and has no stable expected behavior yet.
+- The project has no runnable test surface.
+- The task is documentation-only.
+
+## YAML example
+
+```yaml
+name: tdd
+steps:
+  - id: failing-test
+    type: check.run
+    command: npm test -- --runInBand
+    expected: fail
+  - id: implement
+    type: agent.run
+  - id: verify
+    type: check.run
+    command: npm test
+  - id: export-trace
+    type: trace.export
+```
+
+## Command to apply
+
+```bash
+agentplane recipes install tdd
+agentplane run ./agentplane.yaml --recipe tdd
+```
+
+## Expected trace events
+
+```text
+workflow.start
+check.run
+agent.run
+verification.check
+trace.export
+```
+
+## Expected artifacts
+
+```text
+.agentplane/traces/<run-id>.json
+.agentplane/exports/<run-id>.otel.json
+.agentplane/tasks/<task-id>/acr.json
+```
+
+## Troubleshooting
+
+If the first test does not fail, the task may not have a useful red-green loop. Rewrite the test or
+use a different recipe.
+

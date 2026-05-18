@@ -10,13 +10,13 @@
 
 ## Title Options
 
-- AgentPlane: Git-native evidence records for AI-agent changes
+- Agentplane: Git-native evidence records for AI-agent changes
 - I built a Git-visible evidence layer for Claude Code, Codex, Cursor, and Aider workflows
 - Agent Change Records for coding agents: task, plan, verification, finish, in Git
 
 ## Post Body
 
-AgentPlane is Git-native infrastructure for traceable AI work.
+Agentplane is Git-native infrastructure for traceable AI work.
 
 It does not try to be another agent or IDE. It records the workflow around agent-written changes:
 

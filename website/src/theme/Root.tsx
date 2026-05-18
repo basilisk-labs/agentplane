@@ -10,7 +10,7 @@ const gtmContainerId = "GTM-P4FNLHQF";
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "AgentPlane",
+  name: "Agentplane",
   url: "https://agentplane.org",
   logo: "https://agentplane.org/img/android-chrome-512x512.png",
   sameAs: ["https://github.com/basilisk-labs/agentplane"],
@@ -19,10 +19,10 @@ const organizationJsonLd = {
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "AgentPlane",
+  name: "Agentplane",
   url: "https://agentplane.org",
   description:
-    "Deterministic workflow framework for policy-driven agent execution in repositories.",
+    "CLI-first operational workflows, traces, context, recipes, and artifacts for AI agents.",
   potentialAction: {
     "@type": "SearchAction",
     target: "https://agentplane.org/docs?query={search_term_string}",
@@ -123,7 +123,7 @@ async function copyNavbarInstallCommand(
   installCommand: string,
 ): Promise<void> {
   await navigator.clipboard.writeText(installCommand);
-  trackNavEvent("copy_install_clicked");
+  trackNavEvent("copy_install_command");
   installLink.textContent = "Copied";
   globalThis.setTimeout(() => {
     installLink.textContent = initialLabel;
@@ -133,6 +133,34 @@ async function copyNavbarInstallCommand(
 function trackNavEvent(eventName: string): void {
   const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
   gtag?.("event", eventName, { event_category: "navbar" });
+}
+
+type GitHubRepoResponse = {
+  stargazers_count: number;
+};
+
+const githubStarsCacheKey = "agentplane.github.stargazers";
+const githubStarsCacheTtlMs = 60 * 60 * 1000;
+
+function formatStars(count: number): string {
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
+  return String(count);
+}
+
+function readCachedStars(): number | null {
+  const raw = window.localStorage.getItem(githubStarsCacheKey);
+  if (!raw) return null;
+  const parsed = JSON.parse(raw) as { value?: number; expiresAt?: number };
+  if (typeof parsed.value !== "number" || typeof parsed.expiresAt !== "number") return null;
+  if (parsed.expiresAt < Date.now()) return null;
+  return parsed.value;
+}
+
+function writeCachedStars(value: number): void {
+  window.localStorage.setItem(
+    githubStarsCacheKey,
+    JSON.stringify({ value, expiresAt: Date.now() + githubStarsCacheTtlMs }),
+  );
 }
 
 function NavbarInstallCopy(): null {
@@ -171,7 +199,36 @@ function NavbarGithubTracking(): null {
     const githubLink = document.querySelector<HTMLAnchorElement>(".navbar-github-cta");
     if (!githubLink) return;
 
-    const handleClick = () => trackNavEvent("github_star_nav_clicked");
+    githubLink.setAttribute("aria-label", "Star Agentplane on GitHub");
+    githubLink.textContent = "GitHub";
+
+    const cached = readCachedStars();
+    if (cached !== null) {
+      githubLink.textContent = `Star ${formatStars(cached)}`;
+    } else {
+      const controller = new AbortController();
+      fetch("https://api.github.com/repos/basilisk-labs/agentplane", { signal: controller.signal })
+        .then((response) => {
+          if (!response.ok) throw new Error(`GitHub API failed: ${response.status}`);
+          return response.json() as Promise<GitHubRepoResponse>;
+        })
+        .then((data) => {
+          writeCachedStars(data.stargazers_count);
+          githubLink.textContent = `Star ${formatStars(data.stargazers_count)}`;
+        })
+        .catch(() => {
+          githubLink.textContent = "Star";
+        });
+    }
+
+    const handleClick = () => {
+      const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+      gtag?.("event", "navbar_github_star_click", {
+        event_category: "navbar",
+        location: "navbar",
+        repo: "basilisk-labs/agentplane",
+      });
+    };
     githubLink.addEventListener("click", handleClick);
 
     return () => {

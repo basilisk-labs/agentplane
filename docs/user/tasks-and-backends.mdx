@@ -28,12 +28,12 @@ Task backends now follow one install-first contract:
 For `local`, the canonical source and projection are the same repository state.
 
 For `cloud`, the cloud service is the canonical remote source and `.agentplane/` holds the local
-projection. Connector setup happens in the cloud service, so AgentPlane still uses the `cloud`
+projection. Connector setup happens in the cloud service, so Agentplane still uses the `cloud`
 backend id even when the connected view is GitHub Projects, Redmine, or another task system.
 Cloud projection refreshes are git-visible: `agentplane backend sync cloud --direction pull` may
 update `.agentplane/tasks/**` in the working tree. In `publish_only`, pull does not apply remote
 view edits. In `bidirectional`, pull may update only service-approved operational fields
-(`title`, `status`, `priority`, `owner`, `tags`) on known local tasks; AgentPlane-owned plan,
+(`title`, `status`, `priority`, `owner`, `tags`) on known local tasks; Agentplane-owned plan,
 verification, rollback, findings, comments, events, and README sections remain local task state.
 Remote-only items are ignored unless a future creation policy enables them.
 

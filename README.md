@@ -1,21 +1,19 @@
 <p align="center">
-  <img src="docs/assets/readme-headers/agentplane.svg" alt="AgentPlane latest release header" style="width:100%;max-width:100%;"/>
+  <img src="docs/assets/readme-headers/agentplane.svg" alt="Agentplane latest release header" style="width:100%;max-width:100%;"/>
 </p>
 
-# AgentPlane
+# Agentplane
 
-**Git-native infrastructure for traceable AI work.**
+**CLI-first operational workflows and traces for AI agents.**
 
-AgentPlane turns Claude Code, Codex, Cursor, Aider, and other coding-agent changes into reviewable
-Git evidence: task intent, approved plan, verification, finish state, and Agent Change Record.
+Agentplane helps you run local agent workflows, record traces, manage context, apply recipes, and
+keep agent work reproducible and inspectable.
 
 ```text
-task -> plan -> approve -> implement -> verify -> finish
+install -> init -> run -> trace -> export
 ```
 
-The review trail for AI work, inside Git.
-
-Use any coding agent. Keep the review trail in your repository.
+Build, run, trace, and operationalize AI agents with reproducible local workflows.
 
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
@@ -33,58 +31,44 @@ Use any coding agent. Keep the review trail in your repository.
 ```bash
 npm i -g agentplane
 agentplane init
-agentplane quickstart
+agentplane run ./agentplane.yaml
+agentplane trace open
 ```
 
 Requirements: Node.js 24+, Git, and a local terminal.
 
-![AgentPlane CLI demo](docs/assets/agentplane-demo.gif)
+![Agentplane CLI demo](docs/assets/agentplane-demo.gif)
 
-## Feedback issue prompts
+## What is Agentplane?
 
-AgentPlane intentionally enables GitHub issue prompts for internal AgentPlane errors by default.
-This helps us speed up framework development: when AgentPlane itself fails, the CLI can suggest a
-privacy-bounded issue payload for the `basilisk-labs/agentplane` repository.
+Agentplane is not another agent framework. It is the operational layer around AI agents: workflows,
+orchestration, traces, local context, recipes, verification, and run artifacts.
 
-Preview the payload before creating anything:
+Use Agentplane when you want agent work to be debuggable, reproducible, observable, and safe to
+operate beyond a single chat session.
 
-```bash
-agentplane insights issue --error-code E_INTERNAL --dry-run
-```
+## What Agentplane writes
 
-If you do not want this mode, ask your agent to disable feedback issue prompts or run:
-
-```bash
-agentplane config set feedback.github_issues.enabled false
-```
-
-## Why
-
-A pull request shows what changed. It does not reliably show what the agent was asked to do, which
-plan constrained the change, which checks ran, or why the work is safe to merge.
-
-AgentPlane records that missing evidence before it disappears into chat history, terminal
-scrollback, or IDE state.
-
-## What AgentPlane writes
-
-`agentplane init` adds a local workflow surface:
+`agentplane init` and local workflow runs create inspectable operational artifacts:
 
 ```text
 AGENTS.md                         Repository policy gateway
 .agentplane/WORKFLOW.md           Workflow contract
+.agentplane/runs/<run-id>/         Run state
+.agentplane/traces/<run-id>.json   Trace spans
+.agentplane/exports/<run-id>.json  Exported artifacts
 .agentplane/tasks/<task-id>/       Task state and evidence
-.agentplane/tasks/<task-id>/acr.json
-                                  Agent Change Record
+.agentplane/tasks/<task-id>/acr.json Agent Change Record
 ```
 
-Reviewers do not need to trust an agent transcript. They can inspect files, commits, checks,
-hashes, and the ACR.
+The default quickstart runs locally and writes local project artifacts. It does not require account
+creation. If you enable integrations that publish feedback, traces, or artifacts, the integration
+docs explain the destination and opt-in setting.
 
 ## Agent Change Record
 
-ACR is a commit-safe JSON record for AI-authored work. It captures task intent, approved plan, Git
-commits, policy decisions, verification evidence, and merge readiness.
+An Agent Change Record is a machine-readable record of AI-assisted engineering work. It captures
+task intent, workflow state, changed files, verification evidence, and review status.
 
 ```bash
 agentplane acr generate <task-id> --work-commit HEAD --write
@@ -95,11 +79,10 @@ agentplane acr explain <task-id>
 
 Schema: [`schemas/acr-v0.1.schema.json`](schemas/acr-v0.1.schema.json).
 
-## Context management
+## Local context
 
-AgentPlane also gives agents a repository-owned memory layer. Instead of asking an agent to
-rediscover project knowledge from raw files on every prompt, keep reusable context in Git and let
-AgentPlane project it into searchable local state.
+Local context is the operational knowledge an agent needs for a specific repository or workflow:
+conventions, constraints, current state, reusable notes, tool instructions, and run history.
 
 ```text
 context/raw/**              source material
@@ -120,69 +103,29 @@ agentplane context check
 ```
 
 The model matches the LLM Wiki pattern: raw sources stay immutable, the wiki accumulates synthesis,
-and schema/policy files tell agents how to maintain it. AgentPlane adds task lifecycle, provenance,
+and schema/policy files tell agents how to maintain it. Agentplane adds task lifecycle, provenance,
 proposal-before-promotion, and verification gates so context updates remain reviewable.
 
 Read [Local context](docs/user/local-context.mdx).
 
-## First task flow
-
-Create a task:
+## First local workflow
 
 ```bash
-agentplane task new --title "Fix parser edge case" --description "Reject empty labels." --owner <agent-id> --tag code
+agentplane run ./agentplane.yaml
+agentplane trace list
+agentplane trace export <run-id> --format json
 ```
 
-Record the plan and approval:
+## Agentplane is not
 
-```bash
-agentplane task plan set <task-id> --text "Add a fixture, tighten validation, and run focused tests." --updated-by <agent-id>
-agentplane task plan approve <task-id> --by <reviewer-id>
-```
+- a model provider;
+- a prompt playground;
+- a low-code chatbot builder;
+- a replacement for every agent framework;
+- a black-box runtime that hides operational state.
 
-Then start, verify, and finish:
-
-```bash
-agentplane task start-ready <task-id> --author <agent-id> --body "Start: implementing parser validation with focused tests."
-agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by <agent-id> --note "Focused parser tests passed."
-agentplane finish <task-id> --author <agent-id> --result "Parser rejects empty labels." --commit <git-rev>
-```
-
-Agent IDs are configurable profiles. See
-[Agents](docs/user/agents.mdx).
-
-## AgentPlane is not
-
-- Not another coding agent.
-- Not a prompt framework.
-- Not a replacement for Git, CI, or PR review.
-
-It is the evidence layer around the tools you already use.
-
-## Why AgentPlane
-
-| Without AgentPlane       | With AgentPlane                       |
-| ------------------------ | ------------------------------------- |
-| Prompt in chat history   | Task intent recorded in the repo      |
-| Plan is implicit         | Plan is explicit and can be approved  |
-| Verification is a claim  | Verification is recorded with context |
-| Reviewer reads one diff  | Reviewer reads diff plus task record  |
-| Closure is manual        | Finish state links to a commit        |
-| Workflow lives elsewhere | Workflow artifacts live in Git        |
-
-## vs. other tools
-
-AgentPlane is not another coding agent. It is the workflow envelope around the agent you already
-use:
-
-- Claude Code, Codex, Cursor, and Aider generate or edit code; AgentPlane records the task trail.
-- `AGENTS.md` and `CLAUDE.md` are policy text; AgentPlane adds task state and CLI gates around it.
-- Git stores the final diff; AgentPlane stores the task, plan, verification, and closure evidence
-  beside that diff.
-- Hosted agent dashboards centralize workflow state; AgentPlane keeps it local to the repository.
-
-See the full comparison page in [docs/compare.mdx](docs/compare.mdx).
+Agentplane is the local operational layer around agent workflows: runs, traces, context, recipes,
+checks, exports, and artifacts.
 
 ## Recipes
 
@@ -204,10 +147,10 @@ The current catalog starts with [Code Map](docs/recipes/code-map.mdx).
 - Engineering teams that make agent work follow a shared lifecycle before review.
 - Platform and security teams that need local, inspectable, policy-aware, CI-gateable AI work.
 
-DCO sign-off and multi-author commits are first-class. AgentPlane-managed commits preserve DCO
+DCO sign-off and multi-author commits are first-class. Agentplane-managed commits preserve DCO
 identity fallbacks so agent and human co-authoring stays compliant.
 
-Using AgentPlane in a real repo? Tell us in
+Using Agentplane in a real repo? Tell us in
 [Discussions](https://github.com/basilisk-labs/agentplane/discussions). We will add your story to
 [docs/showcase](docs/showcase.mdx).
 
@@ -224,12 +167,12 @@ review boundaries.
 
 ## Workflow guides
 
-- [AgentPlane + Claude Code](docs/workflow-guides/claude-code.mdx)
-- [AgentPlane + Codex](docs/workflow-guides/codex.mdx)
-- [AgentPlane + Cursor](docs/workflow-guides/cursor.mdx)
-- [AgentPlane + Aider](docs/workflow-guides/aider.mdx)
-- [AgentPlane + GitHub Actions](docs/workflow-guides/github-actions.mdx)
-- [AgentPlane + branch_pr workflow](docs/workflow-guides/branch-pr.mdx)
+- [Agentplane + Claude Code](docs/workflow-guides/claude-code.mdx)
+- [Agentplane + Codex](docs/workflow-guides/codex.mdx)
+- [Agentplane + Cursor](docs/workflow-guides/cursor.mdx)
+- [Agentplane + Aider](docs/workflow-guides/aider.mdx)
+- [Agentplane + GitHub Actions](docs/workflow-guides/github-actions.mdx)
+- [Agentplane + branch_pr workflow](docs/workflow-guides/branch-pr.mdx)
 
 ## Documentation
 
@@ -256,7 +199,7 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Help us ship this
 
-If AgentPlane saved you a bad merge, [star the repo](https://github.com/basilisk-labs/agentplane)
+If Agentplane saved you a bad merge, [star the repo](https://github.com/basilisk-labs/agentplane)
 and drop a note in [Discussions](https://github.com/basilisk-labs/agentplane/discussions). It is
 the only growth signal we use.
 

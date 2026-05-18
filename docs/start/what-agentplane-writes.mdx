@@ -1,0 +1,87 @@
+---
+title: "What files does Agentplane write?"
+description: "A local-first map of the policy, workflow, trace, recipe, export, and Agent Change Record files Agentplane can create."
+---
+
+# What files does Agentplane write?
+
+## Quick answer
+
+Agentplane is designed to make operational state visible. Instead of hiding workflow state in a chat
+transcript, it writes inspectable files that can be reviewed, versioned, exported, or deleted.
+
+## `.agentplane/`
+
+`.agentplane/` is the repo-local operational directory. It can contain workflow configuration,
+task records, traces, exports, recipes, derived context, and cache files.
+
+## Workflows
+
+Workflow files describe the local run structure:
+
+```text
+.agentplane/WORKFLOW.md
+.agentplane/workflows/default.yaml
+agentplane.yaml
+```
+
+## Runs
+
+Run folders capture execution state for a workflow:
+
+```text
+.agentplane/runs/run_01HX...
+```
+
+## Traces
+
+Trace files capture ordered spans for workflow steps, context loads, model calls, tool calls,
+verification checks, and exports.
+
+```text
+.agentplane/traces/run_01HX.json
+```
+
+## Recipes
+
+Recipes are reusable workflow overlays. They can live in repo-local recipe files or be installed
+from a signed catalog.
+
+```text
+.agentplane/recipes/tdd.yaml
+```
+
+## Exports
+
+Exports are portable artifacts for review, debugging, or observability tools.
+
+```text
+.agentplane/exports/run_01HX.otel.json
+```
+
+## Agent Change Records
+
+An Agent Change Record is a machine-readable record of AI-assisted engineering work:
+
+```text
+.agentplane/tasks/<task-id>/acr.json
+```
+
+It captures task intent, workflow state, changed files, verification evidence, and review status.
+
+## What leaves my machine?
+
+The default quickstart runs locally and writes local project artifacts. It does not require account
+creation. If you enable integrations that publish feedback, traces, or artifacts, the integration
+docs explain the destination and opt-in setting.
+
+## How to remove Agentplane files
+
+```bash
+rm -rf .agentplane
+rm -f agentplane.yaml
+```
+
+Review `AGENTS.md` or `CLAUDE.md` before deleting them because your repository may use those policy
+files independently.
+

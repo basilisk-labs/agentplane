@@ -1,0 +1,29 @@
+---
+title: "First local run"
+description: "Run a local Agentplane workflow and inspect the first trace and artifacts."
+---
+
+# First local run
+
+## What is the first success path?
+
+The first success path is a local workflow that produces visible artifacts: a run record, trace,
+verification evidence, and an exportable result.
+
+```bash
+agentplane run ./agentplane.yaml
+agentplane trace list
+agentplane trace open <run-id>
+```
+
+Expected artifact shape:
+
+```text
+.agentplane/runs/<run-id>/
+.agentplane/traces/<run-id>.json
+.agentplane/exports/<run-id>.otel.json
+```
+
+If a command is not available in your installed version, run `agentplane quickstart` and
+`agentplane help` to inspect the supported route for that installation.
+

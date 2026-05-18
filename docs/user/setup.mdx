@@ -1,9 +1,9 @@
 ---
 title: "Setup"
-description: "Install AgentPlane, initialize a repository, enable local context, and hand the repo to a coding agent."
+description: "Install Agentplane, initialize a repository, understand local-first defaults, and hand the repo to a coding agent."
 ---
 
-## Install AgentPlane
+## Install Agentplane
 
 Requirements:
 
@@ -27,6 +27,12 @@ npx agentplane quickstart
 
 On fresh Windows shells, use `npx agentplane ...` if `agentplane` is not yet on `PATH`, then reopen
 the terminal after global install.
+
+## What leaves my machine?
+
+The default quickstart runs locally and writes local project artifacts. It does not require account
+creation. If you enable integrations that publish feedback, traces, or artifacts, the integration
+docs explain the destination and opt-in setting.
 
 ## Initialize repository
 
@@ -53,13 +59,13 @@ agentplane init --dry-run --yes --output json
 
 Dry-run builds the same setup plan but does not create `.git`, `.agentplane`, gateway files,
 backups, hooks, or commits. Use it before re-initializing repositories that already contain
-AgentPlane-related files.
+Agentplane-related files.
 
 ## Feedback issue prompts
 
-New projects keep AgentPlane feedback issue publishing disabled until explicit opt-in. When enabled,
-AgentPlane can prepare a privacy-bounded GitHub issue for internal AgentPlane errors. Publishing uses
-the user's GitHub session by default; anonymous AgentPlane Cloud intake is a separate opt-in fallback.
+New projects keep Agentplane feedback issue publishing disabled until explicit opt-in. When enabled,
+Agentplane can prepare a privacy-bounded GitHub issue for internal Agentplane errors. Publishing uses
+the user's GitHub session by default.
 
 Preview the issue payload:
 
@@ -73,10 +79,10 @@ To initialize with the mode disabled:
 agentplane init --feedback-github-issues false
 ```
 
-To initialize with GitHub issue prompts and anonymous cloud fallback enabled:
+To initialize with GitHub issue prompts enabled:
 
 ```bash
-agentplane init --feedback-github-issues true --feedback-anonymous-cloud true
+agentplane init --feedback-github-issues true
 ```
 
 To disable it later:
@@ -88,18 +94,18 @@ agentplane config set feedback.github_issues.enabled false
 ## Hand off to an agent
 
 After initialization, the normal next step is to give the repository to a coding agent. The agent
-should read the repository policy gateway and run the AgentPlane lifecycle around its own work.
+should read the repository policy gateway and run the Agentplane lifecycle around its own work.
 
 ```text
-Use AgentPlane for this repository.
+Use Agentplane for this repository.
 
 Start with:
 agentplane quickstart
 agentplane role ORCHESTRATOR
 
 Follow AGENTS.md and the workflow mode in .agentplane/WORKFLOW.md.
-Create or reuse an AgentPlane task before mutating repository files.
-Record the plan, start-ready state, verification evidence, and finish state through AgentPlane.
+Create or reuse an Agentplane task before mutating repository files.
+Record the plan, start-ready state, verification evidence, and finish state through Agentplane.
 ```
 
 Expected files:
@@ -123,7 +129,7 @@ agentplane context reindex
 agentplane context search "first task"
 ```
 
-In an empty standalone directory, `agentplane context init` also performs the initial AgentPlane
+In an empty standalone directory, `agentplane context init` also performs the initial Agentplane
 bootstrap before writing context files. For non-empty uninitialized projects, run `agentplane init`
 first so conflicts and gateway/workflow choices stay explicit.
 

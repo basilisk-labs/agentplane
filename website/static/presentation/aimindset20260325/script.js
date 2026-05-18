@@ -44,7 +44,7 @@
     indicator.textContent = `${toTwoDigits(current + 1)} / ${toTwoDigits(total)}`;
     metaTag.textContent = `WF-${toTwoDigits(current + 1)}`;
     progressBar.style.width = `${((current + 1) / total) * 100}%`;
-    document.title = `${slides[current].dataset.title} — AgentPlane Deck`;
+    document.title = `${slides[current].dataset.title} — Agentplane Deck`;
     updateHash(current);
   }
 

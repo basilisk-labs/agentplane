@@ -1,27 +1,23 @@
-# AgentPlane
+# Agentplane
 
 site: https://agentplane.org
 docs: https://agentplane.org/docs
-blog: https://agentplane.org/blog
+examples: https://agentplane.org/examples
 repo: https://github.com/basilisk-labs/agentplane
 
-summary: Open-source audit layer for coding agents; gives Claude Code, Codex, Cursor, Aider, and other coding-agent tools a repository-native task, policy, verification, branch, closure, and Agent Change Record lifecycle.
-not: hosted agent runtime, model provider, IDE, CI replacement, pull-request replacement.
-capabilities: task planning, policy routing, approval-gated execution, verification evidence, branch_pr worktrees, pull-request handoff, release/publish automation, recipe modules.
-acr-schema: https://agentplane.org/schemas/acr-v0.1.schema.json
+summary: Agentplane is a CLI-first operational workflow and observability layer for AI agents. It helps developers run local agent workflows, record traces, manage local context, apply reusable recipes, export artifacts, and make agent work reproducible and inspectable.
+not: model provider, prompt playground, low-code chatbot builder, replacement for every agent framework, black-box runtime that hides operational state.
+local-first: The default quickstart runs locally, writes repo-local artifacts, and does not require account creation.
+cli: agentplane
+license: MIT
 
-index:
-- https://agentplane.org/docs/manifesto
-- https://agentplane.org/docs/compare
-- https://agentplane.org/docs/user/overview
-- https://agentplane.org/docs/user/setup
-- https://agentplane.org/docs/user/workflow
-- https://agentplane.org/docs/user/commands
-- https://agentplane.org/docs/user/agent-change-record
-- https://agentplane.org/docs/workflow-guides/claude-code
-- https://agentplane.org/docs/workflow-guides/codex
-- https://agentplane.org/docs/workflow-guides/cursor
-- https://agentplane.org/docs/workflow-guides/aider
-- https://agentplane.org/docs/recipes/code-map
-- https://agentplane.org/docs/developer/architecture
-- https://agentplane.org/docs/developer/cli-contract
+canonical-links:
+- What is Agentplane: https://agentplane.org/docs
+- Quickstart: https://agentplane.org/docs/start/quickstart
+- Harness engineering: https://agentplane.org/docs/concepts/harness-engineering
+- Context engineering: https://agentplane.org/docs/concepts/context-engineering
+- Traces: https://agentplane.org/docs/concepts/traces
+- Local context: https://agentplane.org/docs/user/local-context
+- Agent Change Records: https://agentplane.org/docs/reference/acr
+- Examples: https://agentplane.org/examples
+

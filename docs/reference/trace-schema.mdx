@@ -1,0 +1,37 @@
+---
+title: "Trace schema"
+description: "Reference notes for Agentplane trace fields and OpenTelemetry-compatible exports."
+---
+
+# Trace schema
+
+## Quick answer
+
+An Agentplane trace records one workflow run as spans. Each span names an operation and carries
+attributes for workflow, context, model calls, tool calls, checks, outputs, and artifacts.
+
+Minimal shape:
+
+```json
+{
+  "trace_id": "run_01HX...",
+  "spans": [
+    {
+      "name": "workflow.start",
+      "attributes": {
+        "agentplane.workflow": "quickstart"
+      }
+    }
+  ]
+}
+```
+
+## Export
+
+```bash
+agentplane trace export <run-id> --format json
+agentplane trace export <run-id> --format otel-json
+```
+
+Use [traces for AI agent runs](../concepts/traces) for the conceptual guide.
+

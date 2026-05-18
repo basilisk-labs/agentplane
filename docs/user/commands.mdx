@@ -27,7 +27,7 @@ Advanced recovery and maintenance commands stay available through direct help or
 agentplane help --all
 ```
 
-Framework-maintainer commands for developing AgentPlane itself are intentionally outside the public
+Framework-maintainer commands for developing Agentplane itself are intentionally outside the public
 user command path and live in the direct-link developer docs.
 
 ## Quickstart
@@ -72,7 +72,7 @@ agentplane init --setup-profile normal --workflow direct --backend local --execu
 agentplane init --dry-run --yes --output json
 ```
 
-Feedback issue prompts are enabled by default for internal AgentPlane errors. Disable them during
+Feedback issue prompts are enabled by default for internal Agentplane errors. Disable them during
 init or later:
 
 ```bash
@@ -211,7 +211,7 @@ require `agentplane context init` first. Use `context verify-task` before closin
 or relies on context artifacts. See [Local context](local-context).
 
 `context wiki` helpers keep markdown pages usable by both humans and agents. `wiki new` creates a
-page with AgentPlane frontmatter, `wiki lint` checks the page manifest and source-link hygiene,
+page with Agentplane frontmatter, `wiki lint` checks the page manifest and source-link hygiene,
 `wiki explain` prints the technical metadata, `wiki link` suggests existing pages that may deserve
 meaningful inline cross-links, and `wiki index` refreshes generated `index.md` navigation sections.
 The helpers do not replace CURATOR judgment; they make page creation, canonical linking, indexing,
@@ -303,7 +303,7 @@ For any commit-capable command (`commit`, `guard commit`, `start/block/finish ..
 - Path-scoped protected overrides can also stand alone without a duplicate explicit prefix: `--allow-policy`, `--allow-config`, `--allow-hooks`, and `--allow-ci` each admit their own protected path family for `commit` auto-stage and `guard commit` policy checks.
 - `--allow-base` is different: it is only a branch-level override for base-branch edits and does not select any file paths by itself.
 - `agentplane guard commit` remains staged-only; it validates the current index and never stages files for you.
-- If `commit.dco.enabled=true`, AgentPlane-created commits append the configured `Signed-off-by` trailer. The `commit-msg` hook rejects manual commits without a valid `Signed-off-by` trailer, but it does not require every manual commit to use the configured AgentPlane identity.
+- If `commit.dco.enabled=true`, Agentplane-created commits append the configured `Signed-off-by` trailer. The `commit-msg` hook rejects manual commits without a valid `Signed-off-by` trailer, but it does not require every manual commit to use the configured Agentplane identity.
 - If commit stderr reports `git_pre_commit_format` or `git_pre_commit_lint`, run `bun run format` or `bun run lint:core` respectively, then retry the original `commit` / `finish` command.
 - Repo-wide prefix `.` is rejected by policy.
 - Fast path to build safe prefixes from current index:
@@ -419,7 +419,7 @@ together.
 During advanced/full-harness init, cached catalog entries can be installed in one step:
 
 ```bash
-agentplane init --setup-profile full-harness --blueprints pack:enterprise-baseline --yes
+agentplane init --setup-profile full-harness --blueprints pack:team-baseline --yes
 ```
 
 Use `blueprint:<id>` or `pack:<id>` when a catalog contains overlapping ids.

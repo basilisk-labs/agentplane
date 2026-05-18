@@ -11,14 +11,14 @@ promotion workflow is already shipped.
 
 ## Goal
 
-AgentPlane evals should measure behavior, not prompt text alone. The core question is whether a
+Agentplane evals should measure behavior, not prompt text alone. The core question is whether a
 prompt, recipe, or prompt module helps a runner-controlled agent reach the documented quality
 criteria with reproducible evidence.
 
 The same architecture should support two separate modes:
 
 1. Internal improvement evals for prompts, recipes, agents, and core prompt modules.
-2. External benchmark runs where AgentPlane acts as a harness adapter and exports results in the
+2. External benchmark runs where Agentplane acts as a harness adapter and exports results in the
    benchmark's required format.
 
 These modes can share runner artifacts and result manifests, but they must keep scoring and
@@ -49,7 +49,7 @@ Controlled recursion uses `evaluator.max_rework_attempts` (default: `3`).
 - When the next attempt stays within the configured limit, the task returns to `DOING` for the same
   owner.
 - When the next attempt would exceed the limit, verification records `blocked_external`, the task
-  moves to `BLOCKED`, and AgentPlane stops cycling it back to `DOING` without explicit operator
+  moves to `BLOCKED`, and Agentplane stops cycling it back to `DOING` without explicit operator
   intervention.
 
 `EVALUATOR` must write `--note` and details on every cycle, so hitting the guard leaves an explicit
@@ -91,10 +91,10 @@ replace deterministic gates for policy, lifecycle, or artifact correctness.
 Benchmark mode is a separate integration surface:
 
 1. A benchmark adapter reads the benchmark dataset.
-2. AgentPlane materializes each case as a task or scenario under a declared harness profile.
+2. Agentplane materializes each case as a task or scenario under a declared harness profile.
 3. The runner executes the selected model/agent setup.
 4. A result exporter writes JSONL, JUnit, benchmark-specific schemas, or hosted submission payloads.
-5. Reports include AgentPlane version, model, prompt bundle hash, recipe set, commit SHA, and
+5. Reports include Agentplane version, model, prompt bundle hash, recipe set, commit SHA, and
    reproducibility notes.
 
 Benchmark scores are useful for external comparison. They should not automatically promote internal

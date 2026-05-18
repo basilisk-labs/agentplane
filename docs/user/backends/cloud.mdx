@@ -1,18 +1,18 @@
 ---
 title: "Cloud backend"
-description: "Remote backend option that connects AgentPlane to a cloud sync service."
+description: "Remote backend option that connects Agentplane to a cloud sync service."
 ---
 
 ## Overview
 
-The cloud backend is a remote task backend option for projects that want AgentPlane task state to
+The cloud backend is a remote task backend option for projects that want Agentplane task state to
 sync through a cloud service.
 
 The local backend stores the canonical task state in the repository. The cloud backend keeps the
 same local projection model, but the canonical state and connector-specific sync state live behind a
 remote service.
 
-AgentPlane still reads ordinary task commands from the local projection by default:
+Agentplane still reads ordinary task commands from the local projection by default:
 
 - `agentplane task list`
 - `agentplane task show <task-id>`
@@ -31,7 +31,7 @@ The cloud service owns connector-specific details:
 - conflict records;
 - remote freshness state.
 
-AgentPlane owns the CLI workflow:
+Agentplane owns the CLI workflow:
 
 - local projection cache;
 - task lifecycle commands;
@@ -144,7 +144,7 @@ Defaults:
 ### Optional auto-push on status mutations
 
 If the cloud backend is configured with `auto_push_on_mutation=true` (or the environment variable
-`AGENTPLANE_CLOUD_AUTO_PUSH_ON_MUTATION=1` is set), AgentPlane will push after successful status
+`AGENTPLANE_CLOUD_AUTO_PUSH_ON_MUTATION=1` is set), Agentplane will push after successful status
 mutations (for example `task start-ready`, `task block`, `task set-status`, `task finish`) so GitHub
 issue state stays in sync without an extra manual push step.
 
@@ -155,10 +155,10 @@ other task-state changes.
 
 Access levels:
 
-- `publish_only`: AgentPlane publishes local operational task state to the connected remote view.
+- `publish_only`: Agentplane publishes local operational task state to the connected remote view.
   Pull does not apply edits from that view.
 - `bidirectional`: the cloud service may apply remote edits to selected operational fields
-  (`title`, `status`, `priority`, `owner`, `tags`). AgentPlane still owns the full task contract,
+  (`title`, `status`, `priority`, `owner`, `tags`). Agentplane still owns the full task contract,
   including plan approval, verification, rollback, findings, comments, events, and README sections.
 
 Conflict modes for pull:
@@ -200,12 +200,12 @@ projection; sync remains explicit.
 
 The cloud backend is connector-neutral from the CLI perspective. Connector setup happens in the
 cloud service. A connected view can be GitHub Projects, Redmine, or another task system without
-requiring a new AgentPlane backend id.
+requiring a new Agentplane backend id.
 
-For GitHub Projects, the cloud service can map AgentPlane tasks to GitHub Issues and Project fields.
-AgentPlane still treats the cloud backend as `cloud`, not `github-projects`.
+For GitHub Projects, the cloud service can map Agentplane tasks to GitHub Issues and Project fields.
+Agentplane still treats the cloud backend as `cloud`, not `github-projects`.
 
 When a GitHub Projects connected view supports native issue relationships, the cloud service may
-project AgentPlane `depends_on` into GitHub issue `blocked by` links. The local AgentPlane
+project Agentplane `depends_on` into GitHub issue `blocked by` links. The local Agentplane
 `depends_on` graph remains the source of truth for task ordering and lifecycle enforcement; GitHub
 relationships are a remote visibility layer, not the authority for starting or finishing tasks.

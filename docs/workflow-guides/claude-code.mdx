@@ -1,9 +1,9 @@
 ---
-title: "Use AgentPlane with Claude Code"
-description: "Use Claude Code for edits while AgentPlane records task intent, approved plan, verification, finish state, and ACR inside Git."
+title: "Use Agentplane with Claude Code"
+description: "Use Claude Code for edits while Agentplane records task intent, approved plan, verification, finish state, and ACR inside Git."
 ---
 
-Claude Code can edit your repository. AgentPlane makes those edits reviewable after the chat is
+Claude Code can edit your repository. Agentplane makes those edits reviewable after the chat is
 gone by recording task intent, approved plan, verification, finish state, and ACR inside Git.
 
 ## What this guide gives you
@@ -24,10 +24,10 @@ npm i -g agentplane
 agentplane init
 agentplane quickstart
 
-agentplane task new --title "Implement pricing copy update" --description "Update the pricing copy and verify the site build." --priority med --owner CODER --tag code
-agentplane task plan set <task-id> --text "Update the copy, keep scope to the pricing page, run the site build." --updated-by CODER
+agentplane task new --title "Implement quickstart copy update" --description "Update the quickstart copy and verify the site build." --priority med --owner CODER --tag code
+agentplane task plan set <task-id> --text "Update the copy, keep scope to the quickstart page, run the site build." --updated-by CODER
 agentplane task plan approve <task-id> --by ORCHESTRATOR
-agentplane task start-ready <task-id> --author CODER --body "Start: pricing copy update with Claude Code; scope is limited to the approved page and build verification."
+agentplane task start-ready <task-id> --author CODER --body "Start: quickstart copy update with Claude Code; scope is limited to the approved page and build verification."
 ```
 
 Then run Claude Code in the repository and ask it to follow the repo `AGENTS.md` policy.
@@ -68,7 +68,7 @@ Before merging, verify:
 
 ## Limitations
 
-AgentPlane does not drive Claude Code or inspect Claude's private chat context. It records the
+Agentplane does not drive Claude Code or inspect Claude's private chat context. It records the
 repository workflow around the code changes.
 
 ## Next

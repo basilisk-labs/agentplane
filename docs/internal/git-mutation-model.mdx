@@ -1,11 +1,11 @@
 ---
 title: "Git Mutation Model"
-description: "Internal model for AgentPlane Git writes, lifecycle writes, worktree isolation, hooks, and integration queues."
+description: "Internal model for Agentplane Git writes, lifecycle writes, worktree isolation, hooks, and integration queues."
 ---
 
 ## Purpose
 
-AgentPlane has multiple write paths that touch Git state. Treating them as one
+Agentplane has multiple write paths that touch Git state. Treating them as one
 generic "commit" operation hides the checkout, owner, and lock semantics that
 make `branch_pr` reliable.
 
@@ -92,8 +92,8 @@ The integration queue must not become a global Git lock. It protects base-branch
 merge order, stale branch handling, and integration evidence. It does not need to
 block unrelated task worktrees.
 
-AgentPlane must not use `.git/**/index.lock` as its own lock file. That file is
-Git-owned. AgentPlane-owned locks belong under `.agentplane/cache/locks/` and
+Agentplane must not use `.git/**/index.lock` as its own lock file. That file is
+Git-owned. Agentplane-owned locks belong under `.agentplane/cache/locks/` and
 should include the worktree identity plus operation kind.
 
 ## Diagnostic context
@@ -118,7 +118,7 @@ worktree, age when detectable, and the next read-only diagnostic command.
 
 Hooks are allowed to enforce policy. They are not implicitly read-only.
 
-AgentPlane distinguishes three hook modes:
+Agentplane distinguishes three hook modes:
 
 - read-only checks: inspect state and may use read-only Git options;
 - write-capable hooks: declare write intent and take the worktree Git mutex;
