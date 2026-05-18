@@ -1,10 +1,11 @@
 ---
 id: "202605181255-29XQ07"
 title: "Repair framework context health contract"
-status: "DOING"
+result_summary: "Merged via PR #3895."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: framework context health scaffold now exists and context commands pass; starter wiki placeholder wording was removed from the template and generated page; command/policy/runtime checks and Turbo workspace discovery pass."
   attempts: 0
-commit: null
+commit:
+  hash: "890e2c70d229f324007edf21dfcf30b4f0036e95"
+  message: "Merge pull request #3895 from basilisk-labs/task/202605181255-29XQ07/framework-context-health"
 comments:
   -
     author: "CODER"
     body: "Start: repair the framework context health route by reproducing the missing scaffold failure, applying the smallest context contract fix, and verifying context checks plus policy/runtime health."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3895 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: framework context health scaffold now exists and context commands pass; starter wiki placeholder wording was removed from the template and generated page; command/policy/runtime checks and Turbo workspace discovery pass."
+  -
+    type: "status"
+    at: "2026-05-18T17:37:25.274Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3895 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T13:02:11.443Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T17:37:25.280Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the current framework checkout context health gap so declared context commands have a valid scaffold or deterministic repair behavior, and verify the local context health route."
 sections:
   Summary: |-
