@@ -4,7 +4,7 @@ title: "Add release and dev workflow helper scripts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T09:35:00.859Z"
+  updated_at: "2026-05-18T09:44:06.116Z"
   updated_by: "CODER"
-  note: "Implemented release/dev helper scripts and skill entrypoints; targeted verification passed."
+  note: "Follow-up verification after hosted test failure: aligned release and hosted install build routes to build @agentplane/testkit before agentplane; ran release CI contract test, test:fast, release:parity, policy routing."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented release/dev helper scripts and skill entrypoints; targeted verification passed."
+  -
+    type: "verify"
+    at: "2026-05-18T09:44:06.116Z"
+    author: "CODER"
+    state: "ok"
+    note: "Follow-up verification after hosted test failure: aligned release and hosted install build routes to build @agentplane/testkit before agentplane; ran release CI contract test, test:fast, release:parity, policy routing."
 doc_version: 3
-doc_updated_at: "2026-05-18T09:35:00.867Z"
+doc_updated_at: "2026-05-18T09:44:06.123Z"
 doc_updated_by: "CODER"
 description: "Add repo-local helper scripts and skill guidance for release state, version bumping, candidate prep, publication evidence collection, dev impact checks, task scope checks, and dependency triage."
 sections:
@@ -78,6 +84,25 @@ sections:
     Command: dry-run entrypoints for release:version:bump, release:state, release:next-action, release:candidate:prepare, dev:impact, dev:task-scope:check, deps:triage. Result: pass. Evidence: structured output produced without release mutation. Scope: script behavior.
     Command: bun run docs:scripts:check && bun run release:parity && node .agentplane/policy/check-routing.mjs && bun run format:changed. Result: pass. Evidence: scripts README up to date, release parity passed for 0.6.2, policy routing OK, Prettier passed. Scope: generated docs, release parity, policy routing, formatting.
     Command: ap doctor. Result: pass. Evidence: doctor OK with 0 errors and 0 warnings. Scope: repo-local runtime and workflow contract.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605180925-JSBEYJ-release-dev-helper-scripts/.agentplane/tasks/202605180925-JSBEYJ/blueprint/resolved-snapshot.json
+    - old_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+    - current_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605180925-JSBEYJ
+
+    ### 2026-05-18T09:44:06.116Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Follow-up verification after hosted test failure: aligned release and hosted install build routes to build @agentplane/testkit before agentplane; ran release CI contract test, test:fast, release:parity, policy routing.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T09:35:00.867Z, excerpt_hash=sha256:9b5bd386770abdc9294dba4c42e546388f1ed2d87740960c933da4729aa0bf46
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -135,6 +160,25 @@ Command: bunx eslint new scripts plus scripts/lib/local-ci-selection.mjs. Result
 Command: dry-run entrypoints for release:version:bump, release:state, release:next-action, release:candidate:prepare, dev:impact, dev:task-scope:check, deps:triage. Result: pass. Evidence: structured output produced without release mutation. Scope: script behavior.
 Command: bun run docs:scripts:check && bun run release:parity && node .agentplane/policy/check-routing.mjs && bun run format:changed. Result: pass. Evidence: scripts README up to date, release parity passed for 0.6.2, policy routing OK, Prettier passed. Scope: generated docs, release parity, policy routing, formatting.
 Command: ap doctor. Result: pass. Evidence: doctor OK with 0 errors and 0 warnings. Scope: repo-local runtime and workflow contract.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605180925-JSBEYJ-release-dev-helper-scripts/.agentplane/tasks/202605180925-JSBEYJ/blueprint/resolved-snapshot.json
+- old_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+- current_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605180925-JSBEYJ
+
+### 2026-05-18T09:44:06.116Z — VERIFY — ok
+
+By: CODER
+
+Note: Follow-up verification after hosted test failure: aligned release and hosted install build routes to build @agentplane/testkit before agentplane; ran release CI contract test, test:fast, release:parity, policy routing.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T09:35:00.867Z, excerpt_hash=sha256:9b5bd386770abdc9294dba4c42e546388f1ed2d87740960c933da4729aa0bf46
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current

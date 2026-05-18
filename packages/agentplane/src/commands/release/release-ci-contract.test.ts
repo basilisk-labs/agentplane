@@ -71,7 +71,7 @@ describe("release CI contract", () => {
     expect(releaseCheck.indexOf("bun run --filter=agentplane build")).toBeGreaterThan(
       releaseCheck.indexOf("bun run --filter=@agentplaneorg/core build"),
     );
-    expect(releaseCheck.indexOf("bun run --filter=@agentplane/testkit build")).toBeGreaterThan(
+    expect(releaseCheck.indexOf("bun run --filter=@agentplane/testkit build")).toBeLessThan(
       releaseCheck.indexOf("bun run --filter=agentplane build"),
     );
 
@@ -86,7 +86,7 @@ describe("release CI contract", () => {
       expect(text.indexOf("bun run --filter=agentplane build")).toBeGreaterThan(
         text.indexOf("bun run --filter=@agentplaneorg/core build"),
       );
-      expect(text.indexOf("bun run --filter=@agentplane/testkit build")).toBeGreaterThan(
+      expect(text.indexOf("bun run --filter=@agentplane/testkit build")).toBeLessThan(
         text.indexOf("bun run --filter=agentplane build"),
       );
     }

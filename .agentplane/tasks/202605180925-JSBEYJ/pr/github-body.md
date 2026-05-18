@@ -16,13 +16,19 @@ Add repo-local helper scripts and skill guidance for release state, version bump
 ## Verification
 
 - State: ok
-- Note: Implemented release/dev helper scripts and skill entrypoints; targeted verification passed.
+- Note:
+
+```text
+Follow-up verification after hosted test failure: aligned release and hosted install build routes to
+build @agentplane/testkit before agentplane; ran release CI contract test, test:fast,
+release:parity, policy routing.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T09:35:57.281Z
+- Updated: 2026-05-18T09:36:03.395Z
 - Branch: task/202605180925-JSBEYJ/release-dev-helper-scripts
 - Head: 262fe6f63e9a
 
