@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-18T10:24:02Z",
   "base": "main",
   "branch": "task/202605180936-BHZ1NJ/context-assimilation-blueprint",
   "created_at": "2026-05-18T09:36:40.870Z",
-  "head_sha": "94d49b82a7678e4851921e29d51293aa11c572cb",
+  "head_sha": "a813b214a4981251af73794b7623e89ad3311cc8",
   "last_verified_at": "2026-05-18T09:46:54.843Z",
   "last_verified_sha": "94d49b82a7678e4851921e29d51293aa11c572cb",
+  "merge_commit": "8a4bf82584f19975be4ddaf6cb21d5f9d694e87b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-18T10:24:02Z",
   "pr_number": 3881,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3881",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605180936-BHZ1NJ",
-  "updated_at": "2026-05-18T09:46:39.286Z",
+  "updated_at": "2026-05-18T10:24:02Z",
   "verify": {
     "status": "pass"
   }
