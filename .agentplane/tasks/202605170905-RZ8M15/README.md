@@ -4,7 +4,7 @@ title: "Minimize branch_pr generated artifacts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T10:57:34.743Z"
+  updated_at: "2026-05-18T11:19:40.720Z"
   updated_by: "CODER"
-  note: "Additional residue classification completed. Command: jq empty on recovered ACR/blueprint artifacts; Result: pass. Command: ap acr validate for recovered ACR files; Result: pass. Command: bun run format:changed after evidence commit; Result: pass. Canonical ACR/blueprint files were tracked instead of ignored; transient handoff/local-backups are covered by runtime gitignore."
+  note: "Verified root-cause fix: branch_pr finish now carries batch task ids into close-tail allowlist, hosted-close stages factually closed task ids, transient handoff/local-backup paths are ignored, and recovered canonical artifacts are tracked. Checks: bun vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/finish.validation.unit.test.ts; bun run typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs. Note: an earlier bun run test:project agentplane -- ... expanded to the full agentplane suite and hit unrelated release-smoke failures plus the pre-fix mock failure; rerun with direct vitest file paths passed."
   attempts: 0
 commit: null
 comments:
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Additional residue classification completed. Command: jq empty on recovered ACR/blueprint artifacts; Result: pass. Command: ap acr validate for recovered ACR files; Result: pass. Command: bun run format:changed after evidence commit; Result: pass. Canonical ACR/blueprint files were tracked instead of ignored; transient handoff/local-backups are covered by runtime gitignore."
+  -
+    type: "verify"
+    at: "2026-05-18T11:19:40.720Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified root-cause fix: branch_pr finish now carries batch task ids into close-tail allowlist, hosted-close stages factually closed task ids, transient handoff/local-backup paths are ignored, and recovered canonical artifacts are tracked. Checks: bun vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/finish.validation.unit.test.ts; bun run typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs. Note: an earlier bun run test:project agentplane -- ... expanded to the full agentplane suite and hit unrelated release-smoke failures plus the pre-fix mock failure; rerun with direct vitest file paths passed."
 doc_version: 3
-doc_updated_at: "2026-05-18T10:57:34.755Z"
+doc_updated_at: "2026-05-18T11:19:40.735Z"
 doc_updated_by: "CODER"
 description: "Reduce non-canonical generated artifacts in branch_pr while preserving compact traceability via README, ACR, PR metadata, and reconstructable digests."
 sections:
@@ -100,6 +106,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T10:54:03.828Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605170905-RZ8M15-untracked-artifacts/.agentplane/tasks/202605170905-RZ8M15/blueprint/resolved-snapshot.json
+    - old_digest: 3b0423f92893ac48504120a6dc6f71078f8000a7d2f18bc6c1197bf9bfb70ded
+    - current_digest: 3b0423f92893ac48504120a6dc6f71078f8000a7d2f18bc6c1197bf9bfb70ded
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605170905-RZ8M15
+
+    ### 2026-05-18T11:19:40.720Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified root-cause fix: branch_pr finish now carries batch task ids into close-tail allowlist, hosted-close stages factually closed task ids, transient handoff/local-backup paths are ignored, and recovered canonical artifacts are tracked. Checks: bun vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/finish.validation.unit.test.ts; bun run typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs. Note: an earlier bun run test:project agentplane -- ... expanded to the full agentplane suite and hit unrelated release-smoke failures plus the pre-fix mock failure; rerun with direct vitest file paths passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T10:57:34.755Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -174,6 +199,25 @@ Note: Additional residue classification completed. Command: jq empty on recovere
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T10:54:03.828Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605170905-RZ8M15-untracked-artifacts/.agentplane/tasks/202605170905-RZ8M15/blueprint/resolved-snapshot.json
+- old_digest: 3b0423f92893ac48504120a6dc6f71078f8000a7d2f18bc6c1197bf9bfb70ded
+- current_digest: 3b0423f92893ac48504120a6dc6f71078f8000a7d2f18bc6c1197bf9bfb70ded
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605170905-RZ8M15
+
+### 2026-05-18T11:19:40.720Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified root-cause fix: branch_pr finish now carries batch task ids into close-tail allowlist, hosted-close stages factually closed task ids, transient handoff/local-backup paths are ignored, and recovered canonical artifacts are tracked. Checks: bun vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/finish.validation.unit.test.ts; bun run typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs. Note: an earlier bun run test:project agentplane -- ... expanded to the full agentplane suite and hit unrelated release-smoke failures plus the pre-fix mock failure; rerun with direct vitest file paths passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T10:57:34.755Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 

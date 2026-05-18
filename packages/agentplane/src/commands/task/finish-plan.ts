@@ -45,11 +45,15 @@ export function resolveFinishExecutionPlan(opts: {
       ].join("\n"),
     });
   }
-  if ((options.closeCommit || options.noCloseCommit) && options.taskIds.length !== 1) {
+  if (
+    (options.closeCommit || options.noCloseCommit) &&
+    options.taskIds.length !== 1 &&
+    ctx.config.workflow_mode !== "branch_pr"
+  ) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: "--close-commit/--no-close-commit requires exactly one task id",
+      message: "--close-commit/--no-close-commit requires exactly one task id outside branch_pr",
     });
   }
   if (options.closeCommit && options.noCloseCommit) {
@@ -121,7 +125,7 @@ export function resolveFinishExecutionPlan(opts: {
   const defaultBranchPrCloseCommit =
     ctx.config.workflow_mode === "branch_pr" &&
     backendWritesTaskReadmes &&
-    options.taskIds.length === 1 &&
+    options.taskIds.length > 0 &&
     !options.commitFromComment &&
     !statusCommitRequested;
   const statusPathRequiresTrackedTaskCommit =
@@ -133,6 +137,10 @@ export function resolveFinishExecutionPlan(opts: {
     statusPathRequiresTrackedTaskCommit ||
     (defaultDirectCloseCommit && options.noCloseCommit !== true) ||
     (defaultBranchPrCloseCommit && options.noCloseCommit !== true);
+  const closeAdditionalTaskIds =
+    ctx.config.workflow_mode === "branch_pr" && shouldCloseCommit
+      ? options.taskIds.slice(1).filter(Boolean)
+      : [];
 
   const metaTaskId = options.taskIds.length === 1 ? (options.taskIds[0] ?? "") : "";
   const wantMeta =
@@ -172,6 +180,7 @@ export function resolveFinishExecutionPlan(opts: {
     breaking,
     finishFinding,
     shouldCloseCommit,
+    closeAdditionalTaskIds,
   };
 }
 

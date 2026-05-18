@@ -165,6 +165,7 @@ export async function materializeBranchPrCloseTail(opts: {
   quiet: boolean;
   closeUnstageOthers?: boolean;
   allowPolicy?: boolean;
+  additionalTaskIds?: string[];
 }): Promise<string | null> {
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const closeTailState = await resolveBranchPrCloseTailState({
@@ -196,6 +197,7 @@ export async function materializeBranchPrCloseTail(opts: {
       quiet: opts.quiet,
       closeUnstageOthers: opts.closeUnstageOthers,
       allowPolicy: opts.allowPolicy,
+      additionalTaskIds: opts.additionalTaskIds,
     });
   } finally {
     try {

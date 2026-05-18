@@ -73,4 +73,5 @@ export type FinishExecutionPlan = {
   breaking: boolean;
   finishFinding: FinishStructuredFinding | null;
   shouldCloseCommit: boolean;
+  closeAdditionalTaskIds: string[];
 };

@@ -19,10 +19,14 @@ Reduce non-canonical generated artifacts in branch_pr while preserving compact t
 - Note:
 
 ```text
-Additional residue classification completed. Command: jq empty on recovered ACR/blueprint artifacts;
-Result: pass. Command: ap acr validate for recovered ACR files; Result: pass. Command: bun run
-format:changed after evidence commit; Result: pass. Canonical ACR/blueprint files were tracked
-instead of ignored; transient handoff/local-backups are covered by runtime gitignore.
+Verified root-cause fix: branch_pr finish now carries batch task ids into close-tail allowlist,
+hosted-close stages factually closed task ids, transient handoff/local-backup paths are ignored, and
+recovered canonical artifacts are tracked. Checks: bun vitest --config vitest.workspace.ts run
+--project agentplane packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts
+packages/agentplane/src/commands/task/finish.validation.unit.test.ts; bun run typecheck; bun run
+format:changed; node .agentplane/policy/check-routing.mjs. Note: an earlier bun run test:project
+agentplane -- ... expanded to the full agentplane suite and hit unrelated release-smoke failures
+plus the pre-fix mock failure; rerun with direct vitest file paths passed.
 ```
 - Canonical workflow state lives in the task README.
 
