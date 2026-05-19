@@ -28,7 +28,7 @@ quality_review:
   updated_at: "2026-05-19T16:57:46.329Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR quality gate passed. Evidence: GitHub PR #3944 checks passed including Core CI test, test-windows, Release-ready manifest, Docs CI, CodeQL; local focused evidence/hosted-close tests, agentplane typecheck, framework:dev:bootstrap, and strict evidence verification passed before integration."
-  evaluated_sha: "11dbf579c74c029fca4ccf9cf5026374664d7aa0"
+  evaluated_sha: "f0db737713b9f0c61778db660eb571b958e6273a"
   blueprint_digest: "2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9"
   evidence_refs:
     - ".agentplane/tasks/202605191618-YJFGND/README.md"
