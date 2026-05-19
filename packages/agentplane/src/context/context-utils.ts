@@ -5,7 +5,7 @@ import path from "node:path";
 
 export { isRecord } from "../shared/guards.js";
 
-type ScopeName = "wiki" | "facts" | "graph" | "tasks" | "capabilities" | "tasks-acr" | "raw";
+export type ScopeName = "wiki" | "facts" | "graph" | "tasks" | "capabilities" | "tasks-acr" | "raw";
 
 type ParsedSourceRef = {
   path: string;
@@ -81,21 +81,60 @@ export async function collectMatchingFiles(root: string, relPath: string): Promi
 }
 
 export function normalizeScopeList(scopeValue: string): ScopeName[] {
-  const defaultScope: ScopeName[] = ["wiki", "facts", "graph", "tasks", "capabilities"];
+  const defaultScope: ScopeName[] = ["wiki", "facts", "graph", "capabilities"];
   if (!scopeValue.trim()) return defaultScope;
-  return scopeValue
+  const scopes = scopeValue
     .split(",")
     .map((part) => part.trim().toLowerCase())
     .filter(Boolean)
-    .map((part) => {
+    .flatMap((part) => {
+      if (part === "context" || part === "curated") return defaultScope;
       if (part === "capabilities") return "capabilities" as const;
       if (part === "capability") return "capabilities" as const;
-      if (part === "graph" || part === "entities" || part === "facts") return "graph" as const;
-      if (part === "tasks" || part === "acr" || part === "acrs") return "tasks" as const;
+      if (part === "facts" || part === "fact" || part === "claims") return "facts" as const;
+      if (part === "graph" || part === "entities" || part === "entity") return "graph" as const;
+      if (part === "tasks") return "tasks" as const;
+      if (part === "tasks-acr" || part === "acr" || part === "acrs") return "tasks-acr" as const;
       if (part === "wiki") return "wiki" as const;
+      if (part === "raw") return "raw" as const;
+      if (part === "all") return [...defaultScope, "raw", "tasks", "tasks-acr"] as const;
       return "raw" as const;
-    })
-    .filter((part) => part !== "raw");
+    });
+  return [...new Set(scopes)];
+}
+
+export function pathMatchesScopes(rowPath: string, scopes: ScopeName[]): boolean {
+  return scopes.some((scope) => {
+    switch (scope) {
+      case "wiki": {
+        return rowPath.startsWith("context/wiki/");
+      }
+      case "facts": {
+        return rowPath.startsWith(".agentplane/context/derived/facts/");
+      }
+      case "graph": {
+        return rowPath.startsWith(".agentplane/context/derived/graph/");
+      }
+      case "tasks": {
+        return rowPath.startsWith(".agentplane/tasks/");
+      }
+      case "tasks-acr": {
+        return rowPath.startsWith(".agentplane/tasks/") && rowPath.includes("/acr.json");
+      }
+      case "capabilities": {
+        return (
+          rowPath.startsWith("context/capabilities/") ||
+          rowPath.startsWith(".agentplane/context/derived/capabilities/")
+        );
+      }
+      case "raw": {
+        return rowPath.startsWith("context/raw/") && !rowPath.startsWith("context/raw/private/");
+      }
+      default: {
+        return false;
+      }
+    }
+  });
 }
 
 function scopeToFiles(root: string, scope: ScopeName): string[] {

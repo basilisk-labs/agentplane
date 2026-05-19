@@ -262,6 +262,57 @@ describe("context release readiness guards", () => {
     expect(sectionResult?.freshness.stale).toBe(false);
   });
 
+  it("keeps task history out of default context search unless tasks scope is explicit", async () => {
+    const root = await tempRoot();
+    await write(root, "context/wiki/release.md", "# Release\n\nCurated release checklist.\n");
+    await write(
+      root,
+      ".agentplane/tasks/202605190000-SEARCH1/README.md",
+      "# Task\n\nTask-only release archaeology note.\n",
+    );
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: true, includeRaw: false, reset: false },
+    });
+
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    await cmdContextSearch({
+      cwd: root,
+      parsed: {
+        query: "release",
+        scope: "",
+        format: "json",
+        explain: false,
+      },
+    });
+    const defaultPayload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      results: { ref: string }[];
+    };
+    expect(defaultPayload.results.some((result) => result.ref.startsWith("context/wiki/"))).toBe(
+      true,
+    );
+    expect(
+      defaultPayload.results.some((result) => result.ref.startsWith(".agentplane/tasks/")),
+    ).toBe(false);
+
+    out.mockClear();
+    await cmdContextSearch({
+      cwd: root,
+      parsed: {
+        query: "task-only release",
+        scope: "tasks",
+        format: "json",
+        explain: false,
+      },
+    });
+    const tasksPayload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      results: { ref: string }[];
+    };
+    expect(tasksPayload.results.some((result) => result.ref.startsWith(".agentplane/tasks/"))).toBe(
+      true,
+    );
+  });
+
   it("does not mark fresh JSONL fact and graph projection rows as stale", async () => {
     const root = await tempRoot();
     await write(

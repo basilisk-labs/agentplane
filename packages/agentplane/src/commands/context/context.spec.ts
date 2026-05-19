@@ -133,14 +133,15 @@ export const contextSearchSpec: CommandSpec<{
 }> = {
   id: ["context", "search"],
   group: "Context",
-  summary: "Search indexed local context, facts, graph, tasks, and capabilities.",
+  summary: "Search curated local context, facts, graph, and capabilities.",
   args: [{ name: "query", required: true, valueHint: "<query>" }],
   options: [
     {
       kind: "string",
       name: "scope",
-      default: "wiki,facts,graph,tasks,capabilities",
-      description: "Comma-separated scope list.",
+      default: "wiki,facts,graph,capabilities",
+      description:
+        "Comma-separated scope list. Defaults to curated context; use tasks, raw, or all explicitly for broader recall.",
       valueHint: "<scope>",
     },
     {
@@ -160,8 +161,7 @@ export const contextSearchSpec: CommandSpec<{
   ],
   parse: (raw) => ({
     query: String(raw.args.query),
-    scope:
-      typeof raw.opts.scope === "string" ? raw.opts.scope : "wiki,facts,graph,tasks,capabilities",
+    scope: typeof raw.opts.scope === "string" ? raw.opts.scope : "wiki,facts,graph,capabilities",
     format: (raw.opts.format as "text" | "json") ?? "text",
     explain: raw.opts.explain === true,
   }),
