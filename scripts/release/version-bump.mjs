@@ -1,19 +1,14 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 
 import { parseScriptArgs } from "../lib/script-runtime.mjs";
+import {
+  applyReleaseVersionSurfaces,
+  listReleaseVersionSurfacePaths,
+} from "../lib/release-version-surfaces.mjs";
 
 const ROOT = process.cwd();
-const RELEASE_PACKAGES = [
-  "packages/core/package.json",
-  "packages/recipes/package.json",
-  "packages/agentplane/package.json",
-];
-const INTERNAL_DEPENDENCY_PACKAGES = ["packages/testkit/package.json"];
-const RECIPES_RUNTIME_PATH = "packages/recipes/src/index.ts";
-const CONFIG_PATH = ".agentplane/config.json";
-const ACR_EXAMPLE_PATH = "packages/spec/examples/acr.json";
 
 function usage() {
   return `Usage: node scripts/release/version-bump.mjs (--version <semver> | --bump <patch|minor|major>) [--write] [--skip-install] [--json]
@@ -25,10 +20,6 @@ Default mode is dry-run. Pass --write to modify files.
 
 function readJson(relPath) {
   return JSON.parse(readFileSync(path.join(ROOT, relPath), "utf8"));
-}
-
-function writeJson(relPath, value) {
-  writeFileSync(path.join(ROOT, relPath), `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
 
 function parseSemver(version) {
@@ -61,65 +52,6 @@ function assertTargetVersion(version) {
   }
 }
 
-function updatePackage(relPath, nextVersion) {
-  const pkg = readJson(relPath);
-  const before = JSON.stringify(pkg);
-  pkg.version = nextVersion;
-  if (pkg.name === "agentplane") {
-    pkg.dependencies = pkg.dependencies ?? {};
-    pkg.dependencies["@agentplaneorg/core"] = nextVersion;
-    pkg.dependencies["@agentplaneorg/recipes"] = nextVersion;
-  }
-  return { relPath, before, after: JSON.stringify(pkg), value: pkg };
-}
-
-function updateInternalDependencies(relPath, nextVersion) {
-  const pkg = readJson(relPath);
-  const before = JSON.stringify(pkg);
-  for (const dependencyBlock of ["dependencies", "devDependencies", "peerDependencies"]) {
-    const dependencies = pkg[dependencyBlock];
-    if (!dependencies || typeof dependencies !== "object") continue;
-    for (const name of ["@agentplaneorg/core", "@agentplaneorg/recipes", "agentplane"]) {
-      if (typeof dependencies[name] === "string") dependencies[name] = nextVersion;
-    }
-  }
-  return { relPath, before, after: JSON.stringify(pkg), value: pkg };
-}
-
-function updateRecipesRuntime(nextVersion) {
-  const absPath = path.join(ROOT, RECIPES_RUNTIME_PATH);
-  const text = readFileSync(absPath, "utf8");
-  const next = text.replace(
-    /export\s+const\s+RECIPES_VERSION\s*=\s*["'][^"']*["']\s*;/u,
-    `export const RECIPES_VERSION = "${nextVersion}";`,
-  );
-  if (next === text) {
-    throw new Error(`${RECIPES_RUNTIME_PATH} must export RECIPES_VERSION as a string literal.`);
-  }
-  return { relPath: RECIPES_RUNTIME_PATH, before: text, after: next };
-}
-
-function updateExpectedCliVersion(nextVersion) {
-  if (!existsSync(path.join(ROOT, CONFIG_PATH))) return null;
-  const cfg = readJson(CONFIG_PATH);
-  cfg.framework = cfg.framework ?? {};
-  cfg.framework.cli = cfg.framework.cli ?? {};
-  cfg.framework.cli.expected_version = nextVersion;
-  return { relPath: CONFIG_PATH, value: cfg };
-}
-
-function updateAcrExampleVersion(nextVersion) {
-  const acr = readJson(ACR_EXAMPLE_PATH);
-  const before = JSON.stringify(acr);
-  acr.producer = acr.producer ?? {};
-  acr.producer.version = nextVersion;
-  const toolchain = Array.isArray(acr.agent?.toolchain) ? acr.agent.toolchain : [];
-  for (const tool of toolchain) {
-    if (tool?.name === "agentplane") tool.version = nextVersion;
-  }
-  return { relPath: ACR_EXAMPLE_PATH, before, after: JSON.stringify(acr), value: acr };
-}
-
 function run(cmd, args) {
   execFileSync(cmd, args, { cwd: ROOT, stdio: "inherit", env: process.env });
 }
@@ -140,24 +72,8 @@ function main() {
     : bumpVersion(currentVersion, String(flags.bump ?? "patch"));
   assertTargetVersion(targetVersion);
 
-  const packageUpdates = RELEASE_PACKAGES.map((relPath) => updatePackage(relPath, targetVersion));
-  const internalDependencyUpdates = INTERNAL_DEPENDENCY_PACKAGES.map((relPath) =>
-    updateInternalDependencies(relPath, targetVersion),
-  );
-  const runtimeUpdate = updateRecipesRuntime(targetVersion);
-  const configUpdate = updateExpectedCliVersion(targetVersion);
-  const acrExampleUpdate = updateAcrExampleVersion(targetVersion);
-  const runtimeChanged = runtimeUpdate.before !== runtimeUpdate.after;
-  const changed = [
-    ...packageUpdates.filter((entry) => entry.before !== entry.after).map((entry) => entry.relPath),
-    ...internalDependencyUpdates
-      .filter((entry) => entry.before !== entry.after)
-      .map((entry) => entry.relPath),
-    ...(runtimeChanged ? [runtimeUpdate.relPath] : []),
-    ...(configUpdate ? [configUpdate.relPath] : []),
-    ...(acrExampleUpdate.before === acrExampleUpdate.after ? [] : [acrExampleUpdate.relPath]),
-    "bun.lock",
-  ];
+  const surfacePaths = listReleaseVersionSurfacePaths(ROOT);
+  const changed = [...surfacePaths, "bun.lock"];
 
   const report = {
     schema_version: 1,
@@ -172,11 +88,7 @@ function main() {
   };
 
   if (flags.write === true) {
-    for (const update of packageUpdates) writeJson(update.relPath, update.value);
-    for (const update of internalDependencyUpdates) writeJson(update.relPath, update.value);
-    writeFileSync(path.join(ROOT, runtimeUpdate.relPath), runtimeUpdate.after, "utf8");
-    if (configUpdate) writeJson(configUpdate.relPath, configUpdate.value);
-    writeJson(acrExampleUpdate.relPath, acrExampleUpdate.value);
+    applyReleaseVersionSurfaces(ROOT, targetVersion);
     if (flags["skip-install"] !== true) {
       run("bun", ["install", "--ignore-scripts"]);
     }

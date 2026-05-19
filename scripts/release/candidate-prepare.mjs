@@ -34,6 +34,7 @@ function main() {
   const dryRun = !args.write;
   const commands = [
     ["bun", ["run", "release:state"]],
+    ["bun", ["run", "release:tasks:check"]],
     ["bun", ["run", "release:incidents:check"]],
     ["ap", ["release", "plan", `--${args.bump}`, ...(args.bump === "patch" ? [] : ["--yes"])]],
     [

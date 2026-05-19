@@ -57,6 +57,17 @@ function buildOutcome({ state, workflow, headSha, artifactName, repo, run, artif
         artifact: null,
       };
     }
+    case "workflow_wait_timeout": {
+      return {
+        ok: false,
+        state,
+        message: `Timed out waiting for workflow ${workflow} to complete successfully for ${headSha} in ${repo}.`,
+        nextAction:
+          "Wait for Core CI to finish, inspect the run if it is stuck, then retry publish for the same exact SHA.",
+        run,
+        artifact: null,
+      };
+    }
     case "workflow_run_sha_mismatch": {
       return {
         ok: false,
@@ -80,6 +91,14 @@ function buildOutcome({ state, workflow, headSha, artifactName, repo, run, artif
       };
     }
   }
+}
+
+function isWaitableWorkflowState(state) {
+  return new Set(["queued", "in_progress", "requested", "waiting", "pending"]).has(state);
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function resolveRun({ apiBase, repo, workflow, headSha, runId, token }) {
@@ -157,7 +176,7 @@ async function resolveRun({ apiBase, repo, workflow, headSha, runId, token }) {
       artifactMissingDirectRun = latestDirectRun;
     } else {
       return {
-        state: "workflow_not_success",
+        state: isWaitableWorkflowState(state) ? state : "workflow_not_success",
         run: latestDirectRun,
       };
     }
@@ -220,15 +239,35 @@ export async function resolveReleaseReadySource({
   runId,
   artifactName = "release-ready",
   token,
+  wait = false,
+  timeoutMs = 15 * 60 * 1000,
+  pollIntervalMs = 15 * 1000,
 }) {
-  const runResult = await resolveRun({
-    apiBase,
-    repo,
-    workflow,
-    headSha,
-    runId,
-    token,
-  });
+  const deadline = Date.now() + Math.max(0, timeoutMs);
+  let runResult = null;
+  for (;;) {
+    runResult = await resolveRun({
+      apiBase,
+      repo,
+      workflow,
+      headSha,
+      runId,
+      token,
+    });
+    if (!wait || !isWaitableWorkflowState(runResult.state)) break;
+    if (Date.now() >= deadline) {
+      return buildOutcome({
+        state: "workflow_wait_timeout",
+        workflow,
+        headSha,
+        artifactName,
+        repo,
+        run: runResult.run,
+        artifact: null,
+      });
+    }
+    await sleep(Math.min(Math.max(1, pollIntervalMs), Math.max(1, deadline - Date.now())));
+  }
 
   if (runResult.state !== "success" || !runResult.run) {
     return buildOutcome({

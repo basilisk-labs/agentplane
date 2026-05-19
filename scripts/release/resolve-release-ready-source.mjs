@@ -18,6 +18,9 @@ function usage() {
     "  --sha <git-sha>        Commit SHA to resolve a release-ready artifact for",
     "  --run-id <id>          Explicit workflow run id to inspect first",
     "  --artifact <name>      Artifact name to require (default: release-ready)",
+    "  --wait                 Wait for an in-progress matching workflow run before resolving",
+    "  --timeout-ms <ms>      Maximum wait time for --wait (default: 900000)",
+    "  --poll-interval-ms <ms> Poll interval for --wait (default: 15000)",
     "  --json                 Emit machine-readable output",
     "  --help, -h             Show this help text",
   ].join("\n");
@@ -25,8 +28,8 @@ function usage() {
 
 function parseArgs(argv) {
   const { flags } = parseScriptArgs(argv, {
-    valueFlags: ["repo", "workflow", "sha", "run-id", "artifact"],
-    booleanFlags: ["json", "help"],
+    valueFlags: ["repo", "workflow", "sha", "run-id", "artifact", "timeout-ms", "poll-interval-ms"],
+    booleanFlags: ["json", "help", "wait"],
     aliases: { h: "help" },
   });
   return {
@@ -35,6 +38,9 @@ function parseArgs(argv) {
     sha: flags.sha ?? process.env.GITHUB_SHA,
     runId: flags["run-id"] ?? null,
     artifactName: flags.artifact ?? "release-ready",
+    wait: flags.wait === true,
+    timeoutMs: Number.parseInt(String(flags["timeout-ms"] ?? "900000"), 10),
+    pollIntervalMs: Number.parseInt(String(flags["poll-interval-ms"] ?? "15000"), 10),
     json: flags.json === true,
     help: flags.help === true,
   };
@@ -71,6 +77,9 @@ const main = defineScript({
       runId: args.runId,
       artifactName,
       token,
+      wait: args.wait,
+      timeoutMs: Number.isFinite(args.timeoutMs) ? args.timeoutMs : 900_000,
+      pollIntervalMs: Number.isFinite(args.pollIntervalMs) ? args.pollIntervalMs : 15_000,
     });
 
     if (args.json) {

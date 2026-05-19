@@ -72,6 +72,17 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
+      - name: Release task registry (check)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f scripts/release/check-task-registry-ready.mjs ]; then
+            node scripts/release/check-task-registry-ready.mjs
+          elif [ -f .agentplane/.release/runtime/scripts/release/check-task-registry-ready.mjs ]; then
+            node .agentplane/.release/runtime/scripts/release/check-task-registry-ready.mjs
+          else
+            echo "release task registry gate skipped: no compatible script exists for this historical target"
+          fi
       - name: Release incidents (check)
         shell: bash
         run: |
@@ -99,6 +110,9 @@ jobs:
             node "${RUNTIME_SCRIPT}" \
               --workflow ci.yml \
               --sha "${SHA}" \
+              --wait \
+              --timeout-ms 900000 \
+              --poll-interval-ms 15000 \
               --json > .agentplane/.release/ready/source.json
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             node scripts/resolve-canonical-release-sha.mjs --json > .agentplane/.release/ready/canonical.json
@@ -110,6 +124,9 @@ jobs:
             node "${RUNTIME_SCRIPT}" \
               --workflow ci.yml \
               --sha "${SHA}" \
+              --wait \
+              --timeout-ms 900000 \
+              --poll-interval-ms 15000 \
               --json > .agentplane/.release/ready/source.json
           else
             SHA="$(git rev-parse HEAD)"
