@@ -4,7 +4,7 @@ title: "Repair website star gateway and docs IA"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T08:45:20.473Z"
-  updated_by: "CODER"
-  note: "Verified website star gateway and docs IA repair in local branch_pr worktree: typecheck, content check, Docusaurus build, local site smoke, link check, policy routing, doctor, and browser QA passed with the only external caveat that GitHub Buttons iframe did not load in the local browser environment so the navbar falls back to a single visible Star link while still loading buttons.github.io."
+  updated_at: "2026-05-19T11:35:08.349Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed: PR #3925 head 40819d9f has successful GitHub Docs CI, Core CI test/test-windows, CodeQL, Dependency Review, and local verification recorded by CODER; scoped CodeQL smoke-script alert was fixed and rechecked."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T11:35:08.349Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed: PR #3925 head 40819d9f has successful GitHub Docs CI, Core CI test/test-windows, CodeQL, Dependency Review, and local verification recorded by CODER; scoped CodeQL smoke-script alert was fixed and rechecked."
+  evaluated_sha: "40819d9f1304b519e10a2a90eae727a7234597c6"
+  blueprint_digest: "b5fd3d8cfa020e2c1773f093e98dd48f0bdce1d74abea3bd8255800c47720889"
+  evidence_refs:
+    - ".agentplane/tasks/202605190828-MDXT5W/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190828-MDXT5W-site-star-docs-ia/.agentplane/tasks/202605190828-MDXT5W/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -43,8 +54,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified website star gateway and docs IA repair in local branch_pr worktree: typecheck, content check, Docusaurus build, local site smoke, link check, policy routing, doctor, and browser QA passed with the only external caveat that GitHub Buttons iframe did not load in the local browser environment so the navbar falls back to a single visible Star link while still loading buttons.github.io."
+  -
+    type: "verify"
+    at: "2026-05-19T11:35:08.349Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed: PR #3925 head 40819d9f has successful GitHub Docs CI, Core CI test/test-windows, CodeQL, Dependency Review, and local verification recorded by CODER; scoped CodeQL smoke-script alert was fixed and rechecked."
 doc_version: 3
-doc_updated_at: "2026-05-19T08:45:20.530Z"
+doc_updated_at: "2026-05-19T11:35:08.367Z"
 doc_updated_by: "CODER"
 description: "Update agentplane.org website and docs surfaces after live audit: star-focused homepage, canonical docs navigation/routes, public docs cleanup, ACR canonicalization, and site smoke coverage."
 sections:
@@ -72,6 +89,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T08:30:09.571Z, excerpt_hash=sha256:bae1c3ce0faeff2b1a0a4d48ce37055e29f008cef96b9dedd9b220bd2d8c0fb2
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190828-MDXT5W-site-star-docs-ia/.agentplane/tasks/202605190828-MDXT5W/blueprint/resolved-snapshot.json
+    - old_digest: b5fd3d8cfa020e2c1773f093e98dd48f0bdce1d74abea3bd8255800c47720889
+    - current_digest: b5fd3d8cfa020e2c1773f093e98dd48f0bdce1d74abea3bd8255800c47720889
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605190828-MDXT5W
+
+    ### 2026-05-19T11:35:08.349Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed: PR #3925 head 40819d9f has successful GitHub Docs CI, Core CI test/test-windows, CodeQL, Dependency Review, and local verification recorded by CODER; scoped CodeQL smoke-script alert was fixed and rechecked.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T08:45:20.530Z, excerpt_hash=sha256:bae1c3ce0faeff2b1a0a4d48ce37055e29f008cef96b9dedd9b220bd2d8c0fb2
 
     Details:
 
@@ -127,6 +163,25 @@ Note: Verified website star gateway and docs IA repair in local branch_pr worktr
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T08:30:09.571Z, excerpt_hash=sha256:bae1c3ce0faeff2b1a0a4d48ce37055e29f008cef96b9dedd9b220bd2d8c0fb2
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190828-MDXT5W-site-star-docs-ia/.agentplane/tasks/202605190828-MDXT5W/blueprint/resolved-snapshot.json
+- old_digest: b5fd3d8cfa020e2c1773f093e98dd48f0bdce1d74abea3bd8255800c47720889
+- current_digest: b5fd3d8cfa020e2c1773f093e98dd48f0bdce1d74abea3bd8255800c47720889
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605190828-MDXT5W
+
+### 2026-05-19T11:35:08.349Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed: PR #3925 head 40819d9f has successful GitHub Docs CI, Core CI test/test-windows, CodeQL, Dependency Review, and local verification recorded by CODER; scoped CodeQL smoke-script alert was fixed and rechecked.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T08:45:20.530Z, excerpt_hash=sha256:bae1c3ce0faeff2b1a0a4d48ce37055e29f008cef96b9dedd9b220bd2d8c0fb2
 
 Details:
 
