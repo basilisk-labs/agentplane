@@ -4,7 +4,7 @@ title: "Fix issue #3934 maximum-assimilation lifecycle drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,16 +21,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T15:36:08.753Z"
+  updated_at: "2026-05-19T16:59:28.896Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed: focused regression coverage exercises the schema/help drift, initialized profile switch behavior, profile-switch verification path, context check label, and direct close-commit preflight before DONE mutation."
+  note: "EVALUATOR quality gate passed after review fix: maximum_assimilation mode no longer bypasses source_set.files for context_assimilation tasks; focused release-readiness test, lint:core, typecheck, framework bootstrap, and hosted PR checks passed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T15:36:08.753Z"
+  updated_at: "2026-05-19T16:59:28.896Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed: focused regression coverage exercises the schema/help drift, initialized profile switch behavior, profile-switch verification path, context check label, and direct close-commit preflight before DONE mutation."
-  evaluated_sha: "81a3ed59446b0e0fbdf663711e789c53ec915369"
+  note: "EVALUATOR quality gate passed after review fix: maximum_assimilation mode no longer bypasses source_set.files for context_assimilation tasks; focused release-readiness test, lint:core, typecheck, framework bootstrap, and hosted PR checks passed."
+  evaluated_sha: "a751c6b9278f62c9fde4d16a1b4167d8522bc6e8"
   blueprint_digest: "9e3baf098fc34016f22121f1d106c78e0c8bf6a9a0828f7a25d4a41866993171"
   evidence_refs:
     - ".agentplane/tasks/202605191451-TFBJEG/README.md"
@@ -61,8 +61,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed: focused regression coverage exercises the schema/help drift, initialized profile switch behavior, profile-switch verification path, context check label, and direct close-commit preflight before DONE mutation."
+  -
+    type: "verify"
+    at: "2026-05-19T16:59:28.896Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed after review fix: maximum_assimilation mode no longer bypasses source_set.files for context_assimilation tasks; focused release-readiness test, lint:core, typecheck, framework bootstrap, and hosted PR checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-19T15:36:08.882Z"
+doc_updated_at: "2026-05-19T16:59:28.939Z"
 doc_updated_by: "CODER"
 description: "Resolve GitHub issue #3934: align maximum-assimilation profile switching, blueprint schema/help, context verify-task scope, direct finish close-commit preflight, and context check labeling."
 sections:
@@ -116,6 +122,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:35:35.560Z, excerpt_hash=sha256:13c016aa641d0e1b5121af8b956b2adf7ccbc65b1e30aaeb2009f9c39ab2b899
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191451-TFBJEG-fix-3934-context-lifecycle/.agentplane/tasks/202605191451-TFBJEG/blueprint/resolved-snapshot.json
+    - old_digest: 9e3baf098fc34016f22121f1d106c78e0c8bf6a9a0828f7a25d4a41866993171
+    - current_digest: 9e3baf098fc34016f22121f1d106c78e0c8bf6a9a0828f7a25d4a41866993171
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191451-TFBJEG
+
+    ### 2026-05-19T16:59:28.896Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed after review fix: maximum_assimilation mode no longer bypasses source_set.files for context_assimilation tasks; focused release-readiness test, lint:core, typecheck, framework bootstrap, and hosted PR checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:36:08.882Z, excerpt_hash=sha256:13c016aa641d0e1b5121af8b956b2adf7ccbc65b1e30aaeb2009f9c39ab2b899
 
     Details:
 
@@ -197,6 +222,25 @@ Note: EVALUATOR quality gate passed: focused regression coverage exercises the s
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:35:35.560Z, excerpt_hash=sha256:13c016aa641d0e1b5121af8b956b2adf7ccbc65b1e30aaeb2009f9c39ab2b899
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191451-TFBJEG-fix-3934-context-lifecycle/.agentplane/tasks/202605191451-TFBJEG/blueprint/resolved-snapshot.json
+- old_digest: 9e3baf098fc34016f22121f1d106c78e0c8bf6a9a0828f7a25d4a41866993171
+- current_digest: 9e3baf098fc34016f22121f1d106c78e0c8bf6a9a0828f7a25d4a41866993171
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191451-TFBJEG
+
+### 2026-05-19T16:59:28.896Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed after review fix: maximum_assimilation mode no longer bypasses source_set.files for context_assimilation tasks; focused release-readiness test, lint:core, typecheck, framework bootstrap, and hosted PR checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:36:08.882Z, excerpt_hash=sha256:13c016aa641d0e1b5121af8b956b2adf7ccbc65b1e30aaeb2009f9c39ab2b899
 
 Details:
 

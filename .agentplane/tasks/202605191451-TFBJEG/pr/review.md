@@ -13,7 +13,7 @@ Created: 2026-05-19T14:52:30.296Z
 ## Verification
 
 - State: ok
-- Note: EVALUATOR quality gate passed: focused regression coverage exercises the schema/help drift, initialized profile switch behavior, profile-switch verification path, context check label, and direct close-commit preflight before DONE mutation.
+- Note: EVALUATOR quality gate passed after review fix: maximum_assimilation mode no longer bypasses source_set.files for context_assimilation tasks; focused release-readiness test, lint:core, typecheck, framework bootstrap, and hosted PR checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

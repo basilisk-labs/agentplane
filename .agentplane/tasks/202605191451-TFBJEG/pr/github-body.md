@@ -19,9 +19,9 @@ Resolve GitHub issue #3934: align maximum-assimilation profile switching, bluepr
 - Note:
 
 ```text
-EVALUATOR quality gate passed: focused regression coverage exercises the schema/help drift,
-initialized profile switch behavior, profile-switch verification path, context check label, and
-direct close-commit preflight before DONE mutation.
+EVALUATOR quality gate passed after review fix: maximum_assimilation mode no longer bypasses
+source_set.files for context_assimilation tasks; focused release-readiness test, lint:core,
+typecheck, framework bootstrap, and hosted PR checks passed.
 ```
 - Canonical workflow state lives in the task README.
 
