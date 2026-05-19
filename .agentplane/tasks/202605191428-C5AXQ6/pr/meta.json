@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-19T15:52:00Z",
   "base": "main",
   "branch": "task/202605191428-C5AXQ6/context-recall-boundaries",
   "created_at": "2026-05-19T14:30:15.673Z",
-  "head_sha": "5f0088c288e39fa35b58c4bf63c507f6ef3d3a17",
+  "head_sha": "d89ecca9fe482d3578c2bbdff03498ced96b5986",
   "last_verified_at": "2026-05-19T15:51:12.528Z",
   "last_verified_sha": "5f0088c288e39fa35b58c4bf63c507f6ef3d3a17",
+  "merge_commit": "61c9ac6e4d16a0003a09e9a91ef2ab8a357063db",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-19T15:52:00Z",
   "pr_number": 3935,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3935",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605191428-C5AXQ6",
-  "updated_at": "2026-05-19T15:51:12.702Z",
+  "updated_at": "2026-05-19T15:52:00Z",
   "verify": {
     "status": "pass"
   }
