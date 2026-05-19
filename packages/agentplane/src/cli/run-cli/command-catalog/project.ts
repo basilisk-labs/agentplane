@@ -8,6 +8,11 @@ import {
   acrValidateSpec,
 } from "../../../commands/acr/acr.command.js";
 import {
+  evidenceBundleSpec,
+  evidenceSpec,
+  evidenceVerifySpec,
+} from "../../../commands/evidence/evidence.command.js";
+import {
   blueprintDriftSpec,
   blueprintExamplesSpec,
   blueprintExplainSpec,
@@ -176,6 +181,9 @@ import {
   loadAcrValidateSpec,
   loadAcrCheckSpec,
   loadAcrExplainSpec,
+  fromCommandsEvidenceCommand,
+  loadEvidenceBundleSpec,
+  loadEvidenceVerifySpec,
   loadBlueprintSpec,
   loadBlueprintListSpec,
   loadBlueprintExamplesSpec,
@@ -198,6 +206,9 @@ export const PROJECT_COMMANDS = [
   declareCommand(acrValidateSpec, { load: loadAcrValidateSpec }),
   declareCommand(acrCheckSpec, { load: loadAcrCheckSpec }),
   declareCommand(acrExplainSpec, { load: loadAcrExplainSpec }),
+  fromCommandsEvidenceCommand(evidenceSpec, "runEvidenceGroup", { needs: "none" }),
+  declareCommand(evidenceBundleSpec, { load: loadEvidenceBundleSpec }),
+  declareCommand(evidenceVerifySpec, { load: loadEvidenceVerifySpec }),
   declareCommand(blueprintSpec, { load: loadBlueprintSpec, needs: "none" }),
   declareCommand(blueprintListSpec, { load: loadBlueprintListSpec, needs: "none" }),
   declareCommand(blueprintExamplesSpec, { load: loadBlueprintExamplesSpec, needs: "none" }),

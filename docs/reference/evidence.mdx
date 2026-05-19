@@ -1,0 +1,44 @@
+---
+title: "Evidence bundles"
+description: "Deterministic task-local evidence bundle manifests for AgentPlane tasks."
+---
+
+# Evidence bundles
+
+Evidence bundles make task evidence portable without turning AgentPlane into a hosted archive. The
+bundle is a deterministic manifest under the task directory. It records task-local artifact paths,
+SHA-256 hashes, file sizes, and roles.
+
+```bash
+agentplane evidence bundle <task-id>
+agentplane evidence verify <task-id>
+```
+
+Default output:
+
+```text
+.agentplane/tasks/<task-id>/evidence/manifest.json
+```
+
+The manifest excludes itself to avoid self-referential hashes. It includes task-local artifacts such
+as `README.md`, `acr.json`, blueprint snapshots, PR notes, and verification logs when those files
+exist.
+
+## Verify
+
+```bash
+agentplane evidence verify <task-id>
+agentplane evidence verify .agentplane/tasks/<task-id>/evidence/manifest.json
+```
+
+Verification fails when a referenced file is missing, its SHA-256 hash changed, the manifest digest
+does not match, or `--strict` is used and the bundle has no ACR artifact.
+
+## ACR trust metadata
+
+When a task-local evidence manifest already exists, `agentplane acr generate <task-id> --write
+--refresh` adds an `agentplane.trust` extension pointing to the bundle manifest and the verification
+command. The manifest keeps its own digest; the ACR does not copy that digest because the manifest
+may include `acr.json`, and copying the digest into the ACR would create a self-referential hash
+cycle. Signing and WORM preservation are separate future layers; the current bundle is local,
+hash-verifiable evidence.

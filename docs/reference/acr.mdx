@@ -52,6 +52,13 @@ agentplane acr check <task-id> --mode ci
 agentplane acr explain <task-id>
 ```
 
+For portable task-local evidence, create and verify an evidence bundle:
+
+```bash
+agentplane evidence bundle <task-id>
+agentplane evidence verify <task-id>
+```
+
 ## Use ACR with Git
 
 Keep ACR task-local:
@@ -74,3 +81,4 @@ private tokens, raw prompts, or full model transcripts by default.
 ## Schema reference
 
 See [ACR schema](acr-schema) for field-level reference and validation notes.
+See [Evidence bundles](evidence) for deterministic task artifact manifests.
