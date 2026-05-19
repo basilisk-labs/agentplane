@@ -4,7 +4,7 @@ title: "Remove stale 0.6 legacy cleanup surfaces"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T13:29:41.530Z"
+  updated_at: "2026-05-19T14:00:57.411Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed with cited evidence. Evaluated current branch including lint callback fix 50db3d2bbeaf: visible-option filtering now uses inline callbacks that satisfy unicorn/no-array-callback-reference, generated CLI reference remains refreshed, and the original 0.6 legacy cleanup behavior is preserved. Evidence: pre-push full-fast previously passed through docs freshness and failed only on lint callback references; targeted fix addresses those exact lint findings."
+  note: "EVALUATOR quality gate passed with cited evidence. Evaluated Windows platform-critical fix 5538593f56ce: legacy config.json remains in init conflict/backup handling because saveConfig removes the legacy file during WORKFLOW migration, while stale init write effect remains removed. Evidence: hosted Windows failure showed five assertions tied to config.json conflict/backup expectations; fix restores that safety guard without reintroducing the write_file effect."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T13:29:41.530Z"
+  updated_at: "2026-05-19T14:00:57.411Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed with cited evidence. Evaluated current branch including lint callback fix 50db3d2bbeaf: visible-option filtering now uses inline callbacks that satisfy unicorn/no-array-callback-reference, generated CLI reference remains refreshed, and the original 0.6 legacy cleanup behavior is preserved. Evidence: pre-push full-fast previously passed through docs freshness and failed only on lint callback references; targeted fix addresses those exact lint findings."
-  evaluated_sha: "88d57cae78d6bf6f2311f5022337d4fac0c3d984"
+  note: "EVALUATOR quality gate passed with cited evidence. Evaluated Windows platform-critical fix 5538593f56ce: legacy config.json remains in init conflict/backup handling because saveConfig removes the legacy file during WORKFLOW migration, while stale init write effect remains removed. Evidence: hosted Windows failure showed five assertions tied to config.json conflict/backup expectations; fix restores that safety guard without reintroducing the write_file effect."
+  evaluated_sha: "86007b9e1620d05cad1af5ef91e6c5d36b761e42"
   blueprint_digest: "40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20"
   evidence_refs:
     - ".agentplane/tasks/202605191250-N3TCR3/README.md"
@@ -84,8 +84,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed with cited evidence. Evaluated current branch including lint callback fix 50db3d2bbeaf: visible-option filtering now uses inline callbacks that satisfy unicorn/no-array-callback-reference, generated CLI reference remains refreshed, and the original 0.6 legacy cleanup behavior is preserved. Evidence: pre-push full-fast previously passed through docs freshness and failed only on lint callback references; targeted fix addresses those exact lint findings."
+  -
+    type: "verify"
+    at: "2026-05-19T14:00:57.411Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed with cited evidence. Evaluated Windows platform-critical fix 5538593f56ce: legacy config.json remains in init conflict/backup handling because saveConfig removes the legacy file during WORKFLOW migration, while stale init write effect remains removed. Evidence: hosted Windows failure showed five assertions tied to config.json conflict/backup expectations; fix restores that safety guard without reintroducing the write_file effect."
 doc_version: 3
-doc_updated_at: "2026-05-19T13:29:41.661Z"
+doc_updated_at: "2026-05-19T14:00:57.449Z"
 doc_updated_by: "CODER"
 description: "Clean up stale legacy-facing CLI/init surfaces that are no longer needed for the 0.6 happy path while preserving runtime compatibility fallbacks."
 sections:
@@ -216,6 +222,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T13:23:11.098Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191250-N3TCR3-legacy-cleanup-06/.agentplane/tasks/202605191250-N3TCR3/blueprint/resolved-snapshot.json
+    - old_digest: 40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20
+    - current_digest: 40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191250-N3TCR3
+
+    ### 2026-05-19T14:00:57.411Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed with cited evidence. Evaluated Windows platform-critical fix 5538593f56ce: legacy config.json remains in init conflict/backup handling because saveConfig removes the legacy file during WORKFLOW migration, while stale init write effect remains removed. Evidence: hosted Windows failure showed five assertions tied to config.json conflict/backup expectations; fix restores that safety guard without reintroducing the write_file effect.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T13:29:41.661Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -370,6 +395,25 @@ Note: EVALUATOR quality gate passed with cited evidence. Evaluated current branc
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T13:23:11.098Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191250-N3TCR3-legacy-cleanup-06/.agentplane/tasks/202605191250-N3TCR3/blueprint/resolved-snapshot.json
+- old_digest: 40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20
+- current_digest: 40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191250-N3TCR3
+
+### 2026-05-19T14:00:57.411Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed with cited evidence. Evaluated Windows platform-critical fix 5538593f56ce: legacy config.json remains in init conflict/backup handling because saveConfig removes the legacy file during WORKFLOW migration, while stale init write effect remains removed. Evidence: hosted Windows failure showed five assertions tied to config.json conflict/backup expectations; fix restores that safety guard without reintroducing the write_file effect.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T13:29:41.661Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 

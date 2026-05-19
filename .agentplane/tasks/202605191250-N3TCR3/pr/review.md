@@ -13,7 +13,7 @@ Created: 2026-05-19T12:51:12.969Z
 ## Verification
 
 - State: ok
-- Note: EVALUATOR quality gate passed with cited evidence. Evaluated current branch including lint callback fix 50db3d2bbeaf: visible-option filtering now uses inline callbacks that satisfy unicorn/no-array-callback-reference, generated CLI reference remains refreshed, and the original 0.6 legacy cleanup behavior is preserved. Evidence: pre-push full-fast previously passed through docs freshness and failed only on lint callback references; targeted fix addresses those exact lint findings.
+- Note: EVALUATOR quality gate passed with cited evidence. Evaluated Windows platform-critical fix 5538593f56ce: legacy config.json remains in init conflict/backup handling because saveConfig removes the legacy file during WORKFLOW migration, while stale init write effect remains removed. Evidence: hosted Windows failure showed five assertions tied to config.json conflict/backup expectations; fix restores that safety guard without reintroducing the write_file effect.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
