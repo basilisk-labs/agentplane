@@ -4,7 +4,7 @@ title: "Improve context recall boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T14:41:29.496Z"
+  updated_at: "2026-05-19T14:43:27.728Z"
   updated_by: "CODER"
-  note: "Verified context recall boundary fix. Commands: bun test packages/agentplane/src/commands/context/release-readiness.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --timeout 120000 => pass, 30 tests and 8 snapshots; bunx eslint touched context/search/blueprint files => pass; bunx prettier --check touched docs/source files => pass; bun run --filter=agentplane build => pass; bun run docs:cli:check => pass; node .agentplane/policy/check-routing.mjs => pass; ap context reindex --include-raw => pass rows=16 files=21; ap context check => pass; ap context doctor => pass after serialized re-run; ap doctor => OK; git diff --check => pass. Manual smoke: default context search excludes task history, --scope tasks returns task records."
+  note: "Post-commit verification refreshed for implementation commit c74d8af24. Previously recorded checks remain valid for this diff: focused context/search tests, help snapshots, lint, formatting, package build, docs CLI freshness, policy routing, context reindex/check/doctor, ap doctor, git diff --check, and manual search smoke passed."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified context recall boundary fix. Commands: bun test packages/agentplane/src/commands/context/release-readiness.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --timeout 120000 => pass, 30 tests and 8 snapshots; bunx eslint touched context/search/blueprint files => pass; bunx prettier --check touched docs/source files => pass; bun run --filter=agentplane build => pass; bun run docs:cli:check => pass; node .agentplane/policy/check-routing.mjs => pass; ap context reindex --include-raw => pass rows=16 files=21; ap context check => pass; ap context doctor => pass after serialized re-run; ap doctor => OK; git diff --check => pass. Manual smoke: default context search excludes task history, --scope tasks returns task records."
+  -
+    type: "verify"
+    at: "2026-05-19T14:43:27.728Z"
+    author: "CODER"
+    state: "ok"
+    note: "Post-commit verification refreshed for implementation commit c74d8af24. Previously recorded checks remain valid for this diff: focused context/search tests, help snapshots, lint, formatting, package build, docs CLI freshness, policy routing, context reindex/check/doctor, ap doctor, git diff --check, and manual search smoke passed."
 doc_version: 3
-doc_updated_at: "2026-05-19T14:41:29.551Z"
+doc_updated_at: "2026-05-19T14:43:27.853Z"
 doc_updated_by: "CODER"
 description: "Make local context search prefer curated context by default, align context policy module references with actual derived paths and blueprint loading, and verify the context command behavior."
 sections:
@@ -71,6 +77,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:35:19.647Z, excerpt_hash=sha256:3d0702eb3f1603903ee3a55584030772bf0ce80cc7678484062b17ba871886e1
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191428-C5AXQ6-context-recall-boundaries/.agentplane/tasks/202605191428-C5AXQ6/blueprint/resolved-snapshot.json
+    - old_digest: cb9ae9fec21885fb858fa3145f79006624675d400b36c2be32ea44d616e9cbd9
+    - current_digest: cb9ae9fec21885fb858fa3145f79006624675d400b36c2be32ea44d616e9cbd9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191428-C5AXQ6
+
+    ### 2026-05-19T14:43:27.728Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Post-commit verification refreshed for implementation commit c74d8af24. Previously recorded checks remain valid for this diff: focused context/search tests, help snapshots, lint, formatting, package build, docs CLI freshness, policy routing, context reindex/check/doctor, ap doctor, git diff --check, and manual search smoke passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:41:29.551Z, excerpt_hash=sha256:3d0702eb3f1603903ee3a55584030772bf0ce80cc7678484062b17ba871886e1
 
     Details:
 
@@ -123,6 +148,25 @@ Note: Verified context recall boundary fix. Commands: bun test packages/agentpla
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:35:19.647Z, excerpt_hash=sha256:3d0702eb3f1603903ee3a55584030772bf0ce80cc7678484062b17ba871886e1
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191428-C5AXQ6-context-recall-boundaries/.agentplane/tasks/202605191428-C5AXQ6/blueprint/resolved-snapshot.json
+- old_digest: cb9ae9fec21885fb858fa3145f79006624675d400b36c2be32ea44d616e9cbd9
+- current_digest: cb9ae9fec21885fb858fa3145f79006624675d400b36c2be32ea44d616e9cbd9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191428-C5AXQ6
+
+### 2026-05-19T14:43:27.728Z — VERIFY — ok
+
+By: CODER
+
+Note: Post-commit verification refreshed for implementation commit c74d8af24. Previously recorded checks remain valid for this diff: focused context/search tests, help snapshots, lint, formatting, package build, docs CLI freshness, policy routing, context reindex/check/doctor, ap doctor, git diff --check, and manual search smoke passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:41:29.551Z, excerpt_hash=sha256:3d0702eb3f1603903ee3a55584030772bf0ce80cc7678484062b17ba871886e1
 
 Details:
 

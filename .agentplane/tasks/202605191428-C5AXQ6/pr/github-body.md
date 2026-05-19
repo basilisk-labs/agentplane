@@ -19,22 +19,17 @@ Make local context search prefer curated context by default, align context polic
 - Note:
 
 ```text
-Verified context recall boundary fix. Commands: bun test
-packages/agentplane/src/commands/context/release-readiness.test.ts
-packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --timeout 120000 => pass, 30 tests and 8
-snapshots; bunx eslint touched context/search/blueprint files => pass; bunx prettier --check touched
-docs/source files => pass; bun run --filter=agentplane build => pass; bun run docs:cli:check =>
-pass; node .agentplane/policy/check-routing.mjs => pass; ap context reindex --include-raw => pass
-rows=16 files=21; ap context check => pass; ap context doctor => pass after serialized re-run; ap
-doctor => OK; git diff --check => pass. Manual smoke: default context search excludes task history,
---scope tasks returns task records.
+Post-commit verification refreshed for implementation commit c74d8af24. Previously recorded checks
+remain valid for this diff: focused context/search tests, help snapshots, lint, formatting, package
+build, docs CLI freshness, policy routing, context reindex/check/doctor, ap doctor, git diff
+--check, and manual search smoke passed.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T14:42:48.918Z
+- Updated: 2026-05-19T14:43:02.501Z
 - Branch: task/202605191428-C5AXQ6/context-recall-boundaries
 - Head: c74d8af24a06
 
