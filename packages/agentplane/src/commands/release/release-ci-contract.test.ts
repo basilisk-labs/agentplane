@@ -28,6 +28,10 @@ describe("release CI contract", () => {
 
     expect(scripts.ci).toBe("bun run ci:contract && bun run ci:test");
     expect(scripts["ci:local:smoke"]).toBe("node scripts/checks/run-local-ci.mjs --mode smoke");
+    expect(scripts["ci:local:touch"]).toBe("node scripts/checks/run-local-ci.mjs --mode smoke");
+    expect(scripts["ci:local:explain"]).toBe(
+      "node scripts/checks/run-local-ci.mjs --mode smoke --explain",
+    );
     expect(scripts["test:critical"]).toBe("node scripts/checks/run-vitest-suite.mjs critical-cli");
     expect(scripts["bench:cli:cold:check"]).toContain("--attempts 3");
     expect(releaseCiCheck).toBe("bun run ci:contract && bun run ci:release-extras");

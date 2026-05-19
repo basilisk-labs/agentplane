@@ -458,6 +458,154 @@ export function shouldRunCliDocsCheck(changedFiles) {
   return anyPathMatches(files, CLI_DOCS_RELEVANT_PATTERNS);
 }
 
+function commandStep(label, command, options = {}) {
+  return {
+    label,
+    command,
+    kind: options.kind ?? "check",
+    skipped: options.skipped === true,
+    reason: options.reason ?? null,
+  };
+}
+
+function baselineStepReports({ includeBuild, runCliDocsCheck }) {
+  return [
+    commandStep("Format (check)", "bun run format:check"),
+    commandStep("Schemas (check)", "bun run schemas:check"),
+    commandStep("Agent templates (check)", "bun run agents:check"),
+    commandStep("Policy routing (check)", "bun run policy:routing:check"),
+    commandStep("Release parity (check)", "bun run release:parity"),
+    ...(includeBuild
+      ? [
+          commandStep("CLI cold-start baseline (check)", "bun run bench:cli:cold:check"),
+          commandStep(
+            "Build",
+            "bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run build",
+          ),
+        ]
+      : []),
+    commandStep("CLI docs freshness (check)", "bun run docs:cli:check", {
+      skipped: !runCliDocsCheck,
+      reason: runCliDocsCheck ? null : "changed files do not touch CLI docs surfaces",
+    }),
+    commandStep("Recipes inventory freshness (check)", "bun run docs:recipes:check"),
+    commandStep("Scripts README freshness (check)", "bun run docs:scripts:check"),
+    commandStep("Agent onboarding scenario (check)", "bun run docs:onboarding:check"),
+    commandStep("Hotspot threshold (check)", "bun run hotspots:check"),
+    commandStep("Vitest projects (check)", "bun run vitest:projects:check"),
+  ];
+}
+
+function targetedStepReports(plan) {
+  const steps = [];
+  const includesWorkflow = plan.bucket === "workflow" || plan.buckets?.includes("workflow");
+  const lintTargets = includesWorkflow
+    ? plan.lintTargets.filter(
+        (target) => !target.startsWith(".github/workflows/") && !target.endsWith(".yml"),
+      )
+    : plan.lintTargets;
+
+  if (lintTargets.length > 0) {
+    steps.push(
+      commandStep(`Lint (targeted:${plan.bucket})`, `bunx eslint ${lintTargets.join(" ")}`),
+    );
+  }
+  if (includesWorkflow) {
+    steps.push(commandStep("Workflow lint + command contract", "bun run workflows:lint"));
+  }
+  if (plan.testFiles.length > 0) {
+    steps.push(
+      commandStep(
+        `Unit tests (targeted:${plan.bucket})`,
+        `bunx vitest run ${plan.testFiles.join(" ")} --pool=${plan.vitestPool}`,
+      ),
+    );
+  }
+  return steps;
+}
+
+function smokeFallbackStepReports() {
+  return [
+    commandStep("Format (check)", "bun run format:check"),
+    commandStep("Vitest projects (check)", "bun run vitest:projects:check"),
+    commandStep("Lint (core)", "bun run lint:core"),
+    commandStep("Unit tests (precommit)", "bun run test:precommit"),
+  ];
+}
+
+function fastStepReports({ runCliDocsCheck }) {
+  return [
+    ...baselineStepReports({ includeBuild: true, runCliDocsCheck }),
+    commandStep("Lint (core)", "bun run lint:core"),
+    commandStep(
+      "Unit tests (fast)",
+      "bunx vitest run --exclude **/cli-smoke.test.ts --exclude **/run-cli*.test.ts --pool=forks",
+    ),
+    commandStep("CLI E2E (critical)", "bun run test:critical"),
+  ];
+}
+
+function fullOnlyStepReports() {
+  return [
+    commandStep(
+      "Docs site pipeline (generate + typecheck + build + design)",
+      "bun run docs:site:check",
+    ),
+    commandStep("Workflows lint (actionlint)", "bun run workflows:lint"),
+    commandStep("Windows platform-critical tests", "bun run test:platform-critical"),
+    commandStep(
+      "Significant file coverage (guard)",
+      "bunx vitest run <significant guard files> --coverage",
+    ),
+    commandStep("Coverage threshold (significant)", "bun run coverage:significant"),
+  ];
+}
+
+export function buildLocalCiExecutionPlan({ mode, changedFiles }) {
+  const plan = selectFastCiPlan(changedFiles);
+  const runCliDocsCheck = shouldRunCliDocsCheck(changedFiles);
+  let route = "full-fast";
+  let steps;
+
+  if (mode === "smoke" && plan.kind === "docs-only") {
+    route = "docs-only-smoke";
+    steps = [commandStep("Format (check)", "bun run format:check")];
+  } else if (mode === "smoke" && plan.kind === "targeted") {
+    route = "targeted-smoke";
+    steps = [commandStep("Format (check)", "bun run format:check"), ...targetedStepReports(plan)];
+  } else if (mode === "smoke") {
+    route = "fallback-smoke";
+    steps = smokeFallbackStepReports();
+  } else if (mode === "fast" && plan.kind === "docs-only") {
+    route = "docs-only-fast";
+    steps = baselineStepReports({ includeBuild: false, runCliDocsCheck });
+  } else if (mode === "fast" && plan.kind === "targeted") {
+    route = "targeted-fast";
+    steps = [
+      ...baselineStepReports({ includeBuild: true, runCliDocsCheck }),
+      ...targetedStepReports(plan),
+    ];
+  } else {
+    route = mode === "full" ? "full" : "full-fast";
+    steps = fastStepReports({ runCliDocsCheck });
+  }
+
+  if (mode === "full") {
+    steps = [...steps, ...fullOnlyStepReports()];
+  }
+
+  return {
+    schema_version: 1,
+    mode,
+    changed_files: [...new Set(changedFiles)].toSorted((a, b) => a.localeCompare(b)),
+    selector: plan,
+    route,
+    run_cli_docs_check: runCliDocsCheck,
+    steps,
+    skipped_steps: steps.filter((step) => step.skipped),
+  };
+}
+
 export function listLocalCiTargetTestFiles() {
   return {
     backend: [...BACKEND_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),

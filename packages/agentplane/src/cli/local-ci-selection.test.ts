@@ -37,8 +37,30 @@ type PrePushUpdate = {
   remoteSha: string;
 };
 
-const { parseChangedFilesEnv, selectFastCiPlan, shouldRunCliDocsCheck } =
+const { buildLocalCiExecutionPlan, parseChangedFilesEnv, selectFastCiPlan, shouldRunCliDocsCheck } =
   localCiSelectionModule as {
+    buildLocalCiExecutionPlan: (options: {
+      mode: "smoke" | "fast" | "full";
+      changedFiles: string[];
+    }) => {
+      mode: string;
+      route: string;
+      selector: FastCiPlan;
+      steps: {
+        command: string;
+        kind: string;
+        label: string;
+        reason: string | null;
+        skipped: boolean;
+      }[];
+      skipped_steps: {
+        command: string;
+        kind: string;
+        label: string;
+        reason: string | null;
+        skipped: boolean;
+      }[];
+    };
     parseChangedFilesEnv: (rawValue: unknown) => string[];
     selectFastCiPlan: (changedFiles: string[]) => FastCiPlan;
     shouldRunCliDocsCheck: (changedFiles: string[]) => boolean;
@@ -444,6 +466,41 @@ describe("local CI fast selection", () => {
     expect(shouldRunCliDocsCheck([])).toBe(true);
     expect(shouldRunCliDocsCheck(["packages/agentplane/src/cli/run-cli.ts"])).toBe(true);
     expect(shouldRunCliDocsCheck(["docs/user/cli-reference.generated.mdx"])).toBe(true);
+  });
+
+  it("builds an explainable smoke execution plan for targeted changes", () => {
+    const report = buildLocalCiExecutionPlan({
+      mode: "smoke",
+      changedFiles: ["packages/agentplane/src/commands/task/new.ts"],
+    });
+
+    expect(report.route).toBe("targeted-smoke");
+    expect(report.selector.kind).toBe("targeted");
+    expect(report.selector.bucket).toBe("task");
+    expect(report.steps.map((step) => step.label)).toEqual([
+      "Format (check)",
+      "Lint (targeted:task)",
+      "Unit tests (targeted:task)",
+    ]);
+    expect(report.steps.at(-1)?.command).toContain(
+      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+    );
+  });
+
+  it("marks CLI docs freshness as skipped in explainable non-CLI fast plans", () => {
+    const report = buildLocalCiExecutionPlan({
+      mode: "fast",
+      changedFiles: ["packages/agentplane/src/commands/doctor.run.ts"],
+    });
+
+    expect(report.route).toBe("targeted-fast");
+    expect(report.skipped_steps).toContainEqual({
+      command: "bun run docs:cli:check",
+      kind: "check",
+      label: "CLI docs freshness (check)",
+      reason: "changed files do not touch CLI docs surfaces",
+      skipped: true,
+    });
   });
 });
 
