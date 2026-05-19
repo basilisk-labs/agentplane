@@ -4,7 +4,7 @@ title: "Add task observations journal"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -31,16 +31,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T18:08:20.394Z"
+  updated_at: "2026-05-19T19:32:57.789Z"
   updated_by: "EVALUATOR"
-  note: "Quality review refreshed for commit 69ca9c004. The hotspot-budget follow-up removed the new runtime hotspot warning without changing the core observations artifact contract; focused checks and CLI smoke remain green."
+  note: "Hosted PR checks are green for head 20be204a after review fixes; unresolved review threads were addressed and resolved."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T18:08:20.394Z"
+  updated_at: "2026-05-19T19:32:57.789Z"
   updated_by: "EVALUATOR"
-  note: "Quality review refreshed for commit 69ca9c004. The hotspot-budget follow-up removed the new runtime hotspot warning without changing the core observations artifact contract; focused checks and CLI smoke remain green."
-  evaluated_sha: "69ca9c0044f482f1d8b0d631885da7d61f7e5eef"
+  note: "Hosted PR checks are green for head 20be204a after review fixes; unresolved review threads were addressed and resolved."
+  evaluated_sha: "20be204abe544277bd7fcd4ee8cdafd099dd50f7"
   blueprint_digest: "e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6"
   evidence_refs:
     - ".agentplane/tasks/202605191736-EQBZ4M/README.md"
@@ -83,8 +83,20 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality review refreshed for commit 69ca9c004. The hotspot-budget follow-up removed the new runtime hotspot warning without changing the core observations artifact contract; focused checks and CLI smoke remain green."
+  -
+    type: "verify"
+    at: "2026-05-19T19:32:51.481Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review fixes verified: observation IDs now use timestamp+UUID instead of length-derived IDs, candidate observations with action=none remain blocking, targeted eslint/unit/typecheck passed, and hosted checks are green for PR #3950 head 20be204a."
+  -
+    type: "verify"
+    at: "2026-05-19T19:32:57.789Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Hosted PR checks are green for head 20be204a after review fixes; unresolved review threads were addressed and resolved."
 doc_version: 3
-doc_updated_at: "2026-05-19T18:08:20.424Z"
+doc_updated_at: "2026-05-19T19:32:57.820Z"
 doc_updated_by: "CODER"
 description: "Implement a structured task-local observations.jsonl artifact for agent-discovered spec gaps, decisions, risks, issue candidates, incident candidates, context candidates, and agent improvement candidates, with CLI support for adding, listing, checking, and triaging observations."
 sections:
@@ -175,6 +187,44 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:08:09.808Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json
+    - old_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+    - current_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191736-EQBZ4M
+
+    ### 2026-05-19T19:32:51.481Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Review fixes verified: observation IDs now use timestamp+UUID instead of length-derived IDs, candidate observations with action=none remain blocking, targeted eslint/unit/typecheck passed, and hosted checks are green for PR #3950 head 20be204a.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:08:20.424Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json
+    - old_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+    - current_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191736-EQBZ4M
+
+    ### 2026-05-19T19:32:57.789Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Hosted PR checks are green for head 20be204a after review fixes; unresolved review threads were addressed and resolved.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T19:32:51.510Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
 
     Details:
 
@@ -289,6 +339,44 @@ Note: Quality review refreshed for commit 69ca9c004. The hotspot-budget follow-u
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:08:09.808Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json
+- old_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+- current_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191736-EQBZ4M
+
+### 2026-05-19T19:32:51.481Z — VERIFY — ok
+
+By: CODER
+
+Note: Review fixes verified: observation IDs now use timestamp+UUID instead of length-derived IDs, candidate observations with action=none remain blocking, targeted eslint/unit/typecheck passed, and hosted checks are green for PR #3950 head 20be204a.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:08:20.424Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json
+- old_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+- current_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191736-EQBZ4M
+
+### 2026-05-19T19:32:57.789Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Hosted PR checks are green for head 20be204a after review fixes; unresolved review threads were addressed and resolved.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T19:32:51.510Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
 
 Details:
 

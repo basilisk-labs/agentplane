@@ -19,23 +19,22 @@ Implement a structured task-local observations.jsonl artifact for agent-discover
 - Note:
 
 ```text
-Quality review refreshed for commit 69ca9c004. The hotspot-budget follow-up removed the new runtime
-hotspot warning without changing the core observations artifact contract; focused checks and CLI
-smoke remain green.
+Hosted PR checks are green for head 20be204a after review fixes; unresolved review threads were
+addressed and resolved.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T18:08:09.867Z
+- Updated: 2026-05-19T19:32:51.553Z
 - Branch: task/202605191736-EQBZ4M/task-observations
-- Head: 69ca9c0044f4
+- Head: 20be204abe54
 
 ```text
- .agentplane/tasks/202605191736-EQBZ4M/acr.json     | 514 ++++++++++++++++++
+ .agentplane/tasks/202605191736-EQBZ4M/acr.json     | 521 +++++++++++++++++++
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
- .../tasks/202605191736-EQBZ4M/observations.jsonl   |   1 +
+ .../tasks/202605191736-EQBZ4M/observations.jsonl   |   2 +
  docs/index.mdx                                     |   4 +-
  docs/reference/evidence.mdx                        |   4 +-
  docs/reference/task-observations.mdx               |  60 +++
@@ -44,8 +43,8 @@ smoke remain green.
  .../src/cli/run-cli/command-loaders/task.ts        |  19 +
  packages/agentplane/src/commands/acr/generate.ts   |  16 +
  .../src/commands/task/observations.command.ts      | 387 ++++++++++++++
- .../agentplane/src/commands/task/observations.ts   | 276 ++++++++++
- .../src/commands/task/observations.unit.test.ts    |  64 +++
+ .../agentplane/src/commands/task/observations.ts   | 279 ++++++++++
+ .../src/commands/task/observations.unit.test.ts    |  73 +++
  packages/core/schemas/task-observation.schema.json | 148 ++++++
  packages/core/src/index.ts                         |   4 +
  packages/core/src/schemas/index.ts                 |   4 +
@@ -57,7 +56,8 @@ smoke remain green.
  packages/spec/schemas/task-observation.schema.json | 148 ++++++
  schemas/task-observation.schema.json               | 148 ++++++
  scripts/generate/sync-schemas.mjs                  |   7 +
- 24 files changed, 2621 insertions(+), 3 deletions(-)
+ website/sidebars.ts                                |   1 +
+ 25 files changed, 2642 insertions(+), 3 deletions(-)
 ```
 
 </details>
