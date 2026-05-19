@@ -13,7 +13,7 @@ Created: 2026-05-19T12:51:12.969Z
 ## Verification
 
 - State: ok
-- Note: EVALUATOR quality gate passed with cited evidence. Evaluated Windows platform-critical fix 5538593f56ce: legacy config.json remains in init conflict/backup handling because saveConfig removes the legacy file during WORKFLOW migration, while stale init write effect remains removed. Evidence: hosted Windows failure showed five assertions tied to config.json conflict/backup expectations; fix restores that safety guard without reintroducing the write_file effect.
+- Note: EVALUATOR quality gate passed with hosted PR checks green on head 03fc80d71ca401fea2d404f0228de17db597e3a3 and implementation commit 5538593f56ce2fddd6f4408b241cbf20a17f0f8b. Evidence: GitHub PR #3932 checks passed: test, test-windows, docs, Release-ready manifest, CodeQL, changes.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
