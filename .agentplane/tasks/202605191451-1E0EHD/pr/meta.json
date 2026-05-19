@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605191451-1E0EHD/daily-cloud-start-pull",
+  "created_at": "2026-05-19T14:52:45.909Z",
+  "head_sha": "81a3ed59446b0e0fbdf663711e789c53ec915369",
+  "last_verified_at": "2026-05-19T15:08:21.753Z",
+  "last_verified_sha": "81a3ed59446b0e0fbdf663711e789c53ec915369",
+  "schema_version": 1,
+  "task_id": "202605191451-1E0EHD",
+  "updated_at": "2026-05-19T14:52:45.909Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -81,6 +81,7 @@ export class CloudBackend implements TaskBackend {
   private readonly autoSyncEnabled: boolean;
   private readonly autoSyncPullOnRead: boolean;
   private readonly autoSyncPullOnWrite: boolean;
+  private readonly autoSyncPullOnStartReady: boolean;
   private readonly autoSyncPushOnWrite: boolean;
   constructor(
     settings: CloudBackendSettings,
@@ -132,6 +133,7 @@ export class CloudBackend implements TaskBackend {
     this.autoSyncEnabled = settings.autosync_enabled ?? this.autoSyncNetworkAllowed;
     this.autoSyncPullOnRead = settings.autosync_pull_on_read ?? true;
     this.autoSyncPullOnWrite = settings.autosync_pull_on_write ?? true;
+    this.autoSyncPullOnStartReady = settings.autosync_pull_on_start_ready ?? true;
     this.autoSyncPushOnWrite = settings.autosync_push_on_write ?? true;
   }
   static async create(opts: {
@@ -227,6 +229,55 @@ export class CloudBackend implements TaskBackend {
       conflict: opts.conflict ?? "prefer-remote",
       quiet: opts.quiet ?? true,
       confirm: opts.allowNetwork,
+    });
+  }
+
+  async refreshProjectionBeforeTaskStart(): Promise<void> {
+    if (!this.autoSyncEnabled || !this.autoSyncPullOnStartReady) return;
+    if (this.missingConfigKeys().length > 0) return;
+
+    const state = await this.readState();
+    if (sameLocalDate(state.last_start_ready_pull_at, new Date())) return;
+    if (state.pending_push) {
+      throw pendingCloudPushError(state.pending_push);
+    }
+    if (!this.autoSyncNetworkAllowed) {
+      throw new BackendError(
+        [
+          "Cloud projection daily task-start refresh requires network access approval.",
+          "Why: task start-ready should see cloud-imported GitHub issue intake tasks before local work begins.",
+          "Fix: pull the cloud projection before starting task work.",
+          "Safe command: agentplane backend sync cloud --direction pull --conflict=prefer-remote --yes",
+          "Stop condition: stop if pull reports open conflicts or cannot refresh the projection.",
+        ].join("\n"),
+        "E_BACKEND",
+      );
+    }
+
+    const syncState = await this.requestCloudSyncState(this.projectId);
+    if (syncState.conflicts.length > 0) {
+      throw new BackendError(
+        cloudConflictMessage({
+          conflicts: syncState.conflicts,
+          safeCommand:
+            syncState.safeCommand ??
+            "agentplane backend sync cloud --direction pull --conflict=diff --yes",
+        }),
+        "E_BACKEND",
+      );
+    }
+
+    await this.sync({
+      direction: "pull",
+      conflict: "prefer-remote",
+      quiet: true,
+      confirm: true,
+    });
+    const refreshed = await this.readState();
+    await writeCloudBackendState(this.statePath, {
+      last_checked_at: refreshed.last_checked_at,
+      last_start_ready_pull_at: new Date().toISOString(),
+      pending_push: refreshed.pending_push,
     });
   }
 
@@ -334,6 +385,7 @@ export class CloudBackend implements TaskBackend {
         const state = await this.readState();
         await writeCloudBackendState(this.statePath, {
           last_checked_at: pull.lastCheckedAt,
+          last_start_ready_pull_at: state.last_start_ready_pull_at,
           pending_push: state.pending_push,
         });
       }
@@ -343,8 +395,10 @@ export class CloudBackend implements TaskBackend {
       await this.clearPendingPush();
       return;
     }
+    const existing = await this.readState();
     await writeCloudBackendState(this.statePath, {
       last_checked_at: pull.lastCheckedAt,
+      last_start_ready_pull_at: existing.last_start_ready_pull_at,
       pending_push: null,
     });
   }
@@ -546,6 +600,7 @@ export class CloudBackend implements TaskBackend {
     const state = await this.readState();
     await writeCloudBackendState(this.statePath, {
       last_checked_at: state.last_checked_at,
+      last_start_ready_pull_at: state.last_start_ready_pull_at,
       pending_push: {
         failed_at: new Date().toISOString(),
         reason: cloudPendingPushReason(error),
@@ -558,6 +613,7 @@ export class CloudBackend implements TaskBackend {
     if (!state.pending_push) return;
     await writeCloudBackendState(this.statePath, {
       last_checked_at: state.last_checked_at,
+      last_start_ready_pull_at: state.last_start_ready_pull_at,
       pending_push: null,
     });
   }
@@ -585,4 +641,15 @@ export class CloudBackend implements TaskBackend {
     ] as const;
     return required.flatMap(([value, key]) => (value ? [] : [key]));
   }
+}
+
+function sameLocalDate(value: string | null, now: Date): boolean {
+  if (!value) return false;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return false;
+  return (
+    parsed.getFullYear() === now.getFullYear() &&
+    parsed.getMonth() === now.getMonth() &&
+    parsed.getDate() === now.getDate()
+  );
 }

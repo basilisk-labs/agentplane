@@ -212,6 +212,7 @@ export type TaskBackendMutationPort = {
 
 export type TaskBackendSyncPort = {
   refreshProjection?(opts: TaskProjectionRefreshOptions): Promise<void>;
+  refreshProjectionBeforeTaskStart?(): Promise<void>;
   migrateCanonicalState?(): Promise<TaskCanonicalStateMigrationResult>;
   sync?(opts: {
     direction: "push" | "pull";

@@ -13,6 +13,7 @@ describe("cloud backend state", () => {
 
     await expect(readCloudBackendState(statePath)).resolves.toEqual({
       last_checked_at: null,
+      last_start_ready_pull_at: null,
       pending_push: null,
     });
   });
@@ -23,11 +24,13 @@ describe("cloud backend state", () => {
 
     await writeCloudBackendState(statePath, {
       last_checked_at: "2026-05-14T09:00:00.000Z",
+      last_start_ready_pull_at: "2026-05-14T09:02:00.000Z",
       pending_push: null,
     });
 
     await expect(readCloudBackendState(statePath)).resolves.toEqual({
       last_checked_at: "2026-05-14T09:00:00.000Z",
+      last_start_ready_pull_at: "2026-05-14T09:02:00.000Z",
       pending_push: null,
     });
     await expect(readFile(statePath, "utf8")).resolves.toContain(
@@ -41,6 +44,7 @@ describe("cloud backend state", () => {
 
     await writeCloudBackendState(statePath, {
       last_checked_at: "2026-05-14T09:00:00.000Z",
+      last_start_ready_pull_at: null,
       pending_push: {
         failed_at: "2026-05-14T09:01:00.000Z",
         reason: "Cloud request failed",
@@ -49,6 +53,7 @@ describe("cloud backend state", () => {
 
     await expect(readCloudBackendState(statePath)).resolves.toEqual({
       last_checked_at: "2026-05-14T09:00:00.000Z",
+      last_start_ready_pull_at: null,
       pending_push: {
         failed_at: "2026-05-14T09:01:00.000Z",
         reason: "Cloud request failed",
