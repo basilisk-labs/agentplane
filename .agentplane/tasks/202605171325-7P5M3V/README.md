@@ -1,10 +1,11 @@
 ---
 id: "202605171325-7P5M3V"
 title: "Warn when local task state is stale relative to origin main"
-status: "DOING"
+result_summary: "Closed as included in merged v0.6 follow-up PR #3915."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -20,15 +21,31 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T17:46:12.661Z"
-  updated_by: "CODER"
-  note: "Verified: release state/next-action now expose behind-upstream and stale-current-plan blockers so release preparation does not proceed from stale local state; release state smoke passed."
+  updated_at: "2026-05-19T06:17:54.057Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed: current main contains follow-up batch PR #3915 and the related GitHub issues #3907, #3908, and #3909 are closed; this update only reconciles stale DOING state."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T06:17:54.057Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed: current main contains follow-up batch PR #3915 and the related GitHub issues #3907, #3908, and #3909 are closed; this update only reconciles stale DOING state."
+  evaluated_sha: "e5e1eeeba01807a4a4c4b03282d22ca208130d4d"
+  blueprint_digest: "518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4"
+  evidence_refs:
+    - ".agentplane/tasks/202605171325-7P5M3V/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202605171325-7P5M3V/blueprint/resolved-snapshot.json"
+  findings: []
+commit:
+  hash: "e5e1eeeba01807a4a4c4b03282d22ca208130d4d"
+  message: "Merge pull request #3919 from basilisk-labs/task-close/202605181816-3W350X/94be1f5afed7"
 comments:
   -
     author: "CODER"
     body: "Start: add stale local task-state diagnostics for release-planning and read-heavy startup surfaces when the base checkout is behind origin/main without blocking offline workflows."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: stale DOING cleanup only; the corresponding v0.6 follow-up fix was included in merged PR #3915 on current main, and related GitHub issues #3907, #3908, and #3909 are closed."
 events:
   -
     type: "status"
@@ -43,9 +60,28 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: release state/next-action now expose behind-upstream and stale-current-plan blockers so release preparation does not proceed from stale local state; release state smoke passed."
+  -
+    type: "verify"
+    at: "2026-05-19T06:17:53.124Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: stale DOING cleanup only; the corresponding v0.6 follow-up fix is already included in merged PR #3915 on current main, and related GitHub issues #3907, #3908, and #3909 are closed."
+  -
+    type: "verify"
+    at: "2026-05-19T06:17:54.057Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed: current main contains follow-up batch PR #3915 and the related GitHub issues #3907, #3908, and #3909 are closed; this update only reconciles stale DOING state."
+  -
+    type: "status"
+    at: "2026-05-19T06:17:54.695Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: stale DOING cleanup only; the corresponding v0.6 follow-up fix was included in merged PR #3915 on current main, and related GitHub issues #3907, #3908, and #3909 are closed."
 doc_version: 3
-doc_updated_at: "2026-05-18T17:46:12.694Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T06:17:54.696Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a release-planning guardrail so read-heavy startup surfaces such as quickstart or task list warn when the current base checkout is behind origin/main and local task state may be stale. The regression case is local task records showing TODO/DOING for work already merged on GitHub, which can mislead v0.6.2 scope decisions."
 sections:
   Summary: |-
@@ -78,6 +114,44 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171326-FXRVNW-v063-prerelease-rough-edges/.agentplane/tasks/202605171325-7P5M3V/blueprint/resolved-snapshot.json
+    - old_digest: 518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4
+    - current_digest: 518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171325-7P5M3V
+
+    ### 2026-05-19T06:17:53.124Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: stale DOING cleanup only; the corresponding v0.6 follow-up fix is already included in merged PR #3915 on current main, and related GitHub issues #3907, #3908, and #3909 are closed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T17:46:12.694Z, excerpt_hash=sha256:8a36d26be7a7c4e3348d77a02cb263ce2376c1477972101e16399b3f254a35b6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605171325-7P5M3V/blueprint/resolved-snapshot.json
+    - old_digest: 518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4
+    - current_digest: 518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171325-7P5M3V
+
+    ### 2026-05-19T06:17:54.057Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed: current main contains follow-up batch PR #3915 and the related GitHub issues #3907, #3908, and #3909 are closed; this update only reconciles stale DOING state.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T06:17:53.146Z, excerpt_hash=sha256:8a36d26be7a7c4e3348d77a02cb263ce2376c1477972101e16399b3f254a35b6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605171325-7P5M3V/blueprint/resolved-snapshot.json
     - old_digest: 518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4
     - current_digest: 518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4
     - route_changed: no
@@ -130,6 +204,44 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171326-FXRVNW-v063-prerelease-rough-edges/.agentplane/tasks/202605171325-7P5M3V/blueprint/resolved-snapshot.json
+- old_digest: 518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4
+- current_digest: 518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171325-7P5M3V
+
+### 2026-05-19T06:17:53.124Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: stale DOING cleanup only; the corresponding v0.6 follow-up fix is already included in merged PR #3915 on current main, and related GitHub issues #3907, #3908, and #3909 are closed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T17:46:12.694Z, excerpt_hash=sha256:8a36d26be7a7c4e3348d77a02cb263ce2376c1477972101e16399b3f254a35b6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605171325-7P5M3V/blueprint/resolved-snapshot.json
+- old_digest: 518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4
+- current_digest: 518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171325-7P5M3V
+
+### 2026-05-19T06:17:54.057Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed: current main contains follow-up batch PR #3915 and the related GitHub issues #3907, #3908, and #3909 are closed; this update only reconciles stale DOING state.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T06:17:53.146Z, excerpt_hash=sha256:8a36d26be7a7c4e3348d77a02cb263ce2376c1477972101e16399b3f254a35b6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605171325-7P5M3V/blueprint/resolved-snapshot.json
 - old_digest: 518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4
 - current_digest: 518e64e0a95e82433648558d9b4a2c97bc8ed5dd773218ae0a42c6a3d42cbad4
 - route_changed: no

@@ -1,10 +1,11 @@
 ---
 id: "202605170812-9FFE6Y"
 title: "Fix CodeQL polynomial regex alerts"
-status: "DOING"
+result_summary: "Closed as included in merged CodeQL remediation PR #3793."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,15 +21,31 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-17T08:49:12.917Z"
-  updated_by: "CODER"
-  note: "Local verification passed for polynomial regex remediation: commit subject, task doc, and task README parsing now use bounded/manual parsing in the alerted paths, with adversarial long-input tests. Focused tests, exact-file ESLint, core typecheck, and policy routing passed. GitHub Code scanning alerts #2-#4 remain open until this branch is published and CodeQL reruns."
+  updated_at: "2026-05-19T06:17:26.459Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed: current main contains CodeQL remediation PR #3793 and GitHub code-scanning currently reports 0 open alerts; this update only reconciles stale DOING state."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T06:17:26.459Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed: current main contains CodeQL remediation PR #3793 and GitHub code-scanning currently reports 0 open alerts; this update only reconciles stale DOING state."
+  evaluated_sha: "e5e1eeeba01807a4a4c4b03282d22ca208130d4d"
+  blueprint_digest: "44391e196b9688a13bfd70916f6549339dd53db92af2925abdf1b14c65014be0"
+  evidence_refs:
+    - ".agentplane/tasks/202605170812-9FFE6Y/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202605170812-9FFE6Y/blueprint/resolved-snapshot.json"
+  findings: []
+commit:
+  hash: "e5e1eeeba01807a4a4c4b03282d22ca208130d4d"
+  message: "Merge pull request #3919 from basilisk-labs/task-close/202605181816-3W350X/94be1f5afed7"
 comments:
   -
     author: "CODER"
     body: "Start: replacing risky regex parsing hotspots with bounded or linear parsing and focused adversarial-input coverage for the approved CodeQL remediation batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: stale DOING cleanup only; CodeQL remediation was included in merged PR #3793 on current main, and live GitHub code-scanning open alerts count is 0."
 events:
   -
     type: "status"
@@ -43,14 +60,33 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local verification passed for polynomial regex remediation: commit subject, task doc, and task README parsing now use bounded/manual parsing in the alerted paths, with adversarial long-input tests. Focused tests, exact-file ESLint, core typecheck, and policy routing passed. GitHub Code scanning alerts #2-#4 remain open until this branch is published and CodeQL reruns."
+  -
+    type: "verify"
+    at: "2026-05-19T06:17:25.647Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: stale DOING cleanup only; CodeQL remediation is already included in merged PR #3793 on current main, and live GitHub code-scanning open alerts count is 0."
+  -
+    type: "verify"
+    at: "2026-05-19T06:17:26.459Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed: current main contains CodeQL remediation PR #3793 and GitHub code-scanning currently reports 0 open alerts; this update only reconciles stale DOING state."
+  -
+    type: "status"
+    at: "2026-05-19T06:17:27.120Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: stale DOING cleanup only; CodeQL remediation was included in merged PR #3793 on current main, and live GitHub code-scanning open alerts count is 0."
 doc_version: 3
-doc_updated_at: "2026-05-17T08:49:12.991Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T06:17:27.121Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace regex parsing hotspots that trigger CodeQL polynomial ReDoS alerts #2-#4."
 sections:
   Summary: |-
     Fix CodeQL polynomial regex alerts
-    
+
     Replace regex parsing hotspots that trigger CodeQL polynomial ReDoS alerts #2-#4.
   Scope: |-
     - In scope: Replace regex parsing hotspots that trigger CodeQL polynomial ReDoS alerts #2-#4.
@@ -64,16 +100,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-17T08:49:12.917Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: Local verification passed for polynomial regex remediation: commit subject, task doc, and task README parsing now use bounded/manual parsing in the alerted paths, with adversarial long-input tests. Focused tests, exact-file ESLint, core typecheck, and policy routing passed. GitHub Code scanning alerts #2-#4 remain open until this branch is published and CodeQL reruns.
     Attempts: 0
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T08:27:35.137Z, excerpt_hash=sha256:4fd6d59d12273981e4634e138c028875ed30aafdf4443fa7d228de304fe0fa33
-    
+
     Details:
-    
+
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605170811-8DPCYD-codeql-security-fixes/.agentplane/tasks/202605170812-9FFE6Y/blueprint/resolved-snapshot.json
@@ -81,7 +117,45 @@ sections:
     - current_digest: 56fe422511a9db028cb940428bb15bece4189c7128ad66812914f8d774ca4c58
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605170812-9FFE6Y
-    
+
+    ### 2026-05-19T06:17:25.647Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: stale DOING cleanup only; CodeQL remediation is already included in merged PR #3793 on current main, and live GitHub code-scanning open alerts count is 0.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T08:49:12.991Z, excerpt_hash=sha256:4fd6d59d12273981e4634e138c028875ed30aafdf4443fa7d228de304fe0fa33
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605170812-9FFE6Y/blueprint/resolved-snapshot.json
+    - old_digest: 44391e196b9688a13bfd70916f6549339dd53db92af2925abdf1b14c65014be0
+    - current_digest: 44391e196b9688a13bfd70916f6549339dd53db92af2925abdf1b14c65014be0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605170812-9FFE6Y
+
+    ### 2026-05-19T06:17:26.459Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed: current main contains CodeQL remediation PR #3793 and GitHub code-scanning currently reports 0 open alerts; this update only reconciles stale DOING state.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T06:17:25.661Z, excerpt_hash=sha256:4fd6d59d12273981e4634e138c028875ed30aafdf4443fa7d228de304fe0fa33
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605170812-9FFE6Y/blueprint/resolved-snapshot.json
+    - old_digest: 44391e196b9688a13bfd70916f6549339dd53db92af2925abdf1b14c65014be0
+    - current_digest: 44391e196b9688a13bfd70916f6549339dd53db92af2925abdf1b14c65014be0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605170812-9FFE6Y
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -133,6 +207,44 @@ BlueprintSnapshotRef:
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605170811-8DPCYD-codeql-security-fixes/.agentplane/tasks/202605170812-9FFE6Y/blueprint/resolved-snapshot.json
 - old_digest: 56fe422511a9db028cb940428bb15bece4189c7128ad66812914f8d774ca4c58
 - current_digest: 56fe422511a9db028cb940428bb15bece4189c7128ad66812914f8d774ca4c58
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605170812-9FFE6Y
+
+### 2026-05-19T06:17:25.647Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: stale DOING cleanup only; CodeQL remediation is already included in merged PR #3793 on current main, and live GitHub code-scanning open alerts count is 0.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T08:49:12.991Z, excerpt_hash=sha256:4fd6d59d12273981e4634e138c028875ed30aafdf4443fa7d228de304fe0fa33
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605170812-9FFE6Y/blueprint/resolved-snapshot.json
+- old_digest: 44391e196b9688a13bfd70916f6549339dd53db92af2925abdf1b14c65014be0
+- current_digest: 44391e196b9688a13bfd70916f6549339dd53db92af2925abdf1b14c65014be0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605170812-9FFE6Y
+
+### 2026-05-19T06:17:26.459Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed: current main contains CodeQL remediation PR #3793 and GitHub code-scanning currently reports 0 open alerts; this update only reconciles stale DOING state.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T06:17:25.661Z, excerpt_hash=sha256:4fd6d59d12273981e4634e138c028875ed30aafdf4443fa7d228de304fe0fa33
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605170812-9FFE6Y/blueprint/resolved-snapshot.json
+- old_digest: 44391e196b9688a13bfd70916f6549339dd53db92af2925abdf1b14c65014be0
+- current_digest: 44391e196b9688a13bfd70916f6549339dd53db92af2925abdf1b14c65014be0
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605170812-9FFE6Y
 

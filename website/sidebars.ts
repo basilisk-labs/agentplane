@@ -110,6 +110,7 @@ const sidebars: SidebarsConfig = {
         "workflow-guides/branch-pr",
         "user/tasks-and-backends",
         "user/commands",
+        "user/agent-bootstrap.generated",
         "user/agents",
       ],
     },
@@ -128,6 +129,7 @@ const sidebars: SidebarsConfig = {
       items: [
         "user/breaking-changes",
         "user/workflow-migration",
+        "help/legacy-upgrade-recovery",
         "help/troubleshooting-by-symptom",
         "help/troubleshooting",
       ],

@@ -1,10 +1,11 @@
 ---
 id: "202605170812-X4C8DJ"
 title: "Fix CodeQL config prototype pollution alerts"
-status: "DOING"
+result_summary: "Closed as included in merged CodeQL remediation PR #3793."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,15 +21,31 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-17T08:48:49.666Z"
-  updated_by: "CODER"
-  note: "Local verification passed for config prototype pollution remediation: setByDottedKey now rejects __proto__, prototype, and constructor path segments while preserving valid nested key behavior. Focused config tests, exact-file ESLint, core typecheck, and policy routing passed. GitHub Code scanning alerts #5 and #6 remain open until this branch is published and CodeQL reruns."
+  updated_at: "2026-05-19T06:17:33.978Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed: current main contains CodeQL remediation PR #3793 and GitHub code-scanning currently reports 0 open alerts; this update only reconciles stale DOING state."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T06:17:33.978Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed: current main contains CodeQL remediation PR #3793 and GitHub code-scanning currently reports 0 open alerts; this update only reconciles stale DOING state."
+  evaluated_sha: "e5e1eeeba01807a4a4c4b03282d22ca208130d4d"
+  blueprint_digest: "ca5205343a607cfc1209ba0963c8aef2212f2643d1cac14f28b14d497db1468b"
+  evidence_refs:
+    - ".agentplane/tasks/202605170812-X4C8DJ/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202605170812-X4C8DJ/blueprint/resolved-snapshot.json"
+  findings: []
+commit:
+  hash: "e5e1eeeba01807a4a4c4b03282d22ca208130d4d"
+  message: "Merge pull request #3919 from basilisk-labs/task-close/202605181816-3W350X/94be1f5afed7"
 comments:
   -
     author: "CODER"
     body: "Start: rejecting unsafe dotted config key segments and adding focused config mutation coverage for the approved CodeQL remediation batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: stale DOING cleanup only; CodeQL remediation was included in merged PR #3793 on current main, and live GitHub code-scanning open alerts count is 0."
 events:
   -
     type: "status"
@@ -43,14 +60,33 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local verification passed for config prototype pollution remediation: setByDottedKey now rejects __proto__, prototype, and constructor path segments while preserving valid nested key behavior. Focused config tests, exact-file ESLint, core typecheck, and policy routing passed. GitHub Code scanning alerts #5 and #6 remain open until this branch is published and CodeQL reruns."
+  -
+    type: "verify"
+    at: "2026-05-19T06:17:33.209Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: stale DOING cleanup only; CodeQL remediation is already included in merged PR #3793 on current main, and live GitHub code-scanning open alerts count is 0."
+  -
+    type: "verify"
+    at: "2026-05-19T06:17:33.978Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed: current main contains CodeQL remediation PR #3793 and GitHub code-scanning currently reports 0 open alerts; this update only reconciles stale DOING state."
+  -
+    type: "status"
+    at: "2026-05-19T06:17:34.618Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: stale DOING cleanup only; CodeQL remediation was included in merged PR #3793 on current main, and live GitHub code-scanning open alerts count is 0."
 doc_version: 3
-doc_updated_at: "2026-05-17T08:48:49.830Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T06:17:34.618Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reject unsafe dotted config keys for CodeQL prototype pollution alerts #5 and #6."
 sections:
   Summary: |-
     Fix CodeQL config prototype pollution alerts
-    
+
     Reject unsafe dotted config keys for CodeQL prototype pollution alerts #5 and #6.
   Scope: |-
     - In scope: Reject unsafe dotted config keys for CodeQL prototype pollution alerts #5 and #6.
@@ -64,16 +100,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-17T08:48:49.666Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: Local verification passed for config prototype pollution remediation: setByDottedKey now rejects __proto__, prototype, and constructor path segments while preserving valid nested key behavior. Focused config tests, exact-file ESLint, core typecheck, and policy routing passed. GitHub Code scanning alerts #5 and #6 remain open until this branch is published and CodeQL reruns.
     Attempts: 0
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T08:27:21.491Z, excerpt_hash=sha256:f6f9b8eef3842348998d5af172be97345a59f963d0c0aebb0012b43e0b34da8d
-    
+
     Details:
-    
+
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605170811-8DPCYD-codeql-security-fixes/.agentplane/tasks/202605170812-X4C8DJ/blueprint/resolved-snapshot.json
@@ -81,7 +117,45 @@ sections:
     - current_digest: 86183173cf5355b9f0b8aba6140d196c909f29aeffd4b5d1595203fcbf65a5c2
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605170812-X4C8DJ
-    
+
+    ### 2026-05-19T06:17:33.209Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: stale DOING cleanup only; CodeQL remediation is already included in merged PR #3793 on current main, and live GitHub code-scanning open alerts count is 0.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T08:48:49.830Z, excerpt_hash=sha256:f6f9b8eef3842348998d5af172be97345a59f963d0c0aebb0012b43e0b34da8d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605170812-X4C8DJ/blueprint/resolved-snapshot.json
+    - old_digest: ca5205343a607cfc1209ba0963c8aef2212f2643d1cac14f28b14d497db1468b
+    - current_digest: ca5205343a607cfc1209ba0963c8aef2212f2643d1cac14f28b14d497db1468b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605170812-X4C8DJ
+
+    ### 2026-05-19T06:17:33.978Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed: current main contains CodeQL remediation PR #3793 and GitHub code-scanning currently reports 0 open alerts; this update only reconciles stale DOING state.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T06:17:33.223Z, excerpt_hash=sha256:f6f9b8eef3842348998d5af172be97345a59f963d0c0aebb0012b43e0b34da8d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605170812-X4C8DJ/blueprint/resolved-snapshot.json
+    - old_digest: ca5205343a607cfc1209ba0963c8aef2212f2643d1cac14f28b14d497db1468b
+    - current_digest: ca5205343a607cfc1209ba0963c8aef2212f2643d1cac14f28b14d497db1468b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605170812-X4C8DJ
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -133,6 +207,44 @@ BlueprintSnapshotRef:
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605170811-8DPCYD-codeql-security-fixes/.agentplane/tasks/202605170812-X4C8DJ/blueprint/resolved-snapshot.json
 - old_digest: 86183173cf5355b9f0b8aba6140d196c909f29aeffd4b5d1595203fcbf65a5c2
 - current_digest: 86183173cf5355b9f0b8aba6140d196c909f29aeffd4b5d1595203fcbf65a5c2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605170812-X4C8DJ
+
+### 2026-05-19T06:17:33.209Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: stale DOING cleanup only; CodeQL remediation is already included in merged PR #3793 on current main, and live GitHub code-scanning open alerts count is 0.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T08:48:49.830Z, excerpt_hash=sha256:f6f9b8eef3842348998d5af172be97345a59f963d0c0aebb0012b43e0b34da8d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605170812-X4C8DJ/blueprint/resolved-snapshot.json
+- old_digest: ca5205343a607cfc1209ba0963c8aef2212f2643d1cac14f28b14d497db1468b
+- current_digest: ca5205343a607cfc1209ba0963c8aef2212f2643d1cac14f28b14d497db1468b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605170812-X4C8DJ
+
+### 2026-05-19T06:17:33.978Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed: current main contains CodeQL remediation PR #3793 and GitHub code-scanning currently reports 0 open alerts; this update only reconciles stale DOING state.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T06:17:33.223Z, excerpt_hash=sha256:f6f9b8eef3842348998d5af172be97345a59f963d0c0aebb0012b43e0b34da8d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605170812-X4C8DJ/blueprint/resolved-snapshot.json
+- old_digest: ca5205343a607cfc1209ba0963c8aef2212f2643d1cac14f28b14d497db1468b
+- current_digest: ca5205343a607cfc1209ba0963c8aef2212f2643d1cac14f28b14d497db1468b
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605170812-X4C8DJ
 
