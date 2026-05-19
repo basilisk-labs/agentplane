@@ -1,10 +1,11 @@
 ---
 id: "202605190830-W0ZCVH"
 title: "Make context init interactive"
-status: "DOING"
+result_summary: "Merged via PR #3924."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605190830-W0ZCVH/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190830-W0ZCVH-interactive-context-init/.agentplane/tasks/202605190830-W0ZCVH/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "0100c3c75f4f53d016df26cc359a6c00ad1e91d2"
+  message: "Merge pull request #3924 from basilisk-labs/task/202605190830-W0ZCVH/interactive-context-init"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved context init interactive mode selection in the task worktree, preserving explicit profile flags and non-interactive defaults."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3924 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -84,9 +90,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for current integration candidate after CLI docs/test split and hosted checks on PR #3924. Evidence: GitHub checks green on d60f8aa5a; local fast pre-push completed build, docs freshness, hotspot, unit fast, and critical-cli before session cutoff; focused tests/lint/routing recorded in task details."
+  -
+    type: "status"
+    at: "2026-05-19T09:49:55.340Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3924 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T09:41:11.125Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T09:49:55.350Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a TTY dialog for user-run agentplane context init with basic mode information and a three-mode selection: minimal, adaptive, maximum-assimilation. Preserve explicit profile flags and non-interactive defaults."
 sections:
   Summary: |-
