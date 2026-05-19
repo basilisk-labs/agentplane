@@ -155,7 +155,7 @@ function main() {
       .map((entry) => entry.relPath),
     ...(runtimeChanged ? [runtimeUpdate.relPath] : []),
     ...(configUpdate ? [configUpdate.relPath] : []),
-    ...(acrExampleUpdate.before !== acrExampleUpdate.after ? [acrExampleUpdate.relPath] : []),
+    ...(acrExampleUpdate.before === acrExampleUpdate.after ? [] : [acrExampleUpdate.relPath]),
     "bun.lock",
   ];
 

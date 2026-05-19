@@ -117,7 +117,7 @@ export async function replaceAcrExampleVersionInFile(
 ): Promise<void> {
   const raw = JSON.parse(await readFile(acrPath, "utf8")) as {
     producer?: { version?: unknown };
-    agent?: { toolchain?: Array<{ name?: unknown; version?: unknown }> };
+    agent?: { toolchain?: { name?: unknown; version?: unknown }[] };
   };
   raw.producer = raw.producer ?? {};
   raw.producer.version = nextVersion;
