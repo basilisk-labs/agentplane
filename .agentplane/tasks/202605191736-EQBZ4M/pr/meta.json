@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-19T19:50:16Z",
   "base": "main",
   "branch": "task/202605191736-EQBZ4M/task-observations",
   "created_at": "2026-05-19T17:36:43.353Z",
-  "head_sha": "20be204abe544277bd7fcd4ee8cdafd099dd50f7",
+  "head_sha": "95caa3f3df4153b77e3d787bc1778dfb5bb45374",
   "last_verified_at": "2026-05-19T19:32:57.789Z",
   "last_verified_sha": "20be204abe544277bd7fcd4ee8cdafd099dd50f7",
+  "merge_commit": "48597982def853801ff7415c600900072a8afae9",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-19T19:50:16Z",
   "pr_number": 3950,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3950",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605191736-EQBZ4M",
-  "updated_at": "2026-05-19T19:32:51.553Z",
+  "updated_at": "2026-05-19T19:50:16Z",
   "verify": {
     "status": "pass"
   }

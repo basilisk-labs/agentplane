@@ -1,10 +1,11 @@
 ---
 id: "202605191736-EQBZ4M"
 title: "Add task observations journal"
-status: "DOING"
+result_summary: "Merged via PR #3950."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -46,11 +47,16 @@ quality_review:
     - ".agentplane/tasks/202605191736-EQBZ4M/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "48597982def853801ff7415c600900072a8afae9"
+  message: "Merge pull request #3950 from basilisk-labs/task/202605191736-EQBZ4M/task-observations"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing a structured task observations journal as a task-local JSONL artifact with CLI support, schema validation, and triage-oriented downstream use."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3950 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -95,9 +101,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Hosted PR checks are green for head 20be204a after review fixes; unresolved review threads were addressed and resolved."
+  -
+    type: "status"
+    at: "2026-05-19T19:51:05.877Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3950 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T19:32:57.820Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T19:51:05.886Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement a structured task-local observations.jsonl artifact for agent-discovered spec gaps, decisions, risks, issue candidates, incident candidates, context candidates, and agent improvement candidates, with CLI support for adding, listing, checking, and triaging observations."
 sections:
   Summary: |-
