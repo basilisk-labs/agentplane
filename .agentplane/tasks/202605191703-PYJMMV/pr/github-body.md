@@ -33,12 +33,23 @@ structure, useful wikilinks, provenance, coverage, glossary safety, and leakage 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T17:04:03.241Z
+- Updated: 2026-05-19T17:27:53.567Z
 - Branch: task/202605191703-PYJMMV/max-assimilation-obsidian
-- Head: cdffae04ff79
+- Head: ca91c80c5dea
 
 ```text
-No changes detected.
+ .agentplane/agents/EVALUATOR.json                  |   2 +-
+ .../blueprint/resolved-snapshot.json               | 574 +++++++++++++++++++++
+ docs/user/local-context.mdx                        |  18 +
+ packages/agentplane/assets/agents/EVALUATOR.json   |   2 +-
+ packages/agentplane/src/blueprints/builtins.ts     |  31 ++
+ .../agentplane/src/blueprints/validate.test.ts     |   6 +
+ packages/agentplane/src/commands/context/init.ts   |  17 +
+ .../src/commands/context/release-readiness.test.ts |  81 ++-
+ packages/agentplane/src/context/ingest-task.ts     |  23 +-
+ packages/agentplane/src/context/ingest.ts          |  12 +-
+ .../src/shared/builtin-assets.generated.ts         |  10 +-
+ 11 files changed, 759 insertions(+), 17 deletions(-)
 ```
 
 </details>
