@@ -29,6 +29,32 @@ const forbiddenPublicText = [
 ];
 
 const forbiddenNonBlogText = ["Blueprints"];
+const githubRepoUrl = new URL("https://github.com/basilisk-labs/agentplane");
+
+function normalizedUrlKey(url) {
+  const pathname = url.pathname.endsWith("/") ? url.pathname.slice(0, -1) : url.pathname;
+  return `${url.origin}${pathname}`;
+}
+
+function htmlHasLinkTo(html, expectedUrl, documentUrl) {
+  const expected = normalizedUrlKey(expectedUrl);
+  const hrefPattern = /\bhref=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/g;
+  let match;
+
+  while ((match = hrefPattern.exec(html)) !== null) {
+    try {
+      const href = match[1] ?? match[2] ?? match[3];
+      const candidate = new URL(href, documentUrl);
+      if (normalizedUrlKey(candidate) === expected) {
+        return true;
+      }
+    } catch {
+      // Ignore malformed HTML attributes; the smoke check only needs valid links.
+    }
+  }
+
+  return false;
+}
 
 async function check(route) {
   const url = `${base}${route}`;
@@ -60,7 +86,7 @@ async function check(route) {
     }
   }
 
-  if (route === "/" && !html.includes("https://github.com/basilisk-labs/agentplane")) {
+  if (route === "/" && !htmlHasLinkTo(html, githubRepoUrl, url)) {
     throw new Error(`${url} homepage must link to GitHub`);
   }
 }
