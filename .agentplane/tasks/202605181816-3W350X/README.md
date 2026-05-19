@@ -4,7 +4,7 @@ title: "Add maximum context assimilation mode"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T04:12:40.656Z"
+  updated_at: "2026-05-19T04:33:16.029Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed: PR #3904 hosted checks are green, local verification evidence is recorded in the task README, and the follow-up model change keeps raw refs as provenance while wiki/fact/graph/glossary artifacts remain self-contained."
+  note: "EVALUATOR quality gate passed for current head 1a14e329 after merging origin/main: PR #3904 hosted checks are green, release tests that previously failed now pass locally, and context/blueprint focused tests pass."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T04:12:40.656Z"
+  updated_at: "2026-05-19T04:33:16.029Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed: PR #3904 hosted checks are green, local verification evidence is recorded in the task README, and the follow-up model change keeps raw refs as provenance while wiki/fact/graph/glossary artifacts remain self-contained."
-  evaluated_sha: "fe4d541e81034f5dc1acdfaa8eb44a34e35f92f6"
+  note: "EVALUATOR quality gate passed for current head 1a14e329 after merging origin/main: PR #3904 hosted checks are green, release tests that previously failed now pass locally, and context/blueprint focused tests pass."
+  evaluated_sha: "1a14e3293a763168775c373eeab7cae93d5acf62"
   blueprint_digest: "459d784158b3116cc43dc8cd149181ef135a15de07391ada1a598d2bfd2d4b9a"
   evidence_refs:
     - ".agentplane/tasks/202605181816-3W350X/README.md"
@@ -66,8 +66,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed: PR #3904 hosted checks are green, local verification evidence is recorded in the task README, and the follow-up model change keeps raw refs as provenance while wiki/fact/graph/glossary artifacts remain self-contained."
+  -
+    type: "verify"
+    at: "2026-05-19T04:33:16.029Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed for current head 1a14e329 after merging origin/main: PR #3904 hosted checks are green, release tests that previously failed now pass locally, and context/blueprint focused tests pass."
 doc_version: 3
-doc_updated_at: "2026-05-19T04:12:40.678Z"
+doc_updated_at: "2026-05-19T04:33:16.053Z"
 doc_updated_by: "CODER"
 description: "Define an extended context assimilation mode for context init/wiki workflows that fully preserves significant source content in wiki, records original hashes and line-addressed provenance, extracts entities and relations before article synthesis, and maintains glossary-driven terminology normalization."
 sections:
@@ -137,6 +143,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T18:55:06.030Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181816-3W350X-maximum-context-assimilation/.agentplane/tasks/202605181816-3W350X/blueprint/resolved-snapshot.json
+    - old_digest: 459d784158b3116cc43dc8cd149181ef135a15de07391ada1a598d2bfd2d4b9a
+    - current_digest: 459d784158b3116cc43dc8cd149181ef135a15de07391ada1a598d2bfd2d4b9a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605181816-3W350X
+
+    ### 2026-05-19T04:33:16.029Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed for current head 1a14e329 after merging origin/main: PR #3904 hosted checks are green, release tests that previously failed now pass locally, and context/blueprint focused tests pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T04:12:40.678Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -231,6 +256,25 @@ Note: EVALUATOR quality gate passed: PR #3904 hosted checks are green, local ver
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T18:55:06.030Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181816-3W350X-maximum-context-assimilation/.agentplane/tasks/202605181816-3W350X/blueprint/resolved-snapshot.json
+- old_digest: 459d784158b3116cc43dc8cd149181ef135a15de07391ada1a598d2bfd2d4b9a
+- current_digest: 459d784158b3116cc43dc8cd149181ef135a15de07391ada1a598d2bfd2d4b9a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605181816-3W350X
+
+### 2026-05-19T04:33:16.029Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed for current head 1a14e329 after merging origin/main: PR #3904 hosted checks are green, release tests that previously failed now pass locally, and context/blueprint focused tests pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T04:12:40.678Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 
