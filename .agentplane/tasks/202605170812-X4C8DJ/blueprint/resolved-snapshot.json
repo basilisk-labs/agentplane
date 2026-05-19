@@ -158,6 +158,18 @@
         ]
       },
       {
+        "id": "quality_gate",
+        "kind": "quality_gate",
+        "mode": "agentic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "quality_report"
+        ]
+      },
+      {
         "id": "finish",
         "kind": "finish",
         "mode": "deterministic",
@@ -198,6 +210,13 @@
         "producedBy": "deterministic_check",
         "required": true,
         "description": "Post-action check."
+      },
+      {
+        "id": "ops.quality",
+        "kind": "quality_report",
+        "producedBy": "quality_gate",
+        "required": true,
+        "description": "EVALUATOR quality verdict."
       }
     ],
     "policyModules": [
@@ -320,6 +339,18 @@
       ]
     },
     {
+      "id": "quality_gate",
+      "kind": "quality_gate",
+      "mode": "agentic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "quality_report"
+      ]
+    },
+    {
       "id": "finish",
       "kind": "finish",
       "mode": "deterministic",
@@ -360,6 +391,13 @@
       "producedBy": "deterministic_check",
       "required": true,
       "description": "Post-action check."
+    },
+    {
+      "id": "ops.quality",
+      "kind": "quality_report",
+      "producedBy": "quality_gate",
+      "required": true,
+      "description": "EVALUATOR quality verdict."
     }
   ],
   "policyModules": [
@@ -387,6 +425,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "86183173cf5355b9f0b8aba6140d196c909f29aeffd4b5d1595203fcbf65a5c2"
+    "value": "ca5205343a607cfc1209ba0963c8aef2212f2643d1cac14f28b14d497db1468b"
   }
 }

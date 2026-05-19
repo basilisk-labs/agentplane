@@ -186,6 +186,20 @@
         ]
       },
       {
+        "id": "quality_gate",
+        "kind": "quality_gate",
+        "mode": "agentic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [
+          "agentplane verify <task-id> --ok|--rework --by EVALUATOR"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "quality_report"
+        ]
+      },
+      {
         "id": "hosted_checks",
         "kind": "hosted_checks",
         "mode": "deterministic",
@@ -256,6 +270,13 @@
         "description": "Task branch verification."
       },
       {
+        "id": "code_pr.quality",
+        "kind": "quality_report",
+        "producedBy": "quality_gate",
+        "required": true,
+        "description": "EVALUATOR quality verdict."
+      },
+      {
         "id": "code_pr.hosted",
         "kind": "check_result",
         "producedBy": "hosted_checks",
@@ -281,6 +302,7 @@
       "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
       "agentplane task verify-show <task-id>",
       "agentplane verify <task-id> --ok|--rework",
+      "agentplane verify <task-id> --ok|--rework --by EVALUATOR",
       "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
       "project focused checks"
     ],
@@ -415,6 +437,20 @@
       ]
     },
     {
+      "id": "quality_gate",
+      "kind": "quality_gate",
+      "mode": "agentic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [
+        "agentplane verify <task-id> --ok|--rework --by EVALUATOR"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "quality_report"
+      ]
+    },
+    {
       "id": "hosted_checks",
       "kind": "hosted_checks",
       "mode": "deterministic",
@@ -485,6 +521,13 @@
       "description": "Task branch verification."
     },
     {
+      "id": "code_pr.quality",
+      "kind": "quality_report",
+      "producedBy": "quality_gate",
+      "required": true,
+      "description": "EVALUATOR quality verdict."
+    },
+    {
       "id": "code_pr.hosted",
       "kind": "check_result",
       "producedBy": "hosted_checks",
@@ -510,6 +553,7 @@
     "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
     "agentplane task verify-show <task-id>",
     "agentplane verify <task-id> --ok|--rework",
+    "agentplane verify <task-id> --ok|--rework --by EVALUATOR",
     "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
     "project focused checks"
   ],
@@ -530,6 +574,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "66aaaa9e2205dd99b2c6e50ec6159b62dfe10ba60c41ba901eb2b75e884d9c52"
+    "value": "0fdf5e3c073257eb8197be7ad8dddcebdc17304591ee4c597e37c7a80e452c02"
   }
 }

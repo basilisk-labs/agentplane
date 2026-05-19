@@ -111,7 +111,7 @@ const main = defineScript({
       ),
     );
 
-    for (const heading of ["### Start", "### Work on a task", "### Upgrade & recover"]) {
+    for (const heading of ["## Start here", "## Agent workflow model", "## Upgrade and recovery"]) {
       assertIncludes(fileContents.docsIndex, heading, "docs index");
     }
 
@@ -132,13 +132,13 @@ const main = defineScript({
 
     for (const label of [
       'label: "Start"',
-      'label: "Work on a task"',
+      'label: "Agent workflow model"',
       'label: "Upgrade & recover"',
     ]) {
       assertIncludes(fileContents.sidebar, label, "sidebar");
     }
 
-    for (const navLabel of ['label: "Docs"', 'label: "Compare"', 'label: "Quickstart"']) {
+    for (const navLabel of ['label: "Docs"', 'label: "Examples"', 'label: "Quickstart"']) {
       assertIncludes(fileContents.docusaurusConfig, navLabel, "navbar");
     }
 

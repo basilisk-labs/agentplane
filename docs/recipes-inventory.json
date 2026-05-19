@@ -1,0 +1,44 @@
+{
+  "schema_version": "recipes-inventory@2",
+  "runtime_contract": {
+    "install_root": ".agentplane/recipes/<recipe-id>/",
+    "public_entrypoint": "recipes add / recipes active / recipes explain",
+    "task_run": "shared-runner-task-entrypoint",
+    "notes": [
+      "Recipe-local agents, skills, tools, and scenarios stay inside the recipe bundle.",
+      "Scenario assets remain recipe-owned internals rather than a first-class public CLI domain.",
+      "Task materialization and execution stay on the shared runner contract instead of a parallel public scenario runtime."
+    ]
+  },
+  "recipes": [
+    {
+      "id": "code-map",
+      "name": "Code Map",
+      "version": "0.1.1",
+      "summary": "Adds a lightweight code-map discipline to agent development work.",
+      "source": "agentplane-recipes/recipes/code-map",
+      "self_contained": true,
+      "scenarios": [
+        {
+          "id": "code-map",
+          "summary": "Create or refresh a compact project code map before implementation.",
+          "use_when": [
+            "A coding task spans multiple modules or ownership boundaries.",
+            "A new agent needs a quick map of the project's runtime surfaces.",
+            "A change depends on understanding entry points and verification commands."
+          ],
+          "required_inputs": ["target_paths"],
+          "outputs": ["code_map_path", "mapped_surfaces", "verification_commands"],
+          "agents_involved": ["code-map-operator"],
+          "skills_used": ["code-map-discipline"],
+          "tools_used": [],
+          "run_profile": {
+            "mode": "analysis",
+            "sandbox": "workspace-write",
+            "writes_artifacts_to": ["docs/code-map.md"]
+          }
+        }
+      ]
+    }
+  ]
+}
