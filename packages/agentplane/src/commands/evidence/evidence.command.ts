@@ -134,10 +134,7 @@ export const evidenceVerifySpec: CommandSpec<EvidenceVerifyParsed> = {
   }),
 };
 
-export async function runEvidenceGroup(
-  _ctx: CommandCtx,
-  p: GroupCommandParsed,
-): Promise<number> {
+export async function runEvidenceGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   return throwGroupCommandUsage({
     spec: evidenceSpec,
     cmd: p.cmd,

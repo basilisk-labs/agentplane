@@ -20,12 +20,12 @@ function fakeCommandContext(root: string): CommandContext {
     taskBackend: {
       getTask: (taskId: string) =>
         Promise.resolve({
-        id: taskId,
-        title: "Evidence task",
-        description: "Create evidence bundle.",
-        status: "TODO",
-        priority: "med",
-        owner: "CODER",
+          id: taskId,
+          title: "Evidence task",
+          description: "Create evidence bundle.",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
         }),
     },
     backendId: "local",
@@ -99,7 +99,7 @@ describe("evidence bundle manifest", () => {
       },
     });
 
-    await writeFile(path.join(taskRoot, "acr.json"), "{\"changed\":true}\n", "utf8");
+    await writeFile(path.join(taskRoot, "acr.json"), '{"changed":true}\n', "utf8");
     await expect(
       cmdEvidenceVerify({
         commandCtx: ctx,
