@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-19T16:10:46Z",
   "base": "main",
   "branch": "task/202605191421-D566XJ/evidence-bundle",
   "created_at": "2026-05-19T14:23:12.633Z",
-  "head_sha": "08db6b47a4528e5e50155378c65a5e299da2966e",
+  "head_sha": "0eb3352ecc6cad56e41f685a96d8233381840c2f",
   "last_verified_at": "2026-05-19T15:54:39.502Z",
   "last_verified_sha": "08db6b47a4528e5e50155378c65a5e299da2966e",
+  "merge_commit": "9d0fa79935ebb2d532e2a718a684506edee203cf",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-19T16:10:46Z",
   "pr_number": 3937,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3937",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605191421-D566XJ",
-  "updated_at": "2026-05-19T15:45:54.714Z",
+  "updated_at": "2026-05-19T16:10:46Z",
   "verify": {
     "status": "pass"
   }
