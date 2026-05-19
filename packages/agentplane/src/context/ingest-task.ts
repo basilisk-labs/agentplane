@@ -19,21 +19,13 @@ function isMaximumAssimilation(mode?: ContextWorkspaceMode): boolean {
 }
 
 export function selectedSourceRows(
-  opts: Pick<ContextIngestParsed, "mode" | "includePrivate">,
+  opts: Pick<ContextIngestParsed, "mode">,
   sourceRows: ManifestEntry[],
 ): ManifestEntry[] {
-  const visible = opts.includePrivate
-    ? sourceRows
-    : sourceRows.filter((entry) => entry.status !== "private");
   if (opts.mode === "changed") {
-    return visible.filter(
-      (entry) =>
-        entry.status === "new" ||
-        entry.status === "changed" ||
-        (opts.includePrivate && entry.status === "private"),
-    );
+    return sourceRows.filter((entry) => entry.status === "new" || entry.status === "changed");
   }
-  return visible;
+  return sourceRows;
 }
 
 function buildIngestMetadata(
@@ -64,7 +56,7 @@ function buildIngestMetadata(
     `Mode detail: mode=${opts.mode}, indexOnly=${opts.indexOnly}, dryRun=${opts.dryRun}`,
     `Total tracked candidates: ${sourceRows.length}`,
     `Changed/new candidates: ${modeSource.length}`,
-    `private-only filtering: enabled`,
+    `Raw hierarchy: user-owned paths under context/raw/** are included as source paths.`,
     `Run policy: task-owner CURATOR`,
     `Prompt module: ${promptRef}`,
     `Blueprint: ${blueprintId}`,
@@ -83,13 +75,13 @@ function buildIngestMetadata(
       ? [
           "",
           "Maximum-assimilation contract:",
-          "- Preserve all significant non-private source meaning in wiki and derived artifacts so semantic recall does not depend on retaining raw files.",
+          "- Preserve all significant source meaning in wiki and derived artifacts so semantic recall does not depend on retaining raw files.",
           "- Keep original source identity in a source registry or source-set lock with path, `sha256:`, content type, line count, ingest time, and availability state.",
           "- Use concrete line-addressed source refs for extracted claims, entities, relations, glossary aliases, and article sections as audit provenance, not as retained content.",
           "- Run extraction in two passes: first entities/aliases/relations/conflicts/open questions/coverage, then narrative wiki articles based on that structured layer.",
           "- Maintain a canonical glossary over wiki pages and graph entities; use canonical terms in prose and preserve source-local terms as aliases or evidence details.",
-          "- Record a coverage map: covered source spans, intentionally omitted boilerplate, redacted private spans, unresolved identity questions, and remaining conflicts.",
-          "- Treat raw-deletion resilience as a finish gate: if `context/raw/**` were removed, the maintained wiki and derived artifacts should still preserve the significant non-private meaning. Raw refs may become non-dereferenceable.",
+          "- Record a coverage map: covered source spans, intentionally omitted boilerplate, redacted sensitive spans, unresolved identity questions, and remaining conflicts.",
+          "- Treat raw-deletion resilience as a finish gate: if `context/raw/**` were removed, the maintained wiki and derived artifacts should still preserve the significant source meaning. Raw refs may become non-dereferenceable.",
         ]
       : []),
   ].join("\n");
@@ -187,13 +179,13 @@ function buildContextAssimilationPromptModule(workspaceMode?: ContextWorkspaceMo
         ? [
             "",
             "Maximum-assimilation workflow:",
-            "- Intake: classify each selected source span as significant content, boilerplate, private/redacted, duplicate, or unresolved.",
-            "- Source identity: preserve each source's `sha256:`, path, content type, line count, ingest time, and availability state. Cite extracted content with line refs such as `context/raw/research/note.md#lines=12-24`.",
+            "- Intake: classify each selected source span as significant content, boilerplate, redacted, duplicate, or unresolved.",
+            "- Source identity: preserve each source's `sha256:`, path, content type, line count, ingest time, and availability state. Cite extracted content with line refs such as `context/raw/<user-path>/note.md#lines=12-24`.",
             "- Extraction pass: identify canonical entities, source-local aliases, relations, decisions, requirements, risks, workflows, definitions, conflicts, and open questions before article writing.",
             "- Glossary pass: update the canonical glossary as a navigation index over wiki pages and graph entities; normalize prose to canonical terms where confidence is high.",
-            "- Synthesis pass: create granular wiki pages and stable headings from the extracted graph/glossary layer. The wiki should preserve all significant non-private meaning even without raw files.",
-            "- Coverage pass: write or update a coverage report naming covered spans, omitted boilerplate, redacted/private spans, conflicts, unresolved identities, and any approval-required gaps.",
-            "- Critical check: do not flatten contradictions, do not silently invent canonical terms, do not copy secrets/private raw content into public wiki/task/ACR surfaces, and do not claim full semantic coverage without self-contained wiki/fact/graph content plus line-addressed provenance.",
+            "- Synthesis pass: create granular wiki pages and stable headings from the extracted graph/glossary layer. The wiki should preserve all significant source meaning even without raw files.",
+            "- Coverage pass: write or update a coverage report naming covered spans, omitted boilerplate, redacted sensitive spans, conflicts, unresolved identities, and any approval-required gaps.",
+            "- Critical check: do not flatten contradictions, do not silently invent canonical terms, do not copy secrets or non-publishable source spans into public wiki/task/ACR surfaces, and do not claim full semantic coverage without self-contained wiki/fact/graph content plus line-addressed provenance.",
           ]
         : []),
       "",
@@ -267,7 +259,6 @@ export function createTaskNewParsed(
         mode: maximumAssimilation ? "maximum_assimilation" : "wiki",
         source_set: {
           selection: opts.mode,
-          include_private: opts.includePrivate,
           generated_at: now,
           files: selectedRows.map((row) => ({
             path: row.path,
@@ -349,7 +340,6 @@ export function createTaskNewParsed(
         },
         forbidden_outputs: [
           "context/raw/**",
-          "context/raw/private/**",
           ".agentplane/cache.sqlite",
           ".agentplane/context/service/**",
         ],

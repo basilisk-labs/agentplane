@@ -57,7 +57,6 @@ const DEFAULT_ALLOWED = [
 
 const DEFAULT_FORBIDDEN = [
   "context/raw/",
-  "context/raw/private/",
   ".agentplane/cache.sqlite",
   ".agentplane/context/service/",
 ];

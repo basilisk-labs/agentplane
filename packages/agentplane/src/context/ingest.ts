@@ -27,6 +27,7 @@ type ManifestSourceStatus =
   | "changed"
   | "unchanged"
   | "deleted"
+  // Legacy lock files may still contain this status from older AgentPlane versions.
   | "private"
   | "unsupported"
   | "error";
@@ -55,7 +56,6 @@ export type ContextIngestParsed = {
   mode: ContextIngestMode;
   dryRun: boolean;
   indexOnly: boolean;
-  includePrivate: boolean;
 };
 
 function defaultWorkspaceHash(root: string): string {
@@ -119,11 +119,6 @@ function isUnsupportedPath(filePath: string): boolean {
     lower.endsWith(".zip") ||
     lower.endsWith(".tar")
   );
-}
-
-function isPrivatePath(filePath: string): boolean {
-  const lower = filePath.toLowerCase();
-  return lower.includes("context/raw/private/");
 }
 
 function isServiceCandidate(filePath: string): boolean {
@@ -317,15 +312,13 @@ async function collectCandidateRows(
       const st = await stat(abs);
       if (!st.isFile()) continue;
       const sha256 = await calculateSha256(abs);
-      const status = isPrivatePath(candidate)
-        ? "private"
-        : isUnsupportedPath(candidate)
-          ? "unsupported"
-          : lockByPath.has(candidate)
-            ? lockByPath.get(candidate)?.sha256 === sha256
-              ? "unchanged"
-              : "changed"
-            : "new";
+      const status = isUnsupportedPath(candidate)
+        ? "unsupported"
+        : lockByPath.has(candidate)
+          ? lockByPath.get(candidate)?.sha256 === sha256
+            ? "unchanged"
+            : "changed"
+          : "new";
       rows.push({
         path: candidate,
         sha256,

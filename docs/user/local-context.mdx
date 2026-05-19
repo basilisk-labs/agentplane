@@ -71,8 +71,8 @@ Editable source artifacts live under `context/**`:
 - `context/facts/**/*.jsonl`: structured facts.
 - `context/graph/**/*.jsonl`: entities and edges.
 - `context/capabilities/**/*.md`: capability notes for agents.
-- `context/raw/**`: ingested raw material.
-- `context/raw/private/**`: private raw material excluded from the generated projection.
+- `context/raw/**`: ingested raw material. `context init` leaves this as an empty user-owned
+  source tree; create whatever nested structure fits the project.
 
 Generated context artifacts live under `.agentplane/context/derived/**`. The fast local search
 projection is stored in the shared Agentplane cache database at `.agentplane/cache.sqlite`; context
@@ -120,7 +120,7 @@ In this mode, the next context ingestion tasks request the `context.maximum_assi
 
 The contract is stricter than the default adaptive profile:
 
-- Preserve all significant non-private source meaning in wiki, fact, graph, glossary, provenance,
+- Preserve all significant source meaning in wiki, fact, graph, glossary, provenance,
   and coverage artifacts. If `context/raw/**` is deleted later, the maintained context should still
   be understandable and usable.
 - Keep original source association through a source registry: `source_id`, original path, `sha256:`
@@ -139,8 +139,8 @@ The contract is stricter than the default adaptive profile:
 
 Critical points:
 
-- Full assimilation does not override privacy. `context/raw/private/**`, secrets, and
-  non-publishable spans must not be copied into public wiki pages, task summaries, ACRs, or reports.
+- Full assimilation does not override sensitivity boundaries. Secrets and non-publishable spans must
+  not be copied into public wiki pages, task summaries, ACRs, or reports.
 - "100% significant content" means semantic coverage, not a line-for-line raw mirror. Boilerplate,
   duplicate text, generated noise, and private spans should be marked as omitted/redacted with reasons
   instead of being silently dropped.
@@ -288,9 +288,9 @@ should compound into future agent work.
 
 ## Privacy boundary
 
-`context/raw/private/**` is for private input files that may be useful during ingestion but should
-not be projected into search. Keep secrets out of public context artifacts and out of task summaries.
-The local context layer is repository-owned; it is not a secrets vault.
+`context/raw/**` is a user-owned source tree. AgentPlane reads the hierarchy and file contents but
+does not prescribe folders under it. Keep secrets out of public context artifacts and out of task
+summaries. The local context layer is repository-owned; it is not a secrets vault.
 
 ## Common commands
 

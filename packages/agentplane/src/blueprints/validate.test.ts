@@ -155,7 +155,7 @@ describe("blueprint built-ins", () => {
         "context_max_missing_line_refs",
         "context_max_coverage_gap_without_reason",
         "context_max_raw_deletion_resilience_unproven",
-        "context_max_private_leakage",
+        "context_max_sensitive_leakage",
       ]),
     );
   });

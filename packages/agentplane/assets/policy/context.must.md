@@ -49,8 +49,8 @@ ap context verify-task <task-id>
 ## Write boundaries
 
 - MUST NOT manually edit `.agentplane/context/derived/**`; rebuild projections through context commands.
-- MUST NOT write private raw content into public wiki pages, task summaries, ACRs, reports, or incident advice.
-- MUST NOT treat `context/raw/private/**` as publishable context.
+- MUST NOT write secrets or non-publishable source spans into public wiki pages, task summaries, ACRs, reports, or incident advice.
+- MUST preserve the user-created hierarchy under `context/raw/**` when citing raw sources.
 - MUST NOT create glossary-only truth; glossary entries are aliases/navigation over wiki pages and graph entities.
 - SHOULD use proposal-before-promotion for harvested or inferred context when provenance, staleness, or conflicts are not clean.
 
