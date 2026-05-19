@@ -34,12 +34,22 @@ doctor => OK; git diff --check => pass. Manual smoke: default context search exc
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T14:30:15.673Z
+- Updated: 2026-05-19T14:42:48.918Z
 - Branch: task/202605191428-C5AXQ6/context-recall-boundaries
-- Head: 81a3ed59446b
+- Head: c74d8af24a06
 
 ```text
-No changes detected.
+ .agentplane/policy/context.must.md                 |   6 +-
+ .../blueprint/resolved-snapshot.json               | 571 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   4 +-
+ docs/user/local-context.mdx                        |   4 +
+ packages/agentplane/src/blueprints/builtins.ts     |  24 +-
+ .../run-cli.core.help-snap.test.ts.snap            |  14 +-
+ .../src/commands/context/context.spec.ts           |  10 +-
+ .../src/commands/context/release-readiness.test.ts |  51 ++
+ packages/agentplane/src/commands/context/search.ts |   2 +
+ packages/agentplane/src/context/context-utils.ts   |  55 +-
+ 10 files changed, 711 insertions(+), 30 deletions(-)
 ```
 
 </details>
