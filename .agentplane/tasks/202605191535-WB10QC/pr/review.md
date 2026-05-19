@@ -13,7 +13,7 @@ Created: 2026-05-19T15:43:24.548Z
 ## Verification
 
 - State: ok
-- Note: Verified generated scripts inventory after adding local CI package scripts.
+- Note: Evaluator gate pass: local verification and hosted PR checks are green on head a46645a20944fd4d235ff12a928f54fbc5ece723.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

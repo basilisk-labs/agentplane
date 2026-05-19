@@ -16,7 +16,12 @@ Improve the local quality/test routing loop by adding an explainable local CI se
 ## Verification
 
 - State: ok
-- Note: Verified generated scripts inventory after adding local CI package scripts.
+- Note:
+
+```text
+Evaluator gate pass: local verification and hosted PR checks are green on head
+a46645a20944fd4d235ff12a928f54fbc5ece723.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

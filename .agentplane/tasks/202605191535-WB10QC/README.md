@@ -4,7 +4,7 @@ title: "Make local test routing more flexible and observable"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T15:58:21.237Z"
-  updated_by: "CODER"
-  note: "Verified generated scripts inventory after adding local CI package scripts."
+  updated_at: "2026-05-19T16:42:27.423Z"
+  updated_by: "EVALUATOR"
+  note: "Evaluator gate pass: local verification and hosted PR checks are green on head a46645a20944fd4d235ff12a928f54fbc5ece723."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T16:42:27.423Z"
+  updated_by: "EVALUATOR"
+  note: "Evaluator gate pass: local verification and hosted PR checks are green on head a46645a20944fd4d235ff12a928f54fbc5ece723."
+  evaluated_sha: "a46645a20944fd4d235ff12a928f54fbc5ece723"
+  blueprint_digest: "1ff36f9c31cac286789eb9dced252ac7af8d587523ee2a08b24500e59ebdf847"
+  evidence_refs:
+    - ".agentplane/tasks/202605191535-WB10QC/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191535-WB10QC-flexible-test-routing/.agentplane/tasks/202605191535-WB10QC/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -55,8 +66,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified generated scripts inventory after adding local CI package scripts."
+  -
+    type: "verify"
+    at: "2026-05-19T16:42:27.423Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Evaluator gate pass: local verification and hosted PR checks are green on head a46645a20944fd4d235ff12a928f54fbc5ece723."
 doc_version: 3
-doc_updated_at: "2026-05-19T15:58:21.312Z"
+doc_updated_at: "2026-05-19T16:42:27.442Z"
 doc_updated_by: "CODER"
 description: "Improve the local quality/test routing loop by adding an explainable local CI selector/report path and reducing registry drift for targeted test runs."
 sections:
@@ -136,6 +153,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605191535-WB10QC
 
+    ### 2026-05-19T16:42:27.423Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Evaluator gate pass: local verification and hosted PR checks are green on head a46645a20944fd4d235ff12a928f54fbc5ece723.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:58:21.312Z, excerpt_hash=sha256:65e592fda16cab5404202de800bd05c6dac194554c7eebf9570d7bc8781b9efd
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191535-WB10QC-flexible-test-routing/.agentplane/tasks/202605191535-WB10QC/blueprint/resolved-snapshot.json
+    - old_digest: 1ff36f9c31cac286789eb9dced252ac7af8d587523ee2a08b24500e59ebdf847
+    - current_digest: 1ff36f9c31cac286789eb9dced252ac7af8d587523ee2a08b24500e59ebdf847
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191535-WB10QC
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -152,6 +188,10 @@ sections:
     - Observation: Command: bun run docs:scripts:check | Result: pass | Evidence: ok: scripts/README.md is up to date | Scope: generated scripts inventory for new ci:local aliases.
       Impact: scripts/README.md is synchronized with package.json before push.
       Resolution: Regenerated scripts/README.md and recorded the docs freshness check.
+
+    - Observation: Command: gh pr view 3940 --json statusCheckRollup,headRefOid | Result: pass | Evidence: PR head a46645a20944fd4d235ff12a928f54fbc5ece723; Core CI test/test-windows, Docs CI docs, CodeQL, dependency review, and Release-ready manifest completed successfully; recovery-validate skipped by workflow condition. Scope: hosted branch protection checks for PR #3940.
+      Impact: Task branch is ready for merge lane; remaining BLOCKED state is review/protection policy, not failing tests.
+      Resolution: Proceed through GitHub PR merge route authorized by the user.
 id_source: "generated"
 ---
 ## Summary
@@ -239,6 +279,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605191535-WB10QC
 
+### 2026-05-19T16:42:27.423Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Evaluator gate pass: local verification and hosted PR checks are green on head a46645a20944fd4d235ff12a928f54fbc5ece723.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:58:21.312Z, excerpt_hash=sha256:65e592fda16cab5404202de800bd05c6dac194554c7eebf9570d7bc8781b9efd
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191535-WB10QC-flexible-test-routing/.agentplane/tasks/202605191535-WB10QC/blueprint/resolved-snapshot.json
+- old_digest: 1ff36f9c31cac286789eb9dced252ac7af8d587523ee2a08b24500e59ebdf847
+- current_digest: 1ff36f9c31cac286789eb9dced252ac7af8d587523ee2a08b24500e59ebdf847
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191535-WB10QC
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -259,3 +318,7 @@ BlueprintSnapshotRef:
 - Observation: Command: bun run docs:scripts:check | Result: pass | Evidence: ok: scripts/README.md is up to date | Scope: generated scripts inventory for new ci:local aliases.
   Impact: scripts/README.md is synchronized with package.json before push.
   Resolution: Regenerated scripts/README.md and recorded the docs freshness check.
+
+- Observation: Command: gh pr view 3940 --json statusCheckRollup,headRefOid | Result: pass | Evidence: PR head a46645a20944fd4d235ff12a928f54fbc5ece723; Core CI test/test-windows, Docs CI docs, CodeQL, dependency review, and Release-ready manifest completed successfully; recovery-validate skipped by workflow condition. Scope: hosted branch protection checks for PR #3940.
+  Impact: Task branch is ready for merge lane; remaining BLOCKED state is review/protection policy, not failing tests.
+  Resolution: Proceed through GitHub PR merge route authorized by the user.
