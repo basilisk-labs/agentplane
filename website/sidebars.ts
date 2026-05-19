@@ -61,6 +61,7 @@ const sidebars: SidebarsConfig = {
         "concepts/context-engineering",
         "recipes/index",
         "reference/acr",
+        "reference/evidence",
       ],
     },
     {
@@ -83,6 +84,7 @@ const sidebars: SidebarsConfig = {
         "reference/workflow-file",
         "reference/trace-schema",
         "reference/acr",
+        "reference/evidence",
         "reference/acr-schema",
       ],
     },

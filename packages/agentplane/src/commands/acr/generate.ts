@@ -19,6 +19,7 @@ import { getVersion } from "../../meta/version.js";
 import { isRecord } from "../../shared/guards.js";
 import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
+import { readTaskEvidenceBundleTrustExtension } from "../evidence/evidence.command.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { readDiffSummary } from "./diff.js";
 import { defaultAcrPath } from "./validate.js";
@@ -113,6 +114,10 @@ export async function generateAcr(opts: {
     task,
     ctx: opts.ctx,
   });
+  const trust = await readTaskEvidenceBundleTrustExtension({
+    ctx: opts.ctx,
+    taskId: task.id,
+  });
   const evidence = [
     ...taskEvidence,
     ...(blueprint.snapshot?.state === "current" &&
@@ -141,6 +146,11 @@ export async function generateAcr(opts: {
     evidence,
   });
   const mergeReady = residualRisks.length === 0;
+  const extensions = {
+    "agentplane.blueprint": blueprint,
+    ...buildAcrContextExtension(task),
+  };
+  if (trust) Object.assign(extensions, trust);
   const recordWithoutDigest: AgentChangeRecord = {
     acr_version: ACR_VERSION,
     record_type: "agent_change_record",
@@ -263,10 +273,7 @@ export async function generateAcr(opts: {
       canonicalization: "rfc8785-jcs",
       signatures: [],
     },
-    extensions: {
-      "agentplane.blueprint": blueprint,
-      ...buildAcrContextExtension(task),
-    },
+    extensions,
   };
   const record = {
     ...recordWithoutDigest,

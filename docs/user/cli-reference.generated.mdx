@@ -146,6 +146,9 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Evaluators
   - [evaluator list](#evaluator-list)
   - [evaluator show](#evaluator-show)
+- Evidence
+  - [evidence bundle](#evidence-bundle)
+  - [evidence verify](#evidence-verify)
 - Workflow
   - [flow repair](#flow-repair)
 
@@ -3559,6 +3562,54 @@ agentplane evaluator show recovery-context
 ```
 
 - Print the recovery-context evaluator prompt.
+
+## Evidence
+
+### evidence bundle
+
+Write a deterministic task evidence bundle manifest.
+
+Usage:
+
+```text
+agentplane evidence bundle <task-id> [options]
+```
+
+Options:
+
+- `--out <path>`: Write manifest to a custom repository-relative path.
+- `--json`: Emit machine-readable result. (default=false)
+
+Examples:
+
+```sh
+agentplane evidence bundle 202605031625-886KZ6
+```
+
+- Write \`.agentplane/tasks/&lt;task-id&gt;/evidence/manifest.json\`.
+
+### evidence verify
+
+Verify a task evidence bundle manifest and referenced file hashes.
+
+Usage:
+
+```text
+agentplane evidence verify <task-id-or-manifest> [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable result. (default=false)
+- `--strict`: Fail when the manifest contains no ACR evidence. (default=false)
+
+Examples:
+
+```sh
+agentplane evidence verify 202605031625-886KZ6
+```
+
+- Verify the task-local evidence manifest.
 
 ## Workflow
 

@@ -18,6 +18,17 @@ export const loadAcrExplainSpec = (deps: RunDeps) =>
   import("../../../commands/acr/acr.command.js").then((m) =>
     m.makeRunAcrExplainHandler(deps.getCtx),
   );
+export const fromCommandsEvidenceCommand = commandModule(
+  () => import("../../../commands/evidence/evidence.command.js"),
+);
+export const loadEvidenceBundleSpec = (deps: RunDeps) =>
+  import("../../../commands/evidence/evidence.command.js").then((m) =>
+    m.makeRunEvidenceBundleHandler(deps.getCtx),
+  );
+export const loadEvidenceVerifySpec = (deps: RunDeps) =>
+  import("../../../commands/evidence/evidence.command.js").then((m) =>
+    m.makeRunEvidenceVerifyHandler(deps.getCtx),
+  );
 
 export const loadBlueprintSpec = (deps: RunDeps) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
