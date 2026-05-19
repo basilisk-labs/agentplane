@@ -30,7 +30,7 @@ task artifact refresh aeea4cdf4f4e.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T13:12:26.319Z
+- Updated: 2026-05-19T13:13:39.619Z
 - Branch: task/202605191250-N3TCR3/legacy-cleanup-06
 - Head: 0ecb74f9962e
 
