@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-19T18:30:52Z",
   "base": "main",
   "branch": "task/202605191703-PYJMMV/max-assimilation-obsidian",
   "created_at": "2026-05-19T17:04:03.241Z",
-  "head_sha": "5ee85ec2abcfbd2e24cdfe0137b0d7c6a56eb994",
+  "head_sha": "85de1be9a59a91f15b80fb30098fb7ac1acf804f",
   "last_verified_at": "2026-05-19T18:24:06.471Z",
   "last_verified_sha": "5ee85ec2abcfbd2e24cdfe0137b0d7c6a56eb994",
+  "merge_commit": "1f3e5cdb91a71a6ab8459d037fca576704c4b510",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-19T18:30:52Z",
   "pr_number": 3948,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3948",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605191703-PYJMMV",
-  "updated_at": "2026-05-19T18:23:46.422Z",
+  "updated_at": "2026-05-19T18:30:52Z",
   "verify": {
     "status": "pass"
   }
