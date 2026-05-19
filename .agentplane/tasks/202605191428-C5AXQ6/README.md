@@ -1,10 +1,11 @@
 ---
 id: "202605191428-C5AXQ6"
 title: "Improve context recall boundaries"
-status: "DOING"
+result_summary: "Merged via PR #3935."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -34,11 +35,16 @@ quality_review:
     - ".agentplane/tasks/202605191428-C5AXQ6/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191428-C5AXQ6-context-recall-boundaries/.agentplane/tasks/202605191428-C5AXQ6/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "61c9ac6e4d16a0003a09e9a91ef2ab8a357063db"
+  message: "Merge pull request #3935 from basilisk-labs/task/202605191428-C5AXQ6/context-recall-boundaries"
 comments:
   -
     author: "CODER"
     body: "Start: implementing approved context recall boundary fixes in the task worktree, limited to context search behavior, context policy wording, blueprint policy metadata, docs/help tests, and focused verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3935 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Resolved PR review blocker: fallback context search now filters discovered files through scope path rules, excluding context/raw/private for raw/all scopes. Verification: bun test packages/agentplane/src/commands/context/release-readiness.test.ts --timeout 120000; bunx eslint packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; bunx prettier --check packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; node .agentplane/policy/check-routing.mjs."
+  -
+    type: "status"
+    at: "2026-05-19T15:52:51.704Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3935 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T15:51:12.608Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T15:52:51.713Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make local context search prefer curated context by default, align context policy module references with actual derived paths and blueprint loading, and verify the context command behavior."
 sections:
   Summary: |-
