@@ -17,6 +17,11 @@ import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import type { ContextInitParsed } from "./context.spec.js";
+import {
+  assertProfileSwitchIsExplicit,
+  POLICY_FILES,
+  shouldRewriteExistingContextFile,
+} from "./init-profile-switch.js";
 import { starterWikiPageFiles, wikiFrontmatter } from "./init-wiki.js";
 import { cmdContextReindex } from "./reindex.js";
 
@@ -33,21 +38,6 @@ const DEFAULT_GITIGNORE_ENTRIES = [
   ".agentplane/context/service/remotes/",
   "context/raw/private/",
 ];
-
-const POLICY_FILES = new Set([
-  ".agentplane/context/policies/context.rules.md",
-  ".agentplane/context/policies/wiki.rules.md",
-  ".agentplane/context/policies/capability.rules.md",
-  ".agentplane/context/policies/redaction.rules.yaml",
-  ".agentplane/context/policies/sync.rules.yaml",
-]);
-
-const PROFILE_MANAGED_FILES = new Set([
-  "context/README.md",
-  "context/wiki/AGENTS.md",
-  "context/capabilities/README.md",
-  ".agentplane/context/agentplane.context.yaml",
-]);
 
 const SAFE_EMPTY_PLACEHOLDERS = new Set([".DS_Store"]);
 
@@ -341,7 +331,7 @@ async function createContextWorkspace(
     content: `${JSON.stringify(lockPayload, null, 2)}\n`,
   });
 
-  await assertProfileSwitchIsExplicit(root, parsed);
+  await assertProfileSwitchIsExplicit({ root, parsed, readExisting });
 
   for (const file of files) {
     const abs = path.join(root, file.relative);
@@ -360,37 +350,6 @@ async function createContextWorkspace(
   }
 
   return { created, rewritten, skipped };
-}
-
-async function assertProfileSwitchIsExplicit(
-  root: string,
-  parsed: ContextInitParsed,
-): Promise<void> {
-  if (parsed.profileProvided !== true) return;
-  if (parsed.force === true) return;
-  const manifestPath = path.join(root, ".agentplane/context/agentplane.context.yaml");
-  const existing = await readExisting(manifestPath);
-  if (!existing) return;
-  const mode = existing.match(/^\s*mode:\s*([^\s#]+)/mu)?.[1]?.trim();
-  if (!mode || mode === parsed.profile) return;
-  throw new CliError({
-    exitCode: 2,
-    code: "E_USAGE",
-    message: [
-      `context workspace is already initialized with profile ${mode}; requested ${parsed.profile}.`,
-      "Profile switches are explicit rewrites of generated context scaffold files.",
-      `Fix: rerun with \`agentplane context init --profile ${parsed.profile} --force\`, or keep the current profile and omit --profile.`,
-    ].join("\n"),
-  });
-}
-
-function shouldRewriteExistingContextFile(
-  file: { relative: string; policy?: boolean },
-  parsed: ContextInitParsed,
-): boolean {
-  if (parsed.force !== true) return false;
-  if (parsed.profileProvided === true && PROFILE_MANAGED_FILES.has(file.relative)) return true;
-  return parsed.repair === true && file.policy === true && POLICY_FILES.has(file.relative);
 }
 
 async function ensureContextGitignore(root: string, parsed: ContextInitParsed): Promise<boolean> {
