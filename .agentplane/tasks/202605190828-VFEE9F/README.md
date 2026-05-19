@@ -1,10 +1,11 @@
 ---
 id: "202605190828-VFEE9F"
 title: "Fix postpublish audit live asset verification"
-status: "DOING"
+result_summary: "Merged via PR #3923."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -45,11 +46,16 @@ verification:
     Evidence: v0.6.3 publish-result returned ok=true with failures=[] using live GitHub Release asset lookup.
     Scope: real v0.6.3 publish-result and release assets.
   attempts: 0
-commit: null
+commit:
+  hash: "beab345cb6784ab33649ce33821207245d70ed5b"
+  message: "Merge pull request #3923 from basilisk-labs/task/202605190828-VFEE9F/postpublish-audit-live-assets"
 comments:
   -
     author: "CODER"
     body: "Start: Implement postpublish audit live asset verification in the dedicated task worktree with focused regression coverage for v0.6.3-style publish-result evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3923 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -110,9 +116,16 @@ events:
       Result: pass
       Evidence: v0.6.3 publish-result returned ok=true with failures=[] using live GitHub Release asset lookup.
       Scope: real v0.6.3 publish-result and release assets.
+  -
+    type: "status"
+    at: "2026-05-19T09:14:44.672Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3923 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T08:50:48.684Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T09:14:44.678Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make the postpublish audit verify live GitHub Release assets instead of relying only on embedded release-distribution manifest entries, so release-distribution.json is not reported missing after a successful publish."
 sections:
   Summary: |-
