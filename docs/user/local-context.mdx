@@ -123,6 +123,12 @@ The contract is stricter than the default adaptive profile:
 - Preserve all significant source meaning in wiki, fact, graph, glossary, provenance,
   and coverage artifacts. If `context/raw/**` is deleted later, the maintained context should still
   be understandable and usable.
+- Choose the wiki structure from the first source analysis. Maximum-assimilation ingest does not
+  create the default `concepts/`, `entities/`, `decisions/`, `modules/`, `contradictions/`, and
+  `reports/` starter scaffold unless the source analysis explicitly justifies that topology.
+- Record the wiki topology decision before creating page families: what folders/pages are canonical,
+  why that granularity fits the sources, which terms are aliases, and which pages should stay as
+  headings inside broader pages.
 - Keep original source association through a source registry: `source_id`, original path, `sha256:`
   hash, content type, line count, ingest time, and availability state such as
   `present|missing|private|redacted`.
@@ -134,8 +140,14 @@ The contract is stricter than the default adaptive profile:
 - Maintain a canonical glossary as an alias/navigation layer over wiki pages and graph entities. Use
   canonical terms from that glossary in synthesized prose when identity is clear, and preserve
   source-local wording as aliases or evidence details.
+- Use Obsidian-compatible `[[Page Title]]` and `[[Page Title#Section]]` links for semantic internal
+  wiki links. Keep standard Markdown links for source refs, external URLs, and file references so
+  AgentPlane provenance checks stay readable.
 - Record a coverage report that separates assimilated spans, intentionally omitted boilerplate,
   duplicates, redacted private spans, unresolved identities, and conflicts.
+- Record an `EVALUATOR` quality review for source-shaped structure, granularity, useful wikilinks,
+  line-addressed provenance, glossary alias safety, coverage gaps, raw-deletion resilience, and
+  private leakage risk before finish.
 
 Critical points:
 
@@ -148,6 +160,8 @@ Critical points:
   `possibly_same_as`, conflict candidates, or open questions until reviewed.
 - Granularity can explode. Prefer reusable entity/concept/decision/risk/workflow pages plus stable
   headings for smaller objects, not one page per sentence.
+- Obsidian compatibility is a markdown/wiki contract, not editor-local configuration. Agentplane does
+  not create `.obsidian/**` by default; vault settings remain user-owned.
 
 ## Wiki pages and metadata
 
@@ -199,6 +213,10 @@ CURATOR should use the canonical term in prose, link it to the canonical page or
 the source-local wording as an alias. For example, if a raw note says "MR Sync" and the graph already
 identifies it as `Meridian Relay`, the wiki sentence should use `[[Meridian Relay]]` or the local
 Markdown link to that page and preserve "MR Sync" as an alias/evidence detail.
+
+In maximum-assimilation mode, prefer `[[Meridian Relay]]` and `[[Meridian Relay#Sync workflow]]` for
+semantic wiki graph links. Use `[context/raw/...#lines=12-24](context/raw/...#lines=12-24)` for
+source refs and normal Markdown links for external or file references.
 
 After adding, moving, or materially renaming wiki pages, CURATOR should refresh relevant `index.md`
 navigation pages. `agentplane context wiki index context/wiki` updates generated index sections so

@@ -460,7 +460,11 @@ export async function cmdContextIngest(opts: {
       return 0;
     }
 
-    if (!sourceLockedManifest.wiki_scaffold?.starter_created_at) {
+    const workspaceMode = await readContextWorkspaceMode(root);
+    if (
+      workspaceMode !== "maximum-assimilation" &&
+      !sourceLockedManifest.wiki_scaffold?.starter_created_at
+    ) {
       const createdWikiScaffold = await ensureFirstIngestWikiScaffold(root);
       await writeManifest(root, {
         ...sourceLockedManifest,
@@ -474,11 +478,7 @@ export async function cmdContextIngest(opts: {
     }
 
     const before = new Set((await ctx.taskBackend.listTasks()).map((task) => task.id));
-    const taskParsed = createTaskNewParsed(
-      opts.parsed,
-      indexModeRows,
-      await readContextWorkspaceMode(root),
-    );
+    const taskParsed = createTaskNewParsed(opts.parsed, indexModeRows, workspaceMode);
     const createTask = opts.createTask ?? runTaskNewParsed;
     await createTask({
       ctx,

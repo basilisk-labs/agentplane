@@ -415,6 +415,7 @@ export const BUILTIN_BLUEPRINTS = [
       "agentplane context search <query> --format json",
       "agentplane acr generate <task-id> --write",
       "agentplane acr check <task-id>",
+      "agentplane verify <task-id> --ok|--rework --by EVALUATOR",
     ],
     policyModules: [
       ".agentplane/policy/security.must.md",
@@ -452,7 +453,7 @@ export const BUILTIN_BLUEPRINTS = [
         "context_max.glossary",
         "artifact",
         "artifact_write",
-        "Canonical glossary updates used for term normalization and alias preservation.",
+        "Canonical glossary updates used for term normalization and alias preservation; semantic wiki links use the source-shaped topology.",
       ),
       evidence(
         "context_max.changed_paths",
