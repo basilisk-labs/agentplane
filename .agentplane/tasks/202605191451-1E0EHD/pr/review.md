@@ -13,10 +13,10 @@ Created: 2026-05-19T14:52:45.909Z
 ## Verification
 
 - State: ok
-- Note: Command: npm test -- --run packages/agentplane/src/backends/task-backend/cloud-backend-state.test.ts packages/agentplane/src/backends/task-backend.cloud.test.ts
+- Note: Command: npm test -- --run packages/agentplane/src/backends/task-backend/cloud-backend-state.test.ts packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/backends/task-backend.cloud-start-refresh.test.ts
 Result: pass
-Evidence: 2 files, 30 tests passed after final code changes.
-Scope: cloud backend state parsing/writing and daily task-start pull behavior.
+Evidence: 3 files, 30 tests passed after extracting daily-start tests.
+Scope: cloud backend state parsing/writing, existing cloud backend behavior, and daily task-start pull behavior.
 
 Command: npm run typecheck
 Result: pass
@@ -27,6 +27,11 @@ Command: npm run build
 Result: pass
 Evidence: tsc -b plus core, recipes, and agentplane bundles built successfully.
 Scope: package build outputs.
+
+Command: bun run hotspots:check
+Result: pass
+Evidence: hotspot threshold check passed; oversized test baseline OK.
+Scope: line-budget regression from the cloud backend split.
 
 Command: ap doctor
 Result: pass
@@ -47,7 +52,7 @@ Scope: policy routing contract.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T15:21:49.949Z
+- Updated: 2026-05-19T15:22:49.030Z
 - Branch: task/202605191451-1E0EHD/daily-cloud-start-pull
 - Head: bf213af3cbf8
 
