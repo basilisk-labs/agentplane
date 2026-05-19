@@ -1,0 +1,65 @@
+---
+title: "Agent Change Records"
+description: "A quick answer and example-first guide to Agent Change Records in Agentplane."
+---
+
+# Agent Change Records
+
+## Quick answer
+
+An Agent Change Record is a machine-readable record of AI-assisted engineering work. It captures
+task intent, workflow state, changed files, verification evidence, and review status so a human or
+tool can inspect what happened.
+
+```json
+{
+  "task": "AP-001",
+  "intent": "Add input validation",
+  "workflow": "code-change",
+  "checks": ["npm test", "npm run typecheck"],
+  "status": "ready_for_review"
+}
+```
+
+## Why does ACR exist?
+
+A diff shows what changed. An Agent Change Record shows why the change exists, which workflow
+constrained it, which checks ran, and whether the result is ready for review.
+
+## What does an ACR contain?
+
+- Task intent.
+- Workflow state.
+- Changed files.
+- Git revisions.
+- Verification evidence.
+- Review status.
+- Links to supporting artifacts.
+
+## Validate an ACR
+
+```bash
+agentplane acr generate <task-id> --work-commit HEAD --write
+agentplane acr validate <task-id> --mode local
+agentplane acr check <task-id> --mode ci
+agentplane acr explain <task-id>
+```
+
+## Use ACR with Git
+
+Keep ACR task-local:
+
+```text
+.agentplane/tasks/<task-id>/acr.json
+```
+
+Git stores the final diff. The Agent Change Record stores the evidence around that diff.
+
+## Privacy baseline
+
+ACR records evidence pointers, checks, status, and hashes. It should not store secrets, credentials,
+private tokens, raw prompts, or full model transcripts by default.
+
+## Schema reference
+
+See [ACR schema](acr-schema) for field-level reference and validation notes.

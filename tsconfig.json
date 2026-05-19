@@ -3,7 +3,7 @@
   "references": [
     { "path": "./packages/core" },
     { "path": "./packages/recipes" },
-    { "path": "./packages/testkit" },
-    { "path": "./packages/agentplane" }
+    { "path": "./packages/agentplane" },
+    { "path": "./packages/testkit" }
   ]
 }

@@ -36,7 +36,7 @@ export const insightsSpec: CommandSpec<GroupCommandParsed> = {
     },
     {
       cmd: "agentplane insights issue --error-code E_INTERNAL",
-      why: "Create a privacy-bounded AgentPlane GitHub issue after feedback opt-in.",
+      why: "Create a privacy-bounded Agentplane GitHub issue after feedback opt-in.",
     },
   ],
   parse: (raw) => parseGroupCommand(raw),
@@ -45,7 +45,7 @@ export const insightsSpec: CommandSpec<GroupCommandParsed> = {
 export const insightsReportSpec: CommandSpec<InsightsReportParsed> = {
   id: ["insights", "report"],
   group: "Diagnostics",
-  summary: "Print a local-only privacy-bounded AgentPlane diagnostic report.",
+  summary: "Print a local-only privacy-bounded Agentplane diagnostic report.",
   options: [
     {
       kind: "boolean",
@@ -85,13 +85,13 @@ export const insightsReportSpec: CommandSpec<InsightsReportParsed> = {
 export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
   id: ["insights", "issue"],
   group: "Diagnostics",
-  summary: "Create an opt-in GitHub issue with privacy-bounded AgentPlane diagnostics.",
+  summary: "Create an opt-in GitHub issue with privacy-bounded Agentplane diagnostics.",
   options: [
     {
       kind: "string",
       name: "title",
       valueHint: "<title>",
-      description: "Issue title. Defaults to an internal AgentPlane error report title.",
+      description: "Issue title. Defaults to an internal Agentplane error report title.",
     },
     {
       kind: "string",
@@ -124,7 +124,7 @@ export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
       kind: "string",
       name: "error-code",
       valueHint: "<code>",
-      description: "AgentPlane error code that triggered the report.",
+      description: "Agentplane error code that triggered the report.",
     },
     {
       kind: "string",
@@ -164,7 +164,7 @@ export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
       valueHint: "<github|cloud|auto>",
       choices: ["github", "cloud", "auto"],
       description:
-        "Issue transport. github uses the user's gh auth, cloud uses anonymous AgentPlane intake, auto falls back to cloud when GitHub publishing fails.",
+        "Issue transport. github uses the user's gh auth, cloud uses anonymous Agentplane intake, auto falls back to cloud when GitHub publishing fails.",
     },
     {
       kind: "boolean",

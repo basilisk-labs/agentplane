@@ -14,7 +14,7 @@ Agent behavior is resolved in this order:
 
 Profiles live under `.agentplane/agents/*.json`, but they cannot override higher-level policy.
 `agentplane role <ROLE>` now renders one unified role-help surface: installed profile content first, then narrow CLI/runtime supplements for that role.
-The generated [Agent bootstrap](agent-bootstrap.generated) page is a docs-site artifact; installed repositories should not depend on that file existing locally.
+The [Quickstart](../start/quickstart) is the public startup path for installed repositories.
 
 Managed ownership remains framework-first:
 
@@ -40,7 +40,7 @@ Use this order when an agent enters a repository:
 1. Read `AGENTS.md`.
 2. Run `agentplane quickstart`.
 3. Use `agentplane role <ROLE>` for the unified role-specific surface built from the installed profile plus CLI/runtime deltas.
-4. If you are browsing the docs site, use [Agent bootstrap](agent-bootstrap.generated) as the expanded reference page for the same startup model.
+4. If you are browsing the docs site, use the [Quickstart](../start/quickstart) as the expanded reference page for the same startup model.
 
 ## ORCHESTRATOR
 
@@ -109,14 +109,9 @@ Use this order when an agent enters a repository:
 - Does not own semantic human edits to managed agent files during upgrade.
 - Ensures incident history in `.agentplane/policy/incidents.md` remains append-only during upgrades.
 
-## REDMINE
-
-- Backend-aware executor that interacts with Redmine tasks only via `agentplane` flows.
-- Uses env-first backend configuration and respects configured custom field mappings.
-
 ## Related guidance
 
 - Role command guidance is available via `agentplane role <ROLE>` and is derived from the installed profile when one exists.
-- The canonical installed startup path lives in `agentplane quickstart`; [Agent bootstrap](agent-bootstrap.generated) is the docs-site expansion of the same flow.
+- The canonical installed startup path lives in `agentplane quickstart`; the [Quickstart](../start/quickstart) is the docs-site expansion of the same flow.
 - For policy details, read `AGENTS.md`.
 - For task artifacts, keep `Verify Steps` as the acceptance contract and use `## Findings` for task-local observations.

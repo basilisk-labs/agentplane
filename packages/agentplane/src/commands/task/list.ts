@@ -1,4 +1,7 @@
 import { mapBackendError } from "../../cli/error-map.js";
+import { warnMessage } from "../../cli/output.js";
+import { gitAheadBehind } from "@agentplaneorg/core/git";
+import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
 import {
   listTaskSummariesMemo,
   loadCommandContext,
@@ -17,6 +20,23 @@ import {
 } from "./blueprint-summary.js";
 import { annotateBranchPrTaskListState, taskListStatusKey } from "./shared/branch-pr-list-state.js";
 
+export async function warnIfLocalTaskStateBehindUpstream(ctx: CommandContext): Promise<void> {
+  try {
+    const branch = await gitCurrentBranch(ctx.resolvedProject.gitRoot);
+    const upstream = await gitBranchUpstream(ctx.resolvedProject.gitRoot, branch);
+    if (!upstream) return;
+    const { behind } = await gitAheadBehind(ctx.resolvedProject.gitRoot, upstream, branch);
+    if (behind === 0) return;
+    process.stderr.write(
+      `${warnMessage(
+        `local task state may be stale: ${branch} is behind ${upstream} by ${behind} commit(s); fetch/rebase before making task decisions`,
+      )}\n`,
+    );
+  } catch {
+    // Task listing must stay available in detached, shallow, or partially initialized repos.
+  }
+}
+
 export async function cmdTaskListWithFilters(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -31,6 +51,7 @@ export async function cmdTaskListWithFilters(opts: {
       ctx,
       tasks: await listTaskSummariesMemo(ctx),
     });
+    await warnIfLocalTaskStateBehindUpstream(ctx);
     handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
     const { depState, items } = queryTaskProjection({ tasks, filters: opts.filters });
     const resolveBlueprint = await createTaskBlueprintLifecycleResolver({

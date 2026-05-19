@@ -3,7 +3,7 @@ title: "Modular prompt assembly"
 description: "Contracts, generated artifacts, diagnostics, and safe-change rules for prompt modules."
 ---
 
-AgentPlane prompt text is assembled from typed modules instead of ad hoc string templates.
+Agentplane prompt text is assembled from typed modules instead of ad hoc string templates.
 The migration boundary covers gateway files, policy modules, agent profiles, runner prompts, and
 recipe-owned prompt extensions.
 
@@ -20,14 +20,14 @@ recipe-owned prompt extensions.
 
 ## Managed source model
 
-AgentPlane-managed prompt files are the visible behavior surface:
+Agentplane-managed prompt files are the visible behavior surface:
 
 - `AGENTS.md` / `CLAUDE.md` for the policy gateway;
 - `.agentplane/policy/**` for canonical policy modules;
 - `.agentplane/agents/*.json` for role profiles.
 
 These files are human-readable and git-tracked, but direct edits are drift unless they happen through
-an AgentPlane command. Recipe activation should update them through fragment-aware materialization,
+an Agentplane command. Recipe activation should update them through fragment-aware materialization,
 then regenerate `.agentplane/generated/prompt-graph.json` as the diagnostic index for the same
 behavior.
 

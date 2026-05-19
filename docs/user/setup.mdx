@@ -1,9 +1,9 @@
 ---
 title: "Setup"
-description: "Install AgentPlane, initialize a repository, and create the first repo-local evidence trail."
+description: "Install Agentplane, initialize a repository, understand local-first defaults, and hand the repo to a coding agent."
 ---
 
-## Install AgentPlane
+## Install Agentplane
 
 Requirements:
 
@@ -14,6 +14,7 @@ Requirements:
 ```bash
 npm i -g agentplane
 agentplane init
+agentplane context init
 agentplane quickstart
 ```
 
@@ -26,6 +27,12 @@ npx agentplane quickstart
 
 On fresh Windows shells, use `npx agentplane ...` if `agentplane` is not yet on `PATH`, then reopen
 the terminal after global install.
+
+## What leaves my machine?
+
+The default quickstart runs locally and writes local project artifacts. It does not require account
+creation. If you enable integrations that publish feedback, traces, or artifacts, the integration
+docs explain the destination and opt-in setting.
 
 ## Initialize repository
 
@@ -52,13 +59,13 @@ agentplane init --dry-run --yes --output json
 
 Dry-run builds the same setup plan but does not create `.git`, `.agentplane`, gateway files,
 backups, hooks, or commits. Use it before re-initializing repositories that already contain
-AgentPlane-related files.
+Agentplane-related files.
 
 ## Feedback issue prompts
 
-New projects keep AgentPlane feedback issue publishing disabled until explicit opt-in. When enabled,
-AgentPlane can prepare a privacy-bounded GitHub issue for internal AgentPlane errors. Publishing uses
-the user's GitHub session by default; anonymous AgentPlane Cloud intake is a separate opt-in fallback.
+New projects keep Agentplane feedback issue publishing disabled until explicit opt-in. When enabled,
+Agentplane can prepare a privacy-bounded GitHub issue for internal Agentplane errors. Publishing uses
+the user's GitHub session by default.
 
 Preview the issue payload:
 
@@ -72,10 +79,10 @@ To initialize with the mode disabled:
 agentplane init --feedback-github-issues false
 ```
 
-To initialize with GitHub issue prompts and anonymous cloud fallback enabled:
+To initialize with GitHub issue prompts enabled:
 
 ```bash
-agentplane init --feedback-github-issues true --feedback-anonymous-cloud true
+agentplane init --feedback-github-issues true
 ```
 
 To disable it later:
@@ -84,35 +91,21 @@ To disable it later:
 agentplane config set feedback.github_issues.enabled false
 ```
 
-## Create your first task
+## Hand off to an agent
 
-Use a harmless task first. The goal is to see the artifact shape before giving an agent broad edit
-scope.
+After initialization, the normal next step is to give the repository to a coding agent. The agent
+should read the repository policy gateway and run the Agentplane lifecycle around its own work.
 
-```bash
-agentplane task new \
-  --title "Demo: make AI work traceable" \
-  --description "Create a harmless task and inspect the evidence artifacts." \
-  --priority med \
-  --owner CODER \
-  --tag docs
+```text
+Use Agentplane for this repository.
 
-agentplane task plan set <task-id> \
-  --text "Inspect the generated task record and ACR path." \
-  --updated-by CODER
+Start with:
+agentplane quickstart
+agentplane role ORCHESTRATOR
 
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-agentplane task start-ready <task-id> \
-  --author CODER \
-  --body "Start: inspect repo-local artifacts before broad agent edits."
-agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by CODER --note "Inspected task evidence."
-agentplane finish <task-id> \
-  --author CODER \
-  --body "Verified: evidence exists and the local traceability path is visible." \
-  --result "First traceable task complete" \
-  --commit HEAD
-agentplane acr explain <task-id>
+Follow AGENTS.md and the workflow mode in .agentplane/WORKFLOW.md.
+Create or reuse an Agentplane task before mutating repository files.
+Record the plan, start-ready state, verification evidence, and finish state through Agentplane.
 ```
 
 Expected files:
@@ -121,6 +114,9 @@ Expected files:
 .agentplane/tasks/<task-id>/README.md
 .agentplane/tasks/<task-id>/acr.json
 ```
+
+The [Quickstart](../start/quickstart) covers the same startup model through install, run, trace, and
+export steps.
 
 ## Enable local context
 
@@ -133,7 +129,7 @@ agentplane context reindex
 agentplane context search "first task"
 ```
 
-In an empty standalone directory, `agentplane context init` also performs the initial AgentPlane
+In an empty standalone directory, `agentplane context init` also performs the initial Agentplane
 bootstrap before writing context files. For non-empty uninitialized projects, run `agentplane init`
 first so conflicts and gateway/workflow choices stay explicit.
 
@@ -145,6 +141,9 @@ agentplane context verify-task <task-id>
 ```
 
 See [Local context](local-context) for source refs, privacy boundaries, and verification rules.
+
+Local context has its own docs section because it is the reusable knowledge layer for agents, not a
+subtopic of manual CLI usage.
 
 ## Setup profiles
 
@@ -175,15 +174,9 @@ agentplane init \
   --yes
 ```
 
-## Backends and advanced setup
+## Local task storage
 
 Start with the local backend. It stores task evidence in the repository and is the default path.
-
-Use the advanced backend docs only when you need them:
-
-- [Backends overview](backends)
-- [Cloud backend](backends/cloud)
-- [Redmine backend](backends/redmine)
 
 ### Managed ownership contract
 
@@ -195,10 +188,6 @@ of the managed policy tree during normal project work; expect `agentplane upgrad
 reconcile those files.
 Agents do not treat `incidents.md` as part of the normal startup reading path for agents; it is
 for recovery, incident response, or tasks that directly modify incident policy.
-
-For older or partially upgraded repositories, use [Upgrade recovery](../help/legacy-upgrade-recovery).
-That page owns the legacy state model and recovery procedures; this setup page describes the current
-initialization path only.
 
 Recovery routing starts from three repository states:
 
@@ -217,6 +206,10 @@ agentplane doctor
 
 Then use `agentplane role <ROLE>` for role-specific guidance.
 
+Use [Commands](commands) and the [generated CLI reference](cli-reference.generated) when you need
+manual inspection, recovery, or operator-level control. They are not the default day-to-day usage
+path.
+
 ## Optional recipes
 
 Recipes are extensions, not the first step. Add them after the task -> plan -> verify -> ACR flow is
@@ -224,7 +217,8 @@ clear.
 
 ```bash
 agentplane recipes list-remote --refresh --yes
-agentplane recipes install code-map --refresh --yes
+agentplane recipes add tdd
 ```
 
-Start with [Code Map](../recipes/code-map) when you need lightweight repository mapping.
+Start with [TDD](../recipes/tdd), [security review](../recipes/security-review), or
+[docs update](../recipes/docs-update) when you need a reusable workflow overlay.

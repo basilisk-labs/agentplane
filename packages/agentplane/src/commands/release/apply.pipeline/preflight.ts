@@ -100,6 +100,7 @@ export async function runReleaseCommandPreflight(opts: {
   await ensureReleasePlanMatchesRepoState({
     gitRoot: opts.state.gitRoot,
     plan: opts.state.plan,
+    route: opts.state.route,
     corePkgPath: opts.state.corePkgPath,
     agentplanePkgPath: opts.state.agentplanePkgPath,
     recipesPkgPath: opts.state.recipesPkgPath,

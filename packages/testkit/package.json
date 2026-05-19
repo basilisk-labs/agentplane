@@ -1,7 +1,7 @@
 {
   "name": "@agentplane/testkit",
   "version": "0.0.0",
-  "description": "Test helpers for AgentPlane audit-layer packages (internal package).",
+  "description": "Test helpers for Agentplane audit-layer packages (internal package).",
   "keywords": [
     "agentplane",
     "agentplane-framework",

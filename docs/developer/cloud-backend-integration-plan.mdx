@@ -1,11 +1,11 @@
 ---
 title: "Cloud backend integration plan"
-description: "Atomic implementation plan for adding the cloud backend to the public AgentPlane CLI."
+description: "Atomic implementation plan for adding the cloud backend to the public Agentplane CLI."
 ---
 
 ## Goal
 
-Add a `cloud` task backend to AgentPlane without embedding connector-specific logic in the public
+Add a `cloud` task backend to Agentplane without embedding connector-specific logic in the public
 CLI.
 
 The public CLI should expose local and cloud backend choices. The cloud service decides which
@@ -13,7 +13,7 @@ connector is attached to a cloud project.
 
 ## Boundary
 
-Public AgentPlane owns:
+Public Agentplane owns:
 
 - `cloud` backend id and config loading;
 - local projection cache;
@@ -51,7 +51,7 @@ Verification:
 - init parser tests for accepted backend ids;
 - docs routing check.
 
-Status: implemented in the first AgentPlane layer. `agentplane init --backend cloud` now writes
+Status: implemented in the first Agentplane layer. `agentplane init --backend cloud` now writes
 `.agentplane/backends/cloud/backend.json` and cloud `.env.example` keys.
 
 ### C002: Implement CloudBackend as a remote-cache backend
@@ -68,7 +68,7 @@ Verification:
 - backend capability unit tests;
 - projection read/write tests with mocked cloud client.
 
-Status: implemented in the first AgentPlane layer. `CloudBackend` wraps `LocalBackend` as a cache
+Status: implemented in the first Agentplane layer. `CloudBackend` wraps `LocalBackend` as a cache
 and reports a remote canonical source.
 
 ### C003: Add cloud API client
@@ -157,7 +157,7 @@ service conflict state, blocks `--conflict=fail` when conflicts are open, and ke
 
 For bidirectional projects, pull applies only service-approved operational fields to already known
 local task IDs. Full task documents returned by the service are treated as projection sources for
-those fields only; AgentPlane-owned lifecycle, planning, verification, findings, rollback, comments,
+those fields only; Agentplane-owned lifecycle, planning, verification, findings, rollback, comments,
 events, and README content are preserved. Remote-only service items are ignored until a
 `remote_create_policy` exists.
 

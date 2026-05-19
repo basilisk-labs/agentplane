@@ -163,7 +163,7 @@ must not require external `node`, `npm`, `bun`, or global packages.
 ## Standalone CLI artifact contract
 
 The first standalone release channel is a bundled-runtime CLI artifact, not a single native
-executable. It packages the built AgentPlane CLI plus a pinned Node runtime so Homebrew, Scoop,
+executable. It packages the built Agentplane CLI plus a pinned Node runtime so Homebrew, Scoop,
 `setup-agentplane`, and install scripts can run without installing or discovering `node` from the
 user's machine. npm remains the canonical JavaScript package channel, and GHCR remains the container
 channel.
@@ -290,9 +290,9 @@ Automated release channels:
 
 Credentials-gated handoff channels:
 
-- AgentPlane-owned Homebrew tap formula bundle when tap credentials are configured. The generated
+- Agentplane-owned Homebrew tap formula bundle when tap credentials are configured. The generated
   formula consumes macOS standalone archives and must not declare `depends_on "node"`.
-- AgentPlane-owned Scoop bucket manifest bundle when bucket credentials are configured. The
+- Agentplane-owned Scoop bucket manifest bundle when bucket credentials are configured. The
   generated manifest consumes the Windows standalone archive and must not declare `depends:
 nodejs`.
 - `setup-agentplane` action bundle when action repository credentials are configured. The generated
@@ -321,7 +321,7 @@ gh workflow run publish-distribution-module.yml \
   -f module=homebrew
 ```
 
-The release result is fail-closed for AgentPlane-owned external channels. Opening a Homebrew,
+The release result is fail-closed for Agentplane-owned external channels. Opening a Homebrew,
 Scoop, or `setup-agentplane` PR is only a handoff state and must not be recorded as completed
 publication. The channel is publish-confirmed only after the PR is merged, the target repository's
 default branch contains the rendered files for the exact version, and `setup-agentplane` has the
@@ -329,7 +329,7 @@ matching `vX.Y.Z` tag.
 
 External moderated registries such as `homebrew/core`, winget, Chocolatey, AUR, and nixpkgs are
 follow-up publication targets. They should be opened as PR jobs or manual recovery tasks after the
-release is already published, because their review queues are outside the AgentPlane release SLA.
+release is already published, because their review queues are outside the Agentplane release SLA.
 
 ## Distribution modules
 

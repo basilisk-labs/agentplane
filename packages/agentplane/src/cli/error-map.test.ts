@@ -55,7 +55,7 @@ describe("core error mapping", () => {
     expect(mapped).toBeInstanceOf(ValidationError);
     expect(mapped.code).toBe("E_VALIDATION");
     expect(mapped.message).toContain("Validation error:");
-    expect(mapped.message).toContain("Invalid enum value");
+    expect(mapped.message).toMatch(/Invalid (enum value|option)/u);
     expect(mapped.message).toContain('"workflow_mode"');
   });
 

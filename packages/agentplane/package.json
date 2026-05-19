@@ -1,7 +1,7 @@
 {
   "name": "agentplane",
   "version": "0.6.2",
-  "description": "Open-source audit-layer CLI for coding-agent task, policy, verification, and branch workflows.",
+  "description": "CLI-first operational workflows and traces for AI agents.",
   "keywords": [
     "agentplane",
     "agentplane-framework",
@@ -75,7 +75,7 @@
     "@clack/prompts": "^1.4.0",
     "yaml": "^2.7.1",
     "yauzl": "^3.3.0",
-    "zod": "^3",
+    "zod": "^4.4.3",
     "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {

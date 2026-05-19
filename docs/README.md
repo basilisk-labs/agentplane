@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/readme-headers/docs.svg" alt="AgentPlane docs header" style="width:100%;max-width:100%;"/>
+  <img src="assets/readme-headers/docs.svg" alt="Agentplane docs header" style="width:100%;max-width:100%;"/>
 </p>
 
 # Docs layout
@@ -21,12 +21,17 @@ Docs are organized into an agent-first public navigation model on top of `docs/u
 `docs/workflow-guides/`, `docs/recipes/`, `docs/reference/`, and `docs/releases/`:
 
 - `Start`
-- `Work on a task`
+- `Use with agents`
+- `Agent workflow model`
+- `Review agent work`
+- `Local context`
+- `Team operations`
+- `Recipes`
 - `Upgrade & recover`
-- `Reference & integrations`
+- `Reference`
 - `Release notes`
 
-Framework maintainer documentation for developing AgentPlane itself lives under `docs/developer/`.
+Framework maintainer documentation for developing Agentplane itself lives under `docs/developer/`.
 It is direct-link only and intentionally omitted from the public sidebar and public docs index.
 Use `docs/developer/harness-dev.mdx` as the maintainer entrypoint.
 
@@ -50,9 +55,4 @@ Generated command reference:
   run the built dist entrypoint directly:
   `node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx`
 
-Generated recipes inventory:
-
-- `docs/recipes-inventory.json` is generated from `agentplane-recipes/index.json` plus the
-  recipe manifests under `agentplane-recipes/recipes/*/manifest.json`.
-- Refresh command:
-  `node scripts/generate-recipes-inventory.mjs`
+Recipe docs are maintained as individual MDX pages under `docs/recipes/`.

@@ -49,7 +49,8 @@ export function parseVersionPlan(raw: unknown): ReleaseVersionPlan {
   const prevVersion = assertNonEmptyString(obj.prevVersion, "prevVersion");
   const nextTag = assertNonEmptyString(obj.nextTag, "nextTag");
   const nextVersion = assertNonEmptyString(obj.nextVersion, "nextVersion");
-  return { prevTag, prevVersion, nextTag, nextVersion, bump: bumpRaw };
+  const baseSha = typeof obj.baseSha === "string" && obj.baseSha.trim() ? obj.baseSha.trim() : null;
+  return { prevTag, prevVersion, nextTag, nextVersion, bump: bumpRaw, baseSha };
 }
 
 export async function findLatestPlanDir(gitRoot: string): Promise<string> {

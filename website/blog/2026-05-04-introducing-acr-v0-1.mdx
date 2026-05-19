@@ -14,10 +14,10 @@ Agent Change Record v0.1 is that artifact.
 
 {/* truncate */}
 
-An ACR is a deterministic JSON projection of one AgentPlane task. It records the task intent, the
+An ACR is a deterministic JSON projection of one Agentplane task. It records the task intent, the
 accepted plan, the agent and toolchain context, policy decisions, changed files, verification
 results, approvals, evidence pointers, and closure state. It is generated from the same task
-lifecycle that AgentPlane already writes into `.agentplane/tasks/<task-id>/`.
+lifecycle that Agentplane already writes into `.agentplane/tasks/<task-id>/`.
 
 The point of naming it is practical. Review tools, CI gates, security scanners, and future agent
 runners need a stable thing to parse. "The agent said it ran tests" is not stable. A repo-local
@@ -45,7 +45,7 @@ ACR v0.1 is intentionally narrow. It does not store prompts, transcripts, privat
 model internals. It stores evidence pointers and hashes: enough for review, audit, and handoff
 without turning agent context into a second source of truth.
 
-The trust model stays local-first. The repository remains the record. AgentPlane derives the ACR
+The trust model stays local-first. The repository remains the record. Agentplane derives the ACR
 from task files, policy state, verification evidence, and Git revisions, then validates the result
 against `@agentplane/spec`.
 

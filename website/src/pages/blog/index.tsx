@@ -55,7 +55,7 @@ function getNewestEntries(items: BlogListPageProps["items"]): BlogEntry[] {
       date: toIsoDate(content.metadata.date),
       description:
         content.metadata.description ||
-        "Product and release context from the AgentPlane development line.",
+        "Product and release context from the Agentplane development line.",
       href: content.metadata.permalink,
       readingTime: toReadingTime(content.metadata.readingTime),
       title: content.metadata.title,
@@ -68,12 +68,12 @@ export default function BlogLanding({ items }: BlogListPageProps) {
   return (
     <Layout
       title="Blog"
-      description="AgentPlane release stories, workflow analysis, and implementation notes."
+      description="Agentplane release stories, workflow analysis, and implementation notes."
     >
       <main className={styles.page}>
         <div className={styles.bentoGrid}>
           <section className={`${styles.bentoItem} ${styles.hero} ${styles.colSpan12}`}>
-            <p className={styles.kicker}>AgentPlane Journal</p>
+            <p className={styles.kicker}>Agentplane Journal</p>
             <h1>Release stories, product notes, and operational context.</h1>
             <p className={styles.lead}>
               The blog is where formal release notes become readable context: what changed, why it

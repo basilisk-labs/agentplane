@@ -212,7 +212,7 @@ export async function recordVerificationOk(root: string, taskId: string): Promis
     taskId,
     "--ok",
     "--by",
-    "REVIEWER",
+    "EVALUATOR",
     "--note",
     "Ok to integrate",
     "--quiet",

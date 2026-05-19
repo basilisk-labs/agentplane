@@ -737,4 +737,20 @@ describe("context release readiness guards", () => {
       "context wiki lint: ok (1 page(s))",
     );
   });
+
+  it("allows initialized scaffold navigation files without page frontmatter", async () => {
+    const root = await tempRoot();
+    await write(root, "context/wiki/AGENTS.md", "# Wiki Policy\n");
+    await write(root, "context/wiki/index.md", "# Project Wiki\n");
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextWikiLint({
+      cwd: root,
+      parsed: { path: "context/wiki" },
+    });
+
+    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
+      "context wiki lint: ok (2 page(s))",
+    );
+  });
 });

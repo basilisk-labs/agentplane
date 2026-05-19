@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
 
 import { formatZodIssues } from "../schemas/zod-error-format.js";
 export { isRecord } from "../types/guards.js";
@@ -11,13 +10,15 @@ export const ISO_UTC_TIMESTAMP = z.string().datetime({ offset: true });
 export const NULLABLE_NON_EMPTY_STRING = NON_EMPTY_STRING.nullable();
 export const NULLABLE_ISO_UTC_TIMESTAMP = ISO_UTC_TIMESTAMP.nullable();
 
-const zodToJsonSchemaSafe = zodToJsonSchema as (
-  schema: z.ZodTypeAny,
-  options: {
-    target: "jsonSchema7";
-    $refStrategy: "none";
-  },
-) => JsonSchemaDocument;
+function zodToDraft7JsonSchema(schema: z.ZodTypeAny): JsonSchemaDocument {
+  return z.toJSONSchema(schema, {
+    target: "draft-07",
+    unrepresentable: "any",
+    io: "input",
+    reused: "inline",
+    cycles: "throw",
+  }) as JsonSchemaDocument;
+}
 
 export function buildJsonSchemaDocument(
   schema: z.ZodTypeAny,
@@ -27,10 +28,7 @@ export function buildJsonSchemaDocument(
     description?: string;
   },
 ): JsonSchemaDocument {
-  const generated = zodToJsonSchemaSafe(schema, {
-    target: "jsonSchema7",
-    $refStrategy: "none",
-  });
+  const generated = zodToDraft7JsonSchema(schema);
   const { $schema: _schema, definitions: _definitions, ...rest } = generated;
   return {
     $schema: "http://json-schema.org/draft-07/schema#",

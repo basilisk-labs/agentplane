@@ -28,7 +28,7 @@ Supporting inputs:
 
 ### Canonical category phrase
 
-AgentPlane is a Git-native control plane for auditable agent work.
+Agentplane is a Git-native control plane for auditable agent work.
 
 ### Human-readable value statement
 
@@ -36,7 +36,7 @@ Put coding agents on a governed Git workflow.
 
 ### What a visitor should understand in the first screen
 
-1. AgentPlane is a local CLI workflow, not a hosted agent platform.
+1. Agentplane is a local CLI workflow, not a hosted agent platform.
 2. It runs inside real git repositories.
 3. It adds approvals, task state, verification, and closure to agent work.
 4. Its value is trust, control, and traceability.
@@ -44,7 +44,7 @@ Put coding agents on a governed Git workflow.
 
 ## Anti-positioning
 
-The homepage must not frame AgentPlane as:
+The homepage must not frame Agentplane as:
 
 1. a generic AI coding assistant,
 2. an autonomous company OS,
@@ -95,7 +95,7 @@ Recommended proof points:
 ### 2. Why teams adopt it
 
 Goal:
-Explain the process failure mode AgentPlane fixes.
+Explain the process failure mode Agentplane fixes.
 
 Core message:
 Fast agents are easy. Governed agent work is the harder problem.
@@ -128,7 +128,7 @@ Must show:
 ### 4. Control model
 
 Goal:
-Show that AgentPlane governs execution as a stateful workflow.
+Show that Agentplane governs execution as a stateful workflow.
 
 Preferred loop:
 
@@ -210,7 +210,7 @@ Preferred order:
 4. Prefer repository, workflow, state, verification, closure, and audit language.
 5. Keep "Harness engineering" spelled correctly everywhere.
 6. Standardize product naming:
-   - product: `AgentPlane`
+   - product: `Agentplane`
    - CLI/package: `agentplane`
 
 ## Definition of done

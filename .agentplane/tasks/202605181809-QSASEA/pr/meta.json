@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-18T18:31:45Z",
+  "base": "main",
+  "branch": "task/202605181809-QSASEA/agent-first-docs-ia",
+  "created_at": "2026-05-18T18:10:37.887Z",
+  "head_sha": "ba30ca99d4fa8fc34c9dffdcd02ee6527334562b",
+  "last_verified_at": "2026-05-18T18:22:26.789Z",
+  "last_verified_sha": "9d2d9ad67325c0c1f440a3d3369d35761f358d75",
+  "merge_commit": "d29f0be0649c9c0f8058c1ded8accead847b7b8e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-18T18:31:45Z",
+  "pr_number": 3903,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3903",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605181809-QSASEA",
+  "updated_at": "2026-05-18T18:31:45Z",
+  "verify": {
+    "status": "pass"
+  }
+}

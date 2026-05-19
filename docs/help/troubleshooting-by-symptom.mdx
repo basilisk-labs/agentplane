@@ -175,12 +175,10 @@ workspace is in an active v2/v3 mixed state.
 - Run `agentplane doctor` from the repository root.
 - Apply the managed framework bundle with `agentplane upgrade --yes`.
 - If you need the latest published bundle, use `agentplane upgrade --remote --yes`.
-- If doctor then reports active legacy task READMEs or an active v2/v3 mixed state, run:
+- If doctor reports active task README schema drift, run:
   - `agentplane task migrate-doc --all`
   - `agentplane doctor`
 - Keep local directives in `.agentplane/policy/incidents.md`; do not patch the rest of the managed policy tree by hand.
-- Full recovery walkthrough:
-  - [Upgrade recovery](legacy-upgrade-recovery)
 
 ## Workflow contract is broken (`WF_*` diagnostics)
 
@@ -211,16 +209,3 @@ still lists `Core CI / test`, `Core CI / test-windows`, or `Docs CI / docs` as `
 - Re-run or refresh the PR after the protection fix so GitHub emits a fresh `pull_request` cycle
   against the corrected required-check contract.
 - Do not merge until the three canonical required checks are all green on the current PR head SHA.
-
-## Sync fails for remote backend
-
-**Symptom:** `agentplane backend sync ...` errors or reports network failures.
-
-**Fix:**
-
-- For redmine, configure secrets in `.env` (`REDMINE_URL`, `REDMINE_API_KEY`) and keep backend JSON non-secret.
-- Retry with `--direction pull` to refresh the local projection, for example:
-  - `agentplane backend sync redmine --direction pull`
-- Then re-run the read command (`task list`, `task show`, or `doctor`) so you are reading the
-  refreshed projection instead of an older snapshot.
-- Check custom field env mappings if using Redmine.

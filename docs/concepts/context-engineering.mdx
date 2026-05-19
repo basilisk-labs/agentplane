@@ -1,0 +1,78 @@
+---
+title: "Context engineering for AI agents"
+description: "How to write, select, compress, and isolate local context for long-running AI-agent workflows."
+---
+
+import FurtherReading from "@site/src/components/FurtherReading";
+
+# Context engineering for AI agents
+
+## Quick answer
+
+Context engineering is the discipline of deciding what information an agent gets, when it gets it,
+how it is compressed, and how irrelevant or unsafe context is isolated. Agentplane local context is a
+repo-local implementation of that idea for agent workflows.
+
+## How is context engineering different from prompt engineering?
+
+Prompt engineering shapes a single instruction. Context engineering manages the information
+environment around the agent: persistent notes, source material, task history, conventions, tool
+instructions, and summaries that can be selected per step.
+
+## Why do long-running agents need context management?
+
+Long-running tasks cross files, tools, checks, and sessions. If context exists only in a chat
+window, it is fragile. Repo-local context makes important knowledge inspectable, versionable, and
+available to later runs.
+
+## What are the four operations?
+
+- Write: persist useful knowledge.
+- Select: load only the context relevant to the current step.
+- Compress: summarize without losing source references.
+- Isolate: keep secrets, stale data, and unrelated material out of the agent's working set.
+
+## Where does local context fit?
+
+Agentplane stores local context as repository artifacts:
+
+```text
+context/raw/**
+context/wiki/**
+context/facts/**/*.jsonl
+context/graph/**/*.jsonl
+.agentplane/context/derived/**
+```
+
+## How does Agentplane store and apply context?
+
+The editable source layer lives in `context/**`. Generated projections live under
+`.agentplane/context/derived/**` and can be rebuilt. Agents should search existing context before
+adding new pages so the same concept does not fragment across duplicate files.
+
+## Example: context pack for a repository
+
+```yaml
+name: repo-conventions
+applies_to:
+  - workflows/*
+  - src/**/*
+rules:
+  - Use TypeScript strict mode.
+  - Run npm test before finishing.
+  - Prefer small patches over broad rewrites.
+  - Do not edit generated files.
+```
+
+## What is the LLM Wiki pattern?
+
+The LLM Wiki pattern is useful as a mental model for persistent, structured knowledge that an LLM
+can consult instead of relying on one huge prompt. Agentplane should not copy that pattern blindly;
+it adapts the useful part: local, structured, inspectable context that can be reviewed and versioned.
+
+Agentplane documentation uses the LLM Wiki as related prior art and inspiration, not as a claim that
+Agentplane implements Karpathy's exact gist.
+
+<FurtherReading
+  ids={["karpathy-llm-wiki", "langchain-context-engineering", "martin-fowler-harness-engineering"]}
+/>

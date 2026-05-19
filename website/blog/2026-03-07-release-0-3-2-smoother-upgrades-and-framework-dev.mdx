@@ -1,14 +1,14 @@
 ---
 slug: release-0-3-2-smoother-upgrades-and-framework-dev
-title: "AgentPlane 0.3.2: smoother upgrades and cleaner finish"
-description: "What AgentPlane 0.3.2 changes in everyday terms: easier upgrades, automatic clean closure in direct mode, and saner behavior inside the framework repo."
+title: "Agentplane 0.3.2: smoother upgrades and cleaner finish"
+description: "What Agentplane 0.3.2 changes in everyday terms: easier upgrades, automatic clean closure in direct mode, and saner behavior inside the framework repo."
 authors: [team]
 tags: [release, workflow, operations]
 ---
 
-AgentPlane `0.3.2` is a cleanup release, but in the good sense. A bunch of things that had been treated like “yeah, that’s annoying, we know” finally got fixed properly.
+Agentplane `0.3.2` is a cleanup release, but in the good sense. A bunch of things that had been treated like “yeah, that’s annoying, we know” finally got fixed properly.
 
-The biggest wins landed in upgrades, direct-mode task closure, and framework development inside the AgentPlane repo itself.
+The biggest wins landed in upgrades, direct-mode task closure, and framework development inside the Agentplane repo itself.
 
 {/* truncate */}
 
@@ -34,7 +34,7 @@ This is a small change, but I would not call it minor. A task marked done should
 
 ## Framework development got less misleading
 
-One of the most practical changes in `0.3.2` is for people working on AgentPlane itself.
+One of the most practical changes in `0.3.2` is for people working on Agentplane itself.
 
 If `agentplane` from `PATH` is launched inside the framework repository, it now hands off to the repo-local binary by default instead of quietly using an older global install. There is still an opt-out, but the default is finally closer to what a developer expects.
 

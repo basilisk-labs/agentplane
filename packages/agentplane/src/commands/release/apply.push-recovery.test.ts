@@ -8,6 +8,7 @@ import {
   commitAll,
   describeWhenNotHook,
   mkGitRepoRoot,
+  mkGitRepoRootWithBranch,
   writeDefaultConfig,
 } from "@agentplane/testkit";
 import {
@@ -31,7 +32,7 @@ describeWhenNotHook(
     it(
       "pushes release refs with --no-verify to avoid recursive local pre-push hooks",
       async () => {
-        const root = await mkGitRepoRoot();
+        const root = await mkGitRepoRootWithBranch("main");
         await writeDefaultConfig(root);
 
         const remoteRoot = path.join(root, "remote.git");
@@ -96,7 +97,7 @@ describeWhenNotHook(
     it(
       "pushes only the task branch for explicit branch_pr release candidates and keeps the tag unpublished",
       async () => {
-        const root = await mkGitRepoRoot();
+        const root = await mkGitRepoRootWithBranch("main");
         await writeDefaultConfig(root);
         await writeWorkflowMode(root, "branch_pr");
 

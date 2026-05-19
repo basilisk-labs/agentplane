@@ -1,0 +1,79 @@
+---
+title: "Agent workflows"
+description: "Workflows, agents, routines, handoffs, and local operational structure in Agentplane."
+---
+
+import FurtherReading from "@site/src/components/FurtherReading";
+
+# Agent workflows
+
+## Quick answer
+
+Agent workflows are the repeatable stages, checks, context loads, handoffs, and artifacts around
+agent behavior. Agentplane treats workflows as operational structure around agents, not as a
+replacement for the agent implementation itself.
+
+## What is the difference between workflows and agents?
+
+An agent can decide, call tools, and produce output. A workflow defines the operational path around
+that behavior: load context, plan, run, verify, export a trace, and preserve evidence.
+
+## Why do predefined workflows still matter?
+
+Predefined workflows make probabilistic model behavior easier to operate. They give teams a known
+route for approval, verification, debugging, and review.
+
+## Prompt chaining
+
+A workflow can split a large objective into ordered prompts or stages, with each stage producing
+evidence for the next one.
+
+## Routing
+
+Routing chooses the next stage or owner based on task shape, policy, checks, or prior output.
+
+## Parallelization
+
+Parallel workflow branches can inspect independent files, run independent checks, or compare
+candidate solutions before a final verification step.
+
+## Orchestrator-worker patterns
+
+An orchestrator can plan, split, and coordinate work while workers execute scoped steps. Agentplane
+records the workflow state and evidence around that handoff.
+
+## Evaluator-optimizer loops
+
+An evaluator can inspect an output, mark rework, and route a second pass. The value comes from
+keeping the decision and evidence visible.
+
+## Routines and handoffs
+
+Routines encode common paths. Handoffs move ownership between roles or tools while preserving the
+current state.
+
+## How does Agentplane represent local workflows?
+
+Agentplane treats workflows as operational structure around agent behavior. A workflow can define
+the stages, checks, context, and artifacts that make a run inspectable even when the model's
+individual decisions are probabilistic.
+
+```yaml
+name: code-review-agent
+steps:
+  - id: load-context
+    type: context.load
+  - id: plan
+    type: agent.plan
+  - id: implement
+    type: agent.run
+  - id: verify
+    type: check.run
+    command: npm test
+  - id: export-trace
+    type: trace.export
+```
+
+Next: run the [quickstart](../start/quickstart).
+
+<FurtherReading ids={["anthropic-building-effective-agents", "openai-routines-handoffs"]} />

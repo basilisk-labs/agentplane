@@ -52,15 +52,7 @@ export const initSpec: CommandSpec<InitParsed> = {
       kind: "string",
       name: "setup-profile",
       valueHint: "<light|normal|full-harness>",
-      choices: [
-        "light",
-        "normal",
-        "full-harness",
-        "developer",
-        "vibecoder",
-        "manager",
-        "enterprise",
-      ],
+      choices: ["light", "normal", "full-harness", "developer", "vibecoder", "manager"],
       description: "Setup profile preset. Preferred values: light, normal, full-harness.",
     },
     {
@@ -132,14 +124,14 @@ export const initSpec: CommandSpec<InitParsed> = {
       name: "feedback-github-issues",
       valueHint: "<true|false>",
       description:
-        "Opt in to AgentPlane GitHub issue prompts for internal AgentPlane errors (default: false).",
+        "Opt in to Agentplane GitHub issue prompts for internal Agentplane errors (default: false).",
     },
     {
       kind: "string",
       name: "feedback-anonymous-cloud",
       valueHint: "<true|false>",
       description:
-        "Allow anonymous AgentPlane Cloud issue intake fallback when GitHub issue publishing is unavailable (default: false).",
+        "Allow anonymous Agentplane issue intake fallback when GitHub issue publishing is unavailable (default: false).",
     },
     {
       kind: "string",
@@ -228,7 +220,7 @@ export const initSpec: CommandSpec<InitParsed> = {
     },
     {
       cmd: "agentplane init --feedback-github-issues true --yes",
-      why: "Opt in to GitHub issue prompts for internal AgentPlane errors.",
+      why: "Opt in to GitHub issue prompts for internal Agentplane errors.",
     },
     {
       cmd: "agentplane init --force --yes",

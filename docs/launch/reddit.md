@@ -10,13 +10,13 @@
 
 ## Title Options
 
-- AgentPlane: Git-native evidence records for AI-agent changes
+- Agentplane: Git-native evidence records for AI-agent changes
 - I built a Git-visible evidence layer for Claude Code, Codex, Cursor, and Aider workflows
 - Agent Change Records for coding agents: task, plan, verification, finish, in Git
 
 ## Post Body
 
-AgentPlane is Git-native infrastructure for traceable AI work.
+Agentplane is Git-native infrastructure for traceable AI work.
 
 It does not try to be another agent or IDE. It records the workflow around agent-written changes:
 
@@ -48,7 +48,7 @@ https://github.com/basilisk-labs/agentplane
 
 Docs:
 
-https://agentplane.org/docs/user/agent-change-record
+https://agentplane.org/docs/reference/acr
 
 I am looking for feedback from people who already review agent-written PRs: what evidence would make
 you more comfortable merging those changes?

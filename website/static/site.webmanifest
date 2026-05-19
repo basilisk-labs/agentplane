@@ -1,6 +1,6 @@
 {
-  "name": "AgentPlane",
-  "short_name": "AgentPlane",
+  "name": "Agentplane",
+  "short_name": "Agentplane",
   "description": "The audit layer for coding agents. Open-source, local-first, MIT.",
   "icons": [
     {

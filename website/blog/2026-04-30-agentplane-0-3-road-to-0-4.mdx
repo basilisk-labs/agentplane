@@ -6,11 +6,11 @@ authors: [team]
 tags: [release, workflow, operations]
 ---
 
-AgentPlane `0.3` ended up being less of a feature line and more of a discipline line.
+Agentplane `0.3` ended up being less of a feature line and more of a discipline line.
 
 It started with a policy gateway and stricter release records. It ended with branch PR closure evidence, publish hygiene, recipe groundwork, and the first real modular prompt assembly layer. That is a lot for a `0.3.x` series, but the pattern is easier to see in hindsight: every patch made the system less dependent on implicit agent judgment.
 
-The final published `0.3` release is `v0.3.29`. A maintenance branch now preserves that line as `0.3`. The next release is being prepared as `0.4.0` because prompt modules are not just another patch. They introduce a new mental model for how AgentPlane builds agent instructions.
+The final published `0.3` release is `v0.3.29`. A maintenance branch now preserves that line as `0.3`. The next release is being prepared as `0.4.0` because prompt modules are not just another patch. They introduce a new mental model for how Agentplane builds agent instructions.
 
 {/* truncate */}
 
@@ -51,7 +51,7 @@ That required a surprising amount of plumbing. PR artifact state had to be typed
 
 The result is not glamorous, but it is important: a task can move from plan to branch to PR to merge to closure with more of its evidence still attached.
 
-That is the core operational idea in AgentPlane. The repository should not have to trust that an agent remembers what happened. The evidence should be in the task, the PR artifacts, the branch history, and the release record.
+That is the core operational idea in Agentplane. The repository should not have to trust that an agent remembers what happened. The evidence should be in the task, the PR artifacts, the branch history, and the release record.
 
 ## Recipes pushed the system toward modular prompts
 

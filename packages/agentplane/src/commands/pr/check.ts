@@ -11,6 +11,10 @@ import {
 } from "../shared/task-backend.js";
 import { validateAcrTarget } from "../acr/acr.command.js";
 
+import {
+  checkGithubUnresolvedReviewThreads,
+  throwIfGithubReviewThreadsUnresolved,
+} from "./internal/github-review-threads.js";
 import { resolvePrPaths } from "./internal/pr-paths.js";
 import {
   buildBranchSnapshot,
@@ -206,6 +210,21 @@ export async function cmdPrCheck(opts: {
         requirePolicyPass: true,
         allowWaivedVerification: false,
         allowManualOverride: false,
+      });
+    }
+
+    const prNumber =
+      typeof selectedSnapshot.meta?.pr_number === "number" && selectedSnapshot.meta.pr_number > 0
+        ? selectedSnapshot.meta.pr_number
+        : null;
+    const reviewThreads = await checkGithubUnresolvedReviewThreads({
+      gitRoot: resolved.gitRoot,
+      prNumber,
+    });
+    if (reviewThreads.checked && prNumber !== null) {
+      throwIfGithubReviewThreadsUnresolved({
+        prNumber,
+        unresolved: reviewThreads.unresolved,
       });
     }
 

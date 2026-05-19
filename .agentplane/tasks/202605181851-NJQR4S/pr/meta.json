@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-19T04:17:30Z",
+  "base": "main",
+  "branch": "task/202605181851-NJQR4S/website-redesign-backlog",
+  "created_at": "2026-05-18T18:53:04.294Z",
+  "head_sha": "8c06bb74d2a7130e0d859cfb3e9ff49e9f7927e0",
+  "last_verified_at": "2026-05-18T19:53:04.785Z",
+  "last_verified_sha": "87e800fb797c5d026b58242f1838fcf53c2444c2",
+  "merge_commit": "c2143fab485431b7bb4dc1e9b984f0fed08250e6",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-19T04:17:30Z",
+  "pr_number": 3914,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3914",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605181851-NJQR4S",
+  "updated_at": "2026-05-19T04:17:30Z",
+  "verify": {
+    "status": "pass"
+  }
+}

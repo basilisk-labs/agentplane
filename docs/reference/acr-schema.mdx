@@ -1,0 +1,26 @@
+---
+title: "ACR schema"
+description: "Reference notes for Agent Change Record schema fields and validation modes."
+---
+
+# ACR schema
+
+## Quick answer
+
+The Agent Change Record schema defines the machine-readable evidence contract for AI-assisted
+engineering work: task, plan, repository, changes, verification, evidence, result, and integrity.
+
+Use the CLI for the current bundled schema:
+
+```bash
+agentplane acr schema --version 0.1
+```
+
+## Validation modes
+
+```bash
+agentplane acr validate <task-id> --mode local
+agentplane acr check <task-id> --mode ci
+```
+
+`local` checks schema and local evidence. `ci` adds merge-readiness expectations.
