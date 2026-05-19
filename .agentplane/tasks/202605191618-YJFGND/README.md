@@ -1,10 +1,11 @@
 ---
 id: "202605191618-YJFGND"
 title: "Refresh evidence bundle during hosted close"
-status: "DOING"
+result_summary: "Merged via PR #3944."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -34,11 +35,16 @@ quality_review:
     - ".agentplane/tasks/202605191618-YJFGND/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191618-YJFGND-hosted-close-evidence/.agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "b7fcd7b32d0c7419f8d8a68097ba797e03719676"
+  message: "Merge pull request #3944 from basilisk-labs/task/202605191618-YJFGND/hosted-close-evidence"
 comments:
   -
     author: "CODER"
     body: "Start: Make hosted close regenerate task evidence manifests after final README/meta mutations."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3944 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -65,9 +71,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed. Evidence: GitHub PR #3944 checks passed including Core CI test, test-windows, Release-ready manifest, Docs CI, CodeQL; local focused evidence/hosted-close tests, agentplane typecheck, framework:dev:bootstrap, and strict evidence verification passed before integration."
+  -
+    type: "status"
+    at: "2026-05-19T17:14:44.902Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3944 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T16:57:46.372Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T17:14:44.909Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure branch_pr hosted close regenerates task evidence manifests after final task README and PR metadata mutations so strict evidence verification remains valid on main after close."
 sections:
   Summary: |-
