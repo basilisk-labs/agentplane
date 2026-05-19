@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-19T17:56:13Z",
   "base": "main",
   "branch": "task/202605191735-MM3AH5/blueprint-visual-map",
   "created_at": "2026-05-19T17:36:37.873Z",
-  "head_sha": "b9c5c6edafb8b38043051eef89611330a937bfae",
+  "head_sha": "43d6a0801beee066bd43fccff930ff524893ca50",
   "last_verified_at": "2026-05-19T17:40:36.019Z",
   "last_verified_sha": "b9c5c6edafb8b38043051eef89611330a937bfae",
+  "merge_commit": "634a20bd7f3a6219d6054d3d201a55296efa8760",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-19T17:56:13Z",
   "pr_number": 3949,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3949",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605191735-MM3AH5",
-  "updated_at": "2026-05-19T17:40:50.312Z",
+  "updated_at": "2026-05-19T17:56:13Z",
   "verify": {
     "status": "pass"
   }

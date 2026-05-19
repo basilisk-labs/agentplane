@@ -1,10 +1,11 @@
 ---
 id: "202605191735-MM3AH5"
 title: "Visualize built-in blueprint routes in docs"
-status: "DOING"
+result_summary: "Merged via PR #3949."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -34,11 +35,16 @@ quality_review:
     - ".agentplane/tasks/202605191735-MM3AH5/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191735-MM3AH5-blueprint-visual-map/.agentplane/tasks/202605191735-MM3AH5/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "634a20bd7f3a6219d6054d3d201a55296efa8760"
+  message: "Merge pull request #3949 from basilisk-labs/task/202605191735-MM3AH5/blueprint-visual-map"
 comments:
   -
     author: "DOCS"
     body: "Start: Documenting the current built-in blueprint route map from the runtime definitions, scoped to docs/developer/blueprints.mdx and task artifacts only."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3949 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality review pass on final commit b9c5c6edafb8: docs-only change matches current built-in blueprint definitions, adds visual route map plus matrix, and Docusaurus build validates the MDX/Mermaid page. No unintended tracked changes remain in the task worktree."
+  -
+    type: "status"
+    at: "2026-05-19T17:57:09.548Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3949 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T17:40:36.054Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-19T17:57:09.553Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a visual representation of existing built-in AgentPlane blueprints and the route modules/nodes they consist of to the developer blueprints documentation."
 sections:
   Summary: |-
