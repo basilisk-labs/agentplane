@@ -4,7 +4,7 @@ title: "Remove stale 0.6 legacy cleanup surfaces"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T13:23:11.067Z"
+  updated_at: "2026-05-19T13:29:41.530Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed with cited evidence. Evaluated current implementation/docs commits including 0ecb74f9962e, 09fbb81c7544, and generated CLI reference refresh cea94634b669: init legacy config preview was narrowed, disabled deprecated options are hidden from help/docs output, and generated CLI reference was refreshed after pre-push freshness failure. Evidence: pre-push fast CI reached CLI docs freshness, reported stale generated docs, and docs:cli:generate updated docs/user/cli-reference.generated.mdx."
+  note: "EVALUATOR quality gate passed with cited evidence. Evaluated current branch including lint callback fix 50db3d2bbeaf: visible-option filtering now uses inline callbacks that satisfy unicorn/no-array-callback-reference, generated CLI reference remains refreshed, and the original 0.6 legacy cleanup behavior is preserved. Evidence: pre-push full-fast previously passed through docs freshness and failed only on lint callback references; targeted fix addresses those exact lint findings."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T13:23:11.067Z"
+  updated_at: "2026-05-19T13:29:41.530Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed with cited evidence. Evaluated current implementation/docs commits including 0ecb74f9962e, 09fbb81c7544, and generated CLI reference refresh cea94634b669: init legacy config preview was narrowed, disabled deprecated options are hidden from help/docs output, and generated CLI reference was refreshed after pre-push freshness failure. Evidence: pre-push fast CI reached CLI docs freshness, reported stale generated docs, and docs:cli:generate updated docs/user/cli-reference.generated.mdx."
-  evaluated_sha: "190dbf9e1255a764aae3954e4ae799dc91522010"
+  note: "EVALUATOR quality gate passed with cited evidence. Evaluated current branch including lint callback fix 50db3d2bbeaf: visible-option filtering now uses inline callbacks that satisfy unicorn/no-array-callback-reference, generated CLI reference remains refreshed, and the original 0.6 legacy cleanup behavior is preserved. Evidence: pre-push full-fast previously passed through docs freshness and failed only on lint callback references; targeted fix addresses those exact lint findings."
+  evaluated_sha: "88d57cae78d6bf6f2311f5022337d4fac0c3d984"
   blueprint_digest: "40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20"
   evidence_refs:
     - ".agentplane/tasks/202605191250-N3TCR3/README.md"
@@ -78,8 +78,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed with cited evidence. Evaluated current implementation/docs commits including 0ecb74f9962e, 09fbb81c7544, and generated CLI reference refresh cea94634b669: init legacy config preview was narrowed, disabled deprecated options are hidden from help/docs output, and generated CLI reference was refreshed after pre-push freshness failure. Evidence: pre-push fast CI reached CLI docs freshness, reported stale generated docs, and docs:cli:generate updated docs/user/cli-reference.generated.mdx."
+  -
+    type: "verify"
+    at: "2026-05-19T13:29:41.530Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed with cited evidence. Evaluated current branch including lint callback fix 50db3d2bbeaf: visible-option filtering now uses inline callbacks that satisfy unicorn/no-array-callback-reference, generated CLI reference remains refreshed, and the original 0.6 legacy cleanup behavior is preserved. Evidence: pre-push full-fast previously passed through docs freshness and failed only on lint callback references; targeted fix addresses those exact lint findings."
 doc_version: 3
-doc_updated_at: "2026-05-19T13:23:11.098Z"
+doc_updated_at: "2026-05-19T13:29:41.661Z"
 doc_updated_by: "CODER"
 description: "Clean up stale legacy-facing CLI/init surfaces that are no longer needed for the 0.6 happy path while preserving runtime compatibility fallbacks."
 sections:
@@ -191,6 +197,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T13:19:21.479Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191250-N3TCR3-legacy-cleanup-06/.agentplane/tasks/202605191250-N3TCR3/blueprint/resolved-snapshot.json
+    - old_digest: 40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20
+    - current_digest: 40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191250-N3TCR3
+
+    ### 2026-05-19T13:29:41.530Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed with cited evidence. Evaluated current branch including lint callback fix 50db3d2bbeaf: visible-option filtering now uses inline callbacks that satisfy unicorn/no-array-callback-reference, generated CLI reference remains refreshed, and the original 0.6 legacy cleanup behavior is preserved. Evidence: pre-push full-fast previously passed through docs freshness and failed only on lint callback references; targeted fix addresses those exact lint findings.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T13:23:11.098Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -326,6 +351,25 @@ Note: EVALUATOR quality gate passed with cited evidence. Evaluated current imple
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T13:19:21.479Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191250-N3TCR3-legacy-cleanup-06/.agentplane/tasks/202605191250-N3TCR3/blueprint/resolved-snapshot.json
+- old_digest: 40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20
+- current_digest: 40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191250-N3TCR3
+
+### 2026-05-19T13:29:41.530Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed with cited evidence. Evaluated current branch including lint callback fix 50db3d2bbeaf: visible-option filtering now uses inline callbacks that satisfy unicorn/no-array-callback-reference, generated CLI reference remains refreshed, and the original 0.6 legacy cleanup behavior is preserved. Evidence: pre-push full-fast previously passed through docs freshness and failed only on lint callback references; targeted fix addresses those exact lint findings.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T13:23:11.098Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 

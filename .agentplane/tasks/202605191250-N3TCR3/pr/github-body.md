@@ -19,12 +19,12 @@ Clean up stale legacy-facing CLI/init surfaces that are no longer needed for the
 - Note:
 
 ```text
-EVALUATOR quality gate passed with cited evidence. Evaluated current implementation/docs commits
-including 0ecb74f9962e, 09fbb81c7544, and generated CLI reference refresh cea94634b669: init legacy
-config preview was narrowed, disabled deprecated options are hidden from help/docs output, and
-generated CLI reference was refreshed after pre-push freshness failure. Evidence: pre-push fast CI
-reached CLI docs freshness, reported stale generated docs, and docs:cli:generate updated
-docs/user/cli-reference.generated.mdx.
+EVALUATOR quality gate passed with cited evidence. Evaluated current branch including lint callback
+fix 50db3d2bbeaf: visible-option filtering now uses inline callbacks that satisfy
+unicorn/no-array-callback-reference, generated CLI reference remains refreshed, and the original 0.6
+legacy cleanup behavior is preserved. Evidence: pre-push full-fast previously passed through docs
+freshness and failed only on lint callback references; targeted fix addresses those exact lint
+findings.
 ```
 - Canonical workflow state lives in the task README.
 
