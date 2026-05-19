@@ -4,7 +4,7 @@ title: "Make context init interactive"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T08:42:47.740Z"
-  updated_by: "EVALUATOR"
-  note: "Re-verified current PR head 4118cece7b9f after commit amend and PR publication. Focused checks remain the same passing set recorded in the task details."
+  updated_at: "2026-05-19T08:46:53.014Z"
+  updated_by: "CODER"
+  note: "Adjusted test placement to avoid expanding the oversized init test file; context init behavior and changed-file lint remain verified."
   attempts: 0
 quality_review:
   state: "pass"
@@ -67,8 +67,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Re-verified current PR head 4118cece7b9f after commit amend and PR publication. Focused checks remain the same passing set recorded in the task details."
+  -
+    type: "verify"
+    at: "2026-05-19T08:46:53.014Z"
+    author: "CODER"
+    state: "ok"
+    note: "Adjusted test placement to avoid expanding the oversized init test file; context init behavior and changed-file lint remain verified."
 doc_version: 3
-doc_updated_at: "2026-05-19T08:42:47.793Z"
+doc_updated_at: "2026-05-19T08:46:53.070Z"
 doc_updated_by: "CODER"
 description: "Add a TTY dialog for user-run agentplane context init with basic mode information and a three-mode selection: minimal, adaptive, maximum-assimilation. Preserve explicit profile flags and non-interactive defaults."
 sections:
@@ -87,10 +93,11 @@ sections:
     5. Add focused CLI tests for interactive selection, explicit profile bypass, and non-interactive default behavior.
     6. Run targeted tests plus policy routing validation.
   Verify Steps: |-
-    1. Run `bun test packages/agentplane/src/cli/run-cli.core.init.test.ts --test-name-pattern \"context init\"`. Expected: context init CLI behavior remains green, including interactive mode selection and non-interactive defaults.
+    1. Run `bun test packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts --test-name-pattern \"context init|context init interactive|runCli context init\"`. Expected: context init CLI behavior remains green, including interactive mode selection and non-interactive defaults.
     2. Run `bun test packages/agentplane/src/commands/context/release-readiness.test.ts --test-name-pattern \"context init|maximum-assimilation\"`. Expected: context workspace generation still matches release-readiness contracts.
-    3. Run `bunx eslint packages/agentplane/src/commands/context/context.spec.ts packages/agentplane/src/commands/context/context.command.ts packages/agentplane/src/cli/run-cli.core.init.test.ts`. Expected: changed files pass lint.
-    4. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid.
+    3. Run `bunx eslint packages/agentplane/src/commands/context/context.spec.ts packages/agentplane/src/commands/context/context.command.ts packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts`. Expected: changed files pass lint.
+    4. Run `node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000`. Expected: splitting the tests keeps the oversized-test baseline within budget.
+    5. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-19T08:39:57.528Z — VERIFY — ok
@@ -175,6 +182,50 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605190830-W0ZCVH
 
+    ### 2026-05-19T08:46:53.014Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Adjusted test placement to avoid expanding the oversized init test file; context init behavior and changed-file lint remain verified.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T08:46:20.259Z, excerpt_hash=sha256:7bb97e7d371bc512743e0e78a2bb35ca315f58091c5fe9a6a0f8994df4bea172
+
+    Details:
+
+    Command: bun test packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts --test-name-pattern "context init|context init interactive|runCli context init"
+    Result: pass
+    Evidence: 7 pass, 0 fail, 43 expect calls
+    Scope: context init CLI behavior across interactive mode selection, explicit profile bypass, non-TTY default, and existing init bootstrap/idempotency/error paths
+
+    Command: bun test packages/agentplane/src/commands/context/release-readiness.test.ts --test-name-pattern "context init|maximum-assimilation"
+    Result: pass
+    Evidence: 2 pass, 0 fail, 17 expect calls
+    Scope: context workspace generation contracts
+
+    Command: bunx eslint packages/agentplane/src/commands/context/context.spec.ts packages/agentplane/src/commands/context/context.command.ts packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts
+    Result: pass
+    Evidence: exit 0
+    Scope: changed source/test files
+
+    Command: node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000
+    Result: pass
+    Evidence: Oversized test baseline OK, 11 entries, 12571 total lines
+    Scope: test-file size budget after moving new tests to a dedicated file
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK
+    Scope: policy routing contract
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190830-W0ZCVH-interactive-context-init/.agentplane/tasks/202605190830-W0ZCVH/blueprint/resolved-snapshot.json
+    - old_digest: e3cdb957c1398f7b590b5f0ac62ac696831e85452f5b2c03b465645d6d4b9c5f
+    - current_digest: e3cdb957c1398f7b590b5f0ac62ac696831e85452f5b2c03b465645d6d4b9c5f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605190830-W0ZCVH
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -204,10 +255,11 @@ Add a TTY dialog for user-run agentplane context init with basic mode informatio
 
 ## Verify Steps
 
-1. Run `bun test packages/agentplane/src/cli/run-cli.core.init.test.ts --test-name-pattern \"context init\"`. Expected: context init CLI behavior remains green, including interactive mode selection and non-interactive defaults.
+1. Run `bun test packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts --test-name-pattern \"context init|context init interactive|runCli context init\"`. Expected: context init CLI behavior remains green, including interactive mode selection and non-interactive defaults.
 2. Run `bun test packages/agentplane/src/commands/context/release-readiness.test.ts --test-name-pattern \"context init|maximum-assimilation\"`. Expected: context workspace generation still matches release-readiness contracts.
-3. Run `bunx eslint packages/agentplane/src/commands/context/context.spec.ts packages/agentplane/src/commands/context/context.command.ts packages/agentplane/src/cli/run-cli.core.init.test.ts`. Expected: changed files pass lint.
-4. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid.
+3. Run `bunx eslint packages/agentplane/src/commands/context/context.spec.ts packages/agentplane/src/commands/context/context.command.ts packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts`. Expected: changed files pass lint.
+4. Run `node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000`. Expected: splitting the tests keeps the oversized-test baseline within budget.
+5. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid.
 
 ## Verification
 
@@ -285,6 +337,50 @@ Command: git rev-parse --short=12 HEAD
 Result: pass
 Evidence: 4118cece7b9f
 Scope: current task PR head used for verification metadata refresh
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190830-W0ZCVH-interactive-context-init/.agentplane/tasks/202605190830-W0ZCVH/blueprint/resolved-snapshot.json
+- old_digest: e3cdb957c1398f7b590b5f0ac62ac696831e85452f5b2c03b465645d6d4b9c5f
+- current_digest: e3cdb957c1398f7b590b5f0ac62ac696831e85452f5b2c03b465645d6d4b9c5f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605190830-W0ZCVH
+
+### 2026-05-19T08:46:53.014Z — VERIFY — ok
+
+By: CODER
+
+Note: Adjusted test placement to avoid expanding the oversized init test file; context init behavior and changed-file lint remain verified.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T08:46:20.259Z, excerpt_hash=sha256:7bb97e7d371bc512743e0e78a2bb35ca315f58091c5fe9a6a0f8994df4bea172
+
+Details:
+
+Command: bun test packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts --test-name-pattern "context init|context init interactive|runCli context init"
+Result: pass
+Evidence: 7 pass, 0 fail, 43 expect calls
+Scope: context init CLI behavior across interactive mode selection, explicit profile bypass, non-TTY default, and existing init bootstrap/idempotency/error paths
+
+Command: bun test packages/agentplane/src/commands/context/release-readiness.test.ts --test-name-pattern "context init|maximum-assimilation"
+Result: pass
+Evidence: 2 pass, 0 fail, 17 expect calls
+Scope: context workspace generation contracts
+
+Command: bunx eslint packages/agentplane/src/commands/context/context.spec.ts packages/agentplane/src/commands/context/context.command.ts packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts
+Result: pass
+Evidence: exit 0
+Scope: changed source/test files
+
+Command: node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000
+Result: pass
+Evidence: Oversized test baseline OK, 11 entries, 12571 total lines
+Scope: test-file size budget after moving new tests to a dedicated file
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK
+Scope: policy routing contract
 
 BlueprintSnapshotRef:
 - state: current

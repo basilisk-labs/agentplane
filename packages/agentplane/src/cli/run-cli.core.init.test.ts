@@ -53,31 +53,9 @@ import {
   writeDefaultConfig,
 } from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
-import * as prompts from "./prompts.js";
 
 function normalizeSlashes(value: string): string {
   return value.replaceAll("\\", "/");
-}
-
-const originalStdinIsTty = Object.getOwnPropertyDescriptor(process.stdin, "isTTY");
-const originalStdoutIsTty = Object.getOwnPropertyDescriptor(process.stdout, "isTTY");
-
-function setTty(enabled: boolean): void {
-  Object.defineProperty(process.stdin, "isTTY", { value: enabled, configurable: true });
-  Object.defineProperty(process.stdout, "isTTY", { value: enabled, configurable: true });
-}
-
-function restoreTty(): void {
-  if (originalStdinIsTty) {
-    Object.defineProperty(process.stdin, "isTTY", originalStdinIsTty);
-  } else {
-    delete (process.stdin as { isTTY?: boolean }).isTTY;
-  }
-  if (originalStdoutIsTty) {
-    Object.defineProperty(process.stdout, "isTTY", originalStdoutIsTty);
-  } else {
-    delete (process.stdout as { isTTY?: boolean }).isTTY;
-  }
 }
 
 installRunCliIntegrationHarness();
@@ -497,95 +475,6 @@ describe("runCli", () => {
     });
     expect(stdout.trim()).toBe("");
   });
-
-  it(
-    "context init prompts for a user-facing mode in an interactive terminal",
-    { timeout: 60_000 },
-    async () => {
-      const root = await mkGitRepoRoot();
-      await configureGitUser(root);
-      expect(await runCli(["init", "--yes", "--root", root])).toBe(0);
-      setTty(true);
-      const prompt = vi
-        .spyOn(prompts, "selectPrompt")
-        .mockResolvedValueOnce("maximum-assimilation");
-
-      const io = captureStdIO();
-      try {
-        const code = await runCli(["context", "init", "--root", root]);
-        expect(code).toBe(0);
-        expect(io.stdout).toContain("Context init mode:");
-        expect(io.stdout).toContain("minimal = smallest workspace scaffold");
-        expect(prompt).toHaveBeenCalledWith(
-          "Select context mode",
-          ["minimal", "adaptive", "maximum-assimilation"],
-          "adaptive",
-        );
-      } finally {
-        io.restore();
-        prompt.mockRestore();
-        restoreTty();
-      }
-
-      const manifest = await readFile(
-        path.join(root, ".agentplane", "context", "agentplane.context.yaml"),
-        "utf8",
-      );
-      expect(manifest).toContain("mode: maximum-assimilation");
-    },
-  );
-
-  it(
-    "context init respects explicit profile without prompting in an interactive terminal",
-    { timeout: 60_000 },
-    async () => {
-      const root = await mkGitRepoRoot();
-      await configureGitUser(root);
-      expect(await runCli(["init", "--yes", "--root", root])).toBe(0);
-      setTty(true);
-      const prompt = vi.spyOn(prompts, "selectPrompt");
-
-      try {
-        expect(await runCli(["context", "init", "--profile", "minimal", "--root", root])).toBe(0);
-        expect(prompt).not.toHaveBeenCalled();
-      } finally {
-        prompt.mockRestore();
-        restoreTty();
-      }
-
-      const manifest = await readFile(
-        path.join(root, ".agentplane", "context", "agentplane.context.yaml"),
-        "utf8",
-      );
-      expect(manifest).toContain("mode: minimal");
-    },
-  );
-
-  it(
-    "context init keeps the adaptive default without prompts outside an interactive terminal",
-    { timeout: 60_000 },
-    async () => {
-      const root = await mkGitRepoRoot();
-      await configureGitUser(root);
-      expect(await runCli(["init", "--yes", "--root", root])).toBe(0);
-      setTty(false);
-      const prompt = vi.spyOn(prompts, "selectPrompt");
-
-      try {
-        expect(await runCli(["context", "init", "--root", root])).toBe(0);
-        expect(prompt).not.toHaveBeenCalled();
-      } finally {
-        prompt.mockRestore();
-        restoreTty();
-      }
-
-      const manifest = await readFile(
-        path.join(root, ".agentplane", "context", "agentplane.context.yaml"),
-        "utf8",
-      );
-      expect(manifest).toContain("mode: adaptive");
-    },
-  );
 
   it("context init remains idempotent in an initialized AgentPlane project", async () => {
     const root = await mkGitRepoRoot();

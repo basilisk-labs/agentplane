@@ -13,7 +13,7 @@ Created: 2026-05-19T08:32:08.899Z
 ## Verification
 
 - State: ok
-- Note: Re-verified current PR head 4118cece7b9f after commit amend and PR publication. Focused checks remain the same passing set recorded in the task details.
+- Note: Adjusted test placement to avoid expanding the oversized init test file; context init behavior and changed-file lint remain verified.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
