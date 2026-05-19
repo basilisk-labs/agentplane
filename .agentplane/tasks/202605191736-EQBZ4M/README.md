@@ -4,7 +4,7 @@ title: "Add task observations journal"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -12,18 +12,40 @@ tags:
   - "code"
   - "evidence"
   - "workflow"
-verify: []
+verify:
+  - "bun run --filter=@agentplaneorg/core typecheck"
+  - "bun run --filter=agentplane typecheck"
+  - "bun run schemas:check"
+  - "bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-artifact-schema.test.ts"
+  - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/observations.unit.test.ts"
+  - "ap task observations check 202605191736-EQBZ4M"
+  - "bun run docs:cli:check"
+  - "bun run format:changed"
+  - "bun run spec:examples:check"
+  - "node .agentplane/policy/check-routing.mjs"
+  - "ap doctor"
 plan_approval:
   state: "approved"
   updated_at: "2026-05-19T17:36:23.512Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-19T17:53:22.821Z"
+  updated_by: "EVALUATOR"
+  note: "Quality review passed for implementation commit bb2904022. Reviewed structured observations journal schema, CLI registration, ACR evidence integration, docs, and verification evidence; no blocking observations or unresolved drift found."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T17:53:22.821Z"
+  updated_by: "EVALUATOR"
+  note: "Quality review passed for implementation commit bb2904022. Reviewed structured observations journal schema, CLI registration, ACR evidence integration, docs, and verification evidence; no blocking observations or unresolved drift found."
+  evaluated_sha: "bb2904022f1b4a80c23e5042c73b296fe43ec245"
+  blueprint_digest: "e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6"
+  evidence_refs:
+    - ".agentplane/tasks/202605191736-EQBZ4M/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -37,8 +59,20 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implementing a structured task observations journal as a task-local JSONL artifact with CLI support, schema validation, and triage-oriented downstream use."
+  -
+    type: "verify"
+    at: "2026-05-19T17:51:51.412Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified task observations journal implementation. Checks passed: core typecheck; agentplane typecheck; schemas:check; focused core schema test; focused task observations unit test; CLI smoke add/list/check/triage; docs:cli:check; format:changed; spec:examples:check; policy routing; ap doctor."
+  -
+    type: "verify"
+    at: "2026-05-19T17:53:22.821Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Quality review passed for implementation commit bb2904022. Reviewed structured observations journal schema, CLI registration, ACR evidence integration, docs, and verification evidence; no blocking observations or unresolved drift found."
 doc_version: 3
-doc_updated_at: "2026-05-19T17:48:48.386Z"
+doc_updated_at: "2026-05-19T17:53:22.889Z"
 doc_updated_by: "CODER"
 description: "Implement a structured task-local observations.jsonl artifact for agent-discovered spec gaps, decisions, risks, issue candidates, incident candidates, context candidates, and agent improvement candidates, with CLI support for adding, listing, checking, and triaging observations."
 sections:
@@ -64,6 +98,44 @@ sections:
     6. Run `bun run docs:cli:check`, `bun run format:changed`, `bun run spec:examples:check`, `node .agentplane/policy/check-routing.mjs`, and `ap doctor`. Expected: all checks pass.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-19T17:51:51.412Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified task observations journal implementation. Checks passed: core typecheck; agentplane typecheck; schemas:check; focused core schema test; focused task observations unit test; CLI smoke add/list/check/triage; docs:cli:check; format:changed; spec:examples:check; policy routing; ap doctor.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:48:48.386Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json
+    - old_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+    - current_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191736-EQBZ4M
+
+    ### 2026-05-19T17:53:22.821Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Quality review passed for implementation commit bb2904022. Reviewed structured observations journal schema, CLI registration, ACR evidence integration, docs, and verification evidence; no blocking observations or unresolved drift found.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:51:51.522Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json
+    - old_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+    - current_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191736-EQBZ4M
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -102,6 +174,44 @@ Implement a structured task-local observations.jsonl artifact for agent-discover
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-19T17:51:51.412Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified task observations journal implementation. Checks passed: core typecheck; agentplane typecheck; schemas:check; focused core schema test; focused task observations unit test; CLI smoke add/list/check/triage; docs:cli:check; format:changed; spec:examples:check; policy routing; ap doctor.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:48:48.386Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json
+- old_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+- current_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191736-EQBZ4M
+
+### 2026-05-19T17:53:22.821Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Quality review passed for implementation commit bb2904022. Reviewed structured observations journal schema, CLI registration, ACR evidence integration, docs, and verification evidence; no blocking observations or unresolved drift found.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:51:51.522Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json
+- old_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+- current_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191736-EQBZ4M
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
