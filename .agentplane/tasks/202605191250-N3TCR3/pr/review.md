@@ -13,7 +13,7 @@ Created: 2026-05-19T12:51:12.969Z
 ## Verification
 
 - State: ok
-- Note: EVALUATOR quality gate passed with cited evidence. Evaluated implementation commit 0ecb74f9962eb055da26fad2da086136a359b68f: stale init write/conflict presentation for .agentplane/config.json was removed while loadConfig legacy import fallback stayed intact; disabled deprecated auto-allow flags are hidden from help/docs rendering while parser rejection remains. Evidence: task branch PR #3932 and committed scoped diff.
+- Note: EVALUATOR quality gate passed with cited evidence. Evaluated current implementation commits 0ecb74f9962eb055da26fad2da086136a359b68f and 09fbb81c7544 formatting follow-up: init no longer presents .agentplane/config.json as a new init write/conflict target; disabled deprecated flags are hidden from help/docs rendering; parser rejection and legacy config import fallback remain preserved. Evidence: PR #3932 scoped branch diff and repo-local bootstrap success after formatting.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
