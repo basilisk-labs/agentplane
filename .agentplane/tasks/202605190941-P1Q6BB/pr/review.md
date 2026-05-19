@@ -13,7 +13,7 @@ Created: 2026-05-19T09:44:06.233Z
 ## Verification
 
 - State: ok
-- Note: Hosted checks are green on PR #3928 for head 55a20724c: Core CI test/test-windows/release-ready manifest, Docs CI, Workflows Lint, Dependency Review, and CodeQL passed.
+- Note: Fresh hosted quality gate passed for current head 298ef95af: Core CI test/test-windows/release-ready manifest, Docs CI, Workflows Lint, Dependency Review, and CodeQL are green on PR #3928.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,15 +24,15 @@ Created: 2026-05-19T09:44:06.233Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T10:29:16.727Z
+- Updated: 2026-05-19T10:36:18.331Z
 - Branch: task/202605190941-P1Q6BB/release-pipeline-hardening
-- Head: 55a20724ccb6
+- Head: 298ef95af002
 
 ```text
- .agentplane/tasks/202605190941-5FPGCV/README.md    | 148 +++++++
+ .agentplane/tasks/202605190941-5FPGCV/README.md    | 203 +++++++++
  .../blueprint/resolved-snapshot.json               | 455 +++++++++++++++++++++
  .../blueprint/resolved-snapshot.json               | 455 +++++++++++++++++++++
- .agentplane/tasks/202605190941-Y873RA/README.md    | 147 +++++++
+ .agentplane/tasks/202605190941-Y873RA/README.md    | 202 +++++++++
  .../blueprint/resolved-snapshot.json               | 454 ++++++++++++++++++++
  .github/workflows/publish.yml                      |  17 +
  package.json                                       |   1 +
@@ -52,7 +52,7 @@ Created: 2026-05-19T09:44:06.233Z
  scripts/release/resolve-release-ready-source.mjs   |  13 +-
  scripts/release/version-bump.mjs                   | 104 +----
  scripts/release/version-surfaces.json              |  77 ++++
- 23 files changed, 2272 insertions(+), 114 deletions(-)
+ 23 files changed, 2382 insertions(+), 114 deletions(-)
 ```
 
 </details>
