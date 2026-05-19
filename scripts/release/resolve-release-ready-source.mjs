@@ -78,8 +78,8 @@ const main = defineScript({
       artifactName,
       token,
       wait: args.wait,
-      timeoutMs: Number.isFinite(args.timeoutMs) ? args.timeoutMs : 900000,
-      pollIntervalMs: Number.isFinite(args.pollIntervalMs) ? args.pollIntervalMs : 15000,
+      timeoutMs: Number.isFinite(args.timeoutMs) ? args.timeoutMs : 900_000,
+      pollIntervalMs: Number.isFinite(args.pollIntervalMs) ? args.pollIntervalMs : 15_000,
     });
 
     if (args.json) {

@@ -58,7 +58,7 @@ export function readReleaseVersionSurfaceManifest(rootDir) {
 function getByPath(value, keys) {
   let current = value;
   for (const key of keys) {
-    if (current === null || typeof current !== "object") return undefined;
+    if (current === null || typeof current !== "object") return;
     current = current[key];
   }
   return current;
@@ -70,7 +70,7 @@ function setByPath(value, keys, nextValue) {
     if (current[key] === null || typeof current[key] !== "object") current[key] = {};
     current = current[key];
   }
-  current[keys[keys.length - 1]] = nextValue;
+  current[keys.at(-1)] = nextValue;
 }
 
 function findArrayMatch(root, surface) {
@@ -89,8 +89,9 @@ function findArrayMatch(root, surface) {
 function readTextConst(text, surface) {
   const name = typeof surface.name === "string" ? surface.name.trim() : "";
   if (!name) throw new Error(`Invalid release version surface manifest: ${surface.id}.name.`);
+  const escapedName = name.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
   const pattern = new RegExp(
-    `export\\s+const\\s+${name.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&")}\\s*=\\s*["']([^"']+)["']\\s*;`,
+    String.raw`export\s+const\s+${escapedName}\s*=\s*["']([^"']+)["']\s*;`,
     "u",
   );
   const match = pattern.exec(text);
@@ -99,8 +100,9 @@ function readTextConst(text, surface) {
 
 function writeTextConst(text, surface, nextVersion) {
   const name = typeof surface.name === "string" ? surface.name.trim() : "";
+  const escapedName = name.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
   const pattern = new RegExp(
-    `export\\s+const\\s+${name.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&")}\\s*=\\s*["'][^"']*["']\\s*;`,
+    String.raw`export\s+const\s+${escapedName}\s*=\s*["'][^"']*["']\s*;`,
     "u",
   );
   const next = text.replace(pattern, `export const ${name} = "${nextVersion}";`);
