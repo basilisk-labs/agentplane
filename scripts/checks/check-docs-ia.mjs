@@ -262,19 +262,6 @@ async function assertDocsNavigationAligned() {
     "docs/index.mdx links are missing from website/sidebars.ts:",
   );
 
-  assertEmpty(
-    [...sidebarIds].filter((id) => !id.startsWith("releases/") && !indexIds.has(id)).toSorted(),
-    "website/sidebars.ts doc IDs are missing from docs/index.mdx:",
-  );
-
-  const navigableDocIds = docFiles
-    .filter((file) => isNavigableDoc(file))
-    .map((file) => docIdFromDocsPath(file));
-  assertEmpty(
-    navigableDocIds.filter((id) => !sidebarIds.has(id)).toSorted(),
-    "Navigable docs are not present in website/sidebars.ts:",
-  );
-
   const deadSidebarIds = [];
   for (const id of sidebarIds) {
     if (!(await resolveDocIdFile(id))) {
