@@ -1,5 +1,9 @@
+import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
 
 function usage() {
   return [
@@ -9,6 +13,8 @@ function usage() {
     "",
     "Options:",
     "  --publish-result <path>  Path to publish-result.json from the Publish release workflow",
+    "  --github-release-assets <path>",
+    "                           JSON file with live GitHub Release asset evidence",
     "  --json                   Emit machine-readable JSON",
     "  --help, -h               Show this help text",
   ].join("\n");
@@ -17,6 +23,7 @@ function usage() {
 function parseArgs(argv) {
   const out = {
     publishResultPath: "",
+    githubReleaseAssetsPath: "",
     json: false,
     help: false,
   };
@@ -24,6 +31,11 @@ function parseArgs(argv) {
     const arg = argv[index] ?? "";
     if (arg === "--publish-result") {
       out.publishResultPath = argv[index + 1] ?? out.publishResultPath;
+      index += 1;
+      continue;
+    }
+    if (arg === "--github-release-assets") {
+      out.githubReleaseAssetsPath = argv[index + 1] ?? out.githubReleaseAssetsPath;
       index += 1;
       continue;
     }
@@ -52,20 +64,68 @@ function checkPackage(failures, manifest, key, label) {
   if (!payload?.published) failures.push(`${label} npm package not confirmed`);
 }
 
-function checkReleaseAssets(failures, manifest) {
+function assetNamesFromGithubReleasePayload(payload) {
+  if (Array.isArray(payload)) {
+    return new Set(
+      payload.map((asset) => (typeof asset === "string" ? asset : asset?.name)).filter(Boolean),
+    );
+  }
+  if (payload && typeof payload === "object" && Array.isArray(payload.assets)) {
+    return assetNamesFromGithubReleasePayload(payload.assets);
+  }
+  throw new Error("invalid GitHub Release assets payload: expected array or object.assets");
+}
+
+async function readGithubReleaseAssetNames(assetPath) {
+  if (!assetPath) return null;
+  return assetNamesFromGithubReleasePayload(
+    JSON.parse(await readFile(path.resolve(assetPath), "utf8")),
+  );
+}
+
+async function fetchGithubReleaseAssetNames(tag) {
+  if (!tag) return null;
+  if (process.env.AGENTPLANE_POSTPUBLISH_AUDIT_SKIP_GH === "1") return null;
+  try {
+    const { stdout } = await execFileAsync(
+      "gh",
+      ["release", "view", tag, "--json", "assets", "--jq", ".assets"],
+      {
+        cwd: process.cwd(),
+        env: process.env,
+      },
+    );
+    return assetNamesFromGithubReleasePayload(JSON.parse(stdout));
+  } catch {
+    return null;
+  }
+}
+
+function embeddedReleaseAssetNames(manifest) {
   const distribution = manifest.distribution;
   if (!distribution?.loaded || !distribution.manifest) {
-    failures.push("release-distribution.json not loaded in publish-result");
-    return;
+    return null;
   }
   const assets = Array.isArray(distribution.manifest.releaseAssets)
     ? distribution.manifest.releaseAssets
     : [];
-  const assetNames = new Set(assets.map((asset) => asset?.name).filter(Boolean));
+  return new Set(assets.map((asset) => asset?.name).filter(Boolean));
+}
+
+function checkReleaseAssets(failures, manifest, liveAssetNames) {
+  const embeddedAssetNames = embeddedReleaseAssetNames(manifest);
+  if (!embeddedAssetNames) {
+    failures.push("release-distribution.json not loaded in publish-result");
+    return;
+  }
+  const assetNames = liveAssetNames ?? embeddedAssetNames;
   for (const required of ["release-distribution.json", "SHA256SUMS", "install.sh", "install.ps1"]) {
     if (!assetNames.has(required)) failures.push(`GitHub Release asset not confirmed: ${required}`);
   }
-  const channels = assertObject(distribution.manifest.channels ?? {}, "distribution channels");
+  const channels = assertObject(
+    manifest.distribution.manifest.channels ?? {},
+    "distribution channels",
+  );
   for (const channel of ["npm", "githubRelease", "ghcr"]) {
     if (!channels[channel]?.required)
       failures.push(`required channel missing from manifest: ${channel}`);
@@ -103,7 +163,7 @@ function checkExternalModules(failures, manifest) {
   }
 }
 
-function auditPublishResult(manifest) {
+function auditPublishResult(manifest, liveAssetNames) {
   const failures = [];
   if (manifest.success !== true) {
     failures.push(`publish-result is not successful (reason=${manifest.reasonCode ?? "unknown"})`);
@@ -118,7 +178,7 @@ function auditPublishResult(manifest) {
   if (manifest.checks?.githubRelease?.created !== true) {
     failures.push("GitHub Release publication not confirmed");
   }
-  checkReleaseAssets(failures, manifest);
+  checkReleaseAssets(failures, manifest, liveAssetNames);
   checkExternalModules(failures, manifest);
 
   return {
@@ -143,7 +203,10 @@ async function main() {
   if (!args.publishResultPath) throw new Error("Missing required --publish-result");
   const publishResultPath = path.resolve(args.publishResultPath);
   const manifest = JSON.parse(await readFile(publishResultPath, "utf8"));
-  const report = auditPublishResult(assertObject(manifest, "publish-result"));
+  const liveAssetNames =
+    (await readGithubReleaseAssetNames(args.githubReleaseAssetsPath)) ??
+    (await fetchGithubReleaseAssetNames(manifest.tag));
+  const report = auditPublishResult(assertObject(manifest, "publish-result"), liveAssetNames);
   if (args.json) {
     process.stdout.write(`${JSON.stringify(report)}\n`);
   } else {
