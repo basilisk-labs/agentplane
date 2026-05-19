@@ -31,17 +31,17 @@ docs/user/cli-reference.generated.mdx.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T13:22:49.905Z
+- Updated: 2026-05-19T13:29:01.756Z
 - Branch: task/202605191250-N3TCR3/legacy-cleanup-06
-- Head: cea94634b669
+- Head: 50db3d2bbeaf
 
 ```text
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
  docs/user/cli-reference.generated.mdx              |   6 -
  .../src/cli/run-cli/commands/init/execution.ts     |  11 +-
  packages/agentplane/src/cli/spec/docs-render.ts    |   6 +-
- packages/agentplane/src/cli/spec/help-render.ts    |  10 +-
- 5 files changed, 585 insertions(+), 20 deletions(-)
+ packages/agentplane/src/cli/spec/help-render.ts    |  50 +-
+ 5 files changed, 606 insertions(+), 39 deletions(-)
 ```
 
 </details>

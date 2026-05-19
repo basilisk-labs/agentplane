@@ -2,5 +2,5 @@
  docs/user/cli-reference.generated.mdx              |   6 -
  .../src/cli/run-cli/commands/init/execution.ts     |  11 +-
  packages/agentplane/src/cli/spec/docs-render.ts    |   6 +-
- packages/agentplane/src/cli/spec/help-render.ts    |  10 +-
- 5 files changed, 585 insertions(+), 20 deletions(-)
+ packages/agentplane/src/cli/spec/help-render.ts    |  50 +-
+ 5 files changed, 606 insertions(+), 39 deletions(-)
