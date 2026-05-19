@@ -30,16 +30,17 @@ preserved. Evidence: PR #3932 scoped branch diff and repo-local bootstrap succes
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T13:18:51.144Z
+- Updated: 2026-05-19T13:22:49.905Z
 - Branch: task/202605191250-N3TCR3/legacy-cleanup-06
-- Head: 09fbb81c7544
+- Head: cea94634b669
 
 ```text
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   6 -
  .../src/cli/run-cli/commands/init/execution.ts     |  11 +-
  packages/agentplane/src/cli/spec/docs-render.ts    |   6 +-
  packages/agentplane/src/cli/spec/help-render.ts    |  10 +-
- 4 files changed, 585 insertions(+), 14 deletions(-)
+ 5 files changed, 585 insertions(+), 20 deletions(-)
 ```
 
 </details>

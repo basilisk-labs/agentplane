@@ -1,5 +1,6 @@
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   6 -
  .../src/cli/run-cli/commands/init/execution.ts     |  11 +-
  packages/agentplane/src/cli/spec/docs-render.ts    |   6 +-
  packages/agentplane/src/cli/spec/help-render.ts    |  10 +-
- 4 files changed, 585 insertions(+), 14 deletions(-)
+ 5 files changed, 585 insertions(+), 20 deletions(-)

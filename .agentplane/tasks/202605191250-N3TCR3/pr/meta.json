@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202605191250-N3TCR3/legacy-cleanup-06",
   "created_at": "2026-05-19T12:51:12.969Z",
-  "head_sha": "09fbb81c75442e0b2df4c07cbac23d48541ac704",
+  "head_sha": "cea94634b669353c7b704d3ba2f4f095eb5819bb",
   "last_verified_at": "2026-05-19T13:19:21.384Z",
   "last_verified_sha": "09fbb81c75442e0b2df4c07cbac23d48541ac704",
   "pr_number": 3932,
@@ -10,7 +10,7 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202605191250-N3TCR3",
-  "updated_at": "2026-05-19T13:18:51.144Z",
+  "updated_at": "2026-05-19T13:22:49.905Z",
   "verify": {
     "status": "pass"
   }
