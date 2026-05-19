@@ -13,6 +13,7 @@ import {
   maybeUpdateBunLockfile,
   packageDependencyExists,
   replaceAgentplanePackageMetadata,
+  replaceAcrExampleVersionInFile,
   replacePackageDependencyVersion,
   replacePackageVersionInFile,
   replaceRecipesRuntimeVersionInFile,
@@ -37,13 +38,18 @@ export async function applyReleaseMutation(opts: {
 }): Promise<ReleaseCommandMutation> {
   let releaseCommit: { hash: string; subject: string } | null = null;
   const recipesRuntimeVersionPath = path.join(path.dirname(opts.recipesPkgPath), "src", "index.ts");
+  const acrExamplePath = path.join(opts.gitRoot, "packages/spec/examples/acr.json");
   const shouldUpdateRecipesRuntimeVersion = await fileExists(recipesRuntimeVersionPath);
+  const shouldUpdateAcrExample = await fileExists(acrExamplePath);
   await Promise.all([
     replacePackageVersionInFile(opts.corePkgPath, opts.nextVersion),
     replacePackageVersionInFile(opts.recipesPkgPath, opts.nextVersion),
     replaceAgentplanePackageMetadata(opts.agentplanePkgPath, opts.nextVersion),
     shouldUpdateRecipesRuntimeVersion
       ? replaceRecipesRuntimeVersionInFile(recipesRuntimeVersionPath, opts.nextVersion)
+      : Promise.resolve(),
+    shouldUpdateAcrExample
+      ? replaceAcrExampleVersionInFile(acrExamplePath, opts.nextVersion)
       : Promise.resolve(),
   ]);
   const shouldUpdateTestkitAgentplaneDependency =
@@ -81,6 +87,9 @@ export async function applyReleaseMutation(opts: {
   }
   if (shouldUpdateTestkitAgentplaneDependency || shouldUpdateTestkitCoreDependency) {
     stagePaths.push("packages/testkit/package.json");
+  }
+  if (shouldUpdateAcrExample) {
+    stagePaths.push("packages/spec/examples/acr.json");
   }
   if (expectedCliVersionPersisted) {
     stagePaths.push(".agentplane/WORKFLOW.md");
