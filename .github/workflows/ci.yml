@@ -177,6 +177,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-
       - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Build packages (dist + manifests)
+        run: |
+          bun run --filter=@agentplaneorg/core build
+          bun run --filter=agentplane build
+          bun run --filter=@agentplane/testkit build
+          bun run --filter=@agentplaneorg/recipes build
       - name: Lint
         run: bun run lint:core
       - name: Architecture boundaries
@@ -214,6 +220,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-
       - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Build packages (dist + manifests)
+        run: |
+          bun run --filter=@agentplaneorg/core build
+          bun run --filter=agentplane build
+          bun run --filter=@agentplane/testkit build
+          bun run --filter=@agentplaneorg/recipes build
       - name: Unit Tests (Fast)
         run: bun run test:fast
         env:
@@ -297,6 +309,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-
       - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Build packages (dist + manifests)
+        run: |
+          bun run --filter=@agentplaneorg/core build
+          bun run --filter=agentplane build
+          bun run --filter=@agentplane/testkit build
+          bun run --filter=@agentplaneorg/recipes build
       - name: Workflow contract gate
         run: |
           if [ "${AGENTPLANE_WORKFLOW_ENFORCEMENT:-on}" = "off" ]; then
@@ -337,6 +355,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-
       - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Build packages (dist + manifests)
+        run: |
+          bun run --filter=@agentplaneorg/core build
+          bun run --filter=agentplane build
+          bun run --filter=@agentplane/testkit build
+          bun run --filter=@agentplaneorg/recipes build
       - name: Workflow/Harness Coverage (guard)
         run: bun run coverage:workflow-suite
       - name: Significant File Coverage (guard)
