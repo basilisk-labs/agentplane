@@ -13,7 +13,7 @@ Created: 2026-05-19T12:51:12.969Z
 ## Verification
 
 - State: ok
-- Note: EVALUATOR quality gate passed with cited evidence. Evaluated current implementation commits 0ecb74f9962eb055da26fad2da086136a359b68f and 09fbb81c7544 formatting follow-up: init no longer presents .agentplane/config.json as a new init write/conflict target; disabled deprecated flags are hidden from help/docs rendering; parser rejection and legacy config import fallback remain preserved. Evidence: PR #3932 scoped branch diff and repo-local bootstrap success after formatting.
+- Note: EVALUATOR quality gate passed with cited evidence. Evaluated current implementation/docs commits including 0ecb74f9962e, 09fbb81c7544, and generated CLI reference refresh cea94634b669: init legacy config preview was narrowed, disabled deprecated options are hidden from help/docs output, and generated CLI reference was refreshed after pre-push freshness failure. Evidence: pre-push fast CI reached CLI docs freshness, reported stale generated docs, and docs:cli:generate updated docs/user/cli-reference.generated.mdx.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
