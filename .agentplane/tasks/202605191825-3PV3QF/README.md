@@ -1,0 +1,163 @@
+---
+id: "202605191825-3PV3QF"
+title: "Split GitHub PR verification into routed parallel gates"
+status: "DOING"
+priority: "high"
+owner: "CODER"
+revision: 7
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "ci"
+  - "code"
+  - "github"
+verify: []
+plan_approval:
+  state: "approved"
+  updated_at: "2026-05-19T18:25:54.020Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "ok"
+  updated_at: "2026-05-19T18:33:52.281Z"
+  updated_by: "CODER"
+  note: "Verified routed GitHub CI changes locally: workflows:command-check, policy routing, workflow bucket route explanation, git diff --check, full ci:local:fast for .github/workflows/ci.yml, and aggregate/release-ready workflow structure inspection all passed."
+  attempts: 0
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: Implement routed GitHub PR verification by reusing the existing local CI selector, splitting Core CI into clearer parallel jobs, adding a stable aggregate gate, and preserving release-ready behavior."
+events:
+  -
+    type: "status"
+    at: "2026-05-19T18:26:31.498Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Implement routed GitHub PR verification by reusing the existing local CI selector, splitting Core CI into clearer parallel jobs, adding a stable aggregate gate, and preserving release-ready behavior."
+  -
+    type: "verify"
+    at: "2026-05-19T18:33:52.281Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified routed GitHub CI changes locally: workflows:command-check, policy routing, workflow bucket route explanation, git diff --check, full ci:local:fast for .github/workflows/ci.yml, and aggregate/release-ready workflow structure inspection all passed."
+doc_version: 3
+doc_updated_at: "2026-05-19T18:33:52.313Z"
+doc_updated_by: "CODER"
+description: "Make GitHub PR verification faster and clearer by reusing the local CI selector for a planning job, splitting Core CI into parallel verification jobs, adding a stable aggregate gate, and caching Bun artifacts on Windows."
+sections:
+  Summary: |-
+    Split GitHub PR verification into routed parallel gates
+
+    Make GitHub PR verification faster and clearer by reusing the local CI selector for a planning job, splitting Core CI into parallel verification jobs, adding a stable aggregate gate, and caching Bun artifacts on Windows.
+  Scope: |-
+    - In scope: Make GitHub PR verification faster and clearer by reusing the local CI selector for a planning job, splitting Core CI into parallel verification jobs, adding a stable aggregate gate, and caching Bun artifacts on Windows.
+    - Out of scope: unrelated refactors not required for "Split GitHub PR verification into routed parallel gates".
+  Plan: |-
+    1. Reuse the existing local CI changed-file selector from GitHub by adding a plan job that emits route/bucket outputs.
+    2. Split Core CI PR verification into independent jobs for contract, static analysis, unit tests, CLI critical tests, workflow checks, coverage, Windows platform checks, and release-ready manifest.
+    3. Add a stable aggregate PR verification job that succeeds only when the route-required jobs pass and skipped jobs are intentional.
+    4. Add Bun artifact caching to Windows setup.
+    5. Verify workflow syntax/contract and local routing behavior without widening release scope.
+  Verify Steps: |-
+    - `bun run workflows:command-check` passes.
+    - `node .agentplane/policy/check-routing.mjs` passes.
+    - `AGENTPLANE_FAST_CHANGED_FILES=.github/workflows/ci.yml node scripts/checks/run-local-ci.mjs --mode smoke --explain` shows the workflow bucket is classified as `targeted (workflow)`.
+    - `git diff --check` passes.
+    - `bun run ci:local:fast -- --changed-files .github/workflows/ci.yml` passes.
+    - The GitHub workflow defines one stable aggregate PR gate and preserves release-ready behavior for core changes.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-19T18:33:52.281Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified routed GitHub CI changes locally: workflows:command-check, policy routing, workflow bucket route explanation, git diff --check, full ci:local:fast for .github/workflows/ci.yml, and aggregate/release-ready workflow structure inspection all passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:33:21.802Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json
+    - old_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+    - current_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
+
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: |-
+    - Observation: GitHub Core CI now has a plan job, routed non-full path, parallel full-fast verification jobs, Windows Bun cache, release-ready dependency preservation, and one PR verification aggregate job.
+      Impact: PR verification should expose a single stable merge gate while running independent full checks in parallel and keeping targeted/doc routes shorter.
+      Resolution: Branch protection must be updated to require Core CI / PR verification instead of the old Core CI / test and Core CI / test-windows checks after this workflow lands.
+id_source: "generated"
+---
+## Summary
+
+Split GitHub PR verification into routed parallel gates
+
+Make GitHub PR verification faster and clearer by reusing the local CI selector for a planning job, splitting Core CI into parallel verification jobs, adding a stable aggregate gate, and caching Bun artifacts on Windows.
+
+## Scope
+
+- In scope: Make GitHub PR verification faster and clearer by reusing the local CI selector for a planning job, splitting Core CI into parallel verification jobs, adding a stable aggregate gate, and caching Bun artifacts on Windows.
+- Out of scope: unrelated refactors not required for "Split GitHub PR verification into routed parallel gates".
+
+## Plan
+
+1. Reuse the existing local CI changed-file selector from GitHub by adding a plan job that emits route/bucket outputs.
+2. Split Core CI PR verification into independent jobs for contract, static analysis, unit tests, CLI critical tests, workflow checks, coverage, Windows platform checks, and release-ready manifest.
+3. Add a stable aggregate PR verification job that succeeds only when the route-required jobs pass and skipped jobs are intentional.
+4. Add Bun artifact caching to Windows setup.
+5. Verify workflow syntax/contract and local routing behavior without widening release scope.
+
+## Verify Steps
+
+- `bun run workflows:command-check` passes.
+- `node .agentplane/policy/check-routing.mjs` passes.
+- `AGENTPLANE_FAST_CHANGED_FILES=.github/workflows/ci.yml node scripts/checks/run-local-ci.mjs --mode smoke --explain` shows the workflow bucket is classified as `targeted (workflow)`.
+- `git diff --check` passes.
+- `bun run ci:local:fast -- --changed-files .github/workflows/ci.yml` passes.
+- The GitHub workflow defines one stable aggregate PR gate and preserves release-ready behavior for core changes.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-19T18:33:52.281Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified routed GitHub CI changes locally: workflows:command-check, policy routing, workflow bucket route explanation, git diff --check, full ci:local:fast for .github/workflows/ci.yml, and aggregate/release-ready workflow structure inspection all passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:33:21.802Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json
+- old_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+- current_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
+
+- Observation: GitHub Core CI now has a plan job, routed non-full path, parallel full-fast verification jobs, Windows Bun cache, release-ready dependency preservation, and one PR verification aggregate job.
+  Impact: PR verification should expose a single stable merge gate while running independent full checks in parallel and keeping targeted/doc routes shorter.
+  Resolution: Branch protection must be updated to require Core CI / PR verification instead of the old Core CI / test and Core CI / test-windows checks after this workflow lands.
