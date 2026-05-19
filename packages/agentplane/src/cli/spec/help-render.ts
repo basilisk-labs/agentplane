@@ -56,6 +56,10 @@ const HELP_GROUP_ORDER = new Map<string, number>([
   ["Maintenance", 950],
 ]);
 
+function isVisibleOption(opt: NonNullable<CommandSpec<unknown>["options"]>[number]): boolean {
+  return opt.hidden !== true && opt.deprecated !== "disabled";
+}
+
 function compareHelpGroups(a: string, b: string): number {
   return helpGroupRank(a) - helpGroupRank(b) || a.localeCompare(b);
 }
@@ -87,7 +91,7 @@ export function renderUsageLines(spec: CommandSpec<unknown>): string[] {
   const args = spec.args ?? [];
   for (const a of args) parts.push(renderArgUsage(a));
 
-  const opts = (spec.options ?? []).filter((o) => !o.hidden);
+  const opts = (spec.options ?? []).filter((o) => isVisibleOption(o));
   const requiredOpts = opts.filter(
     (o): o is StringOptionSpec => o.kind === "string" && o.required === true,
   );
@@ -101,7 +105,7 @@ export function renderUsageLines(spec: CommandSpec<unknown>): string[] {
 }
 
 function renderOptionsLines(spec: CommandSpec<unknown>): string[] {
-  const opts = (spec.options ?? []).filter((o) => !o.hidden);
+  const opts = (spec.options ?? []).filter((o) => isVisibleOption(o));
   if (opts.length === 0) return [];
 
   const lines: string[] = [];
@@ -187,34 +191,36 @@ export function renderCommandHelpText(
 }
 
 export function renderCommandHelpJson(spec: CommandSpec<unknown>): HelpJson {
-  const options = (spec.options ?? []).map((o) => {
-    if (o.kind === "boolean") {
+  const options = (spec.options ?? [])
+    .filter((o) => isVisibleOption(o))
+    .map((o) => {
+      if (o.kind === "boolean") {
+        return {
+          name: o.name,
+          kind: "boolean" as const,
+          short: o.short,
+          description: o.description,
+          hidden: o.hidden,
+          deprecated: o.deprecated,
+          default: o.default,
+        };
+      }
       return {
         name: o.name,
-        kind: "boolean" as const,
+        kind: "string" as const,
         short: o.short,
         description: o.description,
         hidden: o.hidden,
         deprecated: o.deprecated,
+        required: o.required,
+        repeatable: o.repeatable,
+        minCount: o.minCount,
+        valueHint: o.valueHint,
         default: o.default,
+        choices: o.choices ? [...o.choices] : undefined,
+        patternHint: o.patternHint,
       };
-    }
-    return {
-      name: o.name,
-      kind: "string" as const,
-      short: o.short,
-      description: o.description,
-      hidden: o.hidden,
-      deprecated: o.deprecated,
-      required: o.required,
-      repeatable: o.repeatable,
-      minCount: o.minCount,
-      valueHint: o.valueHint,
-      default: o.default,
-      choices: o.choices ? [...o.choices] : undefined,
-      patternHint: o.patternHint,
-    };
-  });
+    });
 
   const args = (spec.args ?? []).map((a) => ({
     name: a.name,

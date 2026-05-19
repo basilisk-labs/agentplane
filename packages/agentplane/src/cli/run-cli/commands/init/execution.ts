@@ -123,15 +123,6 @@ function initWriteEffects(opts: { paths: ResolvedInitPaths; answers: InitAnswers
   const effects: InitEffect[] = [
     {
       kind: "write_file",
-      path: ".agentplane/config.json",
-      summary: "Write legacy compatibility config",
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "low",
-    },
-    {
-      kind: "write_file",
       path: ".agentplane/WORKFLOW.md",
       summary: "Write workflow contract",
       destructive: false,

@@ -914,7 +914,6 @@ Options:
 - `--commit-from-comment`: Create a status commit using the comment body. (default=false)
 - `--commit-emoji <emoji>`: Override the status commit emoji (used with --commit-from-comment).
 - `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
-- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
 - `--commit-require-clean`: Require a clean working tree for the status commit (used with --commit-from-comment). (default=false)
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment). (default=false)
 - `--force`: Override status transition restrictions. (default=false)
@@ -960,12 +959,10 @@ Options:
 - `--commit-from-comment`: Create a commit using the comment body (requires exactly one task id). (default=false)
 - `--commit-emoji <emoji>`: Override the commit emoji (used with --commit-from-comment).
 - `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
-- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
 - `--commit-require-clean`: Require a clean working tree for the commit (used with --commit-from-comment). (default=false)
 - `--status-commit`: Create a separate status commit (requires exactly one task id). (default=false)
 - `--status-commit-emoji <emoji>`: Override the status commit emoji (used with --status-commit).
 - `--status-commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --status-commit). Use minimal prefixes; '.' is rejected. (repeatable)
-- `--status-commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --status-commit-allow prefixes. (default=false, deprecated=disabled)
 - `--status-commit-require-clean`: Require a clean working tree for the status commit (used with --status-commit). (default=false)
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment or --status-commit). (default=false)
 - `--close-commit`: After finishing, run a deterministic close commit for the task README (single-task only). (default=false)
@@ -1025,7 +1022,6 @@ Options:
 - `--commit-from-comment`: Create a status commit using the comment body. (default=false)
 - `--commit-emoji <emoji>`: Override the status commit emoji (used with --commit-from-comment).
 - `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
-- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
 - `--commit-require-clean`: Require a clean working tree for the status commit (used with --commit-from-comment). (default=false)
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment). (default=false)
 - `--force`: Override readiness checks and status transition restrictions. (default=false)
@@ -3009,7 +3005,6 @@ Options:
 - `--unstage-others`: With --close: unstage any currently staged paths before staging the task README. (default=false)
 - `--check-only`: With --close: run preflight checks and print the planned close commit subject without creating a commit. (default=false)
 - `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: \`agentplane guard suggest-allow --format args\`). (repeatable)
-- `--auto-allow`: Deprecated. Disabled for safety; pass explicit --allow prefixes. (default=false, deprecated=disabled)
 - `--allow-tasks`: Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope. (default=false)
 - `--allow-base`: Allow base branch edits; branch override only, not a path allowlist. (default=false)
 - `--allow-policy`: Allow policy edits (e.g. AGENTS.md); standalone path scope. (default=false)
@@ -3084,7 +3079,6 @@ Options:
 
 - `-m, --message <message>`: Commit subject (must follow policy). (required)
 - `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: \`agentplane guard suggest-allow --format args\`). (repeatable)
-- `--auto-allow`: Deprecated. Disabled for safety; pass explicit --allow prefixes. (default=false, deprecated=disabled)
 - `--allow-tasks`: Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope. (default=false)
 - `--allow-base`: Allow base branch edits; branch override only, not a path allowlist. (default=false)
 - `--allow-policy`: Allow policy edits (e.g. AGENTS.md); standalone path scope. (default=false)
