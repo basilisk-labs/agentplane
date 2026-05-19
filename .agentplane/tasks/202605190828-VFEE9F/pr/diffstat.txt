@@ -1,0 +1,4 @@
+ .../blueprint/resolved-snapshot.json               | 455 +++++++++++++++++++++
+ .../audit-platform-publication-script.test.ts      |  61 ++-
+ scripts/release/audit-platform-publication.mjs     |  79 +++-
+ 3 files changed, 582 insertions(+), 13 deletions(-)

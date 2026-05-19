@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605190828-VFEE9F/postpublish-audit-live-assets",
+  "created_at": "2026-05-19T08:29:58.137Z",
+  "head_sha": "0dbc4970903e6e241b4bebed6ca4c3096e159314",
+  "last_verified_at": "2026-05-19T08:50:48.609Z",
+  "last_verified_sha": "0dbc4970903e6e241b4bebed6ca4c3096e159314",
+  "pr_number": 3923,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3923",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605190828-VFEE9F",
+  "updated_at": "2026-05-19T08:40:55.549Z",
+  "verify": {
+    "status": "pass"
+  }
+}

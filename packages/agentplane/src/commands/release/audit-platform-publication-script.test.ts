@@ -24,6 +24,23 @@ async function writePublishResult(root: string, payload: unknown) {
   return filePath;
 }
 
+async function writeGithubReleaseAssets(root: string, payload: unknown) {
+  const filePath = path.join(root, "github-release-assets.json");
+  await writeFile(filePath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  return filePath;
+}
+
+async function writeCompleteGithubReleaseAssets(root: string) {
+  return writeGithubReleaseAssets(root, {
+    assets: [
+      { name: "release-distribution.json" },
+      { name: "SHA256SUMS" },
+      { name: "install.sh" },
+      { name: "install.ps1" },
+    ],
+  });
+}
+
 function completePublishResult() {
   return {
     schemaVersion: 1,
@@ -75,16 +92,21 @@ function completePublishResult() {
   };
 }
 
-async function runAudit(filePath: string) {
-  return execFileAsync("node", [SCRIPT_PATH, "--publish-result", filePath, "--json"], {
+async function runAudit(filePath: string, githubReleaseAssetsPath?: string) {
+  const args = [SCRIPT_PATH, "--publish-result", filePath, "--json"];
+  if (githubReleaseAssetsPath) args.push("--github-release-assets", githubReleaseAssetsPath);
+  return execFileAsync("node", args, {
     cwd: process.cwd(),
-    env: process.env,
+    env: {
+      ...process.env,
+      AGENTPLANE_POSTPUBLISH_AUDIT_SKIP_GH: "1",
+    },
   });
 }
 
-async function runAuditFailureStdout(filePath: string) {
+async function runAuditFailureStdout(filePath: string, githubReleaseAssetsPath?: string) {
   try {
-    await runAudit(filePath);
+    await runAudit(filePath, githubReleaseAssetsPath);
   } catch (error: unknown) {
     const stdout =
       error && typeof error === "object" && "stdout" in error ? error.stdout : undefined;
@@ -106,8 +128,9 @@ describe("post-publish platform audit script", () => {
   it("passes when every release channel has canonical evidence", async () => {
     const root = await makeRoot();
     const filePath = await writePublishResult(root, completePublishResult());
+    const assetsPath = await writeCompleteGithubReleaseAssets(root);
 
-    const result = await runAudit(filePath);
+    const result = await runAudit(filePath, assetsPath);
     const payload = JSON.parse(String(result.stdout ?? "")) as { ok: boolean; failures: string[] };
 
     expect(payload.ok).toBe(true);
@@ -130,8 +153,9 @@ describe("post-publish platform audit script", () => {
       { name: "setup-agentplane", loaded: true, status: "unchanged" },
     ];
     const filePath = await writePublishResult(root, fixture);
+    const assetsPath = await writeCompleteGithubReleaseAssets(root);
 
-    await expect(runAuditFailureStdout(filePath)).resolves.toContain('"ok":false');
+    await expect(runAuditFailureStdout(filePath, assetsPath)).resolves.toContain('"ok":false');
   });
 
   it("fails closed when GHCR or GitHub Release asset evidence is missing", async () => {
@@ -140,9 +164,52 @@ describe("post-publish platform audit script", () => {
     fixture.checks.ghcr.published = false;
     fixture.distribution.manifest.releaseAssets = [{ name: "release-distribution.json" }];
     const filePath = await writePublishResult(root, fixture);
+    const assetsPath = await writeCompleteGithubReleaseAssets(root);
+
+    await expect(runAuditFailureStdout(filePath, assetsPath)).resolves.toContain(
+      "GHCR publication not confirmed",
+    );
+  });
+
+  it("fails closed when live GitHub Release asset evidence is unavailable", async () => {
+    const root = await makeRoot();
+    const filePath = await writePublishResult(root, completePublishResult());
 
     await expect(runAuditFailureStdout(filePath)).resolves.toContain(
-      "GHCR publication not confirmed",
+      "GitHub Release asset evidence unavailable",
+    );
+  });
+
+  it("prefers live GitHub Release asset evidence over embedded distribution assets", async () => {
+    const root = await makeRoot();
+    const fixture = completePublishResult();
+    fixture.distribution.manifest.releaseAssets = [
+      { name: "SHA256SUMS" },
+      { name: "install.sh" },
+      { name: "install.ps1" },
+    ];
+    const filePath = await writePublishResult(root, fixture);
+    const assetsPath = await writeCompleteGithubReleaseAssets(root);
+
+    const result = await runAudit(filePath, assetsPath);
+    const payload = JSON.parse(String(result.stdout ?? "")) as { ok: boolean; failures: string[] };
+
+    expect(payload.ok).toBe(true);
+    expect(payload.failures).toHaveLength(0);
+  });
+
+  it("fails closed when live GitHub Release asset evidence is incomplete", async () => {
+    const root = await makeRoot();
+    const fixture = completePublishResult();
+    const filePath = await writePublishResult(root, fixture);
+    const assetsPath = await writeGithubReleaseAssets(root, [
+      "SHA256SUMS",
+      "install.sh",
+      "install.ps1",
+    ]);
+
+    await expect(runAuditFailureStdout(filePath, assetsPath)).resolves.toContain(
+      "GitHub Release asset not confirmed: release-distribution.json",
     );
   });
 });
