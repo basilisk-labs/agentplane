@@ -1,10 +1,11 @@
 ---
 id: "202605190941-5FPGCV"
 title: "Gate release on task registry reconciliation"
-status: "DOING"
+result_summary: "Merged via PR #3928; close-tail recorded on main."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -20,26 +21,31 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T10:29:23.838Z"
+  updated_at: "2026-05-19T10:56:48.882Z"
   updated_by: "EVALUATOR"
-  note: "Covered by PR #3928 hosted green checks and focused local task-registry-ready tests."
+  note: "Fresh main quality gate passed at merge commit 398671158: PR #3928 merged with hosted checks green and release task registry gate covered."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T10:29:23.838Z"
+  updated_at: "2026-05-19T10:56:48.882Z"
   updated_by: "EVALUATOR"
-  note: "Covered by PR #3928 hosted green checks and focused local task-registry-ready tests."
-  evaluated_sha: "55a20724ccb6b144a1bee480c863dd945f49ced9"
+  note: "Fresh main quality gate passed at merge commit 398671158: PR #3928 merged with hosted checks green and release task registry gate covered."
+  evaluated_sha: "398671158b6b3a67343be06e557dc75f14a78db5"
   blueprint_digest: "ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76"
   evidence_refs:
     - ".agentplane/tasks/202605190941-5FPGCV/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-5FPGCV/blueprint/resolved-snapshot.json"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202605190941-5FPGCV/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "398671158b6b3a67343be06e557dc75f14a78db5"
+  message: "Merge pull request #3928 from basilisk-labs/task/202605190941-P1Q6BB/release-pipeline-hardening"
 comments:
   -
     author: "CODER"
     body: "Start: Implement pre-release task registry reconciliation gate as part of the approved batch PR owned by P1Q6BB."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: completed as included batch task in PR #3928; implementation merge commit is 398671158."
 events:
   -
     type: "status"
@@ -60,9 +66,22 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Covered by PR #3928 hosted green checks and focused local task-registry-ready tests."
+  -
+    type: "verify"
+    at: "2026-05-19T10:56:48.882Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Fresh main quality gate passed at merge commit 398671158: PR #3928 merged with hosted checks green and release task registry gate covered."
+  -
+    type: "status"
+    at: "2026-05-19T10:57:20.429Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: completed as included batch task in PR #3928; implementation merge commit is 398671158."
 doc_version: 3
-doc_updated_at: "2026-05-19T10:29:23.904Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T10:57:20.433Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a pre-release gate that detects stale local DOING tasks and unreadable task files before release candidate or publish readiness, with clear remediation guidance."
 sections:
   Summary: |-
@@ -112,6 +131,25 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-5FPGCV/blueprint/resolved-snapshot.json
+    - old_digest: ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76
+    - current_digest: ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605190941-5FPGCV
+
+    ### 2026-05-19T10:56:48.882Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Fresh main quality gate passed at merge commit 398671158: PR #3928 merged with hosted checks green and release task registry gate covered.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T10:29:23.904Z, excerpt_hash=sha256:f1a1f009a496a46cf646522752d3865a5c5cb28f44b8709c60171793e940f28a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605190941-5FPGCV/blueprint/resolved-snapshot.json
     - old_digest: ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76
     - current_digest: ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76
     - route_changed: no
@@ -184,6 +222,25 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-5FPGCV/blueprint/resolved-snapshot.json
+- old_digest: ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76
+- current_digest: ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605190941-5FPGCV
+
+### 2026-05-19T10:56:48.882Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Fresh main quality gate passed at merge commit 398671158: PR #3928 merged with hosted checks green and release task registry gate covered.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T10:29:23.904Z, excerpt_hash=sha256:f1a1f009a496a46cf646522752d3865a5c5cb28f44b8709c60171793e940f28a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605190941-5FPGCV/blueprint/resolved-snapshot.json
 - old_digest: ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76
 - current_digest: ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76
 - route_changed: no

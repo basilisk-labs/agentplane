@@ -1,10 +1,11 @@
 ---
 id: "202605190941-Y873RA"
 title: "Declare release version surfaces"
-status: "DOING"
+result_summary: "Merged via PR #3928; close-tail recorded on main."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -19,26 +20,31 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T10:29:20.768Z"
+  updated_at: "2026-05-19T10:56:43.793Z"
   updated_by: "EVALUATOR"
-  note: "Covered by PR #3928 hosted green checks and focused local release parity/version-surface tests."
+  note: "Fresh main quality gate passed at merge commit 398671158: PR #3928 merged with hosted checks green and release version surface follow-up review resolved."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T10:29:20.768Z"
+  updated_at: "2026-05-19T10:56:43.793Z"
   updated_by: "EVALUATOR"
-  note: "Covered by PR #3928 hosted green checks and focused local release parity/version-surface tests."
-  evaluated_sha: "55a20724ccb6b144a1bee480c863dd945f49ced9"
+  note: "Fresh main quality gate passed at merge commit 398671158: PR #3928 merged with hosted checks green and release version surface follow-up review resolved."
+  evaluated_sha: "398671158b6b3a67343be06e557dc75f14a78db5"
   blueprint_digest: "eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b"
   evidence_refs:
     - ".agentplane/tasks/202605190941-Y873RA/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-Y873RA/blueprint/resolved-snapshot.json"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202605190941-Y873RA/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "398671158b6b3a67343be06e557dc75f14a78db5"
+  message: "Merge pull request #3928 from basilisk-labs/task/202605190941-P1Q6BB/release-pipeline-hardening"
 comments:
   -
     author: "CODER"
     body: "Start: Implement release version surfaces as part of the approved batch PR owned by P1Q6BB so version bump and parity gates share one contract."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: completed as included batch task in PR #3928; implementation merge commit is 398671158."
 events:
   -
     type: "status"
@@ -59,9 +65,22 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Covered by PR #3928 hosted green checks and focused local release parity/version-surface tests."
+  -
+    type: "verify"
+    at: "2026-05-19T10:56:43.793Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Fresh main quality gate passed at merge commit 398671158: PR #3928 merged with hosted checks green and release version surface follow-up review resolved."
+  -
+    type: "status"
+    at: "2026-05-19T10:57:17.093Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: completed as included batch task in PR #3928; implementation merge commit is 398671158."
 doc_version: 3
-doc_updated_at: "2026-05-19T10:29:20.834Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T10:57:17.099Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce a shared declarative release version surface manifest and wire version bump/parity/prepublish checks to it so package, dependency, spec, and example versions cannot drift."
 sections:
   Summary: |-
@@ -111,6 +130,25 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-Y873RA/blueprint/resolved-snapshot.json
+    - old_digest: eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b
+    - current_digest: eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605190941-Y873RA
+
+    ### 2026-05-19T10:56:43.793Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Fresh main quality gate passed at merge commit 398671158: PR #3928 merged with hosted checks green and release version surface follow-up review resolved.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T10:29:20.834Z, excerpt_hash=sha256:2ef51a1f3895a56f6d431c4b6c098bb58f092087960b341e3fd5fcc3afa0c53b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605190941-Y873RA/blueprint/resolved-snapshot.json
     - old_digest: eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b
     - current_digest: eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b
     - route_changed: no
@@ -183,6 +221,25 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-Y873RA/blueprint/resolved-snapshot.json
+- old_digest: eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b
+- current_digest: eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605190941-Y873RA
+
+### 2026-05-19T10:56:43.793Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Fresh main quality gate passed at merge commit 398671158: PR #3928 merged with hosted checks green and release version surface follow-up review resolved.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T10:29:20.834Z, excerpt_hash=sha256:2ef51a1f3895a56f6d431c4b6c098bb58f092087960b341e3fd5fcc3afa0c53b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605190941-Y873RA/blueprint/resolved-snapshot.json
 - old_digest: eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b
 - current_digest: eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b
 - route_changed: no
