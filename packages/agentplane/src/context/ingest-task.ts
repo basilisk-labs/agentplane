@@ -185,7 +185,7 @@ function buildContextAssimilationPromptModule(workspaceMode?: ContextWorkspaceMo
             "- Glossary pass: update the canonical glossary as a navigation index over wiki pages and graph entities; normalize prose to canonical terms where confidence is high.",
             "- Synthesis pass: create granular wiki pages and stable headings from the extracted graph/glossary layer. The wiki should preserve all significant source meaning even without raw files.",
             "- Coverage pass: write or update a coverage report naming covered spans, omitted boilerplate, redacted sensitive spans, conflicts, unresolved identities, and any approval-required gaps.",
-            "- Critical check: do not flatten contradictions, do not silently invent canonical terms, do not copy secrets into public wiki/task/ACR surfaces, and do not claim full semantic coverage without self-contained wiki/fact/graph content plus line-addressed provenance.",
+            "- Critical check: do not flatten contradictions, do not silently invent canonical terms, do not copy secrets or non-publishable source spans into public wiki/task/ACR surfaces, and do not claim full semantic coverage without self-contained wiki/fact/graph content plus line-addressed provenance.",
           ]
         : []),
       "",

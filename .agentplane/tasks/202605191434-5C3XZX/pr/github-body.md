@@ -16,7 +16,7 @@ Stop creating opinionated context/raw/private, research, and specs folders durin
 ## Verification
 
 - State: ok
-- Note: Recorded pre-push residual after focused verification.
+- Note: Addressed PR review thread for non-publishable source spans.
 - Canonical workflow state lives in the task README.
 
 <details>

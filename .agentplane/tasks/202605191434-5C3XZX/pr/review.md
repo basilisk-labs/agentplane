@@ -13,7 +13,7 @@ Created: 2026-05-19T14:35:28.939Z
 ## Verification
 
 - State: ok
-- Note: Recorded pre-push residual after focused verification.
+- Note: Addressed PR review thread for non-publishable source spans.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
