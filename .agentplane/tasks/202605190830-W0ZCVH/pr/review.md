@@ -13,7 +13,7 @@ Created: 2026-05-19T08:32:08.899Z
 ## Verification
 
 - State: ok
-- Note: Adjusted test placement to avoid expanding the oversized init test file; context init behavior and changed-file lint remain verified.
+- Note: Generated CLI reference is fresh after the context init profile help change; implementation, tests, lint, size budget, docs, and routing checks are green.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

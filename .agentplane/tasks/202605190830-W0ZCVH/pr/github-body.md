@@ -19,8 +19,8 @@ Add a TTY dialog for user-run agentplane context init with basic mode informatio
 - Note:
 
 ```text
-Adjusted test placement to avoid expanding the oversized init test file; context init behavior and
-changed-file lint remain verified.
+Generated CLI reference is fresh after the context init profile help change; implementation, tests,
+lint, size budget, docs, and routing checks are green.
 ```
 - Canonical workflow state lives in the task README.
 
