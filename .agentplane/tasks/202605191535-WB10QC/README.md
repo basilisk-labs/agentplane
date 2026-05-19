@@ -1,10 +1,11 @@
 ---
 id: "202605191535-WB10QC"
 title: "Make local test routing more flexible and observable"
-status: "DOING"
+result_summary: "Merged via PR #3940."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605191535-WB10QC/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191535-WB10QC-flexible-test-routing/.agentplane/tasks/202605191535-WB10QC/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "8e9bdb25bba1c2144e6287c4688d13e2cb91f27e"
+  message: "Merge PR #3940: Improve local CI route explainability"
 comments:
   -
     author: "CODER"
     body: "Start: implementing explainable local CI routing and registry-aligned targeted test reporting in the dedicated branch_pr worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3940 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -72,9 +78,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator gate pass: local verification and hosted PR checks are green on head a46645a20944fd4d235ff12a928f54fbc5ece723."
+  -
+    type: "status"
+    at: "2026-05-19T16:51:26.291Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3940 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T16:42:27.442Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T16:51:26.298Z"
+doc_updated_by: "INTEGRATOR"
 description: "Improve the local quality/test routing loop by adding an explainable local CI selector/report path and reducing registry drift for targeted test runs."
 sections:
   Summary: |-
