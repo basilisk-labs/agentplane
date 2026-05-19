@@ -4,7 +4,7 @@ title: "Refresh evidence bundle during hosted close"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T16:48:54.418Z"
-  updated_by: "CODER"
-  note: "Addressed PR review thread by preserving hosted-close --quiet semantics during internal evidence refresh. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap."
+  updated_at: "2026-05-19T16:57:46.329Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed. Evidence: GitHub PR #3944 checks passed including Core CI test, test-windows, Release-ready manifest, Docs CI, CodeQL; local focused evidence/hosted-close tests, agentplane typecheck, framework:dev:bootstrap, and strict evidence verification passed before integration."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T16:57:46.329Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed. Evidence: GitHub PR #3944 checks passed including Core CI test, test-windows, Release-ready manifest, Docs CI, CodeQL; local focused evidence/hosted-close tests, agentplane typecheck, framework:dev:bootstrap, and strict evidence verification passed before integration."
+  evaluated_sha: "11dbf579c74c029fca4ccf9cf5026374664d7aa0"
+  blueprint_digest: "2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9"
+  evidence_refs:
+    - ".agentplane/tasks/202605191618-YJFGND/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191618-YJFGND-hosted-close-evidence/.agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -48,8 +59,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Addressed PR review thread by preserving hosted-close --quiet semantics during internal evidence refresh. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap."
+  -
+    type: "verify"
+    at: "2026-05-19T16:57:46.329Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed. Evidence: GitHub PR #3944 checks passed including Core CI test, test-windows, Release-ready manifest, Docs CI, CodeQL; local focused evidence/hosted-close tests, agentplane typecheck, framework:dev:bootstrap, and strict evidence verification passed before integration."
 doc_version: 3
-doc_updated_at: "2026-05-19T16:48:54.478Z"
+doc_updated_at: "2026-05-19T16:57:46.372Z"
 doc_updated_by: "CODER"
 description: "Ensure branch_pr hosted close regenerates task evidence manifests after final task README and PR metadata mutations so strict evidence verification remains valid on main after close."
 sections:
@@ -96,6 +113,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T16:22:29.766Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191618-YJFGND-hosted-close-evidence/.agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json
+    - old_digest: 2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9
+    - current_digest: 2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191618-YJFGND
+
+    ### 2026-05-19T16:57:46.329Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed. Evidence: GitHub PR #3944 checks passed including Core CI test, test-windows, Release-ready manifest, Docs CI, CodeQL; local focused evidence/hosted-close tests, agentplane typecheck, framework:dev:bootstrap, and strict evidence verification passed before integration.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T16:48:54.478Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -167,6 +203,25 @@ Note: Addressed PR review thread by preserving hosted-close --quiet semantics du
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T16:22:29.766Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191618-YJFGND-hosted-close-evidence/.agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json
+- old_digest: 2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9
+- current_digest: 2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191618-YJFGND
+
+### 2026-05-19T16:57:46.329Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed. Evidence: GitHub PR #3944 checks passed including Core CI test, test-windows, Release-ready manifest, Docs CI, CodeQL; local focused evidence/hosted-close tests, agentplane typecheck, framework:dev:bootstrap, and strict evidence verification passed before integration.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T16:48:54.478Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 

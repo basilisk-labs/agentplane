@@ -19,9 +19,10 @@ Ensure branch_pr hosted close regenerates task evidence manifests after final ta
 - Note:
 
 ```text
-Addressed PR review thread by preserving hosted-close --quiet semantics during internal evidence
-refresh. Checks passed: hosted-close/evidence focused tests, agentplane typecheck,
-framework:dev:bootstrap.
+EVALUATOR quality gate passed. Evidence: GitHub PR #3944 checks passed including Core CI test,
+test-windows, Release-ready manifest, Docs CI, CodeQL; local focused evidence/hosted-close tests,
+agentplane typecheck, framework:dev:bootstrap, and strict evidence verification passed before
+integration.
 ```
 - Canonical workflow state lives in the task README.
 
