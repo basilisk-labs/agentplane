@@ -7,6 +7,7 @@ import {
   renderAcrSchemaJson,
   renderAgentplaneConfigSchemaJson,
   renderTaskHandoffSchemaJson,
+  renderTaskObservationSchemaJson,
   renderTaskPrMetaSchemaJson,
   renderTaskReadmeFrontmatterSchemaJson,
   renderTasksExportSchemaJson,
@@ -19,6 +20,7 @@ const GENERATED_RUNTIME_SCHEMAS = [
   "tasks-export.schema.json",
   "pr-meta.schema.json",
   "task-handoff.schema.json",
+  "task-observation.schema.json",
 ];
 
 const STATIC_CONTEXT_SCHEMAS = [
@@ -79,6 +81,11 @@ const main = defineScript({
         label: "task handoff schema",
         rendered: renderTaskHandoffSchemaJson(),
         targets: schemaTargets("task-handoff.schema.json"),
+      },
+      {
+        label: "task observation schema",
+        rendered: renderTaskObservationSchemaJson(),
+        targets: schemaTargets("task-observation.schema.json"),
       },
       ...STATIC_CONTEXT_SCHEMAS.map((fileName) => ({
         label: `context schema ${fileName}`,

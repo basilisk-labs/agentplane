@@ -12,6 +12,9 @@ export const fromCommandsTaskHandoffRecordCommand = commandModule(
 export const fromCommandsTaskFindingsCommand = commandModule(
   () => import("../../../commands/task/findings.command.js"),
 );
+export const fromCommandsTaskObservationsCommand = commandModule(
+  () => import("../../../commands/task/observations.command.js"),
+);
 export const fromCommandsTaskDocCommand = commandModule(
   () => import("../../../commands/task/doc.command.js"),
 );
@@ -99,6 +102,22 @@ export const loadTaskSetStatusSpec = (deps: RunDeps) =>
 export const loadTaskFindingsAddSpec = (deps: RunDeps) =>
   import("../../../commands/task/findings-add.command.js").then((m) =>
     m.makeRunTaskFindingsAddHandler(deps.getCtx),
+  );
+export const loadTaskObservationsAddSpec = (deps: RunDeps) =>
+  import("../../../commands/task/observations.command.js").then((m) =>
+    m.makeRunTaskObservationsAddHandler(deps.getCtx),
+  );
+export const loadTaskObservationsListSpec = (deps: RunDeps) =>
+  import("../../../commands/task/observations.command.js").then((m) =>
+    m.makeRunTaskObservationsListHandler(deps.getCtx),
+  );
+export const loadTaskObservationsCheckSpec = (deps: RunDeps) =>
+  import("../../../commands/task/observations.command.js").then((m) =>
+    m.makeRunTaskObservationsCheckHandler(deps.getCtx),
+  );
+export const loadTaskObservationsTriageSpec = (deps: RunDeps) =>
+  import("../../../commands/task/observations.command.js").then((m) =>
+    m.makeRunTaskObservationsTriageHandler(deps.getCtx),
   );
 export const loadTaskDocShowSpec = (deps: RunDeps) =>
   import("../../../commands/task/doc-show.command.js").then((m) =>

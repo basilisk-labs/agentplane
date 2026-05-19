@@ -5,6 +5,13 @@ import { taskCommentSpec } from "../../../commands/task/comment.command.js";
 import { taskDeriveSpec } from "../../../commands/task/derive.command.js";
 import { taskFindingsAddSpec } from "../../../commands/task/findings-add.command.js";
 import { taskFindingsSpec } from "../../../commands/task/findings.command.js";
+import {
+  taskObservationsAddSpec,
+  taskObservationsCheckSpec,
+  taskObservationsListSpec,
+  taskObservationsSpec,
+  taskObservationsTriageSpec,
+} from "../../../commands/task/observations.command.js";
 import { taskDocSetSpec } from "../../../commands/task/doc-set.command.js";
 import { taskDocShowSpec } from "../../../commands/task/doc-show.command.js";
 import { taskDocSpec } from "../../../commands/task/doc.command.js";
@@ -55,6 +62,7 @@ import {
   fromCommandsTaskHandoffCommand,
   fromCommandsTaskHandoffRecordCommand,
   fromCommandsTaskFindingsCommand,
+  fromCommandsTaskObservationsCommand,
   fromCommandsTaskDocCommand,
   fromCommandsTaskLintCommand,
   fromCommandsTaskMigrateDocCommand,
@@ -81,6 +89,10 @@ import {
   loadTaskCommentSpec,
   loadTaskSetStatusSpec,
   loadTaskFindingsAddSpec,
+  loadTaskObservationsAddSpec,
+  loadTaskObservationsCheckSpec,
+  loadTaskObservationsListSpec,
+  loadTaskObservationsTriageSpec,
   loadTaskDocShowSpec,
   loadTaskDocSetSpec,
   loadTaskScrubSpec,
@@ -185,6 +197,31 @@ export const TASK_COMMANDS = [
   }),
   declareCommand(taskFindingsAddSpec, {
     load: loadTaskFindingsAddSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  fromCommandsTaskObservationsCommand(taskObservationsSpec, "runTaskObservations", {
+    needs: "none",
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskObservationsAddSpec, {
+    load: loadTaskObservationsAddSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskObservationsListSpec, {
+    load: loadTaskObservationsListSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskObservationsCheckSpec, {
+    load: loadTaskObservationsCheckSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskObservationsTriageSpec, {
+    load: loadTaskObservationsTriageSpec,
     surface: "advanced",
     helpGroup: "Advanced",
   }),

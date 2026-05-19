@@ -1,0 +1,60 @@
+---
+title: "Task Observations"
+description: "Structured task-local observations for agent decisions, gaps, risks, and follow-up candidates."
+---
+
+# Task Observations
+
+## Quick answer
+
+Task observations are append-only JSONL entries that capture useful signals discovered while an
+agent implements a task:
+
+```text
+.agentplane/tasks/<task-id>/observations.jsonl
+```
+
+They are not a transcript and not a replacement for `Findings` or ACR. Use them for information
+that should remain machine-readable after the task: spec gaps, assumptions, decisions, deviations,
+tradeoffs, risks, issue candidates, incident candidates, context candidates, and agent improvement
+candidates.
+
+## Add an observation
+
+```bash
+agentplane task observations add <task-id> \
+  --kind spec_gap \
+  --summary "Spec did not define issue promotion rules." \
+  --impact "Post-task mining would be ambiguous." \
+  --action blueprint_change \
+  --action-title "Define observation triage gate" \
+  --author CODER
+```
+
+## Inspect and gate
+
+```bash
+agentplane task observations list <task-id>
+agentplane task observations check <task-id>
+agentplane task observations triage <task-id>
+```
+
+`check` validates the JSONL file and fails when blocking observations remain open. Blocking means:
+
+- open `high` or `critical` severity;
+- open `deviation` without a recorded decision;
+- open `incident_candidate`, `issue_candidate`, or `agent_improvement_candidate` without a
+  recommended action.
+
+## Promotion model
+
+Keep raw observations in `observations.jsonl`. Promote only the durable subset:
+
+- `README.md` `Findings` for human-readable task-local outcomes.
+- `.agentplane/policy/incidents.md` for active reusable incident rules.
+- GitHub Issues for product or repository follow-ups.
+- Context/wiki for reusable local knowledge.
+- Skills, blueprints, or agent prompts for agent behavior improvements.
+
+ACR and evidence bundles should point at the observation artifact as evidence rather than copying
+the running log into the final record.

@@ -47,6 +47,7 @@ packages/spec/
     tasks-export.schema.json
     pr-meta.schema.json
     task-handoff.schema.json
+    task-observation.schema.json
     acr-v0.1.schema.json
   examples/
     config.json      legacy import compatibility example
@@ -60,5 +61,6 @@ packages/spec/
 ## Links
 
 - ACR schema: https://agentplane.org/schemas/acr-v0.1.schema.json
+- Task observation schema: https://agentplane.org/schemas/task-observation.schema.json
 - CLI package: https://www.npmjs.com/package/agentplane
 - Repository: https://github.com/basilisk-labs/agentplane
