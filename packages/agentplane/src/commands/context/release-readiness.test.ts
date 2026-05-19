@@ -449,6 +449,47 @@ describe("context release readiness guards", () => {
     );
   });
 
+  it("rejects maximum-assimilation ingest tasks without source ingest files", async () => {
+    const root = await tempRoot();
+    const task = {
+      id: "202605191451-CTXING",
+      status: "DOING",
+      owner: "CURATOR",
+      task_kind: "context",
+      mutation_scope: "context",
+      blueprint_request: "context.maximum_assimilation",
+      extensions: {
+        "agentplane.context": {
+          task_type: "context_assimilation",
+          mode: "maximum_assimilation",
+          allowed_outputs: ["context/wiki/"],
+          source_set: { files: [] },
+        },
+      },
+      runner: {
+        evidence: {
+          changed_paths: [],
+        },
+      },
+    };
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { getTask: async () => task },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+
+    await expect(
+      cmdContextVerifyTask({
+        ctx,
+        cwd: root,
+        parsed: { taskId: task.id },
+      }),
+    ).rejects.toThrow(/extensions\.agentplane\.context\.source_set\.files must not be empty/u);
+  });
+
   it("prints the context check label when check delegates to doctor", async () => {
     const root = await tempRoot();
     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);

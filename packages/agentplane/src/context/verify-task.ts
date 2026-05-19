@@ -132,9 +132,7 @@ function isRawMutationAllowed(context: ContextExtension): boolean {
 
 function isProfileSwitchContextTask(context: ContextExtension): boolean {
   return (
-    context.task_type === "context_profile_switch" ||
-    context.task_type === "context_configuration" ||
-    context.mode === "maximum_assimilation"
+    context.task_type === "context_profile_switch" || context.task_type === "context_configuration"
   );
 }
 
