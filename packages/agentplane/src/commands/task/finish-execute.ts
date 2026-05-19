@@ -37,6 +37,7 @@ import {
   gitMutationDiagnosticContext,
   resolveGitIndexLockInfo,
 } from "../../shared/git-mutation.js";
+import { resolveIgnoredDirectCloseDirtyPaths } from "../guard/impl/close-dirt.js";
 
 export async function executeFinishPlan(opts: {
   ctx: CommandContext;
@@ -465,18 +466,21 @@ async function assertCloseCommitCanMutateTaskState(opts: {
     });
   }
 
-  if (ctx.config.workflow_mode !== "branch_pr") return;
-
   const unstaged = await ctx.git.statusUnstagedTrackedPaths();
-  if (unstaged.length === 0) return;
+  const ignored =
+    ctx.config.workflow_mode === "direct"
+      ? await resolveIgnoredDirectCloseDirtyPaths({ ctx, taskId })
+      : [];
+  const blockingUnstaged = unstaged.filter((relPath) => !ignored.includes(relPath));
+  if (blockingUnstaged.length === 0) return;
 
   throw new CliError({
     exitCode: 5,
     code: "E_GIT",
     message: [
       "finish --close-commit requires a clean tracked working tree before mutating task state.",
-      "Why: deterministic branch_pr close commits stage only the finished task artifacts; other tracked changes would make commit creation fail after the task is marked DONE.",
-      `Dirty tracked paths: ${unstaged.slice(0, 12).join(", ")}${unstaged.length > 12 ? ` (+${unstaged.length - 12} more)` : ""}`,
+      `Why: deterministic ${ctx.config.workflow_mode} close commits stage only the finished task artifacts; other tracked changes would make commit creation fail after the task is marked DONE.`,
+      `Dirty tracked paths: ${blockingUnstaged.slice(0, 12).join(", ")}${blockingUnstaged.length > 12 ? ` (+${blockingUnstaged.length - 12} more)` : ""}`,
       "Fix: commit, stash, or move unrelated lifecycle changes into a batch close branch before rerunning finish.",
       "Safe command: git status --short --untracked-files=no",
     ].join("\n"),

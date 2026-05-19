@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-19T17:13:59Z",
+  "base": "main",
+  "branch": "task/202605191618-YJFGND/hosted-close-evidence",
+  "created_at": "2026-05-19T16:19:53.288Z",
+  "head_sha": "6e455be4ccc635ad78e4914e855a508408dc2b7b",
+  "last_verified_at": "2026-05-19T16:57:46.329Z",
+  "last_verified_sha": "f0db737713b9f0c61778db660eb571b958e6273a",
+  "merge_commit": "b7fcd7b32d0c7419f8d8a68097ba797e03719676",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-19T17:13:59Z",
+  "pr_number": 3944,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3944",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605191618-YJFGND",
+  "updated_at": "2026-05-19T17:13:59Z",
+  "verify": {
+    "status": "pass"
+  }
+}

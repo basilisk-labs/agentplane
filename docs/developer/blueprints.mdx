@@ -62,10 +62,16 @@ Expected shape:
 - `quality.regression`: branch PR code route for tests, CI, coverage, lint, knip, or flaky-check
   work that must preserve the original failure, reproduction, focused check, affected gate, and
   flake classification.
+- `context.assimilation`: context curation route that locks selected sources, reconciles before
+  wiki writes, reindexes, validates graph/wiki state, and records residual gaps.
+- `context.maximum_assimilation`: stricter context route for line-addressed provenance, coverage
+  reporting, glossary normalization, entity/relation extraction, and raw-deletion resilience.
 - `post_run.improvement_review`: branch PR route for long/complex task retrospectives that inspect
   work logs, identify code-fixable errors, create atomic follow-up tasks, and ask whether to execute
   those tasks immediately or defer them.
 - `release.strict`: release/publish route with version, parity, manifest, and publish safety gates.
+- `ops.approval`: operational route with explicit approval and rollback evidence before external
+  system work.
 
 For project-local blueprints, inspect trust and compatibility before task execution:
 
@@ -117,6 +123,76 @@ agentplane init --setup-profile full-harness --blueprints pack:team-baseline --y
 
 Full-harness init may install cached catalog blueprints or packs. Basic/default init keeps using the
 built-in registry and does not prompt for external blueprint installs.
+
+## Built-in Route Map
+
+The built-in registry is a small route ontology. Blueprints reuse shared node sequences and then add
+evidence, policy modules, stop rules, or workflow-mode gates where the task class requires them.
+
+```mermaid
+flowchart LR
+  subgraph ReadOnly["Read-only and content routes"]
+    AL["analysis.light"]
+    CL["content.light"]
+  end
+
+  subgraph Docs["Documentation route"]
+    DC["docs.change"]
+  end
+
+  subgraph Code["Code routes"]
+    CD["code.direct"]
+    CB["code.branch_pr"]
+    PB["performance.benchmark"]
+    QR["quality.regression"]
+  end
+
+  subgraph Context["Context routes"]
+    CA["context.assimilation"]
+    CMA["context.maximum_assimilation"]
+  end
+
+  subgraph ReleaseOps["Release, operations, and review routes"]
+    RS["release.strict"]
+    OA["ops.approval"]
+    PIR["post_run.improvement_review"]
+  end
+
+  AL --> R1["intake -> scope -> context_resolve -> work_unit -> artifact_write -> verify_record -> quality_gate -> finish"]
+  CL --> R2["intake -> scope -> context_resolve -> work_unit -> deterministic_check -> artifact_write -> verify_record -> quality_gate -> finish"]
+  DC --> R2
+  CA --> R2
+  CMA --> R2
+  RS --> R3["intake -> scope -> approval_gate -> context_resolve -> work_unit -> deterministic_check -> publish_or_integrate -> verify_record -> quality_gate -> finish"]
+  OA --> R4["intake -> scope -> approval_gate -> context_resolve -> work_unit -> deterministic_check -> artifact_write -> verify_record -> quality_gate -> finish"]
+  PIR --> R5["intake -> scope -> context_resolve -> work_unit -> artifact_write -> approval_gate -> verify_record -> quality_gate -> handoff -> finish"]
+
+  CD --> CRD["direct code lifecycle nodes"]
+  CB --> CRB["branch_pr code lifecycle nodes"]
+  PB --> CRB
+  QR --> CRB
+
+  CRD --> LC["workflow-lifecycle contract"]
+  CRB --> LC
+```
+
+| Blueprint                      | Task kind          | Workflow modes        | Route spine                                   | Distinctive contract                                                                |
+| ------------------------------ | ------------------ | --------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `analysis.light`               | `analysis`         | any                   | read-only analysis spine                      | sources, assumptions, weak links, final output; no policy modules                   |
+| `content.light`                | `content`          | any                   | content spine with deterministic check        | editorial/style check and final artifact without code lifecycle                     |
+| `docs.change`                  | `docs`             | `direct`, `branch_pr` | docs/content spine                            | `security.must`, `dod.core`, `dod.docs`; changed docs paths and docs checks         |
+| `code.direct`                  | `code`             | `direct`              | direct code lifecycle                         | focused checks and close commit in the current checkout                             |
+| `code.branch_pr`               | `code`             | `branch_pr`           | branch PR code lifecycle                      | worktree, PR artifact, fast local checks, hosted checks, integration commit         |
+| `performance.benchmark`        | `code`             | `branch_pr`           | branch PR code lifecycle                      | baseline, method, run count, threshold, comparison, and performance verdict         |
+| `quality.regression`           | `code`             | `branch_pr`           | branch PR code lifecycle                      | original failure, reproduction, focused check, full gate, flake classification      |
+| `context.assimilation`         | `context`          | `direct`, `branch_pr` | context/docs spine                            | source lock, pre-write reconciliation, wiki/graph/index checks, recovery gaps       |
+| `context.maximum_assimilation` | `context`          | `direct`, `branch_pr` | context/docs spine                            | coverage map, line refs, entity graph, glossary, raw-deletion resilience            |
+| `post_run.improvement_review`  | `code`, `analysis` | `branch_pr`           | post-run review spine                         | inspected work logs, fixable errors, atomic follow-up tasks, execute/defer decision |
+| `release.strict`               | `release`          | `direct`, `branch_pr` | approval plus publish/integrate spine         | version, manifest/parity, external links, publish or integration proof              |
+| `ops.approval`                 | `ops`              | `direct`, `branch_pr` | approval plus rollback-aware operations spine | explicit approval, rollback evidence, operational check result                      |
+
+The diagram intentionally shows route spines rather than every evidence field. The authoritative
+evidence list remains the typed registry and `agentplane blueprint explain <task-id>` output.
 
 ## Task Lifecycle Visibility
 
@@ -299,11 +375,13 @@ export type BlueprintId =
   | "code.branch_pr"
   | "performance.benchmark"
   | "quality.regression"
+  | "context.assimilation"
+  | "context.maximum_assimilation"
   | "post_run.improvement_review"
   | "release.strict"
   | "ops.approval";
 
-export type TaskKind = "analysis" | "content" | "docs" | "code" | "release" | "ops";
+export type TaskKind = "analysis" | "content" | "docs" | "code" | "release" | "ops" | "context";
 
 export type WorkflowMode = "direct" | "branch_pr";
 
@@ -321,6 +399,7 @@ export type BlueprintNodeKind =
   | "hosted_checks"
   | "publish_or_integrate"
   | "verify_record"
+  | "quality_gate"
   | "handoff"
   | "finish";
 
@@ -338,6 +417,7 @@ export type EvidenceKind =
   | "commit"
   | "final_output"
   | "weak_links"
+  | "quality_report"
   | "rollback";
 
 export type Blueprint = {

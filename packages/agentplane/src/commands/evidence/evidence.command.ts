@@ -20,6 +20,7 @@ export type EvidenceBundleParsed = {
   taskId: string;
   out?: string;
   json: boolean;
+  quiet?: boolean;
 };
 
 export type EvidenceVerifyParsed = {
@@ -187,6 +188,7 @@ export async function cmdEvidenceBundle(opts: {
   });
   await mkdir(path.dirname(manifestPath), { recursive: true });
   await writeJsonStableIfChanged(manifestPath, manifest);
+  if (opts.parsed.quiet) return 0;
 
   const relative = toPosix(path.relative(root, manifestPath));
   if (opts.parsed.json) {

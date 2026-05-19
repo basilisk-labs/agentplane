@@ -17,6 +17,11 @@ import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import type { ContextInitParsed } from "./context.spec.js";
+import {
+  assertProfileSwitchIsExplicit,
+  POLICY_FILES,
+  shouldRewriteExistingContextFile,
+} from "./init-profile-switch.js";
 import { starterWikiPageFiles, wikiFrontmatter } from "./init-wiki.js";
 import { cmdContextReindex } from "./reindex.js";
 
@@ -32,14 +37,6 @@ const DEFAULT_GITIGNORE_ENTRIES = [
   ".agentplane/context/service/embeddings/",
   ".agentplane/context/service/remotes/",
 ];
-
-const POLICY_FILES = new Set([
-  ".agentplane/context/policies/context.rules.md",
-  ".agentplane/context/policies/wiki.rules.md",
-  ".agentplane/context/policies/capability.rules.md",
-  ".agentplane/context/policies/redaction.rules.yaml",
-  ".agentplane/context/policies/sync.rules.yaml",
-]);
 
 const SAFE_EMPTY_PLACEHOLDERS = new Set([".DS_Store"]);
 
@@ -327,11 +324,13 @@ async function createContextWorkspace(
     content: `${JSON.stringify(lockPayload, null, 2)}\n`,
   });
 
+  await assertProfileSwitchIsExplicit({ root, parsed, readExisting });
+
   for (const file of files) {
     const abs = path.join(root, file.relative);
     const exists = await readExisting(abs);
     if (exists !== null) {
-      if (parsed.repair && parsed.force && file.policy && POLICY_FILES.has(file.relative)) {
+      if (shouldRewriteExistingContextFile(file, parsed)) {
         await writeTextIfChanged(abs, file.content);
         rewritten.push(file.relative);
       } else {

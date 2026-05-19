@@ -9,6 +9,7 @@ import { fileExists } from "../../cli/fs-utils.js";
 import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import { cmdEvidenceBundle, defaultEvidenceManifestPath } from "../evidence/evidence.command.js";
 import {
   buildIntegratedPrMeta,
   parsePrMeta,
@@ -52,6 +53,23 @@ async function loadHostedBatchTasks(opts: {
     loaded.push({ taskId, task });
   }
   return loaded;
+}
+
+async function refreshExistingEvidenceBundles(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  quiet: boolean;
+  loadedTasks: { taskId: string }[];
+}): Promise<void> {
+  for (const loaded of opts.loadedTasks) {
+    const manifestPath = defaultEvidenceManifestPath(opts.ctx, loaded.taskId);
+    if (!(await fileExists(manifestPath))) continue;
+    await cmdEvidenceBundle({
+      commandCtx: opts.ctx,
+      cwd: opts.cwd,
+      parsed: { taskId: loaded.taskId, json: false, quiet: opts.quiet },
+    });
+  }
 }
 
 function taskIsClosedForMerge(task: TaskData, mergeCommit: string): boolean {
@@ -314,6 +332,12 @@ async function closeHostedTask(opts: {
     ctx: opts.ctx,
     taskId: target.taskId,
     write: true,
+  });
+  await refreshExistingEvidenceBundles({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    quiet: opts.quiet,
+    loadedTasks: tasksNeedingClose,
   });
   if (!opts.quiet) {
     process.stdout.write(
