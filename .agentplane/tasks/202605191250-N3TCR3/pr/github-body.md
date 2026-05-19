@@ -1,0 +1,45 @@
+Task: `202605191250-N3TCR3`
+Title: Remove stale 0.6 legacy cleanup surfaces
+Canonical task record: `.agentplane/tasks/202605191250-N3TCR3/README.md`
+
+## Summary
+
+Remove stale 0.6 legacy cleanup surfaces
+
+Clean up stale legacy-facing CLI/init surfaces that are no longer needed for the 0.6 happy path while preserving runtime compatibility fallbacks.
+
+## Scope
+
+- In scope: Clean up stale legacy-facing CLI/init surfaces that are no longer needed for the 0.6 happy path while preserving runtime compatibility fallbacks.
+- Out of scope: unrelated refactors not required for "Remove stale 0.6 legacy cleanup surfaces".
+
+## Verification
+
+- State: ok
+- Note:
+
+```bash
+ap task verify-show 202605191250-N3TCR3. Result: pass. Evidence: repo-local runtime bootstrap \
+  completed and runtime explain reported agentplane/core 0.6.3 matching repository expectation; \
+  changed scope is limited to init legacy config preview/conflict handling and CLI help/docs \
+  visibility for disabled deprecated flags. Scope: \
+  packages/agentplane/src/cli/run-cli/commands/init/execution.ts, \
+  packages/agentplane/src/cli/spec/help-render.ts, packages/agentplane/src/cli/spec/docs-render.ts. \
+  Skipped: targeted tests not run. Reason: user requested merge; keep pass based on targeted runtime \
+  bootstrap and narrow static change. Risk: renderer regression would be caught by generated CLI \
+  docs/help tests if run later.
+```
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-19T12:51:12.969Z
+- Branch: task/202605191250-N3TCR3/legacy-cleanup-06
+- Head: 81a3ed59446b
+
+```text
+No changes detected.
+```
+
+</details>

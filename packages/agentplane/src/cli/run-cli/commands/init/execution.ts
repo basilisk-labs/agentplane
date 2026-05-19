@@ -82,7 +82,7 @@ export async function collectInitAndHookConflicts(opts: {
     path.join(opts.paths.agentplaneDir, "backends"),
     path.join(opts.paths.agentplaneDir, "backends", opts.answers.backend),
   ];
-  const initFiles = [opts.paths.workflowPath, opts.paths.legacyConfigPath, opts.paths.backendPath];
+  const initFiles = [opts.paths.workflowPath, opts.paths.backendPath];
   const initConflicts = await collectInitConflicts({ initDirs, initFiles });
   const hookConflicts =
     opts.answers.hooks && opts.paths.gitRootExisted
@@ -121,15 +121,6 @@ export async function detectGithubCliInstalled(cwd: string): Promise<boolean> {
 function initWriteEffects(opts: { paths: ResolvedInitPaths; answers: InitAnswers }): InitEffect[] {
   const gateway = opts.answers.policyGateway === "claude" ? "CLAUDE.md" : "AGENTS.md";
   const effects: InitEffect[] = [
-    {
-      kind: "write_file",
-      path: ".agentplane/config.json",
-      summary: "Write legacy compatibility config",
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "low",
-    },
     {
       kind: "write_file",
       path: ".agentplane/WORKFLOW.md",

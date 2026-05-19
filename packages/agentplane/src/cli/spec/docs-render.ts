@@ -92,6 +92,10 @@ function isGroupOnlyCommand(spec: HelpJson, allSpecs: readonly HelpJson[]): bool
   return (spec.args ?? []).some((arg) => isGroupDispatchArg(arg));
 }
 
+function isVisibleOption(option: NonNullable<HelpJson["options"]>[number]): boolean {
+  return option.hidden !== true && option.deprecated !== "disabled";
+}
+
 export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
   const actionableSpecs = specs.filter((spec) => !isGroupOnlyCommand(spec, specs));
   const byGroup = new Map<string, readonly HelpJson[]>();
@@ -123,7 +127,7 @@ export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
 
       const usageLines = ["", "Usage:", "", "```text", ...(s.usage ?? []), "```"];
 
-      const visibleOpts = (s.options ?? []).filter((o) => !o.hidden);
+      const visibleOpts = (s.options ?? []).filter(isVisibleOption);
       const optionLines =
         visibleOpts.length === 0
           ? []
