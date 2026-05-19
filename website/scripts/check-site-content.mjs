@@ -40,8 +40,38 @@ function checkHomepageCommands() {
   }
 }
 
+function checkBrandCasing() {
+  const checkedFiles = [
+    "../README.md",
+    "docusaurus.config.ts",
+    "static/llms.txt",
+    "src/data/homepage-content.ts",
+    "src/pages/index.tsx",
+    "src/theme/Root.tsx",
+  ];
+
+  for (const file of checkedFiles) {
+    const content = read(file);
+    const oldBrand = "Agent" + "Plane";
+    if (content.includes(oldBrand)) {
+      errors.push(`public brand casing must be Agentplane, not ${oldBrand}: ${file}`);
+    }
+  }
+}
+
+function checkNoHardcodedProofMetrics() {
+  const content = read("src/data/homepage-content.ts");
+  if (/stars:\s*\d+|releases:\s*\d+|latestRelease:/.test(content)) {
+    errors.push(
+      "homepage must not contain hardcoded GitHub stars, release counts, or latestRelease proof values",
+    );
+  }
+}
+
 checkBlogDates();
 checkHomepageCommands();
+checkBrandCasing();
+checkNoHardcodedProofMetrics();
 
 if (errors.length > 0) {
   for (const error of errors) {

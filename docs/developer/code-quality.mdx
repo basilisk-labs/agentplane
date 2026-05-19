@@ -15,7 +15,7 @@ Use the local selector before pushing to hosted CI:
 bun run ci:local:fast
 ```
 
-This is the default first gate for AgentPlane framework development. It is intentionally narrower
+This is the default first gate for Agentplane framework development. It is intentionally narrower
 than hosted CI: it selects the cheapest useful checks for the current diff and catches formatting,
 lint, workflow, docs, and focused test failures before a remote run is needed.
 
@@ -28,7 +28,7 @@ Escalate only when the cheaper tier is clean or when the touched scope requires 
 | 2    | Cross-package, workflow, or broad code changes                    | `bun run ci:local:full`, `bun run typecheck`, `bun run test:fast`                    |
 | 3    | Merge, release, or externally visible readiness                   | hosted required checks, release gates, publish/recovery checks                       |
 
-Do not treat this as a consumer-task rule. Analysis, content, and other non-code AgentPlane tasks
+Do not treat this as a consumer-task rule. Analysis, content, and other non-code Agentplane tasks
 should declare evidence-based verification instead of inheriting CI or PR gates by default.
 
 ## Required gates (must pass)

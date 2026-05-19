@@ -1,5 +1,5 @@
 ---
-title: "Why AgentPlane exists"
+title: "Why Agentplane exists"
 description: "Why AI work needs a Git-native evidence layer inside the repository."
 ---
 
@@ -8,7 +8,7 @@ description: "Why AI work needs a Git-native evidence layer inside the repositor
 Coding agents made software changes cheaper. They did not make those changes accountable.
 
 A generated diff is not enough when the work spans prompts, retries, tools, branches, checks,
-approvals, and handoffs. AgentPlane exists to preserve the operational evidence around AI-authored
+approvals, and handoffs. Agentplane exists to preserve the operational evidence around AI-authored
 changes inside the repository where review already happens.
 
 ## 1. The failure mode
@@ -31,7 +31,7 @@ commit does not reliably answer:
 - Which policy decisions or waivers applied?
 - Why is the work safe to merge or revert?
 
-AgentPlane keeps Git as the source of truth and adds the missing evidence beside the diff.
+Agentplane keeps Git as the source of truth and adds the missing evidence beside the diff.
 
 ## 3. Why chat transcripts are not enough
 
@@ -39,7 +39,7 @@ Chat transcripts are useful context, but they are poor review artifacts. They ar
 private, tool-specific, and often unavailable to the next reviewer. They can include sensitive
 material that should not be committed.
 
-AgentPlane records commit-safe summaries, task state, verification evidence, and hashes instead of
+Agentplane records commit-safe summaries, task state, verification evidence, and hashes instead of
 requiring reviewers to trust raw agent conversations.
 
 ## 4. Why the durable record belongs with the code
@@ -47,7 +47,7 @@ requiring reviewers to trust raw agent conversations.
 Remote execution and central status can be useful. They are separate from the durable evidence
 record that reviewers need next to the code.
 
-AgentPlane keeps the durable workflow record with the repository. The repository owns the workflow
+Agentplane keeps the durable workflow record with the repository. The repository owns the workflow
 artifacts.
 
 ## 5. Why ACR exists
@@ -59,9 +59,9 @@ verification results, and merge readiness.
 Humans can read `agentplane acr explain`. CI can run `agentplane acr check`. External tools can read
 `.agentplane/tasks/<task-id>/acr.json`.
 
-## 6. What AgentPlane refuses to do
+## 6. What Agentplane refuses to do
 
-AgentPlane is not another coding agent. It does not choose a model, generate code for you, replace
+Agentplane is not another coding agent. It does not choose a model, generate code for you, replace
 Git, replace CI, or replace pull request review.
 
 It wraps the tools you already use with a repo-local lifecycle:

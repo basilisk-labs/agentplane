@@ -8,6 +8,7 @@
     "build": "bun run check-content && bun run generate-social-images && docusaurus build",
     "build:check": "bun run check-content && bun run check-social-images && docusaurus build",
     "check-content": "node scripts/check-site-content.mjs",
+    "check-links": "node scripts/check-links.mjs",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",

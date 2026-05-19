@@ -1,230 +1,297 @@
 import Link from "@docusaurus/Link";
+import Head from "@docusaurus/Head";
 import Layout from "@theme/Layout";
-import { type ReactNode, useState } from "react";
+import { type ReactNode } from "react";
+import CommandBlock from "../components/CommandBlock";
+import GitHubStarsButton from "../components/GitHubStarsButton";
 import {
+  acrUrl,
+  contextUrl,
   docsUrl,
+  examplesUrl,
   githubUrl,
+  harnessUrl,
   homepageContent,
-  installCommand,
   quickstartUrl,
+  tracesUrl,
 } from "../data/homepage-content";
+import { site } from "../data/site";
 import styles from "./_home.module.css";
 
-type FeatureSection = (typeof homepageContent.menuSections)[number];
-
-function trackHomeEvent(eventName: string): void {
+function trackHomeEvent(eventName: string, payload: Record<string, string> = {}): void {
   if (globalThis.window === undefined) return;
   const gtag = (globalThis.window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
-  gtag?.("event", eventName, { event_category: "home" });
+  gtag?.("event", eventName, { event_category: "home", ...payload });
 }
 
-function Lattice(): ReactNode {
+function HomeJsonLd(): ReactNode {
+  const faq = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      [
+        "What is Agentplane?",
+        "Agentplane is a CLI-first operational workflow and observability layer for AI agents. It helps developers run local workflows, record traces, manage context, apply recipes, and keep agent work inspectable.",
+      ],
+      [
+        "Does Agentplane replace AI agent frameworks?",
+        "No. Agentplane works around agent frameworks by coordinating workflows, traces, context, artifacts, and operational state.",
+      ],
+      [
+        "Does Agentplane run locally?",
+        "Yes. The default quickstart runs locally, writes repo-local artifacts, and does not require account creation.",
+      ],
+      [
+        "What does Agentplane record?",
+        "Agentplane records workflows, runs, traces, recipes, exports, verification evidence, and Agent Change Records.",
+      ],
+      [
+        "What are Agentplane traces?",
+        "Agentplane traces are structured records of workflow steps, context loads, model calls, tool calls, checks, outputs, and artifacts from an agent run.",
+      ],
+      [
+        "What is local context?",
+        "Local context is repo-specific operational knowledge that agents can inspect and reuse without depending on fragile chat history.",
+      ],
+      [
+        "What is an Agent Change Record?",
+        "An Agent Change Record is a machine-readable record of AI-assisted engineering work, including task intent, changed files, verification evidence, and review status.",
+      ],
+    ].map(([name, text]) => ({
+      "@type": "Question",
+      name,
+      acceptedAnswer: { "@type": "Answer", text },
+    })),
+  };
+  const software = {
+    "@context": "https://schema.org",
+    "@type": ["SoftwareApplication", "SoftwareSourceCode"],
+    name: site.brand,
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "macOS, Linux, Windows",
+    codeRepository: site.githubUrl,
+    softwareHelp: "https://agentplane.org/docs",
+    license: "https://github.com/basilisk-labs/agentplane/blob/main/LICENSE",
+  };
+
   return (
-    <div className={styles.latticeWrap} aria-hidden="true">
-      <svg viewBox="0 0 240 160" fill="none" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <pattern id="agentplane-lattice" width="18" height="15.588" patternUnits="userSpaceOnUse">
-            <polygon
-              points="4.5,0 13.5,0 18,7.794 13.5,15.588 4.5,15.588 0,7.794 4.5,0"
-              className={styles.latticeHex}
-            />
-          </pattern>
-        </defs>
-        <rect x="-36" y="-31" width="312" height="222" fill="url(#agentplane-lattice)" />
-        <path className={styles.latticePath} d="M45 80 C74 36 116 36 146 80 S201 124 225 80" />
-        <circle className={styles.latticeSignal} cx="118" cy="78" r="2.4" />
-        <circle className={styles.latticeTrace} cx="171" cy="78" r="2" />
-        <circle className={styles.latticeMemory} cx="81" cy="47" r="2" />
-      </svg>
-      <span className={`${styles.xrayMark} ${styles.xrayOne}`}>[ ROUTE_Q ]</span>
-      <span className={`${styles.xrayMark} ${styles.xrayTwo}`}>[ ACR_SEQ ]</span>
-      <span className={`${styles.xrayMark} ${styles.xrayThree}`}>[ CTX_BOUNDARY ]</span>
-    </div>
+    <Head>
+      <script type="application/ld+json">{JSON.stringify(faq)}</script>
+      <script type="application/ld+json">{JSON.stringify(software)}</script>
+    </Head>
   );
 }
 
 function Hero(): ReactNode {
-  const { hero, problem } = homepageContent;
-
+  const { hero } = homepageContent;
   return (
-    <section className={`${styles.bentoItem} ${styles.colSpan12} ${styles.heroItem}`}>
-      <Lattice />
-      <article className={`${styles.liquidGlass} ${styles.heroPanel}`}>
-        <div className={styles.heroKicker}>
-          <span>{hero.eyebrow}</span>
-          <span>INIT::WORKFLOW</span>
-        </div>
+    <section className={styles.hero}>
+      <div className={styles.heroCopy}>
+        <p className={styles.kicker}>{hero.eyebrow}</p>
         <h1>{hero.title}</h1>
-        <div>
-          <p>{hero.subtitle}</p>
-          <p className={styles.featureProof}>{hero.proofLine}</p>
-        </div>
+        <p className={styles.lede}>{hero.subtitle}</p>
+        <p className={styles.trust}>{hero.trustLine}</p>
         <div className={styles.ctaGroup}>
           <Link
             className={styles.buttonPrimary}
             to={quickstartUrl}
-            onClick={() => trackHomeEvent("quickstart_clicked_from_home_hero")}
+            onClick={() => trackHomeEvent("quickstart_cta_click", { location: "hero" })}
           >
             Run quickstart
           </Link>
           <a
             className={styles.buttonSecondary}
             href={githubUrl}
-            onClick={() => trackHomeEvent("github_clicked_from_home_hero")}
+            onClick={() => trackHomeEvent("github_click", { location: "hero" })}
           >
-            GitHub
+            View GitHub
           </a>
+          <Link className={styles.buttonTertiary} to={docsUrl}>
+            Read docs
+          </Link>
         </div>
-      </article>
-      <article className={`${styles.liquidGlass} ${styles.problemPanel}`}>
-        <div className={styles.editorialHeader}>
-          <h2>{problem.title}</h2>
-          <div className={styles.editorialMeta}>
-            <span className={styles.circleNum}>1</span>
-            <span>Context</span>
-          </div>
+      </div>
+      <div className={styles.terminalPanel} aria-label="Agentplane terminal quickstart">
+        <div className={styles.terminalTop}>
+          <span>local workflow</span>
+          <span>trace ready</span>
         </div>
-        <p>{problem.text}</p>
-        <ul className={styles.problemList}>
-          {problem.bullets.map((bullet) => (
-            <li key={bullet}>{bullet}</li>
+        <pre>
+          <code>{hero.commands.map((line) => `$ ${line}`).join("\n")}</code>
+        </pre>
+        <div className={styles.output}>
+          {hero.output.map((line) => (
+            <span key={line}>ok {line}</span>
           ))}
-        </ul>
-        <div className={styles.projectFooter}>
-          <span className={styles.hardwareLabel}>status</span>
-          <span className={styles.hwLamp} />
-          <span className={styles.monoSm}>DRIFT_VISIBLE</span>
         </div>
-      </article>
+      </div>
     </section>
   );
 }
 
-function ProductAccordion({ sections }: { sections: readonly FeatureSection[] }): ReactNode {
-  const [openId, setOpenId] = useState<string>(sections[0]?.id ?? "");
+function WhatIs(): ReactNode {
+  const { whatIs } = homepageContent;
   return (
-    <section className={`${styles.bentoItem} ${styles.colSpan12} ${styles.accordionSection}`}>
-      <div className={styles.editorialHeader}>
-        <h2>Product surfaces</h2>
-        <div className={styles.editorialMeta}>
-          <span className={styles.circleNum}>2</span>
-          <span>Navigation</span>
-        </div>
+    <section className={styles.section}>
+      <div className={styles.sectionIntro}>
+        <h2>{whatIs.title}</h2>
+        <p>{whatIs.text}</p>
+        <p>{whatIs.use}</p>
       </div>
-      <div className={styles.accordionStack}>
-        {sections.map((section, index) => (
-          <details
-            key={section.id}
-            className={styles.accordionItem}
-            open={openId === section.id}
-            onToggle={(event) => {
-              if ((event.currentTarget as HTMLDetailsElement).open) {
-                setOpenId(section.id);
-              }
-            }}
-          >
-            <summary className={styles.accordionSummary}>
-              <span className={styles.accordionMeta}>
-                <span className={styles.circleNum}>{index + 1}</span>
-                <span>{section.code}</span>
-              </span>
-              <span className={styles.accordionTitle}>{section.title}</span>
-              <span className={styles.monoSm}>{section.status}</span>
-            </summary>
-            <div className={styles.accordionBody}>
-              <p>{section.text}</p>
-              <p className={styles.featureProof}>{section.proof}</p>
-              <Link
-                className={styles.buttonSecondary}
-                to={section.to}
-                onClick={() => trackHomeEvent(`${section.id}_docs_clicked_from_home`)}
-              >
-                {section.linkLabel}
-              </Link>
-            </div>
-          </details>
+      <div className={styles.comparisonTable}>
+        {whatIs.rows.map(([label, text]) => (
+          <div key={label}>
+            <strong>{label}</strong>
+            <span>{text}</span>
+          </div>
         ))}
       </div>
     </section>
   );
 }
 
-function InstallPanel(): ReactNode {
-  const { quickstart, artifacts, worksWith } = homepageContent;
-
+function Records(): ReactNode {
+  const { records, surfaces } = homepageContent;
   return (
-    <>
-      <section className={`${styles.bentoItem} ${styles.colSpan6}`}>
-        <div className={styles.editorialHeader}>
-          <h3>{quickstart.title}</h3>
-          <span className={styles.monoSm}>local</span>
+    <section className={styles.section}>
+      <div className={styles.twoColumn}>
+        <div>
+          <h2>{records.title}</h2>
+          <p>{records.text}</p>
+          <CommandBlock
+            label="Run locally"
+            command={[
+              "npm i -g agentplane",
+              "agentplane init",
+              "agentplane run ./agentplane.yaml",
+              "agentplane trace open",
+            ].join("\n")}
+            eventName="copy_run_command"
+          />
         </div>
-        <p>{quickstart.text}</p>
-        <pre className={styles.codeBlock} aria-label="AgentPlane install command">
-          <code>{[installCommand, "agentplane init", "agentplane quickstart"].join("\n")}</code>
+        <pre className={styles.fileTree} aria-label="Agentplane artifact tree">
+          <code>{records.tree.join("\n")}</code>
         </pre>
-        <Link className={styles.buttonPrimary} to={quickstartUrl}>
-          Open setup docs
+      </div>
+      <div className={styles.surfaceGrid}>
+        {surfaces.map(([title, text]) => (
+          <article key={title}>
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </article>
+        ))}
+      </div>
+      <Link
+        className={styles.inlineCta}
+        to={contextUrl}
+        onClick={() => trackHomeEvent("view_context_guide")}
+      >
+        Read the local context guide
+      </Link>
+    </section>
+  );
+}
+
+function HarnessAndTraces(): ReactNode {
+  const { harness, timeline } = homepageContent;
+  return (
+    <section className={styles.section}>
+      <div className={styles.sectionIntro}>
+        <h2>{harness.title}</h2>
+        <p>{harness.text}</p>
+        <Link
+          className={styles.inlineCta}
+          to={harnessUrl}
+          onClick={() => trackHomeEvent("view_harness_guide")}
+        >
+          Read the harness engineering guide
         </Link>
-      </section>
-      <section className={`${styles.bentoItem} ${styles.colSpan6} ${styles.contactPanel}`}>
-        <div className={styles.editorialHeader}>
-          <h3>{artifacts.title}</h3>
-          <span className={styles.monoSm}>git evidence</span>
+      </div>
+      <div className={styles.harnessGrid}>
+        {harness.items.map(([title, text]) => (
+          <div key={title}>
+            <strong>{title}</strong>
+            <span>{text}</span>
+          </div>
+        ))}
+      </div>
+      <div className={styles.timeline}>
+        <div className={styles.sectionIntro}>
+          <h2>How does Agentplane trace an agent run?</h2>
+          <p>
+            Traces turn workflow execution into a structured timeline that can be inspected or
+            exported.
+          </p>
         </div>
-        <p>{artifacts.text}</p>
-        <div className={styles.artifactList}>
-          {artifacts.items.map((artifact) => (
-            <div key={artifact.path}>
-              <strong>{artifact.path}</strong>
-              <span>{artifact.text}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-      <section className={`${styles.bentoItem} ${styles.colSpan12}`}>
-        <div className={styles.editorialHeader}>
-          <h3>{worksWith.title}</h3>
-          <span className={styles.monoSm}>adapter neutral</span>
-        </div>
-        <div className={styles.logoStrip}>
-          {worksWith.items.map((item) => (
-            <span key={item}>{item}</span>
-          ))}
-        </div>
-      </section>
-    </>
+        {timeline.map(([name, text]) => (
+          <div key={name} className={styles.timelineRow}>
+            <code>{name}</code>
+            <span>{text}</span>
+          </div>
+        ))}
+      </div>
+      <Link
+        className={styles.inlineCta}
+        to={tracesUrl}
+        onClick={() => trackHomeEvent("view_traces_guide")}
+      >
+        Read the traces guide
+      </Link>
+    </section>
+  );
+}
+
+function Examples(): ReactNode {
+  return (
+    <section className={styles.section}>
+      <div className={styles.sectionIntro}>
+        <h2>Examples and recipes</h2>
+        <p>
+          Start from runnable workflows: trace debugging, TDD recipes, local context, and Agent
+          Change Records.
+        </p>
+      </div>
+      <div className={styles.exampleGrid}>
+        {homepageContent.examples.map(([title, command]) => (
+          <Link
+            key={title}
+            to={examplesUrl}
+            onClick={() => trackHomeEvent("view_example", { example: title })}
+          >
+            <strong>{title}</strong>
+            <code>{command}</code>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 
 export default function Home(): ReactNode {
-  const { seo, menuSections, closing } = homepageContent;
+  const { seo, closing } = homepageContent;
 
   return (
     <Layout title={seo.title} description={seo.description}>
+      <HomeJsonLd />
       <main className={styles.page}>
-        <div className={styles.bentoWrapper}>
-          <div className={styles.bentoGrid}>
-            <Hero />
-            <ProductAccordion sections={menuSections} />
-            <InstallPanel />
-            <section className={`${styles.bentoItem} ${styles.colSpan12} ${styles.contactPanel}`}>
-              <div className={styles.editorialHeader}>
-                <h3>{closing.title}</h3>
-                <span className={styles.monoSm}>open source</span>
-              </div>
-              <p>{closing.text}</p>
-              <div className={styles.ctaGroup}>
-                <Link className={styles.buttonPrimary} to={docsUrl}>
-                  Read docs
-                </Link>
-                <a className={styles.buttonSecondary} href={githubUrl}>
-                  Star on GitHub
-                </a>
-              </div>
-            </section>
+        <Hero />
+        <WhatIs />
+        <Records />
+        <HarnessAndTraces />
+        <Examples />
+        <section className={`${styles.section} ${styles.finalCta}`}>
+          <h2>{closing.title}</h2>
+          <p>{closing.text}</p>
+          <div className={styles.ctaGroup}>
+            <Link className={styles.buttonPrimary} to={quickstartUrl}>
+              Run quickstart
+            </Link>
+            <GitHubStarsButton />
+            <Link className={styles.buttonSecondary} to={acrUrl}>
+              See an example ACR
+            </Link>
           </div>
-        </div>
+        </section>
       </main>
     </Layout>
   );

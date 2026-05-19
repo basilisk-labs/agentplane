@@ -1,6 +1,6 @@
 ---
 title: "Local context implementation"
-description: "Implementation contract for AgentPlane local context artifacts, projection, ingestion, and verification."
+description: "Implementation contract for Agentplane local context artifacts, projection, ingestion, and verification."
 ---
 
 ## Boundary
@@ -45,7 +45,7 @@ framework/template/generated.artifact/context_task_extraction/v1
 ```
 
 This keeps task-history extraction improvable through the same module/mutation model as other
-AgentPlane prompts. The generated task remains the execution boundary: a CURATOR agent reads the
+Agentplane prompts. The generated task remains the execution boundary: a CURATOR agent reads the
 source pack, searches existing wiki/facts/graph rows, writes sourced updates, records stale/conflict
 markers, and verifies through context gates before promotion.
 

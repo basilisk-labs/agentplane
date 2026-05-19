@@ -16,9 +16,8 @@ After vendoring, runtime reads recipes only from the project-local vendor store.
 
 This page documents the active recipe v1 contract for the current `0.4` line.
 
-The repository-level docs inventory (`docs/recipes-inventory.json`) is a generated projection sourced
-from `agentplane-recipes/index.json` plus the checked-in recipe manifests under
-`agentplane-recipes/recipes/*/manifest.json`.
+The public docs describe starter recipes as local workflow overlays. Keep implementation catalog
+details out of the public happy path unless the catalog is actively maintained.
 
 ## What a recipe contains
 
@@ -66,7 +65,7 @@ Contract notes:
 - Prompt mutations should target named prompt fragments such as
   `agent.coder.workflow.diff.minimal` or `policy.workflow.branch_pr.sequence.start_worktree`, not
   array indexes, line numbers, or whole-file text replacements.
-- The target activation model materializes active recipe mutations into AgentPlane-managed prompt
+- The target activation model materializes active recipe mutations into Agentplane-managed prompt
   source files, then regenerates the prompt graph as diagnostics. Recipes may change prompt
   behavior through named fragments, but they must not change core lifecycle, workflow, git hygiene,
   or safety invariants.
@@ -285,7 +284,7 @@ contract.
 
 A deterministic resolver builds runtime context from:
 
-- active AgentPlane version
+- active Agentplane version
 - supported manifest/scenario/runtime API versions
 - current platform
 - detected project repo types

@@ -1,9 +1,9 @@
 ---
 title: "Blueprints"
-description: "Typed execution-route contracts for task-specific AgentPlane harness flows."
+description: "Typed execution-route contracts for task-specific Agentplane harness flows."
 ---
 
-Blueprints are AgentPlane's typed route contracts for task-specific harness behavior.
+Blueprints are Agentplane's typed route contracts for task-specific harness behavior.
 
 v0.5 rc1 ships the model, built-in registry, validation, resolver, explain output, recipe hint
 bridge, task verification visibility, ACR summary extension, runner bundle artifacts, deterministic
@@ -26,7 +26,7 @@ A blueprint is not:
 - a replacement for `direct` or `branch_pr`;
 - a requirement that every task uses git, PRs, CI, or code checks.
 
-The purpose is to let AgentPlane select a task-specific route. Analysis, content, documentation,
+The purpose is to let Agentplane select a task-specific route. Analysis, content, documentation,
 code, release, and operational tasks should not inherit the same code-oriented PR flow.
 
 ## CLI Route Inspection
@@ -112,7 +112,7 @@ Cache and project boundaries:
 Init integration:
 
 ```bash
-agentplane init --setup-profile full-harness --blueprints pack:enterprise-baseline --yes
+agentplane init --setup-profile full-harness --blueprints pack:team-baseline --yes
 ```
 
 Full-harness init may install cached catalog blueprints or packs. Basic/default init keeps using the
@@ -150,7 +150,7 @@ Blueprints are useful only if they preserve the difference between task classes.
 
 Facts:
 
-- AgentPlane already has an outer task lifecycle, workflow modes, role contracts, policy modules,
+- Agentplane already has an outer task lifecycle, workflow modes, role contracts, policy modules,
   and verification records.
 - Recipes already provide domain-specific guidance.
 - Some tasks mutate repositories and need git topology, checks, PR artifacts, or release gates.
@@ -217,7 +217,7 @@ benchmark, regression, and runner tasks carry stronger evidence contracts.
 
 Blueprints should reuse proven workflow and governance ideas without copying their full complexity.
 
-| Reference                                                                                                           | Useful idea                                                                 | How AgentPlane should use it                                                   |
+| Reference                                                                                                           | Useful idea                                                                 | How Agentplane should use it                                                   |
 | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | [BPMN](https://www.omg.org/spec/BPMN/2.0/About-BPMN/)                                                               | Explicit processes, gateways, events, and handoffs                          | Treat blueprints as visible process contracts, not prose-only policy text      |
 | [Workflow Patterns](https://www.workflowpatterns.com/patterns/control/)                                             | Named control-flow patterns such as sequence, split, join, and cancellation | Keep node graphs simple, explicit, and testable                                |
@@ -227,7 +227,7 @@ Blueprints should reuse proven workflow and governance ideas without copying the
 | [CUE](https://cuelang.org/)                                                                                         | Schema, validation, and data constraints in one model                       | Use schema-first validation and reject invalid route definitions early         |
 
 The v0 implementation should be closer to a typed state-machine registry than to BPMN or Temporal.
-Those systems justify the shape of the model, but AgentPlane should keep the first surface small:
+Those systems justify the shape of the model, but Agentplane should keep the first surface small:
 model, built-in registry, validator, resolver, and explain output.
 
 ## Layer Model
@@ -237,7 +237,7 @@ model, built-in registry, validator, resolver, and explain output.
 | Task lifecycle | External task state and traceability                | `TODO -> DOING -> DONE`                      |
 | Workflow mode  | Repository mutation topology                        | `direct`, `branch_pr`                        |
 | Blueprint      | Route inside task execution                         | `analysis.light`, `code.branch_pr`           |
-| Recipe         | Domain context, checks, templates, and output hints | `code-map`, release blog companion           |
+| Recipe         | Domain context, checks, templates, and output hints | TDD, security review, docs update            |
 | Runner         | Execution mechanics for a resolved route            | Codex, Claude, local runner                  |
 | ACR            | Post-execution evidence                             | blueprint id, checks, artifacts, stop reason |
 
@@ -249,7 +249,7 @@ while it is being planned, executed, verified, and closed.
 The current implementation adds types, built-in blueprints, validation, resolution, explanation, and
 read-only CLI surfaces. It does not add command execution or a workflow executor.
 
-Current module layout inside the AgentPlane CLI source package:
+Current module layout inside the Agentplane CLI source package:
 
 ```text
 blueprints/
@@ -498,7 +498,7 @@ runner must ask for approval, narrow scope, or choose a different route.
 ## v0.5 Integration Contract
 
 v0.5 treats a resolved blueprint as an executable contract boundary, not as prose. The contract is
-still data-only: AgentPlane materializes plans and evidence surfaces, but it does not yet run
+still data-only: Agentplane materializes plans and evidence surfaces, but it does not yet run
 blueprint nodes as a workflow engine.
 
 Required surfaces:
@@ -572,7 +572,7 @@ Blueprint nodes are reusable building blocks. They are not task statuses. A task
 | `publish_or_integrate` | Push, publish, merge, release, or integrate when required       | deterministic | target, result, external link or commit   |
 | `verify_record`        | Record verification evidence in the task artifact               | record        | verification state and evidence reference |
 | `handoff`              | Transfer unresolved work to a human or another owner            | record        | reason, next owner, remaining work        |
-| `finish`               | Close the task through the active AgentPlane lifecycle          | deterministic | close result and final task state         |
+| `finish`               | Close the task through the active Agentplane lifecycle          | deterministic | close result and final task state         |
 
 ## Built-in Blueprints v0
 
@@ -719,7 +719,7 @@ Expected evidence:
 
 ## Selection Rules
 
-An agent may propose a blueprint, but the AgentPlane resolver must produce the final resolved
+An agent may propose a blueprint, but the Agentplane resolver must produce the final resolved
 blueprint.
 
 Selection inputs:
@@ -813,7 +813,7 @@ Resolver rules:
 Example:
 
 ```text
-User request: "Analyze this article and say what AgentPlane should adopt."
+User request: "Analyze this article and say what Agentplane should adopt."
 Resolved blueprint: analysis.light
 Route: intake -> scope -> context_resolve -> work_unit -> artifact_write -> verify_record -> finish
 Not required: PR, CI, code checks, release gates.
@@ -921,7 +921,7 @@ extension hints, but the resolver and registry remain the authority for lifecycl
 
 ## Recipes Relationship
 
-Recipes are domain extensions. They should make a route more specific, not replace AgentPlane's
+Recipes are domain extensions. They should make a route more specific, not replace Agentplane's
 core lifecycle.
 
 Recipes may provide:

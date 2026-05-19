@@ -277,7 +277,7 @@ describeWhenNotHook(
     it(
       "fails on a dirty tracked tree before preparing a branch_pr release candidate",
       async () => {
-        const root = await mkGitRepoRoot();
+        const root = await mkGitRepoRootWithBranch("main");
         await writeDefaultConfig(root);
         await writeWorkflowMode(root, "branch_pr");
 
@@ -497,7 +497,7 @@ describeWhenNotHook(
     it(
       "fails when release apply is invoked from a branch_pr task branch",
       async () => {
-        const root = await mkGitRepoRoot();
+        const root = await mkGitRepoRootWithBranch("main");
         await writeDefaultConfig(root);
         await writeWorkflowMode(root, "branch_pr");
 

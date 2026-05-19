@@ -1,9 +1,9 @@
 ---
 title: "Recipes"
-description: "Installable AgentPlane recipe packages from the signed catalog."
+description: "Installable Agentplane recipe packages from the signed catalog."
 ---
 
-Recipes are optional AgentPlane extension packages.
+Recipes are optional Agentplane extension packages.
 
 They are different from workflow guides:
 
@@ -16,48 +16,33 @@ They are different from workflow guides:
 For copy-paste flows with Claude Code, Codex, Cursor, Aider, GitHub Actions, or `branch_pr`, use
 [Use with agents](../workflow-guides).
 
-## Current catalog
+## Starter recipe guides
 
-The production catalog currently contains one recipe:
+Use these guides to understand what a recipe should produce:
 
-1. [Code Map](code-map) (`code-map@0.1.0`)
-
-The catalog is sourced from the `agentplane-recipes` submodule and projected into
-`docs/recipes-inventory.json` by `node scripts/generate-recipes-inventory.mjs`.
+- [TDD recipe](tdd)
+- [Security review recipe](security-review)
+- [Docs update recipe](docs-update)
 
 ## Install and vendor
 
-List the signed remote catalog:
+Apply a recipe to a local workflow:
 
 ```bash
-agentplane recipes list-remote --refresh --yes
-```
-
-Install a recipe into the global cache:
-
-```bash
-agentplane recipes install code-map --refresh --yes
-agentplane recipes list
-agentplane recipes info code-map
-```
-
-Vendor the cached recipe into a project:
-
-```bash
-agentplane recipes add code-map
+agentplane recipes add tdd
 agentplane recipes active
-agentplane recipes explain code-map
+agentplane recipes explain tdd
 ```
 
 During project initialization, use `--recipes` only for recipes already available to the init flow:
 
 ```bash
-agentplane init --recipes code-map
+agentplane init --recipes tdd
 ```
 
 ## Runtime model
 
-After vendoring, AgentPlane uses:
+After vendoring, Agentplane uses:
 
 - `.agentplane/recipes/registry.json` as the project authority;
 - `.agentplane/recipes/packages/<recipe-id>/` for the vendored package;
@@ -71,7 +56,7 @@ Deleting the global recipe cache does not remove recipes already vendored into a
 
 Recipes are executable extensions. Review the manifest and package contents before installing.
 
-The default remote index is verified with AgentPlane's trusted recipes index keys before cached
+The default remote index is verified with Agentplane's trusted recipes index keys before cached
 catalog data is trusted. See [Recipes safety](../developer/recipes-safety) and repository ADR
 `docs/adr/0009-recipes-index-signing-algorithm-policy.md` for signing and key handling.
 

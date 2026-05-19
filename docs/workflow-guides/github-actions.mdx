@@ -1,18 +1,18 @@
 ---
-title: "AgentPlane + GitHub Actions"
-description: "Use GitHub Actions as the hosted check surface while AgentPlane keeps local workflow state reviewable."
+title: "Agentplane + GitHub Actions"
+description: "Use GitHub Actions as the hosted check surface while Agentplane keeps local workflow state reviewable."
 ---
 
 Use this when repository checks run in GitHub Actions and agent-generated work should not merge until
 task state and CI evidence are both legible.
 
-AgentPlane does not replace GitHub branch protection. It gives branch protection a repo-local
+Agentplane does not replace GitHub branch protection. It gives branch protection a repo-local
 evidence artifact to check.
 
 ## When to use
 
 - Your repository already uses GitHub Actions for required checks.
-- You want AgentPlane task records to explain why an agent change is ready for review.
+- You want Agentplane task records to explain why an agent change is ready for review.
 - You use pull requests or branch protection.
 
 ## Copy-paste flow
@@ -46,7 +46,7 @@ Integrate only after the required hosted checks are green.
 Use a concrete task id when the PR is task-bound:
 
 ```yaml
-name: AgentPlane ACR
+name: Agentplane ACR
 
 on:
   pull_request:
@@ -64,7 +64,7 @@ jobs:
 ```
 
 For reusable team workflows, wrap the task id discovery in your repository's PR convention or a
-future first-class AgentPlane action.
+future first-class Agentplane action.
 
 ## Expected repo artifacts
 
@@ -75,5 +75,5 @@ future first-class AgentPlane action.
 
 ## Limitations
 
-AgentPlane does not replace GitHub branch protection. Use your repository's existing required checks
+Agentplane does not replace GitHub branch protection. Use your repository's existing required checks
 and PR review rules as the hosted gate.

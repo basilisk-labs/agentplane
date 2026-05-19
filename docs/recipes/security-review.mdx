@@ -1,0 +1,67 @@
+---
+title: "Security review recipe"
+description: "Use a security review workflow recipe for scoped inspection, evidence, checks, and trace export."
+---
+
+# Security review recipe
+
+## What does it do?
+
+The security review recipe structures an agent run around scoped inspection, threat notes,
+verification checks, and trace export.
+
+## When should I use it?
+
+- You need a focused review of an auth, input validation, dependency, or data-handling change.
+- You want findings tied to files, checks, and trace evidence.
+
+## When should I not use it?
+
+- The task requires a formal penetration test.
+- The repository contains secrets that should not be loaded into agent context.
+- The review scope is not defined.
+
+## YAML example
+
+```yaml
+name: security-review
+steps:
+  - id: load-policy
+    type: context.load
+  - id: inspect-risk
+    type: agent.review
+  - id: run-checks
+    type: check.run
+    command: npm audit --audit-level=high
+  - id: export-trace
+    type: trace.export
+```
+
+## Command to apply
+
+```bash
+agentplane recipes install security-review
+agentplane run ./agentplane.yaml --recipe security-review
+```
+
+## Expected trace events
+
+```text
+context.load
+agent.review
+tool.call
+verification.check
+trace.export
+```
+
+## Expected artifacts
+
+```text
+.agentplane/traces/<run-id>.json
+.agentplane/exports/<run-id>.otel.json
+```
+
+## Troubleshooting
+
+If the review expands into security-sensitive implementation changes, stop and create a separate
+approved implementation task.

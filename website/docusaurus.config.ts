@@ -19,8 +19,8 @@ function blogEditUrl(blogPath: string): string {
 }
 
 const config = {
-  title: "AgentPlane",
-  tagline: "Make AI-authored code reviewable in Git.",
+  title: "Agentplane",
+  tagline: "Build, run, trace, and operationalize AI agents with reproducible local workflows.",
   titleDelimiter: "·",
   favicon: "img/favicon.ico",
   future: {
@@ -60,7 +60,7 @@ const config = {
           postsPerPage: "ALL",
           routeBasePath: "/blog",
           blogListComponent: "@site/src/pages/blog/index.tsx",
-          blogTitle: "AgentPlane Blog",
+          blogTitle: "Agentplane Blog",
           blogDescription: "Release notes, workflow deep dives, and implementation guidance.",
           feedOptions: {
             type: ["rss", "atom"],
@@ -85,32 +85,32 @@ const config = {
       {
         name: "keywords",
         content:
-          "agent change record, ai pull request review, claude code workflow, codex workflow, cursor agent, aider, ai coding agent guardrails, git-native ai work, AGENTS.md, reviewable agent work",
+          "agent workflow, ai agent traces, harness engineering, context engineering, local ai agents, OpenTelemetry agent traces, agent change record, agentplane, ai coding agent guardrails",
       },
       {
         name: "robots",
         content: "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1",
       },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "AgentPlane" },
+      { property: "og:site_name", content: "Agentplane" },
       {
         property: "og:title",
-        content: "Make AI-authored code reviewable in Git",
+        content: "Make AI-agent work observable and reproducible",
       },
       {
         property: "og:description",
         content:
-          "Local-first evidence layer for Claude Code, Codex, Cursor, Aider, and other coding agents.",
+          "CLI-first operational workflows, traces, context, recipes, and artifacts for AI agents.",
       },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "Make AI-authored code reviewable in Git",
+        content: "Make AI-agent work observable and reproducible",
       },
       {
         name: "twitter:description",
         content:
-          "Local-first evidence layer for Claude Code, Codex, Cursor, Aider, and other coding agents.",
+          "CLI-first operational workflows, traces, context, recipes, and artifacts for AI agents.",
       },
       { name: "twitter:site", content: "@agentplaneorg" },
     ],
@@ -122,47 +122,29 @@ const config = {
     navbar: {
       title: "",
       logo: {
-        alt: "AgentPlane Logo",
+        alt: "Agentplane Logo",
         src: "img/agentplane.svg",
         width: 160,
         height: 32,
       },
       items: [
         {
-          to: "/docs/recipes",
-          label: "Recipes",
+          to: "/docs",
+          label: "Docs",
           position: "right",
-          activeBaseRegex: "^/docs/recipes",
+          activeBaseRegex: "^/docs",
         },
         {
-          to: "/docs/developer/blueprints",
-          label: "Blueprints",
+          to: "/examples",
+          label: "Examples",
           position: "right",
-          activeBaseRegex: "^/docs/developer/blueprints",
-        },
-        {
-          to: "/docs/user/agent-change-record",
-          label: "ACR",
-          position: "right",
-          activeBaseRegex: "^/docs/user/agent-change-record",
+          activeBaseRegex: "^/examples",
         },
         {
           to: "/blog",
           label: "Blog",
           position: "right",
           activeBaseRegex: "^/blog",
-        },
-        {
-          to: "/docs/user/overview",
-          label: "Docs",
-          position: "right",
-          activeBaseRegex: "^/docs",
-        },
-        {
-          to: "/docs/user/local-context",
-          label: "Context",
-          position: "right",
-          activeBaseRegex: "^/docs/user/local-context",
         },
         {
           href: "https://www.npmjs.com/package/agentplane",
@@ -172,9 +154,15 @@ const config = {
         },
         {
           href: "https://github.com/basilisk-labs/agentplane",
-          label: "★ Star",
+          label: "GitHub",
           position: "right",
           className: "navbar-github-cta",
+        },
+        {
+          to: "/docs/start/quickstart",
+          label: "Quickstart",
+          position: "right",
+          className: "navbar-quickstart-cta",
         },
       ],
     },
@@ -185,20 +173,20 @@ const config = {
           title: "Product",
           items: [
             {
-              label: "Why",
-              to: "/docs/manifesto",
+              label: "What is Agentplane",
+              to: "/docs/user/overview",
             },
             {
-              label: "Agent Change Record",
-              to: "/docs/user/agent-change-record",
+              label: "Quickstart",
+              to: "/docs/start/quickstart",
             },
             {
-              label: "Workflows",
-              to: "/docs/workflow-guides",
+              label: "Examples",
+              to: "/examples",
             },
             {
-              label: "Compare",
-              to: "/docs/compare",
+              label: "Agent Change Records",
+              to: "/docs/reference/acr",
             },
           ],
         },
@@ -206,20 +194,16 @@ const config = {
           title: "Docs",
           items: [
             {
-              label: "Quickstart",
-              to: "/docs/user/setup",
+              label: "Harness engineering",
+              to: "/docs/concepts/harness-engineering",
             },
             {
-              label: "Claude Code",
-              to: "/docs/workflow-guides/claude-code",
+              label: "Context engineering",
+              to: "/docs/concepts/context-engineering",
             },
             {
-              label: "Codex",
-              to: "/docs/workflow-guides/codex",
-            },
-            {
-              label: "GitHub Actions",
-              to: "/docs/workflow-guides/github-actions",
+              label: "Traces",
+              to: "/docs/concepts/traces",
             },
             {
               label: "CLI Reference",
@@ -264,21 +248,8 @@ const config = {
             },
           ],
         },
-        {
-          title: "Community",
-          items: [
-            {
-              label: "Policy",
-              href: "https://github.com/basilisk-labs/agentplane/blob/main/POLICY.md",
-            },
-            {
-              label: "Showcase",
-              to: "/docs/showcase",
-            },
-          ],
-        },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} AgentPlane.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Agentplane.`,
     },
   } satisfies Preset.ThemeConfig,
   customFields: {

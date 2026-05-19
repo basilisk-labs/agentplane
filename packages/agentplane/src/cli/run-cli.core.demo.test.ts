@@ -25,7 +25,7 @@ describe("runCli demo", () => {
     try {
       const code = await runCli(["demo", "--root", root]);
       expect(code, io.stderr).toBe(0);
-      expect(io.stdout).toContain("AgentPlane demo");
+      expect(io.stdout).toContain("Agentplane demo");
       expect(io.stdout).toContain("task_readme:");
       expect(io.stdout).toContain("acr:");
     } finally {
@@ -40,7 +40,7 @@ describe("runCli demo", () => {
     const readme = await readFile(readmePath, "utf8");
     const acr = JSON.parse(await readFile(acrPath, "utf8")) as { task?: { task_id?: string } };
 
-    expect(readme).toContain("AgentPlane demo: first traceable task");
+    expect(readme).toContain("Agentplane demo: first traceable task");
     expect(readme).toContain("DEMO - VERIFY - ok");
     expect(acr.task?.task_id).toBe(taskId);
     expect(await readFile(path.join(root, "parser.js"), "utf8")).toBe(

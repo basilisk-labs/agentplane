@@ -9,7 +9,7 @@ A role profile loaded from `.agentplane/agents/<ID>.json`.
 
 ## Agent Change Record (ACR)
 
-A deterministic, machine-readable JSON evidence projection for one AgentPlane task. It records task
+A deterministic, machine-readable JSON evidence projection for one Agentplane task. It records task
 intent, accepted plan, verification status, policy decisions, changed files, and closure state.
 Schema: `https://agentplane.org/schemas/acr-v0.1.schema.json`. Commands:
 `agentplane acr generate`, `agentplane acr validate`, and `agentplane acr check`.
@@ -64,11 +64,11 @@ A policy gate that can require explicit approval for an action such as network a
 
 ## Backend
 
-Pluggable task store that defines the canonical source of truth (local or redmine).
+Pluggable task store that defines where task evidence is persisted.
 
 ## Local Cache
 
-The `.agentplane/tasks/` folder when backend=redmine; used for offline work and sync.
+The repo-local task evidence under `.agentplane/tasks/`.
 
 ## Review report (`review.json`)
 

@@ -125,9 +125,9 @@ guidance.
 - `feedback.github_issues.dedupe`
 - `feedback.github_issues.labels`
 
-GitHub issue feedback defaults to disabled. Enable it when you want internal AgentPlane errors to
+GitHub issue feedback defaults to disabled. Enable it when you want internal Agentplane errors to
 offer a privacy-bounded issue path for maintainers. `transport=github` uses the user's GitHub auth,
-`transport=cloud` sends an anonymous intake to AgentPlane Cloud, and `transport=auto` tries GitHub
+`transport=cloud` sends an anonymous intake to Agentplane Cloud, and `transport=auto` tries GitHub
 first before falling back to cloud. Cloud intake requires
 `feedback.github_issues.allow_anonymous_cloud=true`.
 
@@ -179,7 +179,7 @@ This config remains privacy-safe by default. ACR records evidence pointers, hash
 policy decisions, and verification status; it does not commit prompts, transcripts, or raw tool
 output by default. `write_on_finish=true` refreshes `.agentplane/tasks/<task-id>/acr.json` during
 successful `finish`; `require_for_pr_check=true` turns ACR into a PR/CI gate that requires
-merge-ready semantic validation, not just schema validation. See [Agent Change Record](agent-change-record).
+merge-ready semantic validation, not just schema validation. See [Agent Change Records](../reference/acr).
 
 ## Examples
 

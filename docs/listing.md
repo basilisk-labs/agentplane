@@ -5,21 +5,21 @@ description: "Copy blocks for ecosystem listings and directories."
 
 # Listing submission profile
 
-Use this page when submitting AgentPlane to AI engineering, developer tools, or open-source
+Use this page when submitting Agentplane to AI engineering, developer tools, or open-source
 directories.
 
 ## Short
 
-AgentPlane - Git-native infrastructure for traceable AI work.
+Agentplane - Git-native infrastructure for traceable AI work.
 
 ## Medium
 
-AgentPlane is a local-first CLI that turns coding-agent changes into reviewable Git evidence: task
+Agentplane is a local-first CLI that turns coding-agent changes into reviewable Git evidence: task
 intent, approved plan, verification, finish state, and Agent Change Record.
 
 ## Long
 
-AgentPlane is not another coding agent or hosted agent runtime. It wraps Claude Code, Codex, Cursor,
+Agentplane is not another coding agent or hosted agent runtime. It wraps Claude Code, Codex, Cursor,
 Aider, and similar tools with a repo-local evidence trail so AI-authored work can be reviewed,
 validated, merged, and reverted through Git.
 
@@ -44,5 +44,5 @@ Repo-local evidence layer for AI-authored software changes.
 
 ## Differentiation note
 
-AgentPlane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first Git evidence
+Agentplane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first Git evidence
 layer for AI work in repositories.

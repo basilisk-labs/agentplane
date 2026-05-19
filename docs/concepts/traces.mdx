@@ -1,0 +1,81 @@
+---
+title: "Traces for AI agent runs"
+description: "How Agentplane records workflow steps, context, model calls, tool calls, checks, outputs, and artifacts as traces."
+---
+
+import FurtherReading from "@site/src/components/FurtherReading";
+
+# Traces for AI agent runs
+
+## Quick answer
+
+A trace is a structured record of what happened during an agent run. In Agentplane, traces explain
+the workflow step, context used, model calls, tool calls, checks, outputs, and artifacts so
+developers can debug and reproduce agent behavior.
+
+## What is a trace?
+
+A trace is the ordered record of a run. It connects steps that belong to the same workflow execution.
+
+## What is a span?
+
+A span is one timed operation inside a trace: a workflow start, context load, model call, tool call,
+verification check, or export.
+
+## Why do agent traces differ from normal logs?
+
+Logs often describe text output. Agent traces need to preserve workflow structure, context
+selection, tool metadata, check results, and artifact references because those fields explain why an
+agent produced a result.
+
+## What does Agentplane record?
+
+- Workflow steps.
+- Context loads.
+- Model-call metadata.
+- Tool-call metadata.
+- Verification checks.
+- Outputs and artifacts.
+- Export status.
+
+## What are OpenTelemetry-compatible exports?
+
+Agentplane-shaped traces can be exported as JSON and mapped to OpenTelemetry trace concepts so other
+observability tools can inspect the run without depending on a proprietary UI.
+
+## Example trace
+
+```json
+{
+  "trace_id": "run_01HX...",
+  "spans": [
+    {
+      "name": "workflow.start",
+      "attributes": {
+        "agentplane.workflow": "code-review",
+        "agentplane.recipe": "tdd"
+      }
+    },
+    {
+      "name": "tool.call",
+      "attributes": {
+        "tool.name": "shell",
+        "command": "npm test"
+      }
+    }
+  ]
+}
+```
+
+## How do I debug with traces?
+
+```bash
+agentplane trace list
+agentplane trace open <run-id>
+agentplane trace export <run-id> --format json
+```
+
+Use the trace to answer: which context was loaded, which tool ran, what failed, what was retried,
+and which artifact proves the result.
+
+<FurtherReading ids={["opentelemetry-traces"]} />

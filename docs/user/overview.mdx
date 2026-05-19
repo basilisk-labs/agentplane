@@ -1,19 +1,21 @@
 ---
-title: "Overview"
-description: "Learn how AgentPlane makes AI-agent work traceable inside Git with task evidence and local context."
+title: "What is Agentplane?"
+description: "Agentplane is a CLI-first operational workflow and observability layer for AI agents."
 ---
 
-## What AgentPlane is
+## What is Agentplane?
 
-AgentPlane is Git-native infrastructure for traceable AI work.
+Agentplane is the CLI-first operational workflow and observability layer for AI agents, built for
+reproducible runs, inspectable traces, local context, recipes, artifacts, and Git-native evidence.
 
-It wraps coding-agent changes in repository-owned evidence: task intent, approved plan,
-verification results, local context artifacts, finish state, Git metadata, and Agent Change Record.
+It does not replace the model or agent framework. It gives agent work an operating surface:
+workflows, context boundaries, tool-call records, verification checks, run artifacts, traces, and
+Agent Change Records.
 
-Humans install and initialize AgentPlane. Coding agents operate the lifecycle. Reviewers inspect the
+Humans install and initialize Agentplane. Coding agents operate the lifecycle. Reviewers inspect the
 evidence in Git.
 
-Use your existing agent to edit code. Use AgentPlane to make the agent's work reviewable after the
+Use your existing agent to edit code. Use Agentplane to make the agent's work reviewable after the
 chat window, terminal session, or IDE context is gone.
 
 ```text
@@ -30,7 +32,7 @@ Manual CLI usage beyond setup and recovery is an advanced operator path.
 
 ## Agent-agnostic model
 
-AgentPlane does not depend on one coding agent, model, IDE, or hosted platform.
+Agentplane does not depend on one coding agent, model, IDE, or hosted platform.
 
 It works at the repository boundary:
 
@@ -41,9 +43,9 @@ It works at the repository boundary:
 - Git records diffs, branches, commits, and review history.
 
 Any coding agent that can read files, run shell commands, edit the repository, and respect the
-policy gateway can operate inside AgentPlane.
+policy gateway can operate inside Agentplane.
 
-## What AgentPlane does not do
+## What Agentplane does not do
 
 - It does not generate code for you.
 - It does not choose a model.
@@ -51,11 +53,13 @@ policy gateway can operate inside AgentPlane.
 - It does not replace CI.
 - It does not replace pull request review.
 
-## What AgentPlane gives you
+## What does Agentplane give you?
 
 - Repo-local task records.
 - Policy gateway through `AGENTS.md` or `CLAUDE.md`.
 - Explicit task lifecycle.
+- Local workflow runs.
+- Trace records.
 - Verification evidence.
 - Local context management: raw sources, wiki pages, facts, graph edges, projection, search, and
   task-context verification.
@@ -64,14 +68,14 @@ policy gateway can operate inside AgentPlane.
 
 ## First artifact before first abstraction
 
-The fastest way to understand AgentPlane is to install it, initialize the repository, then hand the
+The fastest way to understand Agentplane is to install it, initialize the repository, then hand the
 repository to a coding agent:
 
 ```bash
 npm i -g agentplane
 agentplane init
-agentplane context init
-agentplane quickstart
+agentplane run ./agentplane.yaml
+agentplane trace open
 ```
 
 The visible payoff is a repo-owned task trail:
@@ -91,7 +95,7 @@ context/facts/**/*.jsonl
 context/graph/**/*.jsonl
 ```
 
-This is AgentPlane's implementation of the LLM Wiki pattern for repositories: agents maintain a
+This is Agentplane's implementation of the LLM Wiki pattern for repositories: agents maintain a
 source-backed knowledge layer in Git instead of re-reading every raw source on every question.
 
 ## Source of truth model
@@ -112,8 +116,8 @@ source-backed knowledge layer in Git instead of re-reading every raw source on e
 
 ## Next steps
 
-1. Install and initialize from [Setup](setup).
-2. Hand the repository to your coding agent with [Hand off to an agent](agent-handoff).
+1. Run the [Quickstart](../start/quickstart).
+2. Run the first local workflow from the [Quickstart](../start/quickstart).
 3. Read [Local context](local-context) if your agent needs reusable repository knowledge.
-4. Read [Agent Change Record](agent-change-record) when you review the result.
+4. Read [Agent Change Records](../reference/acr) when you review the result.
 5. Pick a [workflow guide](../workflow-guides) for your coding agent or review setup.

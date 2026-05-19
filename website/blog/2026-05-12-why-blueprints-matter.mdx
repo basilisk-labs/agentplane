@@ -1,7 +1,7 @@
 ---
 slug: why-blueprints-matter
 title: "Blueprints: routes for agent work that should not be improvised"
-description: "Blueprints make AgentPlane better by turning repeated work into explicit routes with scope, evidence, checks, and recovery paths."
+description: "Blueprints make Agentplane better by turning repeated work into explicit routes with scope, evidence, checks, and recovery paths."
 authors: [team]
 tags: [blueprints, docs, workflow]
 ---
@@ -15,7 +15,7 @@ rollback. A branch-pr close includes a merge, but the handoff matters just as mu
 jobs has a shape: the sources to inspect, the evidence to record, the checks that matter, and the
 point where the agent should stop instead of guessing.
 
-Blueprints are AgentPlane's way of making that shape explicit.
+Blueprints are Agentplane's way of making that shape explicit.
 
 {/* truncate */}
 
@@ -34,9 +34,9 @@ A blueprint gives the task a route before execution starts. It says what kind of
 surfaces are in scope, what evidence belongs to the task, and which checks are expected. It does not
 remove judgment. It narrows the place where judgment is allowed to happen.
 
-## Why this made AgentPlane better
+## Why this made Agentplane better
 
-AgentPlane already had a task lifecycle: create a task, approve a plan, execute, verify, finish.
+Agentplane already had a task lifecycle: create a task, approve a plan, execute, verify, finish.
 Blueprints made that lifecycle less generic.
 
 That is the real improvement. A lifecycle without task shape can become ceremony. A task record says
@@ -47,7 +47,7 @@ For a docs change, that route is light. For a release, it is strict. For branch-
 separate implementation and integration phases. For runner or workflow changes, it needs stronger
 evidence because a small mistake can change how future agents mutate the repo.
 
-The value is not that AgentPlane can print a nicer plan. The value is that repeated work stops being
+The value is not that Agentplane can print a nicer plan. The value is that repeated work stops being
 reinvented in every session.
 
 ## A blueprint is not a checklist
@@ -86,5 +86,5 @@ handoff belongs to the workflow, and where to record evidence.
 The result is calmer work. Fewer surprise scope jumps. Fewer "green but not actually ready" endings.
 Fewer clean-looking diffs that leave reviewers reconstructing intent from branch names.
 
-Blueprints made AgentPlane better because they moved process knowledge out of individual sessions
+Blueprints made Agentplane better because they moved process knowledge out of individual sessions
 and into repository-owned routes. That is where it belongs.

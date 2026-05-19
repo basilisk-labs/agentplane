@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605181851-NJQR4S/website-redesign-backlog",
+  "created_at": "2026-05-18T18:53:04.294Z",
+  "head_sha": "87e800fb797c5d026b58242f1838fcf53c2444c2",
+  "last_verified_at": "2026-05-18T19:53:04.785Z",
+  "last_verified_sha": "87e800fb797c5d026b58242f1838fcf53c2444c2",
+  "pr_number": 3914,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3914",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605181851-NJQR4S",
+  "updated_at": "2026-05-18T19:53:04.826Z",
+  "verify": {
+    "status": "pass"
+  }
+}

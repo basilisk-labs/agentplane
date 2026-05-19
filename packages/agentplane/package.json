@@ -1,7 +1,7 @@
 {
   "name": "agentplane",
   "version": "0.6.2",
-  "description": "Open-source audit-layer CLI for coding-agent task, policy, verification, and branch workflows.",
+  "description": "CLI-first operational workflows and traces for AI agents.",
   "keywords": [
     "agentplane",
     "agentplane-framework",

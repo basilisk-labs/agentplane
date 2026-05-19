@@ -1,16 +1,16 @@
 ---
 slug: release-0-4-0-modular-prompts-and-recipes
-title: "AgentPlane 0.4.0: modular prompts and recipe-ready agents"
-description: "AgentPlane 0.4.0 turns prompts into compiled, addressable modules so recipes can target behavior instead of replacing whole instruction files."
+title: "Agentplane 0.4.0: modular prompts and recipe-ready agents"
+description: "Agentplane 0.4.0 turns prompts into compiled, addressable modules so recipes can target behavior instead of replacing whole instruction files."
 authors: [team]
 tags: [release, workflow, operations]
 ---
 
-AgentPlane `0.4.0` is published.
+Agentplane `0.4.0` is published.
 
 The headline is modular prompt assembly: agent instructions, policy gateway material, generated agent profiles, and runner prompt inputs now move through a shared module graph instead of being treated as large prompt files copied from place to place.
 
-That sounds internal, but it changes the shape of the product. It gives AgentPlane a stable layer where future recipes can patch, bind, disable, or validate named behavior without rewriting an entire prompt surface.
+That sounds internal, but it changes the shape of the product. It gives Agentplane a stable layer where future recipes can patch, bind, disable, or validate named behavior without rewriting an entire prompt surface.
 
 {/* truncate */}
 
@@ -52,7 +52,7 @@ With module-level prompt assembly, recipes can move toward narrower and more rev
 
 Existing `0.3.29` projects do not need a manual migration.
 
-Projects that regenerate AgentPlane assets through init or upgrade paths will receive prompt assets compiled from the modular prompt graph. Recipe authors can begin designing against prompt modules and selectors, while still following the documented recipe manifest contract.
+Projects that regenerate Agentplane assets through init or upgrade paths will receive prompt assets compiled from the modular prompt graph. Recipe authors can begin designing against prompt modules and selectors, while still following the documented recipe manifest contract.
 
 The `0.3` maintenance branch remains pinned to `v0.3.29`. The modular prompt architecture starts in the `0.4` line.
 

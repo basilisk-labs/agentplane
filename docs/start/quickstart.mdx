@@ -1,0 +1,107 @@
+---
+title: "Quickstart"
+description: "Install Agentplane, initialize a local workflow, run it, inspect the trace, and export artifacts."
+---
+
+# Quickstart
+
+This quickstart runs locally and creates inspectable workflow artifacts. It shows the full loop:
+install, initialize, run, trace, and export.
+
+## What will you do?
+
+You will install the `agentplane` CLI, initialize a project, run a local workflow, inspect the first
+trace, export artifacts, and see what changed in your repository.
+
+## Requirements
+
+- Node.js 24+
+- Git
+- A local terminal
+
+## Install Agentplane
+
+```bash
+npm i -g agentplane
+```
+
+If you do not want a global install, use `npx agentplane ...` for the same commands.
+
+## Initialize a project
+
+Run from a repository root:
+
+```bash
+agentplane init
+```
+
+This creates the repo-local policy and workflow surface that agents can inspect before mutating
+files.
+
+## Run a local workflow
+
+```bash
+agentplane run ./agentplane.yaml
+```
+
+If your project does not have a workflow file yet, use the generated starter workflow or run
+`agentplane quickstart` to inspect the installed route before handing the repository to an agent.
+
+## Inspect your first trace
+
+```bash
+agentplane trace list
+agentplane trace open <run-id>
+agentplane trace export <run-id> --format json
+```
+
+Expected output shape:
+
+```text
+run-id        workflow       status     spans
+run_01HX...   quickstart     ok         12
+```
+
+## Export artifacts
+
+```bash
+agentplane trace export <run-id> --format otel-json --out .agentplane/exports/run.otel.json
+agentplane acr generate <task-id> --work-commit HEAD --write
+```
+
+Exports are files. You can inspect them, version them, attach them to review, or remove them.
+
+## What changed in your repo?
+
+Typical local files:
+
+```text
+AGENTS.md
+.agentplane/WORKFLOW.md
+.agentplane/tasks/<task-id>/README.md
+.agentplane/tasks/<task-id>/acr.json
+.agentplane/traces/<run-id>.json
+.agentplane/exports/<run-id>.otel.json
+```
+
+Generated cache and derived context files can be rebuilt. Task records, traces, exports, and Agent
+Change Records are the evidence trail.
+
+## How do I remove Agentplane files?
+
+Remove the local project artifacts you no longer want:
+
+```bash
+rm -rf .agentplane
+rm -f AGENTS.md CLAUDE.md agentplane.yaml
+```
+
+If the repository already used `AGENTS.md` or `CLAUDE.md` for another purpose, review the file
+before removing it.
+
+## Next steps
+
+- Read [what files Agentplane writes](what-agentplane-writes).
+- Inspect [traces for AI agent runs](../concepts/traces).
+- Try the [examples](../../examples).
+- Add a [TDD recipe](../recipes/tdd) when you need a tighter verification loop.

@@ -2,7 +2,7 @@
 
 ## Title
 
-Launch HN: AgentPlane - Git-native evidence for AI-agent work
+Launch HN: Agentplane - Git-native evidence for AI-agent work
 
 ## URL
 
@@ -10,7 +10,7 @@ https://github.com/basilisk-labs/agentplane
 
 ## Primary Comment
 
-AgentPlane is Git-native infrastructure for traceable AI work. It records the task, approved plan,
+Agentplane is Git-native infrastructure for traceable AI work. It records the task, approved plan,
 verification evidence, finish state, and an Agent Change Record (ACR) in the Git repository where
 the change happens.
 
@@ -32,7 +32,7 @@ them. The output is reviewable in Git and parseable by CI.
 Useful links:
 
 - Repo: https://github.com/basilisk-labs/agentplane
-- ACR docs: https://agentplane.org/docs/user/agent-change-record
+- ACR docs: https://agentplane.org/docs/reference/acr
 - Schema: https://agentplane.org/schemas/acr-v0.1.schema.json
 
 ## Pre-Post Checks

@@ -1,0 +1,66 @@
+---
+title: "Docs update recipe"
+description: "Use a documentation workflow recipe for source inspection, docs edits, link checks, and trace export."
+---
+
+# Docs update recipe
+
+## What does it do?
+
+The docs update recipe structures an agent run around source inspection, targeted docs edits,
+verification, and trace export.
+
+## When should I use it?
+
+- A code change needs matching docs.
+- A concept page needs references and runnable commands.
+- Internal links should be checked before review.
+
+## When should I not use it?
+
+- The task is a product positioning rewrite with no source evidence.
+- The docs need a full IA redesign rather than a local update.
+
+## YAML example
+
+```yaml
+name: docs-update
+steps:
+  - id: inspect-source
+    type: context.load
+  - id: edit-docs
+    type: agent.run
+  - id: verify-links
+    type: check.run
+    command: bun run docs:site:build
+  - id: export-trace
+    type: trace.export
+```
+
+## Command to apply
+
+```bash
+agentplane recipes install docs-update
+agentplane run ./agentplane.yaml --recipe docs-update
+```
+
+## Expected trace events
+
+```text
+context.load
+agent.run
+verification.check
+trace.export
+```
+
+## Expected artifacts
+
+```text
+.agentplane/traces/<run-id>.json
+.agentplane/exports/<run-id>.otel.json
+```
+
+## Troubleshooting
+
+If the docs page cites an external source, prefer the central reference registry and a Further
+Reading block rather than one-off link lists.

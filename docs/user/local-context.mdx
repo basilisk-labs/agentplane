@@ -1,19 +1,44 @@
 ---
-title: "Local context"
+title: "Local context for AI agent workflows"
 description: "Use repo-owned context artifacts for reusable agent memory, task grounding, and source-backed evidence."
 ---
 
+import FurtherReading from "@site/src/components/FurtherReading";
+
+## Quick answer
+
+Local context is the operational knowledge an agent needs for a specific repository or workflow:
+conventions, constraints, current state, reusable notes, tool instructions, and run history.
+Agentplane keeps this context close to local workflows so agents do not depend on fragile chat
+history.
+
+## When should I use local context?
+
+Use local context when:
+
+- the agent repeatedly needs repo-specific conventions;
+- tasks span multiple steps or sessions;
+- workflows need reusable instructions;
+- you want context that is inspectable and versionable.
+
+Do not use local context when:
+
+- a one-off prompt is enough;
+- the information contains secrets;
+- the context would become stale without review;
+- the agent needs live data that should be fetched by a tool instead.
+
 ## What local context is
 
-Local context is AgentPlane's repository-owned memory layer. It keeps reusable project knowledge in
-versioned files, then builds a SQLite projection for fast search and retrieval.
+Local context is Agentplane's repository-owned memory layer. It keeps reusable project knowledge in
+versioned files, then builds a local projection for fast search and retrieval.
 
 Use it when an agent needs facts, wiki pages, graph edges, capability notes, or task-specific
 source sets that should survive outside one chat session.
 
 ## Context management in v0.6
 
-AgentPlane v0.6 turns local context from a search helper into a context-management workflow:
+Agentplane v0.6 turns local context from a search helper into a context-management workflow:
 
 - raw sources remain in the repository and are treated as evidence
 - wiki pages accumulate synthesis instead of forcing agents to re-derive it from scratch
@@ -25,9 +50,18 @@ AgentPlane v0.6 turns local context from a search helper into a context-manageme
 
 This follows the LLM Wiki pattern described by Andrej Karpathy: keep raw sources separate, let an
 LLM maintain a persistent markdown wiki, and use a schema file such as `AGENTS.md` to make the agent
-a disciplined maintainer rather than a generic chatbot. AgentPlane adapts that pattern for software
+a disciplined maintainer rather than a generic chatbot. Agentplane adapts that pattern for software
 repositories by adding task lifecycle, source refs, proposal-before-promotion, and verification
 gates.
+
+Context engineering is broader than prompt writing. It is about selecting, compressing, isolating,
+and updating the information available to an agent at each step. Agentplane local context is a
+practical local implementation of that idea.
+
+The LLM Wiki pattern is useful as a mental model for persistent, structured knowledge that an LLM can
+consult instead of relying on one huge prompt. Agentplane does not claim to implement Karpathy's gist
+verbatim; it adapts the useful part: local, structured, inspectable context that can be reviewed and
+versioned.
 
 ## Source of truth
 
@@ -41,7 +75,7 @@ Editable source artifacts live under `context/**`:
 - `context/raw/private/**`: private raw material excluded from the generated projection.
 
 Generated context artifacts live under `.agentplane/context/derived/**`. The fast local search
-projection is stored in the shared AgentPlane cache database at `.agentplane/cache.sqlite`; context
+projection is stored in the shared Agentplane cache database at `.agentplane/cache.sqlite`; context
 owns only its projection tables inside that file. Treat both the derived artifacts and the SQLite
 cache as disposable output.
 
@@ -60,9 +94,9 @@ agentplane context show context/wiki/release.md#section=publish-gate
 agentplane context check
 ```
 
-When `agentplane context init` runs in an empty standalone directory, it bootstraps the AgentPlane
+When `agentplane context init` runs in an empty standalone directory, it bootstraps the Agentplane
 project first and then creates the context workspace. In a non-empty directory that is not already an
-AgentPlane project, run `agentplane init` explicitly before `agentplane context init` so the project
+Agentplane project, run `agentplane init` explicitly before `agentplane context init` so the project
 gateway, workflow, backend, and conflict handling stay visible.
 
 The default init profile is `adaptive`: one stable llm-wiki contract with project-specific page
@@ -232,3 +266,5 @@ agentplane context check
 
 `context list` is intentionally not a public command. Use search for discovery and the graph
 inspection commands when you need structured neighborhood views.
+
+<FurtherReading ids={["karpathy-llm-wiki", "langchain-context-engineering"]} />

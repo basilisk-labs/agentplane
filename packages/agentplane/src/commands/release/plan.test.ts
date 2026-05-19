@@ -77,6 +77,7 @@ describeWhenNotHook("release plan", () => {
         dependencyVersion: "0.2.6",
       });
       await commitAll(root, "seed");
+      await execFileAsync("git", ["branch", "-M", "main"], { cwd: root });
       await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
       await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", "main"], {
         cwd: root,

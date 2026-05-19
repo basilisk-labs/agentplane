@@ -1,7 +1,7 @@
 {
   "name": "@agentplane/spec",
   "version": "0.0.0",
-  "description": "Schemas and examples for AgentPlane audit-layer file formats (internal package).",
+  "description": "Schemas and examples for Agentplane audit-layer file formats (internal package).",
   "keywords": [
     "agentplane",
     "agentplane-framework",

@@ -136,7 +136,7 @@ export const acrGenerateSpec: CommandSpec<AcrGenerateParsed> = {
       kind: "string",
       name: "agent",
       valueHint: "<id>",
-      description: "AgentPlane role or agent id.",
+      description: "Agentplane role or agent id.",
     },
     {
       kind: "string",

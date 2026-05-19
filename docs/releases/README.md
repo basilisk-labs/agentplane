@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../assets/readme-headers/releases.svg" alt="AgentPlane release notes header" style="width:100%;max-width:100%;"/>
+  <img src="../assets/readme-headers/releases.svg" alt="Agentplane release notes header" style="width:100%;max-width:100%;"/>
 </p>
 
 # Release notes
