@@ -1,7 +1,13 @@
 {
   "artifact_root": ".agentplane/tasks/202605191421-D566XJ",
-  "created_at": "2026-05-19T14:32:35.182Z",
+  "created_at": "2026-05-19T14:51:44.218Z",
   "files": [
+    {
+      "path": ".agentplane/tasks/202605191421-D566XJ/acr.json",
+      "role": "acr",
+      "sha256": "sha256:a22c5a31d28e0b7cee0f8f217a1e7c7cd30295dac2b14dcb3a2e4aacd1050559",
+      "size_bytes": 11026
+    },
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/blueprint/resolved-snapshot.json",
       "role": "blueprint_snapshot",
@@ -11,14 +17,14 @@
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/pr/diffstat.txt",
       "role": "pr_artifact",
-      "sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "size_bytes": 0
+      "sha256": "sha256:5e978ac150ecab40f394945afb235e82bf0f8fcc17bb2ea08cee6403f5780aec",
+      "size_bytes": 759
     },
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/pr/github-body.md",
       "role": "pr_artifact",
-      "sha256": "sha256:b8a114477333e6caee68176b0584bf631d57bcea796c104968d3518c7c337aa4",
-      "size_bytes": 1086
+      "sha256": "sha256:b5f575f8dabe7e52ba49591c4f437c4d16320df8431eac091932f270ebde8f38",
+      "size_bytes": 2059
     },
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/pr/github-title.txt",
@@ -29,26 +35,26 @@
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/pr/meta.json",
       "role": "pr_artifact",
-      "sha256": "sha256:98c3161cbb402c1177f4b830ef0698ed0a69147e4d58f8c5ac7048f6aab481c6",
-      "size_bytes": 382
+      "sha256": "sha256:a1e447bd6dd2e21c486d8a83350cd8f2f7d1df8f555cd329c90f5c2a7ebcf32c",
+      "size_bytes": 439
     },
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/pr/review.md",
       "role": "pr_artifact",
-      "sha256": "sha256:ec0ad05ab3f6ffe0fd19516f0f40b2b81c59dde41cfc5bd5b8f2d9077fca0f76",
-      "size_bytes": 745
+      "sha256": "sha256:107c62ce5b7ef2471785ece3fb601c206641ee24ec4679af37baa53f3f2aa057",
+      "size_bytes": 1705
     },
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/README.md",
       "role": "task_readme",
-      "sha256": "sha256:52ebac6f0d5c8aa858e45c84dde1a4f7eff742c9f94159a8a36979dcb76f66af",
-      "size_bytes": 5605
+      "sha256": "sha256:535082acffa4ff21da7d6d8351a23ea61400d72329e49bb185b59f6a910e1bd0",
+      "size_bytes": 9124
     }
   ],
   "integrity": {
     "canonicalization": "agentplane-canonical-json-v1",
     "digest_algorithm": "sha256",
-    "manifest_digest": "sha256:12c80787894b06a4a7d19c383a8e1a9b4a7b6ef9832957a710a7294d9f6a7515"
+    "manifest_digest": "sha256:340c4a8a64fd0c36545272cac8c3cc961413ea1de1c63a78447273a10df01f43"
   },
   "kind": "agentplane_evidence_bundle",
   "producer": {

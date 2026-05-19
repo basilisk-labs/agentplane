@@ -1,0 +1,12 @@
+ .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ .../202605191421-D566XJ/evidence/manifest.json     |  63 +++
+ docs/reference/acr.mdx                             |   8 +
+ docs/reference/evidence.mdx                        |  44 ++
+ docs/user/cli-reference.generated.mdx              |  51 ++
+ .../src/cli/run-cli/command-catalog/project.ts     |  11 +
+ .../src/cli/run-cli/command-loaders/project.ts     |  11 +
+ packages/agentplane/src/commands/acr/generate.ts   |  15 +-
+ .../src/commands/evidence/evidence.command.test.ts | 111 ++++
+ .../src/commands/evidence/evidence.command.ts      | 487 ++++++++++++++++++
+ website/sidebars.ts                                |   2 +
+ 11 files changed, 1371 insertions(+), 4 deletions(-)

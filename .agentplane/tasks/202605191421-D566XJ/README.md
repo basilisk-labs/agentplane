@@ -4,7 +4,7 @@ title: "Add deterministic evidence bundle commands"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -25,10 +25,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-19T14:49:32.970Z"
+  updated_by: "CODER"
+  note: "Implemented deterministic evidence bundle and verify commands with ACR trust pointer and docs. Checks passed: focused evidence/ACR tests, agentplane typecheck, lint:core, docs:cli:check, docs:ia:check, evidence bundle, evidence verify --strict."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement deterministic evidence bundle and verification commands inside the task worktree, preserving the approved scope and excluding signing or preservation integrations."
+  -
+    type: "verify"
+    at: "2026-05-19T14:49:32.970Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented deterministic evidence bundle and verify commands with ACR trust pointer and docs. Checks passed: focused evidence/ACR tests, agentplane typecheck, lint:core, docs:cli:check, docs:ia:check, evidence bundle, evidence verify --strict."
 doc_version: 3
-doc_updated_at: "2026-05-19T14:23:12.271Z"
+doc_updated_at: "2026-05-19T14:49:33.056Z"
 doc_updated_by: "CODER"
 description: "Implement a deterministic evidence bundle and verification CLI surface, with ACR trust extension metadata for generated bundles. Scope excludes Sigstore signing, S3 Object Lock preservation, and capability proposal flows."
 sections:
@@ -64,6 +70,27 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-19T14:49:32.970Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented deterministic evidence bundle and verify commands with ACR trust pointer and docs. Checks passed: focused evidence/ACR tests, agentplane typecheck, lint:core, docs:cli:check, docs:ia:check, evidence bundle, evidence verify --strict.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:23:12.271Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/evidence/evidence.command.test.ts packages/agentplane/src/commands/acr/acr.command.test.ts -> pass, 13 tests. Command: bun run --filter=agentplane typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run docs:cli:check and bun run docs:ia:check -> pass. Command: agentplane evidence bundle 202605191421-D566XJ and agentplane evidence verify 202605191421-D566XJ --strict -> pass, manifest includes 8 files.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191421-D566XJ-evidence-bundle/.agentplane/tasks/202605191421-D566XJ/blueprint/resolved-snapshot.json
+    - old_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+    - current_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191421-D566XJ
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -97,6 +124,27 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-19T14:49:32.970Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented deterministic evidence bundle and verify commands with ACR trust pointer and docs. Checks passed: focused evidence/ACR tests, agentplane typecheck, lint:core, docs:cli:check, docs:ia:check, evidence bundle, evidence verify --strict.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:23:12.271Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/evidence/evidence.command.test.ts packages/agentplane/src/commands/acr/acr.command.test.ts -> pass, 13 tests. Command: bun run --filter=agentplane typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run docs:cli:check and bun run docs:ia:check -> pass. Command: agentplane evidence bundle 202605191421-D566XJ and agentplane evidence verify 202605191421-D566XJ --strict -> pass, manifest includes 8 files.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191421-D566XJ-evidence-bundle/.agentplane/tasks/202605191421-D566XJ/blueprint/resolved-snapshot.json
+- old_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+- current_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191421-D566XJ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
