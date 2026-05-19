@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-19T17:13:28Z",
   "base": "main",
   "branch": "task/202605191451-TFBJEG/fix-3934-context-lifecycle",
   "created_at": "2026-05-19T14:52:30.296Z",
-  "head_sha": "ce1775ccd1882baf3c993d1acf7e1a0ea3a43f8c",
+  "head_sha": "0862773d0d1cfcd1568122419779a225c8f311ea",
   "last_verified_at": "2026-05-19T16:59:28.896Z",
   "last_verified_sha": "ce1775ccd1882baf3c993d1acf7e1a0ea3a43f8c",
+  "merge_commit": "f1b4e3f4129b112bec3d5a8ed80191280b27eb84",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-19T17:13:28Z",
   "pr_number": 3939,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3939",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605191451-TFBJEG",
-  "updated_at": "2026-05-19T16:50:48.026Z",
+  "updated_at": "2026-05-19T17:13:28Z",
   "verify": {
     "status": "pass"
   }

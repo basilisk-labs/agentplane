@@ -1,10 +1,11 @@
 ---
 id: "202605191451-TFBJEG"
 title: "Fix issue #3934 maximum-assimilation lifecycle drift"
-status: "DOING"
+result_summary: "Merged via PR #3939."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -36,11 +37,16 @@ quality_review:
     - ".agentplane/tasks/202605191451-TFBJEG/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191451-TFBJEG-fix-3934-context-lifecycle/.agentplane/tasks/202605191451-TFBJEG/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "f1b4e3f4129b112bec3d5a8ed80191280b27eb84"
+  message: "Merge pull request #3939 from basilisk-labs/task/202605191451-TFBJEG/fix-3934-context-lifecycle"
 comments:
   -
     author: "CODER"
     body: "Start: Implement issue #3934 fixes in the dedicated branch_pr worktree, covering maximum-assimilation schema/help drift, context verification routing, finish close-commit preflight, and context check labeling with focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3939 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -67,9 +73,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed after review fix: maximum_assimilation mode no longer bypasses source_set.files for context_assimilation tasks; focused release-readiness test, lint:core, typecheck, framework bootstrap, and hosted PR checks passed."
+  -
+    type: "status"
+    at: "2026-05-19T17:14:10.778Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3939 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T16:59:28.939Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T17:14:10.786Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve GitHub issue #3934: align maximum-assimilation profile switching, blueprint schema/help, context verify-task scope, direct finish close-commit preflight, and context check labeling."
 sections:
   Summary: |-
