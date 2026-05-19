@@ -16,6 +16,8 @@ import { buildCloudPullPlan, emitCloudPullDiffSummary, readOpenConflicts } from 
 import { cloudPendingPushReason, pendingCloudPushError } from "./cloud-pending-push.js";
 import type { CloudBackendSettings } from "./cloud-backend-settings.js";
 import { requestCloudPush } from "./cloud-backend-push.js";
+import { cloudBackendCapabilities } from "./cloud-backend-capabilities.js";
+import { refreshCloudProjectionBeforeTaskStart } from "./cloud-start-refresh.js";
 import {
   CLOUD_PULL_REQUEST_TIMEOUT_MS,
   CLOUD_REQUEST_TIMEOUT_MS,
@@ -52,20 +54,7 @@ type CloudSyncStateSnapshot = {
 
 export class CloudBackend implements TaskBackend {
   id = "cloud";
-  capabilities: TaskBackend["capabilities"] = {
-    canonical_source: "remote",
-    projection: "cache",
-    projection_read_mode: "native",
-    reads_from_projection_by_default: true,
-    writes_task_readmes: true,
-    supports_task_revisions: true,
-    supports_revision_guarded_writes: true,
-    may_access_network_on_read: true,
-    may_access_network_on_write: true,
-    supports_projection_refresh: true,
-    supports_push_sync: true,
-    supports_snapshot_export: false,
-  } as const;
+  capabilities: TaskBackend["capabilities"] = cloudBackendCapabilities;
   endpoint: string;
   token: string;
   projectId: string;
@@ -233,51 +222,15 @@ export class CloudBackend implements TaskBackend {
   }
 
   async refreshProjectionBeforeTaskStart(): Promise<void> {
-    if (!this.autoSyncEnabled || !this.autoSyncPullOnStartReady) return;
-    if (this.missingConfigKeys().length > 0) return;
-
-    const state = await this.readState();
-    if (sameLocalDate(state.last_start_ready_pull_at, new Date())) return;
-    if (state.pending_push) {
-      throw pendingCloudPushError(state.pending_push);
-    }
-    if (!this.autoSyncNetworkAllowed) {
-      throw new BackendError(
-        [
-          "Cloud projection daily task-start refresh requires network access approval.",
-          "Why: task start-ready should see cloud-imported GitHub issue intake tasks before local work begins.",
-          "Fix: pull the cloud projection before starting task work.",
-          "Safe command: agentplane backend sync cloud --direction pull --conflict=prefer-remote --yes",
-          "Stop condition: stop if pull reports open conflicts or cannot refresh the projection.",
-        ].join("\n"),
-        "E_BACKEND",
-      );
-    }
-
-    const syncState = await this.requestCloudSyncState(this.projectId);
-    if (syncState.conflicts.length > 0) {
-      throw new BackendError(
-        cloudConflictMessage({
-          conflicts: syncState.conflicts,
-          safeCommand:
-            syncState.safeCommand ??
-            "agentplane backend sync cloud --direction pull --conflict=diff --yes",
-        }),
-        "E_BACKEND",
-      );
-    }
-
-    await this.sync({
-      direction: "pull",
-      conflict: "prefer-remote",
-      quiet: true,
-      confirm: true,
-    });
-    const refreshed = await this.readState();
-    await writeCloudBackendState(this.statePath, {
-      last_checked_at: refreshed.last_checked_at,
-      last_start_ready_pull_at: new Date().toISOString(),
-      pending_push: refreshed.pending_push,
+    await refreshCloudProjectionBeforeTaskStart({
+      autoSyncEnabled: this.autoSyncEnabled,
+      autoSyncPullOnStartReady: this.autoSyncPullOnStartReady,
+      autoSyncNetworkAllowed: this.autoSyncNetworkAllowed,
+      missingConfigKeys: this.missingConfigKeys.bind(this),
+      projectId: this.projectId,
+      statePath: this.statePath,
+      requestCloudSyncState: this.requestCloudSyncState.bind(this),
+      sync: this.sync.bind(this),
     });
   }
 
@@ -641,15 +594,4 @@ export class CloudBackend implements TaskBackend {
     ] as const;
     return required.flatMap(([value, key]) => (value ? [] : [key]));
   }
-}
-
-function sameLocalDate(value: string | null, now: Date): boolean {
-  if (!value) return false;
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return false;
-  return (
-    parsed.getFullYear() === now.getFullYear() &&
-    parsed.getMonth() === now.getMonth() &&
-    parsed.getDate() === now.getDate()
-  );
 }
