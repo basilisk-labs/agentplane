@@ -13,7 +13,7 @@ Created: 2026-05-19T14:23:12.633Z
 ## Verification
 
 - State: ok
-- Note: Quality gate passed for deterministic evidence bundle implementation. Reviewed route evidence, focused tests, typecheck, lint, docs checks, ACR validation, strict evidence verification, and GitHub PR linkage. Hosted checks are still tracked separately on PR #3937.
+- Note: Fixed hosted Linux format gate by applying Prettier to evidence command files. Local checks passed: format:check, focused evidence/ACR tests, agentplane typecheck, targeted eslint, docs:cli:check, docs:ia:check.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,9 +24,9 @@ Created: 2026-05-19T14:23:12.633Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T14:52:54.635Z
+- Updated: 2026-05-19T15:29:40.686Z
 - Branch: task/202605191421-D566XJ/evidence-bundle
-- Head: a89b99bfe360
+- Head: f0df96e155d1
 
 ```text
  .agentplane/tasks/202605191421-D566XJ/acr.json     | 409 +++++++++++++++
@@ -39,9 +39,9 @@ Created: 2026-05-19T14:23:12.633Z
  .../src/cli/run-cli/command-loaders/project.ts     |  11 +
  packages/agentplane/src/commands/acr/generate.ts   |  15 +-
  .../src/commands/evidence/evidence.command.test.ts | 111 ++++
- .../src/commands/evidence/evidence.command.ts      | 487 ++++++++++++++++++
+ .../src/commands/evidence/evidence.command.ts      | 484 +++++++++++++++++
  website/sidebars.ts                                |   2 +
- 12 files changed, 1786 insertions(+), 4 deletions(-)
+ 12 files changed, 1783 insertions(+), 4 deletions(-)
 ```
 
 </details>

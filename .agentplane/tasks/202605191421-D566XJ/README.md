@@ -4,7 +4,7 @@ title: "Add deterministic evidence bundle commands"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T14:54:23.894Z"
-  updated_by: "EVALUATOR"
-  note: "Quality gate passed for deterministic evidence bundle implementation. Reviewed route evidence, focused tests, typecheck, lint, docs checks, ACR validation, strict evidence verification, and GitHub PR linkage. Hosted checks are still tracked separately on PR #3937."
+  updated_at: "2026-05-19T15:29:40.496Z"
+  updated_by: "CODER"
+  note: "Fixed hosted Linux format gate by applying Prettier to evidence command files. Local checks passed: format:check, focused evidence/ACR tests, agentplane typecheck, targeted eslint, docs:cli:check, docs:ia:check."
   attempts: 0
 quality_review:
   state: "pass"
@@ -66,8 +66,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality gate passed for deterministic evidence bundle implementation. Reviewed route evidence, focused tests, typecheck, lint, docs checks, ACR validation, strict evidence verification, and GitHub PR linkage. Hosted checks are still tracked separately on PR #3937."
+  -
+    type: "verify"
+    at: "2026-05-19T15:29:40.496Z"
+    author: "CODER"
+    state: "ok"
+    note: "Fixed hosted Linux format gate by applying Prettier to evidence command files. Local checks passed: format:check, focused evidence/ACR tests, agentplane typecheck, targeted eslint, docs:cli:check, docs:ia:check."
 doc_version: 3
-doc_updated_at: "2026-05-19T14:54:23.947Z"
+doc_updated_at: "2026-05-19T15:29:40.578Z"
 doc_updated_by: "CODER"
 description: "Implement a deterministic evidence bundle and verification CLI surface, with ACR trust extension metadata for generated bundles. Scope excludes Sigstore signing, S3 Object Lock preservation, and capability proposal flows."
 sections:
@@ -116,6 +122,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:49:33.056Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191421-D566XJ-evidence-bundle/.agentplane/tasks/202605191421-D566XJ/blueprint/resolved-snapshot.json
+    - old_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+    - current_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191421-D566XJ
+
+    ### 2026-05-19T15:29:40.496Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Fixed hosted Linux format gate by applying Prettier to evidence command files. Local checks passed: format:check, focused evidence/ACR tests, agentplane typecheck, targeted eslint, docs:cli:check, docs:ia:check.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:54:23.947Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -189,6 +214,25 @@ Note: Quality gate passed for deterministic evidence bundle implementation. Revi
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:49:33.056Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191421-D566XJ-evidence-bundle/.agentplane/tasks/202605191421-D566XJ/blueprint/resolved-snapshot.json
+- old_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+- current_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191421-D566XJ
+
+### 2026-05-19T15:29:40.496Z — VERIFY — ok
+
+By: CODER
+
+Note: Fixed hosted Linux format gate by applying Prettier to evidence command files. Local checks passed: format:check, focused evidence/ACR tests, agentplane typecheck, targeted eslint, docs:cli:check, docs:ia:check.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:54:23.947Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 
