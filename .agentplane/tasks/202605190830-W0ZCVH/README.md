@@ -4,7 +4,7 @@ title: "Make context init interactive"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -20,22 +20,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T08:50:55.281Z"
-  updated_by: "CODER"
-  note: "Generated CLI reference is fresh after the context init profile help change; implementation, tests, lint, size budget, docs, and routing checks are green."
+  updated_at: "2026-05-19T09:41:11.099Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed for current integration candidate after CLI docs/test split and hosted checks on PR #3924. Evidence: GitHub checks green on d60f8aa5a; local fast pre-push completed build, docs freshness, hotspot, unit fast, and critical-cli before session cutoff; focused tests/lint/routing recorded in task details."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T08:42:47.740Z"
+  updated_at: "2026-05-19T09:41:11.099Z"
   updated_by: "EVALUATOR"
-  note: "Re-verified current PR head 4118cece7b9f after commit amend and PR publication. Focused checks remain the same passing set recorded in the task details."
-  evaluated_sha: "5733e97e4deb3a875a562b3639b77bab5a9d264c"
+  note: "EVALUATOR quality gate passed for current integration candidate after CLI docs/test split and hosted checks on PR #3924. Evidence: GitHub checks green on d60f8aa5a; local fast pre-push completed build, docs freshness, hotspot, unit fast, and critical-cli before session cutoff; focused tests/lint/routing recorded in task details."
+  evaluated_sha: "d60f8aa5ad65fd4676cbc51f50fb5c45c2791332"
   blueprint_digest: "e3cdb957c1398f7b590b5f0ac62ac696831e85452f5b2c03b465645d6d4b9c5f"
   evidence_refs:
     - ".agentplane/tasks/202605190830-W0ZCVH/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190830-W0ZCVH-interactive-context-init/.agentplane/tasks/202605190830-W0ZCVH/blueprint/resolved-snapshot.json"
-  findings:
-    - "Command: git rev-parse --short=12 HEAD\nResult: pass\nEvidence: 4118cece7b9f\nScope: current task PR head used for verification metadata refresh"
+  findings: []
 commit: null
 comments:
   -
@@ -79,8 +78,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Generated CLI reference is fresh after the context init profile help change; implementation, tests, lint, size budget, docs, and routing checks are green."
+  -
+    type: "verify"
+    at: "2026-05-19T09:41:11.099Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed for current integration candidate after CLI docs/test split and hosted checks on PR #3924. Evidence: GitHub checks green on d60f8aa5a; local fast pre-push completed build, docs freshness, hotspot, unit fast, and critical-cli before session cutoff; focused tests/lint/routing recorded in task details."
 doc_version: 3
-doc_updated_at: "2026-05-19T08:50:55.392Z"
+doc_updated_at: "2026-05-19T09:41:11.125Z"
 doc_updated_by: "CODER"
 description: "Add a TTY dialog for user-run agentplane context init with basic mode information and a three-mode selection: minimal, adaptive, maximum-assimilation. Preserve explicit profile flags and non-interactive defaults."
 sections:
@@ -273,6 +278,25 @@ sections:
     Result: pass
     Evidence: policy routing OK
     Scope: policy routing contract
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190830-W0ZCVH-interactive-context-init/.agentplane/tasks/202605190830-W0ZCVH/blueprint/resolved-snapshot.json
+    - old_digest: e3cdb957c1398f7b590b5f0ac62ac696831e85452f5b2c03b465645d6d4b9c5f
+    - current_digest: e3cdb957c1398f7b590b5f0ac62ac696831e85452f5b2c03b465645d6d4b9c5f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605190830-W0ZCVH
+
+    ### 2026-05-19T09:41:11.099Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed for current integration candidate after CLI docs/test split and hosted checks on PR #3924. Evidence: GitHub checks green on d60f8aa5a; local fast pre-push completed build, docs freshness, hotspot, unit fast, and critical-cli before session cutoff; focused tests/lint/routing recorded in task details.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T08:50:55.392Z, excerpt_hash=sha256:6cca76c765bdcdc9d7f128d40081f1e9c2b6a3fe89309cef90c6ad52fd40a236
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -487,6 +511,25 @@ Command: node .agentplane/policy/check-routing.mjs
 Result: pass
 Evidence: policy routing OK
 Scope: policy routing contract
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190830-W0ZCVH-interactive-context-init/.agentplane/tasks/202605190830-W0ZCVH/blueprint/resolved-snapshot.json
+- old_digest: e3cdb957c1398f7b590b5f0ac62ac696831e85452f5b2c03b465645d6d4b9c5f
+- current_digest: e3cdb957c1398f7b590b5f0ac62ac696831e85452f5b2c03b465645d6d4b9c5f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605190830-W0ZCVH
+
+### 2026-05-19T09:41:11.099Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed for current integration candidate after CLI docs/test split and hosted checks on PR #3924. Evidence: GitHub checks green on d60f8aa5a; local fast pre-push completed build, docs freshness, hotspot, unit fast, and critical-cli before session cutoff; focused tests/lint/routing recorded in task details.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T08:50:55.392Z, excerpt_hash=sha256:6cca76c765bdcdc9d7f128d40081f1e9c2b6a3fe89309cef90c6ad52fd40a236
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current

@@ -19,8 +19,10 @@ Add a TTY dialog for user-run agentplane context init with basic mode informatio
 - Note:
 
 ```text
-Generated CLI reference is fresh after the context init profile help change; implementation, tests,
-lint, size budget, docs, and routing checks are green.
+EVALUATOR quality gate passed for current integration candidate after CLI docs/test split and hosted
+checks on PR #3924. Evidence: GitHub checks green on d60f8aa5a; local fast pre-push completed build,
+docs freshness, hotspot, unit fast, and critical-cli before session cutoff; focused
+tests/lint/routing recorded in task details.
 ```
 - Canonical workflow state lives in the task README.
 
