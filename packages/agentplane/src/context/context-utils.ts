@@ -203,9 +203,11 @@ export async function walkScopeFiles(root: string, scopes: ScopeName[]): Promise
         if (stats.isDirectory()) {
           const discovered = await collectMatchingFiles(root, item);
           for (const discoveredPath of discovered) {
+            if (!pathMatchesScopes(discoveredPath, scopes)) continue;
             files.add(discoveredPath);
           }
         } else {
+          if (!pathMatchesScopes(item, scopes)) continue;
           files.add(item);
         }
       }
