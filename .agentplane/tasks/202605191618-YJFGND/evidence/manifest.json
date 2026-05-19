@@ -1,0 +1,69 @@
+{
+  "artifact_root": ".agentplane/tasks/202605191618-YJFGND",
+  "created_at": "2026-05-19T16:22:12.570Z",
+  "files": [
+    {
+      "path": ".agentplane/tasks/202605191618-YJFGND/acr.json",
+      "role": "acr",
+      "sha256": "sha256:2e7511b95043130ff58487ed121b6e044b46ecbe27a02f124bcd8d41597802ef",
+      "size_bytes": 8927
+    },
+    {
+      "path": ".agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json",
+      "role": "blueprint_snapshot",
+      "sha256": "sha256:18dff3852e70932aa1f7cd0fb82e333d418928410175a9f40a3aee8425eb539d",
+      "size_bytes": 15061
+    },
+    {
+      "path": ".agentplane/tasks/202605191618-YJFGND/pr/diffstat.txt",
+      "role": "pr_artifact",
+      "sha256": "sha256:9dcbe0291c02f5a7967d180b6e51c3b6083a55ed343e4630718c9b4c2a2e4522",
+      "size_bytes": 383
+    },
+    {
+      "path": ".agentplane/tasks/202605191618-YJFGND/pr/github-body.md",
+      "role": "pr_artifact",
+      "sha256": "sha256:26b50edf19cab904807c666552380c52fe15884bdeff0757b5008ee3b3f1999e",
+      "size_bytes": 1574
+    },
+    {
+      "path": ".agentplane/tasks/202605191618-YJFGND/pr/github-title.txt",
+      "role": "pr_artifact",
+      "sha256": "sha256:350818fc4fd0c239f36d12b8ffb9925eb027620fa2ccb57dd9f493dc64730bca",
+      "size_bytes": 84
+    },
+    {
+      "path": ".agentplane/tasks/202605191618-YJFGND/pr/meta.json",
+      "role": "pr_artifact",
+      "sha256": "sha256:0a60c5da1a424984178863e2787bc3d3b4b42045a557ad97d001d35a643aa3c3",
+      "size_bytes": 555
+    },
+    {
+      "path": ".agentplane/tasks/202605191618-YJFGND/pr/review.md",
+      "role": "pr_artifact",
+      "sha256": "sha256:dbf69369d2b0cdc93076955f66af6a070ea5b075c50d3a03f6e94f908e97049b",
+      "size_bytes": 1302
+    },
+    {
+      "path": ".agentplane/tasks/202605191618-YJFGND/README.md",
+      "role": "task_readme",
+      "sha256": "sha256:427f6b9de103c84efdad035f8646fc02ad38611aabcc7792170a7add5d429f3e",
+      "size_bytes": 9379
+    }
+  ],
+  "integrity": {
+    "canonicalization": "agentplane-canonical-json-v1",
+    "digest_algorithm": "sha256",
+    "manifest_digest": "sha256:56bd7415dface7b6eb15b6c9fae823815fb15a5c550150f0b578f1775156325e"
+  },
+  "kind": "agentplane_evidence_bundle",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.3"
+  },
+  "schema_version": 1,
+  "task_id": "202605191618-YJFGND",
+  "verification": {
+    "command": "agentplane evidence verify 202605191618-YJFGND"
+  }
+}

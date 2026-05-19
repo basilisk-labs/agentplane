@@ -1,0 +1,322 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605191618-YJFGND",
+  "created_at": "2026-05-19T16:49:16.009Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.3"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "0559580ce2f8307d4981d06e8f50675b36a44cb3",
+    "work_ref": "task/202605191618-YJFGND/hosted-close-evidence",
+    "work_commit": "dfebb2e84d60f840d82961cfbd6318f01f6c82c1"
+  },
+  "task": {
+    "task_id": "202605191618-YJFGND",
+    "title": "Refresh evidence bundle during hosted close",
+    "intent": "Ensure branch_pr hosted close regenerates task evidence manifests after final task README and PR metadata mutations so strict evidence verification remains valid on main after close.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "CODER",
+    "name": "CODER",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.6.3"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605191618-YJFGND/README.md",
+      "sha256": "sha256:427f6b9de103c84efdad035f8646fc02ad38611aabcc7792170a7add5d429f3e"
+    },
+    "approved_at": "2026-05-19T16:18:56.501Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Ensure branch_pr hosted close regenerates task evidence manifests after final task README and PR metadata mutations so strict evidence verification remains valid on main after close.",
+    "diff_stats": {
+      "files_changed": 11,
+      "insertions": 1161,
+      "deletions": 5
+    },
+    "files": [
+      {
+        "path": ".agentplane/tasks/202605191421-D566XJ/evidence/manifest.json",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/acr.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/evidence/manifest.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/pr/diffstat.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/pr/github-body.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/pr/github-title.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/pr/meta.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/pr/review.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/hosted-close.command.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      }
+    ],
+    "risk": {
+      "level": "medium",
+      "categories": [
+        "tooling",
+        "cli"
+      ],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605191618-YJFGND_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-19T16:18:56.501Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605191618-YJFGND/README.md",
+      "sha256": "sha256:427f6b9de103c84efdad035f8646fc02ad38611aabcc7792170a7add5d429f3e"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605191618-YJFGND/README.md",
+      "sha256": "sha256:427f6b9de103c84efdad035f8646fc02ad38611aabcc7792170a7add5d429f3e"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605191618-YJFGND/README.md",
+      "sha256": "sha256:427f6b9de103c84efdad035f8646fc02ad38611aabcc7792170a7add5d429f3e"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:18dff3852e70932aa1f7cd0fb82e333d418928410175a9f40a3aee8425eb539d"
+    }
+  ],
+  "result": {
+    "status": "verified",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit dfebb2e84d60f840d82961cfbd6318f01f6c82c1 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:b6db053e69bcc2849b1d5d6c487f9f68d974d7ec2b81151c2981d6604410cbbd",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "quality_gate",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.verify",
+          "kind": "check_result",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "code_pr.quality",
+          "kind": "quality_report",
+          "produced_by": "quality_gate",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json",
+        "digest": "2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9",
+        "current_digest": "2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9",
+        "route_changed": false,
+        "artifact_sha256": "sha256:18dff3852e70932aa1f7cd0fb82e333d418928410175a9f40a3aee8425eb539d",
+        "safe_command": "agentplane blueprint snapshot 202605191618-YJFGND"
+      }
+    },
+    "agentplane.trust": {
+      "schema_version": 1,
+      "evidence_bundle": {
+        "path": ".agentplane/tasks/202605191618-YJFGND/evidence/manifest.json",
+        "digest_algorithm": "sha256",
+        "verification_command": "agentplane evidence verify 202605191618-YJFGND",
+        "status": "available"
+      }
+    }
+  }
+}
