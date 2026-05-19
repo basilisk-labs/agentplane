@@ -55,7 +55,7 @@ const REPOSITORY_RELATIVE_PATH_SCHEMA = z
   .min(1)
   .regex(/^(?!\/)(?!\\)(?![A-Za-z]:)(?!.*\\)(?!.*(?:^|\/)\.\.(?:\/|$)).+$/);
 
-export const TASK_OBSERVATION_EVIDENCE_ZOD_SCHEMA = z
+const TASK_OBSERVATION_EVIDENCE_ZOD_SCHEMA = z
   .object({
     files: z.array(REPOSITORY_RELATIVE_PATH_SCHEMA).optional(),
     commands: z.array(NON_EMPTY_STRING).optional(),
@@ -63,7 +63,7 @@ export const TASK_OBSERVATION_EVIDENCE_ZOD_SCHEMA = z
   })
   .strict();
 
-export const TASK_OBSERVATION_RECOMMENDED_ACTION_ZOD_SCHEMA = z
+const TASK_OBSERVATION_RECOMMENDED_ACTION_ZOD_SCHEMA = z
   .object({
     type: z.enum(TASK_OBSERVATION_ACTION_VALUES),
     title: NON_EMPTY_STRING.optional(),

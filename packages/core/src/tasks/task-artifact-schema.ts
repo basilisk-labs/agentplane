@@ -77,7 +77,7 @@ export const TASK_HANDOFF_SCHEMA = buildJsonSchemaDocument(TASK_HANDOFF_ZOD_SCHE
   title: "Task handoff artifact (v1)",
 });
 
-export const TASK_OBSERVATION_SCHEMA = buildJsonSchemaDocument(TASK_OBSERVATION_ZOD_SCHEMA, {
+const TASK_OBSERVATION_SCHEMA = buildJsonSchemaDocument(TASK_OBSERVATION_ZOD_SCHEMA, {
   $id: "https://agentplane.org/schemas/task-observation.schema.json",
   title: "Task observation JSONL entry (v0.1)",
   description:

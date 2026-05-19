@@ -20,7 +20,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-export const TASK_OBSERVATIONS_FILE = "observations.jsonl";
+const TASK_OBSERVATIONS_FILE = "observations.jsonl";
 
 export type TaskObservationReadError = {
   line: number;
@@ -219,7 +219,7 @@ export function findBlockingObservationIssues(
   return issues;
 }
 
-export function formatObservationReadErrors(
+function formatObservationReadErrors(
   taskId: string,
   errors: readonly TaskObservationReadError[],
 ): string {
