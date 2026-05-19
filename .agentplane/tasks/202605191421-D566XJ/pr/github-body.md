@@ -33,7 +33,7 @@ GitHub PR linkage. Hosted checks are still tracked separately on PR #3937.
 - Head: a89b99bfe360
 
 ```text
- .agentplane/tasks/202605191421-D566XJ/acr.json     | 402 +++++++++++++++
+ .agentplane/tasks/202605191421-D566XJ/acr.json     | 409 +++++++++++++++
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
  .../202605191421-D566XJ/evidence/manifest.json     |  69 +++
  docs/reference/acr.mdx                             |   8 +
@@ -45,7 +45,7 @@ GitHub PR linkage. Hosted checks are still tracked separately on PR #3937.
  .../src/commands/evidence/evidence.command.test.ts | 111 ++++
  .../src/commands/evidence/evidence.command.ts      | 487 ++++++++++++++++++
  website/sidebars.ts                                |   2 +
- 12 files changed, 1779 insertions(+), 4 deletions(-)
+ 12 files changed, 1786 insertions(+), 4 deletions(-)
 ```
 
 </details>
