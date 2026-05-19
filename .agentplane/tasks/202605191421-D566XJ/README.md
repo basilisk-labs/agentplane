@@ -1,10 +1,11 @@
 ---
 id: "202605191421-D566XJ"
 title: "Add deterministic evidence bundle commands"
-status: "DOING"
+result_summary: "Merged via PR #3937."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - ".agentplane/tasks/202605191421-D566XJ/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191421-D566XJ-evidence-bundle/.agentplane/tasks/202605191421-D566XJ/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "9d0fa79935ebb2d532e2a718a684506edee203cf"
+  message: "Merge pull request #3937 from basilisk-labs/task/202605191421-D566XJ/evidence-bundle"
 comments:
   -
     author: "CODER"
     body: "Start: Implement deterministic evidence bundle and verification commands inside the task worktree, preserving the approved scope and excluding signing or preservation integrations."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3937 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -84,9 +90,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for current implementation commit 08db6b47. Reviewed fixes for configured workflow_dir evidence paths and deterministic bundle reruns; local checks passed: focused evidence/ACR tests, typecheck, format:check, targeted eslint, framework bootstrap; hosted PR checks are green on PR #3937."
+  -
+    type: "status"
+    at: "2026-05-19T16:11:38.431Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3937 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T15:54:39.561Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T16:11:38.437Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement a deterministic evidence bundle and verification CLI surface, with ACR trust extension metadata for generated bundles. Scope excludes Sigstore signing, S3 Object Lock preservation, and capability proposal flows."
 sections:
   Summary: |-
