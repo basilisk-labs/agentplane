@@ -33,12 +33,6 @@ export const taskObservationsSpec: CommandSpec<TaskObservationsParsed> = {
   id: ["task", "observations"],
   group: "Task",
   summary: "Structured task-local observations journal commands.",
-  synopsis: [
-    "agentplane task observations add <task-id> --kind <kind> --summary <text> [--author <id>] [--severity <level>] [--action <type>]",
-    "agentplane task observations list <task-id> [--json]",
-    "agentplane task observations check <task-id> [--json]",
-    "agentplane task observations triage <task-id> [--json]",
-  ],
   args: [{ name: "subcommand", required: false, valueHint: "<add|list|check|triage>" }],
   parse: (raw) => ({
     subcommand: typeof raw.args.subcommand === "string" ? raw.args.subcommand : undefined,
@@ -112,21 +106,21 @@ export const taskObservationsAddSpec: CommandSpec<TaskObservationsAddParsed> = {
       name: "author",
       valueHint: "<id>",
       default: "AGENT",
-      description: "Observation author role or agent id.",
+      description: "Author.",
     },
     {
       kind: "string",
       name: "phase",
       valueHint: "<phase>",
       default: "implementation",
-      description: "Lifecycle phase.",
+      description: "Phase.",
     },
     {
       kind: "string",
       name: "severity",
       valueHint: "<level>",
       default: "medium",
-      description: "Observation severity.",
+      description: "Severity.",
     },
     { kind: "string", name: "decision", valueHint: "<text>", description: "Decision made." },
     { kind: "string", name: "impact", valueHint: "<text>", description: "Why it matters." },
@@ -135,62 +129,46 @@ export const taskObservationsAddSpec: CommandSpec<TaskObservationsAddParsed> = {
       name: "action",
       valueHint: "<type>",
       default: "none",
-      description: "Recommended downstream action.",
+      description: "Action.",
     },
-    {
-      kind: "string",
-      name: "action-title",
-      valueHint: "<text>",
-      description: "Recommended action title.",
-    },
-    {
-      kind: "string",
-      name: "action-details",
-      valueHint: "<text>",
-      description: "Recommended action details.",
-    },
+    { kind: "string", name: "action-title", valueHint: "<text>", description: "Title." },
+    { kind: "string", name: "action-details", valueHint: "<text>", description: "Details." },
     {
       kind: "string",
       name: "evidence-file",
       valueHint: "<path>",
       repeatable: true,
-      description: "Repeatable repository-relative evidence path.",
+      description: "Evidence file.",
     },
     {
       kind: "string",
       name: "evidence-command",
       valueHint: "<command>",
       repeatable: true,
-      description: "Repeatable command evidence.",
+      description: "Evidence command.",
     },
     {
       kind: "string",
       name: "ref",
       valueHint: "<ref>",
       repeatable: true,
-      description: "Repeatable external or local reference.",
+      description: "Reference.",
     },
     {
       kind: "string",
       name: "tag",
       valueHint: "<tag>",
       repeatable: true,
-      description: "Repeatable analysis tag.",
+      description: "Tag.",
     },
     {
       kind: "string",
       name: "status",
       valueHint: "<status>",
       default: "open",
-      description: "Observation status.",
+      description: "Status.",
     },
     { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
-  ],
-  examples: [
-    {
-      cmd: 'agentplane task observations add 202605191736-EQBZ4M --kind spec_gap --summary "Spec did not define issue promotion rules." --impact "Follow-up mining would be ambiguous." --action blueprint_change --action-title "Define observation triage gate" --author CODER',
-      why: "Record a structured gap discovered during implementation.",
-    },
   ],
   validateRaw: (raw) => {
     const kind = raw.opts.kind;
@@ -262,8 +240,6 @@ export function makeRunTaskObservationsAddHandler(
 type TaskObservationsReadParsed = {
   taskId: string;
   json: boolean;
-  status?: TaskObservationStatus;
-  kind?: TaskObservationKind;
 };
 
 export const taskObservationsListSpec: CommandSpec<TaskObservationsReadParsed> = {
@@ -271,26 +247,8 @@ export const taskObservationsListSpec: CommandSpec<TaskObservationsReadParsed> =
   group: "Task",
   summary: "List structured task observations.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
-  options: [
-    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
-    { kind: "string", name: "status", valueHint: "<status>", description: "Filter by status." },
-    { kind: "string", name: "kind", valueHint: "<kind>", description: "Filter by kind." },
-  ],
-  parse: (raw) => {
-    const enums = observationEnumValues();
-    return {
-      taskId: String(raw.args["task-id"]),
-      json: raw.opts.json === true,
-      status:
-        raw.opts.status === undefined
-          ? undefined
-          : parseEnum(taskObservationsListSpec, "status", raw.opts.status, enums.statuses),
-      kind:
-        raw.opts.kind === undefined
-          ? undefined
-          : parseEnum(taskObservationsListSpec, "kind", raw.opts.kind, enums.kinds),
-    };
-  },
+  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  parse: (raw) => ({ taskId: String(raw.args["task-id"]), json: raw.opts.json === true }),
 };
 
 function pathRelative(ctx: CommandContext, artifactPath: string): string {
@@ -315,11 +273,7 @@ export function makeRunTaskObservationsListHandler(
         }),
       });
     }
-    const observations = result.observations.filter(
-      (item) =>
-        (p.status === undefined || item.status === p.status) &&
-        (p.kind === undefined || item.kind === p.kind),
-    );
+    const observations = result.observations;
     if (p.json) {
       output.json({ path: pathRelative(commandContext, result.artifactPath), observations });
     } else if (observations.length === 0) {
@@ -338,7 +292,7 @@ export function makeRunTaskObservationsListHandler(
 export const taskObservationsCheckSpec: CommandSpec<TaskObservationsReadParsed> = {
   id: ["task", "observations", "check"],
   group: "Task",
-  summary: "Validate observations.jsonl and fail on unresolved blocking observations.",
+  summary: "Validate observations.jsonl.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
   parse: (raw) => ({ taskId: String(raw.args["task-id"]), json: raw.opts.json === true }),
@@ -383,7 +337,7 @@ export function makeRunTaskObservationsCheckHandler(
 export const taskObservationsTriageSpec: CommandSpec<TaskObservationsReadParsed> = {
   id: ["task", "observations", "triage"],
   group: "Task",
-  summary: "Summarize observations by recommended downstream action.",
+  summary: "Summarize observation actions.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
   parse: (raw) => ({ taskId: String(raw.args["task-id"]), json: raw.opts.json === true }),
