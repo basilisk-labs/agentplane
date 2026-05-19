@@ -1,3 +1,4 @@
+ .agentplane/agents/CURATOR.json                    |   2 +-
  .agentplane/policy/context.must.md                 |   4 +-
  .../blueprint/resolved-snapshot.json               | 571 +++++++++++++++++++++
  .gitignore                                         |   1 -
@@ -18,4 +19,4 @@
  packages/agentplane/src/context/ingest.ts          |  23 +-
  packages/agentplane/src/context/reindex.ts         |   2 -
  packages/agentplane/src/context/verify-task.ts     |   1 -
- 20 files changed, 636 insertions(+), 122 deletions(-)
+ 21 files changed, 637 insertions(+), 123 deletions(-)
