@@ -85,6 +85,7 @@ const sidebars: SidebarsConfig = {
         "reference/trace-schema",
         "reference/acr",
         "reference/evidence",
+        "reference/task-observations",
         "reference/acr-schema",
       ],
     },
