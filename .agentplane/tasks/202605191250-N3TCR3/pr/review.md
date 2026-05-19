@@ -13,7 +13,7 @@ Created: 2026-05-19T12:51:12.969Z
 ## Verification
 
 - State: ok
-- Note: Quality gate: reviewed narrow implementation scope after commit. The change removes stale init write/conflict presentation for .agentplane/config.json while preserving loadConfig legacy import fallback, and hides disabled deprecated options from help/docs JSON rendering without removing parser rejection. No unresolved drift observed in intended scope. Commit evidence: 0ecb74f9962e plus task artifact refresh aeea4cdf4f4e.
+- Note: EVALUATOR quality gate passed with cited evidence. Evaluated implementation commit 0ecb74f9962eb055da26fad2da086136a359b68f: stale init write/conflict presentation for .agentplane/config.json was removed while loadConfig legacy import fallback stayed intact; disabled deprecated auto-allow flags are hidden from help/docs rendering while parser rejection remains. Evidence: task branch PR #3932 and committed scoped diff.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
