@@ -4,7 +4,7 @@ title: "Gate release on task registry reconciliation"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T09:52:04.837Z"
-  updated_by: "CODER"
-  note: "Verified release task registry gate: focused task-registry-ready tests passed, task-state normal check still passes, candidate dry-run includes release:tasks:check before incidents."
+  updated_at: "2026-05-19T10:29:23.838Z"
+  updated_by: "EVALUATOR"
+  note: "Covered by PR #3928 hosted green checks and focused local task-registry-ready tests."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T10:29:23.838Z"
+  updated_by: "EVALUATOR"
+  note: "Covered by PR #3928 hosted green checks and focused local task-registry-ready tests."
+  evaluated_sha: "55a20724ccb6b144a1bee480c863dd945f49ced9"
+  blueprint_digest: "ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76"
+  evidence_refs:
+    - ".agentplane/tasks/202605190941-5FPGCV/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-5FPGCV/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -43,8 +54,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified release task registry gate: focused task-registry-ready tests passed, task-state normal check still passes, candidate dry-run includes release:tasks:check before incidents."
+  -
+    type: "verify"
+    at: "2026-05-19T10:29:23.838Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Covered by PR #3928 hosted green checks and focused local task-registry-ready tests."
 doc_version: 3
-doc_updated_at: "2026-05-19T09:52:04.855Z"
+doc_updated_at: "2026-05-19T10:29:23.904Z"
 doc_updated_by: "CODER"
 description: "Add a pre-release gate that detects stale local DOING tasks and unreadable task files before release candidate or publish readiness, with clear remediation guidance."
 sections:
@@ -70,6 +87,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T09:44:08.311Z, excerpt_hash=sha256:f1a1f009a496a46cf646522752d3865a5c5cb28f44b8709c60171793e940f28a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-5FPGCV/blueprint/resolved-snapshot.json
+    - old_digest: ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76
+    - current_digest: ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605190941-5FPGCV
+
+    ### 2026-05-19T10:29:23.838Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Covered by PR #3928 hosted green checks and focused local task-registry-ready tests.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T09:52:04.855Z, excerpt_hash=sha256:f1a1f009a496a46cf646522752d3865a5c5cb28f44b8709c60171793e940f28a
 
     Details:
 
@@ -123,6 +159,25 @@ Note: Verified release task registry gate: focused task-registry-ready tests pas
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T09:44:08.311Z, excerpt_hash=sha256:f1a1f009a496a46cf646522752d3865a5c5cb28f44b8709c60171793e940f28a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-5FPGCV/blueprint/resolved-snapshot.json
+- old_digest: ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76
+- current_digest: ff3fb28575c47364bc10dca795ee2d6e83a30547f7f5ac3bf33787d03b2dfa76
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605190941-5FPGCV
+
+### 2026-05-19T10:29:23.838Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Covered by PR #3928 hosted green checks and focused local task-registry-ready tests.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T09:52:04.855Z, excerpt_hash=sha256:f1a1f009a496a46cf646522752d3865a5c5cb28f44b8709c60171793e940f28a
 
 Details:
 

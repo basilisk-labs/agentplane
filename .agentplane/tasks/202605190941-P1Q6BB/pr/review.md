@@ -13,7 +13,7 @@ Created: 2026-05-19T09:44:06.233Z
 ## Verification
 
 - State: ok
-- Note: Verified wait-aware release-ready source path: focused Vitest resolver/workflow contracts passed; publish.yml workflow_dispatch now waits for Core CI before resolving release-ready artifacts.
+- Note: Hosted checks are green on PR #3928 for head 55a20724c: Core CI test/test-windows/release-ready manifest, Docs CI, Workflows Lint, Dependency Review, and CodeQL passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,9 +24,9 @@ Created: 2026-05-19T09:44:06.233Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T09:52:55.524Z
+- Updated: 2026-05-19T10:29:16.727Z
 - Branch: task/202605190941-P1Q6BB/release-pipeline-hardening
-- Head: 792e18735c2c
+- Head: 55a20724ccb6
 
 ```text
  .agentplane/tasks/202605190941-5FPGCV/README.md    | 148 +++++++
@@ -39,20 +39,20 @@ Created: 2026-05-19T09:44:06.233Z
  .../release/check-release-parity-script.test.ts    |  32 +-
  .../release/publish-workflow-contract.test.ts      |  13 +
  .../commands/release/release-ci-contract.test.ts   |  12 +
- .../resolve-release-ready-source-script.test.ts    |  44 ++
- .../release/task-registry-ready-script.test.ts     |  77 ++++
+ .../resolve-release-ready-source-script.test.ts    |  48 +++
+ .../release/task-registry-ready-script.test.ts     |  79 ++++
  scripts/README.md                                  |   1 +
  scripts/checks/check-task-state.mjs                |  29 +-
  scripts/lib/release-ready-source.mjs               |  57 ++-
  scripts/lib/release-version-parity.mjs             |  21 +
- scripts/lib/release-version-surfaces.mjs           | 198 +++++++++
+ scripts/lib/release-version-surfaces.mjs           | 210 ++++++++++
  scripts/lib/test-route-registry.mjs                |   1 +
  scripts/release/candidate-prepare.mjs              |   1 +
  scripts/release/check-task-registry-ready.mjs      |  11 +
  scripts/release/resolve-release-ready-source.mjs   |  13 +-
  scripts/release/version-bump.mjs                   | 104 +----
  scripts/release/version-surfaces.json              |  77 ++++
- 23 files changed, 2254 insertions(+), 114 deletions(-)
+ 23 files changed, 2272 insertions(+), 114 deletions(-)
 ```
 
 </details>

@@ -4,7 +4,7 @@ title: "Declare release version surfaces"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T09:52:04.286Z"
-  updated_by: "CODER"
-  note: "Verified release version surface manifest: focused parity tests passed, release:parity passed, version-bump dry-run did not mutate release-owned files."
+  updated_at: "2026-05-19T10:29:20.768Z"
+  updated_by: "EVALUATOR"
+  note: "Covered by PR #3928 hosted green checks and focused local release parity/version-surface tests."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T10:29:20.768Z"
+  updated_by: "EVALUATOR"
+  note: "Covered by PR #3928 hosted green checks and focused local release parity/version-surface tests."
+  evaluated_sha: "55a20724ccb6b144a1bee480c863dd945f49ced9"
+  blueprint_digest: "eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b"
+  evidence_refs:
+    - ".agentplane/tasks/202605190941-Y873RA/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-Y873RA/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -42,8 +53,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified release version surface manifest: focused parity tests passed, release:parity passed, version-bump dry-run did not mutate release-owned files."
+  -
+    type: "verify"
+    at: "2026-05-19T10:29:20.768Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Covered by PR #3928 hosted green checks and focused local release parity/version-surface tests."
 doc_version: 3
-doc_updated_at: "2026-05-19T09:52:04.307Z"
+doc_updated_at: "2026-05-19T10:29:20.834Z"
 doc_updated_by: "CODER"
 description: "Introduce a shared declarative release version surface manifest and wire version bump/parity/prepublish checks to it so package, dependency, spec, and example versions cannot drift."
 sections:
@@ -69,6 +86,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T09:44:07.996Z, excerpt_hash=sha256:2ef51a1f3895a56f6d431c4b6c098bb58f092087960b341e3fd5fcc3afa0c53b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-Y873RA/blueprint/resolved-snapshot.json
+    - old_digest: eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b
+    - current_digest: eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605190941-Y873RA
+
+    ### 2026-05-19T10:29:20.768Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Covered by PR #3928 hosted green checks and focused local release parity/version-surface tests.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T09:52:04.307Z, excerpt_hash=sha256:2ef51a1f3895a56f6d431c4b6c098bb58f092087960b341e3fd5fcc3afa0c53b
 
     Details:
 
@@ -122,6 +158,25 @@ Note: Verified release version surface manifest: focused parity tests passed, re
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T09:44:07.996Z, excerpt_hash=sha256:2ef51a1f3895a56f6d431c4b6c098bb58f092087960b341e3fd5fcc3afa0c53b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-Y873RA/blueprint/resolved-snapshot.json
+- old_digest: eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b
+- current_digest: eab8077141a68c475c827b8eaf832ac6b3e005a72948cdf17222c4cadc83447b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605190941-Y873RA
+
+### 2026-05-19T10:29:20.768Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Covered by PR #3928 hosted green checks and focused local release parity/version-surface tests.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T09:52:04.307Z, excerpt_hash=sha256:2ef51a1f3895a56f6d431c4b6c098bb58f092087960b341e3fd5fcc3afa0c53b
 
 Details:
 
