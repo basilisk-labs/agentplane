@@ -8,7 +8,7 @@
  .../src/cli/run-cli/command-catalog/task.ts        |  37 ++
  .../src/cli/run-cli/command-loaders/task.ts        |  19 +
  packages/agentplane/src/commands/acr/generate.ts   |  16 +
- .../src/commands/task/observations.command.ts      | 433 ++++++++++++++++
+ .../src/commands/task/observations.command.ts      | 387 ++++++++++++++
  .../agentplane/src/commands/task/observations.ts   | 276 ++++++++++
  .../src/commands/task/observations.unit.test.ts    |  64 +++
  packages/core/schemas/task-observation.schema.json | 148 ++++++
@@ -22,4 +22,4 @@
  packages/spec/schemas/task-observation.schema.json | 148 ++++++
  schemas/task-observation.schema.json               | 148 ++++++
  scripts/generate/sync-schemas.mjs                  |   7 +
- 24 files changed, 2667 insertions(+), 3 deletions(-)
+ 24 files changed, 2621 insertions(+), 3 deletions(-)

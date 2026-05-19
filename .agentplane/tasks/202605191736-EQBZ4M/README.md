@@ -4,7 +4,7 @@ title: "Add task observations journal"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -31,16 +31,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T17:53:22.821Z"
+  updated_at: "2026-05-19T18:08:20.394Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed for implementation commit bb2904022. Reviewed structured observations journal schema, CLI registration, ACR evidence integration, docs, and verification evidence; no blocking observations or unresolved drift found."
+  note: "Quality review refreshed for commit 69ca9c004. The hotspot-budget follow-up removed the new runtime hotspot warning without changing the core observations artifact contract; focused checks and CLI smoke remain green."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T17:53:22.821Z"
+  updated_at: "2026-05-19T18:08:20.394Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed for implementation commit bb2904022. Reviewed structured observations journal schema, CLI registration, ACR evidence integration, docs, and verification evidence; no blocking observations or unresolved drift found."
-  evaluated_sha: "bb2904022f1b4a80c23e5042c73b296fe43ec245"
+  note: "Quality review refreshed for commit 69ca9c004. The hotspot-budget follow-up removed the new runtime hotspot warning without changing the core observations artifact contract; focused checks and CLI smoke remain green."
+  evaluated_sha: "69ca9c0044f482f1d8b0d631885da7d61f7e5eef"
   blueprint_digest: "e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6"
   evidence_refs:
     - ".agentplane/tasks/202605191736-EQBZ4M/README.md"
@@ -71,8 +71,20 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality review passed for implementation commit bb2904022. Reviewed structured observations journal schema, CLI registration, ACR evidence integration, docs, and verification evidence; no blocking observations or unresolved drift found."
+  -
+    type: "verify"
+    at: "2026-05-19T18:08:09.762Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified follow-up hotspot-budget change. Checks passed: agentplane typecheck, observations unit test, hotspots:check, agentplane build, docs:cli:generate/check, and CLI smoke observations list."
+  -
+    type: "verify"
+    at: "2026-05-19T18:08:20.394Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Quality review refreshed for commit 69ca9c004. The hotspot-budget follow-up removed the new runtime hotspot warning without changing the core observations artifact contract; focused checks and CLI smoke remain green."
 doc_version: 3
-doc_updated_at: "2026-05-19T17:53:22.889Z"
+doc_updated_at: "2026-05-19T18:08:20.424Z"
 doc_updated_by: "CODER"
 description: "Implement a structured task-local observations.jsonl artifact for agent-discovered spec gaps, decisions, risks, issue candidates, incident candidates, context candidates, and agent improvement candidates, with CLI support for adding, listing, checking, and triaging observations."
 sections:
@@ -125,6 +137,44 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:51:51.522Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json
+    - old_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+    - current_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191736-EQBZ4M
+
+    ### 2026-05-19T18:08:09.762Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified follow-up hotspot-budget change. Checks passed: agentplane typecheck, observations unit test, hotspots:check, agentplane build, docs:cli:generate/check, and CLI smoke observations list.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:53:22.889Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json
+    - old_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+    - current_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191736-EQBZ4M
+
+    ### 2026-05-19T18:08:20.394Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Quality review refreshed for commit 69ca9c004. The hotspot-budget follow-up removed the new runtime hotspot warning without changing the core observations artifact contract; focused checks and CLI smoke remain green.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:08:09.808Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
 
     Details:
 
@@ -201,6 +251,44 @@ Note: Quality review passed for implementation commit bb2904022. Reviewed struct
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:51:51.522Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json
+- old_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+- current_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191736-EQBZ4M
+
+### 2026-05-19T18:08:09.762Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified follow-up hotspot-budget change. Checks passed: agentplane typecheck, observations unit test, hotspots:check, agentplane build, docs:cli:generate/check, and CLI smoke observations list.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:53:22.889Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191736-EQBZ4M-task-observations/.agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json
+- old_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+- current_digest: e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191736-EQBZ4M
+
+### 2026-05-19T18:08:20.394Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Quality review refreshed for commit 69ca9c004. The hotspot-budget follow-up removed the new runtime hotspot warning without changing the core observations artifact contract; focused checks and CLI smoke remain green.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:08:09.808Z, excerpt_hash=sha256:528cca27476a70164b73ba14408343c11d85eadfc76641d4a766c337e97f0280
 
 Details:
 

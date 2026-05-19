@@ -19,18 +19,18 @@ Implement a structured task-local observations.jsonl artifact for agent-discover
 - Note:
 
 ```text
-Quality review passed for implementation commit bb2904022. Reviewed structured observations journal
-schema, CLI registration, ACR evidence integration, docs, and verification evidence; no blocking
-observations or unresolved drift found.
+Quality review refreshed for commit 69ca9c004. The hotspot-budget follow-up removed the new runtime
+hotspot warning without changing the core observations artifact contract; focused checks and CLI
+smoke remain green.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T17:51:51.746Z
+- Updated: 2026-05-19T18:08:09.867Z
 - Branch: task/202605191736-EQBZ4M/task-observations
-- Head: bb2904022f1b
+- Head: 69ca9c0044f4
 
 ```text
  .agentplane/tasks/202605191736-EQBZ4M/acr.json     | 514 ++++++++++++++++++
@@ -43,7 +43,7 @@ observations or unresolved drift found.
  .../src/cli/run-cli/command-catalog/task.ts        |  37 ++
  .../src/cli/run-cli/command-loaders/task.ts        |  19 +
  packages/agentplane/src/commands/acr/generate.ts   |  16 +
- .../src/commands/task/observations.command.ts      | 433 ++++++++++++++++
+ .../src/commands/task/observations.command.ts      | 387 ++++++++++++++
  .../agentplane/src/commands/task/observations.ts   | 276 ++++++++++
  .../src/commands/task/observations.unit.test.ts    |  64 +++
  packages/core/schemas/task-observation.schema.json | 148 ++++++
@@ -57,7 +57,7 @@ observations or unresolved drift found.
  packages/spec/schemas/task-observation.schema.json | 148 ++++++
  schemas/task-observation.schema.json               | 148 ++++++
  scripts/generate/sync-schemas.mjs                  |   7 +
- 24 files changed, 2667 insertions(+), 3 deletions(-)
+ 24 files changed, 2621 insertions(+), 3 deletions(-)
 ```
 
 </details>
