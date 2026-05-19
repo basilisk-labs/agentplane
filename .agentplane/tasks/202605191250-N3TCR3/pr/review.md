@@ -24,16 +24,16 @@ Created: 2026-05-19T12:51:12.969Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T13:13:39.619Z
+- Updated: 2026-05-19T13:18:51.144Z
 - Branch: task/202605191250-N3TCR3/legacy-cleanup-06
-- Head: 0ecb74f9962e
+- Head: 09fbb81c7544
 
 ```text
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
  .../src/cli/run-cli/commands/init/execution.ts     |  11 +-
  packages/agentplane/src/cli/spec/docs-render.ts    |   6 +-
- packages/agentplane/src/cli/spec/help-render.ts    |  12 +-
- 4 files changed, 587 insertions(+), 14 deletions(-)
+ packages/agentplane/src/cli/spec/help-render.ts    |  10 +-
+ 4 files changed, 585 insertions(+), 14 deletions(-)
 ```
 
 </details>
