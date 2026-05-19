@@ -4,6 +4,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 const gtmContainerId = process.env.GTM_CONTAINER_ID ?? "GTM-P4FNLHQF";
 const gaMeasurementId = process.env.GA_MEASUREMENT_ID ?? "G-L8T8ZZ8RSG";
 const githubEditBaseUrl = "https://github.com/basilisk-labs/agentplane/edit/main";
+const githubRepoUrl = "https://github.com/basilisk-labs/agentplane";
 
 function repoEditUrl(sourcePath: string): string {
   const cleanPath = sourcePath.replace(/^(?:\.\.\/)+/, "");
@@ -50,7 +51,15 @@ const config = {
       {
         docs: {
           path: "../docs",
-          exclude: ["**/README.md"],
+          exclude: [
+            "**/README.md",
+            "user/website-ia.mdx",
+            "developer/website-success-metrics.mdx",
+            "contributing/citation-guidelines.mdx",
+            "listing.md",
+            "showcase.mdx",
+            "launch/**",
+          ],
           sidebarPath: "./sidebars.ts",
           routeBasePath: "/docs",
           editUrl: ({ docPath }: { docPath: string }) => docsEditUrl(docPath),
@@ -95,22 +104,22 @@ const config = {
       { property: "og:site_name", content: "Agentplane" },
       {
         property: "og:title",
-        content: "Make AI-agent work observable and reproducible",
+        content: "Make AI-authored code reviewable in Git",
       },
       {
         property: "og:description",
         content:
-          "CLI-first operational workflows, traces, context, recipes, and artifacts for AI agents.",
+          "Local-first CLI evidence for coding-agent intent, plans, verification, traces, commits, and Agent Change Records.",
       },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "Make AI-agent work observable and reproducible",
+        content: "Make AI-authored code reviewable in Git",
       },
       {
         name: "twitter:description",
         content:
-          "CLI-first operational workflows, traces, context, recipes, and artifacts for AI agents.",
+          "Local-first CLI evidence for coding-agent intent, plans, verification, traces, commits, and Agent Change Records.",
       },
       { name: "twitter:site", content: "@agentplaneorg" },
     ],
@@ -141,28 +150,21 @@ const config = {
           activeBaseRegex: "^/examples",
         },
         {
-          to: "/blog",
-          label: "Blog",
+          to: "/docs/compare",
+          label: "Compare",
           position: "right",
-          activeBaseRegex: "^/blog",
-        },
-        {
-          href: "https://www.npmjs.com/package/agentplane",
-          label: "npm i -g agentplane",
-          position: "right",
-          className: "navbar-install-command",
-        },
-        {
-          href: "https://github.com/basilisk-labs/agentplane",
-          label: "GitHub",
-          position: "right",
-          className: "navbar-github-cta",
         },
         {
           to: "/docs/start/quickstart",
           label: "Quickstart",
           position: "right",
           className: "navbar-quickstart-cta",
+        },
+        {
+          href: "https://www.npmjs.com/package/agentplane",
+          label: "npm i -g agentplane",
+          position: "right",
+          className: "navbar-install-command",
         },
       ],
     },
@@ -183,6 +185,10 @@ const config = {
             {
               label: "Examples",
               to: "/examples",
+            },
+            {
+              label: "Blog",
+              to: "/blog",
             },
             {
               label: "Agent Change Records",
@@ -216,7 +222,7 @@ const config = {
           items: [
             {
               label: "GitHub",
-              href: "https://github.com/basilisk-labs/agentplane",
+              href: githubRepoUrl,
             },
             {
               label: "Contributing",
@@ -255,6 +261,7 @@ const config = {
   customFields: {
     gtmContainerId,
     gaMeasurementId,
+    githubRepoUrl,
   },
   headTags: [
     {

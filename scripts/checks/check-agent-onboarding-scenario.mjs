@@ -111,7 +111,7 @@ const main = defineScript({
       ),
     );
 
-    for (const heading of ["## Start here", "## Agent workflow model", "## Upgrade and recovery"]) {
+    for (const heading of ["## Start in order", "## Most common jobs", "## Core references"]) {
       assertIncludes(fileContents.docsIndex, heading, "docs index");
     }
 
@@ -132,8 +132,9 @@ const main = defineScript({
 
     for (const label of [
       'label: "Start"',
-      'label: "Agent workflow model"',
-      'label: "Upgrade & recover"',
+      'label: "Core concepts"',
+      'label: "Workflow guides"',
+      'label: "Reference"',
     ]) {
       assertIncludes(fileContents.sidebar, label, "sidebar");
     }

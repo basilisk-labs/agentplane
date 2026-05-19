@@ -5,93 +5,32 @@ description: "Docs for Agentplane, the CLI-first operational workflow and observ
 
 # Agentplane documentation
 
-Agentplane is a CLI-first operational workflow and observability layer for AI agents. It helps
-developers run local workflows, record traces, manage context, apply recipes, export artifacts, and
-keep agent work reproducible and inspectable.
+Agentplane is a CLI-first operational workflow and observability layer for AI agents. It keeps
+agent work inspectable through local workflows, traces, context, recipes, artifacts, and Git-native
+evidence.
 
-## Start here
+## Start in order
 
-1. [What is Agentplane?](user/overview)
-2. [Quickstart](start/quickstart)
-3. [First local run](start/first-local-run)
-4. [What files Agentplane writes](start/what-agentplane-writes)
-5. [Setup](user/setup)
-6. [Prerequisites](user/prerequisites)
-7. [Traces for AI agent runs](concepts/traces)
-8. [Local context](user/local-context)
+1. [Quickstart](start/quickstart) - install, init, run, and inspect the first trace.
+2. [What Agentplane writes](start/files-written) - understand the repo-local artifacts.
+3. [Agent Change Records](reference/acr) - understand evidence around AI-authored code.
+4. [Workflow guides](workflow-guides) - use Agentplane with Claude Code, Codex, Cursor, or Aider.
 
-## Core concepts
+## Most common jobs
 
-- [Workflows](user/workflow)
-- [Traces](concepts/traces)
-- [Local context](user/local-context)
-- [Recipes](recipes)
-- [Agent Change Records](reference/acr)
+- I want to try Agentplane locally -> [Quickstart](start/quickstart)
+- I want to review AI-authored code -> [Agent Change Records](reference/acr)
+- I want to inspect a run -> [Traces](concepts/traces)
+- I want reusable agent behavior -> [Recipes](recipes)
+- I want my agent to use repo knowledge -> [Context engineering](concepts/context-engineering)
+- I want to compare Agentplane -> [Compare](compare)
 
-## Guides
+## Core references
 
-- [Debug an agent run with traces](examples/debug-agent-run-with-traces)
-- [Export traces](examples/export-traces)
-- [TDD recipe](recipes/tdd)
-- [Security review recipe](recipes/security-review)
-- [Docs update recipe](recipes/docs-update)
-- [Claude Code](workflow-guides/claude-code)
-- [Codex](workflow-guides/codex)
-- [Cursor](workflow-guides/cursor)
-- [Aider](workflow-guides/aider)
-- [Workflow guide index](workflow-guides)
-- [GitHub Actions](workflow-guides/github-actions)
-
-## Reference
-
-- [CLI reference](user/cli-reference.generated)
-- [Workflow file reference](user/configuration)
+- [Overview](user/overview)
+- [Setup](user/setup)
+- [CLI reference](reference/cli)
+- [Workflow file reference](reference/workflow-file)
 - [Trace schema](reference/trace-schema)
 - [ACR schema](reference/acr-schema)
-- [Generated reference](reference/generated-reference)
-
-## Concepts
-
-- [Harness engineering](concepts/harness-engineering)
-- [Context engineering](concepts/context-engineering)
-- [Agent workflows](concepts/agent-workflows)
-- [OpenTelemetry for agent traces](concepts/traces)
-
-## Agent workflow model
-
-- [Task lifecycle](user/task-lifecycle)
-- [Branching and PR artifacts](user/branching-and-pr-artifacts)
-- [Branch PR workflow](workflow-guides/branch-pr)
-- [Tasks and backends](user/tasks-and-backends)
-- [Commands](user/commands)
-- [Agent bootstrap](user/agent-bootstrap.generated)
-- [Agents](user/agents)
-
-## Local context
-
-- [Agent discovery](user/agent-discovery)
-- [Indexing and webmaster operations](user/indexing-and-webmaster-operations)
-
-## Upgrade and recovery
-
-- [Breaking changes](user/breaking-changes)
-- [Workflow migration](user/workflow-migration)
-- [Upgrade recovery](help/legacy-upgrade-recovery)
-- [Troubleshooting by symptom](help/troubleshooting-by-symptom)
 - [Troubleshooting](help/troubleshooting)
-
-## Project
-
-- [Compare](compare)
-- [Manifesto](manifesto)
-- [Listing](listing)
-- [Showcase](showcase)
-- [Website IA](user/website-ia)
-- [Website success metrics](developer/website-success-metrics)
-- [Citation guidelines](contributing/citation-guidelines)
-
-## Release notes and help
-
-- [Release notes](releases)
-- [Broken workflow runbook](help/broken-workflow-runbook)
-- [Glossary](help/glossary)

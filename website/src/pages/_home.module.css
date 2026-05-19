@@ -100,6 +100,10 @@
   text-transform: uppercase;
 }
 
+button.buttonSecondary {
+  cursor: pointer;
+}
+
 .buttonPrimary {
   background: rgb(var(--accent));
   border-color: rgb(var(--accent));
@@ -136,19 +140,21 @@
   color: rgb(255 255 255);
 }
 
-.terminalPanel,
+.artifactPanel,
 .fileTree,
 .comparisonTable,
 .surfaceGrid article,
 .harnessGrid div,
-.exampleGrid a {
+.exampleGrid a,
+.proofStrip,
+.badgeRow span {
   border: 1px solid rgb(var(--border));
 }
 
-.terminalPanel {
+.artifactPanel {
   align-self: center;
-  background: rgb(var(--inverse));
-  color: rgb(255 255 255);
+  background: rgb(255 255 255);
+  color: rgb(var(--fg));
   display: grid;
   gap: 1.1rem;
   min-height: 520px;
@@ -161,13 +167,13 @@
   justify-content: space-between;
 }
 
-.terminalPanel pre,
+.artifactPanel pre,
 .fileTree {
   margin: 0;
   overflow-x: auto;
 }
 
-.terminalPanel code,
+.artifactPanel code,
 .fileTree code {
   background: transparent;
   color: inherit;
@@ -177,6 +183,61 @@
   line-height: 1.72;
   padding: 0;
   white-space: pre;
+}
+
+.artifactPanel pre {
+  background: rgb(var(--inverse));
+  color: rgb(255 255 255);
+  padding: 1rem;
+}
+
+.artifactGrid {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.artifactGrid article {
+  background: rgb(var(--neutral));
+  display: grid;
+  gap: 0.6rem;
+  min-height: 9rem;
+  padding: 0.9rem;
+}
+
+.artifactGrid strong,
+.artifactGrid code {
+  font-family: var(--ifm-font-family-monospace);
+}
+
+.artifactGrid strong {
+  color: rgb(var(--fg));
+  font-size: 0.78rem;
+}
+
+.artifactGrid code {
+  color: rgb(var(--muted));
+  font-size: 0.72rem;
+}
+
+.traceLine {
+  align-items: center;
+  border-top: 1px solid rgb(var(--trace) / 0.32);
+  color: rgb(var(--trace));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  padding-top: 1rem;
+}
+
+.traceLine span {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.74rem;
+}
+
+.traceLine span:not(:last-child)::after {
+  content: "->";
+  margin-left: 0.55rem;
 }
 
 .output {
@@ -190,6 +251,29 @@
   color: rgb(255 255 255 / 0.72);
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.78rem;
+}
+
+.proofStrip {
+  align-items: center;
+  background: rgb(255 255 255);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: center;
+  margin: 0 auto clamp(2rem, 4vw, 3rem);
+  max-width: 1180px;
+  padding: 0.9rem 1.5rem;
+}
+
+.proofStrip span,
+.badgeRow span,
+.checkList li {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.78rem;
+}
+
+.proofStrip span {
+  color: rgb(var(--muted));
 }
 
 .section {
@@ -247,7 +331,8 @@
 
 .surfaceGrid,
 .harnessGrid,
-.exampleGrid {
+.exampleGrid,
+.badgeRow {
   display: grid;
   gap: 1px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -276,6 +361,35 @@
   gap: 0;
 }
 
+.badgeRow span {
+  background: rgb(255 255 255);
+  color: rgb(var(--fg));
+  min-height: 3.2rem;
+  padding: 1rem;
+}
+
+.checkList {
+  display: grid;
+  gap: 0.65rem;
+  list-style: none;
+  margin: 0;
+  max-width: 68ch;
+  padding: 0;
+}
+
+.checkList li {
+  border-top: 1px solid rgb(var(--border));
+  color: rgb(var(--fg));
+  padding-top: 0.65rem;
+}
+
+.checkList li::before {
+  color: rgb(var(--verified));
+  content: "verified";
+  display: inline-block;
+  margin-right: 0.75rem;
+}
+
 .exampleGrid code {
   background: rgb(var(--neutral));
   color: rgb(var(--fg));
@@ -299,13 +413,15 @@
     min-height: auto;
   }
 
-  .terminalPanel {
+  .artifactPanel {
     min-height: 0;
   }
 
   .surfaceGrid,
   .harnessGrid,
-  .exampleGrid {
+  .exampleGrid,
+  .badgeRow,
+  .artifactGrid {
     grid-template-columns: 1fr;
   }
 }

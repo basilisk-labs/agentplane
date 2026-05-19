@@ -27,6 +27,8 @@ function walk(dir) {
 }
 
 function routeExists(route) {
+  const cleanRoute = route.length > 1 ? route.replace(/\/$/, "") : route;
+  route = cleanRoute;
   if (route === "/" || route === "/docs") return true;
   if (route === "/blog") return true;
   if (route.startsWith("/docs/")) {
@@ -35,7 +37,9 @@ function routeExists(route) {
       existsSync(path.join(docsRoot, `${docId}.mdx`)) ||
       existsSync(path.join(docsRoot, `${docId}.md`)) ||
       existsSync(path.join(docsRoot, docId, "index.mdx")) ||
-      existsSync(path.join(docsRoot, docId, "index.md"))
+      existsSync(path.join(docsRoot, docId, "index.md")) ||
+      existsSync(path.join(websiteRoot, "src/pages", `${route.replace(/^\//, "")}.tsx`)) ||
+      existsSync(path.join(websiteRoot, "src/pages", route.replace(/^\//, ""), "index.tsx"))
     );
   }
   if (route === "/examples") return existsSync(path.join(websiteRoot, "src/pages/examples.tsx"));

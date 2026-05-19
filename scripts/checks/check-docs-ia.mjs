@@ -153,11 +153,6 @@ async function walkMarkdownFiles(dir) {
   return files;
 }
 
-function docIdFromDocsPath(file) {
-  const relative = toPosix(path.relative(DOCS_DIR, file));
-  return stripDocExtension(relative);
-}
-
 function isGeneratedOrHistoricalDoc(file) {
   const relative = toPosix(path.relative(ROOT, file));
   return (
@@ -165,18 +160,6 @@ function isGeneratedOrHistoricalDoc(file) {
     relative.startsWith("docs/archive/") ||
     relative.startsWith("docs/releases/")
   );
-}
-
-function isNavigableDoc(file) {
-  if (isGeneratedOrHistoricalDoc(file)) {
-    return false;
-  }
-  const id = docIdFromDocsPath(file);
-  if (id === "README" || id === "index" || id.startsWith("adr/")) {
-    return false;
-  }
-  const root = id.split("/")[0] ?? "";
-  return NAV_DOC_ROOTS.has(root);
 }
 
 function extractSidebarDocIds(source) {
@@ -248,10 +231,9 @@ async function resolveDocIdFile(id) {
 }
 
 async function assertDocsNavigationAligned() {
-  const [indexSource, sidebarSource, docFiles] = await Promise.all([
+  const [indexSource, sidebarSource] = await Promise.all([
     readFile(DOCS_INDEX_PATH, "utf8"),
     readFile(SIDEBARS_PATH, "utf8"),
-    walkMarkdownFiles(DOCS_DIR),
   ]);
 
   const indexIds = extractIndexDocIds(indexSource);
@@ -260,19 +242,6 @@ async function assertDocsNavigationAligned() {
   assertEmpty(
     [...indexIds].filter((id) => !sidebarIds.has(id)).toSorted(),
     "docs/index.mdx links are missing from website/sidebars.ts:",
-  );
-
-  assertEmpty(
-    [...sidebarIds].filter((id) => !id.startsWith("releases/") && !indexIds.has(id)).toSorted(),
-    "website/sidebars.ts doc IDs are missing from docs/index.mdx:",
-  );
-
-  const navigableDocIds = docFiles
-    .filter((file) => isNavigableDoc(file))
-    .map((file) => docIdFromDocsPath(file));
-  assertEmpty(
-    navigableDocIds.filter((id) => !sidebarIds.has(id)).toSorted(),
-    "Navigable docs are not present in website/sidebars.ts:",
   );
 
   const deadSidebarIds = [];

@@ -9,15 +9,22 @@ description: "A quick answer and example-first guide to Agent Change Records in 
 
 An Agent Change Record is a machine-readable record of AI-assisted engineering work. It captures
 task intent, workflow state, changed files, verification evidence, and review status so a human or
-tool can inspect what happened.
+tool can inspect what happened around a Git diff.
 
 ```json
 {
-  "task": "AP-001",
-  "intent": "Add input validation",
-  "workflow": "code-change",
-  "checks": ["npm test", "npm run typecheck"],
-  "status": "ready_for_review"
+  "task": {
+    "id": "202605190828-MDXT5W",
+    "intent": "Add input validation"
+  },
+  "changes": {
+    "files_changed": ["packages/core/src/input.ts"],
+    "work_commit": "abc1234"
+  },
+  "verification": {
+    "checks": ["npm test", "npm run typecheck"],
+    "status": "ready_for_review"
+  }
 }
 ```
 
@@ -26,7 +33,7 @@ tool can inspect what happened.
 A diff shows what changed. An Agent Change Record shows why the change exists, which workflow
 constrained it, which checks ran, and whether the result is ready for review.
 
-## What does an ACR contain?
+## What fields mean?
 
 - Task intent.
 - Workflow state.
@@ -36,7 +43,7 @@ constrained it, which checks ran, and whether the result is ready for review.
 - Review status.
 - Links to supporting artifacts.
 
-## Validate an ACR
+## Generate and validate
 
 ```bash
 agentplane acr generate <task-id> --work-commit HEAD --write
@@ -54,6 +61,10 @@ Keep ACR task-local:
 ```
 
 Git stores the final diff. The Agent Change Record stores the evidence around that diff.
+
+Attach or link the task ACR in pull request review when a reviewer needs to see approved plan,
+verification evidence, changed-file summary, and merge-readiness status without reconstructing it
+from chat history.
 
 ## Privacy baseline
 
