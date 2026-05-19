@@ -13,10 +13,12 @@ Created: 2026-05-19T08:29:58.137Z
 ## Verification
 
 - State: ok
-- Note: Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/audit-platform-publication-script.test.ts
+- Note: Review follow-up addressed: live GitHub Release asset evidence is now mandatory; unavailable gh/live evidence fails closed instead of falling back to planned embedded assets.
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/audit-platform-publication-script.test.ts
 Result: pass
-Evidence: 1 file passed, 5 tests passed, duration 1.47s.
-Scope: focused postpublish audit regression tests.
+Evidence: 1 file passed, 6 tests passed, duration 3.98s.
+Scope: focused postpublish audit regression tests including unavailable-live-evidence fail-closed case.
 
 Command: bunx prettier scripts/release/audit-platform-publication.mjs packages/agentplane/src/commands/release/audit-platform-publication-script.test.ts --check
 Result: pass
@@ -30,8 +32,8 @@ Scope: touched audit script and test.
 
 Command: node scripts/release/audit-platform-publication.mjs --publish-result .agentplane/.release/vfee9f-audit/publish-result.json --json
 Result: pass
-Evidence: v0.6.3 publish-result returned ok=true with failures=[].
-Scope: live GitHub Release asset lookup against the successful v0.6.3 publish-result.
+Evidence: v0.6.3 publish-result returned ok=true with failures=[] using live GitHub Release asset lookup.
+Scope: real v0.6.3 publish-result and release assets.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -42,7 +44,7 @@ Scope: live GitHub Release asset lookup against the successful v0.6.3 publish-re
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T08:40:43.937Z
+- Updated: 2026-05-19T08:40:55.549Z
 - Branch: task/202605190828-VFEE9F/postpublish-audit-live-assets
 - Head: 0dbc4970903e
 

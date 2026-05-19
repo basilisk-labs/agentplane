@@ -118,7 +118,11 @@ function checkReleaseAssets(failures, manifest, liveAssetNames) {
     failures.push("release-distribution.json not loaded in publish-result");
     return;
   }
-  const assetNames = liveAssetNames ?? embeddedAssetNames;
+  if (!liveAssetNames) {
+    failures.push("GitHub Release asset evidence unavailable");
+    return;
+  }
+  const assetNames = liveAssetNames;
   for (const required of ["release-distribution.json", "SHA256SUMS", "install.sh", "install.ps1"]) {
     if (!assetNames.has(required)) failures.push(`GitHub Release asset not confirmed: ${required}`);
   }
