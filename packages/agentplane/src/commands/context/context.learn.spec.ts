@@ -30,7 +30,6 @@ export const contextLearnSpec: CommandSpec<GroupCommandParsed> = {
 export const contextLearnFilesSpec: CommandSpec<{
   sources: string[];
   dryRun: boolean;
-  includePrivate: boolean;
 }> = {
   id: ["context", "learn", "files"],
   group: "Context",
@@ -43,12 +42,6 @@ export const contextLearnFilesSpec: CommandSpec<{
       default: false,
       description: "Preview only; do not create a task.",
     },
-    {
-      kind: "boolean",
-      name: "include-private",
-      default: false,
-      description: "Include context/raw/private sources in the source set.",
-    },
   ],
   examples: [
     {
@@ -59,13 +52,11 @@ export const contextLearnFilesSpec: CommandSpec<{
   parse: (raw) => ({
     sources: toStringList(raw.args.sources),
     dryRun: raw.opts["dry-run"] === true,
-    includePrivate: raw.opts["include-private"] === true,
   }),
 };
 
 export const contextLearnChangesSpec: CommandSpec<{
   dryRun: boolean;
-  includePrivate: boolean;
 }> = {
   id: ["context", "learn", "changes"],
   group: "Context",
@@ -77,12 +68,6 @@ export const contextLearnChangesSpec: CommandSpec<{
       default: false,
       description: "Preview only; do not create a task.",
     },
-    {
-      kind: "boolean",
-      name: "include-private",
-      default: false,
-      description: "Include context/raw/private sources in the source set.",
-    },
   ],
   examples: [
     {
@@ -92,7 +77,6 @@ export const contextLearnChangesSpec: CommandSpec<{
   ],
   parse: (raw) => ({
     dryRun: raw.opts["dry-run"] === true,
-    includePrivate: raw.opts["include-private"] === true,
   }),
 };
 

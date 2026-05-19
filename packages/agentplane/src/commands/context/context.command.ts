@@ -155,7 +155,7 @@ export async function runContextIngest(_ctx: CommandCtx, p: ContextIngestParsed)
 
 export async function runContextLearnFiles(
   _ctx: CommandCtx,
-  p: { sources: string[]; dryRun: boolean; includePrivate: boolean },
+  p: { sources: string[]; dryRun: boolean },
 ): Promise<number> {
   return await cmdContextIngest({
     cwd: _ctx.cwd,
@@ -165,14 +165,13 @@ export async function runContextLearnFiles(
       mode: "sources",
       dryRun: p.dryRun,
       indexOnly: false,
-      includePrivate: p.includePrivate,
     },
   });
 }
 
 export async function runContextLearnChanges(
   _ctx: CommandCtx,
-  p: { dryRun: boolean; includePrivate: boolean },
+  p: { dryRun: boolean },
 ): Promise<number> {
   return await cmdContextIngest({
     cwd: _ctx.cwd,
@@ -182,7 +181,6 @@ export async function runContextLearnChanges(
       mode: "changed",
       dryRun: p.dryRun,
       indexOnly: false,
-      includePrivate: p.includePrivate,
     },
   });
 }
@@ -252,7 +250,7 @@ async function resolveContextInitParsed(
         "Context init mode:",
         "minimal = smallest workspace scaffold",
         "adaptive = default llm-wiki workspace for normal project context",
-        "maximum-assimilation = stricter mode for preserving significant non-private source meaning",
+        "maximum-assimilation = stricter mode for preserving significant source meaning",
       ].join("\n"),
     ) + "\n",
   );

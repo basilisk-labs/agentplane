@@ -44,12 +44,6 @@ export const contextIngestSpec: CommandSpec<ContextIngestParsed> = {
       description:
         "Index raw context sources into local projection without creating a context assimilation task.",
     },
-    {
-      kind: "boolean",
-      name: "include-private",
-      default: false,
-      description: "Include context/raw/private sources in the local source set.",
-    },
   ],
   examples: [
     {
@@ -85,7 +79,6 @@ export const contextIngestSpec: CommandSpec<ContextIngestParsed> = {
       mode,
       dryRun: raw.opts["dry-run"] === true,
       indexOnly: raw.opts["index-only"] === true,
-      includePrivate: raw.opts["include-private"] === true,
     };
   },
 };

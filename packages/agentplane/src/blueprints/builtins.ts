@@ -391,7 +391,7 @@ export const BUILTIN_BLUEPRINTS = [
     id: "context.maximum_assimilation",
     title: "Maximum context assimilation",
     description:
-      "Assimilate selected non-private sources into a self-contained wiki, canonical glossary, entity graph, source registry, and coverage report so maintained context preserves significant meaning without relying on raw files for semantic recall.",
+      "Assimilate selected sources into a self-contained wiki, canonical glossary, entity graph, source registry, and coverage report so maintained context preserves significant meaning without relying on raw files for semantic recall.",
     taskKinds: ["context"],
     workflowModes: ["direct", "branch_pr"],
     allowedCommands: [
@@ -422,7 +422,7 @@ export const BUILTIN_BLUEPRINTS = [
         "context_max.coverage",
         "artifact",
         "artifact_write",
-        "Coverage map proving every significant non-private source span was semantically assimilated, intentionally omitted, duplicated, or redacted.",
+        "Coverage map proving every significant source span was semantically assimilated, intentionally omitted, duplicated, or redacted.",
       ),
       evidence(
         "context_max.addressing",
@@ -458,7 +458,7 @@ export const BUILTIN_BLUEPRINTS = [
         "context_max.recovery",
         "weak_links",
         "verify_record",
-        "Coverage gaps, unresolved identities, conflicts, private-source redactions, or handoff status.",
+        "Coverage gaps, unresolved identities, conflicts, sensitive-source redactions, or handoff status.",
       ),
       evidence(
         "context_max.quality",
@@ -490,7 +490,7 @@ export const BUILTIN_BLUEPRINTS = [
         id: "context_max_coverage_gap_without_reason",
         severity: "approval_required",
         reason:
-          "Every significant non-private source span must be covered, intentionally omitted as non-significant boilerplate, or redacted with a reason.",
+          "Every significant source span must be covered, intentionally omitted as non-significant boilerplate, or redacted with a reason.",
       },
       {
         id: "context_max_glossary_conflict",
@@ -502,13 +502,13 @@ export const BUILTIN_BLUEPRINTS = [
         id: "context_max_raw_deletion_resilience_unproven",
         severity: "approval_required",
         reason:
-          "Finish requires explicit evidence that deleting raw sources would not remove significant non-private meaning from wiki/derived artifacts; line refs may become non-dereferenceable audit pointers.",
+          "Finish requires explicit evidence that deleting raw sources would not remove significant meaning from wiki/derived artifacts; line refs may become non-dereferenceable audit pointers.",
       },
       {
-        id: "context_max_private_leakage",
+        id: "context_max_sensitive_leakage",
         severity: "stop",
         reason:
-          "Private raw material, secrets, and non-publishable spans must not be copied into public wiki, task, report, or ACR surfaces.",
+          "Secrets and non-publishable spans must not be copied into public wiki, task, report, or ACR surfaces.",
       },
       {
         id: "context_max_reindex_missing_after_writes",

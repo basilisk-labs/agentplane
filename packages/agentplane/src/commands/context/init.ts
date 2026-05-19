@@ -31,7 +31,6 @@ const DEFAULT_GITIGNORE_ENTRIES = [
   ".agentplane/context/service/cache/",
   ".agentplane/context/service/embeddings/",
   ".agentplane/context/service/remotes/",
-  "context/raw/private/",
 ];
 
 const POLICY_FILES = new Set([
@@ -244,7 +243,6 @@ async function createContextWorkspace(
   const files: { relative: string; content: string; policy?: boolean }[] = [
     { relative: "context/README.md", content: buildContextReadme(parsed.profile) },
     { relative: "context/raw/.gitkeep", content: "" },
-    { relative: "context/raw/private/.gitkeep", content: "" },
     {
       relative: "context/wiki/AGENTS.md",
       content: buildWikiAgentsMarkdown(parsed.profile),
@@ -308,16 +306,11 @@ async function createContextWorkspace(
     parsed.profile === "maximum-assimilation"
   ) {
     files.push(
-      { relative: "context/raw/specs/.gitkeep", content: "" },
-      { relative: "context/raw/research/.gitkeep", content: "" },
       starterWikiPageFiles().find((file) => file.relative === "context/wiki/index.md") ?? {
         relative: "context/wiki/index.md",
         content: `${wikiFrontmatter("wiki.index", "Context wiki", "definition")}\n\n# Context wiki\n`,
       },
     );
-  }
-  if (parsed.profile === "codebase") {
-    files.push({ relative: "context/raw/notes/.gitkeep", content: "" });
   }
   if (parsed.profile === "research") {
     files.push({ relative: "context/wiki/notes/.gitkeep", content: "" });
@@ -377,7 +370,7 @@ function buildContextReadme(profile: ContextInitParsed["profile"]): string {
       ? `
 Maximum-assimilation mode adds a stricter wiki maintenance contract:
 
-- Preserve all significant non-private source meaning in wiki, facts, graph, glossary, and coverage
+- Preserve all significant source meaning in wiki, facts, graph, glossary, and coverage
   artifacts so maintained context remains useful even if \`context/raw/**\` is later removed.
 - Keep original source identity in a source registry with \`source_id\`, original path,
   \`sha256:\` hash, content type, line count, ingest time, and availability state.
@@ -387,7 +380,7 @@ Maximum-assimilation mode adds a stricter wiki maintenance contract:
   before writing narrative articles.
 - Maintain a canonical glossary as a navigation/alias layer over wiki pages and graph entities, then
   use glossary canonical terms in synthesized prose while preserving source-local terms as aliases.
-- Treat coverage gaps, unresolved entity identity, private-source leakage risk, and missing line refs
+- Treat coverage gaps, unresolved entity identity, sensitive-source leakage risk, and missing line refs
   as blockers or explicit approval-required findings.
 `
       : "";
@@ -405,9 +398,9 @@ AgentPlane local context uses one adaptive llm-wiki contract:
 - \`.agentplane/context/service/**\` keeps local caches only.
 
 Agents should create wiki pages when a topic is reusable for future tasks, but keep atomic claims in
-derived machine artifacts. \`context init\` creates only \`context/wiki/AGENTS.md\` and
-\`context/wiki/index.md\`; the first ingest creates starter wiki folders when there is source
-material to assimilate. Source references should be markdown links where possible.
+derived machine artifacts. \`context init\` creates only \`context/raw/.gitkeep\`,
+\`context/wiki/AGENTS.md\`, and \`context/wiki/index.md\`; users own any hierarchy below
+\`context/raw/**\`. Source references should preserve user-created raw paths where possible.
 ${maximumAssimilation}
 `;
 }
@@ -420,9 +413,9 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
 
 - Use the \`context.maximum_assimilation\` blueprint for new context assimilation tasks.
 - Goal: after assimilation, the maintained wiki and derived artifacts preserve all significant
-  non-private source meaning without relying on raw files for semantic recall.
+  source meaning without relying on raw files for semantic recall.
 - Keep original hashes in the source-set lock and cite source content with concrete line refs such as
-  \`context/raw/research/note.md#lines=12-24\`; treat those refs as audit provenance, not as the
+  \`context/raw/<user-path>/note.md#lines=12-24\`; treat those refs as audit provenance, not as the
   stored meaning.
 - First pass: build or update canonical entities, glossary aliases, relation candidates, conflict
   candidates, and coverage notes.
@@ -430,13 +423,12 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
   glossary terms in prose and preserve source-local wording as aliases or evidence details.
 - Create separate pages for reusable entities, concepts, decisions, requirements, risks, workflows,
   and modules; use stable headings for smaller objects inside broader pages.
-- Record extraction coverage: covered source spans, intentionally omitted boilerplate, private or
-  redacted spans, unresolved conflicts, and open questions.
+- Record extraction coverage: covered source spans, intentionally omitted boilerplate, redacted
+  spans, unresolved conflicts, and open questions.
 - If a raw source is missing later, keep its source registry entry with availability state
   \`missing\`; the wiki, facts, graph, glossary, and coverage artifacts must still carry the
   assimilated meaning.
-- Do not copy secrets or private raw material into public wiki pages. Redact or keep private
-  references outside publication surfaces.
+- Do not copy secrets into public wiki pages. Redact sensitive source spans before publication.
 `
       : "";
   return `${wikiFrontmatter("wiki.agents", "Context wiki agent notes", "policy")}
@@ -453,7 +445,7 @@ Profile: ${profile}
 - Prefer updating existing canonical pages over creating duplicates; describe small objects under stable headings when that is clearer.
 - Use \`agentplane context wiki new\`, \`agentplane context wiki lint\`, \`agentplane context wiki explain\`, \`agentplane context wiki link\`, and \`agentplane context wiki index\`.
 - When claims conflict, keep both claims, create a conflict candidate, and ask for review before promotion or overwrite.
-- Keep raw inputs in \`context/raw/**\`; do not copy private raw sources into public wiki pages.
+- Keep raw inputs in \`context/raw/**\`; preserve the user-created hierarchy when citing sources.
 - Add source references for factual claims and run \`agentplane context verify-task <task-id>\` before closing context assimilation work.
 ${maximumAssimilation}
 

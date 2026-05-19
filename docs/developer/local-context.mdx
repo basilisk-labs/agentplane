@@ -72,7 +72,7 @@ real ingest creates the starter wiki hierarchy when there is source material to 
 - fact JSONL rows
 - graph JSONL entities and edges
 - capability markdown files
-- raw text windows, excluding `context/raw/private/**`
+- raw text windows from the user-created hierarchy under `context/raw/**`
 
 Projection rows must carry source refs precise enough for `context show` to recover the backing
 material. Markdown sections use `#section=<slug>`, line ranges use `#lines=<start>-<end>`, and

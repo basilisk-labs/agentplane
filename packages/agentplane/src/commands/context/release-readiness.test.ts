@@ -59,7 +59,7 @@ describe("context release readiness guards", () => {
     expect(output).toContain("`--fix` only repairs missing directories");
   });
 
-  it("creates only AGENTS and index wiki pages during context init", async () => {
+  it("creates only minimal wiki pages and an empty raw source tree during context init", async () => {
     const root = await tempRoot();
     vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 
@@ -83,11 +83,13 @@ describe("context release readiness guards", () => {
     const wikiAgents = await readFile(path.join(root, "context/wiki/AGENTS.md"), "utf8");
     const rootIndex = await readFile(path.join(root, "context/wiki/index.md"), "utf8");
     const wikiEntries = await readdir(path.join(root, "context/wiki"));
+    const rawEntries = await readdir(path.join(root, "context/raw"));
     expect(wikiAgents).toContain("agentplane_context:");
     expect(wikiAgents).toContain('canonical_id: "wiki.agents"');
     expect(rootIndex).toContain("agentplane_context:");
     expect(rootIndex).toContain('canonical_id: "wiki.index"');
     expect(wikiEntries.toSorted()).toEqual(["AGENTS.md", "index.md"]);
+    expect(rawEntries.toSorted()).toEqual([".gitkeep"]);
   });
 
   it("initializes maximum-assimilation wiki mode with explicit coverage guidance", async () => {
@@ -156,7 +158,6 @@ describe("context release readiness guards", () => {
         mode: "changed",
         dryRun: false,
         indexOnly: false,
-        includePrivate: false,
       },
       createTask,
     });
@@ -184,7 +185,6 @@ describe("context release readiness guards", () => {
         mode: "all",
         dryRun: false,
         indexOnly: false,
-        includePrivate: false,
       },
       createTask,
     });
@@ -193,7 +193,7 @@ describe("context release readiness guards", () => {
     expect(wikiEntriesAfterSecondIngest).not.toContain("concepts");
   });
 
-  it("indexes stable section refs and excludes private raw files from projection", async () => {
+  it("indexes stable section refs and arbitrary user-created raw hierarchy", async () => {
     const root = await tempRoot();
     await write(
       root,
@@ -201,7 +201,7 @@ describe("context release readiness guards", () => {
       "# Payments\n\nIntro\n\n## Refund Idempotency\n\nRefunds are idempotent.\n\n## Refund Idempotency\n\nDuplicate heading stays addressable.\n",
     );
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
-    await write(root, "context/raw/private/secret.md", "# Secret\n\nDo not index.\n");
+    await write(root, "context/raw/customer-notes/secret.md", "# Secret\n\nIndex this source.\n");
 
     await cmdContextReindex({
       cwd: root,
@@ -227,7 +227,9 @@ describe("context release readiness guards", () => {
       (row) => row.path === "context/wiki/payments.md#section=refund-idempotency",
     );
     expect(sectionRow?.sha256).toBe(fileRow?.sha256);
-    expect(projection?.rows.some((row) => row.path.includes("context/raw/private"))).toBe(false);
+    expect(
+      projection?.rows.some((row) => row.path === "context/raw/customer-notes/secret.md"),
+    ).toBe(true);
   });
 
   it("does not mark fresh markdown section projection rows as stale", async () => {
@@ -430,7 +432,6 @@ describe("context release readiness guards", () => {
         mode: "changed",
         dryRun: false,
         indexOnly: false,
-        includePrivate: false,
       },
       createTask,
     });
@@ -537,7 +538,6 @@ describe("context release readiness guards", () => {
         mode: "changed",
         dryRun: false,
         indexOnly: false,
-        includePrivate: false,
       },
       createTask,
     });
@@ -564,7 +564,7 @@ describe("context release readiness guards", () => {
 
     expect(createdArgs.parsed?.blueprintRequest).toBe("context.maximum_assimilation");
     expect(createdArgs.parsed?.description).toContain("Maximum-assimilation contract:");
-    expect(createdArgs.parsed?.description).toContain("significant non-private source meaning");
+    expect(createdArgs.parsed?.description).toContain("significant source meaning");
     expect(createdArgs.parsed?.description).toContain("audit provenance, not as retained content");
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.mode).toBe(
       "maximum_assimilation",

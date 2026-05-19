@@ -310,11 +310,9 @@ async function enumerateSourceFiles(
     if (st.isDirectory()) {
       const matches = await collectMatchingFiles(root, rel);
       for (const match of matches) {
-        if (toPosix(match).startsWith("context/raw/private/")) continue;
         out.add(match);
       }
     } else {
-      if (toPosix(rel).startsWith("context/raw/private/")) continue;
       out.add(toPosix(rel));
     }
   }
