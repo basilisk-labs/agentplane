@@ -4,7 +4,7 @@ title: "Wait for release-ready source before manual publish"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T10:29:16.541Z"
+  updated_at: "2026-05-19T10:36:31.643Z"
   updated_by: "EVALUATOR"
-  note: "Hosted checks are green on PR #3928 for head 55a20724c: Core CI test/test-windows/release-ready manifest, Docs CI, Workflows Lint, Dependency Review, and CodeQL passed."
+  note: "Fresh hosted quality gate passed for current head 298ef95af: Core CI test/test-windows/release-ready manifest, Docs CI, Workflows Lint, Dependency Review, and CodeQL are green on PR #3928."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T10:29:16.541Z"
+  updated_at: "2026-05-19T10:36:31.643Z"
   updated_by: "EVALUATOR"
-  note: "Hosted checks are green on PR #3928 for head 55a20724c: Core CI test/test-windows/release-ready manifest, Docs CI, Workflows Lint, Dependency Review, and CodeQL passed."
-  evaluated_sha: "55a20724ccb6b144a1bee480c863dd945f49ced9"
+  note: "Fresh hosted quality gate passed for current head 298ef95af: Core CI test/test-windows/release-ready manifest, Docs CI, Workflows Lint, Dependency Review, and CodeQL are green on PR #3928."
+  evaluated_sha: "298ef95af002e9cb4ad74326dc915bf70585ed73"
   blueprint_digest: "c40250d9f7a0b7fcfe51403e9ff7d56913553939bc737e8ff9c981eb2f3f2c25"
   evidence_refs:
     - ".agentplane/tasks/202605190941-P1Q6BB/README.md"
@@ -60,8 +60,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Hosted checks are green on PR #3928 for head 55a20724c: Core CI test/test-windows/release-ready manifest, Docs CI, Workflows Lint, Dependency Review, and CodeQL passed."
+  -
+    type: "verify"
+    at: "2026-05-19T10:36:31.643Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Fresh hosted quality gate passed for current head 298ef95af: Core CI test/test-windows/release-ready manifest, Docs CI, Workflows Lint, Dependency Review, and CodeQL are green on PR #3928."
 doc_version: 3
-doc_updated_at: "2026-05-19T10:29:16.614Z"
+doc_updated_at: "2026-05-19T10:36:31.717Z"
 doc_updated_by: "CODER"
 description: "Make the publish workflow wait-aware for workflow_dispatch SHA targets so manual release publication waits for successful Core CI and the release-ready artifact instead of failing while CI is still in progress."
 sections:
@@ -106,6 +112,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T09:52:02.975Z, excerpt_hash=sha256:344757ada18a8a996d1eca55bbad64e92defdb4e4ec95d13d3a451f9817b1d29
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-P1Q6BB/blueprint/resolved-snapshot.json
+    - old_digest: c40250d9f7a0b7fcfe51403e9ff7d56913553939bc737e8ff9c981eb2f3f2c25
+    - current_digest: c40250d9f7a0b7fcfe51403e9ff7d56913553939bc737e8ff9c981eb2f3f2c25
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605190941-P1Q6BB
+
+    ### 2026-05-19T10:36:31.643Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Fresh hosted quality gate passed for current head 298ef95af: Core CI test/test-windows/release-ready manifest, Docs CI, Workflows Lint, Dependency Review, and CodeQL are green on PR #3928.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T10:29:16.614Z, excerpt_hash=sha256:344757ada18a8a996d1eca55bbad64e92defdb4e4ec95d13d3a451f9817b1d29
 
     Details:
 
@@ -178,6 +203,25 @@ Note: Hosted checks are green on PR #3928 for head 55a20724c: Core CI test/test-
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T09:52:02.975Z, excerpt_hash=sha256:344757ada18a8a996d1eca55bbad64e92defdb4e4ec95d13d3a451f9817b1d29
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-P1Q6BB/blueprint/resolved-snapshot.json
+- old_digest: c40250d9f7a0b7fcfe51403e9ff7d56913553939bc737e8ff9c981eb2f3f2c25
+- current_digest: c40250d9f7a0b7fcfe51403e9ff7d56913553939bc737e8ff9c981eb2f3f2c25
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605190941-P1Q6BB
+
+### 2026-05-19T10:36:31.643Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Fresh hosted quality gate passed for current head 298ef95af: Core CI test/test-windows/release-ready manifest, Docs CI, Workflows Lint, Dependency Review, and CodeQL are green on PR #3928.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T10:29:16.614Z, excerpt_hash=sha256:344757ada18a8a996d1eca55bbad64e92defdb4e4ec95d13d3a451f9817b1d29
 
 Details:
 
