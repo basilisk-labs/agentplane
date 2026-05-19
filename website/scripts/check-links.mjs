@@ -28,6 +28,7 @@ function walk(dir) {
 
 function routeExists(route) {
   if (route === "/" || route === "/docs") return true;
+  if (route === "/blog") return true;
   if (route.startsWith("/docs/")) {
     const docId = route.replace(/^\/docs\//, "");
     return (
@@ -39,7 +40,7 @@ function routeExists(route) {
   }
   if (route === "/examples") return existsSync(path.join(websiteRoot, "src/pages/examples.tsx"));
   if (route === "/about") return existsSync(path.join(websiteRoot, "src/pages/about.tsx"));
-  return true;
+  return false;
 }
 
 for (const file of walk(docsRoot).concat(walk(path.join(websiteRoot, "src")))) {

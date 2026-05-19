@@ -150,10 +150,15 @@ function formatStars(count: number): string {
 function readCachedStars(): number | null {
   const raw = window.localStorage.getItem(githubStarsCacheKey);
   if (!raw) return null;
-  const parsed = JSON.parse(raw) as { value?: number; expiresAt?: number };
-  if (typeof parsed.value !== "number" || typeof parsed.expiresAt !== "number") return null;
-  if (parsed.expiresAt < Date.now()) return null;
-  return parsed.value;
+  try {
+    const parsed = JSON.parse(raw) as { value?: number; expiresAt?: number };
+    if (typeof parsed.value !== "number" || typeof parsed.expiresAt !== "number") return null;
+    if (parsed.expiresAt < Date.now()) return null;
+    return parsed.value;
+  } catch {
+    window.localStorage.removeItem(githubStarsCacheKey);
+    return null;
+  }
 }
 
 function writeCachedStars(value: number): void {
