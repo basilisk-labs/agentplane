@@ -197,6 +197,111 @@ describe("CloudBackend", () => {
     expect(Number.isFinite(Date.parse(String(state.last_checked_at)))).toBe(true);
   });
 
+  it("pulls cloud projection once per local day before task start", async () => {
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    await writeFile(
+      path.join(stateDir, "state.json"),
+      `${JSON.stringify(
+        {
+          last_checked_at: new Date().toISOString(),
+          last_start_ready_pull_at: "2000-01-01T00:00:00.000Z",
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    const remoteTask = makeTask({ id: "202605191450-ABCDEF", title: "Imported intake" });
+    const fetchImpl = vi.fn<typeof fetch>((url) => {
+      const href = requestUrl(url);
+      if (href.endsWith("/sync/state")) {
+        return Promise.resolve(Response.json({ data: { open_conflicts: 0 }, open_conflicts: [] }));
+      }
+      if (href.endsWith("/sync/pull")) {
+        return Promise.resolve(
+          Response.json({
+            data: {
+              last_checked_at: "2026-05-19T10:00:00.000Z",
+              tasks: [remoteTask],
+            },
+          }),
+        );
+      }
+      return Promise.resolve(Response.json({ error: "unexpected", url: href }, { status: 500 }));
+    });
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        provider: "github-projects",
+        stale_after_seconds: 86_400,
+      },
+      {
+        root: tempDir,
+        cache,
+        fetchImpl,
+        autoSyncNetworkAllowed: true,
+      },
+    );
+
+    await backend.refreshProjectionBeforeTaskStart();
+
+    await expect(cache.getTask(remoteTask.id)).resolves.toMatchObject({
+      id: remoteTask.id,
+      title: "Imported intake",
+    });
+    const state = JSON.parse(await readFile(path.join(stateDir, "state.json"), "utf8")) as Record<
+      string,
+      unknown
+    >;
+    expect(Number.isFinite(Date.parse(String(state.last_start_ready_pull_at)))).toBe(true);
+    expect(fetchImpl.mock.calls.map(([url]) => requestUrl(url))).toEqual([
+      "https://cloud.example/v1/projects/project-1/sync/state",
+      "https://cloud.example/v1/projects/project-1/sync/state",
+      "https://cloud.example/v1/projects/project-1/sync/pull",
+    ]);
+  });
+
+  it("skips task-start cloud pull after a same-day start refresh", async () => {
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    await writeFile(
+      path.join(stateDir, "state.json"),
+      `${JSON.stringify(
+        {
+          last_checked_at: new Date().toISOString(),
+          last_start_ready_pull_at: new Date().toISOString(),
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    const fetchImpl = vi.fn<typeof fetch>(() =>
+      Promise.resolve(Response.json({ error: "unexpected" }, { status: 500 })),
+    );
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        provider: "github-projects",
+      },
+      {
+        root: tempDir,
+        cache: new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") }),
+        fetchImpl,
+        autoSyncNetworkAllowed: true,
+      },
+    );
+
+    await expect(backend.refreshProjectionBeforeTaskStart()).resolves.toBeUndefined();
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
   it("push sync sends local tasks and records last check time", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const task: TaskData = makeTask({
