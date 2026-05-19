@@ -44,12 +44,7 @@ export const homepageContent = {
     subtitle:
       "Agentplane wraps Claude Code, Codex, Cursor, Aider, and other coding agents with task intent, approved plans, verification evidence, commits, traces, and Agent Change Records inside your repository.",
     trustLine: "Local-first. CLI-first. OpenTelemetry-friendly. MIT licensed.",
-    commands: [
-      installCommand,
-      "agentplane init",
-      "agentplane quickstart",
-      "agentplane trace open",
-    ],
+    commands: [installCommand, "agentplane init", "agentplane quickstart", "agentplane trace open"],
     output: [
       "wrote policy gateway",
       "approved task plan",
@@ -100,10 +95,7 @@ export const homepageContent = {
   surfaces: [
     ["AGENTS.md", "Repository policy gateway for coding agents."],
     [".agentplane/WORKFLOW.md", "Workflow and verification contract."],
-    [
-      "Task README",
-      "Task intent, lifecycle, plan, status, and handoff evidence.",
-    ],
+    ["Task README", "Task intent, lifecycle, plan, status, and handoff evidence."],
     ["acr.json", "Machine-readable Agent Change Record for review and tooling."],
     ["Trace JSON", "Inspectable run timeline and exportable trace data."],
     ["Recipes", "Reusable workflow overlays for TDD, security review, and docs work."],

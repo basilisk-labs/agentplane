@@ -207,10 +207,10 @@ function Records(): ReactNode {
   return (
     <section className={styles.section}>
       <div className={styles.twoColumn}>
-      <div>
-        <h2>{records.title}</h2>
-        <p>{records.text}</p>
-        <CommandBlock
+        <div>
+          <h2>{records.title}</h2>
+          <p>{records.text}</p>
+          <CommandBlock
             label="Run the local loop first"
             command={[
               "npm i -g agentplane",
