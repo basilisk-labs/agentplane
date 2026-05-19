@@ -140,6 +140,7 @@ describe("blueprint built-ins", () => {
         "agentplane context reindex --include-raw",
         "agentplane context wiki lint context/wiki",
         "agentplane context graph validate",
+        "agentplane verify <task-id> --ok|--rework --by EVALUATOR",
       ]),
     );
     expect(blueprint.requiredEvidence.map((item) => item.id)).toEqual(
@@ -147,14 +148,19 @@ describe("blueprint built-ins", () => {
         "context_max.coverage",
         "context_max.addressing",
         "context_max.graph_first",
+        "context_max.topology",
+        "context_max.obsidian_links",
         "context_max.glossary",
       ]),
     );
     expect(blueprint.stopRules.map((rule) => rule.id)).toEqual(
       expect.arrayContaining([
         "context_max_missing_line_refs",
+        "context_max_fixed_scaffold_without_rationale",
+        "context_max_missing_obsidian_wikilinks",
         "context_max_coverage_gap_without_reason",
         "context_max_raw_deletion_resilience_unproven",
+        "context_max_evaluator_review_missing",
         "context_max_sensitive_leakage",
       ]),
     );

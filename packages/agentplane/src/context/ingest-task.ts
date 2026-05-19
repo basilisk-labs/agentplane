@@ -67,7 +67,7 @@ function buildIngestMetadata(
     "- Use markdown frontmatter as the page manifest for modality, status, source_refs, claims, and graph refs.",
     "- Keep atomic claims and graph rows in derived artifacts; do not turn every claim into a wiki page.",
     "- Create or update wiki pages only when the topic is reusable for future tasks or useful to a human reader.",
-    "- Add meaningful markdown cross-links between related wiki pages on first useful mention.",
+    "- Add meaningful cross-links between related wiki pages on first useful mention.",
     "- Represent facts, decisions, policies, requirements, risks, preferences, and definitions as distinct modalities.",
     "- If claims conflict, create a conflict candidate and ask for review before promotion; never overwrite silently.",
     "- Treat completed-task architecture changes as ADR/evolution records with provenance, not as probabilistic facts.",
@@ -79,9 +79,13 @@ function buildIngestMetadata(
           "- Keep original source identity in a source registry or source-set lock with path, `sha256:`, content type, line count, ingest time, and availability state.",
           "- Use concrete line-addressed source refs for extracted claims, entities, relations, glossary aliases, and article sections as audit provenance, not as retained content.",
           "- Run extraction in two passes: first entities/aliases/relations/conflicts/open questions/coverage, then narrative wiki articles based on that structured layer.",
+          "- Choose wiki structure from the selected source content; do not create the default concepts/entities/decisions/modules/contradictions/reports scaffold unless the source analysis justifies that topology.",
+          "- Record a wiki topology decision in `context/wiki/index.md`, a source-backed topology page, or an assimilation report before creating new page families.",
+          "- Use Obsidian-compatible `[[Page Title]]` or `[[Page Title#Section]]` wikilinks for semantic wiki graph links; keep standard Markdown links for source refs and external/file references.",
           "- Maintain a canonical glossary over wiki pages and graph entities; use canonical terms in prose and preserve source-local terms as aliases or evidence details.",
           "- Record a coverage map: covered source spans, intentionally omitted boilerplate, redacted sensitive spans, unresolved identity questions, and remaining conflicts.",
           "- Treat raw-deletion resilience as a finish gate: if `context/raw/**` were removed, the maintained wiki and derived artifacts should still preserve the significant source meaning. Raw refs may become non-dereferenceable.",
+          "- Require an EVALUATOR quality review for source-shaped structure, granularity, wikilinks, coverage, glossary/alias safety, and raw-deletion resilience before finish.",
         ]
       : []),
   ].join("\n");
@@ -139,7 +143,7 @@ function buildContextAssimilationPromptModule(workspaceMode?: ContextWorkspaceMo
       "- Keep related claims on a topic page when that is more readable, but mark every important claim with modality, status, scope, and source_refs.",
       "- Put meaningful wiki links inline in the narrative text at the first useful mention, not only in a trailing Related Pages section.",
       "- When pre-write lookup gives high confidence that a source term matches an existing concept/entity/page, use the canonical term in prose and link it to the canonical page or section.",
-      "- Use markdown cross-links for source_refs and meaningful page-to-page references. Do not add decorative links to every repeated word.",
+      "- Use Markdown links for source_refs. Use meaningful page-to-page references for wiki navigation; in maximum-assimilation mode these should be Obsidian-compatible wikilinks.",
       "- Represent every extracted assertion as a claim candidate until its source and status justify stronger use.",
       "- Preserve modality: factual_claim, observation, assumption, hypothesis, decision, policy, preference, requirement, risk, capability, definition, deprecation.",
       "- Use confidence vectors for factual/requirement/risk claims; do not use one scalar confidence score.",
@@ -182,9 +186,12 @@ function buildContextAssimilationPromptModule(workspaceMode?: ContextWorkspaceMo
             "- Intake: classify each selected source span as significant content, boilerplate, redacted, duplicate, or unresolved.",
             "- Source identity: preserve each source's `sha256:`, path, content type, line count, ingest time, and availability state. Cite extracted content with line refs such as `context/raw/<user-path>/note.md#lines=12-24`.",
             "- Extraction pass: identify canonical entities, source-local aliases, relations, decisions, requirements, risks, workflows, definitions, conflicts, and open questions before article writing.",
+            "- Topology pass: choose the wiki structure from source evidence, then record the topology decision and rationale before creating page families. Do not mechanically create `concepts/`, `entities/`, `decisions/`, `modules/`, `contradictions/`, or `reports/` just because they are familiar defaults.",
             "- Glossary pass: update the canonical glossary as a navigation index over wiki pages and graph entities; normalize prose to canonical terms where confidence is high.",
             "- Synthesis pass: create granular wiki pages and stable headings from the extracted graph/glossary layer. The wiki should preserve all significant source meaning even without raw files.",
+            "- Obsidian pass: use YAML frontmatter plus `[[Canonical Page]]` and `[[Canonical Page#Stable Heading]]` wikilinks for semantic internal links. Use normal Markdown links for source refs and external/file links so AgentPlane source hygiene stays intact.",
             "- Coverage pass: write or update a coverage report naming covered spans, omitted boilerplate, redacted sensitive spans, conflicts, unresolved identities, and any approval-required gaps.",
+            "- Evaluation pass: request or record an EVALUATOR quality review that checks source-shaped topology, page granularity, useful wikilinks/backlink potential, line-addressed provenance, glossary alias safety, coverage gaps, raw-deletion resilience, and private leakage.",
             "- Critical check: do not flatten contradictions, do not silently invent canonical terms, do not copy secrets or non-publishable source spans into public wiki/task/ACR surfaces, and do not claim full semantic coverage without self-contained wiki/fact/graph content plus line-addressed provenance.",
           ]
         : []),
@@ -195,6 +202,11 @@ function buildContextAssimilationPromptModule(workspaceMode?: ContextWorkspaceMo
       "- Run `agentplane context verify-task <task-id>`.",
       "- Run `agentplane context graph validate`.",
       "- Run `agentplane context doctor`.",
+      ...(maximumAssimilation
+        ? [
+            '- Run or record `agentplane verify <task-id> --ok|--rework --by EVALUATOR --note "..."` after CURATOR verification.',
+          ]
+        : []),
       "- Run a smoke `agentplane context search` query using exact source terminology.",
     ].join("\n"),
     mutability: "replaceable",
@@ -276,9 +288,12 @@ export function createTaskNewParsed(
             ...(maximumAssimilation
               ? [
                   "entity_relation_first_extraction",
+                  "source_shaped_wiki_topology_recorded",
                   "canonical_glossary_updated",
+                  "obsidian_wikilinks_reviewed",
                   "line_addressed_coverage_map",
                   "raw_deletion_resilience_review",
+                  "evaluator_quality_review",
                 ]
               : []),
             "wiki_schema_lint",
@@ -295,9 +310,13 @@ export function createTaskNewParsed(
             ...(maximumAssimilation
               ? [
                   "missing_line_refs",
+                  "fixed_starter_scaffold_used_without_source_rationale",
+                  "missing_source_shaped_topology_decision",
+                  "missing_obsidian_wikilinks",
                   "coverage_gap_without_reason",
                   "glossary_conflict",
                   "raw_deletion_resilience_unproven",
+                  "evaluator_quality_review_missing",
                   "private_leakage",
                 ]
               : []),

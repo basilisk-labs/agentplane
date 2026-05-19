@@ -127,6 +127,9 @@ describe("context release readiness guards", () => {
     expect(wikiAgents).toContain("stored meaning");
     expect(wikiAgents).toContain("availability state");
     expect(wikiAgents).toContain("`missing`");
+    expect(wikiAgents).toContain("choose the wiki structure from the selected source content");
+    expect(wikiAgents).toContain("[[Page Title]]");
+    expect(wikiAgents).toContain("EVALUATOR quality review");
   });
 
   it("creates starter wiki structure on first context ingest with selected sources", async () => {
@@ -191,6 +194,54 @@ describe("context release readiness guards", () => {
 
     const wikiEntriesAfterSecondIngest = await readdir(path.join(root, "context/wiki"));
     expect(wikiEntriesAfterSecondIngest).not.toContain("concepts");
+  });
+
+  it("does not create fixed starter wiki folders on maximum-assimilation first ingest", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      ".agentplane/context/agentplane.context.yaml",
+      "version: 1\nworkspace:\n  mode: maximum-assimilation\n",
+    );
+    await write(root, "context/wiki/index.md", "# Context wiki\n");
+    await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
+    vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    const tasks: { id: string; owner: string }[] = [];
+    const createTask = vi.fn(async () => {
+      tasks.push({ id: "202605130501-CTXMAX-SCAFFOLD", owner: "CURATOR" });
+    });
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: {
+        listTasks: async () => [...tasks],
+      },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+
+    await cmdContextIngest({
+      ctx,
+      cwd: root,
+      parsed: {
+        sources: [],
+        mode: "changed",
+        dryRun: false,
+        indexOnly: false,
+      },
+      createTask,
+    });
+
+    const wikiEntries = await readdir(path.join(root, "context/wiki"));
+    expect(wikiEntries).not.toEqual(
+      expect.arrayContaining(["concepts", "entities", "decisions", "modules", "reports"]),
+    );
+
+    const lock = JSON.parse(
+      await readFile(path.join(root, ".agentplane/context/manifest.lock.json"), "utf8"),
+    ) as { wiki_scaffold?: { starter_created_at?: string } };
+    expect(lock.wiki_scaffold).toBeUndefined();
   });
 
   it("indexes stable section refs and arbitrary user-created raw hierarchy", async () => {
@@ -649,6 +700,11 @@ describe("context release readiness guards", () => {
     expect(createdArgs.parsed?.description).toContain("Maximum-assimilation contract:");
     expect(createdArgs.parsed?.description).toContain("significant source meaning");
     expect(createdArgs.parsed?.description).toContain("audit provenance, not as retained content");
+    expect(createdArgs.parsed?.description).toContain(
+      "Choose wiki structure from the selected source content",
+    );
+    expect(createdArgs.parsed?.description).toContain("[[Page Title]]");
+    expect(createdArgs.parsed?.description).toContain("EVALUATOR quality review");
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.mode).toBe(
       "maximum_assimilation",
     );
@@ -657,9 +713,21 @@ describe("context release readiness guards", () => {
     );
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint?.required_gates,
-    ).toEqual(expect.arrayContaining(["canonical_glossary_updated"]));
+    ).toEqual(
+      expect.arrayContaining([
+        "source_shaped_wiki_topology_recorded",
+        "canonical_glossary_updated",
+        "obsidian_wikilinks_reviewed",
+        "evaluator_quality_review",
+      ]),
+    );
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint?.stop_rules).toEqual(
-      expect.arrayContaining(["raw_deletion_resilience_unproven"]),
+      expect.arrayContaining([
+        "missing_source_shaped_topology_decision",
+        "missing_obsidian_wikilinks",
+        "raw_deletion_resilience_unproven",
+        "evaluator_quality_review_missing",
+      ]),
     );
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.wiki).toMatchObject({
       maintenance_mode: "maximum_assimilation",
@@ -673,6 +741,15 @@ describe("context release readiness guards", () => {
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("availability state");
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("Topology pass:");
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("[[Canonical Page]]");
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("Evaluation pass:");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("self-contained wiki/fact/graph content plus line-addressed provenance");

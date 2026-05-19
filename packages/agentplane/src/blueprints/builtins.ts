@@ -415,6 +415,7 @@ export const BUILTIN_BLUEPRINTS = [
       "agentplane context search <query> --format json",
       "agentplane acr generate <task-id> --write",
       "agentplane acr check <task-id>",
+      "agentplane verify <task-id> --ok|--rework --by EVALUATOR",
     ],
     policyModules: [
       ".agentplane/policy/security.must.md",
@@ -447,6 +448,18 @@ export const BUILTIN_BLUEPRINTS = [
         "artifact",
         "work_unit",
         "Entity, alias, relation, conflict, and open-question extraction completed before narrative wiki synthesis.",
+      ),
+      evidence(
+        "context_max.topology",
+        "artifact",
+        "artifact_write",
+        "Source-shaped wiki topology decision recorded before creating page families; fixed starter scaffold avoided unless source-backed.",
+      ),
+      evidence(
+        "context_max.obsidian_links",
+        "artifact",
+        "artifact_write",
+        "Obsidian-compatible wikilinks used for semantic wiki graph links while Markdown links remain for source refs and external/file refs.",
       ),
       evidence(
         "context_max.glossary",
@@ -499,6 +512,18 @@ export const BUILTIN_BLUEPRINTS = [
           "Claims, entities, relations, and wiki sections derived from source text require line-addressed source refs.",
       },
       {
+        id: "context_max_fixed_scaffold_without_rationale",
+        severity: "approval_required",
+        reason:
+          "Maximum assimilation must choose wiki structure from source content; default starter folders require explicit source-backed topology rationale.",
+      },
+      {
+        id: "context_max_missing_obsidian_wikilinks",
+        severity: "approval_required",
+        reason:
+          "Maximum-assimilation wiki pages should use meaningful Obsidian-compatible wikilinks for semantic internal links, not only trailing related-page lists.",
+      },
+      {
         id: "context_max_coverage_gap_without_reason",
         severity: "approval_required",
         reason:
@@ -515,6 +540,12 @@ export const BUILTIN_BLUEPRINTS = [
         severity: "approval_required",
         reason:
           "Finish requires explicit evidence that deleting raw sources would not remove significant meaning from wiki/derived artifacts; line refs may become non-dereferenceable audit pointers.",
+      },
+      {
+        id: "context_max_evaluator_review_missing",
+        severity: "stop",
+        reason:
+          "Maximum-assimilation finish requires EVALUATOR review of source-shaped structure, granularity, wikilinks, coverage, glossary safety, raw-deletion resilience, and leakage risk.",
       },
       {
         id: "context_max_sensitive_leakage",
