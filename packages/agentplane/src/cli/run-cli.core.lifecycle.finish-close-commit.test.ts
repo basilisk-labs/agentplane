@@ -36,6 +36,21 @@ describe("runCli", () => {
   const BLOCK_FINISH_TIMEOUT_MS = 60_000;
   const BLOCK_FINISH_LONG_TIMEOUT_MS = 180_000;
 
+  async function recordEvaluatorReview(root: string, taskId: string, note: string): Promise<void> {
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "EVALUATOR",
+      "--note",
+      note,
+      "--quiet",
+      "--root",
+      root,
+    ]);
+  }
+
   it("finish marks done and records commit metadata", { timeout: 60_000 }, async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -86,6 +101,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await recordEvaluatorReview(root, taskId, "EVALUATOR quality gate passed for finish smoke.");
     await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
     await runCliSilent([
@@ -100,6 +116,11 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await recordEvaluatorReview(
+      root,
+      taskId,
+      "EVALUATOR quality gate passed for close commit path.",
+    );
 
     const io = captureStdIO();
     try {
@@ -184,6 +205,11 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await recordEvaluatorReview(
+        root,
+        taskId,
+        "EVALUATOR quality gate passed for close commit path.",
+      );
 
       const io = captureStdIO();
       try {
@@ -218,7 +244,7 @@ describe("runCli", () => {
   );
 
   it(
-    "finish --commit-from-comment records implementation hash in task metadata and uses a separate close commit for tracked task docs",
+    "finish --commit-from-comment stops before DONE when quality review is stale after the generated commit",
     { timeout: 120_000 },
     async () => {
       const root = await mkGitRepoRoot();
@@ -290,6 +316,11 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await recordEvaluatorReview(
+        root,
+        taskId,
+        "EVALUATOR quality gate passed for commit-from-comment close path.",
+      );
 
       await writeFile(path.join(root, "file.txt"), "seed\nchanged\n", "utf8");
 
@@ -312,27 +343,23 @@ describe("runCli", () => {
           "--root",
           root,
         ]);
-        expect(code).toBe(0);
+        expect(code).toBe(3);
         expect(io.stdout).toContain("creating commit from verification comment");
-        expect(io.stdout).toContain("creating deterministic close commit");
-        expect(io.stdout).toMatch(/\nfinished\n/);
+        expect(io.stdout).not.toContain("creating deterministic close commit");
+        expect(io.stderr).toContain("requires a fresh EVALUATOR quality review");
       } finally {
         io.restore();
       }
 
       const task = await readTask({ cwd: root, rootOverride: root, taskId });
       const { stdout: headHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
-      const { stdout: parentHash } = await execFileAsync("git", ["rev-parse", "HEAD^"], {
-        cwd: root,
-      });
       const { stdout: headSubject } = await execFileAsync("git", ["show", "-s", "--format=%s"], {
         cwd: root,
       });
 
-      expect(task.frontmatter.commit?.hash).toBe(parentHash.trim());
+      expect(task.frontmatter.status).not.toBe("DONE");
       expect(task.frontmatter.commit?.hash).not.toBe(headHash.trim());
-      expect(headSubject.trim()).toBe("docs: finish commit-from-comment close commit");
-      expect(headSubject).not.toContain("close:");
+      expect(headSubject.trim()).toContain("docs: done");
     },
   );
 
@@ -387,6 +414,11 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await recordEvaluatorReview(
+        root,
+        taskId,
+        "EVALUATOR quality gate passed before hook failure smoke.",
+      );
       await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const hookPath = path.join(root, ".git", "hooks", "pre-commit");
@@ -424,6 +456,98 @@ describe("runCli", () => {
       } finally {
         io.restore();
       }
+    },
+  );
+
+  it(
+    "finish --close-commit checks direct dirty tracked files before marking DONE",
+    { timeout: BLOCK_FINISH_LONG_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "file.txt"), "content", "utf8");
+      await writeFile(path.join(root, ".gitignore"), "initial\n", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "file.txt", ".gitignore"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
+      const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
+
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Finish dirty direct close preflight",
+          "--description",
+          "Finish should not mark DONE before direct close commit preflight rejects unrelated dirt",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+
+      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "TESTER",
+        "--note",
+        "Ok to exercise direct dirty close preflight.",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      await recordEvaluatorReview(
+        root,
+        taskId,
+        "EVALUATOR quality gate passed before direct dirty preflight.",
+      );
+      await writeFile(path.join(root, ".gitignore"), "unrelated\n", "utf8");
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "finish",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Verified: finish should reject unrelated dirty tracked files before DONE.",
+          "--result",
+          "finish direct dirty preflight",
+          "--commit",
+          implHash.trim(),
+          "--close-commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(5);
+        expect(io.stderr).toContain("requires a clean tracked working tree");
+        expect(io.stderr).toContain(".gitignore");
+        expect(io.stdout).not.toContain("task marked DONE");
+      } finally {
+        io.restore();
+      }
+
+      const task = await readTask({ cwd: root, rootOverride: root, taskId });
+      expect(task.frontmatter.status).not.toBe("DONE");
     },
   );
 });

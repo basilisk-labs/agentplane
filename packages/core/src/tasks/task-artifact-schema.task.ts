@@ -53,6 +53,7 @@ const TASK_BLUEPRINT_REQUEST_VALUES = [
   "performance.benchmark",
   "quality.regression",
   "context.assimilation",
+  "context.maximum_assimilation",
   "runner.execution",
   "post_run.improvement_review",
   "release.strict",

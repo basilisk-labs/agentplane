@@ -14,6 +14,8 @@ type ContextExtension = {
     update_capabilities?: boolean;
     allow_raw_mutation?: boolean;
   };
+  task_type?: string;
+  mode?: string;
   source_set?: {
     files?: { path?: unknown; sha256?: unknown }[];
   };
@@ -126,6 +128,14 @@ function readChangedPaths(task: VerificationInput): string[] {
 
 function isRawMutationAllowed(context: ContextExtension): boolean {
   return context.assimilation?.allow_raw_mutation === true;
+}
+
+function isProfileSwitchContextTask(context: ContextExtension): boolean {
+  return (
+    context.task_type === "context_profile_switch" ||
+    context.task_type === "context_configuration" ||
+    context.mode === "maximum_assimilation"
+  );
 }
 
 async function readJsonFile(filePath: string): Promise<Record<string, unknown> | null> {
@@ -262,7 +272,15 @@ async function validateContextArtifacts(opts: {
     ? opts.context.source_set.files
     : [];
   if (sourceFiles.length === 0) {
-    errors.push("extensions.agentplane.context.source_set.files must not be empty");
+    if (isProfileSwitchContextTask(opts.context)) {
+      if (opts.changedPaths.some((changed) => hasPathPrefix(changed, "context/raw/"))) {
+        errors.push("profile-switch context tasks must not mutate context/raw/**");
+      }
+    } else {
+      errors.push(
+        "extensions.agentplane.context.source_set.files must not be empty for context assimilation tasks",
+      );
+    }
   }
   for (const file of sourceFiles) {
     if (typeof file.path !== "string" || !file.path.trim()) {

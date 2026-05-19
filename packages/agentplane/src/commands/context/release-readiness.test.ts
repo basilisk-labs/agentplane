@@ -403,6 +403,76 @@ describe("context release readiness guards", () => {
     ).rejects.toThrow(/fact row has no source_ref/u);
   });
 
+  it("allows profile-switch context tasks without source ingest files", async () => {
+    const root = await tempRoot();
+    const task = {
+      id: "202605191451-CTXCFG",
+      status: "DOING",
+      owner: "CURATOR",
+      task_kind: "context",
+      mutation_scope: "context",
+      blueprint_request: "context.maximum_assimilation",
+      extensions: {
+        "agentplane.context": {
+          task_type: "context_profile_switch",
+          mode: "maximum_assimilation",
+          allowed_outputs: [
+            ".agentplane/context/agentplane.context.yaml",
+            "context/wiki/AGENTS.md",
+          ],
+        },
+      },
+      runner: {
+        evidence: {
+          changed_paths: [".agentplane/context/agentplane.context.yaml", "context/wiki/AGENTS.md"],
+        },
+      },
+    };
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { getTask: async () => task },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextVerifyTask({
+      ctx,
+      cwd: root,
+      parsed: { taskId: task.id },
+    });
+
+    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
+      "context verify-task 202605191451-CTXCFG: ok",
+    );
+  });
+
+  it("prints the context check label when check delegates to doctor", async () => {
+    const root = await tempRoot();
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    await cmdContextInit({
+      ctx: { resolvedProject: { gitRoot: root } } as CommandContext,
+      cwd: root,
+      parsed: {
+        profile: "adaptive",
+        rawGitignore: "none",
+        derivedGitignore: "none",
+        repair: false,
+        force: false,
+      },
+    });
+    out.mockClear();
+
+    await cmdContextDoctor({
+      cwd: root,
+      parsed: { fix: false, label: "check" },
+    });
+
+    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain("context check: ok");
+  });
+
   it("creates a CURATOR task for agent-assisted context assimilation", async () => {
     const root = await tempRoot();
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
