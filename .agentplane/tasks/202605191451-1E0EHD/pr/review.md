@@ -47,12 +47,20 @@ Scope: policy routing contract.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T14:52:45.909Z
+- Updated: 2026-05-19T15:21:49.949Z
 - Branch: task/202605191451-1E0EHD/daily-cloud-start-pull
-- Head: 81a3ed59446b
+- Head: bf213af3cbf8
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 571 +++++++++++++++++++++
+ .../src/backends/task-backend.cloud.test.ts        | 105 ++++
+ .../task-backend/cloud-backend-settings.ts         |   1 +
+ .../task-backend/cloud-backend-state.test.ts       |   5 +
+ .../backends/task-backend/cloud-backend-state.ts   |   8 +-
+ .../src/backends/task-backend/cloud-backend.ts     |  67 +++
+ .../src/backends/task-backend/shared/types.ts      |   1 +
+ .../agentplane/src/commands/task/start-ready.ts    |   1 +
+ 8 files changed, 758 insertions(+), 1 deletion(-)
 ```
 
 </details>
