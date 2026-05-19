@@ -28,16 +28,17 @@ direct close-commit preflight before DONE mutation.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T15:38:45.988Z
+- Updated: 2026-05-19T16:46:13.164Z
 - Branch: task/202605191451-TFBJEG/fix-3934-context-lifecycle
-- Head: bf13eb3091c6
+- Head: b0c5ff20ed1f
 
 ```text
  .../blueprint/resolved-snapshot.json               | 573 +++++++++++++++++++++
  .../src/cli/run-cli.core.context-init.test.ts      |  42 ++
- ...-cli.core.lifecycle.finish-close-commit.test.ts | 144 +++++-
+ ...-cli.core.lifecycle.finish-close-commit.test.ts | 145 +++++-
  .../src/commands/context/context.command.ts        |   4 +-
- packages/agentplane/src/commands/context/init.ts   |  42 +-
+ .../src/commands/context/init-profile-switch.ts    |  51 ++
+ packages/agentplane/src/commands/context/init.ts   |  17 +-
  .../src/commands/context/release-readiness.test.ts |  70 +++
  .../agentplane/src/commands/task/finish-execute.ts |  14 +-
  packages/agentplane/src/context/doctor.ts          |  19 +-
@@ -50,7 +51,7 @@ direct close-commit preflight before DONE mutation.
  packages/spec/schemas/tasks-export.schema.json     |   1 +
  schemas/task-readme-frontmatter.schema.json        |   1 +
  schemas/tasks-export.schema.json                   |   1 +
- 17 files changed, 924 insertions(+), 30 deletions(-)
+ 18 files changed, 942 insertions(+), 39 deletions(-)
 ```
 
 </details>
