@@ -7,7 +7,7 @@
  .../src/cli/run-cli/command-catalog/project.ts     |  11 +
  .../src/cli/run-cli/command-loaders/project.ts     |  11 +
  packages/agentplane/src/commands/acr/generate.ts   |  15 +-
- .../src/commands/evidence/evidence.command.test.ts | 111 ++++
- .../src/commands/evidence/evidence.command.ts      | 484 +++++++++++++++++
+ .../src/commands/evidence/evidence.command.test.ts | 158 ++++++
+ .../src/commands/evidence/evidence.command.ts      | 516 +++++++++++++++++++
  website/sidebars.ts                                |   2 +
- 12 files changed, 1783 insertions(+), 4 deletions(-)
+ 12 files changed, 1862 insertions(+), 4 deletions(-)

@@ -19,18 +19,18 @@ Implement a deterministic evidence bundle and verification CLI surface, with ACR
 - Note:
 
 ```text
-Fixed hosted Linux format gate by applying Prettier to evidence command files. Local checks passed:
-format:check, focused evidence/ACR tests, agentplane typecheck, targeted eslint, docs:cli:check,
-docs:ia:check.
+Addressed PR review threads: evidence bundle now respects configured workflow_dir and preserves
+existing created_at to keep unchanged bundle reruns deterministic. Local checks passed: focused
+evidence/ACR tests, agentplane typecheck, targeted eslint, format:check, framework:dev:bootstrap.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T15:29:40.686Z
+- Updated: 2026-05-19T15:45:54.714Z
 - Branch: task/202605191421-D566XJ/evidence-bundle
-- Head: f0df96e155d1
+- Head: 08db6b47a452
 
 ```text
  .agentplane/tasks/202605191421-D566XJ/acr.json     | 409 +++++++++++++++
@@ -42,10 +42,10 @@ docs:ia:check.
  .../src/cli/run-cli/command-catalog/project.ts     |  11 +
  .../src/cli/run-cli/command-loaders/project.ts     |  11 +
  packages/agentplane/src/commands/acr/generate.ts   |  15 +-
- .../src/commands/evidence/evidence.command.test.ts | 111 ++++
- .../src/commands/evidence/evidence.command.ts      | 484 +++++++++++++++++
+ .../src/commands/evidence/evidence.command.test.ts | 158 ++++++
+ .../src/commands/evidence/evidence.command.ts      | 516 +++++++++++++++++++
  website/sidebars.ts                                |   2 +
- 12 files changed, 1783 insertions(+), 4 deletions(-)
+ 12 files changed, 1862 insertions(+), 4 deletions(-)
 ```
 
 </details>

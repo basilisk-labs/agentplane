@@ -5,7 +5,7 @@
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/acr.json",
       "role": "acr",
-      "sha256": "sha256:edc5b5f3b3e6a5bec52b7dda10a6a564b3dfa5270a6eb619d76cb8607a7694b2",
+      "sha256": "sha256:65012c9ae516ea1d2a04540e83fbac39accdcf868df8cecda5dda5d68fdd9359",
       "size_bytes": 11195
     },
     {
@@ -17,14 +17,14 @@
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/pr/diffstat.txt",
       "role": "pr_artifact",
-      "sha256": "sha256:c63900159227ae823709e0f1775dde2d14bfb3c789a47b8d625a841fb2b54e4e",
-      "size_bytes": 832
+      "sha256": "sha256:62eb7b297fa38739c207cdb8c307319f44261f7d9f872904c10edd8721ff1374",
+      "size_bytes": 836
     },
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/pr/github-body.md",
       "role": "pr_artifact",
-      "sha256": "sha256:e5e478ccb7515a967fac8c1a7862a0e40733750ef7662f8d558ba3f55874eb27",
-      "size_bytes": 2099
+      "sha256": "sha256:919d642a4120a791f649ed7a4108b3b7df1851b8a93d0b429c0b0a399506dfe8",
+      "size_bytes": 2181
     },
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/pr/github-title.txt",
@@ -35,26 +35,26 @@
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/pr/meta.json",
       "role": "pr_artifact",
-      "sha256": "sha256:782f3616edb2c90fe3546bf887764222c1f082b547f1a184954dfe1a02e6db8a",
+      "sha256": "sha256:d405b7c0fbd49f61f1e2664a2f350c4e0af2acf50b0faeb1b362127f56c5cf0a",
       "size_bytes": 549
     },
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/pr/review.md",
       "role": "pr_artifact",
-      "sha256": "sha256:7cd69fd8c7067b94ce95d13c09cac5e06e65850ef369d42d08d820b643b10893",
-      "size_bytes": 1745
+      "sha256": "sha256:bb188f821622d6499d4edea822283a74dd5934b6ca33580b0c73868dfb87b65b",
+      "size_bytes": 1827
     },
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/README.md",
       "role": "task_readme",
-      "sha256": "sha256:5979974073c5bbcf349380b5c8bf65fbac5dbe0c34bff6b2c4b9044acebae6c2",
-      "size_bytes": 14460
+      "sha256": "sha256:fa813e50373df208cdc22c44a5bb6222ae98e504142868df1c8dfe7bbac8461a",
+      "size_bytes": 16980
     }
   ],
   "integrity": {
     "canonicalization": "agentplane-canonical-json-v1",
     "digest_algorithm": "sha256",
-    "manifest_digest": "sha256:7fb774dbe00207d293891043f8e4e955142c232af1efb5504ecb90a56495722e"
+    "manifest_digest": "sha256:35cf480f6b2a5c1ffd144167609ed0fe2d2972dd807846085dee96a560002abf"
   },
   "kind": "agentplane_evidence_bundle",
   "producer": {
