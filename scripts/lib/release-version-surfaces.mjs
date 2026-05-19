@@ -23,7 +23,9 @@ function normalizeSurface(raw) {
   const file = typeof raw?.file === "string" ? raw.file.trim() : "";
   const kind = typeof raw?.kind === "string" ? raw.kind.trim() : "";
   if (!id || !file || !kind) {
-    throw new Error("Invalid release version surface manifest: every surface needs id, file, kind.");
+    throw new Error(
+      "Invalid release version surface manifest: every surface needs id, file, kind.",
+    );
   }
   return {
     ...raw,
@@ -116,7 +118,8 @@ export function readReleaseVersionSurfaces(rootDir) {
   for (const surface of manifest.surfaces) {
     const absPath = path.join(rootDir, surface.file);
     if (!existsSync(absPath)) {
-      if (surface.required) errors.push(`${surface.file}: required release version surface is missing.`);
+      if (surface.required)
+        errors.push(`${surface.file}: required release version surface is missing.`);
       values.push({ ...surface, exists: false, value: null });
       continue;
     }
@@ -125,7 +128,11 @@ export function readReleaseVersionSurfaces(rootDir) {
       if (surface.kind === "json") {
         const keys = assertStringArray(surface.path, `${surface.id}.path`);
         const value = getByPath(readJson(absPath), keys);
-        values.push({ ...surface, exists: true, value: typeof value === "string" ? value.trim() : null });
+        values.push({
+          ...surface,
+          exists: true,
+          value: typeof value === "string" ? value.trim() : null,
+        });
         continue;
       }
       if (surface.kind === "json_array_match") {
@@ -133,7 +140,11 @@ export function readReleaseVersionSurfaces(rootDir) {
         const root = readJson(absPath);
         const item = findArrayMatch(root, surface);
         const value = item ? getByPath(item, keys) : undefined;
-        values.push({ ...surface, exists: true, value: typeof value === "string" ? value.trim() : null });
+        values.push({
+          ...surface,
+          exists: true,
+          value: typeof value === "string" ? value.trim() : null,
+        });
         continue;
       }
       if (surface.kind === "typescript_string_const") {
@@ -143,9 +154,7 @@ export function readReleaseVersionSurfaces(rootDir) {
       }
       errors.push(`${surface.id}: unsupported release version surface kind ${surface.kind}.`);
     } catch (error) {
-      errors.push(
-        `${surface.file}: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      errors.push(`${surface.file}: ${error instanceof Error ? error.message : String(error)}`);
       values.push({ ...surface, exists: true, value: null });
     }
   }
@@ -165,7 +174,8 @@ export function applyReleaseVersionSurfaces(rootDir, nextVersion) {
   for (const surface of manifest.surfaces) {
     const absPath = path.join(rootDir, surface.file);
     if (!existsSync(absPath)) {
-      if (surface.required) throw new Error(`${surface.file}: required release version surface is missing.`);
+      if (surface.required)
+        throw new Error(`${surface.file}: required release version surface is missing.`);
       continue;
     }
 

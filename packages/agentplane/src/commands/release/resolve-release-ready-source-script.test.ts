@@ -256,7 +256,11 @@ describe("resolve-release-ready-source script", () => {
             return { ok: false as const, stdout };
           },
         );
-        const payload = JSON.parse(result.stdout) as { ok: boolean; state: string; nextAction: string };
+        const payload = JSON.parse(result.stdout) as {
+          ok: boolean;
+          state: string;
+          nextAction: string;
+        };
         expect(result.ok).toBe(false);
         expect(payload.ok).toBe(false);
         expect(payload.state).toBe("workflow_wait_timeout");

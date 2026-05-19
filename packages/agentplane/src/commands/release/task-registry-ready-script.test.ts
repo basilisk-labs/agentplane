@@ -72,6 +72,8 @@ describe("check-task-registry-ready script", () => {
 
     expect(result.ok).toBe(false);
     expect(result.stderr).toContain("DOING task blocks release readiness");
-    expect(result.stderr).toContain("finish, close, or explicitly move it out of the release scope");
+    expect(result.stderr).toContain(
+      "finish, close, or explicitly move it out of the release scope",
+    );
   });
 });
