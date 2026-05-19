@@ -13,7 +13,7 @@ Created: 2026-05-19T14:23:12.633Z
 ## Verification
 
 - State: ok
-- Note: Addressed PR review threads: evidence bundle now respects configured workflow_dir and preserves existing created_at to keep unchanged bundle reruns deterministic. Local checks passed: focused evidence/ACR tests, agentplane typecheck, targeted eslint, format:check, framework:dev:bootstrap.
+- Note: EVALUATOR quality gate passed for current implementation commit 08db6b47. Reviewed fixes for configured workflow_dir evidence paths and deterministic bundle reruns; local checks passed: focused evidence/ACR tests, typecheck, format:check, targeted eslint, framework bootstrap; hosted PR checks are green on PR #3937.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

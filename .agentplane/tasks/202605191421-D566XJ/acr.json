@@ -2,7 +2,7 @@
   "acr_version": "0.1.0",
   "record_type": "agent_change_record",
   "record_id": "acr_202605191421-D566XJ",
-  "created_at": "2026-05-19T15:46:14.915Z",
+  "created_at": "2026-05-19T15:55:09.267Z",
   "producer": {
     "name": "agentplane",
     "version": "0.6.3"
@@ -44,7 +44,7 @@
     "status": "approved",
     "artifact": {
       "path": ".agentplane/tasks/202605191421-D566XJ/README.md",
-      "sha256": "sha256:fa813e50373df208cdc22c44a5bb6222ae98e504142868df1c8dfe7bbac8461a"
+      "sha256": "sha256:bb93feee5226ad0f762c192d6b08c2f35dec913dbfdbdf91013fb0bc8364a60c"
     },
     "approved_at": "2026-05-19T14:22:15.293Z",
     "approved_by": {
@@ -286,17 +286,17 @@
     {
       "type": "task",
       "path": ".agentplane/tasks/202605191421-D566XJ/README.md",
-      "sha256": "sha256:fa813e50373df208cdc22c44a5bb6222ae98e504142868df1c8dfe7bbac8461a"
+      "sha256": "sha256:bb93feee5226ad0f762c192d6b08c2f35dec913dbfdbdf91013fb0bc8364a60c"
     },
     {
       "type": "plan",
       "path": ".agentplane/tasks/202605191421-D566XJ/README.md",
-      "sha256": "sha256:fa813e50373df208cdc22c44a5bb6222ae98e504142868df1c8dfe7bbac8461a"
+      "sha256": "sha256:bb93feee5226ad0f762c192d6b08c2f35dec913dbfdbdf91013fb0bc8364a60c"
     },
     {
       "type": "verification_log",
       "path": ".agentplane/tasks/202605191421-D566XJ/README.md",
-      "sha256": "sha256:fa813e50373df208cdc22c44a5bb6222ae98e504142868df1c8dfe7bbac8461a"
+      "sha256": "sha256:bb93feee5226ad0f762c192d6b08c2f35dec913dbfdbdf91013fb0bc8364a60c"
     },
     {
       "type": "other",
@@ -315,7 +315,7 @@
   },
   "integrity": {
     "digest_algorithm": "sha256",
-    "record_digest": "sha256:c1fc0816df423cb1976f7b3b46ef04b7411b1aecdd091d5eff91472291e96158",
+    "record_digest": "sha256:50db8e531d154181e8440f8d4445eb4089e29576c8bb1cdb043f45592810c7fa",
     "canonicalization": "rfc8785-jcs",
     "signatures": []
   },

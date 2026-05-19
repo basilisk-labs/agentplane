@@ -4,7 +4,7 @@ title: "Add deterministic evidence bundle commands"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -26,16 +26,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T15:45:54.344Z"
-  updated_by: "CODER"
-  note: "Addressed PR review threads: evidence bundle now respects configured workflow_dir and preserves existing created_at to keep unchanged bundle reruns deterministic. Local checks passed: focused evidence/ACR tests, agentplane typecheck, targeted eslint, format:check, framework:dev:bootstrap."
+  updated_at: "2026-05-19T15:54:39.502Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed for current implementation commit 08db6b47. Reviewed fixes for configured workflow_dir evidence paths and deterministic bundle reruns; local checks passed: focused evidence/ACR tests, typecheck, format:check, targeted eslint, framework bootstrap; hosted PR checks are green on PR #3937."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T14:54:23.894Z"
+  updated_at: "2026-05-19T15:54:39.502Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for deterministic evidence bundle implementation. Reviewed route evidence, focused tests, typecheck, lint, docs checks, ACR validation, strict evidence verification, and GitHub PR linkage. Hosted checks are still tracked separately on PR #3937."
-  evaluated_sha: "96c50097d9834eed7a02f0bc8cf84d1754802c02"
+  note: "EVALUATOR quality gate passed for current implementation commit 08db6b47. Reviewed fixes for configured workflow_dir evidence paths and deterministic bundle reruns; local checks passed: focused evidence/ACR tests, typecheck, format:check, targeted eslint, framework bootstrap; hosted PR checks are green on PR #3937."
+  evaluated_sha: "b4de91888f2a4db53aa0e00cd20972170882085d"
   blueprint_digest: "343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4"
   evidence_refs:
     - ".agentplane/tasks/202605191421-D566XJ/README.md"
@@ -78,8 +78,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Addressed PR review threads: evidence bundle now respects configured workflow_dir and preserves existing created_at to keep unchanged bundle reruns deterministic. Local checks passed: focused evidence/ACR tests, agentplane typecheck, targeted eslint, format:check, framework:dev:bootstrap."
+  -
+    type: "verify"
+    at: "2026-05-19T15:54:39.502Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed for current implementation commit 08db6b47. Reviewed fixes for configured workflow_dir evidence paths and deterministic bundle reruns; local checks passed: focused evidence/ACR tests, typecheck, format:check, targeted eslint, framework bootstrap; hosted PR checks are green on PR #3937."
 doc_version: 3
-doc_updated_at: "2026-05-19T15:45:54.484Z"
+doc_updated_at: "2026-05-19T15:54:39.561Z"
 doc_updated_by: "CODER"
 description: "Implement a deterministic evidence bundle and verification CLI surface, with ACR trust extension metadata for generated bundles. Scope excludes Sigstore signing, S3 Object Lock preservation, and capability proposal flows."
 sections:
@@ -166,6 +172,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:29:40.578Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191421-D566XJ-evidence-bundle/.agentplane/tasks/202605191421-D566XJ/blueprint/resolved-snapshot.json
+    - old_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+    - current_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191421-D566XJ
+
+    ### 2026-05-19T15:54:39.502Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed for current implementation commit 08db6b47. Reviewed fixes for configured workflow_dir evidence paths and deterministic bundle reruns; local checks passed: focused evidence/ACR tests, typecheck, format:check, targeted eslint, framework bootstrap; hosted PR checks are green on PR #3937.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:45:54.484Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -277,6 +302,25 @@ Note: Addressed PR review threads: evidence bundle now respects configured workf
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:29:40.578Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191421-D566XJ-evidence-bundle/.agentplane/tasks/202605191421-D566XJ/blueprint/resolved-snapshot.json
+- old_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+- current_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191421-D566XJ
+
+### 2026-05-19T15:54:39.502Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed for current implementation commit 08db6b47. Reviewed fixes for configured workflow_dir evidence paths and deterministic bundle reruns; local checks passed: focused evidence/ACR tests, typecheck, format:check, targeted eslint, framework bootstrap; hosted PR checks are green on PR #3937.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:45:54.484Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 
