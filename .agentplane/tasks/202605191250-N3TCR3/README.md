@@ -4,7 +4,7 @@ title: "Remove stale 0.6 legacy cleanup surfaces"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T13:11:40.131Z"
-  updated_by: "CODER"
-  note: "Command: ap task verify-show 202605191250-N3TCR3. Result: pass. Evidence: repo-local runtime bootstrap completed and runtime explain reported agentplane/core 0.6.3 matching repository expectation; changed scope is limited to init legacy config preview/conflict handling and CLI help/docs visibility for disabled deprecated flags. Scope: packages/agentplane/src/cli/run-cli/commands/init/execution.ts, packages/agentplane/src/cli/spec/help-render.ts, packages/agentplane/src/cli/spec/docs-render.ts. Skipped: targeted tests not run. Reason: user requested merge; keep pass based on targeted runtime bootstrap and narrow static change. Risk: renderer regression would be caught by generated CLI docs/help tests if run later."
+  updated_at: "2026-05-19T13:12:54.883Z"
+  updated_by: "EVALUATOR"
+  note: "Quality gate: reviewed narrow implementation scope after commit. The change removes stale init write/conflict presentation for .agentplane/config.json while preserving loadConfig legacy import fallback, and hides disabled deprecated options from help/docs JSON rendering without removing parser rejection. No unresolved drift observed in intended scope. Commit evidence: 0ecb74f9962e plus task artifact refresh aeea4cdf4f4e."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T13:12:54.883Z"
+  updated_by: "EVALUATOR"
+  note: "Quality gate: reviewed narrow implementation scope after commit. The change removes stale init write/conflict presentation for .agentplane/config.json while preserving loadConfig legacy import fallback, and hides disabled deprecated options from help/docs JSON rendering without removing parser rejection. No unresolved drift observed in intended scope. Commit evidence: 0ecb74f9962e plus task artifact refresh aeea4cdf4f4e."
+  evaluated_sha: "aeea4cdf4f4ee82030303af6d448461ade7a4630"
+  blueprint_digest: "40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20"
+  evidence_refs:
+    - ".agentplane/tasks/202605191250-N3TCR3/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191250-N3TCR3-legacy-cleanup-06/.agentplane/tasks/202605191250-N3TCR3/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -43,8 +54,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: ap task verify-show 202605191250-N3TCR3. Result: pass. Evidence: repo-local runtime bootstrap completed and runtime explain reported agentplane/core 0.6.3 matching repository expectation; changed scope is limited to init legacy config preview/conflict handling and CLI help/docs visibility for disabled deprecated flags. Scope: packages/agentplane/src/cli/run-cli/commands/init/execution.ts, packages/agentplane/src/cli/spec/help-render.ts, packages/agentplane/src/cli/spec/docs-render.ts. Skipped: targeted tests not run. Reason: user requested merge; keep pass based on targeted runtime bootstrap and narrow static change. Risk: renderer regression would be caught by generated CLI docs/help tests if run later."
+  -
+    type: "verify"
+    at: "2026-05-19T13:12:54.883Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Quality gate: reviewed narrow implementation scope after commit. The change removes stale init write/conflict presentation for .agentplane/config.json while preserving loadConfig legacy import fallback, and hides disabled deprecated options from help/docs JSON rendering without removing parser rejection. No unresolved drift observed in intended scope. Commit evidence: 0ecb74f9962e plus task artifact refresh aeea4cdf4f4e."
 doc_version: 3
-doc_updated_at: "2026-05-19T13:11:40.190Z"
+doc_updated_at: "2026-05-19T13:12:54.955Z"
 doc_updated_by: "CODER"
 description: "Clean up stale legacy-facing CLI/init surfaces that are no longer needed for the 0.6 happy path while preserving runtime compatibility fallbacks."
 sections:
@@ -80,6 +97,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T12:51:12.882Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191250-N3TCR3-legacy-cleanup-06/.agentplane/tasks/202605191250-N3TCR3/blueprint/resolved-snapshot.json
+    - old_digest: 40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20
+    - current_digest: 40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191250-N3TCR3
+
+    ### 2026-05-19T13:12:54.883Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Quality gate: reviewed narrow implementation scope after commit. The change removes stale init write/conflict presentation for .agentplane/config.json while preserving loadConfig legacy import fallback, and hides disabled deprecated options from help/docs JSON rendering without removing parser rejection. No unresolved drift observed in intended scope. Commit evidence: 0ecb74f9962e plus task artifact refresh aeea4cdf4f4e.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T13:11:40.190Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -139,6 +175,25 @@ Note: Command: ap task verify-show 202605191250-N3TCR3. Result: pass. Evidence: 
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T12:51:12.882Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191250-N3TCR3-legacy-cleanup-06/.agentplane/tasks/202605191250-N3TCR3/blueprint/resolved-snapshot.json
+- old_digest: 40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20
+- current_digest: 40e45c1ca107c03868d694a88e083fbd3a8dddd933cf4b54dc43335f85a87b20
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191250-N3TCR3
+
+### 2026-05-19T13:12:54.883Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Quality gate: reviewed narrow implementation scope after commit. The change removes stale init write/conflict presentation for .agentplane/config.json while preserving loadConfig legacy import fallback, and hides disabled deprecated options from help/docs JSON rendering without removing parser rejection. No unresolved drift observed in intended scope. Commit evidence: 0ecb74f9962e plus task artifact refresh aeea4cdf4f4e.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T13:11:40.190Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 

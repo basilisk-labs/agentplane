@@ -13,7 +13,7 @@ Created: 2026-05-19T12:51:12.969Z
 ## Verification
 
 - State: ok
-- Note: Command: ap task verify-show 202605191250-N3TCR3. Result: pass. Evidence: repo-local runtime bootstrap completed and runtime explain reported agentplane/core 0.6.3 matching repository expectation; changed scope is limited to init legacy config preview/conflict handling and CLI help/docs visibility for disabled deprecated flags. Scope: packages/agentplane/src/cli/run-cli/commands/init/execution.ts, packages/agentplane/src/cli/spec/help-render.ts, packages/agentplane/src/cli/spec/docs-render.ts. Skipped: targeted tests not run. Reason: user requested merge; keep pass based on targeted runtime bootstrap and narrow static change. Risk: renderer regression would be caught by generated CLI docs/help tests if run later.
+- Note: Quality gate: reviewed narrow implementation scope after commit. The change removes stale init write/conflict presentation for .agentplane/config.json while preserving loadConfig legacy import fallback, and hides disabled deprecated options from help/docs JSON rendering without removing parser rejection. No unresolved drift observed in intended scope. Commit evidence: 0ecb74f9962e plus task artifact refresh aeea4cdf4f4e.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
