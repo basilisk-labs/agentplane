@@ -24,17 +24,18 @@ Created: 2026-05-19T16:19:53.288Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T16:23:34.595Z
+- Updated: 2026-05-19T16:50:20.903Z
 - Branch: task/202605191618-YJFGND/hosted-close-evidence
-- Head: 3842d635d8a2
+- Head: f0db737713b9
 
 ```text
  .../202605191421-D566XJ/evidence/manifest.json     |  10 +-
- .agentplane/tasks/202605191618-YJFGND/acr.json     | 241 +++++++++
+ .agentplane/tasks/202605191618-YJFGND/acr.json     | 322 ++++++++++++
  .../blueprint/resolved-snapshot.json               | 571 +++++++++++++++++++++
  .../202605191618-YJFGND/evidence/manifest.json     |  69 +++
- .../src/commands/task/hosted-close.command.ts      |  22 +
- 5 files changed, 908 insertions(+), 5 deletions(-)
+ .../src/commands/evidence/evidence.command.ts      |   2 +
+ .../src/commands/task/hosted-close.command.ts      |  24 +
+ 6 files changed, 993 insertions(+), 5 deletions(-)
 ```
 
 </details>
