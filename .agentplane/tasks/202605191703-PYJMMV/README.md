@@ -1,10 +1,11 @@
 ---
 id: "202605191703-PYJMMV"
 title: "Make maximum assimilation source-shaped and Obsidian-compatible"
-status: "DOING"
+result_summary: "Merged via PR #3948."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -36,11 +37,16 @@ quality_review:
     - ".agentplane/tasks/202605191703-PYJMMV/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191703-PYJMMV-max-assimilation-obsidian/.agentplane/tasks/202605191703-PYJMMV/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "1f3e5cdb91a71a6ab8459d037fca576704c4b510"
+  message: "Merge pull request #3948 from basilisk-labs/task/202605191703-PYJMMV/max-assimilation-obsidian"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing maximum-assimilation context behavior in the dedicated branch_pr worktree, covering scaffold mode split, source-shaped Obsidian-compatible prompt contract, EVALUATOR quality checklist, docs, and focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3948 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -79,9 +85,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Fresh integration quality review passed for current PR head 5ee85ec2a after merging origin/main. Evidence: hosted PR checks all green; local merge-state checks passed; maximum-assimilation source-shaped wiki, Obsidian wikilink, granularity, provenance, coverage, raw-deletion resilience, and leakage guardrails remain covered by implementation and tests."
+  -
+    type: "status"
+    at: "2026-05-19T18:31:37.670Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3948 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T18:24:06.638Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T18:31:37.679Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update maximum-assimilation context mode so first ingest does not create the fixed starter wiki scaffold, generated CURATOR prompts require source-shaped wiki topology and Obsidian-compatible wikilinks, and EVALUATOR checks quality for structure, granularity, cross-links, coverage, and raw-deletion resilience."
 sections:
   Summary: |-
