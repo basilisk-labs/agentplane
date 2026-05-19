@@ -4,6 +4,8 @@ import {
   throwGroupCommandUsage,
   type GroupCommandParsed,
 } from "../../cli/group-command.js";
+import { infoMessage } from "../../cli/output.js";
+import * as prompts from "../../cli/prompts.js";
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import type { ContextInitParsed } from "./context.spec.js";
 import { cmdContextIngest, type ContextIngestParsed } from "./ingest.js";
@@ -222,11 +224,50 @@ export async function runContextLearnTasks(
 }
 
 export async function runContextInit(_ctx: CommandCtx, p: ContextInitParsed): Promise<number> {
+  const parsed = await resolveContextInitParsed(_ctx, p);
   return await cmdContextInit({
     cwd: _ctx.cwd,
     rootOverride: _ctx.rootOverride,
-    parsed: p,
+    parsed,
   });
+}
+
+const INTERACTIVE_CONTEXT_INIT_PROFILES: ContextInitParsed["profile"][] = [
+  "minimal",
+  "adaptive",
+  "maximum-assimilation",
+];
+
+async function resolveContextInitParsed(
+  ctx: CommandCtx,
+  parsed: ContextInitParsed,
+): Promise<ContextInitParsed> {
+  if (parsed.profileProvided === true || ctx.outputMode === "json" || !isInteractiveTerminal()) {
+    return parsed;
+  }
+
+  process.stdout.write(
+    infoMessage(
+      [
+        "Context init mode:",
+        "minimal = smallest workspace scaffold",
+        "adaptive = default llm-wiki workspace for normal project context",
+        "maximum-assimilation = stricter mode for preserving significant non-private source meaning",
+      ].join("\n"),
+    ) + "\n",
+  );
+
+  const profile = (await prompts.selectPrompt(
+    "Select context mode",
+    INTERACTIVE_CONTEXT_INIT_PROFILES,
+    parsed.profile,
+  )) as ContextInitParsed["profile"];
+
+  return { ...parsed, profile };
+}
+
+function isInteractiveTerminal(): boolean {
+  return process.stdin.isTTY === true && process.stdout.isTTY === true;
 }
 
 export async function runContextReindex(
