@@ -57,9 +57,14 @@
 }
 
 .meta,
+.artifact,
 .card code {
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.76rem;
+}
+
+.artifact {
+  color: rgb(var(--verified));
 }
 
 .card code {

@@ -5,13 +5,16 @@ description: "Install Agentplane, initialize a local workflow, run it, inspect t
 
 # Quickstart
 
-This quickstart runs locally and creates inspectable workflow artifacts. It shows the full loop:
-install, initialize, run, trace, and export.
+This quickstart runs locally and creates inspectable workflow artifacts.
 
-## What will you do?
+## In 90 seconds you will
 
-You will install the `agentplane` CLI, initialize a project, run a local workflow, inspect the first
-trace, export artifacts, and see what changed in your repository.
+1. install Agentplane;
+2. initialize a repository;
+3. run or inspect the starter workflow;
+4. open your first trace;
+5. see the files Agentplane writes;
+6. know what to attach to a PR.
 
 ## Requirements
 
@@ -38,9 +41,10 @@ agentplane init
 This creates the repo-local policy and workflow surface that agents can inspect before mutating
 files.
 
-## Run a local workflow
+## Run or inspect the local workflow
 
 ```bash
+agentplane quickstart
 agentplane run ./agentplane.yaml
 ```
 
@@ -101,7 +105,9 @@ before removing it.
 
 ## Next steps
 
-- Read [what files Agentplane writes](what-agentplane-writes).
+- Read [what files Agentplane writes](files-written).
 - Inspect [traces for AI agent runs](../concepts/traces).
 - Try the [examples](../../examples).
 - Add a [TDD recipe](../recipes/tdd) when you need a tighter verification loop.
+- If this gave you a clearer review trail for agent work, open the
+  [GitHub repository](https://github.com/basilisk-labs/agentplane).

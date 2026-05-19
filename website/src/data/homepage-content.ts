@@ -1,45 +1,81 @@
 import { site } from "./site";
 
 export const githubUrl = site.githubUrl;
-export const docsUrl = site.docsUrl;
-export const quickstartUrl = site.quickstartUrl;
-export const examplesUrl = site.examplesUrl;
-export const acrUrl = "/docs/reference/acr";
-export const contextUrl = "/docs/user/local-context";
-export const tracesUrl = "/docs/concepts/traces";
-export const harnessUrl = "/docs/concepts/harness-engineering";
 export const installCommand = "npm i -g agentplane";
+
+export const siteRoutes = {
+  docs: "/docs/",
+  quickstart: "/docs/start/quickstart/",
+  overview: "/docs/user/overview/",
+  filesWritten: "/docs/start/files-written/",
+  acr: "/docs/reference/acr/",
+  compare: "/docs/compare/",
+  examples: "/examples/",
+  context: "/docs/concepts/context-engineering/",
+  traces: "/docs/concepts/traces/",
+  harness: "/docs/concepts/harness-engineering/",
+} as const;
+
+export const githubProofFallback = {
+  stars: 51,
+  forks: 6,
+  releases: 62,
+  latestRelease: "v0.6.2",
+  latestReleaseDate: "2026-05-18",
+} as const;
+
+export const docsUrl = siteRoutes.docs;
+export const quickstartUrl = siteRoutes.quickstart;
+export const examplesUrl = siteRoutes.examples;
+export const acrUrl = siteRoutes.acr;
+export const contextUrl = siteRoutes.context;
+export const tracesUrl = siteRoutes.traces;
+export const harnessUrl = siteRoutes.harness;
 
 export const homepageContent = {
   seo: {
-    title: "Agentplane | Observable and reproducible AI-agent workflows",
+    title: "Agentplane | Make AI-authored code reviewable in Git",
     description:
-      "Agentplane is a CLI-first operational workflow and observability layer for AI agents: local runs, traces, context, recipes, artifacts, and Git-native evidence.",
+      "Agentplane wraps coding agents with task intent, approved plans, verification evidence, commits, traces, and Agent Change Records inside your repository.",
   },
   hero: {
-    eyebrow: "Open-source CLI · Local-first workflows",
-    title: "Make AI-agent work observable and reproducible.",
+    eyebrow: "Local-first evidence layer for coding agents",
+    title: "Make AI-authored code reviewable in Git.",
     subtitle:
-      "Agentplane is a CLI-first operational workflow layer for AI agents. Run agents locally, record traces, manage context, apply recipes, and keep every run inspectable from the terminal to Git.",
+      "Agentplane wraps Claude Code, Codex, Cursor, Aider, and other coding agents with task intent, approved plans, verification evidence, commits, traces, and Agent Change Records inside your repository.",
     trustLine: "Local-first. CLI-first. OpenTelemetry-friendly. MIT licensed.",
     commands: [
       installCommand,
       "agentplane init",
-      "agentplane run ./agentplane.yaml",
+      "agentplane quickstart",
       "agentplane trace open",
     ],
     output: [
-      "initialized .agentplane/",
-      "loaded workflow",
-      "started local agent run",
-      "recorded trace spans",
-      "exported run artifacts",
+      "wrote policy gateway",
+      "approved task plan",
+      "recorded verification",
+      "generated ACR",
+      "ready for review",
     ],
   },
+  proof: [
+    `${githubProofFallback.stars} stars`,
+    `${githubProofFallback.releases} releases`,
+    githubProofFallback.latestRelease,
+    "MIT",
+    "TypeScript",
+    "local-first CLI",
+  ],
+  problem: {
+    title: "A diff is not the whole story.",
+    text: "A diff shows what changed. It does not show why the agent changed it, what plan was approved, what checks ran, or whether the result is ready for review.",
+    evidence:
+      "Agentplane turns AI-authored work into repo-local evidence: task intent, plan, verification, traces, commits, and Agent Change Records.",
+  },
   whatIs: {
-    title: "What is Agentplane?",
-    text: "Agentplane is not another agent framework. It is the operational layer around AI agents: workflows, orchestration, traces, local context, recipes, verification, and run artifacts.",
-    use: "Use Agentplane when you want agent work to be debuggable, reproducible, observable, and safe to operate beyond a single chat session.",
+    title: "Agentplane is not another agent framework.",
+    text: "Agent frameworks define agent logic. Model providers run inference. Prompt tools shape instructions.",
+    use: "Agentplane coordinates the operational layer around coding-agent work: workflows, traces, context, recipes, verification, artifacts, and Git evidence.",
     rows: [
       ["Agent frameworks", "Define agent logic and application behavior."],
       ["Model providers", "Run model inference."],
@@ -51,38 +87,26 @@ export const homepageContent = {
     ],
   },
   records: {
-    title: "What Agentplane records",
-    text: "Agentplane keeps operational state inspectable. Workflows, runs, traces, recipes, and exports live as files you can inspect, version, and share.",
+    title: "Agentplane writes evidence your repo can keep.",
+    text: "No account. No hosted dependency. Start in a repository and inspect the artifacts before deciding what to automate.",
     tree: [
-      ".agentplane/",
-      "  workflows/",
-      "    default.yaml",
-      "  runs/",
-      "    run-2026-05-18/",
-      "  traces/",
-      "    run-2026-05-18.json",
-      "  recipes/",
-      "    tdd.yaml",
-      "  exports/",
-      "    run-2026-05-18.otel.json",
+      "AGENTS.md",
+      ".agentplane/WORKFLOW.md",
+      ".agentplane/tasks/<task-id>/README.md",
+      ".agentplane/tasks/<task-id>/acr.json",
+      ".agentplane/traces/<run-id>.json",
     ],
   },
   surfaces: [
-    ["Workflows", "Define reproducible steps for agent runs."],
+    ["AGENTS.md", "Repository policy gateway for coding agents."],
+    [".agentplane/WORKFLOW.md", "Workflow and verification contract."],
     [
-      "Traces",
-      "Record what happened, what context was used, which tools were called, and how outputs were produced.",
+      "Task README",
+      "Task intent, lifecycle, plan, status, and handoff evidence.",
     ],
-    [
-      "Recipes",
-      "Apply reusable workflow overlays for TDD, security review, documentation, and team standards.",
-    ],
-    [
-      "Local Context",
-      "Keep operational context close to the workflow, not buried in chat history.",
-    ],
-    ["Agent Change Records", "Capture auditable evidence for AI-assisted engineering work."],
-    ["Exports", "Share traces and run artifacts with other tools."],
+    ["acr.json", "Machine-readable Agent Change Record for review and tooling."],
+    ["Trace JSON", "Inspectable run timeline and exportable trace data."],
+    ["Recipes", "Reusable workflow overlays for TDD, security review, and docs work."],
   ],
   harness: {
     title: "Why harnesses matter",
@@ -104,12 +128,27 @@ export const homepageContent = {
     ["trace.export", "JSON or OpenTelemetry-compatible artifact"],
   ],
   examples: [
-    ["Debug an agent run with traces", "agentplane trace open"],
-    ["Run a TDD workflow recipe", "agentplane recipes install tdd"],
-    ["Create an Agent Change Record", "agentplane acr generate <task-id> --write"],
+    ["Debug an agent run with traces", "trace JSON"],
+    ["Create an Agent Change Record", "acr.json"],
+    ["Run a TDD workflow recipe", "recipe YAML"],
   ],
+  worksWith: {
+    title: "Use your existing coding agent.",
+    text: "Agentplane does not replace Claude Code, Codex, Cursor, Aider, or your Git workflow. It gives their work an evidence layer inside the repository.",
+    tools: ["Claude Code", "Codex", "Cursor", "Aider", "GitHub Actions", "OpenTelemetry"],
+  },
+  whoShouldUse: {
+    title: "Who should open the repo?",
+    items: [
+      "using Claude Code, Codex, Cursor, or Aider in real repositories",
+      "reviewing AI-authored pull requests and missing intent, plan, and check evidence",
+      "maintaining an OSS project where agent changes need audit trails",
+      "building platform workflows around reproducible AI-agent work",
+      "tired of agent demos that disappear after the chat session",
+    ],
+  },
   closing: {
-    title: "Run the local loop first.",
-    text: "Install the CLI, initialize a project, run a workflow, inspect the trace, then decide which recipes or context packs are worth adding.",
+    title: "Help make AI-authored code reviewable in Git.",
+    text: "Open the repository, inspect the CLI, then run the local loop in a repo you control.",
   },
 } as const;

@@ -1,17 +1,15 @@
 import Link from "@docusaurus/Link";
 import Head from "@docusaurus/Head";
 import Layout from "@theme/Layout";
-import { type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import CommandBlock from "../components/CommandBlock";
-import GitHubStarsButton from "../components/GitHubStarsButton";
 import {
   acrUrl,
-  contextUrl,
-  docsUrl,
   examplesUrl,
   githubUrl,
   harnessUrl,
   homepageContent,
+  installCommand,
   quickstartUrl,
   tracesUrl,
 } from "../data/homepage-content";
@@ -84,6 +82,15 @@ function HomeJsonLd(): ReactNode {
 
 function Hero(): ReactNode {
   const { hero } = homepageContent;
+  const [copied, setCopied] = useState(false);
+
+  async function copyInstall(): Promise<void> {
+    await navigator.clipboard.writeText(installCommand);
+    setCopied(true);
+    trackHomeEvent("copy_install_click", { location: "hero" });
+    window.setTimeout(() => setCopied(false), 1600);
+  }
+
   return (
     <section className={styles.hero}>
       <div className={styles.heroCopy}>
@@ -92,38 +99,83 @@ function Hero(): ReactNode {
         <p className={styles.lede}>{hero.subtitle}</p>
         <p className={styles.trust}>{hero.trustLine}</p>
         <div className={styles.ctaGroup}>
-          <Link
-            className={styles.buttonPrimary}
-            to={quickstartUrl}
-            onClick={() => trackHomeEvent("quickstart_cta_click", { location: "hero" })}
-          >
-            Run quickstart
-          </Link>
           <a
-            className={styles.buttonSecondary}
+            className={styles.buttonPrimary}
             href={githubUrl}
             onClick={() => trackHomeEvent("github_click", { location: "hero" })}
           >
-            View GitHub
+            Open GitHub
           </a>
-          <Link className={styles.buttonTertiary} to={docsUrl}>
-            Read docs
+          <button
+            className={styles.buttonSecondary}
+            type="button"
+            aria-live="polite"
+            onClick={() => void copyInstall()}
+          >
+            {copied ? "Copied" : installCommand}
+          </button>
+          <Link
+            className={styles.buttonTertiary}
+            to={quickstartUrl}
+            onClick={() => trackHomeEvent("quickstart_click", { location: "hero" })}
+          >
+            Run the 90-second quickstart
           </Link>
         </div>
       </div>
-      <div className={styles.terminalPanel} aria-label="Agentplane terminal quickstart">
+      <div className={styles.artifactPanel} aria-label="Agentplane Git evidence artifacts">
         <div className={styles.terminalTop}>
-          <span>local workflow</span>
-          <span>trace ready</span>
+          <span>repo evidence</span>
+          <span>ready_for_review</span>
+        </div>
+        <div className={styles.artifactGrid}>
+          {[
+            ["task.md", ["intent", "scope", "agent"]],
+            ["approved_plan.md", ["plan", "constraints", "verification"]],
+            ["acr.json", ["checks", "files_changed", "status: ready_for_review"]],
+          ].map(([title, rows]) => (
+            <article key={title as string}>
+              <strong>{title}</strong>
+              {(rows as string[]).map((row) => (
+                <code key={row}>{row}</code>
+              ))}
+            </article>
+          ))}
+        </div>
+        <div className={styles.traceLine}>
+          <span>task</span>
+          <span>plan</span>
+          <span>approve</span>
+          <span>implement</span>
+          <span>verify</span>
+          <span>ACR</span>
         </div>
         <pre>
           <code>{hero.commands.map((line) => `$ ${line}`).join("\n")}</code>
         </pre>
-        <div className={styles.output}>
-          {hero.output.map((line) => (
-            <span key={line}>ok {line}</span>
-          ))}
-        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProofStrip(): ReactNode {
+  return (
+    <section className={styles.proofStrip} aria-label="Agentplane open-source proof">
+      {homepageContent.proof.map((item) => (
+        <span key={item}>{item}</span>
+      ))}
+    </section>
+  );
+}
+
+function Problem(): ReactNode {
+  const { problem } = homepageContent;
+  return (
+    <section className={styles.section}>
+      <div className={styles.sectionIntro}>
+        <h2>{problem.title}</h2>
+        <p>{problem.text}</p>
+        <p>{problem.evidence}</p>
       </div>
     </section>
   );
@@ -155,15 +207,15 @@ function Records(): ReactNode {
   return (
     <section className={styles.section}>
       <div className={styles.twoColumn}>
-        <div>
-          <h2>{records.title}</h2>
-          <p>{records.text}</p>
-          <CommandBlock
-            label="Run locally"
+      <div>
+        <h2>{records.title}</h2>
+        <p>{records.text}</p>
+        <CommandBlock
+            label="Run the local loop first"
             command={[
               "npm i -g agentplane",
               "agentplane init",
-              "agentplane run ./agentplane.yaml",
+              "agentplane quickstart",
               "agentplane trace open",
             ].join("\n")}
             eventName="copy_run_command"
@@ -183,10 +235,10 @@ function Records(): ReactNode {
       </div>
       <Link
         className={styles.inlineCta}
-        to={contextUrl}
-        onClick={() => trackHomeEvent("view_context_guide")}
+        to={acrUrl}
+        onClick={() => trackHomeEvent("view_acr_guide")}
       >
-        Read the local context guide
+        Read the Agent Change Record guide
       </Link>
     </section>
   );
@@ -241,6 +293,23 @@ function HarnessAndTraces(): ReactNode {
   );
 }
 
+function WorksWith(): ReactNode {
+  const { worksWith } = homepageContent;
+  return (
+    <section className={styles.section}>
+      <div className={styles.sectionIntro}>
+        <h2>{worksWith.title}</h2>
+        <p>{worksWith.text}</p>
+      </div>
+      <div className={styles.badgeRow}>
+        {worksWith.tools.map((tool) => (
+          <span key={tool}>{tool}</span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function Examples(): ReactNode {
   return (
     <section className={styles.section}>
@@ -267,6 +336,22 @@ function Examples(): ReactNode {
   );
 }
 
+function WhoShouldUse(): ReactNode {
+  const { whoShouldUse } = homepageContent;
+  return (
+    <section className={styles.section}>
+      <div className={styles.sectionIntro}>
+        <h2>{whoShouldUse.title}</h2>
+      </div>
+      <ul className={styles.checkList}>
+        {whoShouldUse.items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export default function Home(): ReactNode {
   const { seo, closing } = homepageContent;
 
@@ -275,18 +360,24 @@ export default function Home(): ReactNode {
       <HomeJsonLd />
       <main className={styles.page}>
         <Hero />
-        <WhatIs />
+        <ProofStrip />
+        <Problem />
         <Records />
+        <WorksWith />
+        <WhatIs />
         <HarnessAndTraces />
         <Examples />
+        <WhoShouldUse />
         <section className={`${styles.section} ${styles.finalCta}`}>
           <h2>{closing.title}</h2>
           <p>{closing.text}</p>
           <div className={styles.ctaGroup}>
-            <Link className={styles.buttonPrimary} to={quickstartUrl}>
+            <a className={styles.buttonPrimary} href={githubUrl}>
+              Open GitHub
+            </a>
+            <Link className={styles.buttonSecondary} to={quickstartUrl}>
               Run quickstart
             </Link>
-            <GitHubStarsButton />
             <Link className={styles.buttonSecondary} to={acrUrl}>
               See an example ACR
             </Link>

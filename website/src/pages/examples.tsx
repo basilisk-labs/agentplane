@@ -9,6 +9,7 @@ const examples = [
     outcome: "Open a trace, inspect spans, and identify the failing workflow step.",
     time: "7 min",
     command: "agentplane trace open <run-id>",
+    artifact: "trace JSON",
     to: "/docs/examples/debug-agent-run-with-traces",
   },
   {
@@ -16,6 +17,7 @@ const examples = [
     outcome: "Structure an agent run around failing tests, implementation, and verification.",
     time: "10 min",
     command: "agentplane recipes install tdd",
+    artifact: "recipe YAML",
     to: "/docs/recipes/tdd",
   },
   {
@@ -23,6 +25,7 @@ const examples = [
     outcome: "Export run evidence as JSON for another tool or review artifact.",
     time: "5 min",
     command: "agentplane trace export <run-id> --format otel-json",
+    artifact: "export file",
     to: "/docs/examples/export-traces",
   },
   {
@@ -30,6 +33,7 @@ const examples = [
     outcome: "Generate a machine-readable evidence record for AI-assisted engineering work.",
     time: "5 min",
     command: "agentplane acr generate <task-id> --write",
+    artifact: "acr.json",
     to: "/docs/reference/acr",
   },
   {
@@ -37,6 +41,7 @@ const examples = [
     outcome: "Keep repository rules inspectable instead of relying on fragile chat history.",
     time: "8 min",
     command: 'agentplane context search "repo conventions"',
+    artifact: "task README",
     to: "/docs/user/local-context",
   },
 ];
@@ -71,6 +76,7 @@ export default function ExamplesPage(): ReactNode {
               <span className={styles.meta}>{example.time}</span>
               <h2>{example.title}</h2>
               <p>{example.outcome}</p>
+              <span className={styles.artifact}>You get: {example.artifact}</span>
               <code>{example.command}</code>
             </Link>
           ))}

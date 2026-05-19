@@ -230,26 +230,46 @@ html.nav-scrolled .navbar.navbar--fixed-top {
   text-transform: none;
 }
 
-.navbar__item.navbar-github-cta {
+.navbar-github-button-host {
   align-items: center;
   background: transparent;
   border-color: transparent;
-  color: rgb(var(--fg));
-  min-width: 5.5rem;
-  padding: 0.34rem 0.42rem;
-  text-transform: none;
+  display: inline-flex;
+  min-height: 2.45rem;
+  min-width: 7.5rem;
+  padding: 0.28rem 0.42rem;
 }
 
-.navbar__item.navbar-github-cta:hover,
-.navbar__item.navbar-github-cta:focus-visible {
+.navbar-github-button-host:hover,
+.navbar-github-button-host:focus-within {
   background: transparent;
   border-color: transparent;
   box-shadow: none;
-  color: rgb(var(--fg));
 }
 
-.navbar-mobile-github-cta {
-  display: none;
+.navbar-github-button-host iframe {
+  display: block;
+}
+
+.navbar-github-button-fallback {
+  align-items: center;
+  background: rgb(var(--fg));
+  border: 1px solid rgb(var(--fg));
+  border-radius: 6px;
+  color: rgb(255 255 255);
+  display: inline-flex;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.72rem;
+  font-weight: 650;
+  min-height: 1.8rem;
+  padding: 0 0.62rem;
+  text-decoration: none;
+}
+
+.navbar-github-button-fallback:hover,
+.navbar-github-button-fallback:focus-visible {
+  color: rgb(255 255 255);
+  text-decoration: none;
 }
 
 html.nav-scrolled .navbar__inner {
@@ -309,46 +329,15 @@ html.nav-scrolled .navbar__inner {
     margin-left: 0;
   }
 
-  .navbar__items--right .navbar__item:not(.navbar-github-cta) {
+  .navbar__items--right .navbar__item:not(.navbar-github-button-host) {
     display: none;
   }
 
-  .navbar__item.navbar-github-cta {
+  .navbar-github-button-host {
     display: inline-flex;
-    font-size: 0.68rem;
     min-height: 2.25rem;
-    padding: 0.48rem 0.62rem;
-  }
-
-  .navbar-mobile-github-cta {
-    background: rgb(var(--accent));
-    border: 1px solid rgb(var(--accent));
-    color: rgb(255 255 255);
-    display: inline-flex;
-    flex: 0 0 auto;
-    font-family: var(--ifm-font-family-monospace);
-    font-size: 0.68rem;
-    font-weight: 700;
-    justify-content: center;
-    margin-left: auto;
-    min-height: 2.25rem;
-    padding: 0.48rem 0.62rem;
-    border-radius: 9999px;
-    text-decoration: none;
-    transition:
-      background-color 180ms ease,
-      box-shadow 180ms ease,
-      transform 180ms ease;
-  }
-
-  .navbar-mobile-github-cta:hover,
-  .navbar-mobile-github-cta:focus-visible {
-    background: rgb(var(--fg));
-    border-color: rgb(var(--fg));
-    box-shadow: 0 8px 18px rgb(17 17 17 / 0.08);
-    color: rgb(255 255 255);
-    text-decoration: none;
-    transform: translateY(-1px);
+    min-width: 6rem;
+    padding: 0.2rem 0;
   }
 }
 
@@ -373,7 +362,7 @@ html.nav-scrolled .navbar__inner {
 
 @media (max-width: 996px) {
   .navbar__items--right {
-    display: none !important;
+    display: flex !important;
   }
 
   .theme-layout-navbar-left > .navbar__item:not(.navbar__brand):not(.navbar__toggle),
