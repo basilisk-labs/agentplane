@@ -125,7 +125,8 @@ function cleanStringArray(values: readonly string[] | undefined): string[] | und
 
 function optionalTrimmed(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
-  return trimmed ? trimmed : undefined;
+  if (trimmed === "") return undefined;
+  return trimmed;
 }
 
 export async function appendTaskObservation(
