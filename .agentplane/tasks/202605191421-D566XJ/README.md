@@ -4,7 +4,7 @@ title: "Add deterministic evidence bundle commands"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T14:49:32.970Z"
-  updated_by: "CODER"
-  note: "Implemented deterministic evidence bundle and verify commands with ACR trust pointer and docs. Checks passed: focused evidence/ACR tests, agentplane typecheck, lint:core, docs:cli:check, docs:ia:check, evidence bundle, evidence verify --strict."
+  updated_at: "2026-05-19T14:54:23.894Z"
+  updated_by: "EVALUATOR"
+  note: "Quality gate passed for deterministic evidence bundle implementation. Reviewed route evidence, focused tests, typecheck, lint, docs checks, ACR validation, strict evidence verification, and GitHub PR linkage. Hosted checks are still tracked separately on PR #3937."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T14:54:23.894Z"
+  updated_by: "EVALUATOR"
+  note: "Quality gate passed for deterministic evidence bundle implementation. Reviewed route evidence, focused tests, typecheck, lint, docs checks, ACR validation, strict evidence verification, and GitHub PR linkage. Hosted checks are still tracked separately on PR #3937."
+  evaluated_sha: "96c50097d9834eed7a02f0bc8cf84d1754802c02"
+  blueprint_digest: "343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4"
+  evidence_refs:
+    - ".agentplane/tasks/202605191421-D566XJ/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191421-D566XJ-evidence-bundle/.agentplane/tasks/202605191421-D566XJ/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -49,8 +60,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented deterministic evidence bundle and verify commands with ACR trust pointer and docs. Checks passed: focused evidence/ACR tests, agentplane typecheck, lint:core, docs:cli:check, docs:ia:check, evidence bundle, evidence verify --strict."
+  -
+    type: "verify"
+    at: "2026-05-19T14:54:23.894Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Quality gate passed for deterministic evidence bundle implementation. Reviewed route evidence, focused tests, typecheck, lint, docs checks, ACR validation, strict evidence verification, and GitHub PR linkage. Hosted checks are still tracked separately on PR #3937."
 doc_version: 3
-doc_updated_at: "2026-05-19T14:49:33.056Z"
+doc_updated_at: "2026-05-19T14:54:23.947Z"
 doc_updated_by: "CODER"
 description: "Implement a deterministic evidence bundle and verification CLI surface, with ACR trust extension metadata for generated bundles. Scope excludes Sigstore signing, S3 Object Lock preservation, and capability proposal flows."
 sections:
@@ -82,6 +99,25 @@ sections:
     Details:
 
     Command: bun test packages/agentplane/src/commands/evidence/evidence.command.test.ts packages/agentplane/src/commands/acr/acr.command.test.ts -> pass, 13 tests. Command: bun run --filter=agentplane typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run docs:cli:check and bun run docs:ia:check -> pass. Command: agentplane evidence bundle 202605191421-D566XJ and agentplane evidence verify 202605191421-D566XJ --strict -> pass, manifest includes 8 files.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191421-D566XJ-evidence-bundle/.agentplane/tasks/202605191421-D566XJ/blueprint/resolved-snapshot.json
+    - old_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+    - current_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191421-D566XJ
+
+    ### 2026-05-19T14:54:23.894Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Quality gate passed for deterministic evidence bundle implementation. Reviewed route evidence, focused tests, typecheck, lint, docs checks, ACR validation, strict evidence verification, and GitHub PR linkage. Hosted checks are still tracked separately on PR #3937.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:49:33.056Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -136,6 +172,25 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:23:12.271Z, excerpt_
 Details:
 
 Command: bun test packages/agentplane/src/commands/evidence/evidence.command.test.ts packages/agentplane/src/commands/acr/acr.command.test.ts -> pass, 13 tests. Command: bun run --filter=agentplane typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run docs:cli:check and bun run docs:ia:check -> pass. Command: agentplane evidence bundle 202605191421-D566XJ and agentplane evidence verify 202605191421-D566XJ --strict -> pass, manifest includes 8 files.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191421-D566XJ-evidence-bundle/.agentplane/tasks/202605191421-D566XJ/blueprint/resolved-snapshot.json
+- old_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+- current_digest: 343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191421-D566XJ
+
+### 2026-05-19T14:54:23.894Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Quality gate passed for deterministic evidence bundle implementation. Reviewed route evidence, focused tests, typecheck, lint, docs checks, ACR validation, strict evidence verification, and GitHub PR linkage. Hosted checks are still tracked separately on PR #3937.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:49:33.056Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current

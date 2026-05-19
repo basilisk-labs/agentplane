@@ -13,7 +13,7 @@ Created: 2026-05-19T14:23:12.633Z
 ## Verification
 
 - State: ok
-- Note: Implemented deterministic evidence bundle and verify commands with ACR trust pointer and docs. Checks passed: focused evidence/ACR tests, agentplane typecheck, lint:core, docs:cli:check, docs:ia:check, evidence bundle, evidence verify --strict.
+- Note: Quality gate passed for deterministic evidence bundle implementation. Reviewed route evidence, focused tests, typecheck, lint, docs checks, ACR validation, strict evidence verification, and GitHub PR linkage. Hosted checks are still tracked separately on PR #3937.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

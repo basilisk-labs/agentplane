@@ -2,7 +2,7 @@
   "acr_version": "0.1.0",
   "record_type": "agent_change_record",
   "record_id": "acr_202605191421-D566XJ",
-  "created_at": "2026-05-19T14:51:37.546Z",
+  "created_at": "2026-05-19T14:54:34.480Z",
   "producer": {
     "name": "agentplane",
     "version": "0.6.3"
@@ -13,7 +13,7 @@
     "base_ref": "main",
     "base_commit": "81a3ed59446b0e0fbdf663711e789c53ec915369",
     "work_ref": "task/202605191421-D566XJ/evidence-bundle",
-    "work_commit": "a89b99bfe360becc2e5b22f3395a84d70db43257"
+    "work_commit": "96c50097d9834eed7a02f0bc8cf84d1754802c02"
   },
   "task": {
     "task_id": "202605191421-D566XJ",
@@ -44,7 +44,7 @@
     "status": "approved",
     "artifact": {
       "path": ".agentplane/tasks/202605191421-D566XJ/README.md",
-      "sha256": "sha256:535082acffa4ff21da7d6d8351a23ea61400d72329e49bb185b59f6a910e1bd0"
+      "sha256": "sha256:c2172e902b303ad763f569235b9c6b354f3d9c3f68b5338c58164ed4d703a493"
     },
     "approved_at": "2026-05-19T14:22:15.293Z",
     "approved_by": {
@@ -84,13 +84,20 @@
   "changes": {
     "summary": "Implement a deterministic evidence bundle and verification CLI surface, with ACR trust extension metadata for generated bundles. Scope excludes Sigstore signing, S3 Object Lock preservation, and capability proposal flows.",
     "diff_stats": {
-      "files_changed": 17,
-      "insertions": 1562,
+      "files_changed": 18,
+      "insertions": 2064,
       "deletions": 4
     },
     "files": [
       {
         "path": ".agentplane/tasks/202605191421-D566XJ/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191421-D566XJ/acr.json",
         "status": "added",
         "risk_categories": [
           "tooling"
@@ -279,17 +286,17 @@
     {
       "type": "task",
       "path": ".agentplane/tasks/202605191421-D566XJ/README.md",
-      "sha256": "sha256:535082acffa4ff21da7d6d8351a23ea61400d72329e49bb185b59f6a910e1bd0"
+      "sha256": "sha256:c2172e902b303ad763f569235b9c6b354f3d9c3f68b5338c58164ed4d703a493"
     },
     {
       "type": "plan",
       "path": ".agentplane/tasks/202605191421-D566XJ/README.md",
-      "sha256": "sha256:535082acffa4ff21da7d6d8351a23ea61400d72329e49bb185b59f6a910e1bd0"
+      "sha256": "sha256:c2172e902b303ad763f569235b9c6b354f3d9c3f68b5338c58164ed4d703a493"
     },
     {
       "type": "verification_log",
       "path": ".agentplane/tasks/202605191421-D566XJ/README.md",
-      "sha256": "sha256:535082acffa4ff21da7d6d8351a23ea61400d72329e49bb185b59f6a910e1bd0"
+      "sha256": "sha256:c2172e902b303ad763f569235b9c6b354f3d9c3f68b5338c58164ed4d703a493"
     },
     {
       "type": "other",
@@ -303,12 +310,12 @@
     "residual_risks": [],
     "rollback": {
       "available": true,
-      "notes": "Revert work_commit a89b99bfe360becc2e5b22f3395a84d70db43257 if downstream validation fails."
+      "notes": "Revert work_commit 96c50097d9834eed7a02f0bc8cf84d1754802c02 if downstream validation fails."
     }
   },
   "integrity": {
     "digest_algorithm": "sha256",
-    "record_digest": "sha256:5faa98944696bff12e72b490007ffa6481b718584b7dbb513700720a886bea0a",
+    "record_digest": "sha256:7cbe463af4864690547a893bca3a44035ffb4f8fa54616a320eb06a7efa7f9dd",
     "canonicalization": "rfc8785-jcs",
     "signatures": []
   },
