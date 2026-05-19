@@ -13,7 +13,7 @@ Created: 2026-05-19T18:26:31.579Z
 ## Verification
 
 - State: ok
-- Note: Verified routed GitHub CI changes locally: workflows:command-check, policy routing, workflow bucket route explanation, git diff --check, full ci:local:fast for .github/workflows/ci.yml, and aggregate/release-ready workflow structure inspection all passed.
+- Note: EVALUATOR pass: approved CI-routing scope is satisfied by commit a67500fdb; Verify Steps are backed by local command evidence; residual deployment risk is limited to updating GitHub branch protection to require Core CI / PR verification after this workflow lands.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,12 +24,16 @@ Created: 2026-05-19T18:26:31.579Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T18:26:31.579Z
+- Updated: 2026-05-19T18:34:58.519Z
 - Branch: task/202605191825-3PV3QF/github-verification-gates
-- Head: 41fbf7215229
+- Head: a67500fdbb90
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 594 +++++++++++++++++++++
+ .github/workflows/ci.yml                           | 322 ++++++++++-
+ .../checks/check-github-protection-contract.mjs    |   2 +-
+ scripts/checks/plan-github-ci.mjs                  |  67 +++
+ 4 files changed, 976 insertions(+), 9 deletions(-)
 ```
 
 </details>

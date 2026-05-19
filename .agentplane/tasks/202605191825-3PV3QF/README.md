@@ -4,7 +4,7 @@ title: "Split GitHub PR verification into routed parallel gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T18:33:52.281Z"
-  updated_by: "CODER"
-  note: "Verified routed GitHub CI changes locally: workflows:command-check, policy routing, workflow bucket route explanation, git diff --check, full ci:local:fast for .github/workflows/ci.yml, and aggregate/release-ready workflow structure inspection all passed."
+  updated_at: "2026-05-19T18:34:58.434Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR pass: approved CI-routing scope is satisfied by commit a67500fdb; Verify Steps are backed by local command evidence; residual deployment risk is limited to updating GitHub branch protection to require Core CI / PR verification after this workflow lands."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T18:34:58.434Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR pass: approved CI-routing scope is satisfied by commit a67500fdb; Verify Steps are backed by local command evidence; residual deployment risk is limited to updating GitHub branch protection to require Core CI / PR verification after this workflow lands."
+  evaluated_sha: "a67500fdbb9095ec3af0be1f3bd7555c1e7e2d20"
+  blueprint_digest: "4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b"
+  evidence_refs:
+    - ".agentplane/tasks/202605191825-3PV3QF/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -43,8 +54,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified routed GitHub CI changes locally: workflows:command-check, policy routing, workflow bucket route explanation, git diff --check, full ci:local:fast for .github/workflows/ci.yml, and aggregate/release-ready workflow structure inspection all passed."
+  -
+    type: "verify"
+    at: "2026-05-19T18:34:58.434Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR pass: approved CI-routing scope is satisfied by commit a67500fdb; Verify Steps are backed by local command evidence; residual deployment risk is limited to updating GitHub branch protection to require Core CI / PR verification after this workflow lands."
 doc_version: 3
-doc_updated_at: "2026-05-19T18:33:52.313Z"
+doc_updated_at: "2026-05-19T18:34:58.469Z"
 doc_updated_by: "CODER"
 description: "Make GitHub PR verification faster and clearer by reusing the local CI selector for a planning job, splitting Core CI into parallel verification jobs, adding a stable aggregate gate, and caching Bun artifacts on Windows."
 sections:
@@ -89,6 +106,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
 
+    ### 2026-05-19T18:34:58.434Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR pass: approved CI-routing scope is satisfied by commit a67500fdb; Verify Steps are backed by local command evidence; residual deployment risk is limited to updating GitHub branch protection to require Core CI / PR verification after this workflow lands.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:33:52.313Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json
+    - old_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+    - current_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -97,6 +133,10 @@ sections:
     - Observation: GitHub Core CI now has a plan job, routed non-full path, parallel full-fast verification jobs, Windows Bun cache, release-ready dependency preservation, and one PR verification aggregate job.
       Impact: PR verification should expose a single stable merge gate while running independent full checks in parallel and keeping targeted/doc routes shorter.
       Resolution: Branch protection must be updated to require Core CI / PR verification instead of the old Core CI / test and Core CI / test-windows checks after this workflow lands.
+
+    - Observation: Reviewed changed workflow/script surfaces and recorded command evidence from CODER verification.
+      Impact: The implementation is ready for PR publication; hosted GitHub checks remain the external confirmation for the new aggregate gate.
+      Resolution: Proceed to PR open/update and then adjust branch protection once the new check exists on GitHub.
 id_source: "generated"
 ---
 ## Summary
@@ -149,6 +189,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
 
+### 2026-05-19T18:34:58.434Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR pass: approved CI-routing scope is satisfied by commit a67500fdb; Verify Steps are backed by local command evidence; residual deployment risk is limited to updating GitHub branch protection to require Core CI / PR verification after this workflow lands.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:33:52.313Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json
+- old_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+- current_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -161,3 +220,7 @@ BlueprintSnapshotRef:
 - Observation: GitHub Core CI now has a plan job, routed non-full path, parallel full-fast verification jobs, Windows Bun cache, release-ready dependency preservation, and one PR verification aggregate job.
   Impact: PR verification should expose a single stable merge gate while running independent full checks in parallel and keeping targeted/doc routes shorter.
   Resolution: Branch protection must be updated to require Core CI / PR verification instead of the old Core CI / test and Core CI / test-windows checks after this workflow lands.
+
+- Observation: Reviewed changed workflow/script surfaces and recorded command evidence from CODER verification.
+  Impact: The implementation is ready for PR publication; hosted GitHub checks remain the external confirmation for the new aggregate gate.
+  Resolution: Proceed to PR open/update and then adjust branch protection once the new check exists on GitHub.
