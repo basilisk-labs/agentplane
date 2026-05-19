@@ -4,7 +4,7 @@ title: "Make local test routing more flexible and observable"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T15:50:59.907Z"
+  updated_at: "2026-05-19T15:53:25.712Z"
   updated_by: "CODER"
-  note: "Implemented explainable local CI routing and verified targeted selector/report behavior."
+  note: "Revalidated local CI route explainability after implementation and PR artifact commits."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented explainable local CI routing and verified targeted selector/report behavior."
+  -
+    type: "verify"
+    at: "2026-05-19T15:53:25.712Z"
+    author: "CODER"
+    state: "ok"
+    note: "Revalidated local CI route explainability after implementation and PR artifact commits."
 doc_version: 3
-doc_updated_at: "2026-05-19T15:50:59.961Z"
+doc_updated_at: "2026-05-19T15:53:25.769Z"
 doc_updated_by: "CODER"
 description: "Improve the local quality/test routing loop by adding an explainable local CI selector/report path and reducing registry drift for targeted test runs."
 sections:
@@ -86,6 +92,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605191535-WB10QC
 
+    ### 2026-05-19T15:53:25.712Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Revalidated local CI route explainability after implementation and PR artifact commits.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:50:59.961Z, excerpt_hash=sha256:65e592fda16cab5404202de800bd05c6dac194554c7eebf9570d7bc8781b9efd
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191535-WB10QC-flexible-test-routing/.agentplane/tasks/202605191535-WB10QC/blueprint/resolved-snapshot.json
+    - old_digest: 1ff36f9c31cac286789eb9dced252ac7af8d587523ee2a08b24500e59ebdf847
+    - current_digest: 1ff36f9c31cac286789eb9dced252ac7af8d587523ee2a08b24500e59ebdf847
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191535-WB10QC
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -94,6 +119,10 @@ sections:
     - Observation: Command: bun run vitest:projects:check | Result: pass | Evidence: test routing OK (414 tests, 10 primary routes) | Scope: Vitest route registry integrity. Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts | Result: pass | Evidence: 2 files, 53 tests passed | Scope: local CI selector and release script contract. Command: node scripts/checks/run-local-ci.mjs --mode smoke --explain --changed-files packages/agentplane/src/commands/task/new.ts | Result: pass | Evidence: targeted-smoke route with task bucket lint/test plan | Scope: explain output. Command: node scripts/checks/dev-impact.mjs --json | Result: pass | Evidence: broad_or_infra_sensitive_change for current mixed task/script/package diff | Scope: impact report. Command: git diff --check | Result: pass | Evidence: no whitespace errors | Scope: changed diff.
       Impact: Developers and agents can inspect the local CI route without running checks, pass changed files directly without env setup, and use ci:local:touch/explain aliases for faster feedback.
       Resolution: Added buildLocalCiExecutionPlan, run-local-ci --explain/--json/--changed-files, package aliases, and regression coverage.
+
+    - Observation: Command: bun run vitest:projects:check | Result: pass | Evidence: test routing OK (414 tests, 10 primary routes) | Scope: Vitest route registry. Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts | Result: pass | Evidence: 2 test files, 53 tests passed | Scope: selector/report and package script contracts. Command: node scripts/checks/run-local-ci.mjs --mode smoke --explain --changed-files packages/agentplane/src/commands/task/new.ts | Result: pass | Evidence: targeted-smoke task route with concrete lint/test plan | Scope: dry explain CLI. Command: bunx eslint scripts/lib/local-ci-selection.mjs scripts/checks/run-local-ci.mjs packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts | Result: pass | Evidence: no lint output | Scope: changed JS/TS files. Command: git diff --check | Result: pass | Evidence: no whitespace errors | Scope: final diff.
+      Impact: The PR branch now has current verification evidence tied to the implementation branch state.
+      Resolution: Recorded verification after PR artifact creation and before final task-artifact commit.
 id_source: "generated"
 ---
 ## Summary
@@ -143,6 +172,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605191535-WB10QC
 
+### 2026-05-19T15:53:25.712Z — VERIFY — ok
+
+By: CODER
+
+Note: Revalidated local CI route explainability after implementation and PR artifact commits.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:50:59.961Z, excerpt_hash=sha256:65e592fda16cab5404202de800bd05c6dac194554c7eebf9570d7bc8781b9efd
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191535-WB10QC-flexible-test-routing/.agentplane/tasks/202605191535-WB10QC/blueprint/resolved-snapshot.json
+- old_digest: 1ff36f9c31cac286789eb9dced252ac7af8d587523ee2a08b24500e59ebdf847
+- current_digest: 1ff36f9c31cac286789eb9dced252ac7af8d587523ee2a08b24500e59ebdf847
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191535-WB10QC
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -155,3 +203,7 @@ BlueprintSnapshotRef:
 - Observation: Command: bun run vitest:projects:check | Result: pass | Evidence: test routing OK (414 tests, 10 primary routes) | Scope: Vitest route registry integrity. Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts | Result: pass | Evidence: 2 files, 53 tests passed | Scope: local CI selector and release script contract. Command: node scripts/checks/run-local-ci.mjs --mode smoke --explain --changed-files packages/agentplane/src/commands/task/new.ts | Result: pass | Evidence: targeted-smoke route with task bucket lint/test plan | Scope: explain output. Command: node scripts/checks/dev-impact.mjs --json | Result: pass | Evidence: broad_or_infra_sensitive_change for current mixed task/script/package diff | Scope: impact report. Command: git diff --check | Result: pass | Evidence: no whitespace errors | Scope: changed diff.
   Impact: Developers and agents can inspect the local CI route without running checks, pass changed files directly without env setup, and use ci:local:touch/explain aliases for faster feedback.
   Resolution: Added buildLocalCiExecutionPlan, run-local-ci --explain/--json/--changed-files, package aliases, and regression coverage.
+
+- Observation: Command: bun run vitest:projects:check | Result: pass | Evidence: test routing OK (414 tests, 10 primary routes) | Scope: Vitest route registry. Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts | Result: pass | Evidence: 2 test files, 53 tests passed | Scope: selector/report and package script contracts. Command: node scripts/checks/run-local-ci.mjs --mode smoke --explain --changed-files packages/agentplane/src/commands/task/new.ts | Result: pass | Evidence: targeted-smoke task route with concrete lint/test plan | Scope: dry explain CLI. Command: bunx eslint scripts/lib/local-ci-selection.mjs scripts/checks/run-local-ci.mjs packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts | Result: pass | Evidence: no lint output | Scope: changed JS/TS files. Command: git diff --check | Result: pass | Evidence: no whitespace errors | Scope: final diff.
+  Impact: The PR branch now has current verification evidence tied to the implementation branch state.
+  Resolution: Recorded verification after PR artifact creation and before final task-artifact commit.

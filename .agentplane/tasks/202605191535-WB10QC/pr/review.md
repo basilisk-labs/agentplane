@@ -13,7 +13,7 @@ Created: 2026-05-19T15:43:24.548Z
 ## Verification
 
 - State: ok
-- Note: Implemented explainable local CI routing and verified targeted selector/report behavior.
+- Note: Revalidated local CI route explainability after implementation and PR artifact commits.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-05-19T15:43:24.548Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T15:52:41.680Z
+- Updated: 2026-05-19T15:52:47.939Z
 - Branch: task/202605191535-WB10QC/flexible-test-routing
 - Head: 4083285e3a46
 
