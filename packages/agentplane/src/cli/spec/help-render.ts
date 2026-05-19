@@ -56,9 +56,7 @@ const HELP_GROUP_ORDER = new Map<string, number>([
   ["Maintenance", 950],
 ]);
 
-function isVisibleOption(
-  opt: NonNullable<CommandSpec<unknown>["options"]>[number],
-): boolean {
+function isVisibleOption(opt: NonNullable<CommandSpec<unknown>["options"]>[number]): boolean {
   return opt.hidden !== true && opt.deprecated !== "disabled";
 }
 
