@@ -1,0 +1,24 @@
+ .agentplane/tasks/202605190941-5FPGCV/README.md    | 148 +++++++
+ .../blueprint/resolved-snapshot.json               | 455 +++++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 455 +++++++++++++++++++++
+ .agentplane/tasks/202605190941-Y873RA/README.md    | 147 +++++++
+ .../blueprint/resolved-snapshot.json               | 454 ++++++++++++++++++++
+ .github/workflows/publish.yml                      |  17 +
+ package.json                                       |   1 +
+ .../release/check-release-parity-script.test.ts    |  32 +-
+ .../release/publish-workflow-contract.test.ts      |  13 +
+ .../commands/release/release-ci-contract.test.ts   |  12 +
+ .../resolve-release-ready-source-script.test.ts    |  44 ++
+ .../release/task-registry-ready-script.test.ts     |  77 ++++
+ scripts/README.md                                  |   1 +
+ scripts/checks/check-task-state.mjs                |  29 +-
+ scripts/lib/release-ready-source.mjs               |  57 ++-
+ scripts/lib/release-version-parity.mjs             |  21 +
+ scripts/lib/release-version-surfaces.mjs           | 198 +++++++++
+ scripts/lib/test-route-registry.mjs                |   1 +
+ scripts/release/candidate-prepare.mjs              |   1 +
+ scripts/release/check-task-registry-ready.mjs      |  11 +
+ scripts/release/resolve-release-ready-source.mjs   |  13 +-
+ scripts/release/version-bump.mjs                   | 104 +----
+ scripts/release/version-surfaces.json              |  77 ++++
+ 23 files changed, 2254 insertions(+), 114 deletions(-)
