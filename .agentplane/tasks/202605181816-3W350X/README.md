@@ -1,10 +1,11 @@
 ---
 id: "202605181816-3W350X"
 title: "Add maximum context assimilation mode"
-status: "DOING"
+result_summary: "Merged via PR #3904."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605181816-3W350X/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181816-3W350X-maximum-context-assimilation/.agentplane/tasks/202605181816-3W350X/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "94be1f5afed702226092b8f86f483ea638dc86c6"
+  message: "Merge pull request #3904 from basilisk-labs/task/202605181816-3W350X/maximum-context-assimilation"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the approved maximum context assimilation blueprint and documentation updates in the dedicated branch_pr worktree, preserving existing context defaults while adding explicit full-coverage wiki assimilation guidance and verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3904 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -72,9 +78,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for current head 1a14e329 after merging origin/main: PR #3904 hosted checks are green, release tests that previously failed now pass locally, and context/blueprint focused tests pass."
+  -
+    type: "status"
+    at: "2026-05-19T04:40:10.282Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3904 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T04:33:16.053Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T04:40:10.291Z"
+doc_updated_by: "INTEGRATOR"
 description: "Define an extended context assimilation mode for context init/wiki workflows that fully preserves significant source content in wiki, records original hashes and line-addressed provenance, extracts entities and relations before article synthesis, and maintains glossary-driven terminology normalization."
 sections:
   Summary: |-
