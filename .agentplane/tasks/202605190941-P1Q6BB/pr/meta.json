@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-19T10:49:57Z",
   "base": "main",
   "branch": "task/202605190941-P1Q6BB/release-pipeline-hardening",
   "created_at": "2026-05-19T09:44:06.233Z",
-  "head_sha": "298ef95af002e9cb4ad74326dc915bf70585ed73",
+  "head_sha": "9fb910af6ca8f5e31a5cf41ce5d85437b688d4cb",
   "last_verified_at": "2026-05-19T10:36:31.643Z",
   "last_verified_sha": "298ef95af002e9cb4ad74326dc915bf70585ed73",
+  "merge_commit": "398671158b6b3a67343be06e557dc75f14a78db5",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-19T10:49:57Z",
   "pr_number": 3928,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3928",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605190941-P1Q6BB",
-  "updated_at": "2026-05-19T10:36:18.331Z",
+  "updated_at": "2026-05-19T10:49:57Z",
   "verify": {
     "status": "pass"
   }
