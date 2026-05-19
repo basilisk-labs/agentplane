@@ -28,7 +28,7 @@ export async function assertProfileSwitchIsExplicit(opts: {
   const manifestPath = path.join(opts.root, ".agentplane/context/agentplane.context.yaml");
   const existing = await opts.readExisting(manifestPath);
   if (!existing) return;
-  const mode = existing.match(/^\s*mode:\s*([^\s#]+)/mu)?.[1]?.trim();
+  const mode = /^\s*mode:\s*([^\s#]+)/mu.exec(existing)?.[1]?.trim();
   if (!mode || mode === opts.parsed.profile) return;
   throw new CliError({
     exitCode: 2,
