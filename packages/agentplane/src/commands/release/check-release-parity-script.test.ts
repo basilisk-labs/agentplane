@@ -1,6 +1,6 @@
 import path from "node:path";
 import { execFile } from "node:child_process";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
@@ -10,6 +10,10 @@ import { initReleaseWorkspace, writePackageJson } from "@agentplane/testkit/rele
 const execFileAsync = promisify(execFile);
 
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/check-release-parity.mjs");
+const VERSION_SURFACES_MODULE_PATH = path.resolve(
+  process.cwd(),
+  "scripts/lib/release-version-surfaces.mjs",
+);
 
 async function runParity(root: string): Promise<{ ok: boolean; stderr: string }> {
   return execFileAsync("node", [SCRIPT_PATH], { cwd: root }).then(
@@ -253,6 +257,35 @@ describe("check-release-parity script", () => {
     expect(result.ok).toBe(false);
     expect(result.stderr).toContain("acr.producer.version=2.3.3");
     expect(result.stderr).toContain("acr.agentplane.toolchain.version=2.3.2");
+  });
+
+  it("skips optional array-match surfaces during version writes when the match is absent", async () => {
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-parity-",
+      coreVersion: "2.3.4",
+      cliVersion: "2.3.4",
+      recipesVersion: "2.3.4",
+      dependencyVersion: "2.3.4",
+      recipesDependencyVersion: "2.3.4",
+    });
+    await mkdir(path.join(root, "packages", "spec", "examples"), { recursive: true });
+    await writeFile(
+      path.join(root, "packages", "spec", "examples", "acr.json"),
+      `${JSON.stringify({ producer: { version: "2.3.4" }, agent: { toolchain: [] } }, null, 2)}\n`,
+      "utf8",
+    );
+    const versionSurfaces = (await import(VERSION_SURFACES_MODULE_PATH)) as {
+      applyReleaseVersionSurfaces(rootDir: string, nextVersion: string): string[];
+    };
+
+    const changedPaths = versionSurfaces.applyReleaseVersionSurfaces(root, "2.3.5");
+
+    expect(changedPaths).toContain("packages/spec/examples/acr.json");
+    const acr = JSON.parse(
+      await readFile(path.join(root, "packages", "spec", "examples", "acr.json"), "utf8"),
+    ) as { producer?: { version?: string }; agent?: { toolchain?: unknown[] } };
+    expect(acr.producer?.version).toBe("2.3.5");
+    expect(acr.agent?.toolchain).toEqual([]);
   });
 
   it("fails when the publishable package manifest leaks a workspace protocol dependency", async () => {

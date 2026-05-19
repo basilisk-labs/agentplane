@@ -191,7 +191,12 @@ export function applyReleaseVersionSurfaces(rootDir, nextVersion) {
     if (surface.kind === "json_array_match") {
       const value = readJson(absPath);
       const item = findArrayMatch(value, surface);
-      if (!item) throw new Error(`${surface.file}: missing array entry for ${surface.id}.`);
+      if (!item) {
+        if (surface.required) {
+          throw new Error(`${surface.file}: missing array entry for ${surface.id}.`);
+        }
+        continue;
+      }
       setByPath(item, assertStringArray(surface.path, `${surface.id}.path`), nextVersion);
       writeJson(absPath, value);
       changedPaths.push(surface.file);
