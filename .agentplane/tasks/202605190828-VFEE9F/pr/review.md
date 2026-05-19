@@ -42,12 +42,15 @@ Scope: live GitHub Release asset lookup against the successful v0.6.3 publish-re
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T08:29:58.137Z
+- Updated: 2026-05-19T08:40:43.937Z
 - Branch: task/202605190828-VFEE9F/postpublish-audit-live-assets
-- Head: 2a1e5c630239
+- Head: 0dbc4970903e
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 455 +++++++++++++++++++++
+ .../audit-platform-publication-script.test.ts      |  61 ++-
+ scripts/release/audit-platform-publication.mjs     |  79 +++-
+ 3 files changed, 582 insertions(+), 13 deletions(-)
 ```
 
 </details>
