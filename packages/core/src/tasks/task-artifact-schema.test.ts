@@ -401,7 +401,7 @@ describe("task-artifact-schema", () => {
     ).not.toThrow();
   });
 
-  it("accepts context task kinds and context.assimilation blueprint request", () => {
+  it("accepts context task kinds and context blueprint requests", () => {
     const task = withTaskReadmeFrontmatterDefaults({
       id: "202605130152-3JZSHZ",
       title: "Context assimilation fixture",
@@ -426,8 +426,23 @@ describe("task-artifact-schema", () => {
 
     expect(() => validateTaskReadmeFrontmatter(task)).not.toThrow();
     expect(() =>
+      validateTaskReadmeFrontmatter({
+        ...task,
+        blueprint_request: "context.maximum_assimilation",
+      }),
+    ).not.toThrow();
+    expect(() =>
       validateTasksExportSnapshot({
-        tasks: [{ ...task, commit: null, dirty: false }],
+        tasks: [
+          { ...task, commit: null, dirty: false },
+          {
+            ...task,
+            id: "202605130152-3JZMAX",
+            blueprint_request: "context.maximum_assimilation",
+            commit: null,
+            dirty: false,
+          },
+        ],
         meta: {
           schema_version: 1,
           managed_by: "agentplane",

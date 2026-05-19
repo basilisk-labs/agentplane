@@ -114,4 +114,46 @@ describe("runCli context init interactive mode", () => {
       expect(await readContextManifest(root)).toContain("mode: adaptive");
     },
   );
+
+  it(
+    "requires force when switching an initialized context profile",
+    { timeout: 60_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await initAgentplaneProject(root);
+
+      expect(await runCli(["context", "init", "--profile", "adaptive", "--root", root])).toBe(0);
+
+      const rejected = captureStdIO();
+      try {
+        const code = await runCli([
+          "context",
+          "init",
+          "--profile",
+          "maximum-assimilation",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(2);
+        expect(rejected.stderr).toContain("already initialized with profile adaptive");
+        expect(rejected.stderr).toContain("--force");
+      } finally {
+        rejected.restore();
+      }
+      expect(await readContextManifest(root)).toContain("mode: adaptive");
+
+      expect(
+        await runCli([
+          "context",
+          "init",
+          "--profile",
+          "maximum-assimilation",
+          "--force",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      expect(await readContextManifest(root)).toContain("mode: maximum-assimilation");
+    },
+  );
 });

@@ -302,7 +302,7 @@ export async function runContextCheck(_ctx: CommandCtx, p: { fix: boolean }): Pr
   return await cmdContextDoctor({
     cwd: _ctx.cwd,
     rootOverride: _ctx.rootOverride,
-    parsed: p,
+    parsed: { ...p, label: "check" },
   });
 }
 
@@ -310,7 +310,7 @@ export async function runContextDoctor(_ctx: CommandCtx, p: { fix: boolean }): P
   return await cmdContextDoctor({
     cwd: _ctx.cwd,
     rootOverride: _ctx.rootOverride,
-    parsed: p,
+    parsed: { ...p, label: "doctor" },
   });
 }
 

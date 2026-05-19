@@ -16,9 +16,10 @@ import { checkSqliteProjection } from "./sqlite.js";
 export async function cmdContextDoctor(opts: {
   cwd: string;
   rootOverride?: string;
-  parsed: { fix: boolean };
+  parsed: { fix: boolean; label?: "check" | "doctor" };
 }): Promise<number> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
+  const label = opts.parsed.label ?? "doctor";
   const manifestPath = path.join(root, ".agentplane/context/agentplane.context.yaml");
   const lockPath = path.join(root, ".agentplane/context/manifest.lock.json");
   const warnings: string[] = [];
@@ -153,30 +154,30 @@ export async function cmdContextDoctor(opts: {
 
   if (issues.length > 0) {
     process.stderr.write(
-      `[context.doctor] issues:\n` + issues.map((entry) => `- ${entry}`).join("\n") + "\n",
+      `[context.${label}] issues:\n` + issues.map((entry) => `- ${entry}`).join("\n") + "\n",
     );
-    process.stderr.write(contextDoctorRecoveryHint(root, opts.parsed.fix) + "\n");
+    process.stderr.write(contextDoctorRecoveryHint(root, opts.parsed.fix, label) + "\n");
     if (!opts.parsed.fix)
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
-        message: `context doctor failed: ${issues.length} issues`,
+        message: `context ${label} failed: ${issues.length} issues`,
       });
   }
   if (warnings.length > 0) {
     process.stderr.write(
-      `[context.doctor] warnings:\n` + warnings.map((entry) => `- ${entry}`).join("\n") + "\n",
+      `[context.${label}] warnings:\n` + warnings.map((entry) => `- ${entry}`).join("\n") + "\n",
     );
   }
 
-  process.stdout.write("context doctor: ok\n");
+  process.stdout.write(`context ${label}: ok\n`);
   return 0;
 }
 
-function contextDoctorRecoveryHint(root: string, fix: boolean): string {
-  const retry = fix ? "then re-run `agentplane context doctor`" : "then re-run this command";
+function contextDoctorRecoveryHint(root: string, fix: boolean, label: "check" | "doctor"): string {
+  const retry = fix ? `then re-run \`agentplane context ${label}\`` : "then re-run this command";
   return (
-    `[context.doctor] recovery:\n` +
+    `[context.${label}] recovery:\n` +
     `- If this repository has no initialized context workspace, run \`agentplane context init --repair\` from ${root}, ${retry}.\n` +
     "- `--fix` only repairs missing directories; it does not create the manifest, policy files, lockfile, or registry artifacts."
   );
