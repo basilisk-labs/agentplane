@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202605191451-TFBJEG/fix-3934-context-lifecycle",
   "created_at": "2026-05-19T14:52:30.296Z",
-  "head_sha": "b0c5ff20ed1f18e1aa833b9f5787b9e4157ce788",
+  "head_sha": "ce1775ccd1882baf3c993d1acf7e1a0ea3a43f8c",
   "last_verified_at": "2026-05-19T15:36:08.753Z",
   "last_verified_sha": "81a3ed59446b0e0fbdf663711e789c53ec915369",
   "pr_number": 3939,
@@ -10,7 +10,7 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202605191451-TFBJEG",
-  "updated_at": "2026-05-19T16:46:13.164Z",
+  "updated_at": "2026-05-19T16:50:48.026Z",
   "verify": {
     "status": "pass"
   }

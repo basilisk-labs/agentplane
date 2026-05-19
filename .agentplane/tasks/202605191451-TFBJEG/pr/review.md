@@ -24,9 +24,9 @@ Created: 2026-05-19T14:52:30.296Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T16:46:13.164Z
+- Updated: 2026-05-19T16:50:48.026Z
 - Branch: task/202605191451-TFBJEG/fix-3934-context-lifecycle
-- Head: b0c5ff20ed1f
+- Head: ce1775ccd188
 
 ```text
  .../blueprint/resolved-snapshot.json               | 573 +++++++++++++++++++++
@@ -35,10 +35,10 @@ Created: 2026-05-19T14:52:30.296Z
  .../src/commands/context/context.command.ts        |   4 +-
  .../src/commands/context/init-profile-switch.ts    |  51 ++
  packages/agentplane/src/commands/context/init.ts   |  17 +-
- .../src/commands/context/release-readiness.test.ts |  70 +++
+ .../src/commands/context/release-readiness.test.ts | 111 ++++
  .../agentplane/src/commands/task/finish-execute.ts |  14 +-
  packages/agentplane/src/context/doctor.ts          |  19 +-
- packages/agentplane/src/context/verify-task.ts     |  20 +-
+ packages/agentplane/src/context/verify-task.ts     |  18 +-
  .../schemas/task-readme-frontmatter.schema.json    |   1 +
  packages/core/schemas/tasks-export.schema.json     |   1 +
  .../core/src/tasks/task-artifact-schema.task.ts    |   1 +
@@ -47,7 +47,7 @@ Created: 2026-05-19T14:52:30.296Z
  packages/spec/schemas/tasks-export.schema.json     |   1 +
  schemas/task-readme-frontmatter.schema.json        |   1 +
  schemas/tasks-export.schema.json                   |   1 +
- 18 files changed, 942 insertions(+), 39 deletions(-)
+ 18 files changed, 981 insertions(+), 39 deletions(-)
 ```
 
 </details>
