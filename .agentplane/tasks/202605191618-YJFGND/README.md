@@ -4,7 +4,7 @@ title: "Refresh evidence bundle during hosted close"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T16:22:29.737Z"
+  updated_at: "2026-05-19T16:48:54.418Z"
   updated_by: "CODER"
-  note: "Implemented hosted close evidence refresh and repaired stale evidence manifest for 202605191421-D566XJ on main. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap, evidence verify --strict for both tasks."
+  note: "Addressed PR review thread by preserving hosted-close --quiet semantics during internal evidence refresh. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented hosted close evidence refresh and repaired stale evidence manifest for 202605191421-D566XJ on main. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap, evidence verify --strict for both tasks."
+  -
+    type: "verify"
+    at: "2026-05-19T16:48:54.418Z"
+    author: "CODER"
+    state: "ok"
+    note: "Addressed PR review thread by preserving hosted-close --quiet semantics during internal evidence refresh. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap."
 doc_version: 3
-doc_updated_at: "2026-05-19T16:22:29.766Z"
+doc_updated_at: "2026-05-19T16:48:54.478Z"
 doc_updated_by: "CODER"
 description: "Ensure branch_pr hosted close regenerates task evidence manifests after final task README and PR metadata mutations so strict evidence verification remains valid on main after close."
 sections:
@@ -71,6 +77,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T16:19:53.213Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191618-YJFGND-hosted-close-evidence/.agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json
+    - old_digest: 2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9
+    - current_digest: 2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191618-YJFGND
+
+    ### 2026-05-19T16:48:54.418Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Addressed PR review thread by preserving hosted-close --quiet semantics during internal evidence refresh. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T16:22:29.766Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -123,6 +148,25 @@ Note: Implemented hosted close evidence refresh and repaired stale evidence mani
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T16:19:53.213Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191618-YJFGND-hosted-close-evidence/.agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json
+- old_digest: 2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9
+- current_digest: 2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191618-YJFGND
+
+### 2026-05-19T16:48:54.418Z — VERIFY — ok
+
+By: CODER
+
+Note: Addressed PR review thread by preserving hosted-close --quiet semantics during internal evidence refresh. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T16:22:29.766Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 

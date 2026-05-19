@@ -2,7 +2,7 @@
   "acr_version": "0.1.0",
   "record_type": "agent_change_record",
   "record_id": "acr_202605191618-YJFGND",
-  "created_at": "2026-05-19T16:22:38.134Z",
+  "created_at": "2026-05-19T16:49:16.009Z",
   "producer": {
     "name": "agentplane",
     "version": "0.6.3"
@@ -13,7 +13,7 @@
     "base_ref": "main",
     "base_commit": "0559580ce2f8307d4981d06e8f50675b36a44cb3",
     "work_ref": "task/202605191618-YJFGND/hosted-close-evidence",
-    "work_commit": "0559580ce2f8307d4981d06e8f50675b36a44cb3"
+    "work_commit": "dfebb2e84d60f840d82961cfbd6318f01f6c82c1"
   },
   "task": {
     "task_id": "202605191618-YJFGND",
@@ -44,7 +44,7 @@
     "status": "approved",
     "artifact": {
       "path": ".agentplane/tasks/202605191618-YJFGND/README.md",
-      "sha256": "sha256:17d3a33116100885e125838cfe1b1b42fd21bec3cb97ed4aeda7fe1ed01684e3"
+      "sha256": "sha256:427f6b9de103c84efdad035f8646fc02ad38611aabcc7792170a7add5d429f3e"
     },
     "approved_at": "2026-05-19T16:18:56.501Z",
     "approved_by": {
@@ -84,14 +84,95 @@
   "changes": {
     "summary": "Ensure branch_pr hosted close regenerates task evidence manifests after final task README and PR metadata mutations so strict evidence verification remains valid on main after close.",
     "diff_stats": {
-      "files_changed": 0,
-      "insertions": 0,
-      "deletions": 0
+      "files_changed": 11,
+      "insertions": 1161,
+      "deletions": 5
     },
-    "files": [],
+    "files": [
+      {
+        "path": ".agentplane/tasks/202605191421-D566XJ/evidence/manifest.json",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/acr.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/evidence/manifest.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/pr/diffstat.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/pr/github-body.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/pr/github-title.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/pr/meta.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191618-YJFGND/pr/review.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/hosted-close.command.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      }
+    ],
     "risk": {
       "level": "medium",
-      "categories": [],
+      "categories": [
+        "tooling",
+        "cli"
+      ],
       "protected_paths_touched": false
     }
   },
@@ -116,17 +197,17 @@
     {
       "type": "task",
       "path": ".agentplane/tasks/202605191618-YJFGND/README.md",
-      "sha256": "sha256:17d3a33116100885e125838cfe1b1b42fd21bec3cb97ed4aeda7fe1ed01684e3"
+      "sha256": "sha256:427f6b9de103c84efdad035f8646fc02ad38611aabcc7792170a7add5d429f3e"
     },
     {
       "type": "plan",
       "path": ".agentplane/tasks/202605191618-YJFGND/README.md",
-      "sha256": "sha256:17d3a33116100885e125838cfe1b1b42fd21bec3cb97ed4aeda7fe1ed01684e3"
+      "sha256": "sha256:427f6b9de103c84efdad035f8646fc02ad38611aabcc7792170a7add5d429f3e"
     },
     {
       "type": "verification_log",
       "path": ".agentplane/tasks/202605191618-YJFGND/README.md",
-      "sha256": "sha256:17d3a33116100885e125838cfe1b1b42fd21bec3cb97ed4aeda7fe1ed01684e3"
+      "sha256": "sha256:427f6b9de103c84efdad035f8646fc02ad38611aabcc7792170a7add5d429f3e"
     },
     {
       "type": "other",
@@ -142,12 +223,12 @@
     ],
     "rollback": {
       "available": true,
-      "notes": "Revert work_commit 0559580ce2f8307d4981d06e8f50675b36a44cb3 if downstream validation fails."
+      "notes": "Revert work_commit dfebb2e84d60f840d82961cfbd6318f01f6c82c1 if downstream validation fails."
     }
   },
   "integrity": {
     "digest_algorithm": "sha256",
-    "record_digest": "sha256:1d942a01dc56d60b8e0817ecd6f147066f7cfab2b07a2a395153e9302515701c",
+    "record_digest": "sha256:b6db053e69bcc2849b1d5d6c487f9f68d974d7ec2b81151c2981d6604410cbbd",
     "canonicalization": "rfc8785-jcs",
     "signatures": []
   },

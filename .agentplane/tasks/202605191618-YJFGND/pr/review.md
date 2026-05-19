@@ -13,7 +13,7 @@ Created: 2026-05-19T16:19:53.288Z
 ## Verification
 
 - State: ok
-- Note: Implemented hosted close evidence refresh and repaired stale evidence manifest for 202605191421-D566XJ on main. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap, evidence verify --strict for both tasks.
+- Note: Addressed PR review thread by preserving hosted-close --quiet semantics during internal evidence refresh. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

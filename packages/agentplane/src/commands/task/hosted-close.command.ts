@@ -58,6 +58,7 @@ async function loadHostedBatchTasks(opts: {
 async function refreshExistingEvidenceBundles(opts: {
   ctx: CommandContext;
   cwd: string;
+  quiet: boolean;
   loadedTasks: { taskId: string }[];
 }): Promise<void> {
   for (const loaded of opts.loadedTasks) {
@@ -66,7 +67,7 @@ async function refreshExistingEvidenceBundles(opts: {
     await cmdEvidenceBundle({
       commandCtx: opts.ctx,
       cwd: opts.cwd,
-      parsed: { taskId: loaded.taskId, json: false },
+      parsed: { taskId: loaded.taskId, json: false, quiet: opts.quiet },
     });
   }
 }
@@ -335,6 +336,7 @@ async function closeHostedTask(opts: {
   await refreshExistingEvidenceBundles({
     ctx: opts.ctx,
     cwd: opts.cwd,
+    quiet: opts.quiet,
     loadedTasks: tasksNeedingClose,
   });
   if (!opts.quiet) {
