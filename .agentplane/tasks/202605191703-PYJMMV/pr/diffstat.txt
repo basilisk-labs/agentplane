@@ -2,11 +2,11 @@
  .../blueprint/resolved-snapshot.json               | 574 +++++++++++++++++++++
  docs/user/local-context.mdx                        |  18 +
  packages/agentplane/assets/agents/EVALUATOR.json   |   2 +-
- packages/agentplane/src/blueprints/builtins.ts     |  31 ++
- .../agentplane/src/blueprints/validate.test.ts     |   6 +
- packages/agentplane/src/commands/context/init.ts   |  17 +
- .../src/commands/context/release-readiness.test.ts |  81 ++-
+ packages/agentplane/src/blueprints/builtins.ts     |   3 +-
+ .../agentplane/src/blueprints/validate.test.ts     |   1 +
+ packages/agentplane/src/commands/context/init.ts   |  13 +
+ .../src/commands/context/release-readiness.test.ts |  87 +++-
  packages/agentplane/src/context/ingest-task.ts     |  23 +-
  packages/agentplane/src/context/ingest.ts          |  12 +-
  .../src/shared/builtin-assets.generated.ts         |  10 +-
- 11 files changed, 759 insertions(+), 17 deletions(-)
+ 11 files changed, 709 insertions(+), 36 deletions(-)

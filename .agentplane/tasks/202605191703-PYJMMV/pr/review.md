@@ -13,7 +13,7 @@ Created: 2026-05-19T17:04:03.241Z
 ## Verification
 
 - State: ok
-- Note: Final quality review passed. Maximum-assimilation behavior is source-shaped: first ingest skips the fixed starter wiki scaffold, generated task contracts require topology decision, granular wiki synthesis, Obsidian-compatible semantic wikilinks, raw-deletion resilience, and explicit EVALUATOR review; medium/non-maximum scaffold behavior remains covered by tests.
+- Note: Fresh integration quality review passed for current PR head 5ee85ec2a after merging origin/main. Evidence: hosted PR checks all green; local merge-state checks passed; maximum-assimilation source-shaped wiki, Obsidian wikilink, granularity, provenance, coverage, raw-deletion resilience, and leakage guardrails remain covered by implementation and tests.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,23 +24,23 @@ Created: 2026-05-19T17:04:03.241Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T17:28:46.796Z
+- Updated: 2026-05-19T18:23:46.422Z
 - Branch: task/202605191703-PYJMMV/max-assimilation-obsidian
-- Head: ca91c80c5dea
+- Head: 5ee85ec2abcf
 
 ```text
  .agentplane/agents/EVALUATOR.json                  |   2 +-
  .../blueprint/resolved-snapshot.json               | 574 +++++++++++++++++++++
  docs/user/local-context.mdx                        |  18 +
  packages/agentplane/assets/agents/EVALUATOR.json   |   2 +-
- packages/agentplane/src/blueprints/builtins.ts     |  31 ++
- .../agentplane/src/blueprints/validate.test.ts     |   6 +
- packages/agentplane/src/commands/context/init.ts   |  17 +
- .../src/commands/context/release-readiness.test.ts |  81 ++-
+ packages/agentplane/src/blueprints/builtins.ts     |   3 +-
+ .../agentplane/src/blueprints/validate.test.ts     |   1 +
+ packages/agentplane/src/commands/context/init.ts   |  13 +
+ .../src/commands/context/release-readiness.test.ts |  87 +++-
  packages/agentplane/src/context/ingest-task.ts     |  23 +-
  packages/agentplane/src/context/ingest.ts          |  12 +-
  .../src/shared/builtin-assets.generated.ts         |  10 +-
- 11 files changed, 759 insertions(+), 17 deletions(-)
+ 11 files changed, 709 insertions(+), 36 deletions(-)
 ```
 
 </details>
