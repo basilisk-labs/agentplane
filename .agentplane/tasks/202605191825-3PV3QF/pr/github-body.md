@@ -28,16 +28,18 @@ to require Core CI / PR verification after this workflow lands.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T18:34:58.519Z
+- Updated: 2026-05-19T18:48:17.663Z
 - Branch: task/202605191825-3PV3QF/github-verification-gates
-- Head: a67500fdbb90
+- Head: 8e58c020032e
 
 ```text
  .../blueprint/resolved-snapshot.json               | 594 +++++++++++++++++++++
- .github/workflows/ci.yml                           | 322 ++++++++++-
+ .github/workflows/ci.yml                           | 346 +++++++++++-
+ ...check-github-protection-contract-script.test.ts |  12 +-
+ .../commands/release/ci-workflow-contract.test.ts  |  21 +-
  .../checks/check-github-protection-contract.mjs    |   2 +-
  scripts/checks/plan-github-ci.mjs                  |  67 +++
- 4 files changed, 976 insertions(+), 9 deletions(-)
+ 6 files changed, 1023 insertions(+), 19 deletions(-)
 ```
 
 </details>

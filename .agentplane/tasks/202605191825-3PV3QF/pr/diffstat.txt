@@ -1,5 +1,7 @@
  .../blueprint/resolved-snapshot.json               | 594 +++++++++++++++++++++
- .github/workflows/ci.yml                           | 322 ++++++++++-
+ .github/workflows/ci.yml                           | 346 +++++++++++-
+ ...check-github-protection-contract-script.test.ts |  12 +-
+ .../commands/release/ci-workflow-contract.test.ts  |  21 +-
  .../checks/check-github-protection-contract.mjs    |   2 +-
  scripts/checks/plan-github-ci.mjs                  |  67 +++
- 4 files changed, 976 insertions(+), 9 deletions(-)
+ 6 files changed, 1023 insertions(+), 19 deletions(-)
