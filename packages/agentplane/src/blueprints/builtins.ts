@@ -388,6 +388,137 @@ export const BUILTIN_BLUEPRINTS = [
     ],
   }),
   blueprint({
+    id: "context.maximum_assimilation",
+    title: "Maximum context assimilation",
+    description:
+      "Assimilate selected non-private sources into a self-contained wiki, canonical glossary, entity graph, source registry, and coverage report so maintained context preserves significant meaning without relying on raw files for semantic recall.",
+    taskKinds: ["context"],
+    workflowModes: ["direct", "branch_pr"],
+    allowedCommands: [
+      "agentplane context learn files <path>",
+      "agentplane context learn changes",
+      "agentplane task resume-context <task-id>",
+      "agentplane context reindex --include-raw",
+      "agentplane context wiki lint context/wiki",
+      "agentplane context wiki index context/wiki",
+      "agentplane context verify-task <task-id>",
+      "agentplane context doctor",
+      "agentplane context graph validate",
+      "agentplane context search <query> --format json",
+      "agentplane acr generate <task-id> --write",
+      "agentplane acr check <task-id>",
+    ],
+    policyModules: [".agentplane/policy/security.must.md", ".agentplane/policy/dod.core.md"],
+    contextBudget: {
+      maxPolicyModules: 2,
+      maxPromptBlocks: 16,
+      rationale:
+        "Maximum assimilation keeps the normal context policy set but reserves prompt budget for coverage, glossary, entity/relation extraction, and raw-deletion resilience checks.",
+    },
+    nodes: contextAssimilationNodes,
+    requiredEvidence: [
+      evidence("context_max.sources", "sources", "intake", "Selected source set and hashes."),
+      evidence(
+        "context_max.coverage",
+        "artifact",
+        "artifact_write",
+        "Coverage map proving every significant non-private source span was semantically assimilated, intentionally omitted, duplicated, or redacted.",
+      ),
+      evidence(
+        "context_max.addressing",
+        "context_manifest",
+        "context_resolve",
+        "Source registry with original hashes, availability state, and line-addressed provenance refs for extracted claims, entities, relations, and articles.",
+      ),
+      evidence(
+        "context_max.graph_first",
+        "artifact",
+        "work_unit",
+        "Entity, alias, relation, conflict, and open-question extraction completed before narrative wiki synthesis.",
+      ),
+      evidence(
+        "context_max.glossary",
+        "artifact",
+        "artifact_write",
+        "Canonical glossary updates used for term normalization and alias preservation.",
+      ),
+      evidence(
+        "context_max.changed_paths",
+        "changed_paths",
+        "work_unit",
+        "Wiki, derived, glossary, report, task, and ACR paths changed by maximum assimilation.",
+      ),
+      evidence(
+        "context_max.verification",
+        "check_result",
+        "deterministic_check",
+        "reindex, wiki lint, graph validation, context verify-task, doctor, smoke search, and ACR check results.",
+      ),
+      evidence(
+        "context_max.recovery",
+        "weak_links",
+        "verify_record",
+        "Coverage gaps, unresolved identities, conflicts, private-source redactions, or handoff status.",
+      ),
+      evidence(
+        "context_max.quality",
+        "quality_report",
+        "quality_gate",
+        "EVALUATOR quality verdict.",
+      ),
+      evidence("context_max.commit", "commit", "finish", "Close or integration commit."),
+    ],
+    stopRules: [
+      {
+        id: "context_max_empty_source_set",
+        severity: "stop",
+        reason: "Maximum assimilation requires at least one selected source with a recorded hash.",
+      },
+      {
+        id: "context_max_pipeline_order_skipped",
+        severity: "stop",
+        reason:
+          "Entity/relation/glossary extraction and pre-write reconciliation must happen before narrative wiki synthesis.",
+      },
+      {
+        id: "context_max_missing_line_refs",
+        severity: "stop",
+        reason:
+          "Claims, entities, relations, and wiki sections derived from source text require line-addressed source refs.",
+      },
+      {
+        id: "context_max_coverage_gap_without_reason",
+        severity: "approval_required",
+        reason:
+          "Every significant non-private source span must be covered, intentionally omitted as non-significant boilerplate, or redacted with a reason.",
+      },
+      {
+        id: "context_max_glossary_conflict",
+        severity: "approval_required",
+        reason:
+          "Canonical term collisions, alias ambiguity, or identity uncertainty must be kept as conflict/open-question candidates before normalization.",
+      },
+      {
+        id: "context_max_raw_deletion_resilience_unproven",
+        severity: "approval_required",
+        reason:
+          "Finish requires explicit evidence that deleting raw sources would not remove significant non-private meaning from wiki/derived artifacts; line refs may become non-dereferenceable audit pointers.",
+      },
+      {
+        id: "context_max_private_leakage",
+        severity: "stop",
+        reason:
+          "Private raw material, secrets, and non-publishable spans must not be copied into public wiki, task, report, or ACR surfaces.",
+      },
+      {
+        id: "context_max_reindex_missing_after_writes",
+        severity: "stop",
+        reason:
+          "Wiki, fact, graph, glossary, or report edits require a fresh context reindex before finish.",
+      },
+    ],
+  }),
+  blueprint({
     id: "release.strict",
     title: "Strict release",
     description: "Version, package, publish, and distribution work.",

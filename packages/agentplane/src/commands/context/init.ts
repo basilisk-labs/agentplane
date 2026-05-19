@@ -304,7 +304,8 @@ async function createContextWorkspace(
     parsed.profile === "adaptive" ||
     parsed.profile === "wiki" ||
     parsed.profile === "codebase" ||
-    parsed.profile === "research"
+    parsed.profile === "research" ||
+    parsed.profile === "maximum-assimilation"
   ) {
     files.push(
       { relative: "context/raw/specs/.gitkeep", content: "" },
@@ -371,6 +372,25 @@ async function ensureContextGitignore(root: string, parsed: ContextInitParsed): 
 }
 
 function buildContextReadme(profile: ContextInitParsed["profile"]): string {
+  const maximumAssimilation =
+    profile === "maximum-assimilation"
+      ? `
+Maximum-assimilation mode adds a stricter wiki maintenance contract:
+
+- Preserve all significant non-private source meaning in wiki, facts, graph, glossary, and coverage
+  artifacts so maintained context remains useful even if \`context/raw/**\` is later removed.
+- Keep original source identity in a source registry with \`source_id\`, original path,
+  \`sha256:\` hash, content type, line count, ingest time, and availability state.
+- Use line-addressed source refs as provenance pointers, not as retained content. If raw files are
+  missing, refs may be non-dereferenceable while wiki/fact/graph artifacts stay self-contained.
+- Extract entities, aliases, relations, decisions, requirements, risks, workflows, and conflicts
+  before writing narrative articles.
+- Maintain a canonical glossary as a navigation/alias layer over wiki pages and graph entities, then
+  use glossary canonical terms in synthesized prose while preserving source-local terms as aliases.
+- Treat coverage gaps, unresolved entity identity, private-source leakage risk, and missing line refs
+  as blockers or explicit approval-required findings.
+`
+      : "";
   return `# Context workspace
 
 Profile: ${profile}
@@ -388,10 +408,37 @@ Agents should create wiki pages when a topic is reusable for future tasks, but k
 derived machine artifacts. \`context init\` creates only \`context/wiki/AGENTS.md\` and
 \`context/wiki/index.md\`; the first ingest creates starter wiki folders when there is source
 material to assimilate. Source references should be markdown links where possible.
+${maximumAssimilation}
 `;
 }
 
 function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string {
+  const maximumAssimilation =
+    profile === "maximum-assimilation"
+      ? `
+## Maximum assimilation mode
+
+- Use the \`context.maximum_assimilation\` blueprint for new context assimilation tasks.
+- Goal: after assimilation, the maintained wiki and derived artifacts preserve all significant
+  non-private source meaning without relying on raw files for semantic recall.
+- Keep original hashes in the source-set lock and cite source content with concrete line refs such as
+  \`context/raw/research/note.md#lines=12-24\`; treat those refs as audit provenance, not as the
+  stored meaning.
+- First pass: build or update canonical entities, glossary aliases, relation candidates, conflict
+  candidates, and coverage notes.
+- Second pass: synthesize granular wiki articles from that graph/glossary layer; use canonical
+  glossary terms in prose and preserve source-local wording as aliases or evidence details.
+- Create separate pages for reusable entities, concepts, decisions, requirements, risks, workflows,
+  and modules; use stable headings for smaller objects inside broader pages.
+- Record extraction coverage: covered source spans, intentionally omitted boilerplate, private or
+  redacted spans, unresolved conflicts, and open questions.
+- If a raw source is missing later, keep its source registry entry with availability state
+  \`missing\`; the wiki, facts, graph, glossary, and coverage artifacts must still carry the
+  assimilated meaning.
+- Do not copy secrets or private raw material into public wiki pages. Redact or keep private
+  references outside publication surfaces.
+`
+      : "";
   return `${wikiFrontmatter("wiki.agents", "Context wiki agent notes", "policy")}
 
 # Context wiki agent notes
@@ -408,6 +455,7 @@ Profile: ${profile}
 - When claims conflict, keep both claims, create a conflict candidate, and ask for review before promotion or overwrite.
 - Keep raw inputs in \`context/raw/**\`; do not copy private raw sources into public wiki pages.
 - Add source references for factual claims and run \`agentplane context verify-task <task-id>\` before closing context assimilation work.
+${maximumAssimilation}
 
 ## Source References
 
@@ -464,6 +512,15 @@ wiki:
   frontmatter_required: true
   source_refs_as_markdown_links: true
   cross_links_required: true
+  maintenance_mode: ${profile === "maximum-assimilation" ? "maximum_assimilation" : "adaptive"}
+  raw_deletion_resilience_required: ${profile === "maximum-assimilation" ? "true" : "false"}
+  entity_relation_first: ${profile === "maximum-assimilation" ? "true" : "false"}
+  glossary:
+    canonical_required: ${profile === "maximum-assimilation" ? "true" : "false"}
+    alias_normalization_required: ${profile === "maximum-assimilation" ? "true" : "false"}
+  source_addressing:
+    original_hash_required: true
+    line_refs_required: ${profile === "maximum-assimilation" ? "true" : "false"}
   modalities:
     - factual_claim
     - observation

@@ -59,6 +59,7 @@ export type TaskData = {
     | "performance.benchmark"
     | "quality.regression"
     | "context.assimilation"
+    | "context.maximum_assimilation"
     | "post_run.improvement_review"
     | "release.strict"
     | "ops.approval";

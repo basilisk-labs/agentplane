@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605181816-3W350X/maximum-context-assimilation",
+  "created_at": "2026-05-18T18:18:01.868Z",
+  "head_sha": "1a14e3293a763168775c373eeab7cae93d5acf62",
+  "last_verified_at": "2026-05-19T04:33:16.029Z",
+  "last_verified_sha": "1a14e3293a763168775c373eeab7cae93d5acf62",
+  "pr_number": 3904,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3904",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605181816-3W350X",
+  "updated_at": "2026-05-19T04:33:04.825Z",
+  "verify": {
+    "status": "pass"
+  }
+}

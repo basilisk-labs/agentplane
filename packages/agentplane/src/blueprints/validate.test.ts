@@ -43,7 +43,7 @@ function docsPlan() {
 
 describe("blueprint built-ins", () => {
   it("validates every built-in blueprint", () => {
-    expect(BUILTIN_BLUEPRINTS).toHaveLength(11);
+    expect(BUILTIN_BLUEPRINTS).toHaveLength(12);
 
     for (const blueprint of BUILTIN_BLUEPRINTS) {
       expect(validateBlueprint(blueprint), blueprint.id).toEqual({ ok: true, errors: [] });
@@ -59,6 +59,7 @@ describe("blueprint built-ins", () => {
       "code.direct",
       "content.light",
       "context.assimilation",
+      "context.maximum_assimilation",
       "docs.change",
       "ops.approval",
       "performance.benchmark",
@@ -127,6 +128,34 @@ describe("blueprint built-ins", () => {
         "context_pipeline_order_skipped",
         "context_reindex_missing_after_writes",
         "context_agent_handoff_missing_after_stalled_work",
+      ]),
+    );
+  });
+
+  it("keeps maximum context assimilation coverage gates explicit", () => {
+    const blueprint = requireBlueprint("context.maximum_assimilation");
+
+    expect(blueprint.allowedCommands).toEqual(
+      expect.arrayContaining([
+        "agentplane context reindex --include-raw",
+        "agentplane context wiki lint context/wiki",
+        "agentplane context graph validate",
+      ]),
+    );
+    expect(blueprint.requiredEvidence.map((item) => item.id)).toEqual(
+      expect.arrayContaining([
+        "context_max.coverage",
+        "context_max.addressing",
+        "context_max.graph_first",
+        "context_max.glossary",
+      ]),
+    );
+    expect(blueprint.stopRules.map((rule) => rule.id)).toEqual(
+      expect.arrayContaining([
+        "context_max_missing_line_refs",
+        "context_max_coverage_gap_without_reason",
+        "context_max_raw_deletion_resilience_unproven",
+        "context_max_private_leakage",
       ]),
     );
   });

@@ -6,6 +6,18 @@ import type { ContextIngestParsed, ManifestEntry } from "./ingest.js";
 const CONTEXT_ASSIMILATION_PROMPT_ADDRESS =
   "framework/template/generated.artifact/context_assimilation/v1";
 
+export type ContextWorkspaceMode =
+  | "adaptive"
+  | "minimal"
+  | "wiki"
+  | "codebase"
+  | "research"
+  | "maximum-assimilation";
+
+function isMaximumAssimilation(mode?: ContextWorkspaceMode): boolean {
+  return mode === "maximum-assimilation";
+}
+
 export function selectedSourceRows(
   opts: Pick<ContextIngestParsed, "mode" | "includePrivate">,
   sourceRows: ManifestEntry[],
@@ -27,6 +39,7 @@ export function selectedSourceRows(
 function buildIngestMetadata(
   opts: Omit<ContextIngestParsed, "runTask">,
   sourceRows: ManifestEntry[],
+  workspaceMode?: ContextWorkspaceMode,
 ): {
   title: string;
   description: string;
@@ -38,6 +51,10 @@ function buildIngestMetadata(
     sources: "explicit sources",
   }[opts.mode];
   const modeSource = selectedSourceRows(opts, sourceRows);
+  const maximumAssimilation = isMaximumAssimilation(workspaceMode);
+  const blueprintId: NonNullable<TaskNewParsed["blueprintRequest"]> = maximumAssimilation
+    ? "context.maximum_assimilation"
+    : "context.assimilation";
   const title = `context assimilation (${modeLabel})`;
   const promptRef = CONTEXT_ASSIMILATION_PROMPT_ADDRESS;
   const description = [
@@ -50,7 +67,7 @@ function buildIngestMetadata(
     `private-only filtering: enabled`,
     `Run policy: task-owner CURATOR`,
     `Prompt module: ${promptRef}`,
-    "Blueprint: context.assimilation",
+    `Blueprint: ${blueprintId}`,
     "",
     "CURATOR contract:",
     "- Follow the context.assimilation lifecycle: source_set lock -> pre-write search/reconcile -> wiki/facts/graph/report writes -> reindex -> lint -> graph validate -> verify-task -> doctor -> smoke search.",
@@ -62,6 +79,19 @@ function buildIngestMetadata(
     "- Represent facts, decisions, policies, requirements, risks, preferences, and definitions as distinct modalities.",
     "- If claims conflict, create a conflict candidate and ask for review before promotion; never overwrite silently.",
     "- Treat completed-task architecture changes as ADR/evolution records with provenance, not as probabilistic facts.",
+    ...(maximumAssimilation
+      ? [
+          "",
+          "Maximum-assimilation contract:",
+          "- Preserve all significant non-private source meaning in wiki and derived artifacts so semantic recall does not depend on retaining raw files.",
+          "- Keep original source identity in a source registry or source-set lock with path, `sha256:`, content type, line count, ingest time, and availability state.",
+          "- Use concrete line-addressed source refs for extracted claims, entities, relations, glossary aliases, and article sections as audit provenance, not as retained content.",
+          "- Run extraction in two passes: first entities/aliases/relations/conflicts/open questions/coverage, then narrative wiki articles based on that structured layer.",
+          "- Maintain a canonical glossary over wiki pages and graph entities; use canonical terms in prose and preserve source-local terms as aliases or evidence details.",
+          "- Record a coverage map: covered source spans, intentionally omitted boilerplate, redacted private spans, unresolved identity questions, and remaining conflicts.",
+          "- Treat raw-deletion resilience as a finish gate: if `context/raw/**` were removed, the maintained wiki and derived artifacts should still preserve the significant non-private meaning. Raw refs may become non-dereferenceable.",
+        ]
+      : []),
   ].join("\n");
   return {
     title,
@@ -80,7 +110,8 @@ function buildIngestMetadata(
   };
 }
 
-function buildContextAssimilationPromptModule(): PromptModule {
+function buildContextAssimilationPromptModule(workspaceMode?: ContextWorkspaceMode): PromptModule {
+  const maximumAssimilation = isMaximumAssimilation(workspaceMode);
   return {
     schema_version: PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
     address: {
@@ -108,7 +139,7 @@ function buildContextAssimilationPromptModule(): PromptModule {
       "",
       "Core rules:",
       "- Raw sources remain source-of-truth. Do not mutate `context/raw/**`.",
-      "- Treat `context.assimilation` as the governing blueprint for lifecycle order, evidence, stop rules, and recovery.",
+      `- Treat \`${maximumAssimilation ? "context.maximum_assimilation" : "context.assimilation"}\` as the governing blueprint for lifecycle order, evidence, stop rules, and recovery.`,
       "- Source-set lock and pre-write search/reconciliation happen before wiki edits.",
       "- Wiki pages are synthesis artifacts for humans and agents. They should be readable markdown with YAML frontmatter.",
       "- Atomic claims belong in derived claim/fact rows and graph rows. Do not create one markdown page per minor claim.",
@@ -152,6 +183,19 @@ function buildContextAssimilationPromptModule(): PromptModule {
       "- Use `possibly_same_as` or an open question when entity identity is uncertain.",
       "- If new evidence contradicts existing knowledge, create a conflict candidate and request review before promotion or overwrite.",
       "- Final update step: refresh affected indexes, navigation pages, glossary entries, and tables of contents after wiki and derived artifact changes are complete.",
+      ...(maximumAssimilation
+        ? [
+            "",
+            "Maximum-assimilation workflow:",
+            "- Intake: classify each selected source span as significant content, boilerplate, private/redacted, duplicate, or unresolved.",
+            "- Source identity: preserve each source's `sha256:`, path, content type, line count, ingest time, and availability state. Cite extracted content with line refs such as `context/raw/research/note.md#lines=12-24`.",
+            "- Extraction pass: identify canonical entities, source-local aliases, relations, decisions, requirements, risks, workflows, definitions, conflicts, and open questions before article writing.",
+            "- Glossary pass: update the canonical glossary as a navigation index over wiki pages and graph entities; normalize prose to canonical terms where confidence is high.",
+            "- Synthesis pass: create granular wiki pages and stable headings from the extracted graph/glossary layer. The wiki should preserve all significant non-private meaning even without raw files.",
+            "- Coverage pass: write or update a coverage report naming covered spans, omitted boilerplate, redacted/private spans, conflicts, unresolved identities, and any approval-required gaps.",
+            "- Critical check: do not flatten contradictions, do not silently invent canonical terms, do not copy secrets/private raw content into public wiki/task/ACR surfaces, and do not claim full semantic coverage without self-contained wiki/fact/graph content plus line-addressed provenance.",
+          ]
+        : []),
       "",
       "Verification:",
       "- Run `agentplane context reindex --include-raw` after the final content change.",
@@ -183,11 +227,16 @@ function buildContextAssimilationPromptModule(): PromptModule {
 export function createTaskNewParsed(
   opts: ContextIngestParsed,
   sourceRows: ManifestEntry[],
+  workspaceMode?: ContextWorkspaceMode,
 ): TaskNewParsed {
-  const metadata = buildIngestMetadata(opts, sourceRows);
+  const metadata = buildIngestMetadata(opts, sourceRows, workspaceMode);
   const now = new Date().toISOString();
   const selectedRows = selectedSourceRows(opts, sourceRows);
   const allowCapabilities = false;
+  const maximumAssimilation = isMaximumAssimilation(workspaceMode);
+  const blueprintId: NonNullable<TaskNewParsed["blueprintRequest"]> = maximumAssimilation
+    ? "context.maximum_assimilation"
+    : "context.assimilation";
   const allowedOutputs = [
     "context/wiki/**",
     ".agentplane/context/derived/facts/**",
@@ -199,7 +248,7 @@ export function createTaskNewParsed(
   if (allowCapabilities) {
     allowedOutputs.push("context/capabilities/**", ".agentplane/context/derived/capabilities/**");
   }
-  const promptModule = buildContextAssimilationPromptModule();
+  const promptModule = buildContextAssimilationPromptModule(workspaceMode);
   return {
     title: metadata.title,
     description: metadata.description,
@@ -208,14 +257,14 @@ export function createTaskNewParsed(
     tags: ["context", "assimilation"],
     taskKind: "context",
     mutationScope: "context",
-    blueprintRequest: "context.assimilation",
+    blueprintRequest: blueprintId,
     extensions: {
       "agentplane.context": {
         schema_version: 1,
         task_type: "context_assimilation",
         manifest: ".agentplane/context/agentplane.context.yaml",
         workspace: "context",
-        mode: "wiki",
+        mode: maximumAssimilation ? "maximum_assimilation" : "wiki",
         source_set: {
           selection: opts.mode,
           include_private: opts.includePrivate,
@@ -229,10 +278,18 @@ export function createTaskNewParsed(
           })),
         },
         blueprint: {
-          id: "context.assimilation",
+          id: blueprintId,
           required_gates: [
             "source_set_locked",
             "prewrite_context_search",
+            ...(maximumAssimilation
+              ? [
+                  "entity_relation_first_extraction",
+                  "canonical_glossary_updated",
+                  "line_addressed_coverage_map",
+                  "raw_deletion_resilience_review",
+                ]
+              : []),
             "wiki_schema_lint",
             "reindex_after_writes",
             "graph_validate",
@@ -244,6 +301,15 @@ export function createTaskNewParsed(
             "empty_source_set",
             "pipeline_order_skipped",
             "missing_source_refs",
+            ...(maximumAssimilation
+              ? [
+                  "missing_line_refs",
+                  "coverage_gap_without_reason",
+                  "glossary_conflict",
+                  "raw_deletion_resilience_unproven",
+                  "private_leakage",
+                ]
+              : []),
             "stale_projection_after_reindex",
             "empty_derived_outputs_without_reason",
             "unresolved_conflict_candidate",
@@ -255,11 +321,20 @@ export function createTaskNewParsed(
         allowed_outputs: allowedOutputs,
         wiki: {
           layout_strategy: "adaptive",
-          page_granularity: "topic_artifact",
+          page_granularity: maximumAssimilation ? "granular_topic_artifact" : "topic_artifact",
           claim_granularity: "atomic",
           frontmatter_required: true,
           cross_links_required: true,
           source_refs_as_markdown_links: true,
+          ...(maximumAssimilation
+            ? {
+                maintenance_mode: "maximum_assimilation",
+                raw_deletion_resilience_required: true,
+                line_refs_required: true,
+                entity_relation_first: true,
+                canonical_glossary_required: true,
+              }
+            : {}),
         },
         assimilation: {
           update_wiki: true,
