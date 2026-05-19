@@ -34,11 +34,20 @@ describe("task observations", () => {
         severity: "high",
         status: "accepted",
       }),
+      observation({
+        id: "obs-0005",
+        kind: "agent_improvement_candidate",
+        recommended_action: { type: "none", title: "Think about it later" },
+      }),
     ]);
 
     expect(issues).toEqual([
       { id: "obs-0001", reason: "open critical severity observation" },
       { id: "obs-0002", reason: "open deviation without decision" },
+      {
+        id: "obs-0005",
+        reason: "agent_improvement_candidate without actionable recommended_action",
+      },
     ]);
   });
 

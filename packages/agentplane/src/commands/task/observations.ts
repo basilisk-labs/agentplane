@@ -14,6 +14,7 @@ import {
   type TaskObservationStatus,
 } from "@agentplaneorg/core/tasks";
 import { mkdir, readFile, appendFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -105,8 +106,8 @@ export async function readTaskObservations(
   return { task, artifactPath, observations, errors };
 }
 
-function nextObservationId(observations: readonly TaskObservation[]): string {
-  return `obs-${String(observations.length + 1).padStart(4, "0")}`;
+function nextObservationId(now: Date): string {
+  return `obs-${now.getTime().toString(36)}-${randomUUID()}`;
 }
 
 function cleanStringArray(values: readonly string[] | undefined): string[] | undefined {
@@ -169,11 +170,12 @@ export async function appendTaskObservation(
     title: optionalTrimmed(opts.actionTitle),
     details: optionalTrimmed(opts.actionDetails),
   };
+  const now = opts.now ?? new Date();
   const observation = validateTaskObservation({
     schema_version: TASK_OBSERVATION_SCHEMA_VERSION,
-    id: nextObservationId(existing.observations),
+    id: nextObservationId(now),
     task_id: opts.taskId,
-    created_at: (opts.now ?? new Date()).toISOString(),
+    created_at: now.toISOString(),
     author: opts.author.trim(),
     phase: opts.phase,
     kind: opts.kind,
@@ -211,9 +213,9 @@ export function findBlockingObservationIssues(
       (item.kind === "incident_candidate" ||
         item.kind === "issue_candidate" ||
         item.kind === "agent_improvement_candidate") &&
-      !item.recommended_action
+      (!item.recommended_action || item.recommended_action.type === "none")
     ) {
-      issues.push({ id: item.id, reason: `${item.kind} without recommended_action` });
+      issues.push({ id: item.id, reason: `${item.kind} without actionable recommended_action` });
     }
   }
   return issues;
