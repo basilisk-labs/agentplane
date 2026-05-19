@@ -1,10 +1,11 @@
 ---
 id: "202605191250-N3TCR3"
 title: "Remove stale 0.6 legacy cleanup surfaces"
-status: "DOING"
+result_summary: "Merged via PR #3932."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605191250-N3TCR3/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191250-N3TCR3-legacy-cleanup-06/.agentplane/tasks/202605191250-N3TCR3/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "6df56b008647cb3978a89ebc7bc3b2c19e2242c8"
+  message: "Remove stale 0.6 legacy cleanup surfaces"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the approved 0.6 legacy cleanup in the task worktree, limited to init legacy config preview/conflict handling and disabled deprecated auto-allow help/docs visibility."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3932 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -96,9 +102,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed with hosted PR checks green on head 03fc80d71ca401fea2d404f0228de17db597e3a3 and implementation commit 5538593f56ce2fddd6f4408b241cbf20a17f0f8b. Evidence: GitHub PR #3932 checks passed: test, test-windows, docs, Release-ready manifest, CodeQL, changes."
+  -
+    type: "status"
+    at: "2026-05-19T14:19:01.592Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3932 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T14:09:34.546Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T14:19:01.601Z"
+doc_updated_by: "INTEGRATOR"
 description: "Clean up stale legacy-facing CLI/init surfaces that are no longer needed for the 0.6 happy path while preserving runtime compatibility fallbacks."
 sections:
   Summary: |-
