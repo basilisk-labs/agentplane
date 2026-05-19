@@ -28,7 +28,7 @@ docs:ia:check, evidence bundle, evidence verify --strict.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T14:49:33.248Z
+- Updated: 2026-05-19T14:52:54.635Z
 - Branch: task/202605191421-D566XJ/evidence-bundle
 - Head: a89b99bfe360
 
