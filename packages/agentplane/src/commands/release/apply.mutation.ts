@@ -111,6 +111,34 @@ export async function replacePackageDependencyVersion(
   await writeFile(pkgJsonPath, replaced, "utf8");
 }
 
+export async function replaceAcrExampleVersionInFile(
+  acrPath: string,
+  nextVersion: string,
+): Promise<void> {
+  const raw = JSON.parse(await readFile(acrPath, "utf8")) as {
+    producer?: { version?: unknown };
+    agent?: { toolchain?: { name?: unknown; version?: unknown }[] };
+  };
+  raw.producer = raw.producer ?? {};
+  raw.producer.version = nextVersion;
+  const toolchain = Array.isArray(raw.agent?.toolchain) ? raw.agent.toolchain : [];
+  let updatedToolchain = false;
+  for (const tool of toolchain) {
+    if (tool.name === "agentplane") {
+      tool.version = nextVersion;
+      updatedToolchain = true;
+    }
+  }
+  if (!updatedToolchain) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Failed to update agentplane toolchain version in ${acrPath}.`,
+    });
+  }
+  await writeFile(acrPath, `${JSON.stringify(raw, null, 2)}\n`, "utf8");
+}
+
 export async function packageDependencyExists(
   pkgJsonPath: string,
   dependencyName: string,
