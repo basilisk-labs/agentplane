@@ -13,7 +13,7 @@ Created: 2026-05-19T17:04:03.241Z
 ## Verification
 
 - State: ok
-- Note: Command: independent quality review against the updated maximum-assimilation contract and diff. Result: pass. Evidence: first-ingest behavior now skips fixed starter folders only when workspace mode is maximum-assimilation while retaining the starter scaffold test for non-maximum mode; generated CURATOR prompt requires source-shaped topology decision, granular synthesis, Obsidian-compatible wikilinks, coverage report, raw-deletion resilience review, and EVALUATOR review; blueprint evidence/stop rules include topology, wikilinks, and evaluator gates; docs clarify no .obsidian config is created by default. Scope: semantic quality gate for source-shaped wiki structure, useful wikilinks, provenance, coverage, glossary safety, and leakage risk.
+- Note: Final quality review passed. Maximum-assimilation behavior is source-shaped: first ingest skips the fixed starter wiki scaffold, generated task contracts require topology decision, granular wiki synthesis, Obsidian-compatible semantic wikilinks, raw-deletion resilience, and explicit EVALUATOR review; medium/non-maximum scaffold behavior remains covered by tests.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

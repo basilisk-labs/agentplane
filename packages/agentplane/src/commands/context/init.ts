@@ -378,19 +378,17 @@ Maximum-assimilation mode adds a stricter wiki maintenance contract:
   missing, refs may be non-dereferenceable while wiki/fact/graph artifacts stay self-contained.
 - Extract entities, aliases, relations, decisions, requirements, risks, workflows, and conflicts
   before writing narrative articles.
-- Choose the wiki structure from source content. Do not create the default
-  concepts/entities/decisions/modules/contradictions/reports scaffold in maximum-assimilation mode
-  unless the source analysis justifies that topology.
-- Record a wiki topology decision before creating page families: canonical pages, folder rationale,
-  aliases, and headings kept inside broader pages.
+- Choose the wiki structure from source content; do not create the default
+  concepts/entities/decisions/modules/contradictions/reports scaffold unless source analysis
+  justifies it. Record the topology decision before creating page families.
 - Maintain a canonical glossary as a navigation/alias layer over wiki pages and graph entities, then
   use glossary canonical terms in synthesized prose while preserving source-local terms as aliases.
-- Use Obsidian-compatible \`[[Page Title]]\` and \`[[Page Title#Section]]\` links for semantic wiki
-  graph links; keep Markdown links for source refs, files, and external URLs.
+- Use Obsidian-compatible \`[[Page Title]]\` links for semantic wiki graph links; keep Markdown
+  links for source refs, files, and external URLs.
 - Treat coverage gaps, unresolved entity identity, sensitive-source leakage risk, and missing line refs
   as blockers or explicit approval-required findings.
-- Require EVALUATOR review of source-shaped topology, granularity, wikilinks, coverage, glossary
-  alias safety, raw-deletion resilience, and private leakage risk before finish.
+- Require EVALUATOR review of topology, granularity, wikilinks, coverage, glossary safety,
+  raw-deletion resilience, and private leakage risk before finish.
 `
       : "";
   return `# Context workspace
@@ -428,9 +426,8 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
   stored meaning.
 - First pass: build or update canonical entities, glossary aliases, relation candidates, conflict
   candidates, and coverage notes.
-- Topology pass: choose the wiki structure from the selected source content; do not mechanically
-  create \`concepts/\`, \`entities/\`, \`decisions/\`, \`modules/\`, \`contradictions/\`, or
-  \`reports/\` unless that structure is source-backed.
+- Topology pass: choose wiki structure from source content; do not mechanically create
+  \`concepts/\`, \`entities/\`, \`decisions/\`, \`modules/\`, \`contradictions/\`, or \`reports/\`.
 - Second pass: synthesize granular wiki articles from that graph/glossary layer; use canonical
   glossary terms in prose and preserve source-local wording as aliases or evidence details.
 - Create separate pages for reusable entities, concepts, decisions, requirements, risks, workflows,
@@ -439,9 +436,8 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
   graph links; keep Markdown links for source refs, files, and external URLs.
 - Record extraction coverage: covered source spans, intentionally omitted boilerplate, redacted
   spans, unresolved conflicts, and open questions.
-- Record an EVALUATOR quality review for source-shaped topology, granularity, useful wikilinks,
-  line-addressed provenance, glossary alias safety, coverage gaps, raw-deletion resilience, and
-  private leakage risk before finish.
+- Record EVALUATOR review for topology, granularity, wikilinks, line refs, glossary safety,
+  coverage gaps, raw-deletion resilience, and private leakage risk before finish.
 - If a raw source is missing later, keep its source registry entry with availability state
   \`missing\`; the wiki, facts, graph, glossary, and coverage artifacts must still carry the
   assimilated meaning.

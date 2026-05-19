@@ -4,7 +4,7 @@ title: "Make maximum assimilation source-shaped and Obsidian-compatible"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,16 +21,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T17:19:50.380Z"
+  updated_at: "2026-05-19T17:42:29.745Z"
   updated_by: "EVALUATOR"
-  note: "Command: independent quality review against the updated maximum-assimilation contract and diff. Result: pass. Evidence: first-ingest behavior now skips fixed starter folders only when workspace mode is maximum-assimilation while retaining the starter scaffold test for non-maximum mode; generated CURATOR prompt requires source-shaped topology decision, granular synthesis, Obsidian-compatible wikilinks, coverage report, raw-deletion resilience review, and EVALUATOR review; blueprint evidence/stop rules include topology, wikilinks, and evaluator gates; docs clarify no .obsidian config is created by default. Scope: semantic quality gate for source-shaped wiki structure, useful wikilinks, provenance, coverage, glossary safety, and leakage risk."
+  note: "Final quality review passed. Maximum-assimilation behavior is source-shaped: first ingest skips the fixed starter wiki scaffold, generated task contracts require topology decision, granular wiki synthesis, Obsidian-compatible semantic wikilinks, raw-deletion resilience, and explicit EVALUATOR review; medium/non-maximum scaffold behavior remains covered by tests."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T17:19:50.380Z"
+  updated_at: "2026-05-19T17:42:29.745Z"
   updated_by: "EVALUATOR"
-  note: "Command: independent quality review against the updated maximum-assimilation contract and diff. Result: pass. Evidence: first-ingest behavior now skips fixed starter folders only when workspace mode is maximum-assimilation while retaining the starter scaffold test for non-maximum mode; generated CURATOR prompt requires source-shaped topology decision, granular synthesis, Obsidian-compatible wikilinks, coverage report, raw-deletion resilience review, and EVALUATOR review; blueprint evidence/stop rules include topology, wikilinks, and evaluator gates; docs clarify no .obsidian config is created by default. Scope: semantic quality gate for source-shaped wiki structure, useful wikilinks, provenance, coverage, glossary safety, and leakage risk."
-  evaluated_sha: "cdffae04ff79d82e589eed934d02c3d38932488d"
+  note: "Final quality review passed. Maximum-assimilation behavior is source-shaped: first ingest skips the fixed starter wiki scaffold, generated task contracts require topology decision, granular wiki synthesis, Obsidian-compatible semantic wikilinks, raw-deletion resilience, and explicit EVALUATOR review; medium/non-maximum scaffold behavior remains covered by tests."
+  evaluated_sha: "299c0fb395a7ef967427372f90c9470a53de1678"
   blueprint_digest: "50d9296a4fc61c3c7b6f21071ca1760784975791e2202d81593b7cf6b51b43e5"
   evidence_refs:
     - ".agentplane/tasks/202605191703-PYJMMV/README.md"
@@ -61,8 +61,20 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Command: independent quality review against the updated maximum-assimilation contract and diff. Result: pass. Evidence: first-ingest behavior now skips fixed starter folders only when workspace mode is maximum-assimilation while retaining the starter scaffold test for non-maximum mode; generated CURATOR prompt requires source-shaped topology decision, granular synthesis, Obsidian-compatible wikilinks, coverage report, raw-deletion resilience review, and EVALUATOR review; blueprint evidence/stop rules include topology, wikilinks, and evaluator gates; docs clarify no .obsidian config is created by default. Scope: semantic quality gate for source-shaped wiki structure, useful wikilinks, provenance, coverage, glossary safety, and leakage risk."
+  -
+    type: "verify"
+    at: "2026-05-19T17:42:17.041Z"
+    author: "CODER"
+    state: "ok"
+    note: "Final implementation verification passed after hotspot compaction. Checks: bun run typecheck; bun test packages/agentplane/src/commands/context/release-readiness.test.ts packages/agentplane/src/blueprints/validate.test.ts; bunx eslint targeted files; bun run hotspots:check; bun run agents:check && bun run assets:builtin:check && node .agentplane/policy/check-routing.mjs; bun run docs:site:typecheck."
+  -
+    type: "verify"
+    at: "2026-05-19T17:42:29.745Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Final quality review passed. Maximum-assimilation behavior is source-shaped: first ingest skips the fixed starter wiki scaffold, generated task contracts require topology decision, granular wiki synthesis, Obsidian-compatible semantic wikilinks, raw-deletion resilience, and explicit EVALUATOR review; medium/non-maximum scaffold behavior remains covered by tests."
 doc_version: 3
-doc_updated_at: "2026-05-19T17:19:50.732Z"
+doc_updated_at: "2026-05-19T17:42:29.816Z"
 doc_updated_by: "CODER"
 description: "Update maximum-assimilation context mode so first ingest does not create the fixed starter wiki scaffold, generated CURATOR prompts require source-shaped wiki topology and Obsidian-compatible wikilinks, and EVALUATOR checks quality for structure, granularity, cross-links, coverage, and raw-deletion resilience."
 sections:
@@ -109,6 +121,44 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:18:53.442Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191703-PYJMMV-max-assimilation-obsidian/.agentplane/tasks/202605191703-PYJMMV/blueprint/resolved-snapshot.json
+    - old_digest: 50d9296a4fc61c3c7b6f21071ca1760784975791e2202d81593b7cf6b51b43e5
+    - current_digest: 50d9296a4fc61c3c7b6f21071ca1760784975791e2202d81593b7cf6b51b43e5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191703-PYJMMV
+
+    ### 2026-05-19T17:42:17.041Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Final implementation verification passed after hotspot compaction. Checks: bun run typecheck; bun test packages/agentplane/src/commands/context/release-readiness.test.ts packages/agentplane/src/blueprints/validate.test.ts; bunx eslint targeted files; bun run hotspots:check; bun run agents:check && bun run assets:builtin:check && node .agentplane/policy/check-routing.mjs; bun run docs:site:typecheck.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:19:50.732Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191703-PYJMMV-max-assimilation-obsidian/.agentplane/tasks/202605191703-PYJMMV/blueprint/resolved-snapshot.json
+    - old_digest: 50d9296a4fc61c3c7b6f21071ca1760784975791e2202d81593b7cf6b51b43e5
+    - current_digest: 50d9296a4fc61c3c7b6f21071ca1760784975791e2202d81593b7cf6b51b43e5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191703-PYJMMV
+
+    ### 2026-05-19T17:42:29.745Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Final quality review passed. Maximum-assimilation behavior is source-shaped: first ingest skips the fixed starter wiki scaffold, generated task contracts require topology decision, granular wiki synthesis, Obsidian-compatible semantic wikilinks, raw-deletion resilience, and explicit EVALUATOR review; medium/non-maximum scaffold behavior remains covered by tests.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:42:17.078Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -180,6 +230,44 @@ Note: Command: independent quality review against the updated maximum-assimilati
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:18:53.442Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191703-PYJMMV-max-assimilation-obsidian/.agentplane/tasks/202605191703-PYJMMV/blueprint/resolved-snapshot.json
+- old_digest: 50d9296a4fc61c3c7b6f21071ca1760784975791e2202d81593b7cf6b51b43e5
+- current_digest: 50d9296a4fc61c3c7b6f21071ca1760784975791e2202d81593b7cf6b51b43e5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191703-PYJMMV
+
+### 2026-05-19T17:42:17.041Z — VERIFY — ok
+
+By: CODER
+
+Note: Final implementation verification passed after hotspot compaction. Checks: bun run typecheck; bun test packages/agentplane/src/commands/context/release-readiness.test.ts packages/agentplane/src/blueprints/validate.test.ts; bunx eslint targeted files; bun run hotspots:check; bun run agents:check && bun run assets:builtin:check && node .agentplane/policy/check-routing.mjs; bun run docs:site:typecheck.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:19:50.732Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191703-PYJMMV-max-assimilation-obsidian/.agentplane/tasks/202605191703-PYJMMV/blueprint/resolved-snapshot.json
+- old_digest: 50d9296a4fc61c3c7b6f21071ca1760784975791e2202d81593b7cf6b51b43e5
+- current_digest: 50d9296a4fc61c3c7b6f21071ca1760784975791e2202d81593b7cf6b51b43e5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191703-PYJMMV
+
+### 2026-05-19T17:42:29.745Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Final quality review passed. Maximum-assimilation behavior is source-shaped: first ingest skips the fixed starter wiki scaffold, generated task contracts require topology decision, granular wiki synthesis, Obsidian-compatible semantic wikilinks, raw-deletion resilience, and explicit EVALUATOR review; medium/non-maximum scaffold behavior remains covered by tests.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T17:42:17.078Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 

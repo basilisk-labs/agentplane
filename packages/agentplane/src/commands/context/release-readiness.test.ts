@@ -127,9 +127,9 @@ describe("context release readiness guards", () => {
     expect(wikiAgents).toContain("stored meaning");
     expect(wikiAgents).toContain("availability state");
     expect(wikiAgents).toContain("`missing`");
-    expect(wikiAgents).toContain("choose the wiki structure from the selected source content");
+    expect(wikiAgents).toContain("choose wiki structure from source content");
     expect(wikiAgents).toContain("[[Page Title]]");
-    expect(wikiAgents).toContain("EVALUATOR quality review");
+    expect(wikiAgents).toContain("Record EVALUATOR review");
   });
 
   it("creates starter wiki structure on first context ingest with selected sources", async () => {
