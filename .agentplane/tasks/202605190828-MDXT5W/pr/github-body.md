@@ -19,18 +19,18 @@ Update agentplane.org website and docs surfaces after live audit: star-focused h
 - Note:
 
 ```text
-EVALUATOR quality gate passed: PR #3925 head 40819d9f has successful GitHub Docs CI, Core CI
-test/test-windows, CodeQL, Dependency Review, and local verification recorded by CODER; scoped
-CodeQL smoke-script alert was fixed and rechecked.
+EVALUATOR quality gate passed for PR #3925 head 9b0c19b: review thread resolved by updating GitHub
+proof fallback to live v0.6.3 release data; Docs CI, Core CI test/test-windows, CodeQL, Dependency
+Review, format, and site-content checks passed.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T11:34:48.736Z
+- Updated: 2026-05-19T11:49:54.936Z
 - Branch: task/202605190828-MDXT5W/site-star-docs-ia
-- Head: 40819d9f1304
+- Head: 9b0c19b3bfb4
 
 ```text
  .../blueprint/resolved-snapshot.json               | 598 +++++++++++++++++++++
