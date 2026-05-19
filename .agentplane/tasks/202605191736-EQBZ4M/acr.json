@@ -1,0 +1,521 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605191736-EQBZ4M",
+  "created_at": "2026-05-19T18:08:27.418Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.3"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "3c18330bf47b1eab43524d902537fc3b4c9d8830",
+    "work_ref": "task/202605191736-EQBZ4M/task-observations",
+    "work_commit": "69ca9c0044f482f1d8b0d631885da7d61f7e5eef"
+  },
+  "task": {
+    "task_id": "202605191736-EQBZ4M",
+    "title": "Add task observations journal",
+    "intent": "Implement a structured task-local observations.jsonl artifact for agent-discovered spec gaps, decisions, risks, issue candidates, incident candidates, context candidates, and agent improvement candidates, with CLI support for adding, listing, checking, and triaging observations.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "CODER",
+    "name": "CODER",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.6.3"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605191736-EQBZ4M/README.md",
+      "sha256": "sha256:d11e67e237be391ae2ca40a9fe04861833b747e21ef833809f0738343a915ca9"
+    },
+    "approved_at": "2026-05-19T17:36:23.512Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Implement a structured task-local observations.jsonl artifact for agent-discovered spec gaps, decisions, risks, issue candidates, incident candidates, context candidates, and agent improvement candidates, with CLI support for adding, listing, checking, and triaging observations.",
+    "diff_stats": {
+      "files_changed": 30,
+      "insertions": 3009,
+      "deletions": 3
+    },
+    "files": [
+      {
+        "path": ".agentplane/tasks/202605191736-EQBZ4M/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191736-EQBZ4M/acr.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191736-EQBZ4M/observations.jsonl",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191736-EQBZ4M/pr/diffstat.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191736-EQBZ4M/pr/github-body.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191736-EQBZ4M/pr/github-title.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191736-EQBZ4M/pr/meta.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605191736-EQBZ4M/pr/review.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "docs/index.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/reference/evidence.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/reference/task-observations.mdx",
+        "status": "added",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/start/what-agentplane-writes.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/command-catalog/task.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/command-loaders/task.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/acr/generate.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/observations.command.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/observations.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/observations.unit.test.ts",
+        "status": "added",
+        "risk_categories": [
+          "tests",
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/core/schemas/task-observation.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/src/index.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/core/src/schemas/index.ts",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/src/tasks/index.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/core/src/tasks/task-artifact-schema.observations.ts",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/src/tasks/task-artifact-schema.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "schema",
+          "tests"
+        ]
+      },
+      {
+        "path": "packages/core/src/tasks/task-artifact-schema.ts",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/spec/README.md",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/spec/schemas/task-observation.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "schemas/task-observation.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "scripts/generate/sync-schemas.mjs",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      }
+    ],
+    "risk": {
+      "level": "medium",
+      "categories": [
+        "tooling",
+        "docs",
+        "cli",
+        "tests",
+        "schema"
+      ],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "typecheck",
+        "command": "bun run --filter=@agentplaneorg/core typecheck",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-2",
+        "type": "typecheck",
+        "command": "bun run --filter=agentplane typecheck",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-3",
+        "type": "schema_validation",
+        "command": "bun run schemas:check",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-4",
+        "type": "schema_validation",
+        "command": "bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-artifact-schema.test.ts",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-5",
+        "type": "test",
+        "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/observations.unit.test.ts",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-6",
+        "type": "other",
+        "command": "ap task observations check 202605191736-EQBZ4M",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-7",
+        "type": "other",
+        "command": "bun run docs:cli:check",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-8",
+        "type": "other",
+        "command": "bun run format:changed",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-9",
+        "type": "other",
+        "command": "bun run spec:examples:check",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-10",
+        "type": "other",
+        "command": "node .agentplane/policy/check-routing.mjs",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-11",
+        "type": "other",
+        "command": "ap doctor",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605191736-EQBZ4M_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-19T17:36:23.512Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605191736-EQBZ4M/README.md",
+      "sha256": "sha256:d11e67e237be391ae2ca40a9fe04861833b747e21ef833809f0738343a915ca9"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605191736-EQBZ4M/README.md",
+      "sha256": "sha256:d11e67e237be391ae2ca40a9fe04861833b747e21ef833809f0738343a915ca9"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605191736-EQBZ4M/README.md",
+      "sha256": "sha256:d11e67e237be391ae2ca40a9fe04861833b747e21ef833809f0738343a915ca9"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605191736-EQBZ4M/observations.jsonl",
+      "sha256": "sha256:58c5482d01fad8604889e0a5472ea1222da554972d9328cda35caad873a4bdcf"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:bd9dc93c07f4cbf4bfb21ee5505b1727a85d2741224d9e89d387427566f1e625"
+    }
+  ],
+  "result": {
+    "status": "verified",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 69ca9c0044f482f1d8b0d631885da7d61f7e5eef if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:322b03c583b70d022d617b0309f0ecd4e4c86025e3920cf2977cf9b52836342d",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "quality_gate",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.verify",
+          "kind": "check_result",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "code_pr.quality",
+          "kind": "quality_report",
+          "produced_by": "quality_gate",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605191736-EQBZ4M/blueprint/resolved-snapshot.json",
+        "digest": "e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6",
+        "current_digest": "e9d2ac6b284e899336436829c48477751c34f000feaec95129567d714a931dc6",
+        "route_changed": false,
+        "artifact_sha256": "sha256:bd9dc93c07f4cbf4bfb21ee5505b1727a85d2741224d9e89d387427566f1e625",
+        "safe_command": "agentplane blueprint snapshot 202605191736-EQBZ4M"
+      }
+    }
+  }
+}

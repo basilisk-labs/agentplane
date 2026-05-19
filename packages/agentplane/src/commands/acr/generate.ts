@@ -61,6 +61,13 @@ export async function generateAcr(opts: {
   const remote = await gitConfigGet(gitRoot, "remote.origin.url");
   const diff = await readDiffSummary(gitRoot, baseCommit, workCommit);
   const taskHash = await hashFile(taskReadmePath).catch(() => null);
+  const observationsPath = path.join(
+    gitRoot,
+    opts.ctx.config.paths.workflow_dir,
+    opts.taskId,
+    "observations.jsonl",
+  );
+  const observationsHash = await hashFile(observationsPath).catch(() => null);
   const planState = task.plan_approval?.state ?? "pending";
   const verificationState = task.verification?.state ?? "pending";
   const now = new Date().toISOString();
@@ -120,6 +127,15 @@ export async function generateAcr(opts: {
   });
   const evidence = [
     ...taskEvidence,
+    ...(observationsHash
+      ? [
+          {
+            type: "other" as const,
+            path: path.relative(gitRoot, observationsPath),
+            sha256: observationsHash,
+          },
+        ]
+      : []),
     ...(blueprint.snapshot?.state === "current" &&
     blueprint.snapshot.path &&
     blueprint.snapshot.artifact_sha256

@@ -1,0 +1,148 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentplane.org/schemas/task-observation.schema.json",
+  "title": "Task observation JSONL entry (v0.1)",
+  "description": "A task observation is one append-only JSONL entry for agent-discovered spec gaps, decisions, risks, and follow-up candidates.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "0.1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^obs-[A-Za-z0-9_-]+$"
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+    },
+    "author": {
+      "type": "string",
+      "minLength": 1
+    },
+    "phase": {
+      "type": "string",
+      "enum": ["planning", "implementation", "verification", "integration", "finish", "post_run"]
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "spec_gap",
+        "assumption",
+        "decision",
+        "deviation",
+        "tradeoff",
+        "risk",
+        "bug_candidate",
+        "issue_candidate",
+        "incident_candidate",
+        "context_candidate",
+        "agent_improvement_candidate",
+        "blueprint_improvement_candidate"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?!\\/)(?!\\\\)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|\\/)\\.\\.(?:\\/|$)).+$"
+          }
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "decision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "impact": {
+      "type": "string",
+      "minLength": 1
+    },
+    "recommended_action": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "none",
+            "readme_finding",
+            "github_issue",
+            "incident",
+            "context",
+            "skill",
+            "blueprint_change",
+            "agent_prompt_change",
+            "test_gap"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "details": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "string",
+      "enum": ["open", "accepted", "promoted", "dismissed", "superseded"]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "id",
+    "task_id",
+    "created_at",
+    "author",
+    "phase",
+    "kind",
+    "severity",
+    "summary",
+    "status"
+  ],
+  "additionalProperties": false
+}

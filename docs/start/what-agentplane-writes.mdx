@@ -70,6 +70,18 @@ An Agent Change Record is a machine-readable record of AI-assisted engineering w
 
 It captures task intent, workflow state, changed files, verification evidence, and review status.
 
+## Task observations
+
+Task observations are append-only structured notes for signals discovered during task execution:
+
+```text
+.agentplane/tasks/<task-id>/observations.jsonl
+```
+
+Use them for spec gaps, assumptions, implementation decisions, deviations, tradeoffs, risks, issue
+candidates, incident candidates, context candidates, and agent improvement candidates that should be
+available for later analysis.
+
 ## What leaves my machine?
 
 The default quickstart runs locally and writes local project artifacts. It does not require account

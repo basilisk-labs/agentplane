@@ -2,6 +2,10 @@ import type { TaskFrontmatter } from "./task-store.js";
 import type { TasksExportSnapshot } from "./tasks-export.js";
 import { ACR_ZOD_SCHEMA, type AgentChangeRecord } from "./task-artifact-schema.acr.js";
 import { TASK_HANDOFF_ZOD_SCHEMA, type TaskHandoff } from "./task-artifact-schema.handoff.js";
+import {
+  TASK_OBSERVATION_ZOD_SCHEMA,
+  type TaskObservation,
+} from "./task-artifact-schema.observations.js";
 import { TASK_PR_META_ZOD_SCHEMA, type TaskPrMeta } from "./task-artifact-schema.pr-metadata.js";
 import {
   TASK_README_FRONTMATTER_ZOD_SCHEMA,
@@ -22,6 +26,22 @@ export type {
 
 export type { TaskPrMeta } from "./task-artifact-schema.pr-metadata.js";
 export type { AgentChangeRecord } from "./task-artifact-schema.acr.js";
+export type { TaskObservation } from "./task-artifact-schema.observations.js";
+export type {
+  TaskObservationAction,
+  TaskObservationKind,
+  TaskObservationPhase,
+  TaskObservationSeverity,
+  TaskObservationStatus,
+} from "./task-artifact-schema.observations.js";
+export {
+  TASK_OBSERVATION_ACTION_VALUES,
+  TASK_OBSERVATION_KIND_VALUES,
+  TASK_OBSERVATION_PHASE_VALUES,
+  TASK_OBSERVATION_SCHEMA_VERSION,
+  TASK_OBSERVATION_SEVERITY_VALUES,
+  TASK_OBSERVATION_STATUS_VALUES,
+} from "./task-artifact-schema.observations.js";
 export { ACR_VERSION, computeAcrRecordDigest } from "./task-artifact-schema.acr.js";
 export { withTaskReadmeFrontmatterDefaults } from "./task-artifact-schema.task.js";
 
@@ -55,6 +75,13 @@ export const TASK_PR_META_SCHEMA = buildJsonSchemaDocument(TASK_PR_META_ZOD_SCHE
 export const TASK_HANDOFF_SCHEMA = buildJsonSchemaDocument(TASK_HANDOFF_ZOD_SCHEMA, {
   $id: "https://agentplane.org/schemas/task-handoff.schema.json",
   title: "Task handoff artifact (v1)",
+});
+
+const TASK_OBSERVATION_SCHEMA = buildJsonSchemaDocument(TASK_OBSERVATION_ZOD_SCHEMA, {
+  $id: "https://agentplane.org/schemas/task-observation.schema.json",
+  title: "Task observation JSONL entry (v0.1)",
+  description:
+    "A task observation is one append-only JSONL entry for agent-discovered spec gaps, decisions, risks, and follow-up candidates.",
 });
 
 export function listTaskReadmeFrontmatterSchemaErrors(value: unknown): string[] {
@@ -101,6 +128,14 @@ export function validateTaskHandoff(value: unknown): TaskHandoff {
   return assertValid("handoff/latest.json", TASK_HANDOFF_ZOD_SCHEMA, value);
 }
 
+export function listTaskObservationSchemaErrors(value: unknown): string[] {
+  return schemaErrors("task observation", TASK_OBSERVATION_ZOD_SCHEMA, value);
+}
+
+export function validateTaskObservation(value: unknown): TaskObservation {
+  return assertValid("task observation", TASK_OBSERVATION_ZOD_SCHEMA, value);
+}
+
 export function renderTaskReadmeFrontmatterSchemaJson(): string {
   return `${JSON.stringify(TASK_README_FRONTMATTER_SCHEMA, null, 2)}\n`;
 }
@@ -119,4 +154,8 @@ export function renderTaskPrMetaSchemaJson(): string {
 
 export function renderTaskHandoffSchemaJson(): string {
   return `${JSON.stringify(TASK_HANDOFF_SCHEMA, null, 2)}\n`;
+}
+
+export function renderTaskObservationSchemaJson(): string {
+  return `${JSON.stringify(TASK_OBSERVATION_SCHEMA, null, 2)}\n`;
 }

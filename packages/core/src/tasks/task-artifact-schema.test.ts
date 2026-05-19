@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import {
   renderAcrSchemaJson,
   renderTaskHandoffSchemaJson,
+  renderTaskObservationSchemaJson,
   renderTaskPrMetaSchemaJson,
   renderTaskReadmeFrontmatterSchemaJson,
   renderTasksExportSchemaJson,
@@ -13,6 +14,7 @@ import {
   listTaskReadmeFrontmatterSchemaErrors,
   validateAcr,
   validateTaskHandoff,
+  validateTaskObservation,
   validateTaskPrMeta,
   validateTaskReadmeFrontmatter,
   validateTasksExportSnapshot,
@@ -151,6 +153,10 @@ describe("task-artifact-schema", () => {
       "../../../spec/schemas/task-handoff.schema.json",
       import.meta.url,
     );
+    const specTaskObservationUrl = new URL(
+      "../../../spec/schemas/task-observation.schema.json",
+      import.meta.url,
+    );
     const coreTaskReadmeUrl = new URL(
       "../../schemas/task-readme-frontmatter.schema.json",
       import.meta.url,
@@ -158,6 +164,10 @@ describe("task-artifact-schema", () => {
     const coreTasksExportUrl = new URL("../../schemas/tasks-export.schema.json", import.meta.url);
     const corePrMetaUrl = new URL("../../schemas/pr-meta.schema.json", import.meta.url);
     const coreTaskHandoffUrl = new URL("../../schemas/task-handoff.schema.json", import.meta.url);
+    const coreTaskObservationUrl = new URL(
+      "../../schemas/task-observation.schema.json",
+      import.meta.url,
+    );
     const coreAcrUrl = new URL("../../schemas/acr-v0.1.schema.json", import.meta.url);
 
     const renderedAcr = JSON.parse(renderAcrSchemaJson()) as unknown;
@@ -165,28 +175,33 @@ describe("task-artifact-schema", () => {
     const renderedTasksExport = JSON.parse(renderTasksExportSchemaJson()) as unknown;
     const renderedPrMeta = JSON.parse(renderTaskPrMetaSchemaJson()) as unknown;
     const renderedTaskHandoff = JSON.parse(renderTaskHandoffSchemaJson()) as unknown;
+    const renderedTaskObservation = JSON.parse(renderTaskObservationSchemaJson()) as unknown;
 
     const [
       specTaskReadme,
       specTasksExport,
       specPrMeta,
       specTaskHandoff,
+      specTaskObservation,
       specAcr,
       coreTaskReadme,
       coreTasksExport,
       corePrMeta,
       coreTaskHandoff,
+      coreTaskObservation,
       coreAcr,
     ] = await Promise.all([
       readFile(fileURLToPath(specTaskReadmeUrl), "utf8"),
       readFile(fileURLToPath(specTasksExportUrl), "utf8"),
       readFile(fileURLToPath(specPrMetaUrl), "utf8"),
       readFile(fileURLToPath(specTaskHandoffUrl), "utf8"),
+      readFile(fileURLToPath(specTaskObservationUrl), "utf8"),
       readFile(fileURLToPath(specAcrUrl), "utf8"),
       readFile(fileURLToPath(coreTaskReadmeUrl), "utf8"),
       readFile(fileURLToPath(coreTasksExportUrl), "utf8"),
       readFile(fileURLToPath(corePrMetaUrl), "utf8"),
       readFile(fileURLToPath(coreTaskHandoffUrl), "utf8"),
+      readFile(fileURLToPath(coreTaskObservationUrl), "utf8"),
       readFile(fileURLToPath(coreAcrUrl), "utf8"),
     ]);
 
@@ -195,11 +210,40 @@ describe("task-artifact-schema", () => {
     expect(JSON.parse(specTasksExport)).toEqual(renderedTasksExport);
     expect(JSON.parse(specPrMeta)).toEqual(renderedPrMeta);
     expect(JSON.parse(specTaskHandoff)).toEqual(renderedTaskHandoff);
+    expect(JSON.parse(specTaskObservation)).toEqual(renderedTaskObservation);
     expect(JSON.parse(coreTaskReadme)).toEqual(renderedTaskReadme);
     expect(JSON.parse(coreTasksExport)).toEqual(renderedTasksExport);
     expect(JSON.parse(corePrMeta)).toEqual(renderedPrMeta);
     expect(JSON.parse(coreTaskHandoff)).toEqual(renderedTaskHandoff);
+    expect(JSON.parse(coreTaskObservation)).toEqual(renderedTaskObservation);
     expect(JSON.parse(coreAcr)).toEqual(renderedAcr);
+  });
+
+  it("validates a task observation entry", () => {
+    expect(() =>
+      validateTaskObservation({
+        schema_version: "0.1",
+        id: "obs-0001",
+        task_id: "202605191736-EQBZ4M",
+        created_at: "2026-05-19T17:36:00.000Z",
+        author: "CODER",
+        phase: "implementation",
+        kind: "spec_gap",
+        severity: "medium",
+        summary: "Spec did not define downstream promotion gates.",
+        evidence: {
+          files: ["packages/agentplane/src/commands/task/observations.ts"],
+          commands: ["bun run --filter=agentplane typecheck"],
+        },
+        impact: "Post-task mining would be ambiguous without a recommended action.",
+        recommended_action: {
+          type: "blueprint_change",
+          title: "Define observation triage gate",
+        },
+        status: "open",
+        tags: ["workflow", "evidence"],
+      }),
+    ).not.toThrow();
   });
 
   it("validates a minimal ACR v0.1 record", () => {
