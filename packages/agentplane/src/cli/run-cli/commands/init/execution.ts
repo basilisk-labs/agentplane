@@ -82,7 +82,7 @@ export async function collectInitAndHookConflicts(opts: {
     path.join(opts.paths.agentplaneDir, "backends"),
     path.join(opts.paths.agentplaneDir, "backends", opts.answers.backend),
   ];
-  const initFiles = [opts.paths.workflowPath, opts.paths.backendPath];
+  const initFiles = [opts.paths.workflowPath, opts.paths.legacyConfigPath, opts.paths.backendPath];
   const initConflicts = await collectInitConflicts({ initDirs, initFiles });
   const hookConflicts =
     opts.answers.hooks && opts.paths.gitRootExisted
