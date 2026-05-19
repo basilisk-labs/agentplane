@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 
 import {
+  buildLocalCiExecutionPlan,
   parseChangedFilesEnv,
   selectFastCiPlan,
   shouldRunCliDocsCheck,
@@ -40,6 +41,73 @@ const VITEST_TIMEOUT_MS = "60000";
 const LOCAL_FAST_VITEST_MAX_WORKERS =
   String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "4";
 const FAST_TEST_EXCLUDES = ["**/cli-smoke.test.ts", "**/run-cli*.test.ts"];
+
+function parseListValue(rawValue) {
+  return String(rawValue ?? "")
+    .split(/[\n,]/u)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function parseArgs(argv) {
+  const parsed = {
+    changedFiles: [],
+    explain: false,
+    json: false,
+    mode: "full",
+  };
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg === "--explain") {
+      parsed.explain = true;
+      continue;
+    }
+    if (arg === "--json") {
+      parsed.json = true;
+      parsed.explain = true;
+      continue;
+    }
+    if (arg === "--mode") {
+      parsed.mode = argv[index + 1] ?? "full";
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith("--mode=")) {
+      parsed.mode = arg.slice("--mode=".length);
+      continue;
+    }
+    if (arg === "--changed-files") {
+      parsed.changedFiles.push(...parseListValue(argv[index + 1]));
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith("--changed-files=")) {
+      parsed.changedFiles.push(...parseListValue(arg.slice("--changed-files=".length)));
+      continue;
+    }
+    throw new Error(`Unsupported local CI argument: ${arg}`);
+  }
+
+  return parsed;
+}
+
+function renderExecutionPlan(report) {
+  process.stdout.write(`Local CI mode: ${report.mode}\n`);
+  process.stdout.write(
+    `Fast CI selector: ${report.selector.kind}${report.selector.bucket ? ` (${report.selector.bucket}${report.selector.buckets ? `:${report.selector.buckets.join("+")}` : ""})` : ""} [${report.selector.reason}]\n`,
+  );
+  process.stdout.write(`Execution route: ${report.route}\n`);
+  process.stdout.write(`Changed files: ${report.changed_files.length}\n`);
+  if (report.changed_files.length > 0) {
+    process.stdout.write(`${report.changed_files.map((filePath) => `- ${filePath}`).join("\n")}\n`);
+  }
+  process.stdout.write("Planned steps:\n");
+  for (const step of report.steps) {
+    const suffix = step.skipped ? ` (skipped: ${step.reason})` : "";
+    process.stdout.write(`- ${step.label}: ${step.command}${suffix}\n`);
+  }
+}
 
 function run(cmd, args, env = baseEnv) {
   execFileSync(cmd, args, { stdio: "inherit", env });
@@ -133,14 +201,8 @@ function runStepEntries(stepEntries) {
   }
 }
 
-const modeFlagIndex = process.argv.indexOf("--mode");
-const inlineModeArg = process.argv.find((arg) => arg.startsWith("--mode="));
-const mode =
-  modeFlagIndex === -1
-    ? inlineModeArg
-      ? inlineModeArg.slice("--mode=".length)
-      : "full"
-    : (process.argv[modeFlagIndex + 1] ?? "full");
+const parsedArgs = parseArgs(process.argv.slice(2));
+const mode = parsedArgs.mode;
 if (mode !== "smoke" && mode !== "fast" && mode !== "full") {
   throw new Error(`Unsupported ci mode: ${mode}`);
 }
@@ -184,9 +246,22 @@ const fullOnlySteps = [
   ["Coverage threshold (significant)", () => run("bun", ["run", "coverage:significant"])],
 ];
 
-const changedFiles = parseChangedFilesEnv(baseEnv.AGENTPLANE_FAST_CHANGED_FILES);
+const changedFiles =
+  parsedArgs.changedFiles.length > 0
+    ? [...new Set(parsedArgs.changedFiles)].toSorted((a, b) => a.localeCompare(b))
+    : parseChangedFilesEnv(baseEnv.AGENTPLANE_FAST_CHANGED_FILES);
 const fastPlan = selectFastCiPlan(changedFiles);
 const runCliDocsCheck = shouldRunCliDocsCheck(changedFiles);
+const executionPlan = buildLocalCiExecutionPlan({ mode, changedFiles });
+const shouldExecuteChecks = !parsedArgs.explain;
+
+if (parsedArgs.explain) {
+  if (parsedArgs.json) {
+    process.stdout.write(`${JSON.stringify(executionPlan, null, 2)}\n`);
+  } else {
+    renderExecutionPlan(executionPlan);
+  }
+}
 
 function runCliDocsFreshnessStep() {
   if (!runCliDocsCheck) {
@@ -249,26 +324,28 @@ function runSmokeFallbackPath() {
   runStep("Unit tests (precommit)", () => run("bun", ["run", "test:precommit"], testEnv));
 }
 
-process.stdout.write(`Local CI mode: ${mode}\n`);
-if (mode === "smoke" || mode === "fast") {
-  process.stdout.write(
-    `Fast CI selector: ${fastPlan.kind}${fastPlan.bucket ? ` (${fastPlan.bucket}${fastPlan.buckets ? `:${fastPlan.buckets.join("+")}` : ""})` : ""} [${fastPlan.reason}]\n`,
-  );
-}
+if (shouldExecuteChecks) {
+  process.stdout.write(`Local CI mode: ${mode}\n`);
+  if (mode === "smoke" || mode === "fast") {
+    process.stdout.write(
+      `Fast CI selector: ${fastPlan.kind}${fastPlan.bucket ? ` (${fastPlan.bucket}${fastPlan.buckets ? `:${fastPlan.buckets.join("+")}` : ""})` : ""} [${fastPlan.reason}]\n`,
+    );
+  }
 
-if (mode === "smoke" && fastPlan.kind === "docs-only") {
-  runDocsOnlySmokePath();
-} else if (mode === "smoke" && fastPlan.kind === "targeted") {
-  runTargetedSmokePath(fastPlan);
-} else if (mode === "smoke") {
-  runSmokeFallbackPath();
-} else if (mode === "fast" && fastPlan.kind === "docs-only") {
-  runDocsOnlyFastPath();
-} else if (mode === "fast" && fastPlan.kind === "targeted") {
-  runTargetedFastPath(fastPlan);
-} else {
-  runStepEntries(fastSteps);
-}
-if (mode === "full") {
-  runStepEntries(fullOnlySteps);
+  if (mode === "smoke" && fastPlan.kind === "docs-only") {
+    runDocsOnlySmokePath();
+  } else if (mode === "smoke" && fastPlan.kind === "targeted") {
+    runTargetedSmokePath(fastPlan);
+  } else if (mode === "smoke") {
+    runSmokeFallbackPath();
+  } else if (mode === "fast" && fastPlan.kind === "docs-only") {
+    runDocsOnlyFastPath();
+  } else if (mode === "fast" && fastPlan.kind === "targeted") {
+    runTargetedFastPath(fastPlan);
+  } else {
+    runStepEntries(fastSteps);
+  }
+  if (mode === "full") {
+    runStepEntries(fullOnlySteps);
+  }
 }
