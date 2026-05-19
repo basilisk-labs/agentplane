@@ -34,12 +34,16 @@ ap task verify-show 202605191250-N3TCR3. Result: pass. Evidence: repo-local runt
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T12:51:12.969Z
+- Updated: 2026-05-19T13:12:26.319Z
 - Branch: task/202605191250-N3TCR3/legacy-cleanup-06
-- Head: 81a3ed59446b
+- Head: 0ecb74f9962e
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ .../src/cli/run-cli/commands/init/execution.ts     |  11 +-
+ packages/agentplane/src/cli/spec/docs-render.ts    |   6 +-
+ packages/agentplane/src/cli/spec/help-render.ts    |  12 +-
+ 4 files changed, 587 insertions(+), 14 deletions(-)
 ```
 
 </details>
