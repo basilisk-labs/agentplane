@@ -4,7 +4,7 @@ title: "Improve context recall boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T15:38:54.894Z"
-  updated_by: "CODER"
-  note: "Post-rebase verification refreshed on top of origin/main c4b8430f3. Checks rerun after rebase: bun test packages/agentplane/src/commands/context/release-readiness.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --timeout 120000 => pass, 30 tests; bun run agents:check => pass; node .agentplane/policy/check-routing.mjs => pass."
+  updated_at: "2026-05-19T15:51:12.528Z"
+  updated_by: "EVALUATOR"
+  note: "Resolved PR review blocker: fallback context search now filters discovered files through scope path rules, excluding context/raw/private for raw/all scopes. Verification: bun test packages/agentplane/src/commands/context/release-readiness.test.ts --timeout 120000; bunx eslint packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; bunx prettier --check packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; node .agentplane/policy/check-routing.mjs."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-19T15:51:12.528Z"
+  updated_by: "EVALUATOR"
+  note: "Resolved PR review blocker: fallback context search now filters discovered files through scope path rules, excluding context/raw/private for raw/all scopes. Verification: bun test packages/agentplane/src/commands/context/release-readiness.test.ts --timeout 120000; bunx eslint packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; bunx prettier --check packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; node .agentplane/policy/check-routing.mjs."
+  evaluated_sha: "5f0088c288e39fa35b58c4bf63c507f6ef3d3a17"
+  blueprint_digest: "cb9ae9fec21885fb858fa3145f79006624675d400b36c2be32ea44d616e9cbd9"
+  evidence_refs:
+    - ".agentplane/tasks/202605191428-C5AXQ6/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191428-C5AXQ6-context-recall-boundaries/.agentplane/tasks/202605191428-C5AXQ6/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -54,8 +65,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-rebase verification refreshed on top of origin/main c4b8430f3. Checks rerun after rebase: bun test packages/agentplane/src/commands/context/release-readiness.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --timeout 120000 => pass, 30 tests; bun run agents:check => pass; node .agentplane/policy/check-routing.mjs => pass."
+  -
+    type: "verify"
+    at: "2026-05-19T15:51:12.528Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Resolved PR review blocker: fallback context search now filters discovered files through scope path rules, excluding context/raw/private for raw/all scopes. Verification: bun test packages/agentplane/src/commands/context/release-readiness.test.ts --timeout 120000; bunx eslint packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; bunx prettier --check packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; node .agentplane/policy/check-routing.mjs."
 doc_version: 3
-doc_updated_at: "2026-05-19T15:38:55.013Z"
+doc_updated_at: "2026-05-19T15:51:12.608Z"
 doc_updated_by: "CODER"
 description: "Make local context search prefer curated context by default, align context policy module references with actual derived paths and blueprint loading, and verify the context command behavior."
 sections:
@@ -121,6 +138,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:43:27.853Z, excerpt_hash=sha256:3d0702eb3f1603903ee3a55584030772bf0ce80cc7678484062b17ba871886e1
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191428-C5AXQ6-context-recall-boundaries/.agentplane/tasks/202605191428-C5AXQ6/blueprint/resolved-snapshot.json
+    - old_digest: cb9ae9fec21885fb858fa3145f79006624675d400b36c2be32ea44d616e9cbd9
+    - current_digest: cb9ae9fec21885fb858fa3145f79006624675d400b36c2be32ea44d616e9cbd9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191428-C5AXQ6
+
+    ### 2026-05-19T15:51:12.528Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Resolved PR review blocker: fallback context search now filters discovered files through scope path rules, excluding context/raw/private for raw/all scopes. Verification: bun test packages/agentplane/src/commands/context/release-readiness.test.ts --timeout 120000; bunx eslint packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; bunx prettier --check packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; node .agentplane/policy/check-routing.mjs.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:38:55.013Z, excerpt_hash=sha256:3d0702eb3f1603903ee3a55584030772bf0ce80cc7678484062b17ba871886e1
 
     Details:
 
@@ -211,6 +247,25 @@ Note: Post-rebase verification refreshed on top of origin/main c4b8430f3. Checks
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T14:43:27.853Z, excerpt_hash=sha256:3d0702eb3f1603903ee3a55584030772bf0ce80cc7678484062b17ba871886e1
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191428-C5AXQ6-context-recall-boundaries/.agentplane/tasks/202605191428-C5AXQ6/blueprint/resolved-snapshot.json
+- old_digest: cb9ae9fec21885fb858fa3145f79006624675d400b36c2be32ea44d616e9cbd9
+- current_digest: cb9ae9fec21885fb858fa3145f79006624675d400b36c2be32ea44d616e9cbd9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191428-C5AXQ6
+
+### 2026-05-19T15:51:12.528Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Resolved PR review blocker: fallback context search now filters discovered files through scope path rules, excluding context/raw/private for raw/all scopes. Verification: bun test packages/agentplane/src/commands/context/release-readiness.test.ts --timeout 120000; bunx eslint packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; bunx prettier --check packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; node .agentplane/policy/check-routing.mjs.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:38:55.013Z, excerpt_hash=sha256:3d0702eb3f1603903ee3a55584030772bf0ce80cc7678484062b17ba871886e1
 
 Details:
 

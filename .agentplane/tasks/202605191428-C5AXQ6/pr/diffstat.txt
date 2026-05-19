@@ -6,7 +6,7 @@
  packages/agentplane/src/blueprints/builtins.ts     |  24 +-
  .../run-cli.core.help-snap.test.ts.snap            |  14 +-
  .../src/commands/context/context.spec.ts           |  10 +-
- .../src/commands/context/release-readiness.test.ts |  51 ++
+ .../src/commands/context/release-readiness.test.ts |  83 +++
  packages/agentplane/src/commands/context/search.ts |   2 +
- packages/agentplane/src/context/context-utils.ts   |  55 +-
- 11 files changed, 715 insertions(+), 32 deletions(-)
+ packages/agentplane/src/context/context-utils.ts   |  57 +-
+ 11 files changed, 749 insertions(+), 32 deletions(-)

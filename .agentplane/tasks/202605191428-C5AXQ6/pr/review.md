@@ -13,7 +13,7 @@ Created: 2026-05-19T14:30:15.673Z
 ## Verification
 
 - State: ok
-- Note: Post-rebase verification refreshed on top of origin/main c4b8430f3. Checks rerun after rebase: bun test packages/agentplane/src/commands/context/release-readiness.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --timeout 120000 => pass, 30 tests; bun run agents:check => pass; node .agentplane/policy/check-routing.mjs => pass.
+- Note: Resolved PR review blocker: fallback context search now filters discovered files through scope path rules, excluding context/raw/private for raw/all scopes. Verification: bun test packages/agentplane/src/commands/context/release-readiness.test.ts --timeout 120000; bunx eslint packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; bunx prettier --check packages/agentplane/src/context/context-utils.ts packages/agentplane/src/commands/context/release-readiness.test.ts; node .agentplane/policy/check-routing.mjs.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,9 +24,9 @@ Created: 2026-05-19T14:30:15.673Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T15:38:55.225Z
+- Updated: 2026-05-19T15:51:12.702Z
 - Branch: task/202605191428-C5AXQ6/context-recall-boundaries
-- Head: 46ae9f7bffbf
+- Head: 5f0088c288e3
 
 ```text
  .agentplane/policy/context.must.md                 |   6 +-
@@ -37,10 +37,10 @@ Created: 2026-05-19T14:30:15.673Z
  packages/agentplane/src/blueprints/builtins.ts     |  24 +-
  .../run-cli.core.help-snap.test.ts.snap            |  14 +-
  .../src/commands/context/context.spec.ts           |  10 +-
- .../src/commands/context/release-readiness.test.ts |  51 ++
+ .../src/commands/context/release-readiness.test.ts |  83 +++
  packages/agentplane/src/commands/context/search.ts |   2 +
- packages/agentplane/src/context/context-utils.ts   |  55 +-
- 11 files changed, 715 insertions(+), 32 deletions(-)
+ packages/agentplane/src/context/context-utils.ts   |  57 +-
+ 11 files changed, 749 insertions(+), 32 deletions(-)
 ```
 
 </details>
