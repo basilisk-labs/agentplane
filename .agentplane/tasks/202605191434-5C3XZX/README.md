@@ -1,10 +1,11 @@
 ---
 id: "202605191434-5C3XZX"
 title: "Leave context raw scaffold empty"
-status: "DOING"
+result_summary: "Merged via PR #3936."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -34,11 +35,16 @@ quality_review:
     - ".agentplane/tasks/202605191434-5C3XZX/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191434-5C3XZX-empty-raw-context/.agentplane/tasks/202605191434-5C3XZX/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "e5744b926cee30f27d53cb229db30f02be93c7bb"
+  message: "Merge pull request #3936 from basilisk-labs/task/202605191434-5C3XZX/empty-raw-context"
 comments:
   -
     author: "CODER"
     body: "Start: updating the local context scaffold so context/raw stays an empty user-owned source tree while preserving ingestion of arbitrary user-created raw hierarchy and focused context verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3936 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Addressed PR review thread for non-publishable source spans."
+  -
+    type: "status"
+    at: "2026-05-19T16:04:44.718Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3936 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T15:57:04.144Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T16:04:44.726Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stop creating opinionated context/raw/private, research, and specs folders during context init. Keep context/raw as an empty user-owned source tree and preserve ingestion/reindex behavior for arbitrary user-created hierarchy under context/raw."
 sections:
   Summary: |-

@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-19T16:03:51Z",
   "base": "main",
   "branch": "task/202605191434-5C3XZX/empty-raw-context",
   "created_at": "2026-05-19T14:35:28.939Z",
-  "head_sha": "9bc6f2ec9086cce9cda7b99b7d71840292e57a3e",
+  "head_sha": "a8428ae18c0026f8814c98b860be617ad91b7482",
   "last_verified_at": "2026-05-19T15:57:04.091Z",
   "last_verified_sha": "9bc6f2ec9086cce9cda7b99b7d71840292e57a3e",
+  "merge_commit": "e5744b926cee30f27d53cb229db30f02be93c7bb",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-19T16:03:51Z",
   "pr_number": 3936,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3936",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605191434-5C3XZX",
-  "updated_at": "2026-05-19T15:38:38.531Z",
+  "updated_at": "2026-05-19T16:03:51Z",
   "verify": {
     "status": "pass"
   }
