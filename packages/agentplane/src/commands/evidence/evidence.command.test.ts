@@ -13,10 +13,10 @@ import {
   readTaskEvidenceBundleTrustExtension,
 } from "./evidence.command.js";
 
-function fakeCommandContext(root: string): CommandContext {
+function fakeCommandContext(root: string, workflowDir = ".agentplane/tasks"): CommandContext {
   return {
     resolvedProject: { gitRoot: root },
-    config: { paths: { workflow_dir: ".agentplane/tasks" } },
+    config: { paths: { workflow_dir: workflowDir } },
     taskBackend: {
       getTask: (taskId: string) =>
         Promise.resolve({
@@ -72,9 +72,12 @@ describe("evidence bundle manifest", () => {
 
     const manifestPath = path.join(taskRoot, "evidence/manifest.json");
     const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
+      created_at: string;
       files: { path: string; role: string }[];
       integrity: { manifest_digest: string };
     };
+    const firstCreatedAt = manifest.created_at;
+    const firstDigest = manifest.integrity.manifest_digest;
     expect(manifest.integrity.manifest_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(manifest.files.map((file) => file.role)).toEqual([
       "acr",
@@ -99,6 +102,18 @@ describe("evidence bundle manifest", () => {
       },
     });
 
+    await cmdEvidenceBundle({
+      commandCtx: ctx,
+      cwd: root,
+      parsed: { taskId, json: false },
+    });
+    const rerunManifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
+      created_at: string;
+      integrity: { manifest_digest: string };
+    };
+    expect(rerunManifest.created_at).toBe(firstCreatedAt);
+    expect(rerunManifest.integrity.manifest_digest).toBe(firstDigest);
+
     await writeFile(path.join(taskRoot, "acr.json"), '{"changed":true}\n', "utf8");
     await expect(
       cmdEvidenceVerify({
@@ -107,5 +122,37 @@ describe("evidence bundle manifest", () => {
         parsed: { target: taskId, json: false, strict: true },
       }),
     ).rejects.toThrow("hash mismatch");
+  });
+
+  it("uses the configured workflow directory for default evidence paths", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-evidence-"));
+    const taskId = "202605031625-886KZ6";
+    const workflowDir = ".custom-agentplane/tasks";
+    const taskRoot = path.join(root, workflowDir, taskId);
+    await mkdir(taskRoot, { recursive: true });
+    await writeFile(path.join(taskRoot, "README.md"), "# Task\n", "utf8");
+
+    const ctx = fakeCommandContext(root, workflowDir);
+    await cmdEvidenceBundle({
+      commandCtx: ctx,
+      cwd: root,
+      parsed: { taskId, json: false },
+    });
+
+    const manifestPath = path.join(taskRoot, "evidence/manifest.json");
+    const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
+      artifact_root: string;
+      files: { path: string }[];
+    };
+    expect(manifest.artifact_root).toBe(`${workflowDir}/${taskId}`);
+    expect(manifest.files.map((file) => file.path)).toEqual([`${workflowDir}/${taskId}/README.md`]);
+
+    await expect(
+      cmdEvidenceVerify({
+        commandCtx: ctx,
+        cwd: root,
+        parsed: { target: taskId, json: false, strict: false },
+      }),
+    ).resolves.toBe(0);
   });
 });

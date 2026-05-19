@@ -169,11 +169,21 @@ export async function cmdEvidenceBundle(opts: {
 }): Promise<number> {
   await loadTaskFromContext({ ctx: opts.commandCtx, taskId: opts.parsed.taskId });
   const root = opts.commandCtx.resolvedProject.gitRoot;
-  const manifestPath = resolveManifestPath(root, opts.cwd, opts.parsed.taskId, opts.parsed.out);
+  const workflowDir = opts.commandCtx.config.paths.workflow_dir;
+  const manifestPath = resolveManifestPath(
+    root,
+    opts.cwd,
+    workflowDir,
+    opts.parsed.taskId,
+    opts.parsed.out,
+  );
+  const existingManifest = await readEvidenceManifestOrNull(manifestPath);
   const manifest = await buildEvidenceBundleManifest({
     root,
+    taskRoot: path.join(root, workflowDir, opts.parsed.taskId),
     taskId: opts.parsed.taskId,
     manifestPath,
+    existingManifest,
   });
   await mkdir(path.dirname(manifestPath), { recursive: true });
   await writeJsonStableIfChanged(manifestPath, manifest);
@@ -208,7 +218,12 @@ export async function cmdEvidenceVerify(opts: {
   parsed: EvidenceVerifyParsed;
 }): Promise<number> {
   const root = opts.commandCtx.resolvedProject.gitRoot;
-  const manifestPath = resolveVerifyTarget(root, opts.cwd, opts.parsed.target);
+  const manifestPath = resolveVerifyTarget(
+    root,
+    opts.cwd,
+    opts.commandCtx.config.paths.workflow_dir,
+    opts.parsed.target,
+  );
   const manifest = await readEvidenceManifest(manifestPath);
   const errors = await verifyEvidenceManifest({ root, manifest, strict: opts.parsed.strict });
   const relative = toPosix(path.relative(root, manifestPath));
@@ -283,25 +298,26 @@ export async function readTaskEvidenceBundleTrustExtension(opts: {
 
 async function buildEvidenceBundleManifest(opts: {
   root: string;
+  taskRoot: string;
   taskId: string;
   manifestPath: string;
+  existingManifest: EvidenceBundleManifest | null;
 }): Promise<EvidenceBundleManifest> {
-  const taskRoot = path.join(opts.root, ".agentplane", "tasks", opts.taskId);
   const files = await collectTaskEvidenceFiles({
     root: opts.root,
-    taskRoot,
+    taskRoot: opts.taskRoot,
     manifestPath: opts.manifestPath,
   });
   const manifestWithoutDigest: EvidenceBundleManifest = {
     schema_version: 1,
     kind: "agentplane_evidence_bundle",
     task_id: opts.taskId,
-    created_at: new Date().toISOString(),
+    created_at: opts.existingManifest?.created_at ?? new Date().toISOString(),
     producer: {
       name: "agentplane",
       version: getVersion(),
     },
-    artifact_root: toPosix(path.relative(opts.root, taskRoot)),
+    artifact_root: toPosix(path.relative(opts.root, opts.taskRoot)),
     files,
     verification: {
       command: `agentplane evidence verify ${opts.taskId}`,
@@ -420,21 +436,37 @@ async function readEvidenceManifest(filePath: string): Promise<EvidenceBundleMan
   };
 }
 
+async function readEvidenceManifestOrNull(
+  filePath: string,
+): Promise<EvidenceBundleManifest | null> {
+  try {
+    return await readEvidenceManifest(filePath);
+  } catch {
+    return null;
+  }
+}
+
 function resolveManifestPath(
   root: string,
   cwd: string,
+  workflowDir: string,
   taskId: string,
   out: string | undefined,
 ): string {
   if (out) return ensureWithinRoot(root, path.resolve(cwd, out));
-  return path.join(root, ".agentplane", "tasks", taskId, "evidence", "manifest.json");
+  return path.join(root, workflowDir, taskId, "evidence", "manifest.json");
 }
 
-function resolveVerifyTarget(root: string, cwd: string, target: string): string {
+function resolveVerifyTarget(
+  root: string,
+  cwd: string,
+  workflowDir: string,
+  target: string,
+): string {
   if (target.includes("/") || target.endsWith(".json")) {
     return ensureWithinRoot(root, path.resolve(cwd, target));
   }
-  return path.join(root, ".agentplane", "tasks", target, "evidence", "manifest.json");
+  return path.join(root, workflowDir, target, "evidence", "manifest.json");
 }
 
 function ensureWithinRoot(root: string, candidate: string): string {
