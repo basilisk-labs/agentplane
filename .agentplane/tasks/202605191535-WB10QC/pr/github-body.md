@@ -22,12 +22,18 @@ Improve the local quality/test routing loop by adding an explainable local CI se
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T15:43:24.548Z
+- Updated: 2026-05-19T15:52:41.680Z
 - Branch: task/202605191535-WB10QC/flexible-test-routing
-- Head: c4b8430f333e
+- Head: 4083285e3a46
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 598 +++++++++++++++++++++
+ package.json                                       |   2 +
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  59 +-
+ .../commands/release/release-ci-contract.test.ts   |   4 +
+ scripts/checks/run-local-ci.mjs                    | 137 +++--
+ scripts/lib/local-ci-selection.mjs                 | 148 +++++
+ 6 files changed, 917 insertions(+), 31 deletions(-)
 ```
 
 </details>

@@ -1,0 +1,7 @@
+ .../blueprint/resolved-snapshot.json               | 598 +++++++++++++++++++++
+ package.json                                       |   2 +
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  59 +-
+ .../commands/release/release-ci-contract.test.ts   |   4 +
+ scripts/checks/run-local-ci.mjs                    | 137 +++--
+ scripts/lib/local-ci-selection.mjs                 | 148 +++++
+ 6 files changed, 917 insertions(+), 31 deletions(-)
