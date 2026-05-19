@@ -35,7 +35,7 @@ quality_review:
   updated_at: "2026-05-19T15:54:39.502Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR quality gate passed for current implementation commit 08db6b47. Reviewed fixes for configured workflow_dir evidence paths and deterministic bundle reruns; local checks passed: focused evidence/ACR tests, typecheck, format:check, targeted eslint, framework bootstrap; hosted PR checks are green on PR #3937."
-  evaluated_sha: "b4de91888f2a4db53aa0e00cd20972170882085d"
+  evaluated_sha: "08db6b47a4528e5e50155378c65a5e299da2966e"
   blueprint_digest: "343e2d15f7e61a5cf9827383ac870b6ead273d6b8ef487f4a2fa3a4c6607b6f4"
   evidence_refs:
     - ".agentplane/tasks/202605191421-D566XJ/README.md"
