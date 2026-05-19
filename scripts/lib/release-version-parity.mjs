@@ -1,6 +1,8 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { readReleaseVersionSurfaces } from "./release-version-surfaces.mjs";
+
 const FREEZE_V03_PATH = "FREEZE.v0.3.md";
 const RECIPES_RUNTIME_VERSION_PATH = "packages/recipes/src/index.ts";
 const V03_VERSION_RE = /^0\.3\.\d+(?:[-+][0-9A-Za-z.-]+)?$/u;
@@ -160,6 +162,7 @@ export async function readReleaseParityState(rootDir) {
   const packageWorkspaceDependencies = await readPackageWorkspaceDependencies(rootDir);
   const freezeV03Text = await readOptionalText(rootDir, FREEZE_V03_PATH);
   const recipesRuntimeVersion = await readRecipesRuntimeVersion(rootDir);
+  const versionSurfaces = readReleaseVersionSurfaces(rootDir);
 
   const coreVersion = readVersion(corePkg, corePath);
   const agentplaneVersion = readVersion(agentplanePkg, agentplanePath);
@@ -178,6 +181,7 @@ export async function readReleaseParityState(rootDir) {
     coreDependency,
     recipesDependency,
     recipesRuntimeVersion,
+    versionSurfaces,
     packageWorkspaceDependencies,
     publishDependencyErrors,
     freezeV03: {
@@ -194,6 +198,23 @@ export function collectReleaseParityErrors(state, opts = {}) {
       : null;
 
   const errors = [];
+  const expectedManifestVersion = requiredVersion ?? state.agentplaneVersion;
+  for (const error of state.versionSurfaces?.errors ?? []) {
+    errors.push(error);
+  }
+  for (const surface of state.versionSurfaces?.values ?? []) {
+    if (!surface.exists) continue;
+    if (surface.required && surface.value === null) {
+      errors.push(`${surface.file} ${surface.id} is missing a release version value.`);
+      continue;
+    }
+    if (surface.value !== null && surface.value !== expectedManifestVersion) {
+      errors.push(
+        `${surface.file} ${surface.id}=${surface.value} does not match release version ${expectedManifestVersion}.`,
+      );
+    }
+  }
+
   if (state.coreVersion !== state.agentplaneVersion) {
     errors.push(
       `Package versions must match. packages/core=${state.coreVersion} packages/agentplane=${state.agentplaneVersion}.`,

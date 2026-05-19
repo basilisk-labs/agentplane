@@ -210,12 +210,25 @@ describe("publish workflow contract", () => {
       'if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then',
     );
     expect(workflow).toContain('SHA="${{ github.event.inputs.sha }}"');
+    expect(workflow).toContain("--wait");
+    expect(workflow).toContain("--timeout-ms 900000");
+    expect(workflow).toContain("--poll-interval-ms 15000");
     expect(workflow).toContain("node scripts/resolve-canonical-release-sha.mjs --json");
     expect(workflow).toContain(
       'echo "No canonical release candidate resolved from $(git rev-parse HEAD)." >&2',
     );
     expect(workflow).toContain(
       'description: "Git ref to evaluate only when sha is omitted (default: main)"',
+    );
+  });
+
+  it("checks local task registry before release publish readiness", async () => {
+    const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+
+    expect(workflow).toContain("Release task registry (check)");
+    expect(workflow).toContain("node scripts/release/check-task-registry-ready.mjs");
+    expect(workflow.indexOf("Release task registry (check)")).toBeLessThan(
+      workflow.indexOf("Release incidents (check)"),
     );
   });
 

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "version_surfaces": [
+    {
+      "id": "core.package.version",
+      "file": "packages/core/package.json",
+      "kind": "json",
+      "path": ["version"],
+      "required": true
+    },
+    {
+      "id": "recipes.package.version",
+      "file": "packages/recipes/package.json",
+      "kind": "json",
+      "path": ["version"],
+      "required": true
+    },
+    {
+      "id": "agentplane.package.version",
+      "file": "packages/agentplane/package.json",
+      "kind": "json",
+      "path": ["version"],
+      "required": true
+    },
+    {
+      "id": "agentplane.dep.core",
+      "file": "packages/agentplane/package.json",
+      "kind": "json",
+      "path": ["dependencies", "@agentplaneorg/core"],
+      "required": true
+    },
+    {
+      "id": "agentplane.dep.recipes",
+      "file": "packages/agentplane/package.json",
+      "kind": "json",
+      "path": ["dependencies", "@agentplaneorg/recipes"],
+      "required": true
+    },
+    {
+      "id": "testkit.dep.core",
+      "file": "packages/testkit/package.json",
+      "kind": "json",
+      "path": ["dependencies", "@agentplaneorg/core"],
+      "required": false
+    },
+    {
+      "id": "recipes.runtime.version",
+      "file": "packages/recipes/src/index.ts",
+      "kind": "typescript_string_const",
+      "name": "RECIPES_VERSION",
+      "required": false
+    },
+    {
+      "id": "framework.expected_cli_version",
+      "file": ".agentplane/config.json",
+      "kind": "json",
+      "path": ["framework", "cli", "expected_version"],
+      "required": false
+    },
+    {
+      "id": "acr.producer.version",
+      "file": "packages/spec/examples/acr.json",
+      "kind": "json",
+      "path": ["producer", "version"],
+      "required": false
+    },
+    {
+      "id": "acr.agentplane.toolchain.version",
+      "file": "packages/spec/examples/acr.json",
+      "kind": "json_array_match",
+      "arrayPath": ["agent", "toolchain"],
+      "match": { "name": "agentplane" },
+      "path": ["version"],
+      "required": false
+    }
+  ]
+}

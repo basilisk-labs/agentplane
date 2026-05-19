@@ -37,6 +37,9 @@ describe("release CI contract", () => {
     );
     expect(scripts["ci:contract"]).toContain("bun run release:parity");
     expect(scripts["release:incidents:check"]).toBe("node scripts/check-release-incidents.mjs");
+    expect(scripts["release:tasks:check"]).toBe(
+      "node scripts/release/check-task-registry-ready.mjs",
+    );
     expect(scripts["ci:test"]).toContain("bun run typecheck");
     expect(releaseExtras).toContain("bun run coverage:workflow-suite");
     expect(releaseExtras).toContain("bun run coverage:significant-suite");
@@ -146,5 +149,14 @@ describe("release CI contract", () => {
     expect(docsText).toContain("workflow/harness coverage guard");
     expect(docsText).toContain("significant-file coverage guard");
     expect(docsText).toContain("release incident registry cleanup gate");
+  });
+
+  it("keeps candidate preparation gated on task registry reconciliation before incidents", async () => {
+    const candidatePrepare = await readRootText("scripts/release/candidate-prepare.mjs");
+
+    expect(candidatePrepare).toContain('["bun", ["run", "release:tasks:check"]]');
+    expect(candidatePrepare.indexOf("release:tasks:check")).toBeLessThan(
+      candidatePrepare.indexOf("release:incidents:check"),
+    );
   });
 });

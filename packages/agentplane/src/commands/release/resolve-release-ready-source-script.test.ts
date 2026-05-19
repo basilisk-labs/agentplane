@@ -221,6 +221,50 @@ describe("resolve-release-ready-source script", () => {
     );
   });
 
+  it("waits for an in-progress Core CI run and times out with an actionable state", async () => {
+    await withFixtures(
+      (pathname) => {
+        if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+          return {
+            body: {
+              workflow_runs: [makeRun({ status: "in_progress", conclusion: null })],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl, fixturePath) => {
+        const result = await runScript(baseUrl, fixturePath, [
+          "--sha",
+          "abc123",
+          "--wait",
+          "--timeout-ms",
+          "1",
+          "--poll-interval-ms",
+          "1",
+          "--json",
+        ]).then(
+          () => ({ ok: true as const, stdout: "" }),
+          (error: unknown) => {
+            const stdout =
+              typeof error === "object" &&
+              error !== null &&
+              "stdout" in error &&
+              typeof (error as { stdout?: unknown }).stdout === "string"
+                ? (error as { stdout: string }).stdout
+                : "";
+            return { ok: false as const, stdout };
+          },
+        );
+        const payload = JSON.parse(result.stdout) as { ok: boolean; state: string; nextAction: string };
+        expect(result.ok).toBe(false);
+        expect(payload.ok).toBe(false);
+        expect(payload.state).toBe("workflow_wait_timeout");
+        expect(payload.nextAction).toContain("retry publish");
+      },
+    );
+  });
+
   it("passes when an explicit run-id belongs to the requested SHA and succeeded", async () => {
     await withFixtures(
       (pathname) => {

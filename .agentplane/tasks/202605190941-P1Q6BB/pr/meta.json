@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605190941-P1Q6BB/release-pipeline-hardening",
+  "created_at": "2026-05-19T09:44:06.233Z",
+  "head_sha": "cdae11ed0e8d4c3dce1ca1974a7695c5b8d2a48b",
+  "last_verified_at": "2026-05-19T09:52:02.954Z",
+  "last_verified_sha": "cdae11ed0e8d4c3dce1ca1974a7695c5b8d2a48b",
+  "schema_version": 1,
+  "task_id": "202605190941-P1Q6BB",
+  "updated_at": "2026-05-19T09:44:06.233Z",
+  "verify": {
+    "status": "pass"
+  }
+}

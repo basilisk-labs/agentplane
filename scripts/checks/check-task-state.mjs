@@ -1,7 +1,8 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
-import { defineScript, runScriptMain } from "../lib/script-runtime.mjs";
+import { defineScript, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
 
 const SCRIPT_NAME = "check-task-state.mjs";
 const ACTIVE_STATUSES = new Set(["TODO", "DOING", "BLOCKED"]);
@@ -44,7 +45,7 @@ function parseMinorPatch(version) {
   return match ? Number.parseInt(match[1], 10) : null;
 }
 
-function mainCheck(repoRoot) {
+export function checkTaskState(repoRoot, opts = {}) {
   const packageJson = readJson(path.join(repoRoot, "packages", "agentplane", "package.json"));
   const currentPatch = parseMinorPatch(String(packageJson.version));
   const tasksRoot = path.join(repoRoot, ".agentplane", "tasks");
@@ -61,13 +62,26 @@ function mainCheck(repoRoot) {
 
     const readmePath = path.join(tasksRoot, taskId, "README.md");
     const relReadmePath = normalizePath(path.relative(repoRoot, readmePath));
-    const frontMatter = parseFrontMatter(readFileSync(readmePath, "utf8"));
+    let frontMatter;
+    try {
+      frontMatter = parseFrontMatter(readFileSync(readmePath, "utf8"));
+    } catch (error) {
+      failures.push(
+        `${relReadmePath}: unreadable task file (${error instanceof Error ? error.message : String(error)})`,
+      );
+      continue;
+    }
     const status = String(frontMatter.status ?? "").trim();
     const title = String(frontMatter.title ?? "").trim();
 
     if (!status) {
       failures.push(`${relReadmePath}: missing status`);
       continue;
+    }
+    if (opts.releaseReady === true && status === "DOING") {
+      failures.push(
+        `${relReadmePath}: DOING task blocks release readiness; finish, close, or explicitly move it out of the release scope before candidate/publish.`,
+      );
     }
 
     if (currentPatch !== null && ACTIVE_STATUSES.has(status)) {
@@ -98,9 +112,12 @@ function mainCheck(repoRoot) {
 
 const main = defineScript({
   name: SCRIPT_NAME,
-  async run() {
-    mainCheck(process.cwd());
+  async run({ argv }) {
+    const { flags } = parseScriptArgs(argv, { booleanFlags: ["release-ready"] });
+    checkTaskState(process.cwd(), { releaseReady: flags["release-ready"] === true });
   },
 });
 
-runScriptMain(main);
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  runScriptMain(main);
+}

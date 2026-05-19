@@ -1,6 +1,6 @@
 import path from "node:path";
 import { execFile } from "node:child_process";
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
@@ -223,6 +223,36 @@ describe("check-release-parity script", () => {
     expect(result.stderr).toContain(
       "packages/testkit/package.json dependencies @agentplaneorg/core=2.3.3 does not match workspace version 2.3.4",
     );
+  });
+
+  it("fails when manifest-declared ACR release version surfaces drift", async () => {
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-parity-",
+      coreVersion: "2.3.4",
+      cliVersion: "2.3.4",
+      recipesVersion: "2.3.4",
+      dependencyVersion: "2.3.4",
+      recipesDependencyVersion: "2.3.4",
+    });
+    await mkdir(path.join(root, "packages", "spec", "examples"), { recursive: true });
+    await writeFile(
+      path.join(root, "packages", "spec", "examples", "acr.json"),
+      `${JSON.stringify(
+        {
+          producer: { version: "2.3.3" },
+          agent: { toolchain: [{ name: "agentplane", version: "2.3.2" }] },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const result = await runParity(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("acr.producer.version=2.3.3");
+    expect(result.stderr).toContain("acr.agentplane.toolchain.version=2.3.2");
   });
 
   it("fails when the publishable package manifest leaks a workspace protocol dependency", async () => {
