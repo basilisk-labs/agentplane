@@ -192,7 +192,7 @@ export const taskObservationsAddSpec: CommandSpec<TaskObservationsAddParsed> = {
       taskId: String(raw.args["task-id"]),
       kind: parseEnum(taskObservationsAddSpec, "kind", raw.opts.kind, enums.kinds),
       summary: String(raw.opts.summary),
-      author: String(raw.opts.author ?? "AGENT"),
+      author: parseOptionalString(raw.opts.author) ?? "AGENT",
       phase: parseEnum(taskObservationsAddSpec, "phase", raw.opts.phase, enums.phases),
       severity: parseEnum(taskObservationsAddSpec, "severity", raw.opts.severity, enums.severities),
       decision: parseOptionalString(raw.opts.decision),
