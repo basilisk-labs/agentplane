@@ -1,0 +1,144 @@
+---
+id: "202605191618-YJFGND"
+title: "Refresh evidence bundle during hosted close"
+status: "DOING"
+priority: "high"
+owner: "CODER"
+revision: 5
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "code"
+  - "trust"
+verify: []
+plan_approval:
+  state: "approved"
+  updated_at: "2026-05-19T16:18:56.501Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "ok"
+  updated_at: "2026-05-19T16:22:29.737Z"
+  updated_by: "CODER"
+  note: "Implemented hosted close evidence refresh and repaired stale evidence manifest for 202605191421-D566XJ on main. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap, evidence verify --strict for both tasks."
+  attempts: 0
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: Make hosted close regenerate task evidence manifests after final README/meta mutations."
+events:
+  -
+    type: "status"
+    at: "2026-05-19T16:19:53.213Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Make hosted close regenerate task evidence manifests after final README/meta mutations."
+  -
+    type: "verify"
+    at: "2026-05-19T16:22:29.737Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented hosted close evidence refresh and repaired stale evidence manifest for 202605191421-D566XJ on main. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap, evidence verify --strict for both tasks."
+doc_version: 3
+doc_updated_at: "2026-05-19T16:22:29.766Z"
+doc_updated_by: "CODER"
+description: "Ensure branch_pr hosted close regenerates task evidence manifests after final task README and PR metadata mutations so strict evidence verification remains valid on main after close."
+sections:
+  Summary: |-
+    Refresh evidence bundle during hosted close
+
+    Ensure branch_pr hosted close regenerates task evidence manifests after final task README and PR metadata mutations so strict evidence verification remains valid on main after close.
+  Scope: |-
+    - In scope: Ensure branch_pr hosted close regenerates task evidence manifests after final task README and PR metadata mutations so strict evidence verification remains valid on main after close.
+    - Out of scope: unrelated refactors not required for "Refresh evidence bundle during hosted close".
+  Plan: "Fix close-tail evidence freshness. In scope: update hosted close flow so, after it records final DONE README and PR metadata, it regenerates the task evidence manifest when one exists or evidence bundling is available; add focused regression coverage proving post-close README/meta changes do not leave strict evidence verification stale. Out of scope: changing ACR schema or preserving external signing/storage integrations."
+  Verify Steps: |-
+    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
+
+    1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+    2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-19T16:22:29.737Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented hosted close evidence refresh and repaired stale evidence manifest for 202605191421-D566XJ on main. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap, evidence verify --strict for both tasks.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T16:19:53.213Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191618-YJFGND-hosted-close-evidence/.agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json
+    - old_digest: 2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9
+    - current_digest: 2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191618-YJFGND
+
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+id_source: "generated"
+---
+## Summary
+
+Refresh evidence bundle during hosted close
+
+Ensure branch_pr hosted close regenerates task evidence manifests after final task README and PR metadata mutations so strict evidence verification remains valid on main after close.
+
+## Scope
+
+- In scope: Ensure branch_pr hosted close regenerates task evidence manifests after final task README and PR metadata mutations so strict evidence verification remains valid on main after close.
+- Out of scope: unrelated refactors not required for "Refresh evidence bundle during hosted close".
+
+## Plan
+
+Fix close-tail evidence freshness. In scope: update hosted close flow so, after it records final DONE README and PR metadata, it regenerates the task evidence manifest when one exists or evidence bundling is available; add focused regression coverage proving post-close README/meta changes do not leave strict evidence verification stale. Out of scope: changing ACR schema or preserving external signing/storage integrations.
+
+## Verify Steps
+
+PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
+
+1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-19T16:22:29.737Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented hosted close evidence refresh and repaired stale evidence manifest for 202605191421-D566XJ on main. Checks passed: hosted-close/evidence focused tests, agentplane typecheck, framework:dev:bootstrap, evidence verify --strict for both tasks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T16:19:53.213Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191618-YJFGND-hosted-close-evidence/.agentplane/tasks/202605191618-YJFGND/blueprint/resolved-snapshot.json
+- old_digest: 2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9
+- current_digest: 2471ee601a1ca2d3c42bcbf815df6e9c18ff64c3419c6dabaf442bc8e10d1dd9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191618-YJFGND
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings

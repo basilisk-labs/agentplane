@@ -35,8 +35,8 @@
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/pr/meta.json",
       "role": "pr_artifact",
-      "sha256": "sha256:e00db3c4135ffb1361bc369f141d630418b17d072df5b17e766dd3997b5595b6",
-      "size_bytes": 549
+      "sha256": "sha256:d728ea47f8d2f858475a9954000d2cbd53ae4b3e2f0616c0b637ca1c88bcdd74",
+      "size_bytes": 762
     },
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/pr/review.md",
@@ -47,14 +47,14 @@
     {
       "path": ".agentplane/tasks/202605191421-D566XJ/README.md",
       "role": "task_readme",
-      "sha256": "sha256:8a2bc2c3d465faecd46b9773842f2ccb023d04da18374bc839b751b5233b46a0",
-      "size_bytes": 19598
+      "sha256": "sha256:482f55e51d1a87a11e70315fabbf69070dd083683a8a8ed726e2323d151be348",
+      "size_bytes": 20161
     }
   ],
   "integrity": {
     "canonicalization": "agentplane-canonical-json-v1",
     "digest_algorithm": "sha256",
-    "manifest_digest": "sha256:00364747149e3c7e8d68c444cfafbc6ffbf82e298028cc04ed699819f847a32e"
+    "manifest_digest": "sha256:75a5d7f6daaf404a0b87ec4074723e2fd22f4efead7fd374497475855e0fe02b"
   },
   "kind": "agentplane_evidence_bundle",
   "producer": {
