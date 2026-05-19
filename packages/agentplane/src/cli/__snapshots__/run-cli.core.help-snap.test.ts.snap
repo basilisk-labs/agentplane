@@ -159,7 +159,7 @@ Commands:
     context learn changes  Create a context assimilation task from changed context sources.
     context learn files  Create a context assimilation task from explicit files or paths.
     context learn tasks  Create CURATOR extraction tasks from completed task history.
-    context search  Search indexed local context, facts, graph, tasks, and capabilities.
+    context search  Search curated local context, facts, graph, and capabilities.
     context show  Resolve a context source reference and print addressed content.
     context wiki  Create, lint, explain, link, and index local context wiki pages.
     context wiki explain  Print a wiki page's Agentplane context frontmatter.
@@ -342,7 +342,7 @@ exports[`runCli help snapshots (cli2) help (registry) snapshot 1`] = `
 Commands:
   Core:
     agents  List agent definitions under .agentplane/agents.
-    demo  Create a safe first-success AgentPlane demo task with ACR evidence.
+    demo  Create a safe first-success Agentplane demo task with ACR evidence.
     help  Show help for a command.
     preflight  Run aggregated preflight checks and print a deterministic readiness report.
     quickstart  Print the canonical agent bootstrap path and startup guidance.
@@ -425,8 +425,8 @@ Commands:
     doctor git-locks  Check Git index lock state for this repository and suggest cleanup.
   Diagnostics:
     insights  Generate local-only diagnostic insights for support analysis.
-    insights issue  Create an opt-in GitHub issue with privacy-bounded AgentPlane diagnostics.
-    insights report  Print a local-only privacy-bounded AgentPlane diagnostic report.
+    insights issue  Create an opt-in GitHub issue with privacy-bounded Agentplane diagnostics.
+    insights report  Print a local-only privacy-bounded Agentplane diagnostic report.
     runtime  Inspect which agentplane runtime/binary/package sources are active.
     runtime explain  Explain the active binary, runtime mode, and resolved package roots.
   Recipes:
@@ -494,14 +494,14 @@ Commands:
     context learn changes  Create a context assimilation task from changed context sources.
     context learn files  Create a context assimilation task from explicit files or paths.
     context learn tasks  Create CURATOR extraction tasks from completed task history.
-    context search  Search indexed local context, facts, graph, tasks, and capabilities.
+    context search  Search curated local context, facts, graph, and capabilities.
     context show  Resolve a context source reference and print addressed content.
     context wiki  Create, lint, explain, link, and index local context wiki pages.
-    context wiki explain  Print a wiki page's AgentPlane context frontmatter.
+    context wiki explain  Print a wiki page's Agentplane context frontmatter.
     context wiki index  Update generated wiki index sections for pages and subdirectories.
     context wiki link  Suggest existing wiki pages that may deserve cross-links.
     context wiki lint  Validate wiki page frontmatter and source-link hygiene.
-    context wiki new  Create a wiki page with AgentPlane context frontmatter.
+    context wiki new  Create a wiki page with Agentplane context frontmatter.
   Evaluators:
     evaluator  List and inspect evaluator prompt modules.
     evaluator list  List evaluator prompt modules from .agentplane/evaluators.

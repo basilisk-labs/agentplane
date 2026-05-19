@@ -99,7 +99,11 @@ const contextAssimilationNodes = [
   node({
     kind: "context_resolve",
     evidence: ["context_manifest", "sources"],
-    policyModules: [".agentplane/policy/security.must.md", ".agentplane/policy/dod.core.md"],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/context.must.md",
+    ],
   }),
   node({ kind: "work_unit", evidence: ["changed_paths", "artifact", "weak_links"] }),
   node({
@@ -290,12 +294,16 @@ export const BUILTIN_BLUEPRINTS = [
       "agentplane acr check <task-id>",
       "agentplane verify <task-id> --ok|--rework",
     ],
-    policyModules: [".agentplane/policy/security.must.md", ".agentplane/policy/dod.core.md"],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/context.must.md",
+    ],
     contextBudget: {
-      maxPolicyModules: 2,
+      maxPolicyModules: 3,
       maxPromptBlocks: 14,
       rationale:
-        "Context assimilation needs source-set policy, mutation boundaries, and evidence checks without loading code or release policy by default.",
+        "Context assimilation needs context source-set policy, mutation boundaries, and evidence checks without loading code or release policy by default.",
     },
     nodes: contextAssimilationNodes,
     requiredEvidence: [
@@ -408,9 +416,13 @@ export const BUILTIN_BLUEPRINTS = [
       "agentplane acr generate <task-id> --write",
       "agentplane acr check <task-id>",
     ],
-    policyModules: [".agentplane/policy/security.must.md", ".agentplane/policy/dod.core.md"],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/context.must.md",
+    ],
     contextBudget: {
-      maxPolicyModules: 2,
+      maxPolicyModules: 3,
       maxPromptBlocks: 16,
       rationale:
         "Maximum assimilation keeps the normal context policy set but reserves prompt budget for coverage, glossary, entity/relation extraction, and raw-deletion resilience checks.",

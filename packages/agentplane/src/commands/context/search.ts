@@ -9,6 +9,7 @@ import {
   buildSnippet,
   fileExists,
   normalizeScopeList,
+  pathMatchesScopes,
   parseJsonlLines,
   readText,
   scoreMatch,
@@ -52,6 +53,7 @@ export async function cmdContextSearch(opts: {
   const projection = await readContextProjection(root);
   if (projection) {
     for (const row of projection.rows) {
+      if (!pathMatchesScopes(row.path, scopes)) continue;
       if (row.body.toLowerCase().includes(query)) {
         usedSQLite = true;
         const freshness = await buildFreshness(root, row.path, row.sha256);

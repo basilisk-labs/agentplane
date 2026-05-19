@@ -3411,7 +3411,7 @@ agentplane context learn tasks --tag branch_pr --batch-size 25 --dry-run
 
 ### context search
 
-Search indexed local context, facts, graph, tasks, and capabilities.
+Search curated local context, facts, graph, and capabilities.
 
 Usage:
 
@@ -3421,7 +3421,7 @@ agentplane context search <query> [options]
 
 Options:
 
-- `--scope <scope>`: Comma-separated scope list. (default=wiki,facts,graph,tasks,capabilities)
+- `--scope <scope>`: Comma-separated scope list. Defaults to curated context; use tasks, raw, or all explicitly for broader recall. (default=wiki,facts,graph,capabilities)
 - `--format <text|json>`: Output format. (choices=text|json, default=text)
 - `--explain`: Include score explanation metadata. (default=false)
 

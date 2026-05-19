@@ -230,6 +230,38 @@ describe("context release readiness guards", () => {
     expect(projection?.rows.some((row) => row.path.includes("context/raw/private"))).toBe(false);
   });
 
+  it("excludes private raw files from fallback search for raw and all scopes", async () => {
+    const root = await tempRoot();
+    await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nNeedle public.\n");
+    await write(root, "context/raw/private/secret.md", "# Secret\n\nNeedle private.\n");
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextSearch({
+      cwd: root,
+      parsed: { query: "needle", scope: "raw", format: "json", explain: false },
+    });
+    await cmdContextSearch({
+      cwd: root,
+      parsed: { query: "needle", scope: "all", format: "json", explain: false },
+    });
+
+    const payloads = out.mock.calls
+      .map((call) => String(call[0]))
+      .join("")
+      .trim()
+      .split(/\n(?=\{)/u)
+      .map((chunk) => JSON.parse(chunk) as { results: { ref: string }[] });
+    expect(payloads).toHaveLength(2);
+    for (const payload of payloads) {
+      expect(payload.results.some((result) => result.ref.includes("context/raw/private"))).toBe(
+        false,
+      );
+      expect(
+        payload.results.some((result) => result.ref === "context/raw/specs/payment-api.md"),
+      ).toBe(true);
+    }
+  });
+
   it("does not mark fresh markdown section projection rows as stale", async () => {
     const root = await tempRoot();
     await write(
@@ -260,6 +292,57 @@ describe("context release readiness guards", () => {
       (result) => result.ref === "context/wiki/payments.md#section=refund-idempotency",
     );
     expect(sectionResult?.freshness.stale).toBe(false);
+  });
+
+  it("keeps task history out of default context search unless tasks scope is explicit", async () => {
+    const root = await tempRoot();
+    await write(root, "context/wiki/release.md", "# Release\n\nCurated release checklist.\n");
+    await write(
+      root,
+      ".agentplane/tasks/202605190000-SEARCH1/README.md",
+      "# Task\n\nTask-only release archaeology note.\n",
+    );
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: true, includeRaw: false, reset: false },
+    });
+
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    await cmdContextSearch({
+      cwd: root,
+      parsed: {
+        query: "release",
+        scope: "",
+        format: "json",
+        explain: false,
+      },
+    });
+    const defaultPayload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      results: { ref: string }[];
+    };
+    expect(defaultPayload.results.some((result) => result.ref.startsWith("context/wiki/"))).toBe(
+      true,
+    );
+    expect(
+      defaultPayload.results.some((result) => result.ref.startsWith(".agentplane/tasks/")),
+    ).toBe(false);
+
+    out.mockClear();
+    await cmdContextSearch({
+      cwd: root,
+      parsed: {
+        query: "task-only release",
+        scope: "tasks",
+        format: "json",
+        explain: false,
+      },
+    });
+    const tasksPayload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      results: { ref: string }[];
+    };
+    expect(tasksPayload.results.some((result) => result.ref.startsWith(".agentplane/tasks/"))).toBe(
+      true,
+    );
   });
 
   it("does not mark fresh JSONL fact and graph projection rows as stale", async () => {

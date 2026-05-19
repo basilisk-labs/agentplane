@@ -4,7 +4,7 @@
 
 Use this module when a task reads, writes, learns, curates, verifies, or relies on AgentPlane local context.
 
-Local context means `context/wiki/**`, `context/facts/**`, `context/graph/**`, `context/capabilities/**`, `context/raw/**`, and `.agentplane/context/**`.
+Local context means `context/wiki/**`, `context/capabilities/**`, `context/raw/**`, `.agentplane/context/derived/facts/**`, `.agentplane/context/derived/graph/**`, `.agentplane/context/derived/capabilities/**`, and `.agentplane/context/**`.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.context.must.hard_constraint.source.first" slot="hard_constraint" mutability="append_only" -->
@@ -27,6 +27,8 @@ ap context search "<query>"
 ap context show <ref>
 ap context learn changes
 ap context learn files <path> [--run]
+ap context ingest --changed|--all|--index-only
+ap context reindex --include-raw
 ap context wiki lint <path>
 ap context wiki explain <path>
 ap context wiki link <path>
@@ -37,7 +39,7 @@ ap context verify-task <task-id>
 ```
 
 - Use `search` for discovery and `show` for exact source readback.
-- Use `learn` to create context assimilation tasks instead of ad hoc memory writes.
+- Use `learn` to create human-facing context assimilation tasks instead of ad hoc memory writes; use `ingest`/`reindex` for lower-level agent and automation pipelines.
 - Use wiki lint/explain/link/index when adding or changing wiki pages.
 - Run `verify-task` before closing tasks that create or rely on context artifacts.
 

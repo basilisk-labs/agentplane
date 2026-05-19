@@ -94,6 +94,10 @@ agentplane context show context/wiki/release.md#section=publish-gate
 agentplane context check
 ```
 
+`context search` defaults to curated context: wiki pages, derived facts, derived graph rows, and
+capability records. Use `--scope tasks`, `--scope raw`, or `--scope all` when you intentionally want
+task-history or raw-source recall mixed into results.
+
 When `agentplane context init` runs in an empty standalone directory, it bootstraps the Agentplane
 project first and then creates the context workspace. In a non-empty directory that is not already an
 Agentplane project, run `agentplane init` explicitly before `agentplane context init` so the project
