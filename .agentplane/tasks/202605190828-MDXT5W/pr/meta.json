@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-19T11:57:19Z",
   "base": "main",
   "branch": "task/202605190828-MDXT5W/site-star-docs-ia",
   "created_at": "2026-05-19T08:30:09.855Z",
-  "head_sha": "9b0c19b3bfb4884e28a4fa6da08294b99844f246",
+  "head_sha": "c4cd3072e6363ee6b3bf4de460f1100bf702f6fe",
   "last_verified_at": "2026-05-19T11:50:37.311Z",
   "last_verified_sha": "9b0c19b3bfb4884e28a4fa6da08294b99844f246",
+  "merge_commit": "cf24451ab5d3c3a0bca3ca85938ef41555720215",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-19T11:57:19Z",
   "pr_number": 3925,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3925",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605190828-MDXT5W",
-  "updated_at": "2026-05-19T11:49:54.936Z",
+  "updated_at": "2026-05-19T11:57:19Z",
   "verify": {
     "status": "pass"
   }

@@ -1,10 +1,11 @@
 ---
 id: "202605190828-MDXT5W"
 title: "Repair website star gateway and docs IA"
-status: "DOING"
+result_summary: "Merged via PR #3925."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605190828-MDXT5W/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190828-MDXT5W-site-star-docs-ia/.agentplane/tasks/202605190828-MDXT5W/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "cf24451ab5d3c3a0bca3ca85938ef41555720215"
+  message: "Merge pull request #3925 from basilisk-labs/task/202605190828-MDXT5W/site-star-docs-ia"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the approved website and docs IA repair in the dedicated branch_pr worktree, preserving the user's update that only the navbar uses the GitHub Buttons Star control while hero and other CTAs link to GitHub without duplicating Star buttons."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3925 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -66,9 +72,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for PR #3925 head 9b0c19b: review thread resolved by updating GitHub proof fallback to live v0.6.3 release data; Docs CI, Core CI test/test-windows, CodeQL, Dependency Review, format, and site-content checks passed."
+  -
+    type: "status"
+    at: "2026-05-19T11:58:02.017Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3925 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T11:50:37.365Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T11:58:02.023Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update agentplane.org website and docs surfaces after live audit: star-focused homepage, canonical docs navigation/routes, public docs cleanup, ACR canonicalization, and site smoke coverage."
 sections:
   Summary: |-
