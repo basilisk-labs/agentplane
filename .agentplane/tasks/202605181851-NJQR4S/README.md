@@ -1,10 +1,11 @@
 ---
 id: "202605181851-NJQR4S"
 title: "Implement Agentplane website redesign backlog"
-status: "DOING"
+result_summary: "Merged via PR #3914."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified website redesign backlog on branch task/202605181851-NJQR4S/website-redesign-backlog. Local checks: format:check, website check-content, docs:ia:check, docs:site:typecheck, docs:site:build, website check-links with O'Reilly 403 external warning. GitHub PR #3914 head 87e800fb7: Docs CI docs success, Core CI test and test-windows success, CodeQL success."
   attempts: 0
-commit: null
+commit:
+  hash: "c2143fab485431b7bb4dc1e9b984f0fed08250e6"
+  message: "Merge pull request #3914 from basilisk-labs/task/202605181851-NJQR4S/website-redesign-backlog"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved website redesign backlog from an isolated branch_pr worktree, preserving unrelated base task-file drift and keeping the milestone free of hosted, pricing, enterprise, sales, or paid-platform messaging."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3914 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified website redesign backlog on branch task/202605181851-NJQR4S/website-redesign-backlog. Local checks: format:check, website check-content, docs:ia:check, docs:site:typecheck, docs:site:build, website check-links with O'Reilly 403 external warning. GitHub PR #3914 head 87e800fb7: Docs CI docs success, Core CI test and test-windows success, CodeQL success."
+  -
+    type: "status"
+    at: "2026-05-19T04:18:08.625Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3914 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T19:53:04.800Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T04:18:08.630Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement the public website redesign backlog across homepage, docs, README-adjacent copy, SEO/AEO metadata, design-system touches, examples, recipes, GitHub star CTA, and quality gates. Scope excludes hosted product, pricing, enterprise, sales, or paid-platform messaging."
 sections:
   Summary: |-
