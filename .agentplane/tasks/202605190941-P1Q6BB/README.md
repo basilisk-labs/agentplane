@@ -1,10 +1,11 @@
 ---
 id: "202605190941-P1Q6BB"
 title: "Wait for release-ready source before manual publish"
-status: "DOING"
+result_summary: "Merged via PR #3928."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605190941-P1Q6BB/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605190941-P1Q6BB-release-pipeline-hardening/.agentplane/tasks/202605190941-P1Q6BB/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "398671158b6b3a67343be06e557dc75f14a78db5"
+  message: "Merge pull request #3928 from basilisk-labs/task/202605190941-P1Q6BB/release-pipeline-hardening"
 comments:
   -
     author: "CODER"
     body: "Start: Implement batch release pipeline hardening for P1Q6BB, Y873RA, and 5FPGCV in one primary worktree because publish readiness, release version surfaces, and registry gates share release scripts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3928 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -66,9 +72,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Fresh hosted quality gate passed for current head 298ef95af: Core CI test/test-windows/release-ready manifest, Docs CI, Workflows Lint, Dependency Review, and CodeQL are green on PR #3928."
+  -
+    type: "status"
+    at: "2026-05-19T10:50:38.139Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3928 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-19T10:36:31.717Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-19T10:50:38.145Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make the publish workflow wait-aware for workflow_dispatch SHA targets so manual release publication waits for successful Core CI and the release-ready artifact instead of failing while CI is still in progress."
 sections:
   Summary: |-
