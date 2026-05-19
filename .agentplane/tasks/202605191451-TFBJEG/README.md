@@ -30,7 +30,7 @@ quality_review:
   updated_at: "2026-05-19T16:59:28.896Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR quality gate passed after review fix: maximum_assimilation mode no longer bypasses source_set.files for context_assimilation tasks; focused release-readiness test, lint:core, typecheck, framework bootstrap, and hosted PR checks passed."
-  evaluated_sha: "a751c6b9278f62c9fde4d16a1b4167d8522bc6e8"
+  evaluated_sha: "ce1775ccd1882baf3c993d1acf7e1a0ea3a43f8c"
   blueprint_digest: "9e3baf098fc34016f22121f1d106c78e0c8bf6a9a0828f7a25d4a41866993171"
   evidence_refs:
     - ".agentplane/tasks/202605191451-TFBJEG/README.md"
