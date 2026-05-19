@@ -33,6 +33,7 @@ observations or unresolved drift found.
 - Head: bb2904022f1b
 
 ```text
+ .agentplane/tasks/202605191736-EQBZ4M/acr.json     | 514 ++++++++++++++++++
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
  .../tasks/202605191736-EQBZ4M/observations.jsonl   |   1 +
  docs/index.mdx                                     |   4 +-
@@ -56,7 +57,7 @@ observations or unresolved drift found.
  packages/spec/schemas/task-observation.schema.json | 148 ++++++
  schemas/task-observation.schema.json               | 148 ++++++
  scripts/generate/sync-schemas.mjs                  |   7 +
- 23 files changed, 2153 insertions(+), 3 deletions(-)
+ 24 files changed, 2667 insertions(+), 3 deletions(-)
 ```
 
 </details>
