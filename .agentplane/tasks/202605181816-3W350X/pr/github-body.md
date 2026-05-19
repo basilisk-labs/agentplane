@@ -16,7 +16,13 @@ Define an extended context assimilation mode for context init/wiki workflows tha
 ## Verification
 
 - State: ok
-- Note: Refined maximum-assimilation model around self-contained wiki semantics with optional raw provenance.
+- Note:
+
+```text
+EVALUATOR quality gate passed: PR #3904 hosted checks are green, local verification evidence is
+recorded in the task README, and the follow-up model change keeps raw refs as provenance while
+wiki/fact/graph/glossary artifacts remain self-contained.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

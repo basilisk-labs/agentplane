@@ -13,7 +13,7 @@ Created: 2026-05-18T18:18:01.868Z
 ## Verification
 
 - State: ok
-- Note: Refined maximum-assimilation model around self-contained wiki semantics with optional raw provenance.
+- Note: EVALUATOR quality gate passed: PR #3904 hosted checks are green, local verification evidence is recorded in the task README, and the follow-up model change keeps raw refs as provenance while wiki/fact/graph/glossary artifacts remain self-contained.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
