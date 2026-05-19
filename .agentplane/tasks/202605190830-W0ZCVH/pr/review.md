@@ -24,9 +24,9 @@ Created: 2026-05-19T08:32:08.899Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T08:41:29.698Z
+- Updated: 2026-05-19T08:42:04.592Z
 - Branch: task/202605190830-W0ZCVH/interactive-context-init
-- Head: 580810a78fec
+- Head: 4118cece7b9f
 
 ```text
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
