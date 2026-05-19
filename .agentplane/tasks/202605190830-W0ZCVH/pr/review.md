@@ -24,17 +24,18 @@ Created: 2026-05-19T08:32:08.899Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T08:47:20.394Z
+- Updated: 2026-05-19T08:51:21.353Z
 - Branch: task/202605190830-W0ZCVH/interactive-context-init
-- Head: 3f83c7ecb5f4
+- Head: 6d564c9884e4
 
 ```text
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   2 +-
  .../src/cli/run-cli.core.context-init.test.ts      | 117 +++++
  .../agentplane/src/cli/run-cli.core.init.test.ts   |   1 -
  .../src/commands/context/context.command.ts        |  43 +-
  .../src/commands/context/context.spec.ts           |   5 +-
- 5 files changed, 734 insertions(+), 4 deletions(-)
+ 6 files changed, 735 insertions(+), 5 deletions(-)
 ```
 
 </details>
