@@ -31,9 +31,8 @@ export const contextInitSpec: CommandSpec<{
       name: "profile",
       valueHint: "<adaptive|minimal|wiki|codebase|research|maximum-assimilation>",
       choices: ["adaptive", "minimal", "wiki", "codebase", "research", "maximum-assimilation"],
-      default: "adaptive",
       description:
-        "Select initial context setup. adaptive is the default cloud-ready llm-wiki contract; maximum-assimilation preserves all significant non-private content in wiki/derived artifacts.",
+        "Select initial context setup. Defaults to adaptive when omitted. User-facing interactive setup offers minimal, adaptive, and maximum-assimilation.",
     },
     {
       kind: "string",
@@ -74,6 +73,7 @@ export const contextInitSpec: CommandSpec<{
         | "codebase"
         | "research"
         | "maximum-assimilation") ?? "adaptive",
+    profileProvided: typeof raw.opts.profile === "string",
     rawGitignore: (raw.opts["raw-gitignore"] as "none" | "all") ?? "none",
     derivedGitignore: (raw.opts["derived-gitignore"] as "none" | "all") ?? "none",
     repair: raw.opts.repair === true,
@@ -83,6 +83,7 @@ export const contextInitSpec: CommandSpec<{
 
 export type ContextInitParsed = {
   profile: "adaptive" | "minimal" | "wiki" | "codebase" | "research" | "maximum-assimilation";
+  profileProvided?: boolean;
   rawGitignore: "none" | "all";
   derivedGitignore: "none" | "all";
   repair: boolean;
