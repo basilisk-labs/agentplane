@@ -19,9 +19,8 @@ Make GitHub PR verification faster and clearer by reusing the local CI selector 
 - Note:
 
 ```text
-EVALUATOR pass: approved CI-routing scope is satisfied by commit a67500fdb; Verify Steps are backed
-by local command evidence; residual deployment risk is limited to updating GitHub branch protection
-to require Core CI / PR verification after this workflow lands.
+Hosted PR verification confirmed on GitHub for head 92cdffa0984fe37610ee41caeef8d57d46951075: split
+Core CI gates, test-windows, Release-ready manifest, and PR verification all succeeded.
 ```
 - Canonical workflow state lives in the task README.
 

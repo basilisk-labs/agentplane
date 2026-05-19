@@ -4,7 +4,7 @@ title: "Split GitHub PR verification into routed parallel gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T18:34:58.434Z"
+  updated_at: "2026-05-19T19:10:08.635Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR pass: approved CI-routing scope is satisfied by commit a67500fdb; Verify Steps are backed by local command evidence; residual deployment risk is limited to updating GitHub branch protection to require Core CI / PR verification after this workflow lands."
+  note: "Hosted PR verification confirmed on GitHub for head 92cdffa0984fe37610ee41caeef8d57d46951075: split Core CI gates, test-windows, Release-ready manifest, and PR verification all succeeded."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T18:34:58.434Z"
+  updated_at: "2026-05-19T19:10:08.635Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR pass: approved CI-routing scope is satisfied by commit a67500fdb; Verify Steps are backed by local command evidence; residual deployment risk is limited to updating GitHub branch protection to require Core CI / PR verification after this workflow lands."
-  evaluated_sha: "a67500fdbb9095ec3af0be1f3bd7555c1e7e2d20"
+  note: "Hosted PR verification confirmed on GitHub for head 92cdffa0984fe37610ee41caeef8d57d46951075: split Core CI gates, test-windows, Release-ready manifest, and PR verification all succeeded."
+  evaluated_sha: "92cdffa0984fe37610ee41caeef8d57d46951075"
   blueprint_digest: "4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b"
   evidence_refs:
     - ".agentplane/tasks/202605191825-3PV3QF/README.md"
@@ -60,8 +60,20 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR pass: approved CI-routing scope is satisfied by commit a67500fdb; Verify Steps are backed by local command evidence; residual deployment risk is limited to updating GitHub branch protection to require Core CI / PR verification after this workflow lands."
+  -
+    type: "verify"
+    at: "2026-05-19T19:09:55.357Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented split GitHub PR verification gates and confirmed hosted Core CI aggregate PR verification passes on head 92cdffa0984fe37610ee41caeef8d57d46951075."
+  -
+    type: "verify"
+    at: "2026-05-19T19:10:08.635Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Hosted PR verification confirmed on GitHub for head 92cdffa0984fe37610ee41caeef8d57d46951075: split Core CI gates, test-windows, Release-ready manifest, and PR verification all succeeded."
 doc_version: 3
-doc_updated_at: "2026-05-19T18:34:58.469Z"
+doc_updated_at: "2026-05-19T19:10:08.665Z"
 doc_updated_by: "CODER"
 description: "Make GitHub PR verification faster and clearer by reusing the local CI selector for a planning job, splitting Core CI into parallel verification jobs, adding a stable aggregate gate, and caching Bun artifacts on Windows."
 sections:
@@ -114,6 +126,44 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:33:52.313Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json
+    - old_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+    - current_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
+
+    ### 2026-05-19T19:09:55.357Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented split GitHub PR verification gates and confirmed hosted Core CI aggregate PR verification passes on head 92cdffa0984fe37610ee41caeef8d57d46951075.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:34:58.469Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json
+    - old_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+    - current_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
+
+    ### 2026-05-19T19:10:08.635Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Hosted PR verification confirmed on GitHub for head 92cdffa0984fe37610ee41caeef8d57d46951075: split Core CI gates, test-windows, Release-ready manifest, and PR verification all succeeded.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T19:09:55.389Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
 
     Details:
 
@@ -197,6 +247,44 @@ Note: EVALUATOR pass: approved CI-routing scope is satisfied by commit a67500fdb
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:33:52.313Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json
+- old_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+- current_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
+
+### 2026-05-19T19:09:55.357Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented split GitHub PR verification gates and confirmed hosted Core CI aggregate PR verification passes on head 92cdffa0984fe37610ee41caeef8d57d46951075.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T18:34:58.469Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json
+- old_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+- current_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
+
+### 2026-05-19T19:10:08.635Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Hosted PR verification confirmed on GitHub for head 92cdffa0984fe37610ee41caeef8d57d46951075: split Core CI gates, test-windows, Release-ready manifest, and PR verification all succeeded.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T19:09:55.389Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
 
 Details:
 

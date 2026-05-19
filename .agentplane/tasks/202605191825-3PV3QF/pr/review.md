@@ -13,7 +13,7 @@ Created: 2026-05-19T18:26:31.579Z
 ## Verification
 
 - State: ok
-- Note: EVALUATOR pass: approved CI-routing scope is satisfied by commit a67500fdb; Verify Steps are backed by local command evidence; residual deployment risk is limited to updating GitHub branch protection to require Core CI / PR verification after this workflow lands.
+- Note: Hosted PR verification confirmed on GitHub for head 92cdffa0984fe37610ee41caeef8d57d46951075: split Core CI gates, test-windows, Release-ready manifest, and PR verification all succeeded.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
