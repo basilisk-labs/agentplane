@@ -127,7 +127,7 @@ export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
 
       const usageLines = ["", "Usage:", "", "```text", ...(s.usage ?? []), "```"];
 
-      const visibleOpts = (s.options ?? []).filter(isVisibleOption);
+      const visibleOpts = (s.options ?? []).filter((o) => isVisibleOption(o));
       const optionLines =
         visibleOpts.length === 0
           ? []
