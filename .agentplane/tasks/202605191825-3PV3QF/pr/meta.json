@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-20T05:21:34Z",
   "base": "main",
   "branch": "task/202605191825-3PV3QF/github-verification-gates",
   "created_at": "2026-05-19T18:26:31.579Z",
-  "head_sha": "cc3e17188adc6d3cbe3014e96d8788611b5819ce",
+  "head_sha": "c3b87f768da33a5cf91faf866ad923615723c6c7",
   "last_verified_at": "2026-05-20T05:15:29.305Z",
   "last_verified_sha": "cc3e17188adc6d3cbe3014e96d8788611b5819ce",
+  "merge_commit": "32d41be60a030dc7abcbe6af9162f8180453f2ab",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-20T05:21:34Z",
   "pr_number": 3953,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3953",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605191825-3PV3QF",
-  "updated_at": "2026-05-20T05:15:29.384Z",
+  "updated_at": "2026-05-20T05:21:34Z",
   "verify": {
     "status": "pass"
   }
