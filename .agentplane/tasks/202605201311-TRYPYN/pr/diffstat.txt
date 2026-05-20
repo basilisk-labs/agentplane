@@ -1,0 +1,5 @@
+ .../blueprint/resolved-snapshot.json               | 598 +++++++++++++++++++++
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  19 +
+ scripts/lib/local-ci-selection.mjs                 |  29 +
+ scripts/lib/test-route-registry.mjs                |   8 +
+ 4 files changed, 654 insertions(+)
