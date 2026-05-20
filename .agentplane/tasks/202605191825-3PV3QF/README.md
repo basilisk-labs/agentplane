@@ -29,7 +29,7 @@ quality_review:
   updated_at: "2026-05-20T04:55:14.550Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR quality gate passed for integration target 8e58c020032e43817562363a7ae53604e96c3871; hosted GitHub PR verification later confirmed on b5108eed4 with Core CI / PR verification success."
-  evaluated_sha: "b5108eed4c8f2046fb1527400dfa75f45e8fff29"
+  evaluated_sha: "8e58c020032e43817562363a7ae53604e96c3871"
   blueprint_digest: "4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b"
   evidence_refs:
     - ".agentplane/tasks/202605191825-3PV3QF/README.md"
