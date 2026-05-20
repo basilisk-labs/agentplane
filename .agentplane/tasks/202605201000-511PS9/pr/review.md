@@ -24,9 +24,9 @@ Created: 2026-05-20T10:03:29.826Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T10:25:30.437Z
+- Updated: 2026-05-20T11:12:34.439Z
 - Branch: task/202605201000-511PS9/ambiguity-route-contract
-- Head: d5f50e7b3c05
+- Head: 13286b7e42da
 
 ```text
  .agentplane/tasks/202605200959-2KQ8XN/README.md    | 210 ++++++++
@@ -39,15 +39,16 @@ Created: 2026-05-20T10:03:29.826Z
  .agentplane/tasks/202605201001-YCTG8P/README.md    | 215 ++++++++
  .../blueprint/resolved-snapshot.json               | 579 +++++++++++++++++++++
  docs/reference/workflow-file.mdx                   |   3 +-
+ docs/user/cli-reference.generated.mdx              |   1 +
  docs/user/configuration.mdx                        |   6 +-
  packages/agentplane/src/cli/command-guide.ts       |   3 +-
  .../src/cli/run-cli/command-catalog/task.ts        |   7 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
- .../src/commands/shared/route-decision.ts          |  74 ++-
- .../src/commands/task/evidence-check.command.ts    | 137 +++++
+ .../src/commands/shared/route-decision.ts          |  80 ++-
+ .../src/commands/task/evidence-check.command.ts    | 143 +++++
  .../agentplane/src/commands/task/lint.command.ts   |  23 +-
  packages/agentplane/src/commands/task/lint.ts      |  17 +-
- .../src/commands/task/next-action.command.ts       |  42 +-
+ .../src/commands/task/next-action.command.ts       |  43 +-
  .../agentplane/src/commands/task/status.command.ts |  11 +
  packages/agentplane/src/runner/types/context.ts    |   1 +
  .../src/runner/usecases/task-run-bootstrap.ts      |  20 +-
@@ -56,7 +57,7 @@ Created: 2026-05-20T10:03:29.826Z
  packages/core/src/tasks/index.ts                   |   1 +
  packages/core/src/tasks/tasks-lint.test.ts         |  18 +
  packages/core/src/tasks/tasks-lint.ts              |  36 ++
- 27 files changed, 3974 insertions(+), 13 deletions(-)
+ 28 files changed, 3988 insertions(+), 13 deletions(-)
 ```
 
 </details>
