@@ -1,10 +1,11 @@
 ---
 id: "202605200959-2KQ8XN"
 title: "Clarify workflow state source terminology"
-status: "DOING"
+result_summary: "Merged via batch PR #3965 as included task."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,26 +26,31 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T10:23:37.110Z"
+  updated_at: "2026-05-20T16:53:44.928Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task."
+  note: "Verified: current main cc334fc66 contains batch PR #3965 and primary task 202605201000-511PS9 close evidence; included docs task route unchanged after snapshot refresh."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-20T10:23:37.110Z"
+  updated_at: "2026-05-20T16:53:44.928Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task."
-  evaluated_sha: "8dea62f1d0e2728731bc1fea54252adc77e4cbe3"
+  note: "Verified: current main cc334fc66 contains batch PR #3965 and primary task 202605201000-511PS9 close evidence; included docs task route unchanged after snapshot refresh."
+  evaluated_sha: "cc334fc66ef290e994438d1c3c413ebeb7d3b8a2"
   blueprint_digest: "c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e"
   evidence_refs:
     - ".agentplane/tasks/202605200959-2KQ8XN/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605200959-2KQ8XN/blueprint/resolved-snapshot.json"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202605200959-2KQ8XN/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "63645a1cc3e1908fb5bca751360d416c122bb6ec"
+  message: "Merge pull request #3965 from basilisk-labs/task/202605201000-511PS9/task-next-action-ambiguity"
 comments:
   -
     author: "CODER"
     body: "Start: Batch task for workflow source terminology clarification; implementation will be included in primary ambiguity-route-contract worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Included task landed through batch PR #3965; current main cc334fc66 contains implementation, hosted checks, review fix, and primary close evidence."
 events:
   -
     type: "status"
@@ -65,9 +71,22 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task."
+  -
+    type: "verify"
+    at: "2026-05-20T16:53:44.928Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Verified: current main cc334fc66 contains batch PR #3965 and primary task 202605201000-511PS9 close evidence; included docs task route unchanged after snapshot refresh."
+  -
+    type: "status"
+    at: "2026-05-20T16:54:17.362Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Included task landed through batch PR #3965; current main cc334fc66 contains implementation, hosted checks, review fix, and primary close evidence."
 doc_version: 3
-doc_updated_at: "2026-05-20T10:23:37.194Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-20T16:54:17.364Z"
+doc_updated_by: "INTEGRATOR"
 description: "Clarify that .agentplane/WORKFLOW.md is the single repo-local workflow/config source, while ap config show is a readback and quickstart is guidance, reducing source-of-truth ambiguity for agents."
 sections:
   Summary: |-
@@ -123,6 +142,25 @@ sections:
     - state: stale
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605200959-2KQ8XN/blueprint/resolved-snapshot.json
     - old_digest: 577baace79b6a4509190916e3f61223922a4beefde0a8f192bb23452777dd49b
+    - current_digest: c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605200959-2KQ8XN
+
+    ### 2026-05-20T16:53:44.928Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Verified: current main cc334fc66 contains batch PR #3965 and primary task 202605201000-511PS9 close evidence; included docs task route unchanged after snapshot refresh.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:23:37.194Z, excerpt_hash=sha256:93d6fa448828a802f1e6db6b19c3fa0283e0a06517ef329b19c44a9f45cab884
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605200959-2KQ8XN/blueprint/resolved-snapshot.json
+    - old_digest: c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e
     - current_digest: c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605200959-2KQ8XN
@@ -196,6 +234,25 @@ BlueprintSnapshotRef:
 - state: stale
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605200959-2KQ8XN/blueprint/resolved-snapshot.json
 - old_digest: 577baace79b6a4509190916e3f61223922a4beefde0a8f192bb23452777dd49b
+- current_digest: c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605200959-2KQ8XN
+
+### 2026-05-20T16:53:44.928Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Verified: current main cc334fc66 contains batch PR #3965 and primary task 202605201000-511PS9 close evidence; included docs task route unchanged after snapshot refresh.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:23:37.194Z, excerpt_hash=sha256:93d6fa448828a802f1e6db6b19c3fa0283e0a06517ef329b19c44a9f45cab884
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605200959-2KQ8XN/blueprint/resolved-snapshot.json
+- old_digest: c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e
 - current_digest: c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605200959-2KQ8XN
