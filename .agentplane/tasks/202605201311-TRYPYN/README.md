@@ -1,10 +1,11 @@
 ---
 id: "202605201311-TRYPYN"
 title: "Fix local CI routing for context task artifacts"
-status: "DOING"
+result_summary: "Merged via PR #3971."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Root cause confirmed: context code/docs plus neutral task PR artifact fell through to full-fast as unclassified_changed_paths. Added context bucket and regression coverage. Evidence: run-local-ci --mode fast --explain now selects targeted(context)/context_paths_only; run-local-ci --mode fast for reproduced changed files passed; local-ci-selection.test.ts passed; context targeted tests passed; prettier/eslint/check-routing/diff-check passed; ap doctor OK with unrelated archived README warning only."
   attempts: 0
-commit: null
+commit:
+  hash: "debe5dbf56799427e472aed79888fcf07158b8d2"
+  message: "Merge pull request #3971 from basilisk-labs/task/202605201311-TRYPYN/context-ci-routing"
 comments:
   -
     author: "CODER"
     body: "Start: Investigating the local CI selector fallback that routed context code plus task PR artifacts into full-fast pre-push, then adding a targeted context route with regression tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3971 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Root cause confirmed: context code/docs plus neutral task PR artifact fell through to full-fast as unclassified_changed_paths. Added context bucket and regression coverage. Evidence: run-local-ci --mode fast --explain now selects targeted(context)/context_paths_only; run-local-ci --mode fast for reproduced changed files passed; local-ci-selection.test.ts passed; context targeted tests passed; prettier/eslint/check-routing/diff-check passed; ap doctor OK with unrelated archived README warning only."
+  -
+    type: "status"
+    at: "2026-05-20T13:29:29.521Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3971 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-20T13:20:34.649Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-20T13:29:29.527Z"
+doc_updated_by: "INTEGRATOR"
 description: "Investigate and fix the pre-push ci:local:fast full-fast fallback that occurred when context code changes were combined with .agentplane task/PR artifacts; route this scope to focused context tests instead of broad flaky/timing suites."
 sections:
   Summary: |-
