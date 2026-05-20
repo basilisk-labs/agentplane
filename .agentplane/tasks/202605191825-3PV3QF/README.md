@@ -1,10 +1,11 @@
 ---
 id: "202605191825-3PV3QF"
 title: "Split GitHub PR verification into routed parallel gates"
-status: "DOING"
+result_summary: "Merged via PR #3953."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605191825-3PV3QF/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "32d41be60a030dc7abcbe6af9162f8180453f2ab"
+  message: "Merge pull request #3953 from basilisk-labs/task/202605191825-3PV3QF/github-verification-gates"
 comments:
   -
     author: "CODER"
     body: "Start: Implement routed GitHub PR verification by reusing the existing local CI selector, splitting Core CI into clearer parallel jobs, adding a stable aggregate gate, and preserving release-ready behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3953 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -90,9 +96,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed after formatting the recovery contract test; format:check, workflows:lint, and focused workflow contract test passed."
+  -
+    type: "status"
+    at: "2026-05-20T05:22:21.123Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3953 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-20T05:15:29.337Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-20T05:22:21.133Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make GitHub PR verification faster and clearer by reusing the local CI selector for a planning job, splitting Core CI into parallel verification jobs, adding a stable aggregate gate, and caching Bun artifacts on Windows."
 sections:
   Summary: |-
