@@ -4,7 +4,7 @@ title: "Split GitHub PR verification into routed parallel gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T19:10:08.635Z"
+  updated_at: "2026-05-20T04:55:14.550Z"
   updated_by: "EVALUATOR"
-  note: "Hosted PR verification confirmed on GitHub for head 92cdffa0984fe37610ee41caeef8d57d46951075: split Core CI gates, test-windows, Release-ready manifest, and PR verification all succeeded."
+  note: "EVALUATOR quality gate passed for integration target 8e58c020032e43817562363a7ae53604e96c3871; hosted GitHub PR verification later confirmed on b5108eed4 with Core CI / PR verification success."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-19T19:10:08.635Z"
+  updated_at: "2026-05-20T04:55:14.550Z"
   updated_by: "EVALUATOR"
-  note: "Hosted PR verification confirmed on GitHub for head 92cdffa0984fe37610ee41caeef8d57d46951075: split Core CI gates, test-windows, Release-ready manifest, and PR verification all succeeded."
-  evaluated_sha: "92cdffa0984fe37610ee41caeef8d57d46951075"
+  note: "EVALUATOR quality gate passed for integration target 8e58c020032e43817562363a7ae53604e96c3871; hosted GitHub PR verification later confirmed on b5108eed4 with Core CI / PR verification success."
+  evaluated_sha: "b5108eed4c8f2046fb1527400dfa75f45e8fff29"
   blueprint_digest: "4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b"
   evidence_refs:
     - ".agentplane/tasks/202605191825-3PV3QF/README.md"
@@ -72,8 +72,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Hosted PR verification confirmed on GitHub for head 92cdffa0984fe37610ee41caeef8d57d46951075: split Core CI gates, test-windows, Release-ready manifest, and PR verification all succeeded."
+  -
+    type: "verify"
+    at: "2026-05-20T04:55:14.550Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed for integration target 8e58c020032e43817562363a7ae53604e96c3871; hosted GitHub PR verification later confirmed on b5108eed4 with Core CI / PR verification success."
 doc_version: 3
-doc_updated_at: "2026-05-19T19:10:08.665Z"
+doc_updated_at: "2026-05-20T04:55:14.582Z"
 doc_updated_by: "CODER"
 description: "Make GitHub PR verification faster and clearer by reusing the local CI selector for a planning job, splitting Core CI into parallel verification jobs, adding a stable aggregate gate, and caching Bun artifacts on Windows."
 sections:
@@ -164,6 +170,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T19:09:55.389Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json
+    - old_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+    - current_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
+
+    ### 2026-05-20T04:55:14.550Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed for integration target 8e58c020032e43817562363a7ae53604e96c3871; hosted GitHub PR verification later confirmed on b5108eed4 with Core CI / PR verification success.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T19:10:08.665Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
 
     Details:
 
@@ -285,6 +310,25 @@ Note: Hosted PR verification confirmed on GitHub for head 92cdffa0984fe37610ee41
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T19:09:55.389Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json
+- old_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+- current_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
+
+### 2026-05-20T04:55:14.550Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed for integration target 8e58c020032e43817562363a7ae53604e96c3871; hosted GitHub PR verification later confirmed on b5108eed4 with Core CI / PR verification success.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T19:10:08.665Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
 
 Details:
 

@@ -13,7 +13,7 @@ Created: 2026-05-19T18:26:31.579Z
 ## Verification
 
 - State: ok
-- Note: Hosted PR verification confirmed on GitHub for head 92cdffa0984fe37610ee41caeef8d57d46951075: split Core CI gates, test-windows, Release-ready manifest, and PR verification all succeeded.
+- Note: EVALUATOR quality gate passed for integration target 8e58c020032e43817562363a7ae53604e96c3871; hosted GitHub PR verification later confirmed on b5108eed4 with Core CI / PR verification success.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
