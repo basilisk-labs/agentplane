@@ -43,8 +43,8 @@ quality_review:
     - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202605201001-C1X8B6/blueprint/resolved-snapshot.json"
   findings: []
 commit:
-  hash: "cc334fc66ef290e994438d1c3c413ebeb7d3b8a2"
-  message: "Merge pull request #3975 from basilisk-labs/task-close/202605201448-WCP4YB/96db406f20a1"
+  hash: "63645a1cc3e1908fb5bca751360d416c122bb6ec"
+  message: "Merge pull request #3965 from basilisk-labs/task/202605201000-511PS9/task-next-action-ambiguity"
 comments:
   -
     author: "CODER"
