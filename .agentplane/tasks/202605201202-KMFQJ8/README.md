@@ -1,10 +1,11 @@
 ---
 id: "202605201202-KMFQJ8"
 title: "Require root glossary for maximum assimilation"
-status: "DOING"
+result_summary: "Merged via PR #3968."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605201202-KMFQJ8/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201202-KMFQJ8-root-glossary/.agentplane/tasks/202605201202-KMFQJ8/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "24086f143e982c25ade4c8d3ce771d19f78c65a8"
+  message: "Merge pull request #3968 from basilisk-labs/task/202605201202-KMFQJ8/root-glossary"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the approved maximum-assimilation glossary contract in the dedicated branch_pr worktree, limited to generated guidance, blueprint evidence, docs, and focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3968 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -66,9 +72,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-hotspot update verification. Command: bun test packages/agentplane/src/commands/context/release-readiness.test.ts packages/agentplane/src/blueprints/validate.test.ts. Result: pass. Evidence: 45 pass, 0 fail, 179 expect calls. Command: bunx prettier --check touched files. Result: pass. Evidence: all matched files use Prettier code style. Command: bunx eslint touched TypeScript files. Result: pass. Evidence: no lint output. Command: bun run hotspots:check. Result: pass. Evidence: runtime threshold passed; oversized test baseline OK with 11 entries and 12571 total lines. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: ap doctor. Result: pass with pre-existing warning. Evidence: doctor OK; unrelated DONE task 202605200640-7AXZRX archive README warning. Command: git diff --check. Result: pass. Evidence: no whitespace errors. Residual: full pre-push ci:local:fast failed on unrelated long-running broad tests/timeouts after targeted checks had passed; branch was pushed with --no-verify and GitHub checks are in progress on PR #3968."
+  -
+    type: "status"
+    at: "2026-05-20T13:18:19.671Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3968 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-20T12:48:15.291Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-20T13:18:19.678Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update maximum-assimilation context mode so the canonical glossary is created or maintained as a separate root file, with generated guidance, blueprint evidence, docs, and focused tests aligned."
 sections:
   Summary: |-
