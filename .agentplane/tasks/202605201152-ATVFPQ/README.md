@@ -4,7 +4,7 @@ title: "Define context wiki contract surface"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-20T11:57:31.156Z"
+  updated_by: "DOCS"
+  note: "Command: bunx prettier --check .agentplane/context/agentplane.context.yaml .agentplane/context/policies/wiki.rules.md context/wiki/AGENTS.md packages/agentplane/src/commands/context/init.ts -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: ap context wiki lint context/wiki/AGENTS.md -> pass. Command: ap context check -> pass. Command: bunx eslint packages/agentplane/src/commands/context/init.ts -> pass. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts -> pass, 33 tests. Command: ap doctor -> OK with pre-existing warning about DONE task archive README 202605200640-7AXZRX missing from git index. Skipped: ap context verify-task 202605201152-ATVFPQ, because this is a docs/policy task and the command rejected it as not a context task."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: defining the context wiki contract surface in the existing context manifest and wiki policy files, then aligning the wiki agent notes to reference that control layer."
+  -
+    type: "verify"
+    at: "2026-05-20T11:57:31.156Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Command: bunx prettier --check .agentplane/context/agentplane.context.yaml .agentplane/context/policies/wiki.rules.md context/wiki/AGENTS.md packages/agentplane/src/commands/context/init.ts -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: ap context wiki lint context/wiki/AGENTS.md -> pass. Command: ap context check -> pass. Command: bunx eslint packages/agentplane/src/commands/context/init.ts -> pass. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts -> pass, 33 tests. Command: ap doctor -> OK with pre-existing warning about DONE task archive README 202605200640-7AXZRX missing from git index. Skipped: ap context verify-task 202605201152-ATVFPQ, because this is a docs/policy task and the command rejected it as not a context task."
 doc_version: 3
-doc_updated_at: "2026-05-20T11:53:03.295Z"
+doc_updated_at: "2026-05-20T11:57:31.182Z"
 doc_updated_by: "DOCS"
 description: "Clarify the repository-local context/wiki contract by making the context manifest and wiki rules the explicit source for wiki format, language, topology, and provenance expectations without changing runtime enforcement."
 sections:
@@ -58,6 +64,25 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-20T11:57:31.156Z — VERIFY — ok
+
+    By: DOCS
+
+    Note: Command: bunx prettier --check .agentplane/context/agentplane.context.yaml .agentplane/context/policies/wiki.rules.md context/wiki/AGENTS.md packages/agentplane/src/commands/context/init.ts -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: ap context wiki lint context/wiki/AGENTS.md -> pass. Command: ap context check -> pass. Command: bunx eslint packages/agentplane/src/commands/context/init.ts -> pass. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts -> pass, 33 tests. Command: ap doctor -> OK with pre-existing warning about DONE task archive README 202605200640-7AXZRX missing from git index. Skipped: ap context verify-task 202605201152-ATVFPQ, because this is a docs/policy task and the command rejected it as not a context task.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T11:53:03.295Z, excerpt_hash=sha256:bcc38c34ef4931bd578d7f99ea818892646e5319d4422c20fae7a280de2ff7ac
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201152-ATVFPQ-context-wiki-contract/.agentplane/tasks/202605201152-ATVFPQ/blueprint/resolved-snapshot.json
+    - old_digest: 2b00d837ef349d9bb4f691c50e1570ccfcd683e6fece96dbb41449a2ae77c745
+    - current_digest: 2b00d837ef349d9bb4f691c50e1570ccfcd683e6fece96dbb41449a2ae77c745
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605201152-ATVFPQ
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -91,6 +116,25 @@ PLANNER fallback scaffold for "Define context wiki contract surface". Replace wi
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-20T11:57:31.156Z — VERIFY — ok
+
+By: DOCS
+
+Note: Command: bunx prettier --check .agentplane/context/agentplane.context.yaml .agentplane/context/policies/wiki.rules.md context/wiki/AGENTS.md packages/agentplane/src/commands/context/init.ts -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: ap context wiki lint context/wiki/AGENTS.md -> pass. Command: ap context check -> pass. Command: bunx eslint packages/agentplane/src/commands/context/init.ts -> pass. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts -> pass, 33 tests. Command: ap doctor -> OK with pre-existing warning about DONE task archive README 202605200640-7AXZRX missing from git index. Skipped: ap context verify-task 202605201152-ATVFPQ, because this is a docs/policy task and the command rejected it as not a context task.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T11:53:03.295Z, excerpt_hash=sha256:bcc38c34ef4931bd578d7f99ea818892646e5319d4422c20fae7a280de2ff7ac
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201152-ATVFPQ-context-wiki-contract/.agentplane/tasks/202605201152-ATVFPQ/blueprint/resolved-snapshot.json
+- old_digest: 2b00d837ef349d9bb4f691c50e1570ccfcd683e6fece96dbb41449a2ae77c745
+- current_digest: 2b00d837ef349d9bb4f691c50e1570ccfcd683e6fece96dbb41449a2ae77c745
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605201152-ATVFPQ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

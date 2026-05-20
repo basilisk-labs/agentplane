@@ -1,0 +1,6 @@
+ .agentplane/context/agentplane.context.yaml        |  23 ++
+ .agentplane/context/policies/wiki.rules.md         |  47 ++-
+ .../blueprint/resolved-snapshot.json               | 397 +++++++++++++++++++++
+ context/wiki/AGENTS.md                             |   2 +
+ packages/agentplane/src/commands/context/init.ts   |  68 +++-
+ 5 files changed, 533 insertions(+), 4 deletions(-)
