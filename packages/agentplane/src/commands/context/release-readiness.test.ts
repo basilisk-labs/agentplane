@@ -114,10 +114,12 @@ describe("context release readiness guards", () => {
     );
     const readme = await readFile(path.join(root, "context/README.md"), "utf8");
     const wikiAgents = await readFile(path.join(root, "context/wiki/AGENTS.md"), "utf8");
+    const rawEntries = await readdir(path.join(root, "context/raw"));
 
     expect(manifest).toContain("mode: maximum-assimilation");
     expect(manifest).toContain("maintenance_mode: maximum_assimilation");
     expect(manifest).toContain("line_refs_required: true");
+    expect(rawEntries.toSorted()).toEqual([".gitkeep"]);
     expect(readme).toContain("Maximum-assimilation mode adds a stricter wiki maintenance contract");
     expect(readme).toContain("line-addressed source refs as provenance pointers");
     expect(readme).toContain("wiki/fact/graph artifacts stay self-contained");

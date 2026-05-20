@@ -137,7 +137,7 @@ The contract is stricter than the default adaptive profile:
 - Keep original source association through a source registry: `source_id`, original path, `sha256:`
   hash, content type, line count, ingest time, and availability state such as
   `present|missing|private|redacted`.
-- Use concrete line refs such as `context/raw/research/note.md#lines=12-24` as provenance
+- Use concrete line refs such as `context/raw/source-name.md#lines=12-24` as provenance
   addresses, not as the retained content. When raw is missing, those refs become non-dereferenceable
   audit pointers while the wiki/fact/graph layer remains self-contained.
 - Extract canonical entities, aliases, relations, decisions, requirements, risks, workflows,
