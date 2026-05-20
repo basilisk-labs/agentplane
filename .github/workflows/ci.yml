@@ -62,7 +62,19 @@ jobs:
           node-version: "24"
       - name: Plan PR verification route
         id: plan
-        run: node scripts/checks/plan-github-ci.mjs
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then
+            {
+              echo "route=full-fast"
+              echo "selector_kind=recovery"
+              echo "bucket=recovery"
+              echo "buckets=recovery"
+              echo "changed_files="
+              echo "changed_files_count=0"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          node scripts/checks/plan-github-ci.mjs
 
   verify-routed:
     needs:
