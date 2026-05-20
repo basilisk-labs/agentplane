@@ -129,6 +129,11 @@ The contract is stricter than the default adaptive profile:
 - Record the wiki topology decision before creating page families: what folders/pages are canonical,
   why that granularity fits the sources, which terms are aliases, and which pages should stay as
   headings inside broader pages.
+- Treat the topology decision as a verification artifact, not just a planning note. It should
+  classify the selected source shape, such as book/corpus, codebase, task history, product docs,
+  research notes, or ops logs; name each canonical page family; cite source-backed evidence for
+  every new family; explain page-vs-heading granularity; and keep ambiguous identities as aliases,
+  `possibly_same_as`, conflicts, or open questions instead of normalizing them away.
 - Keep original source association through a source registry: `source_id`, original path, `sha256:`
   hash, content type, line count, ingest time, and availability state such as
   `present|missing|private|redacted`.
@@ -153,6 +158,9 @@ Critical points:
 
 - Full assimilation does not override sensitivity boundaries. Secrets and non-publishable spans must
   not be copied into public wiki pages, task summaries, ACRs, or reports.
+- Source-shaped topology is a gate, not an aesthetic preference. Do not create a page family until
+  the topology decision names the source evidence that justifies it; otherwise keep the material
+  under stable headings inside an existing canonical page.
 - "100% significant content" means semantic coverage, not a line-for-line raw mirror. Boilerplate,
   duplicate text, generated noise, and private spans should be marked as omitted/redacted with reasons
   instead of being silently dropped.

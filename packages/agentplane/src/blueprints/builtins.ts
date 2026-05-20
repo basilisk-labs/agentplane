@@ -450,6 +450,12 @@ export const BUILTIN_BLUEPRINTS = [
         "Entity, alias, relation, conflict, and open-question extraction completed before narrative wiki synthesis.",
       ),
       evidence(
+        "context_max.topology",
+        "artifact",
+        "artifact_write",
+        "Source-shaped topology decision recorded before page-family creation, including source type, canonical families, page-vs-heading granularity, aliases, unresolved identities, and source-backed evidence for every new family.",
+      ),
+      evidence(
         "context_max.glossary",
         "artifact",
         "artifact_write",
@@ -492,6 +498,18 @@ export const BUILTIN_BLUEPRINTS = [
         severity: "stop",
         reason:
           "Entity/relation/glossary extraction and pre-write reconciliation must happen before narrative wiki synthesis.",
+      },
+      {
+        id: "context_max_missing_topology_decision",
+        severity: "stop",
+        reason:
+          "Narrative wiki synthesis requires a source-shaped topology decision that classifies source type, canonical page families, page-vs-heading granularity, aliases, and unresolved identities.",
+      },
+      {
+        id: "context_max_page_family_without_source_evidence",
+        severity: "approval_required",
+        reason:
+          "Every new wiki page family requires source-backed evidence in the topology decision; otherwise keep the material under stable headings or request approval.",
       },
       {
         id: "context_max_missing_line_refs",

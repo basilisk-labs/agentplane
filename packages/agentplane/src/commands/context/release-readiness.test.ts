@@ -128,6 +128,8 @@ describe("context release readiness guards", () => {
     expect(wikiAgents).toContain("availability state");
     expect(wikiAgents).toContain("`missing`");
     expect(wikiAgents).toContain("choose wiki structure from source content");
+    expect(wikiAgents).toContain("classify the source shape");
+    expect(wikiAgents).toContain("justify page-vs-heading granularity");
     expect(wikiAgents).toContain("[[Page Title]]");
     expect(wikiAgents).toContain("Record EVALUATOR review");
   });
@@ -797,6 +799,7 @@ describe("context release readiness guards", () => {
     ).toEqual(
       expect.arrayContaining([
         "source_shaped_wiki_topology_recorded",
+        "topology_page_family_evidence_recorded",
         "canonical_glossary_updated",
         "obsidian_wikilinks_reviewed",
         "evaluator_quality_review",
@@ -805,6 +808,7 @@ describe("context release readiness guards", () => {
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint?.stop_rules).toEqual(
       expect.arrayContaining([
         "missing_source_shaped_topology_decision",
+        "page_family_without_source_evidence",
         "missing_obsidian_wikilinks",
         "raw_deletion_resilience_unproven",
         "evaluator_quality_review_missing",
@@ -825,6 +829,12 @@ describe("context release readiness guards", () => {
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("Topology pass:");
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("classify source shape");
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("source-backed evidence for every new family");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("[[Canonical Page]]");
