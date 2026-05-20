@@ -4,7 +4,7 @@ title: "Fix done task next-action route"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T17:02:23.005Z"
+  updated_at: "2026-05-20T17:20:21.455Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for implementation commit bf2f3e28a. Evidence: focused cli-core route-decision test passed, ESLint passed, agentplane typecheck passed, framework bootstrap completed through task verify-show, and policy routing passed."
+  note: "Review fix accepted locally: branch_pr DONE tasks keep cleanup guidance, direct DONE tasks now return a direct-safe terminal action with null command; no branch_pr recovery blockers for DONE tasks."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-20T17:02:23.005Z"
+  updated_at: "2026-05-20T17:20:21.455Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for implementation commit bf2f3e28a. Evidence: focused cli-core route-decision test passed, ESLint passed, agentplane typecheck passed, framework bootstrap completed through task verify-show, and policy routing passed."
-  evaluated_sha: "bf2f3e28a4f83c8150d158c98b60728902c3708d"
+  note: "Review fix accepted locally: branch_pr DONE tasks keep cleanup guidance, direct DONE tasks now return a direct-safe terminal action with null command; no branch_pr recovery blockers for DONE tasks."
+  evaluated_sha: "3250fc77cb404f5061d2df3bd4667ed2caa6833f"
   blueprint_digest: "38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1"
   evidence_refs:
     - ".agentplane/tasks/202605201656-J68MDT/README.md"
@@ -66,8 +66,20 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality gate passed for implementation commit bf2f3e28a. Evidence: focused cli-core route-decision test passed, ESLint passed, agentplane typecheck passed, framework bootstrap completed through task verify-show, and policy routing passed."
+  -
+    type: "verify"
+    at: "2026-05-20T17:20:12.706Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review fix verified: DONE next-action now returns branch cleanup only in branch_pr and direct-safe terminal route in direct mode; focused cli-core route-decision test, prettier, eslint, typecheck, and policy routing passed."
+  -
+    type: "verify"
+    at: "2026-05-20T17:20:21.455Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Review fix accepted locally: branch_pr DONE tasks keep cleanup guidance, direct DONE tasks now return a direct-safe terminal action with null command; no branch_pr recovery blockers for DONE tasks."
 doc_version: 3
-doc_updated_at: "2026-05-20T17:02:23.042Z"
+doc_updated_at: "2026-05-20T17:20:21.486Z"
 doc_updated_by: "CODER"
 description: "Stop task next-action and task status route output from suggesting branch_pr worktree recovery for tasks that are already DONE, especially included batch tasks closed after their primary PR merged."
 sections:
@@ -137,6 +149,44 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:01:40.215Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201656-J68MDT-done-next-action/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json
+    - old_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+    - current_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605201656-J68MDT
+
+    ### 2026-05-20T17:20:12.706Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Review fix verified: DONE next-action now returns branch cleanup only in branch_pr and direct-safe terminal route in direct mode; focused cli-core route-decision test, prettier, eslint, typecheck, and policy routing passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:02:23.042Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201656-J68MDT-done-next-action/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json
+    - old_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+    - current_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605201656-J68MDT
+
+    ### 2026-05-20T17:20:21.455Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Review fix accepted locally: branch_pr DONE tasks keep cleanup guidance, direct DONE tasks now return a direct-safe terminal action with null command; no branch_pr recovery blockers for DONE tasks.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:20:12.733Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -230,6 +280,44 @@ Note: Quality gate passed for implementation commit bf2f3e28a. Evidence: focused
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:01:40.215Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201656-J68MDT-done-next-action/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json
+- old_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+- current_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605201656-J68MDT
+
+### 2026-05-20T17:20:12.706Z — VERIFY — ok
+
+By: CODER
+
+Note: Review fix verified: DONE next-action now returns branch cleanup only in branch_pr and direct-safe terminal route in direct mode; focused cli-core route-decision test, prettier, eslint, typecheck, and policy routing passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:02:23.042Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201656-J68MDT-done-next-action/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json
+- old_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+- current_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605201656-J68MDT
+
+### 2026-05-20T17:20:21.455Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Review fix accepted locally: branch_pr DONE tasks keep cleanup guidance, direct DONE tasks now return a direct-safe terminal action with null command; no branch_pr recovery blockers for DONE tasks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:20:12.733Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 

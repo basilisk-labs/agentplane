@@ -173,6 +173,14 @@ function deriveNextAction(opts: {
 }): RouteNextAction {
   const id = opts.task.id;
   if (opts.task.status === "DONE") {
+    if (opts.workflowMode !== "branch_pr") {
+      return {
+        code: "done",
+        command: null,
+        summary: "task is already done; no branch cleanup is required in direct workflow",
+        requiresApproval: false,
+      };
+    }
     return {
       code: "cleanup",
       command: "agentplane cleanup merged",

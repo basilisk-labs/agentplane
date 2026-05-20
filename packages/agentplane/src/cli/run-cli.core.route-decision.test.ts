@@ -161,6 +161,53 @@ describe("runCli route decision commands", () => {
     }
   });
 
+  it("keeps done direct-mode tasks on a direct-safe terminal route", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise direct done route decisions.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    await writeFile(
+      readmePath,
+      readme
+        .replace('status: "TODO"', 'status: "DONE"')
+        .replace("commit: null", 'commit:\n  hash: "abc123"\n  message: "Direct close"'),
+      "utf8",
+    );
+
+    const statusIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "status", taskId, "--route", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(statusIo.stdout) as {
+        blockers: { code: string }[];
+        nextAction: { code: string; command: string | null };
+      };
+      expect(parsed.blockers).toEqual([]);
+      expect(parsed.nextAction.code).toBe("done");
+      expect(parsed.nextAction.command).toBeNull();
+    } finally {
+      statusIo.restore();
+    }
+  });
+
   it("does not treat task-local artifact commits as stale PR metadata", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

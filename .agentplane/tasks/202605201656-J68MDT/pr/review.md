@@ -13,7 +13,7 @@ Created: 2026-05-20T16:57:11.337Z
 ## Verification
 
 - State: ok
-- Note: Quality gate passed for implementation commit bf2f3e28a. Evidence: focused cli-core route-decision test passed, ESLint passed, agentplane typecheck passed, framework bootstrap completed through task verify-show, and policy routing passed.
+- Note: Review fix accepted locally: branch_pr DONE tasks keep cleanup guidance, direct DONE tasks now return a direct-safe terminal action with null command; no branch_pr recovery blockers for DONE tasks.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-05-20T16:57:11.337Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T17:02:23.091Z
+- Updated: 2026-05-20T17:02:42.798Z
 - Branch: task/202605201656-J68MDT/done-next-action
 - Head: bf2f3e28a4f8
 
