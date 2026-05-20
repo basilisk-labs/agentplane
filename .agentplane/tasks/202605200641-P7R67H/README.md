@@ -30,7 +30,7 @@ quality_review:
   updated_at: "2026-05-20T07:32:57.702Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR quality gate passed for review-fix commit 76fec02e. Verified high/critical open observations block release readiness regardless recommended_action, harvest --json preserves exit code 3 on invalid entries, focused Vitest regression coverage passed, eslint/typecheck/build/routing/doctor passed, and hosted PR checks are green."
-  evaluated_sha: "e1420e33797f8f5bf2d4a2b7884839c0de0eab6c"
+  evaluated_sha: "76fec02e24d311741cb263dfab00d609c6ad9b09"
   blueprint_digest: "f22f814449eee013b30806f7b546e9758dac3d623e6795479e62c6e247573760"
   evidence_refs:
     - ".agentplane/tasks/202605200641-P7R67H/README.md"
