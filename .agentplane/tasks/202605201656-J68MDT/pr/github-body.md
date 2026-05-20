@@ -19,24 +19,20 @@ Stop task next-action and task status route output from suggesting branch_pr wor
 - Note:
 
 ```text
-Review fix accepted locally: branch_pr DONE tasks keep cleanup guidance, direct DONE tasks now
-return a direct-safe terminal action with null command; no branch_pr recovery blockers for DONE
-tasks.
+Quality gate passed for merged PR #3976 at e747ce59: review comments resolved, hosted PR checks
+passed, and release task check only awaits task closure.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T17:02:42.798Z
+- Updated: 2026-05-20T17:43:12.348Z
 - Branch: task/202605201656-J68MDT/done-next-action
-- Head: bf2f3e28a4f8
+- Head: 847e2b6d2e9e
 
 ```text
- .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
- .../src/cli/run-cli.core.route-decision.test.ts    |  54 +-
- .../src/commands/shared/route-decision.ts          |  18 +-
- 3 files changed, 633 insertions(+), 11 deletions(-)
+No changes detected.
 ```
 
 </details>

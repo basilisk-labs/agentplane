@@ -1,10 +1,11 @@
 ---
 id: "202605201656-J68MDT"
 title: "Fix done task next-action route"
-status: "DOING"
+result_summary: "Merged PR #3976 and closed release-blocking lifecycle tail."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -20,26 +21,31 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T17:20:21.455Z"
+  updated_at: "2026-05-20T17:43:12.290Z"
   updated_by: "EVALUATOR"
-  note: "Review fix accepted locally: branch_pr DONE tasks keep cleanup guidance, direct DONE tasks now return a direct-safe terminal action with null command; no branch_pr recovery blockers for DONE tasks."
+  note: "Quality gate passed for merged PR #3976 at e747ce59: review comments resolved, hosted PR checks passed, and release task check only awaits task closure."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-20T17:20:21.455Z"
+  updated_at: "2026-05-20T17:43:12.290Z"
   updated_by: "EVALUATOR"
-  note: "Review fix accepted locally: branch_pr DONE tasks keep cleanup guidance, direct DONE tasks now return a direct-safe terminal action with null command; no branch_pr recovery blockers for DONE tasks."
-  evaluated_sha: "3250fc77cb404f5061d2df3bd4667ed2caa6833f"
+  note: "Quality gate passed for merged PR #3976 at e747ce59: review comments resolved, hosted PR checks passed, and release task check only awaits task closure."
+  evaluated_sha: "e747ce59acdd641d7dfab547e8ea7b49f0931d02"
   blueprint_digest: "38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1"
   evidence_refs:
     - ".agentplane/tasks/202605201656-J68MDT/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201656-J68MDT-done-next-action/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "e747ce59acdd641d7dfab547e8ea7b49f0931d02"
+  message: "🐛 J68MDT workflow: stop done task recovery routing"
 comments:
   -
     author: "CODER"
     body: "Start: Fixing DONE task route decisions so closed branch_pr tasks do not suggest worktree recovery, with focused CLI regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3976 merged after review fix and green hosted checks; DONE routing is branch_pr/direct aware."
 events:
   -
     type: "status"
@@ -78,9 +84,22 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Review fix accepted locally: branch_pr DONE tasks keep cleanup guidance, direct DONE tasks now return a direct-safe terminal action with null command; no branch_pr recovery blockers for DONE tasks."
+  -
+    type: "verify"
+    at: "2026-05-20T17:43:12.290Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Quality gate passed for merged PR #3976 at e747ce59: review comments resolved, hosted PR checks passed, and release task check only awaits task closure."
+  -
+    type: "status"
+    at: "2026-05-20T17:43:23.298Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3976 merged after review fix and green hosted checks; DONE routing is branch_pr/direct aware."
 doc_version: 3
-doc_updated_at: "2026-05-20T17:20:21.486Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-20T17:43:23.298Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stop task next-action and task status route output from suggesting branch_pr worktree recovery for tasks that are already DONE, especially included batch tasks closed after their primary PR merged."
 sections:
   Summary: |-
@@ -193,6 +212,25 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201656-J68MDT-done-next-action/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json
+    - old_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+    - current_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605201656-J68MDT
+
+    ### 2026-05-20T17:43:12.290Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Quality gate passed for merged PR #3976 at e747ce59: review comments resolved, hosted PR checks passed, and release task check only awaits task closure.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:20:21.486Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json
     - old_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
     - current_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
     - route_changed: no
@@ -324,6 +362,25 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201656-J68MDT-done-next-action/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json
+- old_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+- current_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605201656-J68MDT
+
+### 2026-05-20T17:43:12.290Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Quality gate passed for merged PR #3976 at e747ce59: review comments resolved, hosted PR checks passed, and release task check only awaits task closure.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:20:21.486Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json
 - old_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
 - current_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
 - route_changed: no
