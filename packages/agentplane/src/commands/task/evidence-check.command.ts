@@ -14,6 +14,18 @@ type EvidenceCheckRow = {
   reason: string;
 };
 
+export function summarizeEvidenceRows(rows: readonly Pick<EvidenceCheckRow, "state">[]) {
+  const missing = rows.filter((row) => row.state === "missing");
+  const unknown = rows.filter((row) => row.state === "unknown");
+  const blocking = rows.filter((row) => row.state !== "present");
+  return {
+    ok: blocking.length === 0,
+    missing_count: missing.length,
+    unknown_count: unknown.length,
+    blocking_count: blocking.length,
+  };
+}
+
 export type TaskEvidenceCheckParsed = {
   taskId: string;
   strict: boolean;
@@ -113,13 +125,14 @@ export function makeRunTaskEvidenceCheckHandler(getCtx: (cmd: string) => Promise
         reason: state.reason,
       };
     });
-    const missing = rows.filter((row) => row.state === "missing");
+    const summary = summarizeEvidenceRows(rows);
     const output = createCliEmitter();
     const payload = {
       task_id: task.id,
       blueprint_id: resolved.blueprint.id,
-      ok: missing.length === 0,
-      missing_count: missing.length,
+      ok: summary.ok,
+      missing_count: summary.missing_count,
+      unknown_count: summary.unknown_count,
       evidence: rows,
     };
     if (parsed.json) {
@@ -131,13 +144,13 @@ export function makeRunTaskEvidenceCheckHandler(getCtx: (cmd: string) => Promise
           { label: "blueprint", value: resolved.blueprint.id },
           { label: "ok", value: payload.ok },
           ...rows.map((row) => ({
-            label: row.state === "missing" ? "missing" : "evidence",
+            label: row.state === "present" ? "evidence" : row.state,
             value: `${row.id} ${row.kind}/${row.producedBy}: ${row.state} (${row.reason})`,
           })),
         ],
         { header: infoMessage(`task evidence check: ${task.id}`) },
       );
     }
-    return parsed.strict && missing.length > 0 ? 3 : 0;
+    return parsed.strict && summary.blocking_count > 0 ? 3 : 0;
   };
 }
