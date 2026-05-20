@@ -4,7 +4,7 @@
   "resolverInput": {
     "taskId": "202605200959-2KQ8XN",
     "title": "Clarify workflow state source terminology",
-    "description": "Clarify that runtime config/readback is canonical workflow state and WORKFLOW.md is a managed agent-readable projection, reducing source-of-truth ambiguity for agents.",
+    "description": "Clarify that .agentplane/WORKFLOW.md is the single repo-local workflow/config source, while ap config show is a readback and quickstart is guidance, reducing source-of-truth ambiguity for agents.",
     "tags": [
       "ambiguity",
       "docs",
@@ -399,6 +399,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "577baace79b6a4509190916e3f61223922a4beefde0a8f192bb23452777dd49b"
+    "value": "c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e"
   }
 }
