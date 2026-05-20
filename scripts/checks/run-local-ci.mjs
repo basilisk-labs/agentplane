@@ -154,7 +154,7 @@ function existingLintTargets(targets) {
   return targets.filter((target) => existsSync(target));
 }
 
-function createBaselineStepEntries({ includeBuild }) {
+function createBaselineStepEntries({ includeBuild, includeRecipesInventory = true }) {
   return [
     ["Format (check)", () => runCommand("bun", ["run", "format:check"])],
     ["Schemas (check)", () => runCommand("bun", ["run", "schemas:check"])],
@@ -184,7 +184,14 @@ function createBaselineStepEntries({ includeBuild }) {
         ]
       : []),
     ["CLI docs freshness (check)", () => runCliDocsFreshnessStep()],
-    ["Recipes inventory freshness (check)", () => runCommand("bun", ["run", "docs:recipes:check"])],
+    ...(includeRecipesInventory
+      ? [
+          [
+            "Recipes inventory freshness (check)",
+            () => runCommand("bun", ["run", "docs:recipes:check"]),
+          ],
+        ]
+      : []),
     ["Scripts README freshness (check)", () => runCommand("bun", ["run", "docs:scripts:check"])],
     [
       "Agent onboarding scenario (check)",
@@ -272,7 +279,9 @@ function runCliDocsFreshnessStep() {
 }
 
 function runDocsOnlyFastPath() {
-  runStepEntries(createBaselineStepEntries({ includeBuild: false }));
+  runStepEntries(
+    createBaselineStepEntries({ includeBuild: false, includeRecipesInventory: false }),
+  );
 }
 
 function runDocsOnlySmokePath() {

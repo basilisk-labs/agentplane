@@ -1,0 +1,6 @@
+ .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ .github/workflows/publish.yml                      |  46 +-
+ .github/workflows/task-hosted-close.yml            |  33 ++
+ .../release/publish-workflow-contract.test.ts      |   7 +-
+ .../task/hosted-close-workflow-contract.test.ts    |   5 +
+ 5 files changed, 638 insertions(+), 25 deletions(-)

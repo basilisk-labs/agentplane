@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202605200826-947S9Q/hosted-close-pr-verification",
   "created_at": "2026-05-20T08:27:18.526Z",
-  "head_sha": "c68aed656063097d62dae0de757919a95e115194",
+  "head_sha": "7856f3e7aeae51062f860e20347e9c10003102e0",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "pr_number": 3962,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3962",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202605200826-947S9Q",
-  "updated_at": "2026-05-20T08:27:18.526Z",
+  "updated_at": "2026-05-20T08:32:31.549Z",
   "verify": {
     "status": "skipped"
   }

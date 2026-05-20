@@ -22,12 +22,17 @@ Make hosted close-tail automation satisfy the required PR verification check for
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T08:27:18.526Z
+- Updated: 2026-05-20T08:32:10.602Z
 - Branch: task/202605200826-947S9Q/hosted-close-pr-verification
-- Head: c68aed656063
+- Head: 7856f3e7aeae
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ .github/workflows/publish.yml                      |  46 +-
+ .github/workflows/task-hosted-close.yml            |  33 ++
+ .../release/publish-workflow-contract.test.ts      |   7 +-
+ .../task/hosted-close-workflow-contract.test.ts    |   5 +
+ 5 files changed, 638 insertions(+), 25 deletions(-)
 ```
 
 </details>

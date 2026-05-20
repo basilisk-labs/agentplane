@@ -99,6 +99,15 @@ describe("release CI contract", () => {
     }
   });
 
+  it("does not require recipes submodule inventory checks for docs-only fast CI", async () => {
+    const localCi = await readRootText("scripts/checks/run-local-ci.mjs");
+
+    expect(localCi).toContain(
+      "createBaselineStepEntries({ includeBuild: false, includeRecipesInventory: false })",
+    );
+    expect(localCi).toContain("includeRecipesInventory = true");
+  });
+
   it("keeps the developer reinstall helper on the minimal runtime build path", async () => {
     const wrapper = await readRootText("scripts/reinstall-global-agentplane.sh");
     const reinstall = await readRootText("scripts/workflow/reinstall-global-agentplane.sh");
