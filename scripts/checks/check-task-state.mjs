@@ -162,7 +162,9 @@ export function checkTaskState(repoRoot, opts = {}) {
   if (failures.length > 0) {
     throw new Error(["task state check failed.", ...failures].join("\n"));
   }
-  process.stdout.write(`task state OK (tasks=${taskIds.length})\n`);
+  if (opts.quiet !== true) {
+    process.stdout.write(`task state OK (tasks=${taskIds.length})\n`);
+  }
 }
 
 const main = defineScript({
