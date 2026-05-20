@@ -1,10 +1,11 @@
 ---
 id: "202605201001-YCTG8P"
 title: "Add runner route decision snapshot"
-status: "DOING"
+result_summary: "Merged via batch PR #3965 as included task."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -26,26 +27,31 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T10:24:25.962Z"
+  updated_at: "2026-05-20T16:53:54.708Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task."
+  note: "Verified: current main cc334fc66 contains batch PR #3965 and primary task 202605201000-511PS9 close evidence; included code task quality evidence remains covered by hosted PR checks and review fix."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-20T10:24:25.962Z"
+  updated_at: "2026-05-20T16:53:54.708Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task."
-  evaluated_sha: "8dea62f1d0e2728731bc1fea54252adc77e4cbe3"
+  note: "Verified: current main cc334fc66 contains batch PR #3965 and primary task 202605201000-511PS9 close evidence; included code task quality evidence remains covered by hosted PR checks and review fix."
+  evaluated_sha: "cc334fc66ef290e994438d1c3c413ebeb7d3b8a2"
   blueprint_digest: "6a6cf96bf8edd6c44162fc8683dcdef1e0c83ae7707e5b6563204bd8c5929d13"
   evidence_refs:
     - ".agentplane/tasks/202605201001-YCTG8P/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605201001-YCTG8P/blueprint/resolved-snapshot.json"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202605201001-YCTG8P/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "63645a1cc3e1908fb5bca751360d416c122bb6ec"
+  message: "Merge pull request #3965 from basilisk-labs/task/202605201000-511PS9/task-next-action-ambiguity"
 comments:
   -
     author: "CODER"
     body: "Start: Batch task for runner route decision snapshot; implementation will be included in primary ambiguity-route-contract worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Included task landed through batch PR #3965; current main cc334fc66 contains implementation, hosted checks, review fix, and primary close evidence."
 events:
   -
     type: "status"
@@ -66,9 +72,22 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task."
+  -
+    type: "verify"
+    at: "2026-05-20T16:53:54.708Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Verified: current main cc334fc66 contains batch PR #3965 and primary task 202605201000-511PS9 close evidence; included code task quality evidence remains covered by hosted PR checks and review fix."
+  -
+    type: "status"
+    at: "2026-05-20T16:54:26.363Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Included task landed through batch PR #3965; current main cc334fc66 contains implementation, hosted checks, review fix, and primary close evidence."
 doc_version: 3
-doc_updated_at: "2026-05-20T10:24:26.122Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-20T16:54:26.367Z"
+doc_updated_by: "INTEGRATOR"
 description: "Include route decision, checkout role, approval contract, and artifact contract in runner bundles so execution agents do not reconstruct the route from fragmented surfaces."
 sections:
   Summary: |-
@@ -125,6 +144,25 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605201001-YCTG8P/blueprint/resolved-snapshot.json
+    - old_digest: 6a6cf96bf8edd6c44162fc8683dcdef1e0c83ae7707e5b6563204bd8c5929d13
+    - current_digest: 6a6cf96bf8edd6c44162fc8683dcdef1e0c83ae7707e5b6563204bd8c5929d13
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605201001-YCTG8P
+
+    ### 2026-05-20T16:53:54.708Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Verified: current main cc334fc66 contains batch PR #3965 and primary task 202605201000-511PS9 close evidence; included code task quality evidence remains covered by hosted PR checks and review fix.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:24:26.122Z, excerpt_hash=sha256:56696db90b09f8f6930af7b02b0f9aff6a94c26288122b81342b2d1f719c8991
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605201001-YCTG8P/blueprint/resolved-snapshot.json
     - old_digest: 6a6cf96bf8edd6c44162fc8683dcdef1e0c83ae7707e5b6563204bd8c5929d13
     - current_digest: 6a6cf96bf8edd6c44162fc8683dcdef1e0c83ae7707e5b6563204bd8c5929d13
     - route_changed: no
@@ -200,6 +238,25 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605201001-YCTG8P/blueprint/resolved-snapshot.json
+- old_digest: 6a6cf96bf8edd6c44162fc8683dcdef1e0c83ae7707e5b6563204bd8c5929d13
+- current_digest: 6a6cf96bf8edd6c44162fc8683dcdef1e0c83ae7707e5b6563204bd8c5929d13
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605201001-YCTG8P
+
+### 2026-05-20T16:53:54.708Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Verified: current main cc334fc66 contains batch PR #3965 and primary task 202605201000-511PS9 close evidence; included code task quality evidence remains covered by hosted PR checks and review fix.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:24:26.122Z, excerpt_hash=sha256:56696db90b09f8f6930af7b02b0f9aff6a94c26288122b81342b2d1f719c8991
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605201001-YCTG8P/blueprint/resolved-snapshot.json
 - old_digest: 6a6cf96bf8edd6c44162fc8683dcdef1e0c83ae7707e5b6563204bd8c5929d13
 - current_digest: 6a6cf96bf8edd6c44162fc8683dcdef1e0c83ae7707e5b6563204bd8c5929d13
 - route_changed: no
