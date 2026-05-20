@@ -152,12 +152,16 @@ describe("blueprint built-ins", () => {
         "context_max.glossary",
       ]),
     );
+    expect(
+      blueprint.requiredEvidence.find((item) => item.id === "context_max.glossary")?.description,
+    ).toContain("context/wiki/glossary.md");
     expect(blueprint.stopRules.map((rule) => rule.id)).toEqual(
       expect.arrayContaining([
         "context_max_missing_topology_decision",
         "context_max_page_family_without_source_evidence",
         "context_max_missing_line_refs",
         "context_max_coverage_gap_without_reason",
+        "context_max_missing_root_glossary_file",
         "context_max_raw_deletion_resilience_unproven",
         "context_max_sensitive_leakage",
       ]),

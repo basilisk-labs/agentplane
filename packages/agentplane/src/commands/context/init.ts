@@ -380,8 +380,9 @@ Maximum-assimilation mode adds a stricter wiki maintenance contract:
 - Choose the wiki structure from source content; do not create the default
   concepts/entities/decisions/modules/contradictions/reports scaffold unless source analysis
   justifies it. Record the topology decision before creating page families.
-- Maintain a canonical glossary as a navigation/alias layer over wiki pages and graph entities, then
-  use glossary canonical terms in synthesized prose while preserving source-local terms as aliases.
+- Create or maintain the canonical glossary as the root wiki file \`context/wiki/glossary.md\`.
+  Keep it as a navigation/alias layer over wiki pages and graph entities, then use glossary
+  canonical terms in synthesized prose while preserving source-local terms as aliases.
 - Use Obsidian-compatible \`[[Page Title]]\` links for semantic wiki graph links; keep Markdown
   links for source refs, files, and external URLs.
 - Treat coverage gaps, unresolved entity identity, sensitive-source leakage risk, and missing line refs
@@ -425,11 +426,14 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
   stored meaning.
 - First pass: build or update canonical entities, glossary aliases, relation candidates, conflict
   candidates, and coverage notes.
+- Glossary output: create or update \`context/wiki/glossary.md\` as the root glossary file. Do not
+  scatter canonical glossary state across reports or page-local notes.
 - Topology pass: choose wiki structure from source content; do not mechanically create
   \`concepts/\`, \`entities/\`, \`decisions/\`, \`modules/\`, \`contradictions/\`, or \`reports/\`.
 - Record a topology decision before page-family creation. It must classify the source shape (book/corpus, codebase, task history, product docs, research notes, ops logs, or another named shape), name canonical page families, justify page-vs-heading granularity, map source-local terms to canonical labels or aliases, and keep ambiguous identities as open questions.
 - Second pass: synthesize granular wiki articles from that graph/glossary layer; use canonical
-  glossary terms in prose and preserve source-local wording as aliases or evidence details.
+  glossary terms from \`context/wiki/glossary.md\` in prose and preserve source-local wording as
+  aliases or evidence details.
 - Create separate pages for reusable entities, concepts, decisions, requirements, risks, workflows,
   and modules; use stable headings for smaller objects inside broader pages.
 - Use Obsidian-compatible \`[[Page Title]]\` or \`[[Page Title#Section]]\` links for semantic wiki
@@ -523,6 +527,7 @@ wiki:
   glossary:
     canonical_required: ${profile === "maximum-assimilation" ? "true" : "false"}
     alias_normalization_required: ${profile === "maximum-assimilation" ? "true" : "false"}
+    canonical_path: ${profile === "maximum-assimilation" ? "context/wiki/glossary.md" : "null"}
   source_addressing:
     original_hash_required: true
     line_refs_required: ${profile === "maximum-assimilation" ? "true" : "false"}

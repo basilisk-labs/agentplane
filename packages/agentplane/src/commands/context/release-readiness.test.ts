@@ -121,8 +121,10 @@ describe("context release readiness guards", () => {
     expect(readme).toContain("Maximum-assimilation mode adds a stricter wiki maintenance contract");
     expect(readme).toContain("line-addressed source refs as provenance pointers");
     expect(readme).toContain("wiki/fact/graph artifacts stay self-contained");
+    expect(readme).toContain("context/wiki/glossary.md");
     expect(wikiAgents).toContain("Use the `context.maximum_assimilation` blueprint");
     expect(wikiAgents).toContain("canonical entities, glossary aliases, relation candidates");
+    expect(wikiAgents).toContain("Glossary output: create or update `context/wiki/glossary.md`");
     expect(wikiAgents).toContain("treat those refs as audit provenance");
     expect(wikiAgents).toContain("stored meaning");
     expect(wikiAgents).toContain("availability state");
@@ -770,6 +772,7 @@ describe("context release readiness guards", () => {
               raw_deletion_resilience_required?: boolean;
               line_refs_required?: boolean;
               canonical_glossary_required?: boolean;
+              canonical_glossary_path?: string;
             };
             blueprint?: { id?: string; required_gates?: string[]; stop_rules?: string[] };
           };
@@ -799,6 +802,7 @@ describe("context release readiness guards", () => {
         "source_shaped_wiki_topology_recorded",
         "topology_page_family_evidence_recorded",
         "canonical_glossary_updated",
+        "root_glossary_file_updated",
         "obsidian_wikilinks_reviewed",
         "evaluator_quality_review",
       ]),
@@ -808,6 +812,7 @@ describe("context release readiness guards", () => {
         "missing_source_shaped_topology_decision",
         "page_family_without_source_evidence",
         "missing_obsidian_wikilinks",
+        "missing_root_glossary_file",
         "raw_deletion_resilience_unproven",
         "evaluator_quality_review_missing",
       ]),
@@ -817,6 +822,7 @@ describe("context release readiness guards", () => {
       raw_deletion_resilience_required: true,
       line_refs_required: true,
       canonical_glossary_required: true,
+      canonical_glossary_path: "context/wiki/glossary.md",
     });
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
@@ -827,6 +833,9 @@ describe("context release readiness guards", () => {
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("Topology pass:");
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("Glossary pass: create or update `context/wiki/glossary.md`");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("[[Canonical Page]]");

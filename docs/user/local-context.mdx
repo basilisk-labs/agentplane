@@ -142,9 +142,10 @@ The contract is stricter than the default adaptive profile:
   audit pointers while the wiki/fact/graph layer remains self-contained.
 - Extract canonical entities, aliases, relations, decisions, requirements, risks, workflows,
   conflicts, and open questions before writing narrative articles.
-- Maintain a canonical glossary as an alias/navigation layer over wiki pages and graph entities. Use
-  canonical terms from that glossary in synthesized prose when identity is clear, and preserve
-  source-local wording as aliases or evidence details.
+- Maintain the canonical glossary as a separate root wiki file at `context/wiki/glossary.md`. Keep
+  it as an alias/navigation layer over wiki pages and graph entities, use canonical terms from that
+  glossary in synthesized prose when identity is clear, and preserve source-local wording as aliases
+  or evidence details.
 - Use Obsidian-compatible `[[Page Title]]` and `[[Page Title#Section]]` links for semantic internal
   wiki links. Keep standard Markdown links for source refs, external URLs, and file references so
   AgentPlane provenance checks stay readable.
@@ -166,6 +167,9 @@ Critical points:
   instead of being silently dropped.
 - Glossary normalization can corrupt meaning if aliases are guessed. Ambiguous identity should stay as
   `possibly_same_as`, conflict candidates, or open questions until reviewed.
+- The root glossary file is navigation and normalization, not a competing source of truth. Factual
+  claims and provenance still belong on the backing wiki, fact, graph, source registry, and coverage
+  artifacts.
 - Granularity can explode. Prefer reusable entity/concept/decision/risk/workflow pages plus stable
   headings for smaller objects, not one page per sentence.
 - Obsidian compatibility is a markdown/wiki contract, not editor-local configuration. Agentplane does
