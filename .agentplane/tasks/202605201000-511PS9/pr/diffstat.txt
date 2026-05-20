@@ -14,7 +14,8 @@
  .../src/cli/run-cli/command-catalog/task.ts        |   7 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
  .../src/commands/shared/route-decision.ts          |  80 ++-
- .../src/commands/task/evidence-check.command.ts    | 143 +++++
+ .../src/commands/task/evidence-check.command.ts    | 156 ++++++
+ .../src/commands/task/evidence-check.unit.test.ts  |  25 +
  .../agentplane/src/commands/task/lint.command.ts   |  23 +-
  packages/agentplane/src/commands/task/lint.ts      |  17 +-
  .../src/commands/task/next-action.command.ts       |  43 +-
@@ -26,4 +27,4 @@
  packages/core/src/tasks/index.ts                   |   1 +
  packages/core/src/tasks/tasks-lint.test.ts         |  18 +
  packages/core/src/tasks/tasks-lint.ts              |  36 ++
- 28 files changed, 3988 insertions(+), 13 deletions(-)
+ 29 files changed, 4026 insertions(+), 13 deletions(-)
