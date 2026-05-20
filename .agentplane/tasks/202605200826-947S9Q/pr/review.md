@@ -24,9 +24,9 @@ Created: 2026-05-20T08:27:18.526Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T08:32:31.549Z
+- Updated: 2026-05-20T09:07:11.680Z
 - Branch: task/202605200826-947S9Q/hosted-close-pr-verification
-- Head: 7856f3e7aeae
+- Head: 013431c289f2
 
 ```text
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
