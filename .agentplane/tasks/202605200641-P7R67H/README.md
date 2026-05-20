@@ -1,10 +1,11 @@
 ---
 id: "202605200641-P7R67H"
 title: "Implement observation harvest and follow-up gates"
-status: "DOING"
+result_summary: "Merged via PR #3957."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -36,11 +37,16 @@ quality_review:
     - ".agentplane/tasks/202605200641-P7R67H/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200641-P7R67H-observations-followup-gates/.agentplane/tasks/202605200641-P7R67H/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "3ae9748568e3b450534f520683bc1f9338d29895"
+  message: "Merge pull request #3957 from basilisk-labs/task/202605200641-P7R67H/observations-followup-gates"
 comments:
   -
     author: "CODER"
     body: "Start: Implement approved observations harvest, runtime log surface, cold-start retry/reporting, docs image drift repair, release observation gate, and branch-protection preparation in the dedicated branch_pr worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3957 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -67,9 +73,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for review-fix commit 76fec02e. Verified high/critical open observations block release readiness regardless recommended_action, harvest --json preserves exit code 3 on invalid entries, focused Vitest regression coverage passed, eslint/typecheck/build/routing/doctor passed, and hosted PR checks are green."
+  -
+    type: "status"
+    at: "2026-05-20T07:47:55.067Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3957 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-20T07:32:57.724Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-20T07:47:55.074Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement the recent follow-ups from task execution logs: harvest task observations into actionable queues, align runtime log surface, harden cold-start retry/reporting, fix docs social image drift, gate release readiness on blocking observations, and prepare branch protection for the new PR verification aggregate."
 sections:
   Summary: |-
