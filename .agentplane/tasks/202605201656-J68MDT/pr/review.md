@@ -13,7 +13,7 @@ Created: 2026-05-20T16:57:11.337Z
 ## Verification
 
 - State: ok
-- Note: Quality gate passed for DONE task route decision fix. The change is limited to terminal route handling and regression coverage; focused cli-core route-decision tests, ESLint, agentplane typecheck, framework bootstrap, and policy routing passed.
+- Note: Quality gate passed for implementation commit bf2f3e28a. Evidence: focused cli-core route-decision test passed, ESLint passed, agentplane typecheck passed, framework bootstrap completed through task verify-show, and policy routing passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,12 +24,15 @@ Created: 2026-05-20T16:57:11.337Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T16:57:11.337Z
+- Updated: 2026-05-20T17:02:23.091Z
 - Branch: task/202605201656-J68MDT/done-next-action
-- Head: cc334fc66ef2
+- Head: bf2f3e28a4f8
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ .../src/cli/run-cli.core.route-decision.test.ts    |  54 +-
+ .../src/commands/shared/route-decision.ts          |  18 +-
+ 3 files changed, 633 insertions(+), 11 deletions(-)
 ```
 
 </details>
