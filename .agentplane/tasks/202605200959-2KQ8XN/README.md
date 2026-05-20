@@ -4,7 +4,7 @@ title: "Clarify workflow state source terminology"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-20T10:23:37.110Z"
+  updated_by: "EVALUATOR"
+  note: "Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-20T10:23:37.110Z"
+  updated_by: "EVALUATOR"
+  note: "Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task."
+  evaluated_sha: "8dea62f1d0e2728731bc1fea54252adc77e4cbe3"
+  blueprint_digest: "c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e"
+  evidence_refs:
+    - ".agentplane/tasks/202605200959-2KQ8XN/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605200959-2KQ8XN/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -42,8 +53,20 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Batch task for workflow source terminology clarification; implementation will be included in primary ambiguity-route-contract worktree."
+  -
+    type: "verify"
+    at: "2026-05-20T10:22:16.990Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented in 8dea62f1d. Evidence: focused Vitest suites passed (tasks-lint, runner blueprint, base prompts); packages/core and packages/recipes typecheck passed; packages/agentplane tsc --noEmit passed after rebuilding local package outputs; ESLint passed on touched TS files; policy routing passed; diff check passed; framework:dev:bootstrap passed; ap doctor passed with only pre-existing untracked DONE-task archive warning for 202605200640-7AXZRX; CLI smoke passed for quickstart wording, next-action --explain, evidence check, and default task lint. ap task lint --verify-steps intentionally reports legacy polluted Verify Steps as an opt-in diagnostic."
+  -
+    type: "verify"
+    at: "2026-05-20T10:23:37.110Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task."
 doc_version: 3
-doc_updated_at: "2026-05-20T10:03:23.583Z"
+doc_updated_at: "2026-05-20T10:23:37.194Z"
 doc_updated_by: "CODER"
 description: "Clarify that .agentplane/WORKFLOW.md is the single repo-local workflow/config source, while ap config show is a readback and quickstart is guidance, reducing source-of-truth ambiguity for agents."
 sections:
@@ -66,6 +89,44 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-20T10:22:16.990Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented in 8dea62f1d. Evidence: focused Vitest suites passed (tasks-lint, runner blueprint, base prompts); packages/core and packages/recipes typecheck passed; packages/agentplane tsc --noEmit passed after rebuilding local package outputs; ESLint passed on touched TS files; policy routing passed; diff check passed; framework:dev:bootstrap passed; ap doctor passed with only pre-existing untracked DONE-task archive warning for 202605200640-7AXZRX; CLI smoke passed for quickstart wording, next-action --explain, evidence check, and default task lint. ap task lint --verify-steps intentionally reports legacy polluted Verify Steps as an opt-in diagnostic.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:03:23.583Z, excerpt_hash=sha256:93d6fa448828a802f1e6db6b19c3fa0283e0a06517ef329b19c44a9f45cab884
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605200959-2KQ8XN/blueprint/resolved-snapshot.json
+    - old_digest: 577baace79b6a4509190916e3f61223922a4beefde0a8f192bb23452777dd49b
+    - current_digest: c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605200959-2KQ8XN
+
+    ### 2026-05-20T10:23:37.110Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:22:17.190Z, excerpt_hash=sha256:93d6fa448828a802f1e6db6b19c3fa0283e0a06517ef329b19c44a9f45cab884
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605200959-2KQ8XN/blueprint/resolved-snapshot.json
+    - old_digest: 577baace79b6a4509190916e3f61223922a4beefde0a8f192bb23452777dd49b
+    - current_digest: c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605200959-2KQ8XN
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -101,6 +162,44 @@ PLANNER fallback scaffold for "Clarify workflow state source terminology". Repla
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-20T10:22:16.990Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented in 8dea62f1d. Evidence: focused Vitest suites passed (tasks-lint, runner blueprint, base prompts); packages/core and packages/recipes typecheck passed; packages/agentplane tsc --noEmit passed after rebuilding local package outputs; ESLint passed on touched TS files; policy routing passed; diff check passed; framework:dev:bootstrap passed; ap doctor passed with only pre-existing untracked DONE-task archive warning for 202605200640-7AXZRX; CLI smoke passed for quickstart wording, next-action --explain, evidence check, and default task lint. ap task lint --verify-steps intentionally reports legacy polluted Verify Steps as an opt-in diagnostic.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:03:23.583Z, excerpt_hash=sha256:93d6fa448828a802f1e6db6b19c3fa0283e0a06517ef329b19c44a9f45cab884
+
+Details:
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605200959-2KQ8XN/blueprint/resolved-snapshot.json
+- old_digest: 577baace79b6a4509190916e3f61223922a4beefde0a8f192bb23452777dd49b
+- current_digest: c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605200959-2KQ8XN
+
+### 2026-05-20T10:23:37.110Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:22:17.190Z, excerpt_hash=sha256:93d6fa448828a802f1e6db6b19c3fa0283e0a06517ef329b19c44a9f45cab884
+
+Details:
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605200959-2KQ8XN/blueprint/resolved-snapshot.json
+- old_digest: 577baace79b6a4509190916e3f61223922a4beefde0a8f192bb23452777dd49b
+- current_digest: c48427c2f5cd0d30d026f70413cd1bc6444d06701e23b59d2dd69ed683c7a46e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605200959-2KQ8XN
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
