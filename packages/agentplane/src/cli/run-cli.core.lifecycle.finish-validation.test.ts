@@ -80,7 +80,7 @@ describe("runCli", () => {
         taskId,
         "--ok",
         "--by",
-        "TESTER",
+        "EVALUATOR",
         "--note",
         "Ok to finish with formatter close-commit blocker coverage.",
         "--quiet",
@@ -176,7 +176,7 @@ describe("runCli", () => {
         taskId,
         "--ok",
         "--by",
-        "TESTER",
+        "EVALUATOR",
         "--note",
         "Ok to finish: verification recorded for finish metadata persistence test coverage.",
         "--quiet",
@@ -294,7 +294,7 @@ describe("runCli", () => {
             taskId,
             "--ok",
             "--by",
-            "TESTER",
+            "EVALUATOR",
             "--note",
             "Ok to finish under conservative force-approval test.",
             "--quiet",
@@ -410,12 +410,16 @@ describe("runCli", () => {
       }
     }
 
+    await writeFile(path.join(root, "finish.txt"), "done\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "finish changes"], { cwd: root });
+
     await runCliSilent([
       "verify",
       taskA,
       "--ok",
       "--by",
-      "TESTER",
+      "EVALUATOR",
       "--note",
       "Ok A",
       "--quiet",
@@ -428,7 +432,7 @@ describe("runCli", () => {
       taskB,
       "--ok",
       "--by",
-      "TESTER",
+      "EVALUATOR",
       "--note",
       "Ok B",
       "--quiet",
@@ -436,10 +440,6 @@ describe("runCli", () => {
       root,
     ]);
     await runCliSilent(["blueprint", "snapshot", taskB, "--root", root]);
-
-    await writeFile(path.join(root, "finish.txt"), "done\n", "utf8");
-    await execFileAsync("git", ["add", "."], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "finish changes"], { cwd: root });
 
     const io = captureStdIO();
     try {
