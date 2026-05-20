@@ -72,28 +72,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-      - name: Release task registry (check)
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -f scripts/release/check-task-registry-ready.mjs ]; then
-            node scripts/release/check-task-registry-ready.mjs
-          elif [ -f .agentplane/.release/runtime/scripts/release/check-task-registry-ready.mjs ]; then
-            node .agentplane/.release/runtime/scripts/release/check-task-registry-ready.mjs
-          else
-            echo "release task registry gate skipped: no compatible script exists for this historical target"
-          fi
-      - name: Release incidents (check)
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -f scripts/check-release-incidents.mjs ]; then
-            node scripts/check-release-incidents.mjs
-          elif [ -f .agentplane/.release/runtime/scripts/check-release-incidents.mjs ]; then
-            node .agentplane/.release/runtime/scripts/check-release-incidents.mjs
-          else
-            echo "release incident gate skipped: no compatible script exists for this historical target"
-          fi
       - name: Resolve release-ready source
         id: source
         env:
@@ -156,6 +134,30 @@ jobs:
             echo "release_ready_artifact_name=${RELEASE_READY_ARTIFACT_NAME}"
           } >> "$GITHUB_OUTPUT"
           node -e 'const fs=require("node:fs"); const payload=JSON.parse(fs.readFileSync(".agentplane/.release/ready/source.json","utf8")); console.log(payload.message); if (payload.nextAction) console.log("Next action: " + payload.nextAction);'
+      - name: Release task registry (check)
+        if: steps.source.outputs.release_ready_ok == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f scripts/release/check-task-registry-ready.mjs ]; then
+            node scripts/release/check-task-registry-ready.mjs
+          elif [ -f .agentplane/.release/runtime/scripts/release/check-task-registry-ready.mjs ]; then
+            node .agentplane/.release/runtime/scripts/release/check-task-registry-ready.mjs
+          else
+            echo "release task registry gate skipped: no compatible script exists for this historical target"
+          fi
+      - name: Release incidents (check)
+        if: steps.source.outputs.release_ready_ok == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f scripts/check-release-incidents.mjs ]; then
+            node scripts/check-release-incidents.mjs
+          elif [ -f .agentplane/.release/runtime/scripts/check-release-incidents.mjs ]; then
+            node .agentplane/.release/runtime/scripts/check-release-incidents.mjs
+          else
+            echo "release incident gate skipped: no compatible script exists for this historical target"
+          fi
       - name: Detect publish target
         id: detect
         shell: bash

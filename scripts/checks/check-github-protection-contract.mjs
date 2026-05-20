@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { defineScript, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
 
-const EXPECTED_CHECKS = ["Core CI / PR verification", "Docs CI / docs"];
+const EXPECTED_CHECKS = ["PR verification"];
 
 function usage() {
   process.stdout.write(

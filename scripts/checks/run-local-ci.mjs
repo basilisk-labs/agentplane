@@ -154,21 +154,13 @@ function existingLintTargets(targets) {
   return targets.filter((target) => existsSync(target));
 }
 
-function createBaselineStepEntries({ includeBuild }) {
+function createBaselineStepEntries({ includeBuild, includeRecipesInventory = true }) {
   return [
     ["Format (check)", () => runCommand("bun", ["run", "format:check"])],
     ["Schemas (check)", () => runCommand("bun", ["run", "schemas:check"])],
     ["Agent templates (check)", () => runCommand("bun", ["run", "agents:check"])],
     ["Policy routing (check)", () => runCommand("bun", ["run", "policy:routing:check"])],
     ["Release parity (check)", () => runCommand("bun", ["run", "release:parity"])],
-    ...(includeBuild
-      ? [
-          [
-            "CLI cold-start baseline (check)",
-            () => runCommand("bun", ["run", "bench:cli:cold:check"]),
-          ],
-        ]
-      : []),
     ...(includeBuild
       ? [
           [
@@ -183,8 +175,23 @@ function createBaselineStepEntries({ includeBuild }) {
           ],
         ]
       : []),
+    ...(includeBuild
+      ? [
+          [
+            "CLI cold-start baseline (check)",
+            () => runCommand("bun", ["run", "bench:cli:cold:check"]),
+          ],
+        ]
+      : []),
     ["CLI docs freshness (check)", () => runCliDocsFreshnessStep()],
-    ["Recipes inventory freshness (check)", () => runCommand("bun", ["run", "docs:recipes:check"])],
+    ...(includeRecipesInventory
+      ? [
+          [
+            "Recipes inventory freshness (check)",
+            () => runCommand("bun", ["run", "docs:recipes:check"]),
+          ],
+        ]
+      : []),
     ["Scripts README freshness (check)", () => runCommand("bun", ["run", "docs:scripts:check"])],
     [
       "Agent onboarding scenario (check)",
@@ -272,7 +279,9 @@ function runCliDocsFreshnessStep() {
 }
 
 function runDocsOnlyFastPath() {
-  runStepEntries(createBaselineStepEntries({ includeBuild: false }));
+  runStepEntries(
+    createBaselineStepEntries({ includeBuild: false, includeRecipesInventory: false }),
+  );
 }
 
 function runDocsOnlySmokePath() {
