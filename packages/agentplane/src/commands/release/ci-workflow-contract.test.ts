@@ -34,9 +34,22 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("name: Release-ready manifest");
     expect(workflow).toContain("needs:");
     expect(workflow).toContain("- changes");
-    expect(workflow).toContain("- test");
+    expect(workflow).toContain("- plan");
+    expect(workflow).toContain("- verify-routed");
+    expect(workflow).toContain("- verify-contract");
+    expect(workflow).toContain("- verify-static");
+    expect(workflow).toContain("- verify-unit");
+    expect(workflow).toContain("- verify-cli-critical");
+    expect(workflow).toContain("- verify-workflow");
+    expect(workflow).toContain("- verify-coverage");
     expect(workflow).toContain("- test-windows");
     expect(workflow).toContain("- recovery-validate");
+    expect(workflow).toContain("pr-verification:");
+    expect(workflow).toContain("name: PR verification");
+    expect(workflow).toContain(
+      'if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then',
+    );
+    expect(workflow).toContain('echo "selector_kind=recovery"');
     expect(workflow).toContain("Resolve release-ready target");
     expect(workflow).toContain("github.event_name == 'workflow_dispatch' &&");
     expect(workflow).toContain("github.event.inputs.sha != '' &&");
@@ -48,7 +61,13 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("github.event_name == 'push' &&");
     expect(workflow).toContain("github.ref == 'refs/heads/main'");
     expect(workflow).toContain("needs.changes.outputs.core == 'true' &&");
-    expect(workflow).toContain("needs.test.result == 'success' &&");
+    expect(workflow).toContain("needs.verify-routed.result == 'success'");
+    expect(workflow).toContain("needs.verify-contract.result == 'success' &&");
+    expect(workflow).toContain("needs.verify-static.result == 'success' &&");
+    expect(workflow).toContain("needs.verify-unit.result == 'success' &&");
+    expect(workflow).toContain("needs.verify-cli-critical.result == 'success' &&");
+    expect(workflow).toContain("needs.verify-workflow.result == 'success' &&");
+    expect(workflow).toContain("needs.verify-coverage.result == 'success' &&");
     expect(workflow).toContain("needs.test-windows.result == 'success'");
     expect(workflow).toContain("needs.changes.outputs.core != 'true'");
     expect(workflow).toContain("node scripts/manifest.mjs release-ready");
@@ -85,7 +104,7 @@ describe("Core CI workflow contract", () => {
     const workflow = await readFile(CI_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain(
-      "(\n              needs.changes.outputs.core == 'true' &&\n              needs.test.result == 'success' &&\n              needs.test-windows.result == 'success'\n            ) ||\n            needs.changes.outputs.core != 'true'",
+      "(\n              needs.changes.outputs.core == 'true' &&\n              (\n                needs.verify-routed.result == 'success' ||\n                (\n                  needs.verify-contract.result == 'success' &&\n                  needs.verify-static.result == 'success' &&\n                  needs.verify-unit.result == 'success' &&\n                  needs.verify-cli-critical.result == 'success' &&\n                  needs.verify-workflow.result == 'success' &&\n                  needs.verify-coverage.result == 'success' &&\n                  needs.test-windows.result == 'success'\n                )\n              )\n            ) ||\n            needs.changes.outputs.core != 'true'",
     );
   });
 });
