@@ -22,7 +22,9 @@ import {
   POLICY_FILES,
   shouldRewriteExistingContextFile,
 } from "./init-profile-switch.js";
+import { buildContextManifestYaml } from "./init-manifest.js";
 import { starterWikiPageFiles, wikiFrontmatter } from "./init-wiki.js";
+import { buildWikiPolicyMarkdown } from "./init-wiki-policy.js";
 import { cmdContextReindex } from "./reindex.js";
 
 const execFileAsync = promisify(execFile);
@@ -267,7 +269,7 @@ async function createContextWorkspace(
     },
     {
       relative: ".agentplane/context/policies/wiki.rules.md",
-      content: buildPolicyMarkdown("Wiki rules"),
+      content: buildWikiPolicyMarkdown(),
       policy: true,
     },
     {
@@ -448,10 +450,12 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
 Profile: ${profile}
 
 - Treat \`context/wiki/**\` as durable, source-backed project knowledge with stable AgentPlane frontmatter.
+- Treat \`.agentplane/context/agentplane.context.yaml\` as the machine-readable context contract and \`.agentplane/context/policies/wiki.rules.md\` as the human-readable wiki policy.
 - Analyze the base project, existing docs, task history, and raw sources before choosing a wiki structure.
 - Choose the smallest wiki hierarchy that fits this project; do not force a universal concepts/entities/decisions/modules layout.
 - Keep this initialized wiki minimal until first ingest; project-specific folders should appear from source-backed assimilation, not from empty scaffolding.
 - Preserve modality, source refs, cross-links, glossary aliases, and graph alignment when updating pages.
+- Write synthesized wiki prose in English by default; preserve source-language terms only for quotes, titles, proper names, aliases, paths, and code identifiers.
 - Prefer updating existing canonical pages over creating duplicates; describe small objects under stable headings when that is clearer.
 - Use \`agentplane context wiki new\`, \`agentplane context wiki lint\`, \`agentplane context wiki explain\`, \`agentplane context wiki link\`, and \`agentplane context wiki index\`.
 - When claims conflict, keep both claims, create a conflict candidate, and ask for review before promotion or overwrite.
@@ -467,89 +471,6 @@ ${maximumAssimilation}
 
 function buildCapabilitiesReadme(profile: ContextInitParsed["profile"]): string {
   return `# Context capabilities\n\nProfile: ${profile}\n\nReusable artefacts for prompts, playbooks, templates, checklists and rubrics.\n`;
-}
-
-function buildContextManifestYaml(
-  projectName: string,
-  profile: ContextInitParsed["profile"],
-  now: string,
-): string {
-  return `version: 1
-project:
-  name: "${projectName.replaceAll('"', String.raw`\"`)}"
-  root: "."
-workspace:
-  namespace: local.project
-  mode: ${profile}
-  layout_strategy: adaptive
-  page_granularity: topic_artifact
-  claim_granularity: atomic
-  root: context
-  raw: context/raw
-  wiki: context/wiki
-  capabilities: context/capabilities
-control:
-  root: .agentplane/context
-  policies:
-    rules: .agentplane/context/policies/context.rules.md
-    wiki_rules: .agentplane/context/policies/wiki.rules.md
-    capability_rules: .agentplane/context/policies/capability.rules.md
-    redaction: .agentplane/context/policies/redaction.rules.yaml
-    sync: .agentplane/context/policies/sync.rules.yaml
-lock:
-  path: .agentplane/context/manifest.lock.json
-derived:
-  root: .agentplane/context/derived
-  facts: .agentplane/context/derived/facts/facts.jsonl
-  graph:
-    entities: .agentplane/context/derived/graph/entities.jsonl
-    edges: .agentplane/context/derived/graph/edges.jsonl
-    provenance_edges: .agentplane/context/derived/graph/provenance_edges.jsonl
-  capabilities:
-    registry: .agentplane/context/derived/capabilities/capabilities.jsonl
-    edges: .agentplane/context/derived/capabilities/capability_edges.jsonl
-  reports:
-    events: .agentplane/context/derived/reports/assimilation-events.jsonl
-wiki:
-  frontmatter_required: true
-  source_refs_as_markdown_links: true
-  cross_links_required: true
-  maintenance_mode: ${profile === "maximum-assimilation" ? "maximum_assimilation" : "adaptive"}
-  raw_deletion_resilience_required: ${profile === "maximum-assimilation" ? "true" : "false"}
-  entity_relation_first: ${profile === "maximum-assimilation" ? "true" : "false"}
-  glossary:
-    canonical_required: ${profile === "maximum-assimilation" ? "true" : "false"}
-    alias_normalization_required: ${profile === "maximum-assimilation" ? "true" : "false"}
-    canonical_path: ${profile === "maximum-assimilation" ? "context/wiki/glossary.md" : "null"}
-  source_addressing:
-    original_hash_required: true
-    line_refs_required: ${profile === "maximum-assimilation" ? "true" : "false"}
-  modalities:
-    - factual_claim
-    - observation
-    - assumption
-    - hypothesis
-    - decision
-    - policy
-    - preference
-    - requirement
-    - risk
-    - capability
-    - definition
-    - deprecation
-agentplane:
-  tasks_root: .agentplane/tasks
-service:
-  root: .agentplane/context/service
-  index:
-    type: sqlite
-    path: .agentplane/cache.sqlite
-    fts: true
-    cache_task_readmes: true
-    cache_acr_summaries: true
-generated_at: "${now}"
-remotes: []
-`;
 }
 
 function buildPolicyMarkdown(name: string): string {
