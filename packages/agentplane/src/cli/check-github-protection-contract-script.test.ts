@@ -75,11 +75,8 @@ describe("check-github-protection-contract script", () => {
     const payload = JSON.stringify({
       required_status_checks: {
         strict: true,
-        contexts: ["Core CI / PR verification", "Docs CI / docs"],
-        checks: [
-          { context: "Core CI / PR verification", app_id: 15_368 },
-          { context: "Docs CI / docs", app_id: 15_368 },
-        ],
+        contexts: ["PR verification"],
+        checks: [{ context: "PR verification", app_id: 15_368 }],
       },
     });
     await writeExecutable(
@@ -109,11 +106,8 @@ describe("check-github-protection-contract script", () => {
     const payload = JSON.stringify({
       required_status_checks: {
         strict: true,
-        contexts: ["Core CI / PR verification", "Docs CI / docs"],
-        checks: [
-          { context: "Core CI / PR verification", app_id: null },
-          { context: "Docs CI / docs", app_id: null },
-        ],
+        contexts: ["PR verification"],
+        checks: [{ context: "PR verification", app_id: null }],
       },
     });
     await writeExecutable(
@@ -140,10 +134,7 @@ describe("check-github-protection-contract script", () => {
       required_status_checks: {
         strict: true,
         contexts: ["Core CI / test", "Docs CI / docs"],
-        checks: [
-          { context: "Core CI / test", app_id: 15_368 },
-          { context: "Docs CI / docs", app_id: 15_368 },
-        ],
+        checks: [{ context: "Core CI / test", app_id: 15_368 }],
       },
     });
     await writeExecutable(
@@ -161,6 +152,6 @@ describe("check-github-protection-contract script", () => {
     });
 
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain("Missing required checks: Core CI / PR verification");
+    expect(result.stderr).toContain("Missing required checks: PR verification");
   });
 });
