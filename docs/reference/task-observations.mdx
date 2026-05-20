@@ -7,8 +7,8 @@ description: "Structured task-local observations for agent decisions, gaps, risk
 
 ## Quick answer
 
-Task observations are append-only JSONL entries that capture useful signals discovered while an
-agent implements a task:
+Task observations are JSONL entries that capture useful signals discovered while an agent
+implements a task:
 
 ```text
 .agentplane/tasks/<task-id>/observations.jsonl
@@ -17,7 +17,8 @@ agent implements a task:
 They are not a transcript and not a replacement for `Findings` or ACR. Use them for information
 that should remain machine-readable after the task: spec gaps, assumptions, decisions, deviations,
 tradeoffs, risks, issue candidates, incident candidates, context candidates, and agent improvement
-candidates.
+candidates. Treat the entry content as append-only; later follow-up tasks may update `status` when
+the signal is promoted, dismissed, accepted, or superseded.
 
 ## Add an observation
 
@@ -37,6 +38,7 @@ agentplane task observations add <task-id> \
 agentplane task observations list <task-id>
 agentplane task observations check <task-id>
 agentplane task observations triage <task-id>
+agentplane task observations harvest
 ```
 
 `check` validates the JSONL file and fails when blocking observations remain open. Blocking means:
@@ -45,6 +47,11 @@ agentplane task observations triage <task-id>
 - open `deviation` without a recorded decision;
 - open `incident_candidate`, `issue_candidate`, or `agent_improvement_candidate` without a
   recommended action.
+
+`harvest` scans all task-local `observations.jsonl` files and groups open follow-up signals by
+recommended action. Use it before release or maintenance planning to turn scattered task execution
+signals into explicit GitHub issues, incidents, context updates, skill changes, blueprint changes,
+or dismissed `action=none` notes.
 
 ## Promotion model
 

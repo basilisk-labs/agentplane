@@ -1,7 +1,11 @@
 import type { TaskObservation } from "@agentplaneorg/core/tasks";
 import { describe, expect, it } from "vitest";
 
-import { findBlockingObservationIssues, summarizeObservationTriage } from "./observations.js";
+import {
+  findBlockingObservationIssues,
+  summarizeObservationHarvest,
+  summarizeObservationTriage,
+} from "./observations.js";
 
 function observation(overrides: Partial<TaskObservation> = {}): TaskObservation {
   return {
@@ -68,6 +72,55 @@ describe("task observations", () => {
     expect(summary).toEqual({
       github_issue: { total: 2, open: 1, ids: ["obs-0001"] },
       none: { total: 1, open: 1, ids: ["obs-0003"] },
+    });
+  });
+
+  it("summarizes harvested task observations across tasks", () => {
+    const summary = summarizeObservationHarvest([
+      {
+        taskId: "202605191736-EQBZ4M",
+        taskTitle: "Add task observations journal",
+        artifactPath: "/repo/.agentplane/tasks/202605191736-EQBZ4M/observations.jsonl",
+        errors: [],
+        blocking: [{ id: "obs-0002", reason: "open critical severity observation" }],
+        observations: [
+          observation({
+            id: "obs-0001",
+            recommended_action: { type: "github_issue", title: "Review guard stability" },
+          }),
+          observation({
+            id: "obs-0002",
+            severity: "critical",
+            recommended_action: { type: "incident", title: "Promote incident" },
+          }),
+          observation({ id: "obs-0003", status: "dismissed" }),
+        ],
+      },
+    ]);
+
+    expect(summary).toEqual({
+      tasks: 1,
+      observations: 3,
+      open: 2,
+      invalid: 0,
+      blocking: 1,
+      byAction: {
+        github_issue: {
+          total: 1,
+          open: 1,
+          ids: ["202605191736-EQBZ4M:obs-0001"],
+        },
+        incident: {
+          total: 1,
+          open: 1,
+          ids: ["202605191736-EQBZ4M:obs-0002"],
+        },
+        none: {
+          total: 1,
+          open: 0,
+          ids: [],
+        },
+      },
     });
   });
 });

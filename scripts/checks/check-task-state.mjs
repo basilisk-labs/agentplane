@@ -6,6 +6,7 @@ import { defineScript, parseScriptArgs, runScriptMain } from "../lib/script-runt
 
 const SCRIPT_NAME = "check-task-state.mjs";
 const ACTIVE_STATUSES = new Set(["TODO", "DOING", "BLOCKED"]);
+const RELEASE_BLOCKING_OBSERVATION_SEVERITIES = new Set(["medium", "high", "critical"]);
 
 function readJson(filePath) {
   return JSON.parse(readFileSync(filePath, "utf8"));
@@ -38,6 +39,34 @@ function listTaskDirs(tasksRoot) {
       return statSync(fullPath).isDirectory() && existsSync(path.join(fullPath, "README.md"));
     })
     .toSorted((a, b) => a.localeCompare(b));
+}
+
+function readObservationLines(filePath) {
+  if (!existsSync(filePath)) return { observations: [], errors: [] };
+  const observations = [];
+  const errors = [];
+  const text = readFileSync(filePath, "utf8");
+  for (const [index, line] of text.replaceAll("\r\n", "\n").split("\n").entries()) {
+    const raw = line.trim();
+    if (!raw) continue;
+    try {
+      observations.push(JSON.parse(raw));
+    } catch (error) {
+      errors.push(`line ${index + 1}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+  return { observations, errors };
+}
+
+function isReleaseBlockingObservation(value) {
+  if (!value || typeof value !== "object") return false;
+  if (value.status !== "open") return false;
+  if (!RELEASE_BLOCKING_OBSERVATION_SEVERITIES.has(String(value.severity ?? ""))) return false;
+  const action =
+    value.recommended_action && typeof value.recommended_action === "object"
+      ? String(value.recommended_action.type ?? "none")
+      : "none";
+  return action !== "none";
 }
 
 function parseMinorPatch(version) {
@@ -82,6 +111,27 @@ export function checkTaskState(repoRoot, opts = {}) {
       failures.push(
         `${relReadmePath}: DOING task blocks release readiness; finish, close, or explicitly move it out of the release scope before candidate/publish.`,
       );
+    }
+    if (opts.releaseReady === true) {
+      const observationsPath = path.join(tasksRoot, taskId, "observations.jsonl");
+      const relObservationsPath = normalizePath(path.relative(repoRoot, observationsPath));
+      const { observations, errors } = readObservationLines(observationsPath);
+      for (const error of errors) {
+        failures.push(
+          `${relObservationsPath}: invalid observation blocks release readiness (${error})`,
+        );
+      }
+      for (const observation of observations) {
+        if (!isReleaseBlockingObservation(observation)) continue;
+        const id = String(observation.id ?? "unknown");
+        const action =
+          observation.recommended_action && typeof observation.recommended_action === "object"
+            ? String(observation.recommended_action.type ?? "unknown")
+            : "unknown";
+        failures.push(
+          `${relObservationsPath}: open ${observation.severity} observation ${id} requires ${action} triage before release readiness.`,
+        );
+      }
     }
 
     if (currentPatch !== null && ACTIVE_STATUSES.has(status)) {

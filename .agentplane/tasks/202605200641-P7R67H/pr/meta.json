@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605200641-P7R67H/observations-followup-gates",
+  "created_at": "2026-05-20T06:42:30.667Z",
+  "head_sha": "6d0b0f745b687d267ef6c84f22606438eba967ce",
+  "last_verified_at": "2026-05-20T06:53:10.894Z",
+  "last_verified_sha": "6d0b0f745b687d267ef6c84f22606438eba967ce",
+  "schema_version": 1,
+  "task_id": "202605200641-P7R67H",
+  "updated_at": "2026-05-20T06:42:30.667Z",
+  "verify": {
+    "status": "pass"
+  }
+}

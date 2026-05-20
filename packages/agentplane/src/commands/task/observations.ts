@@ -19,7 +19,7 @@ import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
-import type { CommandContext } from "../shared/task-backend.js";
+import { listTasksMemo, type CommandContext } from "../shared/task-backend.js";
 
 const TASK_OBSERVATIONS_FILE = "observations.jsonl";
 
@@ -39,6 +39,15 @@ export type TaskObservationsReadResult = {
 export type TaskObservationBlockingIssue = {
   id: string;
   reason: string;
+};
+
+export type TaskObservationHarvestEntry = {
+  taskId: string;
+  taskTitle: string;
+  artifactPath: string;
+  observations: TaskObservation[];
+  errors: TaskObservationReadError[];
+  blocking: TaskObservationBlockingIssue[];
 };
 
 function taskObservationsPath(ctx: CommandContext, taskId: string): string {
@@ -266,6 +275,50 @@ export function summarizeObservationTriage(observations: readonly TaskObservatio
     }
   }
   return summary;
+}
+
+export async function harvestTaskObservations(
+  ctx: CommandContext,
+): Promise<TaskObservationHarvestEntry[]> {
+  const tasks = await listTasksMemo(ctx);
+  const entries: TaskObservationHarvestEntry[] = [];
+  for (const task of tasks.toSorted((a, b) => a.id.localeCompare(b.id))) {
+    const result = await readTaskObservations(ctx, task.id);
+    if (result.observations.length === 0 && result.errors.length === 0) continue;
+    entries.push({
+      taskId: task.id,
+      taskTitle: task.title,
+      artifactPath: result.artifactPath,
+      observations: result.observations,
+      errors: result.errors,
+      blocking: findBlockingObservationIssues(result.observations),
+    });
+  }
+  return entries;
+}
+
+export function summarizeObservationHarvest(entries: readonly TaskObservationHarvestEntry[]) {
+  const byAction: Record<string, { total: number; open: number; ids: string[] }> = {};
+  let observations = 0;
+  let open = 0;
+  let invalid = 0;
+  let blocking = 0;
+  for (const entry of entries) {
+    invalid += entry.errors.length;
+    blocking += entry.blocking.length;
+    for (const item of entry.observations) {
+      observations += 1;
+      const action = item.recommended_action?.type ?? "none";
+      byAction[action] ??= { total: 0, open: 0, ids: [] };
+      byAction[action].total += 1;
+      if (item.status === "open") {
+        open += 1;
+        byAction[action].open += 1;
+        byAction[action].ids.push(`${entry.taskId}:${item.id}`);
+      }
+    }
+  }
+  return { tasks: entries.length, observations, open, invalid, blocking, byAction };
 }
 
 export function observationEnumValues() {
