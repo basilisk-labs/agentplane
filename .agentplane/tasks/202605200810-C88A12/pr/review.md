@@ -24,12 +24,16 @@ Created: 2026-05-20T08:11:19.953Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T08:11:19.953Z
+- Updated: 2026-05-20T08:14:42.090Z
 - Branch: task/202605200810-C88A12/release-ready-task-registry
-- Head: 6dfe8f4189a8
+- Head: 55d3669a2595
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 455 +++++++++++++++++++++
+ .../release/release-ready-manifest-script.test.ts  | 114 ++++++
+ scripts/checks/check-task-state.mjs                |   4 +-
+ scripts/release/manifest.mjs                       |  46 ++-
+ 4 files changed, 610 insertions(+), 9 deletions(-)
 ```
 
 </details>
