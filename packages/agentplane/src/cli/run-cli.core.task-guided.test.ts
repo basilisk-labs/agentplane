@@ -131,6 +131,8 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
         "Shortcut finished",
         "--commit",
         commit.trim(),
+        "--by",
+        "EVALUATOR",
         "--json",
         "--root",
         root,
