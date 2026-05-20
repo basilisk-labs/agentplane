@@ -4,7 +4,7 @@ title: "Fix done task next-action route"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T17:01:40.143Z"
+  updated_at: "2026-05-20T17:02:23.005Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for DONE task route decision fix. The change is limited to terminal route handling and regression coverage; focused cli-core route-decision tests, ESLint, agentplane typecheck, framework bootstrap, and policy routing passed."
+  note: "Quality gate passed for implementation commit bf2f3e28a. Evidence: focused cli-core route-decision test passed, ESLint passed, agentplane typecheck passed, framework bootstrap completed through task verify-show, and policy routing passed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-20T17:01:40.143Z"
+  updated_at: "2026-05-20T17:02:23.005Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for DONE task route decision fix. The change is limited to terminal route handling and regression coverage; focused cli-core route-decision tests, ESLint, agentplane typecheck, framework bootstrap, and policy routing passed."
-  evaluated_sha: "cc334fc66ef290e994438d1c3c413ebeb7d3b8a2"
+  note: "Quality gate passed for implementation commit bf2f3e28a. Evidence: focused cli-core route-decision test passed, ESLint passed, agentplane typecheck passed, framework bootstrap completed through task verify-show, and policy routing passed."
+  evaluated_sha: "bf2f3e28a4f83c8150d158c98b60728902c3708d"
   blueprint_digest: "38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1"
   evidence_refs:
     - ".agentplane/tasks/202605201656-J68MDT/README.md"
@@ -60,8 +60,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality gate passed for DONE task route decision fix. The change is limited to terminal route handling and regression coverage; focused cli-core route-decision tests, ESLint, agentplane typecheck, framework bootstrap, and policy routing passed."
+  -
+    type: "verify"
+    at: "2026-05-20T17:02:23.005Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Quality gate passed for implementation commit bf2f3e28a. Evidence: focused cli-core route-decision test passed, ESLint passed, agentplane typecheck passed, framework bootstrap completed through task verify-show, and policy routing passed."
 doc_version: 3
-doc_updated_at: "2026-05-20T17:01:40.215Z"
+doc_updated_at: "2026-05-20T17:02:23.042Z"
 doc_updated_by: "CODER"
 description: "Stop task next-action and task status route output from suggesting branch_pr worktree recovery for tasks that are already DONE, especially included batch tasks closed after their primary PR merged."
 sections:
@@ -112,6 +118,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:01:27.437Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201656-J68MDT-done-next-action/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json
+    - old_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+    - current_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605201656-J68MDT
+
+    ### 2026-05-20T17:02:23.005Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Quality gate passed for implementation commit bf2f3e28a. Evidence: focused cli-core route-decision test passed, ESLint passed, agentplane typecheck passed, framework bootstrap completed through task verify-show, and policy routing passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:01:40.215Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -186,6 +211,25 @@ Note: Quality gate passed for DONE task route decision fix. The change is limite
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:01:27.437Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201656-J68MDT-done-next-action/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json
+- old_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+- current_digest: 38273f1ed23e94202d4316a91a1e63a558b7eccf0a157a989d5d511fbd1d76c1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605201656-J68MDT
+
+### 2026-05-20T17:02:23.005Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Quality gate passed for implementation commit bf2f3e28a. Evidence: focused cli-core route-decision test passed, ESLint passed, agentplane typecheck passed, framework bootstrap completed through task verify-show, and policy routing passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:01:40.215Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 
