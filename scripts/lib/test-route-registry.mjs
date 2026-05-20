@@ -539,11 +539,19 @@ const GUARD_TEST_FILES = discoverTestFiles(
   GUARD_DISCOVERY_PATTERNS,
 );
 
+const CONTEXT_TEST_FILES = [
+  "packages/agentplane/src/commands/context/release-readiness.test.ts",
+  "packages/agentplane/src/commands/context/sqlite.unit.test.ts",
+  "packages/agentplane/src/commands/context/harvest-tasks.test.ts",
+  "packages/agentplane/src/blueprints/validate.test.ts",
+];
+
 export const LOCAL_CI_TARGET_TEST_FILES = {
   backend: BACKEND_CRITICAL_FILES,
   "cli-core": CLI_CORE_TEST_FILES,
   "cli-help": CLI_HELP_TEST_FILES,
   "cli-runtime": CLI_RUNTIME_TEST_FILES,
+  context: CONTEXT_TEST_FILES,
   doctor: DOCTOR_TEST_FILES,
   guard: GUARD_TEST_FILES,
   hooks: HOOKS_TEST_FILES,

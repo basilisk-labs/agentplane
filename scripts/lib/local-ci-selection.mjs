@@ -5,6 +5,7 @@ const {
   "cli-core": CLI_CORE_TEST_FILES,
   "cli-help": CLI_HELP_TEST_FILES,
   "cli-runtime": CLI_RUNTIME_TEST_FILES,
+  context: CONTEXT_TEST_FILES,
   doctor: DOCTOR_TEST_FILES,
   guard: GUARD_TEST_FILES,
   hooks: HOOKS_TEST_FILES,
@@ -39,6 +40,15 @@ const BACKEND_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/shared\/task-backend(?:\.test)?\.ts$/,
   /^packages\/agentplane\/src\/commands\/task\/(?:export|migrate-doc)(?:\.test|\.unit\.test)?\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.backend-sync\.test\.ts$/,
+];
+
+const CONTEXT_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/commands\/context(?:\/|\.|$)/,
+  /^packages\/agentplane\/src\/context\//,
+  /^packages\/agentplane\/src\/blueprints\/context-.+\.ts$/,
+  /^packages\/agentplane\/src\/blueprints\/validate\.test\.ts$/,
+  /^docs\/user\/local-context\.mdx$/,
+  /^docs\/developer\/blueprints\.mdx$/,
 ];
 
 const HOOKS_BUCKET_PATTERNS = [
@@ -167,6 +177,13 @@ const TARGET_BUCKET_DEFINITIONS = [
     patterns: BACKEND_BUCKET_PATTERNS,
     testFiles: BACKEND_TEST_FILES,
     vitestPool: "forks",
+  },
+  {
+    bucket: "context",
+    reason: "context_paths_only",
+    patterns: CONTEXT_BUCKET_PATTERNS,
+    testFiles: CONTEXT_TEST_FILES,
+    vitestPool: "threads",
   },
   {
     bucket: "hooks",
@@ -331,6 +348,18 @@ export function selectFastCiPlan(changedFiles) {
       lintTargets: effectiveFiles,
       testFiles: BACKEND_TEST_FILES,
       vitestPool: "forks",
+    };
+  }
+
+  if (everyPathMatches(effectiveFiles, CONTEXT_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "context",
+      reason: "context_paths_only",
+      files,
+      lintTargets: effectiveFiles,
+      testFiles: CONTEXT_TEST_FILES,
+      vitestPool: "threads",
     };
   }
 

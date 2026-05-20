@@ -16,6 +16,7 @@ type FastCiPlan =
         | "workflow"
         | "cli-help"
         | "cli-core"
+        | "context"
         | "pr"
         | "cli-runtime"
         | "release"
@@ -147,6 +148,24 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
     );
+  });
+
+  it("routes context code and neutral task PR artifacts to the context bucket", () => {
+    const plan = selectFastCiPlan([
+      ".agentplane/tasks/202605201202-KMFQJ8/pr/meta.json",
+      "docs/user/local-context.mdx",
+      "packages/agentplane/src/blueprints/context-maximum-assimilation.ts",
+      "packages/agentplane/src/commands/context/init.ts",
+      "packages/agentplane/src/context/ingest-task.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("context");
+    expect(plan.reason).toBe("context_paths_only");
+    expect(plan.lintTargets).not.toContain(".agentplane/tasks/202605201202-KMFQJ8/pr/meta.json");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/commands/context/release-readiness.test.ts",
+    );
+    expect(plan.testFiles).toContain("packages/agentplane/src/blueprints/validate.test.ts");
   });
 
   it("routes isolated hook and CI routing paths to the hooks bucket", () => {
