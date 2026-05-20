@@ -6,7 +6,8 @@ import { defineScript, parseScriptArgs, runScriptMain } from "../lib/script-runt
 
 const SCRIPT_NAME = "check-task-state.mjs";
 const ACTIVE_STATUSES = new Set(["TODO", "DOING", "BLOCKED"]);
-const RELEASE_BLOCKING_OBSERVATION_SEVERITIES = new Set(["medium", "high", "critical"]);
+const RELEASE_ACTIONABLE_OBSERVATION_SEVERITIES = new Set(["medium", "high", "critical"]);
+const RELEASE_SEVERITY_ONLY_BLOCKERS = new Set(["high", "critical"]);
 
 function readJson(filePath) {
   return JSON.parse(readFileSync(filePath, "utf8"));
@@ -61,7 +62,9 @@ function readObservationLines(filePath) {
 function isReleaseBlockingObservation(value) {
   if (!value || typeof value !== "object") return false;
   if (value.status !== "open") return false;
-  if (!RELEASE_BLOCKING_OBSERVATION_SEVERITIES.has(String(value.severity ?? ""))) return false;
+  const severity = String(value.severity ?? "");
+  if (RELEASE_SEVERITY_ONLY_BLOCKERS.has(severity)) return true;
+  if (!RELEASE_ACTIONABLE_OBSERVATION_SEVERITIES.has(severity)) return false;
   const action =
     value.recommended_action && typeof value.recommended_action === "object"
       ? String(value.recommended_action.type ?? "none")
@@ -124,12 +127,14 @@ export function checkTaskState(repoRoot, opts = {}) {
       for (const observation of observations) {
         if (!isReleaseBlockingObservation(observation)) continue;
         const id = String(observation.id ?? "unknown");
-        const action =
-          observation.recommended_action && typeof observation.recommended_action === "object"
+        const severity = String(observation.severity ?? "unknown");
+        const action = RELEASE_SEVERITY_ONLY_BLOCKERS.has(severity)
+          ? "severity"
+          : observation.recommended_action && typeof observation.recommended_action === "object"
             ? String(observation.recommended_action.type ?? "unknown")
             : "unknown";
         failures.push(
-          `${relObservationsPath}: open ${observation.severity} observation ${id} requires ${action} triage before release readiness.`,
+          `${relObservationsPath}: open ${severity} observation ${id} requires ${action} triage before release readiness.`,
         );
       }
     }

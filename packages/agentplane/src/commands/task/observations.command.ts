@@ -419,7 +419,7 @@ export function makeRunTaskObservationsHarvestHandler(
           blocking: entry.blocking,
         })),
       });
-      return 0;
+      return summary.invalid > 0 ? 3 : 0;
     }
     output.report(
       [

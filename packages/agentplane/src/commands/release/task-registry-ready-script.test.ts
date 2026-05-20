@@ -115,6 +115,44 @@ describe("check-task-registry-ready script", () => {
     expect(result.stderr).toContain("obs-release-gate requires github_issue triage");
   });
 
+  it("blocks open high observations even with action none", async () => {
+    const root = await makeRepo([{ id: "202605190001-ABC123", status: "DONE" }]);
+    await appendFile(
+      path.join(root, ".agentplane", "tasks", "202605190001-ABC123", "observations.jsonl"),
+      `${JSON.stringify({
+        schema_version: "0.1",
+        id: "obs-severe-risk",
+        task_id: "202605190001-ABC123",
+        created_at: "2026-05-20T00:00:00.000Z",
+        author: "AGENT",
+        phase: "verification",
+        kind: "risk",
+        severity: "high",
+        summary: "Severe open risk must block release even before action routing is known.",
+        recommended_action: { type: "none" },
+        status: "open",
+      })}\n`,
+      "utf8",
+    );
+
+    const result = await execFileAsync("node", [SCRIPT_PATH], { cwd: root }).then(
+      () => ({ ok: true as const, stderr: "" }),
+      (error: unknown) => {
+        const stderr =
+          typeof error === "object" &&
+          error !== null &&
+          "stderr" in error &&
+          typeof (error as { stderr?: unknown }).stderr === "string"
+            ? (error as { stderr: string }).stderr
+            : "";
+        return { ok: false as const, stderr };
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("obs-severe-risk requires severity triage");
+  });
+
   it("allows open medium observations with action none", async () => {
     const root = await makeRepo([{ id: "202605190001-ABC123", status: "DONE" }]);
     await appendFile(
