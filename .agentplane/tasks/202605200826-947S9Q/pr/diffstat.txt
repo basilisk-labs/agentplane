@@ -1,8 +1,11 @@
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |   2 -
  .github/workflows/publish.yml                      |  46 +-
  .github/workflows/task-hosted-close.yml            |  33 ++
+ ...check-github-protection-contract-script.test.ts |  21 +-
  .../release/publish-workflow-contract.test.ts      |   7 +-
  .../commands/release/release-ci-contract.test.ts   |  12 +
  .../task/hosted-close-workflow-contract.test.ts    |   5 +
+ .../checks/check-github-protection-contract.mjs    |   2 +-
  scripts/checks/run-local-ci.mjs                    |  31 +-
- 7 files changed, 670 insertions(+), 36 deletions(-)
+ 10 files changed, 677 insertions(+), 54 deletions(-)
