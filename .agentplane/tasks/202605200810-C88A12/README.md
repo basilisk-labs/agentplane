@@ -1,10 +1,11 @@
 ---
 id: "202605200810-C88A12"
 title: "Gate release-ready manifest on task registry"
-status: "DOING"
+result_summary: "Merged via PR #3959."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605200810-C88A12/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200810-C88A12-release-ready-task-registry/.agentplane/tasks/202605200810-C88A12/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "c68aed656063097d62dae0de757919a95e115194"
+  message: "Merge pull request #3959 from basilisk-labs/task/202605200810-C88A12/release-ready-task-registry"
 comments:
   -
     author: "CODER"
     body: "Start: Implement release-ready manifest task-registry gating so pre-close DOING task races cannot produce publishable release-ready artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3959 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for implementation commit 55d3669a. Evidence covers ready and DOING task-registry manifest behavior, JSON stdout cleanliness, lint, typecheck, policy routing, and doctor. Residual warning is unrelated pre-existing untracked DONE archive 202605200640-7AXZRX."
+  -
+    type: "status"
+    at: "2026-05-20T09:46:45.636Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3959 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-20T08:15:24.562Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-20T09:46:45.639Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make Core CI release-ready artifact fail closed when task registry is not release-ready, so Publish release does not discover pre-close DOING task races first."
 sections:
   Summary: |-
