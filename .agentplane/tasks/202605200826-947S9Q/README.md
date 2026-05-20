@@ -4,7 +4,7 @@ title: "Unblock hosted close-tail PR verification"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T09:02:22.817Z"
+  updated_at: "2026-05-20T09:28:41.599Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed for implementation commit c2b1520b73037e905375aa84aab2a42d13eb9807. Hosted checks on PR #3962 are green, including PR verification and Release-ready manifest; local verification covers publish ordering, hosted-close check-run contract, docs-only fast route, build-before-cold-baseline, typecheck, and policy routing."
+  note: "EVALUATOR quality gate passed for f0aaff1c9: GitHub PR #3962 checks are green, including PR verification and Release-ready manifest; local workflow lint, protection contract, routing, diff check, typecheck, and targeted workflow tests passed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-20T09:02:22.817Z"
+  updated_at: "2026-05-20T09:28:41.599Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed for implementation commit c2b1520b73037e905375aa84aab2a42d13eb9807. Hosted checks on PR #3962 are green, including PR verification and Release-ready manifest; local verification covers publish ordering, hosted-close check-run contract, docs-only fast route, build-before-cold-baseline, typecheck, and policy routing."
-  evaluated_sha: "c2b1520b73037e905375aa84aab2a42d13eb9807"
+  note: "EVALUATOR quality gate passed for f0aaff1c9: GitHub PR #3962 checks are green, including PR verification and Release-ready manifest; local workflow lint, protection contract, routing, diff check, typecheck, and targeted workflow tests passed."
+  evaluated_sha: "2a316c63ec0ebfdbdc26c08b5d9604762244ddc9"
   blueprint_digest: "655c724346ac3b26a4318dcfcbbfb050cef48b19bbdead30f51c9d53ae95617e"
   evidence_refs:
     - ".agentplane/tasks/202605200826-947S9Q/README.md"
@@ -60,8 +60,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for implementation commit c2b1520b73037e905375aa84aab2a42d13eb9807. Hosted checks on PR #3962 are green, including PR verification and Release-ready manifest; local verification covers publish ordering, hosted-close check-run contract, docs-only fast route, build-before-cold-baseline, typecheck, and policy routing."
+  -
+    type: "verify"
+    at: "2026-05-20T09:28:41.599Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed for f0aaff1c9: GitHub PR #3962 checks are green, including PR verification and Release-ready manifest; local workflow lint, protection contract, routing, diff check, typecheck, and targeted workflow tests passed."
 doc_version: 3
-doc_updated_at: "2026-05-20T09:02:22.832Z"
+doc_updated_at: "2026-05-20T09:28:41.616Z"
 doc_updated_by: "CODER"
 description: "Make hosted close-tail automation satisfy the required PR verification check for deterministic task-close PRs created by GitHub Actions, because those PRs do not trigger normal pull_request CI."
 sections:
@@ -115,6 +121,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T09:02:20.223Z, excerpt_hash=sha256:bf08ab5192fc0c484da09373fe9137a5a7e11b47676b939495f3ec5b00045cd6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200826-947S9Q-hosted-close-pr-verification/.agentplane/tasks/202605200826-947S9Q/blueprint/resolved-snapshot.json
+    - old_digest: 655c724346ac3b26a4318dcfcbbfb050cef48b19bbdead30f51c9d53ae95617e
+    - current_digest: 655c724346ac3b26a4318dcfcbbfb050cef48b19bbdead30f51c9d53ae95617e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605200826-947S9Q
+
+    ### 2026-05-20T09:28:41.599Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed for f0aaff1c9: GitHub PR #3962 checks are green, including PR verification and Release-ready manifest; local workflow lint, protection contract, routing, diff check, typecheck, and targeted workflow tests passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T09:02:22.832Z, excerpt_hash=sha256:bf08ab5192fc0c484da09373fe9137a5a7e11b47676b939495f3ec5b00045cd6
 
     Details:
 
@@ -195,6 +220,25 @@ Note: EVALUATOR quality gate passed for implementation commit c2b1520b73037e9053
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T09:02:20.223Z, excerpt_hash=sha256:bf08ab5192fc0c484da09373fe9137a5a7e11b47676b939495f3ec5b00045cd6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200826-947S9Q-hosted-close-pr-verification/.agentplane/tasks/202605200826-947S9Q/blueprint/resolved-snapshot.json
+- old_digest: 655c724346ac3b26a4318dcfcbbfb050cef48b19bbdead30f51c9d53ae95617e
+- current_digest: 655c724346ac3b26a4318dcfcbbfb050cef48b19bbdead30f51c9d53ae95617e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605200826-947S9Q
+
+### 2026-05-20T09:28:41.599Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed for f0aaff1c9: GitHub PR #3962 checks are green, including PR verification and Release-ready manifest; local workflow lint, protection contract, routing, diff check, typecheck, and targeted workflow tests passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T09:02:22.832Z, excerpt_hash=sha256:bf08ab5192fc0c484da09373fe9137a5a7e11b47676b939495f3ec5b00045cd6
 
 Details:
 

@@ -13,7 +13,7 @@ Created: 2026-05-20T08:27:18.526Z
 ## Verification
 
 - State: ok
-- Note: EVALUATOR quality gate passed for implementation commit c2b1520b73037e905375aa84aab2a42d13eb9807. Hosted checks on PR #3962 are green, including PR verification and Release-ready manifest; local verification covers publish ordering, hosted-close check-run contract, docs-only fast route, build-before-cold-baseline, typecheck, and policy routing.
+- Note: EVALUATOR quality gate passed for f0aaff1c9: GitHub PR #3962 checks are green, including PR verification and Release-ready manifest; local workflow lint, protection contract, routing, diff check, typecheck, and targeted workflow tests passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
