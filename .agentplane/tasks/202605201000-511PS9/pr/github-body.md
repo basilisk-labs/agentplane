@@ -29,19 +29,19 @@ is opt-in because it exposes pre-existing historical Verify Steps pollution outs
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T10:22:23.220Z
+- Updated: 2026-05-20T10:25:30.437Z
 - Branch: task/202605201000-511PS9/ambiguity-route-contract
-- Head: 8dea62f1d0e2
+- Head: d5f50e7b3c05
 
 ```text
- .agentplane/tasks/202605200959-2KQ8XN/README.md    | 111 ++++
+ .agentplane/tasks/202605200959-2KQ8XN/README.md    | 210 ++++++++
  .../blueprint/resolved-snapshot.json               | 404 ++++++++++++++
  .../blueprint/resolved-snapshot.json               | 579 +++++++++++++++++++++
- .agentplane/tasks/202605201001-3TVWFX/README.md    | 116 +++++
+ .agentplane/tasks/202605201001-3TVWFX/README.md    | 215 ++++++++
  .../blueprint/resolved-snapshot.json               | 579 +++++++++++++++++++++
- .agentplane/tasks/202605201001-C1X8B6/README.md    | 116 +++++
+ .agentplane/tasks/202605201001-C1X8B6/README.md    | 215 ++++++++
  .../blueprint/resolved-snapshot.json               | 579 +++++++++++++++++++++
- .agentplane/tasks/202605201001-YCTG8P/README.md    | 116 +++++
+ .agentplane/tasks/202605201001-YCTG8P/README.md    | 215 ++++++++
  .../blueprint/resolved-snapshot.json               | 579 +++++++++++++++++++++
  docs/reference/workflow-file.mdx                   |   3 +-
  docs/user/configuration.mdx                        |   6 +-
@@ -61,7 +61,7 @@ is opt-in because it exposes pre-existing historical Verify Steps pollution outs
  packages/core/src/tasks/index.ts                   |   1 +
  packages/core/src/tasks/tasks-lint.test.ts         |  18 +
  packages/core/src/tasks/tasks-lint.ts              |  36 ++
- 27 files changed, 3578 insertions(+), 13 deletions(-)
+ 27 files changed, 3974 insertions(+), 13 deletions(-)
 ```
 
 </details>
