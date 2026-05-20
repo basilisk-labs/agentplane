@@ -36,17 +36,19 @@ command rejected it as not a context task.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T11:57:31.221Z
+- Updated: 2026-05-20T12:28:22.962Z
 - Branch: task/202605201152-ATVFPQ/context-wiki-contract
-- Head: 7c1b52ebf76e
+- Head: 0b158ea3a160
 
 ```text
  .agentplane/context/agentplane.context.yaml        |  23 ++
  .agentplane/context/policies/wiki.rules.md         |  47 ++-
  .../blueprint/resolved-snapshot.json               | 397 +++++++++++++++++++++
  context/wiki/AGENTS.md                             |   2 +
- packages/agentplane/src/commands/context/init.ts   |  68 +++-
- 5 files changed, 533 insertions(+), 4 deletions(-)
+ .../src/commands/context/init-manifest.ts          |  97 +++++
+ .../src/commands/context/init-wiki-policy.ts       |  49 +++
+ packages/agentplane/src/commands/context/init.ts   |  88 +----
+ 7 files changed, 617 insertions(+), 86 deletions(-)
 ```
 
 </details>
