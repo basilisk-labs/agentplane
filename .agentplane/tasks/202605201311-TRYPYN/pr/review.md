@@ -24,12 +24,16 @@ Created: 2026-05-20T13:12:08.755Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T13:20:34.793Z
+- Updated: 2026-05-20T13:21:16.993Z
 - Branch: task/202605201311-TRYPYN/context-ci-routing
-- Head: 4483996a8cdd
+- Head: ba50f14147ad
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 598 +++++++++++++++++++++
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  19 +
+ scripts/lib/local-ci-selection.mjs                 |  29 +
+ scripts/lib/test-route-registry.mjs                |   8 +
+ 4 files changed, 654 insertions(+)
 ```
 
 </details>
