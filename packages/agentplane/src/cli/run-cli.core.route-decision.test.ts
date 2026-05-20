@@ -71,9 +71,9 @@ describe("runCli route decision commands", () => {
     try {
       const code = await runCli(["task", "status", taskId, "--route", "--root", root]);
       expect(code).toBe(0);
-      expect(statusIo.stdout).toContain(`task:         ${taskId} TODO`);
-      expect(statusIo.stdout).toContain("next_code:    start_or_recover_worktree");
-      expect(statusIo.stdout).toContain("blocker:      missing_pr_branch");
+      expect(statusIo.stdout).toContain(`task:                        ${taskId} TODO`);
+      expect(statusIo.stdout).toContain("next_code:                   start_or_recover_worktree");
+      expect(statusIo.stdout).toContain("blocker:                     missing_pr_branch");
     } finally {
       statusIo.restore();
     }
@@ -110,6 +110,101 @@ describe("runCli route decision commands", () => {
       expect(repairIo.stdout).toContain(`agentplane work start ${taskId}`);
     } finally {
       repairIo.restore();
+    }
+  });
+
+  it("treats done branch_pr tasks as terminal even when PR metadata is absent", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise done route decisions.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    await writeFile(
+      readmePath,
+      readme
+        .replace('status: "TODO"', 'status: "DONE"')
+        .replace("commit: null", 'commit:\n  hash: "abc123"\n  message: "Merge PR #1"'),
+      "utf8",
+    );
+
+    const statusIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "status", taskId, "--route", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(statusIo.stdout) as {
+        blockers: { code: string }[];
+        nextAction: { code: string; command: string };
+      };
+      expect(parsed.blockers).toEqual([]);
+      expect(parsed.nextAction.code).toBe("cleanup");
+      expect(parsed.nextAction.command).toBe("agentplane cleanup merged");
+    } finally {
+      statusIo.restore();
+    }
+  });
+
+  it("keeps done direct-mode tasks on a direct-safe terminal route", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise direct done route decisions.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    await writeFile(
+      readmePath,
+      readme
+        .replace('status: "TODO"', 'status: "DONE"')
+        .replace("commit: null", 'commit:\n  hash: "abc123"\n  message: "Direct close"'),
+      "utf8",
+    );
+
+    const statusIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "status", taskId, "--route", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(statusIo.stdout) as {
+        blockers: { code: string }[];
+        nextAction: { code: string; command: string | null };
+      };
+      expect(parsed.blockers).toEqual([]);
+      expect(parsed.nextAction.code).toBe("done");
+      expect(parsed.nextAction.command).toBeNull();
+    } finally {
+      statusIo.restore();
     }
   });
 

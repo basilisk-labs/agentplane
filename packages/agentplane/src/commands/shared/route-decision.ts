@@ -114,6 +114,7 @@ async function deriveBlockers(opts: {
   prFlow: PrFlowStatusReport | null;
 }): Promise<RouteBlocker[]> {
   const blockers: RouteBlocker[] = [];
+  if (opts.task.status === "DONE") return blockers;
   if (opts.task.plan_approval?.state !== "approved") {
     addBlocker(blockers, "plan_not_approved", "task plan is not approved");
   }
@@ -171,6 +172,23 @@ function deriveNextAction(opts: {
   blockers: readonly RouteBlocker[];
 }): RouteNextAction {
   const id = opts.task.id;
+  if (opts.task.status === "DONE") {
+    if (opts.workflowMode !== "branch_pr") {
+      return {
+        code: "done",
+        command: null,
+        summary: "task is already done; no branch cleanup is required in direct workflow",
+        requiresApproval: false,
+      };
+    }
+    return {
+      code: "cleanup",
+      command: "agentplane cleanup merged",
+      summary:
+        "task is already done; pull the base branch and clean merged task branches/worktrees",
+      requiresApproval: false,
+    };
+  }
   if (opts.task.plan_approval?.state !== "approved") {
     return {
       code: "approve_plan",
@@ -240,14 +258,6 @@ function deriveNextAction(opts: {
       code: "open_close_tail",
       command: `agentplane task hosted-close-pr ${id}`,
       summary: "open the hosted close-tail PR for the merged implementation PR",
-      requiresApproval: false,
-    };
-  }
-  if (opts.task.status === "DONE") {
-    return {
-      code: "cleanup",
-      command: "agentplane cleanup merged",
-      summary: "pull the base branch and clean merged task branches/worktrees",
       requiresApproval: false,
     };
   }
