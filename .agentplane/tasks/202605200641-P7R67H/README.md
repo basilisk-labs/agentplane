@@ -4,7 +4,7 @@ title: "Implement observation harvest and follow-up gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,10 +21,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T06:53:10.894Z"
-  updated_by: "CODER"
-  note: "Implemented observations harvest, release observation gating, cold-start retry diagnostics, per-task runs_dir contract, docs social image repair, and promoted the prior handled observations. Checks passed: focused observations/release/cold-start tests; core and agentplane typecheck; framework:dev:bootstrap; ap task observations harvest/check smoke; docs:cli:check; docs:scripts:check; website build:check including social images; local CI route explain; bench:cli:cold:check; targeted eslint; format:changed; policy routing; ap doctor; git diff --check."
+  updated_at: "2026-05-20T06:54:12.894Z"
+  updated_by: "EVALUATOR"
+  note: "Quality gate passed for implementation commit 93161f991. Reviewed observation harvest CLI, release observation gating semantics, cold-start retry diagnostics, per-task runs_dir contract alignment, docs/social-image freshness, and promoted prior handled observations. Local focused tests, typechecks, website build:check, social-image check, cold-start guard, eslint, policy routing, doctor, and diff checks passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-20T06:54:12.894Z"
+  updated_by: "EVALUATOR"
+  note: "Quality gate passed for implementation commit 93161f991. Reviewed observation harvest CLI, release observation gating semantics, cold-start retry diagnostics, per-task runs_dir contract alignment, docs/social-image freshness, and promoted prior handled observations. Local focused tests, typechecks, website build:check, social-image check, cold-start guard, eslint, policy routing, doctor, and diff checks passed."
+  evaluated_sha: "93161f99139cc0bafbe21b9674d332a6a392ea6b"
+  blueprint_digest: "f22f814449eee013b30806f7b546e9758dac3d623e6795479e62c6e247573760"
+  evidence_refs:
+    - ".agentplane/tasks/202605200641-P7R67H/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200641-P7R67H-observations-followup-gates/.agentplane/tasks/202605200641-P7R67H/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -44,8 +55,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented observations harvest, release observation gating, cold-start retry diagnostics, per-task runs_dir contract, docs social image repair, and promoted the prior handled observations. Checks passed: focused observations/release/cold-start tests; core and agentplane typecheck; framework:dev:bootstrap; ap task observations harvest/check smoke; docs:cli:check; docs:scripts:check; website build:check including social images; local CI route explain; bench:cli:cold:check; targeted eslint; format:changed; policy routing; ap doctor; git diff --check."
+  -
+    type: "verify"
+    at: "2026-05-20T06:54:12.894Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Quality gate passed for implementation commit 93161f991. Reviewed observation harvest CLI, release observation gating semantics, cold-start retry diagnostics, per-task runs_dir contract alignment, docs/social-image freshness, and promoted prior handled observations. Local focused tests, typechecks, website build:check, social-image check, cold-start guard, eslint, policy routing, doctor, and diff checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-20T06:53:10.911Z"
+doc_updated_at: "2026-05-20T06:54:12.910Z"
 doc_updated_by: "CODER"
 description: "Implement the recent follow-ups from task execution logs: harvest task observations into actionable queues, align runtime log surface, harden cold-start retry/reporting, fix docs social image drift, gate release readiness on blocking observations, and prepare branch protection for the new PR verification aggregate."
 sections:
@@ -74,6 +91,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T06:51:49.915Z, excerpt_hash=sha256:b70efcc18e31a8996390df57857c80762e8cf26d9bee80c94e526cc5654f4dfc
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200641-P7R67H-observations-followup-gates/.agentplane/tasks/202605200641-P7R67H/blueprint/resolved-snapshot.json
+    - old_digest: f22f814449eee013b30806f7b546e9758dac3d623e6795479e62c6e247573760
+    - current_digest: f22f814449eee013b30806f7b546e9758dac3d623e6795479e62c6e247573760
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605200641-P7R67H
+
+    ### 2026-05-20T06:54:12.894Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Quality gate passed for implementation commit 93161f991. Reviewed observation harvest CLI, release observation gating semantics, cold-start retry diagnostics, per-task runs_dir contract alignment, docs/social-image freshness, and promoted prior handled observations. Local focused tests, typechecks, website build:check, social-image check, cold-start guard, eslint, policy routing, doctor, and diff checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T06:53:10.911Z, excerpt_hash=sha256:b70efcc18e31a8996390df57857c80762e8cf26d9bee80c94e526cc5654f4dfc
 
     Details:
 
@@ -130,6 +166,25 @@ Note: Implemented observations harvest, release observation gating, cold-start r
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T06:51:49.915Z, excerpt_hash=sha256:b70efcc18e31a8996390df57857c80762e8cf26d9bee80c94e526cc5654f4dfc
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200641-P7R67H-observations-followup-gates/.agentplane/tasks/202605200641-P7R67H/blueprint/resolved-snapshot.json
+- old_digest: f22f814449eee013b30806f7b546e9758dac3d623e6795479e62c6e247573760
+- current_digest: f22f814449eee013b30806f7b546e9758dac3d623e6795479e62c6e247573760
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605200641-P7R67H
+
+### 2026-05-20T06:54:12.894Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Quality gate passed for implementation commit 93161f991. Reviewed observation harvest CLI, release observation gating semantics, cold-start retry diagnostics, per-task runs_dir contract alignment, docs/social-image freshness, and promoted prior handled observations. Local focused tests, typechecks, website build:check, social-image check, cold-start guard, eslint, policy routing, doctor, and diff checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T06:53:10.911Z, excerpt_hash=sha256:b70efcc18e31a8996390df57857c80762e8cf26d9bee80c94e526cc5654f4dfc
 
 Details:
 

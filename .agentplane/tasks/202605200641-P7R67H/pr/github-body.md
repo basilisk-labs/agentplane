@@ -19,24 +19,41 @@ Implement the recent follow-ups from task execution logs: harvest task observati
 - Note:
 
 ```text
-Implemented observations harvest, release observation gating, cold-start retry diagnostics, per-task
-runs_dir contract, docs social image repair, and promoted the prior handled observations. Checks
-passed: focused observations/release/cold-start tests; core and agentplane typecheck;
-framework:dev:bootstrap; ap task observations harvest/check smoke; docs:cli:check;
-docs:scripts:check; website build:check including social images; local CI route explain;
-bench:cli:cold:check; targeted eslint; format:changed; policy routing; ap doctor; git diff --check.
+Quality gate passed for implementation commit 93161f991. Reviewed observation harvest CLI, release
+observation gating semantics, cold-start retry diagnostics, per-task runs_dir contract alignment,
+docs/social-image freshness, and promoted prior handled observations. Local focused tests,
+typechecks, website build:check, social-image check, cold-start guard, eslint, policy routing,
+doctor, and diff checks passed.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T06:42:30.667Z
+- Updated: 2026-05-20T06:54:12.934Z
 - Branch: task/202605200641-P7R67H/observations-followup-gates
-- Head: 6d0b0f745b68
+- Head: 93161f99139c
 
 ```text
-No changes detected.
+ .agentplane/WORKFLOW.md                            |   2 +-
+ .../tasks/202605191736-EQBZ4M/observations.jsonl   |   4 +-
+ .../blueprint/resolved-snapshot.json               | 456 +++++++++++++++++++++
+ docs/reference/task-observations.mdx               |  13 +-
+ .../src/cli/check-cli-cold-baseline-script.test.ts |   2 +
+ .../src/cli/run-cli/command-catalog/task.ts        |   7 +
+ .../src/cli/run-cli/command-loaders/task.ts        |   4 +
+ .../release/task-registry-ready-script.test.ts     |  63 ++-
+ .../src/commands/task/observations.command.ts      |  57 ++-
+ .../agentplane/src/commands/task/observations.ts   |  55 ++-
+ .../src/commands/task/observations.unit.test.ts    |  55 ++-
+ packages/agentplane/src/workflow-runtime/build.ts  |   2 +-
+ .../src/workflow-runtime/validate.test.ts          |   2 +-
+ packages/core/src/config/workflow-file.ts          |   2 +-
+ scripts/checks/check-cli-cold-baseline.mjs         |  10 +
+ scripts/checks/check-task-state.mjs                |  50 +++
+ .../static/img/social/docs/reference/evidence.png  | Bin 0 -> 46086 bytes
+ .../social/docs/reference/task-observations.png    | Bin 0 -> 49596 bytes
+ 18 files changed, 771 insertions(+), 13 deletions(-)
 ```
 
 </details>
