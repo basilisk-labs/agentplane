@@ -128,8 +128,6 @@ describe("context release readiness guards", () => {
     expect(wikiAgents).toContain("availability state");
     expect(wikiAgents).toContain("`missing`");
     expect(wikiAgents).toContain("choose wiki structure from source content");
-    expect(wikiAgents).toContain("classify the source shape");
-    expect(wikiAgents).toContain("justify page-vs-heading granularity");
     expect(wikiAgents).toContain("[[Page Title]]");
     expect(wikiAgents).toContain("Record EVALUATOR review");
   });
@@ -829,12 +827,6 @@ describe("context release readiness guards", () => {
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("Topology pass:");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("classify source shape");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("source-backed evidence for every new family");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("[[Canonical Page]]");

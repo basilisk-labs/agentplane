@@ -380,9 +380,6 @@ Maximum-assimilation mode adds a stricter wiki maintenance contract:
 - Choose the wiki structure from source content; do not create the default
   concepts/entities/decisions/modules/contradictions/reports scaffold unless source analysis
   justifies it. Record the topology decision before creating page families.
-- The topology decision must name source types, canonical page families, page-vs-heading
-  granularity, source-backed evidence for each family, canonical terms, aliases, and unresolved
-  identity questions before narrative synthesis starts.
 - Maintain a canonical glossary as a navigation/alias layer over wiki pages and graph entities, then
   use glossary canonical terms in synthesized prose while preserving source-local terms as aliases.
 - Use Obsidian-compatible \`[[Page Title]]\` links for semantic wiki graph links; keep Markdown
@@ -430,10 +427,7 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
   candidates, and coverage notes.
 - Topology pass: choose wiki structure from source content; do not mechanically create
   \`concepts/\`, \`entities/\`, \`decisions/\`, \`modules/\`, \`contradictions/\`, or \`reports/\`.
-- Record a topology decision before page-family creation. It must classify the source shape
-  (book/corpus, codebase, task history, product docs, research notes, ops logs, or another named
-  shape), name canonical page families, justify page-vs-heading granularity, map source-local terms
-  to canonical labels or aliases, and keep ambiguous identities as open questions.
+- Record a topology decision before page-family creation. It must classify the source shape (book/corpus, codebase, task history, product docs, research notes, ops logs, or another named shape), name canonical page families, justify page-vs-heading granularity, map source-local terms to canonical labels or aliases, and keep ambiguous identities as open questions.
 - Second pass: synthesize granular wiki articles from that graph/glossary layer; use canonical
   glossary terms in prose and preserve source-local wording as aliases or evidence details.
 - Create separate pages for reusable entities, concepts, decisions, requirements, risks, workflows,
