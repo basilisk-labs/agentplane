@@ -172,7 +172,7 @@ evaluator:
     - agentplane doctor
     - node .agentplane/policy/check-routing.mjs
 observability:
-  runs_dir: .agentplane/runs
+  runs_dir: .agentplane/tasks/<task-id>/runs
   events: jsonl
 retry_policy:
   normal_exit_continuation: true

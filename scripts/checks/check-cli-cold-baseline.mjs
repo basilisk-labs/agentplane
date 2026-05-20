@@ -201,6 +201,13 @@ function compareMeasurementToBaseline(measurement, baseline) {
   return { failures, summaries };
 }
 
+function formatAttemptFailures(attempt, attempts, failures) {
+  return [
+    `CLI cold-start baseline attempt ${attempt}/${attempts} failed; retrying to classify transient noise.`,
+    ...failures.map((failure) => `- ${failure}`),
+  ].join("\n");
+}
+
 const main = defineCheck({
   name: SCRIPT_NAME,
   parseArgs,
@@ -238,6 +245,9 @@ const main = defineCheck({
         }
         lastFailures = failures;
         lastSummaries = summaries;
+        if (attempt < attempts) {
+          process.stderr.write(`${formatAttemptFailures(attempt, attempts, failures)}\n`);
+        }
       }
     } finally {
       if (fixtureRoot) {

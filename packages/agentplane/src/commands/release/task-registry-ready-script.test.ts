@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -75,5 +75,104 @@ describe("check-task-registry-ready script", () => {
     expect(result.stderr).toContain(
       "finish, close, or explicitly move it out of the release scope",
     );
+  });
+
+  it("fails release readiness on open medium actionable observations", async () => {
+    const root = await makeRepo([{ id: "202605190001-ABC123", status: "DONE" }]);
+    await appendFile(
+      path.join(root, ".agentplane", "tasks", "202605190001-ABC123", "observations.jsonl"),
+      `${JSON.stringify({
+        schema_version: "0.1",
+        id: "obs-release-gate",
+        task_id: "202605190001-ABC123",
+        created_at: "2026-05-20T00:00:00.000Z",
+        author: "AGENT",
+        phase: "verification",
+        kind: "issue_candidate",
+        severity: "medium",
+        summary: "Release should not hide actionable task observations.",
+        recommended_action: { type: "github_issue", title: "Triage before release" },
+        status: "open",
+      })}\n`,
+      "utf8",
+    );
+
+    const result = await execFileAsync("node", [SCRIPT_PATH], { cwd: root }).then(
+      () => ({ ok: true as const, stderr: "" }),
+      (error: unknown) => {
+        const stderr =
+          typeof error === "object" &&
+          error !== null &&
+          "stderr" in error &&
+          typeof (error as { stderr?: unknown }).stderr === "string"
+            ? (error as { stderr: string }).stderr
+            : "";
+        return { ok: false as const, stderr };
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("obs-release-gate requires github_issue triage");
+  });
+
+  it("blocks open high observations even with action none", async () => {
+    const root = await makeRepo([{ id: "202605190001-ABC123", status: "DONE" }]);
+    await appendFile(
+      path.join(root, ".agentplane", "tasks", "202605190001-ABC123", "observations.jsonl"),
+      `${JSON.stringify({
+        schema_version: "0.1",
+        id: "obs-severe-risk",
+        task_id: "202605190001-ABC123",
+        created_at: "2026-05-20T00:00:00.000Z",
+        author: "AGENT",
+        phase: "verification",
+        kind: "risk",
+        severity: "high",
+        summary: "Severe open risk must block release even before action routing is known.",
+        recommended_action: { type: "none" },
+        status: "open",
+      })}\n`,
+      "utf8",
+    );
+
+    const result = await execFileAsync("node", [SCRIPT_PATH], { cwd: root }).then(
+      () => ({ ok: true as const, stderr: "" }),
+      (error: unknown) => {
+        const stderr =
+          typeof error === "object" &&
+          error !== null &&
+          "stderr" in error &&
+          typeof (error as { stderr?: unknown }).stderr === "string"
+            ? (error as { stderr: string }).stderr
+            : "";
+        return { ok: false as const, stderr };
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("obs-severe-risk requires severity triage");
+  });
+
+  it("allows open medium observations with action none", async () => {
+    const root = await makeRepo([{ id: "202605190001-ABC123", status: "DONE" }]);
+    await appendFile(
+      path.join(root, ".agentplane", "tasks", "202605190001-ABC123", "observations.jsonl"),
+      `${JSON.stringify({
+        schema_version: "0.1",
+        id: "obs-release-note",
+        task_id: "202605190001-ABC123",
+        created_at: "2026-05-20T00:00:00.000Z",
+        author: "AGENT",
+        phase: "verification",
+        kind: "decision",
+        severity: "medium",
+        summary: "No downstream action required.",
+        recommended_action: { type: "none" },
+        status: "open",
+      })}\n`,
+      "utf8",
+    );
+
+    await expect(execFileAsync("node", [SCRIPT_PATH], { cwd: root })).resolves.toBeDefined();
   });
 });

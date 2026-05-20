@@ -8,6 +8,7 @@ import { taskFindingsSpec } from "../../../commands/task/findings.command.js";
 import {
   taskObservationsAddSpec,
   taskObservationsCheckSpec,
+  taskObservationsHarvestSpec,
   taskObservationsListSpec,
   taskObservationsSpec,
   taskObservationsTriageSpec,
@@ -91,6 +92,7 @@ import {
   loadTaskFindingsAddSpec,
   loadTaskObservationsAddSpec,
   loadTaskObservationsCheckSpec,
+  loadTaskObservationsHarvestSpec,
   loadTaskObservationsListSpec,
   loadTaskObservationsTriageSpec,
   loadTaskDocShowSpec,
@@ -222,6 +224,11 @@ export const TASK_COMMANDS = [
   }),
   declareCommand(taskObservationsTriageSpec, {
     load: loadTaskObservationsTriageSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskObservationsHarvestSpec, {
+    load: loadTaskObservationsHarvestSpec,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
