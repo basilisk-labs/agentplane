@@ -6,13 +6,7 @@ import type { ContextIngestParsed, ManifestEntry } from "./ingest.js";
 const CONTEXT_ASSIMILATION_PROMPT_ADDRESS =
   "framework/template/generated.artifact/context_assimilation/v1";
 
-export type ContextWorkspaceMode =
-  | "adaptive"
-  | "minimal"
-  | "wiki"
-  | "codebase"
-  | "research"
-  | "maximum-assimilation";
+export type ContextWorkspaceMode = "basic" | "maximum-assimilation";
 
 function isMaximumAssimilation(mode?: ContextWorkspaceMode): boolean {
   return mode === "maximum-assimilation";

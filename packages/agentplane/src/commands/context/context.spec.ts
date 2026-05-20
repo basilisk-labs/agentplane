@@ -14,7 +14,7 @@ export const contextSpec: CommandSpec<GroupCommandParsed> = {
 };
 
 export const contextInitSpec: CommandSpec<{
-  profile: "adaptive" | "minimal" | "wiki" | "codebase" | "research" | "maximum-assimilation";
+  profile: "basic" | "maximum-assimilation";
   rawGitignore: "none" | "all";
   derivedGitignore: "none" | "all";
   repair: boolean;
@@ -29,10 +29,10 @@ export const contextInitSpec: CommandSpec<{
     {
       kind: "string",
       name: "profile",
-      valueHint: "<adaptive|minimal|wiki|codebase|research|maximum-assimilation>",
-      choices: ["adaptive", "minimal", "wiki", "codebase", "research", "maximum-assimilation"],
+      valueHint: "<basic|maximum-assimilation>",
+      choices: ["basic", "maximum-assimilation"],
       description:
-        "Select initial context setup. Defaults to adaptive when omitted. User-facing interactive setup offers minimal, adaptive, and maximum-assimilation.",
+        "Select context mode. Defaults to basic when omitted. Use maximum-assimilation when maintained context must preserve significant source meaning without relying on raw files.",
     },
     {
       kind: "string",
@@ -65,14 +65,7 @@ export const contextInitSpec: CommandSpec<{
     },
   ],
   parse: (raw) => ({
-    profile:
-      (raw.opts.profile as
-        | "adaptive"
-        | "minimal"
-        | "wiki"
-        | "codebase"
-        | "research"
-        | "maximum-assimilation") ?? "adaptive",
+    profile: (raw.opts.profile as "basic" | "maximum-assimilation" | undefined) ?? "basic",
     profileProvided: typeof raw.opts.profile === "string",
     rawGitignore: (raw.opts["raw-gitignore"] as "none" | "all") ?? "none",
     derivedGitignore: (raw.opts["derived-gitignore"] as "none" | "all") ?? "none",
@@ -82,7 +75,7 @@ export const contextInitSpec: CommandSpec<{
 };
 
 export type ContextInitParsed = {
-  profile: "adaptive" | "minimal" | "wiki" | "codebase" | "research" | "maximum-assimilation";
+  profile: "basic" | "maximum-assimilation";
   profileProvided?: boolean;
   rawGitignore: "none" | "all";
   derivedGitignore: "none" | "all";

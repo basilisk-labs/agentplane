@@ -59,7 +59,7 @@ describe("context release readiness guards", () => {
     expect(output).toContain("`--fix` only repairs missing directories");
   });
 
-  it("creates only minimal wiki pages and an empty raw source tree during context init", async () => {
+  it("creates only basic wiki pages and an empty raw source tree during context init", async () => {
     const root = await tempRoot();
     vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 
@@ -67,7 +67,7 @@ describe("context release readiness guards", () => {
       ctx: { resolvedProject: { gitRoot: root } } as CommandContext,
       cwd: root,
       parsed: {
-        profile: "adaptive",
+        profile: "basic",
         rawGitignore: "none",
         derivedGitignore: "none",
         repair: false,
@@ -603,7 +603,7 @@ describe("context release readiness guards", () => {
       ctx: { resolvedProject: { gitRoot: root } } as CommandContext,
       cwd: root,
       parsed: {
-        profile: "adaptive",
+        profile: "basic",
         rawGitignore: "none",
         derivedGitignore: "none",
         repair: false,

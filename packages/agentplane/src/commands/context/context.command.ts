@@ -231,8 +231,7 @@ export async function runContextInit(_ctx: CommandCtx, p: ContextInitParsed): Pr
 }
 
 const INTERACTIVE_CONTEXT_INIT_PROFILES: ContextInitParsed["profile"][] = [
-  "minimal",
-  "adaptive",
+  "basic",
   "maximum-assimilation",
 ];
 
@@ -248,8 +247,7 @@ async function resolveContextInitParsed(
     infoMessage(
       [
         "Context init mode:",
-        "minimal = smallest workspace scaffold",
-        "adaptive = default llm-wiki workspace for normal project context",
+        "basic = default llm-wiki workspace for normal project context",
         "maximum-assimilation = stricter mode for preserving significant source meaning",
       ].join("\n"),
     ) + "\n",

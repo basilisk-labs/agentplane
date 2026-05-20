@@ -244,6 +244,10 @@ async function createContextWorkspace(
       relative: "context/wiki/AGENTS.md",
       content: buildWikiAgentsMarkdown(parsed.profile),
     },
+    starterWikiPageFiles().find((file) => file.relative === "context/wiki/index.md") ?? {
+      relative: "context/wiki/index.md",
+      content: `${wikiFrontmatter("wiki.index", "Context wiki", "definition")}\n\n# Context wiki\n`,
+    },
     {
       relative: "context/capabilities/README.md",
       content: buildCapabilitiesReadme(parsed.profile),
@@ -294,24 +298,6 @@ async function createContextWorkspace(
     { relative: ".agentplane/context/derived/reports/assimilation-events.jsonl", content: "" },
     { relative: ".agentplane/context/service/.gitkeep", content: "" },
   ];
-
-  if (
-    parsed.profile === "adaptive" ||
-    parsed.profile === "wiki" ||
-    parsed.profile === "codebase" ||
-    parsed.profile === "research" ||
-    parsed.profile === "maximum-assimilation"
-  ) {
-    files.push(
-      starterWikiPageFiles().find((file) => file.relative === "context/wiki/index.md") ?? {
-        relative: "context/wiki/index.md",
-        content: `${wikiFrontmatter("wiki.index", "Context wiki", "definition")}\n\n# Context wiki\n`,
-      },
-    );
-  }
-  if (parsed.profile === "research") {
-    files.push({ relative: "context/wiki/notes/.gitkeep", content: "" });
-  }
 
   const lockPayload = {
     version: 1,
@@ -396,7 +382,7 @@ Profile: ${profile}
 
 Use this directory as the human-readable context surface.
 
-AgentPlane local context uses one adaptive llm-wiki contract:
+AgentPlane local context uses one basic llm-wiki contract:
 
 - \`context/raw/**\` keeps source material.
 - \`context/wiki/**\` keeps readable synthesis pages with AgentPlane frontmatter.
@@ -452,7 +438,7 @@ Profile: ${profile}
 - Treat \`context/wiki/**\` as durable, source-backed project knowledge with stable AgentPlane frontmatter.
 - Analyze the base project, existing docs, task history, and raw sources before choosing a wiki structure.
 - Choose the smallest wiki hierarchy that fits this project; do not force a universal concepts/entities/decisions/modules layout.
-- Keep this initialized wiki minimal until first ingest; project-specific folders should appear from source-backed assimilation, not from empty scaffolding.
+- Keep this initialized wiki small until first ingest; project-specific folders should appear from source-backed assimilation, not from empty scaffolding.
 - Preserve modality, source refs, cross-links, glossary aliases, and graph alignment when updating pages.
 - Prefer updating existing canonical pages over creating duplicates; describe small objects under stable headings when that is clearer.
 - Use \`agentplane context wiki new\`, \`agentplane context wiki lint\`, \`agentplane context wiki explain\`, \`agentplane context wiki link\`, and \`agentplane context wiki index\`.
@@ -516,7 +502,7 @@ wiki:
   frontmatter_required: true
   source_refs_as_markdown_links: true
   cross_links_required: true
-  maintenance_mode: ${profile === "maximum-assimilation" ? "maximum_assimilation" : "adaptive"}
+  maintenance_mode: ${profile === "maximum-assimilation" ? "maximum_assimilation" : "basic"}
   raw_deletion_resilience_required: ${profile === "maximum-assimilation" ? "true" : "false"}
   entity_relation_first: ${profile === "maximum-assimilation" ? "true" : "false"}
   glossary:

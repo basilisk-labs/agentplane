@@ -58,11 +58,11 @@ describe("runCli context init interactive mode", () => {
       const code = await runCli(["context", "init", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("Context init mode:");
-      expect(io.stdout).toContain("minimal = smallest workspace scaffold");
+      expect(io.stdout).toContain("basic = default llm-wiki workspace");
       expect(prompt).toHaveBeenCalledWith(
         "Select context mode",
-        ["minimal", "adaptive", "maximum-assimilation"],
-        "adaptive",
+        ["basic", "maximum-assimilation"],
+        "basic",
       );
     } finally {
       io.restore();
@@ -83,19 +83,19 @@ describe("runCli context init interactive mode", () => {
       const prompt = vi.spyOn(prompts, "selectPrompt");
 
       try {
-        expect(await runCli(["context", "init", "--profile", "minimal", "--root", root])).toBe(0);
+        expect(await runCli(["context", "init", "--profile", "basic", "--root", root])).toBe(0);
         expect(prompt).not.toHaveBeenCalled();
       } finally {
         prompt.mockRestore();
         restoreTty();
       }
 
-      expect(await readContextManifest(root)).toContain("mode: minimal");
+      expect(await readContextManifest(root)).toContain("mode: basic");
     },
   );
 
   it(
-    "keeps the adaptive default without prompts outside an interactive terminal",
+    "keeps the basic default without prompts outside an interactive terminal",
     { timeout: 60_000 },
     async () => {
       const root = await mkGitRepoRoot();
@@ -111,7 +111,7 @@ describe("runCli context init interactive mode", () => {
         restoreTty();
       }
 
-      expect(await readContextManifest(root)).toContain("mode: adaptive");
+      expect(await readContextManifest(root)).toContain("mode: basic");
     },
   );
 
@@ -122,7 +122,7 @@ describe("runCli context init interactive mode", () => {
       const root = await mkGitRepoRoot();
       await initAgentplaneProject(root);
 
-      expect(await runCli(["context", "init", "--profile", "adaptive", "--root", root])).toBe(0);
+      expect(await runCli(["context", "init", "--profile", "basic", "--root", root])).toBe(0);
 
       const rejected = captureStdIO();
       try {
@@ -135,12 +135,12 @@ describe("runCli context init interactive mode", () => {
           root,
         ]);
         expect(code).toBe(2);
-        expect(rejected.stderr).toContain("already initialized with profile adaptive");
+        expect(rejected.stderr).toContain("already initialized with profile basic");
         expect(rejected.stderr).toContain("--force");
       } finally {
         rejected.restore();
       }
-      expect(await readContextManifest(root)).toContain("mode: adaptive");
+      expect(await readContextManifest(root)).toContain("mode: basic");
 
       expect(
         await runCli([
@@ -156,4 +156,20 @@ describe("runCli context init interactive mode", () => {
       expect(await readContextManifest(root)).toContain("mode: maximum-assimilation");
     },
   );
+
+  it("rejects removed legacy context profiles", { timeout: 60_000 }, async () => {
+    const root = await mkGitRepoRoot();
+    await initAgentplaneProject(root);
+
+    const rejected = captureStdIO();
+    try {
+      const code = await runCli(["context", "init", "--profile", "minimal", "--root", root]);
+      expect(code).toBe(2);
+      expect(rejected.stderr).toContain("Invalid value for --profile");
+      expect(rejected.stderr).toContain("basic");
+      expect(rejected.stderr).toContain("maximum-assimilation");
+    } finally {
+      rejected.restore();
+    }
+  });
 });

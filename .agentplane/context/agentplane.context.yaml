@@ -4,7 +4,7 @@ project:
   root: "."
 workspace:
   namespace: local.project
-  mode: adaptive
+  mode: basic
   layout_strategy: adaptive
   page_granularity: topic_artifact
   claim_granularity: atomic
