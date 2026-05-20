@@ -4,7 +4,7 @@ title: "Split GitHub PR verification into routed parallel gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T05:08:45.986Z"
+  updated_at: "2026-05-20T05:15:29.305Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed after preserving workflow_dispatch exact-sha recovery planning path; focused workflow checks and contract test passed."
+  note: "EVALUATOR quality gate passed after formatting the recovery contract test; format:check, workflows:lint, and focused workflow contract test passed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-20T05:08:45.986Z"
+  updated_at: "2026-05-20T05:15:29.305Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed after preserving workflow_dispatch exact-sha recovery planning path; focused workflow checks and contract test passed."
-  evaluated_sha: "5d2377eecb0671d7a5d00aef0cfc1535136cad98"
+  note: "EVALUATOR quality gate passed after formatting the recovery contract test; format:check, workflows:lint, and focused workflow contract test passed."
+  evaluated_sha: "cc3e17188adc6d3cbe3014e96d8788611b5819ce"
   blueprint_digest: "4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b"
   evidence_refs:
     - ".agentplane/tasks/202605191825-3PV3QF/README.md"
@@ -84,8 +84,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed after preserving workflow_dispatch exact-sha recovery planning path; focused workflow checks and contract test passed."
+  -
+    type: "verify"
+    at: "2026-05-20T05:15:29.305Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed after formatting the recovery contract test; format:check, workflows:lint, and focused workflow contract test passed."
 doc_version: 3
-doc_updated_at: "2026-05-20T05:08:46.017Z"
+doc_updated_at: "2026-05-20T05:15:29.337Z"
 doc_updated_by: "CODER"
 description: "Make GitHub PR verification faster and clearer by reusing the local CI selector for a planning job, splitting Core CI into parallel verification jobs, adding a stable aggregate gate, and caching Bun artifacts on Windows."
 sections:
@@ -214,6 +220,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T04:55:14.582Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json
+    - old_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+    - current_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
+
+    ### 2026-05-20T05:15:29.305Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed after formatting the recovery contract test; format:check, workflows:lint, and focused workflow contract test passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T05:08:46.017Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
 
     Details:
 
@@ -373,6 +398,25 @@ Note: EVALUATOR quality gate passed after preserving workflow_dispatch exact-sha
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T04:55:14.582Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191825-3PV3QF-github-verification-gates/.agentplane/tasks/202605191825-3PV3QF/blueprint/resolved-snapshot.json
+- old_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+- current_digest: 4853d90da83b6531a4931e9984e3ebc33041e2f6211e41cf53ac685cb7eac73b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191825-3PV3QF
+
+### 2026-05-20T05:15:29.305Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed after formatting the recovery contract test; format:check, workflows:lint, and focused workflow contract test passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T05:08:46.017Z, excerpt_hash=sha256:e76c5b48218adbe9fa9f694c321fa1a2b011832a88841ff0740263c0ffa4668a
 
 Details:
 

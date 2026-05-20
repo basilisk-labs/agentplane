@@ -19,17 +19,17 @@ Make GitHub PR verification faster and clearer by reusing the local CI selector 
 - Note:
 
 ```text
-EVALUATOR quality gate passed after preserving workflow_dispatch exact-sha recovery planning path;
-focused workflow checks and contract test passed.
+EVALUATOR quality gate passed after formatting the recovery contract test; format:check,
+workflows:lint, and focused workflow contract test passed.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T05:08:46.061Z
+- Updated: 2026-05-20T05:15:29.384Z
 - Branch: task/202605191825-3PV3QF/github-verification-gates
-- Head: 5d2377eecb06
+- Head: cc3e17188adc
 
 ```text
  .../blueprint/resolved-snapshot.json               | 594 +++++++++++++++++++++
