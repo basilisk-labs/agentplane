@@ -24,14 +24,14 @@ Created: 2026-05-20T14:48:16.305Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T14:56:59.833Z
+- Updated: 2026-05-20T15:09:17.405Z
 - Branch: task/202605201447-DGSB7B/max-assimilation-gates
-- Head: abdc3746f1ec
+- Head: 68326fd654b9
 
 ```text
- .../src/commands/context/release-readiness.test.ts | 248 +++++++++++++++++++++
- packages/agentplane/src/context/verify-task.ts     | 147 +++++++++++-
- 2 files changed, 392 insertions(+), 3 deletions(-)
+ .../verify-task.maximum-assimilation.test.ts       | 238 +++++++++++++++++++++
+ packages/agentplane/src/context/verify-task.ts     | 147 ++++++++++++-
+ 2 files changed, 382 insertions(+), 3 deletions(-)
 ```
 
 </details>
