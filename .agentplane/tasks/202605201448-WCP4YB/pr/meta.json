@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-20T14:56:26Z",
   "base": "main",
   "branch": "task/202605201448-WCP4YB/archive-7axzrx-readme",
   "created_at": "2026-05-20T14:49:24.583Z",
-  "head_sha": "2579900a027cb1e2eb6d1e753dc692fce6503165",
+  "head_sha": "6d981abf5467cad0430f2aac0f3c2121fc8b8489",
   "last_verified_at": "2026-05-20T14:51:10.076Z",
   "last_verified_sha": "d87ad4294272a613666b3756cd1ec5ba1ec17122",
+  "merge_commit": "96db406f20a1611cc02c326d7ce0761c1d03dd8e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-20T14:56:26Z",
   "pr_number": 3973,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3973",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605201448-WCP4YB",
-  "updated_at": "2026-05-20T14:52:00.979Z",
+  "updated_at": "2026-05-20T14:56:26Z",
   "verify": {
     "status": "pass"
   }

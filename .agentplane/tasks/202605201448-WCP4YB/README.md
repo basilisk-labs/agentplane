@@ -1,10 +1,11 @@
 ---
 id: "202605201448-WCP4YB"
 title: "Archive 7AXZRX no-op task README"
-status: "DOING"
+result_summary: "Merged via PR #3973."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Archived existing 202605200640-7AXZRX no-op README without code changes. Evidence: node .agentplane/policy/check-routing.mjs passed; ap doctor passed with errors=0 warnings=0 after staging the README into git index."
   attempts: 0
-commit: null
+commit:
+  hash: "96db406f20a1611cc02c326d7ce0761c1d03dd8e"
+  message: "Merge pull request #3973 from basilisk-labs/task/202605201448-WCP4YB/archive-7axzrx-readme"
 comments:
   -
     author: "CODER"
     body: "Start: Archive the existing 7AXZRX no-op closure README in git without changing implementation code or unrelated task artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3973 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Archived existing 202605200640-7AXZRX no-op README without code changes. Evidence: node .agentplane/policy/check-routing.mjs passed; ap doctor passed with errors=0 warnings=0 after staging the README into git index."
+  -
+    type: "status"
+    at: "2026-05-20T14:57:13.485Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3973 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-20T14:51:10.214Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-20T14:57:13.492Z"
+doc_updated_by: "INTEGRATOR"
 description: "Commit the existing no-op closure README for DONE task 202605200640-7AXZRX so doctor no longer reports the task archive as missing from the git index."
 sections:
   Summary: |-
