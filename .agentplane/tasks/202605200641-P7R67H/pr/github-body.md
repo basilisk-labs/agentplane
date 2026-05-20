@@ -30,9 +30,9 @@ doctor, and diff checks passed.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T06:54:12.934Z
+- Updated: 2026-05-20T07:27:27.577Z
 - Branch: task/202605200641-P7R67H/observations-followup-gates
-- Head: 93161f99139c
+- Head: 76fec02e24d3
 
 ```text
  .agentplane/WORKFLOW.md                            |   2 +-
@@ -42,18 +42,18 @@ doctor, and diff checks passed.
  .../src/cli/check-cli-cold-baseline-script.test.ts |   2 +
  .../src/cli/run-cli/command-catalog/task.ts        |   7 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
- .../release/task-registry-ready-script.test.ts     |  63 ++-
+ .../release/task-registry-ready-script.test.ts     | 101 ++++-
  .../src/commands/task/observations.command.ts      |  57 ++-
  .../agentplane/src/commands/task/observations.ts   |  55 ++-
- .../src/commands/task/observations.unit.test.ts    |  55 ++-
+ .../src/commands/task/observations.unit.test.ts    | 114 +++++-
  packages/agentplane/src/workflow-runtime/build.ts  |   2 +-
  .../src/workflow-runtime/validate.test.ts          |   2 +-
  packages/core/src/config/workflow-file.ts          |   2 +-
  scripts/checks/check-cli-cold-baseline.mjs         |  10 +
- scripts/checks/check-task-state.mjs                |  50 +++
+ scripts/checks/check-task-state.mjs                |  55 +++
  .../static/img/social/docs/reference/evidence.png  | Bin 0 -> 46086 bytes
  .../social/docs/reference/task-observations.png    | Bin 0 -> 49596 bytes
- 18 files changed, 771 insertions(+), 13 deletions(-)
+ 18 files changed, 872 insertions(+), 14 deletions(-)
 ```
 
 </details>
