@@ -164,14 +164,6 @@ function createBaselineStepEntries({ includeBuild, includeRecipesInventory = tru
     ...(includeBuild
       ? [
           [
-            "CLI cold-start baseline (check)",
-            () => runCommand("bun", ["run", "bench:cli:cold:check"]),
-          ],
-        ]
-      : []),
-    ...(includeBuild
-      ? [
-          [
             "Build",
             () => {
               withFrameworkBuildLock(process.cwd(), "local-ci-build", () => {
@@ -180,6 +172,14 @@ function createBaselineStepEntries({ includeBuild, includeRecipesInventory = tru
                 runCommand("bun", ["run", "build"]);
               });
             },
+          ],
+        ]
+      : []),
+    ...(includeBuild
+      ? [
+          [
+            "CLI cold-start baseline (check)",
+            () => runCommand("bun", ["run", "bench:cli:cold:check"]),
           ],
         ]
       : []),

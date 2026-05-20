@@ -106,6 +106,9 @@ describe("release CI contract", () => {
       "createBaselineStepEntries({ includeBuild: false, includeRecipesInventory: false })",
     );
     expect(localCi).toContain("includeRecipesInventory = true");
+    expect(localCi.indexOf('"Build"')).toBeLessThan(
+      localCi.indexOf('"CLI cold-start baseline (check)"'),
+    );
   });
 
   it("keeps the developer reinstall helper on the minimal runtime build path", async () => {

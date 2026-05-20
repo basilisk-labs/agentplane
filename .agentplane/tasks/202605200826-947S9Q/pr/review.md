@@ -24,7 +24,7 @@ Created: 2026-05-20T08:27:18.526Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T08:32:10.602Z
+- Updated: 2026-05-20T08:32:31.549Z
 - Branch: task/202605200826-947S9Q/hosted-close-pr-verification
 - Head: 7856f3e7aeae
 
@@ -33,8 +33,10 @@ Created: 2026-05-20T08:27:18.526Z
  .github/workflows/publish.yml                      |  46 +-
  .github/workflows/task-hosted-close.yml            |  33 ++
  .../release/publish-workflow-contract.test.ts      |   7 +-
+ .../commands/release/release-ci-contract.test.ts   |   9 +
  .../task/hosted-close-workflow-contract.test.ts    |   5 +
- 5 files changed, 638 insertions(+), 25 deletions(-)
+ scripts/checks/run-local-ci.mjs                    |  15 +-
+ 7 files changed, 659 insertions(+), 28 deletions(-)
 ```
 
 </details>
