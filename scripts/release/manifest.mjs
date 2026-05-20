@@ -3,6 +3,8 @@ import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
+import { checkTaskState } from "../checks/check-task-state.mjs";
+
 import {
   collectWatchedRuntimeSnapshot,
   getWatchedRuntimePathsForPackage,
@@ -702,6 +704,23 @@ async function probeNpmPublished(pkgSpec, repoRoot) {
   }
 }
 
+function checkReleaseTaskRegistry(repoRoot) {
+  try {
+    checkTaskState(repoRoot, { releaseReady: true, quiet: true });
+    return {
+      ready: true,
+      reasonCode: "ready",
+      message: "Task registry is release-ready.",
+    };
+  } catch (error) {
+    return {
+      ready: false,
+      reasonCode: "task_registry_not_release_ready",
+      message: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
 async function buildRegistrySnapshot(repoRoot, version, enabled) {
   if (!enabled) {
     return {
@@ -748,24 +767,34 @@ async function buildReleaseReadyManifest(repoRoot, args) {
     workspace.recipesVersion === workspace.cliVersion &&
     workspace.coreDependencyVersion === workspace.coreVersion &&
     workspace.recipesDependencyVersion === workspace.recipesVersion;
-  const ready = parityAligned && notesPresent;
-  const reasonCode = parityAligned
-    ? notesPresent
-      ? "ready"
-      : "release_notes_missing"
-    : "release_version_parity_drift";
+  const taskRegistry = checkReleaseTaskRegistry(repoRoot);
+  const ready = parityAligned && notesPresent && taskRegistry.ready;
+  let reasonCode = "ready";
+  if (parityAligned) {
+    if (notesPresent) {
+      if (!taskRegistry.ready) reasonCode = taskRegistry.reasonCode;
+    } else {
+      reasonCode = "release_notes_missing";
+    }
+  } else {
+    reasonCode = "release_version_parity_drift";
+  }
   const message =
     reasonCode === "ready"
       ? `Release-ready manifest emitted for ${workspace.tag} at ${workspace.cliVersion}.`
       : reasonCode === "release_notes_missing"
         ? `Release notes are missing for ${workspace.tag}.`
-        : `Release parity drift prevents a release-ready manifest: core=${workspace.coreVersion}, recipes=${workspace.recipesVersion}, agentplane=${workspace.cliVersion}, coreDependency=${workspace.coreDependencyVersion || "missing"}, recipesDependency=${workspace.recipesDependencyVersion || "missing"}.`;
+        : reasonCode === "task_registry_not_release_ready"
+          ? `Task registry is not release-ready: ${taskRegistry.message}`
+          : `Release parity drift prevents a release-ready manifest: core=${workspace.coreVersion}, recipes=${workspace.recipesVersion}, agentplane=${workspace.cliVersion}, coreDependency=${workspace.coreDependencyVersion || "missing"}, recipesDependency=${workspace.recipesDependencyVersion || "missing"}.`;
   const nextAction =
     reasonCode === "ready"
       ? "Use this manifest as the only auto-publish input for the exact release SHA."
       : reasonCode === "release_notes_missing"
         ? `Write ${path.relative(repoRoot, workspace.notesPath)} before treating this SHA as release-ready.`
-        : "Restore package version parity before treating this SHA as release-ready.";
+        : reasonCode === "task_registry_not_release_ready"
+          ? "Finish or close active task records before treating this SHA as release-ready."
+          : "Restore package version parity before treating this SHA as release-ready.";
 
   return {
     schemaVersion: 1,
@@ -785,6 +814,7 @@ async function buildReleaseReadyManifest(repoRoot, args) {
       coreDependencyVersion: workspace.coreDependencyVersion || null,
       recipesDependencyVersion: workspace.recipesDependencyVersion || null,
     },
+    taskRegistry,
     registry: await buildRegistrySnapshot(repoRoot, workspace.cliVersion, args.checkRegistry),
     source: {
       workflow: process.env.GITHUB_WORKFLOW ?? null,
