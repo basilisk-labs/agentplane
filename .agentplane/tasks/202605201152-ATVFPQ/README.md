@@ -29,7 +29,7 @@ quality_review:
   updated_at: "2026-05-20T12:34:40.659Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR quality gate passed. Evidence: local pre-push fast CI completed through format, schema freshness, policy routing, release parity, build, bundle build, CLI cold baseline, docs freshness, recipe inventory, scripts README, onboarding, hotspot threshold, vitest projects, lint, unit tests 321 files/1925 passed/2 skipped, and critical CLI chunks 5/5 passed before push. Hosted PR #3967 checks on head 0b158ea3a all passed: CodeQL, Core CI plan, verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, PR verification, Release-ready manifest, Docs CI docs, and change detection."
-  evaluated_sha: "9c073bfdf51c13518f31c3a3303c252f5f2825df"
+  evaluated_sha: "0b158ea3a1600b42910b0e4f43f9e86746ce13db"
   blueprint_digest: "2b00d837ef349d9bb4f691c50e1570ccfcd683e6fece96dbb41449a2ae77c745"
   evidence_refs:
     - ".agentplane/tasks/202605201152-ATVFPQ/README.md"
