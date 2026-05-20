@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605201647-7QJP57/v0-7-runner-handoff",
+  "created_at": "2026-05-20T17:06:34.863Z",
+  "head_sha": "ac7a148ec07e80b66aea216075b47df76aa94958",
+  "last_verified_at": "2026-05-20T17:06:34.794Z",
+  "last_verified_sha": "ac7a148ec07e80b66aea216075b47df76aa94958",
+  "schema_version": 1,
+  "task_id": "202605201647-7QJP57",
+  "updated_at": "2026-05-20T17:06:34.863Z",
+  "verify": {
+    "status": "pass"
+  }
+}
