@@ -4,7 +4,7 @@ title: "Gate release-ready manifest on task registry"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,11 +19,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-20T08:15:24.547Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed for implementation commit 55d3669a. Evidence covers ready and DOING task-registry manifest behavior, JSON stdout cleanliness, lint, typecheck, policy routing, and doctor. Residual warning is unrelated pre-existing untracked DONE archive 202605200640-7AXZRX."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-20T08:15:24.547Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed for implementation commit 55d3669a. Evidence covers ready and DOING task-registry manifest behavior, JSON stdout cleanliness, lint, typecheck, policy routing, and doctor. Residual warning is unrelated pre-existing untracked DONE archive 202605200640-7AXZRX."
+  evaluated_sha: "55d3669a2595d145976efefcda69795af8b514b6"
+  blueprint_digest: "eab50f35729cacbf84d26b140b69b28d66959b05b4e183ba129194ebf93e6efe"
+  evidence_refs:
+    - ".agentplane/tasks/202605200810-C88A12/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200810-C88A12-release-ready-task-registry/.agentplane/tasks/202605200810-C88A12/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -37,8 +48,20 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement release-ready manifest task-registry gating so pre-close DOING task races cannot produce publishable release-ready artifacts."
+  -
+    type: "verify"
+    at: "2026-05-20T08:15:22.834Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified release-ready task registry gate locally. Targeted Vitest passed for release-ready manifest and CI workflow contract; eslint passed on touched scripts/tests; agentplane typecheck passed; release-ready manifest smoke returns ready=false with task_registry_not_release_ready while this task is DOING; policy routing and doctor passed with only pre-existing untracked archive warning."
+  -
+    type: "verify"
+    at: "2026-05-20T08:15:24.547Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed for implementation commit 55d3669a. Evidence covers ready and DOING task-registry manifest behavior, JSON stdout cleanliness, lint, typecheck, policy routing, and doctor. Residual warning is unrelated pre-existing untracked DONE archive 202605200640-7AXZRX."
 doc_version: 3
-doc_updated_at: "2026-05-20T08:14:11.015Z"
+doc_updated_at: "2026-05-20T08:15:24.562Z"
 doc_updated_by: "CODER"
 description: "Make Core CI release-ready artifact fail closed when task registry is not release-ready, so Publish release does not discover pre-close DOING task races first."
 sections:
@@ -70,6 +93,44 @@ sections:
     4. Run policy routing OK and doctor (OK); expected: routing passes and doctor has no errors.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-20T08:15:22.834Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified release-ready task registry gate locally. Targeted Vitest passed for release-ready manifest and CI workflow contract; eslint passed on touched scripts/tests; agentplane typecheck passed; release-ready manifest smoke returns ready=false with task_registry_not_release_ready while this task is DOING; policy routing and doctor passed with only pre-existing untracked archive warning.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T08:14:11.015Z, excerpt_hash=sha256:23dd61ebe0a8ff588d2bea8854c10e111383acf72d399434c3e6fc5794e0aec0
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200810-C88A12-release-ready-task-registry/.agentplane/tasks/202605200810-C88A12/blueprint/resolved-snapshot.json
+    - old_digest: eab50f35729cacbf84d26b140b69b28d66959b05b4e183ba129194ebf93e6efe
+    - current_digest: eab50f35729cacbf84d26b140b69b28d66959b05b4e183ba129194ebf93e6efe
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605200810-C88A12
+
+    ### 2026-05-20T08:15:24.547Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed for implementation commit 55d3669a. Evidence covers ready and DOING task-registry manifest behavior, JSON stdout cleanliness, lint, typecheck, policy routing, and doctor. Residual warning is unrelated pre-existing untracked DONE archive 202605200640-7AXZRX.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T08:15:22.850Z, excerpt_hash=sha256:23dd61ebe0a8ff588d2bea8854c10e111383acf72d399434c3e6fc5794e0aec0
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200810-C88A12-release-ready-task-registry/.agentplane/tasks/202605200810-C88A12/blueprint/resolved-snapshot.json
+    - old_digest: eab50f35729cacbf84d26b140b69b28d66959b05b4e183ba129194ebf93e6efe
+    - current_digest: eab50f35729cacbf84d26b140b69b28d66959b05b4e183ba129194ebf93e6efe
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605200810-C88A12
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -98,7 +159,7 @@ Make Core CI release-ready artifact fail closed when task registry is not releas
 
 ## Verify Steps
 
-1. Run 
+1. Run
  RUN  v4.1.6 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200810-C88A12-release-ready-task-registry
 
  Test Files  2 passed (2)
@@ -114,6 +175,44 @@ Make Core CI release-ready artifact fail closed when task registry is not releas
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-20T08:15:22.834Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified release-ready task registry gate locally. Targeted Vitest passed for release-ready manifest and CI workflow contract; eslint passed on touched scripts/tests; agentplane typecheck passed; release-ready manifest smoke returns ready=false with task_registry_not_release_ready while this task is DOING; policy routing and doctor passed with only pre-existing untracked archive warning.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T08:14:11.015Z, excerpt_hash=sha256:23dd61ebe0a8ff588d2bea8854c10e111383acf72d399434c3e6fc5794e0aec0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200810-C88A12-release-ready-task-registry/.agentplane/tasks/202605200810-C88A12/blueprint/resolved-snapshot.json
+- old_digest: eab50f35729cacbf84d26b140b69b28d66959b05b4e183ba129194ebf93e6efe
+- current_digest: eab50f35729cacbf84d26b140b69b28d66959b05b4e183ba129194ebf93e6efe
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605200810-C88A12
+
+### 2026-05-20T08:15:24.547Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed for implementation commit 55d3669a. Evidence covers ready and DOING task-registry manifest behavior, JSON stdout cleanliness, lint, typecheck, policy routing, and doctor. Residual warning is unrelated pre-existing untracked DONE archive 202605200640-7AXZRX.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T08:15:22.850Z, excerpt_hash=sha256:23dd61ebe0a8ff588d2bea8854c10e111383acf72d399434c3e6fc5794e0aec0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200810-C88A12-release-ready-task-registry/.agentplane/tasks/202605200810-C88A12/blueprint/resolved-snapshot.json
+- old_digest: eab50f35729cacbf84d26b140b69b28d66959b05b4e183ba129194ebf93e6efe
+- current_digest: eab50f35729cacbf84d26b140b69b28d66959b05b4e183ba129194ebf93e6efe
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605200810-C88A12
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

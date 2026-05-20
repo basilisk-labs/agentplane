@@ -15,14 +15,20 @@ Make Core CI release-ready artifact fail closed when task registry is not releas
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+EVALUATOR quality gate passed for implementation commit 55d3669a. Evidence covers ready and DOING
+task-registry manifest behavior, JSON stdout cleanliness, lint, typecheck, policy routing, and
+doctor. Residual warning is unrelated pre-existing untracked DONE archive 202605200640-7AXZRX.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T08:14:42.090Z
+- Updated: 2026-05-20T08:14:48.483Z
 - Branch: task/202605200810-C88A12/release-ready-task-registry
 - Head: 55d3669a2595
 
