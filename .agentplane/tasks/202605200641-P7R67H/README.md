@@ -4,7 +4,7 @@ title: "Implement observation harvest and follow-up gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,16 +21,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T06:54:12.894Z"
+  updated_at: "2026-05-20T07:32:57.702Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for implementation commit 93161f991. Reviewed observation harvest CLI, release observation gating semantics, cold-start retry diagnostics, per-task runs_dir contract alignment, docs/social-image freshness, and promoted prior handled observations. Local focused tests, typechecks, website build:check, social-image check, cold-start guard, eslint, policy routing, doctor, and diff checks passed."
+  note: "EVALUATOR quality gate passed for review-fix commit 76fec02e. Verified high/critical open observations block release readiness regardless recommended_action, harvest --json preserves exit code 3 on invalid entries, focused Vitest regression coverage passed, eslint/typecheck/build/routing/doctor passed, and hosted PR checks are green."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-20T06:54:12.894Z"
+  updated_at: "2026-05-20T07:32:57.702Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for implementation commit 93161f991. Reviewed observation harvest CLI, release observation gating semantics, cold-start retry diagnostics, per-task runs_dir contract alignment, docs/social-image freshness, and promoted prior handled observations. Local focused tests, typechecks, website build:check, social-image check, cold-start guard, eslint, policy routing, doctor, and diff checks passed."
-  evaluated_sha: "93161f99139cc0bafbe21b9674d332a6a392ea6b"
+  note: "EVALUATOR quality gate passed for review-fix commit 76fec02e. Verified high/critical open observations block release readiness regardless recommended_action, harvest --json preserves exit code 3 on invalid entries, focused Vitest regression coverage passed, eslint/typecheck/build/routing/doctor passed, and hosted PR checks are green."
+  evaluated_sha: "e1420e33797f8f5bf2d4a2b7884839c0de0eab6c"
   blueprint_digest: "f22f814449eee013b30806f7b546e9758dac3d623e6795479e62c6e247573760"
   evidence_refs:
     - ".agentplane/tasks/202605200641-P7R67H/README.md"
@@ -61,8 +61,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality gate passed for implementation commit 93161f991. Reviewed observation harvest CLI, release observation gating semantics, cold-start retry diagnostics, per-task runs_dir contract alignment, docs/social-image freshness, and promoted prior handled observations. Local focused tests, typechecks, website build:check, social-image check, cold-start guard, eslint, policy routing, doctor, and diff checks passed."
+  -
+    type: "verify"
+    at: "2026-05-20T07:32:57.702Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed for review-fix commit 76fec02e. Verified high/critical open observations block release readiness regardless recommended_action, harvest --json preserves exit code 3 on invalid entries, focused Vitest regression coverage passed, eslint/typecheck/build/routing/doctor passed, and hosted PR checks are green."
 doc_version: 3
-doc_updated_at: "2026-05-20T06:54:12.910Z"
+doc_updated_at: "2026-05-20T07:32:57.724Z"
 doc_updated_by: "CODER"
 description: "Implement the recent follow-ups from task execution logs: harvest task observations into actionable queues, align runtime log surface, harden cold-start retry/reporting, fix docs social image drift, gate release readiness on blocking observations, and prepare branch protection for the new PR verification aggregate."
 sections:
@@ -110,6 +116,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T06:53:10.911Z, excerpt_hash=sha256:b70efcc18e31a8996390df57857c80762e8cf26d9bee80c94e526cc5654f4dfc
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200641-P7R67H-observations-followup-gates/.agentplane/tasks/202605200641-P7R67H/blueprint/resolved-snapshot.json
+    - old_digest: f22f814449eee013b30806f7b546e9758dac3d623e6795479e62c6e247573760
+    - current_digest: f22f814449eee013b30806f7b546e9758dac3d623e6795479e62c6e247573760
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605200641-P7R67H
+
+    ### 2026-05-20T07:32:57.702Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed for review-fix commit 76fec02e. Verified high/critical open observations block release readiness regardless recommended_action, harvest --json preserves exit code 3 on invalid entries, focused Vitest regression coverage passed, eslint/typecheck/build/routing/doctor passed, and hosted PR checks are green.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T06:54:12.910Z, excerpt_hash=sha256:b70efcc18e31a8996390df57857c80762e8cf26d9bee80c94e526cc5654f4dfc
 
     Details:
 
@@ -185,6 +210,25 @@ Note: Quality gate passed for implementation commit 93161f991. Reviewed observat
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T06:53:10.911Z, excerpt_hash=sha256:b70efcc18e31a8996390df57857c80762e8cf26d9bee80c94e526cc5654f4dfc
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200641-P7R67H-observations-followup-gates/.agentplane/tasks/202605200641-P7R67H/blueprint/resolved-snapshot.json
+- old_digest: f22f814449eee013b30806f7b546e9758dac3d623e6795479e62c6e247573760
+- current_digest: f22f814449eee013b30806f7b546e9758dac3d623e6795479e62c6e247573760
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605200641-P7R67H
+
+### 2026-05-20T07:32:57.702Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed for review-fix commit 76fec02e. Verified high/critical open observations block release readiness regardless recommended_action, harvest --json preserves exit code 3 on invalid entries, focused Vitest regression coverage passed, eslint/typecheck/build/routing/doctor passed, and hosted PR checks are green.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T06:54:12.910Z, excerpt_hash=sha256:b70efcc18e31a8996390df57857c80762e8cf26d9bee80c94e526cc5654f4dfc
 
 Details:
 

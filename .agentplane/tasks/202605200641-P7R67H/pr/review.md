@@ -13,7 +13,7 @@ Created: 2026-05-20T06:42:30.667Z
 ## Verification
 
 - State: ok
-- Note: Quality gate passed for implementation commit 93161f991. Reviewed observation harvest CLI, release observation gating semantics, cold-start retry diagnostics, per-task runs_dir contract alignment, docs/social-image freshness, and promoted prior handled observations. Local focused tests, typechecks, website build:check, social-image check, cold-start guard, eslint, policy routing, doctor, and diff checks passed.
+- Note: EVALUATOR quality gate passed for review-fix commit 76fec02e. Verified high/critical open observations block release readiness regardless recommended_action, harvest --json preserves exit code 3 on invalid entries, focused Vitest regression coverage passed, eslint/typecheck/build/routing/doctor passed, and hosted PR checks are green.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
