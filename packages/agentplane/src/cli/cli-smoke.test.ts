@@ -138,17 +138,24 @@ describe("agentplane CLI smoke", () => {
       await writeFile(path.join(root, "note.txt"), "smoke\n", "utf8");
       await execFileAsync("git", ["add", "."], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "smoke change"], { cwd: root });
+      const { stdout: implementationCommit } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
 
       const verify = await runCliWithOutput(root, [
         "verify",
         taskId,
         "--ok",
         "--by",
-        "ORCHESTRATOR",
+        "EVALUATOR",
         "--note",
         "Smoke verification: local checks only; core lifecycle commands succeeded.",
       ]);
       expect(verify.code).toBe(0);
+      await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "test: record smoke verification"], {
+        cwd: root,
+      });
 
       const finish = await runCliWithOutput(root, [
         "finish",
@@ -160,9 +167,9 @@ describe("agentplane CLI smoke", () => {
         "--result",
         "smoke: finish task",
         "--commit",
-        "HEAD",
+        implementationCommit.trim(),
       ]);
-      expect(finish.code).toBe(0);
+      expect(finish.code, `${finish.stdout}\n${finish.stderr}`).toBe(0);
 
       const recipe = await createRecipeArchive({
         version: "0.0.0",

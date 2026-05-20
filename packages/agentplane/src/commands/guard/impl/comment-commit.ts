@@ -209,16 +209,6 @@ export async function commitFromComment(opts: {
     });
   }
 
-  const staged = await stageAllowlist({
-    ctx,
-    allow: allowPrefixes,
-    allowTasks: opts.allowTasks,
-    tasksPath: opts.config.paths.tasks_path,
-    workflowDir: opts.config.paths.workflow_dir,
-    taskId: opts.taskId,
-    mutationKind: "lifecycle_commit",
-  });
-
   const message = deriveCommitMessageFromComment({
     taskId: opts.taskId,
     primaryTag: opts.primaryTag,
@@ -236,6 +226,16 @@ export async function commitFromComment(opts: {
     statusTo: opts.statusTo,
     commentBody: opts.commentBody,
     formattedComment,
+  });
+
+  const staged = await stageAllowlist({
+    ctx,
+    allow: allowPrefixes,
+    allowTasks: opts.allowTasks,
+    tasksPath: opts.config.paths.tasks_path,
+    workflowDir: opts.config.paths.workflow_dir,
+    taskId: opts.taskId,
+    mutationKind: "lifecycle_commit",
   });
 
   await guardCommitCheck({

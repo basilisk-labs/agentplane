@@ -409,3 +409,6 @@ BlueprintSnapshotRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- The task observations journal decision was to keep task-local `observations.jsonl` as the raw structured signal source while README Findings and ACR artifacts carry durable summaries and pointers.
+- A transient pre-push cold-start guard timeout was promoted for follow-up: `task_list` reached 10032ms against a 10000ms threshold once, then passed on immediate rerun at 1439ms.

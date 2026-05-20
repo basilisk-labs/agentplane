@@ -155,7 +155,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
           taskId,
           "--ok",
           "--by",
-          "CODER",
+          "EVALUATOR",
           "--note",
           "Verified: targeted release workflow checks passed.",
           "--root",

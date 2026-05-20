@@ -96,6 +96,42 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      depId,
+      "--text",
+      "1. Complete dependency fixture\n2. Verify readiness fixture",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--quiet",
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "task",
+      "plan",
+      "approve",
+      depId,
+      "--by",
+      "ORCHESTRATOR",
+      "--quiet",
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      depId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: dependency fixture for readiness details.",
+      "--quiet",
+      "--root",
+      root,
+    ]);
     const execFileAsync = promisify(execFile);
     await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
     await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
@@ -105,34 +141,40 @@ describe("runCli", () => {
       depId,
       "--ok",
       "--by",
-      "TESTER",
+      "EVALUATOR",
       "--note",
-      "Ok to finish dependency",
+      "Ok to finish dependency; EVALUATOR quality gate passed with cited evidence.",
       "--quiet",
       "--root",
       root,
     ]);
     await runCliSilent(["blueprint", "snapshot", depId, "--root", root]);
-    await runCliSilent([
-      "finish",
-      depId,
-      "--author",
-      "INTEGRATOR",
-      "--body",
-      "Verified: dependency completed for readiness test; checks done locally; no issues found.",
-      "--result",
-      "ready: finish dependency",
-      "--commit",
-      "HEAD",
-      "--quiet",
-      "--root",
-      root,
-    ]);
+    const finishIo = captureStdIO();
+    try {
+      const finishCode = await runCli([
+        "finish",
+        depId,
+        "--author",
+        "INTEGRATOR",
+        "--body",
+        "Verified: dependency completed for readiness test; checks done locally; no issues found.",
+        "--result",
+        "ready: finish dependency",
+        "--commit",
+        "HEAD",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      expect(finishCode, `${finishIo.stdout}\n${finishIo.stderr}`).toBe(0);
+    } finally {
+      finishIo.restore();
+    }
 
     const io = captureStdIO();
     try {
       const code = await runCli(["ready", taskId, "--root", root]);
-      expect(code).toBe(0);
+      expect(code, `${io.stdout}\n${io.stderr}`).toBe(0);
       expect(io.stdout).toContain(`Task: ${taskId}`);
       expect(io.stdout).toContain("✅ ready");
     } finally {
