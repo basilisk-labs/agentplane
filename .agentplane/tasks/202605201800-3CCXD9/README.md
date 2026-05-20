@@ -1,10 +1,11 @@
 ---
 id: "202605201800-3CCXD9"
 title: "Release AgentPlane v0.6.4"
-status: "BLOCKED"
+result_summary: "Merged via PR #3980."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,7 +25,9 @@ verification:
   updated_by: "INTEGRATOR"
   note: "Local release gates passed for v0.6.4 candidate preparation: ci:local:full succeeded after refreshing website/static/llms-full.txt; hosted publish evidence will be recorded by publish workflow after merge and dispatch."
   attempts: 0
-commit: null
+commit:
+  hash: "75072680dde8840f26ab3ae1fd02fae8b7e54bcd"
+  message: "Merge pull request #3980 from basilisk-labs/task/202605201800-3CCXD9/release-v0.6.4"
 comments:
   -
     author: "INTEGRATOR"
@@ -32,6 +35,9 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Blocked: Local release candidate preparation is complete, but final task finish is intentionally deferred until the branch_pr candidate is merged and hosted publish evidence is attached by the publish workflow."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3980 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -53,8 +59,15 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: Local release candidate preparation is complete, but final task finish is intentionally deferred until the branch_pr candidate is merged and hosted publish evidence is attached by the publish workflow."
+  -
+    type: "status"
+    at: "2026-05-20T21:40:07.395Z"
+    author: "INTEGRATOR"
+    from: "BLOCKED"
+    to: "DONE"
+    note: "Verified: PR #3980 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-20T18:27:30.128Z"
+doc_updated_at: "2026-05-20T21:40:07.401Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare, verify, publish, and audit the next AgentPlane patch release from current main."
 sections:
