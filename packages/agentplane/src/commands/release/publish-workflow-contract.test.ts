@@ -222,13 +222,14 @@ describe("publish workflow contract", () => {
     );
   });
 
-  it("checks local task registry before release publish readiness", async () => {
+  it("checks local task registry only after a release-ready source exists", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain("Release task registry (check)");
+    expect(workflow).toContain("if: steps.source.outputs.release_ready_ok == 'true'");
     expect(workflow).toContain("node scripts/release/check-task-registry-ready.mjs");
-    expect(workflow.indexOf("Release task registry (check)")).toBeLessThan(
-      workflow.indexOf("Release incidents (check)"),
+    expect(workflow.indexOf("Resolve release-ready source")).toBeLessThan(
+      workflow.indexOf("Release task registry (check)"),
     );
   });
 

@@ -15,12 +15,17 @@ describe("Task hosted-close workflow contract", () => {
     expect(workflow).toContain("- closed");
     expect(workflow).toContain("if: github.event.pull_request.merged == true");
     expect(workflow).toContain("contents: write");
+    expect(workflow).toContain("checks: write");
     expect(workflow).toContain("pull-requests: write");
     expect(workflow).toContain("fetch-depth: 0");
     expect(workflow).toContain("node scripts/prepare-hosted-task-closure.mjs");
     expect(workflow).not.toContain("pull/${{ steps.prepare.outputs.pr_number }}/head");
     expect(workflow).toContain("task hosted-close");
     expect(workflow).toContain("gh pr create");
+    expect(workflow).toContain("Record hosted closure PR verification");
+    expect(workflow).toContain('"repos/${{ github.repository }}/check-runs"');
+    expect(workflow).toContain('-f name="PR verification"');
+    expect(workflow).toContain('-f head_sha="$closure_sha"');
     expect(workflow).toContain('if gh pr merge --merge --delete-branch "$pr_url"; then');
     expect(workflow).toContain("gh pr merge --auto --merge --delete-branch");
     expect(workflow).not.toContain("gh pr merge --squash");

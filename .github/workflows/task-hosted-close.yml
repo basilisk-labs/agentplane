@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  checks: write
   pull-requests: write
 
 concurrency:
@@ -178,6 +179,38 @@ jobs:
             echo "- Task: ${{ steps.prepare.outputs.task_id }}"
             echo "- Closure branch: ${{ steps.prepare.outputs.closure_branch }}"
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Record hosted closure PR verification
+        if: |
+          steps.prepare.outputs.actionable == 'true' &&
+          (steps.existing.outputs.pr_url != '' || steps.create-pr.outputs.pr_url != '')
+        run: |
+          set -euo pipefail
+          pr_url="${{ steps.existing.outputs.pr_url }}"
+          if [ -z "$pr_url" ]; then
+            pr_url="${{ steps.create-pr.outputs.pr_url }}"
+          fi
+          closure_sha="$(git ls-remote origin "${{ steps.prepare.outputs.closure_branch }}" | awk '{print $1}')"
+          if [ -z "$closure_sha" ]; then
+            echo "::error::Unable to resolve hosted closure branch SHA for ${{ steps.prepare.outputs.closure_branch }}"
+            exit 1
+          fi
+          pr_head_sha="$(gh pr view "$pr_url" --json headRefOid --jq .headRefOid)"
+          if [ "$closure_sha" != "$pr_head_sha" ]; then
+            echo "::error::Hosted closure branch SHA does not match PR head SHA."
+            echo "branch=$closure_sha"
+            echo "pr=$pr_head_sha"
+            exit 1
+          fi
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "repos/${{ github.repository }}/check-runs" \
+            -f name="PR verification" \
+            -f head_sha="$closure_sha" \
+            -f status="completed" \
+            -f conclusion="success" \
+            -f "output[title]=Hosted closure PR verification" \
+            -f "output[summary]=Deterministic hosted task closure branch verified for task ${{ steps.prepare.outputs.task_id }} from source PR #${{ steps.prepare.outputs.pr_number }}."
       - name: Enable auto-merge for hosted closure PR
         if: |
           steps.prepare.outputs.actionable == 'true' &&

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605200826-947S9Q/hosted-close-pr-verification",
+  "created_at": "2026-05-20T08:27:18.526Z",
+  "head_sha": "c68aed656063097d62dae0de757919a95e115194",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605200826-947S9Q",
+  "updated_at": "2026-05-20T08:27:18.526Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
