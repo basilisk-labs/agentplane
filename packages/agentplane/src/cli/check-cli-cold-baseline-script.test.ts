@@ -238,6 +238,8 @@ describe("check-cli-cold-baseline script", () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("CLI cold-start baseline OK after retry 2/2");
+    expect(result.stderr).toContain("attempt 1/2 failed; retrying");
+    expect(result.stderr).toContain("quickstart: exit_code=1, expected=0");
     expect(await readFile(counterPath, "utf8")).toBe("10\n");
   });
 });

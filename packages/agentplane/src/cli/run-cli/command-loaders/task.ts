@@ -119,6 +119,10 @@ export const loadTaskObservationsTriageSpec = (deps: RunDeps) =>
   import("../../../commands/task/observations.command.js").then((m) =>
     m.makeRunTaskObservationsTriageHandler(deps.getCtx),
   );
+export const loadTaskObservationsHarvestSpec = (deps: RunDeps) =>
+  import("../../../commands/task/observations.command.js").then((m) =>
+    m.makeRunTaskObservationsHarvestHandler(deps.getCtx),
+  );
 export const loadTaskDocShowSpec = (deps: RunDeps) =>
   import("../../../commands/task/doc-show.command.js").then((m) =>
     m.makeRunTaskDocShowHandler(deps.getCtx),

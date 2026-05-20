@@ -1,7 +1,29 @@
 import type { TaskObservation } from "@agentplaneorg/core/tasks";
-import { describe, expect, it } from "vitest";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 
-import { findBlockingObservationIssues, summarizeObservationTriage } from "./observations.js";
+import { afterEach, describe, expect, it } from "vitest";
+
+import type { TaskData } from "../../backends/task-backend.js";
+import type { CommandCtx } from "../../cli/spec/spec.js";
+import type { CommandContext } from "../shared/task-backend.js";
+
+import { makeRunTaskObservationsHarvestHandler } from "./observations.command.js";
+import {
+  findBlockingObservationIssues,
+  summarizeObservationHarvest,
+  summarizeObservationTriage,
+} from "./observations.js";
+
+const temps: string[] = [];
+
+afterEach(async () => {
+  while (temps.length > 0) {
+    const dir = temps.pop();
+    if (dir) await rm(dir, { recursive: true, force: true });
+  }
+});
 
 function observation(overrides: Partial<TaskObservation> = {}): TaskObservation {
   return {
@@ -69,5 +91,93 @@ describe("task observations", () => {
       github_issue: { total: 2, open: 1, ids: ["obs-0001"] },
       none: { total: 1, open: 1, ids: ["obs-0003"] },
     });
+  });
+
+  it("summarizes harvested task observations across tasks", () => {
+    const summary = summarizeObservationHarvest([
+      {
+        taskId: "202605191736-EQBZ4M",
+        taskTitle: "Add task observations journal",
+        artifactPath: "/repo/.agentplane/tasks/202605191736-EQBZ4M/observations.jsonl",
+        errors: [],
+        blocking: [{ id: "obs-0002", reason: "open critical severity observation" }],
+        observations: [
+          observation({
+            id: "obs-0001",
+            recommended_action: { type: "github_issue", title: "Review guard stability" },
+          }),
+          observation({
+            id: "obs-0002",
+            severity: "critical",
+            recommended_action: { type: "incident", title: "Promote incident" },
+          }),
+          observation({ id: "obs-0003", status: "dismissed" }),
+        ],
+      },
+    ]);
+
+    expect(summary).toEqual({
+      tasks: 1,
+      observations: 3,
+      open: 2,
+      invalid: 0,
+      blocking: 1,
+      byAction: {
+        github_issue: {
+          total: 1,
+          open: 1,
+          ids: ["202605191736-EQBZ4M:obs-0001"],
+        },
+        incident: {
+          total: 1,
+          open: 1,
+          ids: ["202605191736-EQBZ4M:obs-0002"],
+        },
+        none: {
+          total: 1,
+          open: 0,
+          ids: [],
+        },
+      },
+    });
+  });
+
+  it("keeps harvest JSON exit code non-zero when invalid entries exist", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "agentplane-observations-harvest-"));
+    temps.push(root);
+    const taskId = "202605191736-EQBZ4M";
+    const task: TaskData = {
+      id: taskId,
+      title: "Observation task",
+      description: "",
+      status: "DONE",
+      priority: "med",
+      owner: "CODER",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    };
+    await mkdir(path.join(root, ".agentplane", "tasks", taskId), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "tasks", taskId, "observations.jsonl"),
+      "{not-json}\n",
+      "utf8",
+    );
+
+    const commandContext = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: {
+        listTasks: () => Promise.resolve([task]),
+        getTask: (id: string) => Promise.resolve(id === taskId ? task : null),
+      },
+      memo: {},
+    } as unknown as CommandContext;
+
+    const run = makeRunTaskObservationsHarvestHandler(() => Promise.resolve(commandContext));
+
+    await expect(
+      run({ cwd: root, rootOverride: null } as CommandCtx, { json: true }),
+    ).resolves.toBe(3);
   });
 });

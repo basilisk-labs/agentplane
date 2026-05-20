@@ -18,8 +18,10 @@ import {
   appendTaskObservation,
   findBlockingObservationIssues,
   formatObservationCheckSummary,
+  harvestTaskObservations,
   observationEnumValues,
   readTaskObservations,
+  summarizeObservationHarvest,
   summarizeObservationTriage,
 } from "./observations.js";
 
@@ -33,7 +35,7 @@ export const taskObservationsSpec: CommandSpec<TaskObservationsParsed> = {
   id: ["task", "observations"],
   group: "Task",
   summary: "Structured task-local observations journal commands.",
-  args: [{ name: "subcommand", required: false, valueHint: "<add|list|check|triage>" }],
+  args: [{ name: "subcommand", required: false, valueHint: "<add|list|check|triage|harvest>" }],
   parse: (raw) => ({
     subcommand: typeof raw.args.subcommand === "string" ? raw.args.subcommand : undefined,
   }),
@@ -383,5 +385,58 @@ export function makeRunTaskObservationsTriageHandler(
       }
     }
     return 0;
+  };
+}
+
+type TaskObservationsHarvestParsed = {
+  json: boolean;
+};
+
+export const taskObservationsHarvestSpec: CommandSpec<TaskObservationsHarvestParsed> = {
+  id: ["task", "observations", "harvest"],
+  group: "Task",
+  summary: "Harvest structured observations across all tasks.",
+  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  parse: (raw) => ({ json: raw.opts.json === true }),
+};
+
+export function makeRunTaskObservationsHarvestHandler(
+  getCtx: (cmd: string) => Promise<CommandContext>,
+) {
+  return async (ctx: CommandCtx, p: TaskObservationsHarvestParsed): Promise<number> => {
+    const commandContext = await resolveCtx(ctx, getCtx, "task observations harvest");
+    const entries = await harvestTaskObservations(commandContext);
+    const summary = summarizeObservationHarvest(entries);
+    if (p.json) {
+      output.json({
+        summary,
+        tasks: entries.map((entry) => ({
+          task_id: entry.taskId,
+          title: entry.taskTitle,
+          path: pathRelative(commandContext, entry.artifactPath),
+          observations: entry.observations,
+          errors: entry.errors,
+          blocking: entry.blocking,
+        })),
+      });
+      return summary.invalid > 0 ? 3 : 0;
+    }
+    output.report(
+      [
+        { label: "tasks", value: String(summary.tasks) },
+        { label: "observations", value: String(summary.observations) },
+        { label: "open", value: String(summary.open) },
+        { label: "invalid", value: String(summary.invalid) },
+        { label: "blocking", value: String(summary.blocking) },
+      ],
+      { header: "task observation harvest" },
+    );
+    for (const [action, value] of Object.entries(summary.byAction).toSorted(([a], [b]) =>
+      a.localeCompare(b),
+    )) {
+      output.info(`${action}: total=${value.total} open=${value.open}`);
+    }
+    if (entries.length === 0) output.info("no task observations found");
+    return summary.invalid > 0 ? 3 : 0;
   };
 }

@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605200641-P7R67H/observations-followup-gates",
+  "created_at": "2026-05-20T06:42:30.667Z",
+  "head_sha": "76fec02e24d311741cb263dfab00d609c6ad9b09",
+  "last_verified_at": "2026-05-20T07:32:57.702Z",
+  "last_verified_sha": "76fec02e24d311741cb263dfab00d609c6ad9b09",
+  "pr_number": 3957,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3957",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605200641-P7R67H",
+  "updated_at": "2026-05-20T07:27:27.577Z",
+  "verify": {
+    "status": "pass"
+  }
+}
