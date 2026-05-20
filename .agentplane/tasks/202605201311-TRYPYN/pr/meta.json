@@ -5,9 +5,12 @@
   "head_sha": "ba50f14147adda816512565204d27ed6f28ef84f",
   "last_verified_at": "2026-05-20T13:20:34.573Z",
   "last_verified_sha": "4483996a8cdd672b81e721540f3b0776cfc093a1",
+  "pr_number": 3971,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3971",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202605201311-TRYPYN",
-  "updated_at": "2026-05-20T13:21:16.993Z",
+  "updated_at": "2026-05-20T13:21:27.659Z",
   "verify": {
     "status": "pass"
   }
