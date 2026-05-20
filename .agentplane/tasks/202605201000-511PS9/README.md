@@ -35,7 +35,7 @@ quality_review:
   updated_at: "2026-05-20T11:36:55.607Z"
   updated_by: "EVALUATOR"
   note: "Fresh integration quality gate passed for published PR head 13286b7e42da22119986d13aa7340cf05eabc1ca. Evidence: GitHub hosted checks are green or skipped by policy; local ci:local:fast passed after CLI reference refresh; PR #3965 is open and mergeable. Note: final artifact-only commit e25a7be77 only refreshed AgentPlane PR metadata after publication."
-  evaluated_sha: "e25a7be772c9b2cda159ee4742910fd63078b2a7"
+  evaluated_sha: "13286b7e42da22119986d13aa7340cf05eabc1ca"
   blueprint_digest: "91f69fdec3d2fcfbaacff171c8dbdf8c35e59a81f753f14fb6181bbe078b0e88"
   evidence_refs:
     - ".agentplane/tasks/202605201000-511PS9/README.md"
