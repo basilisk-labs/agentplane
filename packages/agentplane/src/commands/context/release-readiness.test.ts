@@ -107,7 +107,6 @@ describe("context release readiness guards", () => {
         force: false,
       },
     });
-
     const manifest = await readFile(
       path.join(root, ".agentplane/context/agentplane.context.yaml"),
       "utf8",
@@ -118,6 +117,7 @@ describe("context release readiness guards", () => {
     expect(manifest).toContain("mode: maximum-assimilation");
     expect(manifest).toContain("maintenance_mode: maximum_assimilation");
     expect(manifest).toContain("line_refs_required: true");
+    expect(await readdir(path.join(root, "context/raw"))).toEqual([".gitkeep"]);
     expect(readme).toContain("Maximum-assimilation mode adds a stricter wiki maintenance contract");
     expect(readme).toContain("line-addressed source refs as provenance pointers");
     expect(readme).toContain("wiki/fact/graph artifacts stay self-contained");
@@ -797,6 +797,7 @@ describe("context release readiness guards", () => {
     ).toEqual(
       expect.arrayContaining([
         "source_shaped_wiki_topology_recorded",
+        "topology_page_family_evidence_recorded",
         "canonical_glossary_updated",
         "obsidian_wikilinks_reviewed",
         "evaluator_quality_review",
@@ -805,6 +806,7 @@ describe("context release readiness guards", () => {
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint?.stop_rules).toEqual(
       expect.arrayContaining([
         "missing_source_shaped_topology_decision",
+        "page_family_without_source_evidence",
         "missing_obsidian_wikilinks",
         "raw_deletion_resilience_unproven",
         "evaluator_quality_review_missing",

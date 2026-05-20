@@ -413,6 +413,7 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
   candidates, and coverage notes.
 - Topology pass: choose wiki structure from source content; do not mechanically create
   \`concepts/\`, \`entities/\`, \`decisions/\`, \`modules/\`, \`contradictions/\`, or \`reports/\`.
+- Record a topology decision before page-family creation. It must classify the source shape (book/corpus, codebase, task history, product docs, research notes, ops logs, or another named shape), name canonical page families, justify page-vs-heading granularity, map source-local terms to canonical labels or aliases, and keep ambiguous identities as open questions.
 - Second pass: synthesize granular wiki articles from that graph/glossary layer; use canonical
   glossary terms in prose and preserve source-local wording as aliases or evidence details.
 - Create separate pages for reusable entities, concepts, decisions, requirements, risks, workflows,
