@@ -1,10 +1,11 @@
 ---
 id: "202605201656-J68MDT"
 title: "Fix done task next-action route"
-status: "DOING"
+result_summary: "Merged via PR #3976."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605201656-J68MDT/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201656-J68MDT-done-next-action/.agentplane/tasks/202605201656-J68MDT/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "e747ce59acdd641d7dfab547e8ea7b49f0931d02"
+  message: "🐛 J68MDT workflow: stop done task recovery routing"
 comments:
   -
     author: "CODER"
     body: "Start: Fixing DONE task route decisions so closed branch_pr tasks do not suggest worktree recovery, with focused CLI regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3976 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -78,9 +84,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Review fix accepted locally: branch_pr DONE tasks keep cleanup guidance, direct DONE tasks now return a direct-safe terminal action with null command; no branch_pr recovery blockers for DONE tasks."
+  -
+    type: "status"
+    at: "2026-05-20T17:42:27.031Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3976 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-20T17:20:21.486Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-20T17:42:27.038Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stop task next-action and task status route output from suggesting branch_pr worktree recovery for tasks that are already DONE, especially included batch tasks closed after their primary PR merged."
 sections:
   Summary: |-
