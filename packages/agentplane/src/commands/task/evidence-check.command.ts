@@ -51,7 +51,10 @@ function sectionText(task: { sections?: Record<string, string> }, name: string):
   return task.sections?.[name] ?? "";
 }
 
-function evidenceState(task: Awaited<ReturnType<typeof loadTaskFromContext>>, kind: string): {
+function evidenceState(
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>,
+  kind: string,
+): {
   state: EvidenceState;
   reason: string;
 } {
@@ -86,7 +89,10 @@ function evidenceState(task: Awaited<ReturnType<typeof loadTaskFromContext>>, ki
   if (kind === "external_link") {
     return /https?:\/\/|#\d+|PR\b/i.test(verificationText)
       ? { state: "present", reason: "Verification section references an external link or PR" }
-      : { state: "unknown", reason: "external evidence is provider-specific; inspect PR artifacts" };
+      : {
+          state: "unknown",
+          reason: "external evidence is provider-specific; inspect PR artifacts",
+        };
   }
   return { state: "unknown", reason: `no checker registered for evidence kind ${kind}` };
 }

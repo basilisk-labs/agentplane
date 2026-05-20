@@ -19,7 +19,8 @@ export const taskNextActionSpec: CommandSpec<TaskNextActionParsed> = {
       kind: "boolean",
       name: "explain",
       default: false,
-      description: "Include route context, approval policy, blockers, and ambiguity resolution hints.",
+      description:
+        "Include route context, approval policy, blockers, and ambiguity resolution hints.",
     },
     { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
   ],

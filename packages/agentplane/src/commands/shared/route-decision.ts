@@ -259,7 +259,9 @@ function deriveNextAction(opts: {
   };
 }
 
-function deriveCheckoutRole(resume: TaskResumeContext): TaskRouteDecision["workspace"]["checkoutRole"] {
+function deriveCheckoutRole(
+  resume: TaskResumeContext,
+): TaskRouteDecision["workspace"]["checkoutRole"] {
   if (!resume.branch || !resume.base_branch) return "unknown";
   return resume.branch === resume.base_branch ? "base" : "task_worktree";
 }
@@ -290,22 +292,26 @@ function deriveAmbiguities(opts: {
   ) {
     ambiguities.push({
       code: "base_checkout_owner_scope",
-      summary: "current checkout is the base branch while branch_pr owner-scoped work normally belongs in the task worktree",
-      resolution: "use the selected next action only if it is a base-lane action; otherwise run agentplane work resume <task-id>",
+      summary:
+        "current checkout is the base branch while branch_pr owner-scoped work normally belongs in the task worktree",
+      resolution:
+        "use the selected next action only if it is a base-lane action; otherwise run agentplane work resume <task-id>",
     });
   }
   if (opts.decision.nextAction.requiresApproval && !opts.decision.nextAction.command) {
     ambiguities.push({
       code: "approval_without_local_command",
       summary: "the selected next action requires approval but has no safe local command",
-      resolution: "treat this as a human/provider action and re-run task status --route after the external action completes",
+      resolution:
+        "treat this as a human/provider action and re-run task status --route after the external action completes",
     });
   }
   if (blockerCodes.has("close_tail_open") && opts.decision.nextAction.code === "merge_close_tail") {
     ambiguities.push({
       code: "close_tail_provider_lane",
       summary: "hosted close-tail is open, so local task mutation is not the next source of truth",
-      resolution: "wait for stable hosted checks and merge the close-tail PR through the provider, then pull/reconcile base state",
+      resolution:
+        "wait for stable hosted checks and merge the close-tail PR through the provider, then pull/reconcile base state",
     });
   }
   return ambiguities;
