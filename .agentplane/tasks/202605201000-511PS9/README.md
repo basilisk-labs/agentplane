@@ -1,10 +1,11 @@
 ---
 id: "202605201000-511PS9"
 title: "Unify task next-action route explanation"
-status: "DOING"
+result_summary: "Merged via PR #3965."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - ".agentplane/tasks/202605201000-511PS9/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605201000-511PS9/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "63645a1cc3e1908fb5bca751360d416c122bb6ec"
+  message: "Merge pull request #3965 from basilisk-labs/task/202605201000-511PS9/ambiguity-route-contract"
 comments:
   -
     author: "CODER"
     body: "Start: Primary batch task for route ambiguity minimization; owns branch, worktree, and PR for the included task set."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3965 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -78,9 +84,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Fresh quality gate passed for review fix commit f37cb3865. Review thread r3273173348 addressed by making unknown required evidence blocking in task evidence check strict mode and adding evidence-check.unit.test coverage. Focused checks passed: prettier on touched files, vitest evidence-check plus existing focused suites, and packages/agentplane tsc --noEmit."
+  -
+    type: "status"
+    at: "2026-05-20T11:56:09.085Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3965 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-20T11:50:41.762Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-20T11:56:09.092Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make the task route decision surface explain effective approval policy, checkout role, and ambiguity between next-action and recovery diagnostics."
 sections:
   Summary: |-
