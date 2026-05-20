@@ -1,10 +1,11 @@
 ---
 id: "202605201152-ATVFPQ"
 title: "Define context wiki contract surface"
-status: "DOING"
+result_summary: "Merged via PR #3967."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605201152-ATVFPQ/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201152-ATVFPQ-context-wiki-contract/.agentplane/tasks/202605201152-ATVFPQ/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "715bd2783198096cedbdc9e2246f6ac74004f8c8"
+  message: "Merge pull request #3967 from basilisk-labs/task/202605201152-ATVFPQ/context-wiki-contract"
 comments:
   -
     author: "DOCS"
     body: "Start: defining the context wiki contract surface in the existing context manifest and wiki policy files, then aligning the wiki agent notes to reference that control layer."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3967 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed. Evidence: local pre-push fast CI completed through format, schema freshness, policy routing, release parity, build, bundle build, CLI cold baseline, docs freshness, recipe inventory, scripts README, onboarding, hotspot threshold, vitest projects, lint, unit tests 321 files/1925 passed/2 skipped, and critical CLI chunks 5/5 passed before push. Hosted PR #3967 checks on head 0b158ea3a all passed: CodeQL, Core CI plan, verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, PR verification, Release-ready manifest, Docs CI docs, and change detection."
+  -
+    type: "status"
+    at: "2026-05-20T12:54:11.623Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3967 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-20T12:34:40.717Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-20T12:54:11.631Z"
+doc_updated_by: "INTEGRATOR"
 description: "Clarify the repository-local context/wiki contract by making the context manifest and wiki rules the explicit source for wiki format, language, topology, and provenance expectations without changing runtime enforcement."
 sections:
   Summary: |-
