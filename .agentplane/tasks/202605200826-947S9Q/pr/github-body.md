@@ -15,8 +15,15 @@ Make hosted close-tail automation satisfy the required PR verification check for
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+EVALUATOR quality gate passed for implementation commit c2b1520b73037e905375aa84aab2a42d13eb9807.
+Hosted checks on PR #3962 are green, including PR verification and Release-ready manifest; local
+verification covers publish ordering, hosted-close check-run contract, docs-only fast route,
+build-before-cold-baseline, typecheck, and policy routing.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -31,10 +38,10 @@ Make hosted close-tail automation satisfy the required PR verification check for
  .github/workflows/publish.yml                      |  46 +-
  .github/workflows/task-hosted-close.yml            |  33 ++
  .../release/publish-workflow-contract.test.ts      |   7 +-
- .../commands/release/release-ci-contract.test.ts   |   9 +
+ .../commands/release/release-ci-contract.test.ts   |  12 +
  .../task/hosted-close-workflow-contract.test.ts    |   5 +
- scripts/checks/run-local-ci.mjs                    |  15 +-
- 7 files changed, 659 insertions(+), 28 deletions(-)
+ scripts/checks/run-local-ci.mjs                    |  31 +-
+ 7 files changed, 670 insertions(+), 36 deletions(-)
 ```
 
 </details>
