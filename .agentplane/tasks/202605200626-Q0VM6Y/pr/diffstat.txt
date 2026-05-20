@@ -1,7 +1,9 @@
- docs/user/local-context.mdx                            |  8 ++++++++
- packages/agentplane/src/blueprints/builtins.ts         | 18 ++++++++++++++++++
- packages/agentplane/src/blueprints/validate.test.ts    |  3 +++
- packages/agentplane/src/commands/context/init.ts       |  7 +++++++
- .../src/commands/context/release-readiness.test.ts     | 10 ++++++++++
- packages/agentplane/src/context/ingest-task.ts         |  4 ++++
- 6 files changed, 50 insertions(+)
+ .../blueprint/resolved-snapshot.json               | 571 +++++++++++++++++++++
+ docs/user/local-context.mdx                        |   8 +
+ packages/agentplane/src/blueprints/builtins.ts     | 107 +---
+ .../src/blueprints/context-maximum-assimilation.ts | 118 +++++
+ .../agentplane/src/blueprints/validate.test.ts     |   3 +
+ packages/agentplane/src/commands/context/init.ts   |   1 +
+ .../src/commands/context/release-readiness.test.ts |   2 +
+ packages/agentplane/src/context/ingest-task.ts     |   4 +
+ 8 files changed, 713 insertions(+), 101 deletions(-)
