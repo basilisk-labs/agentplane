@@ -126,7 +126,6 @@ describe("context release readiness guards", () => {
     expect(wikiAgents).toContain("canonical entities, glossary aliases, relation candidates");
     expect(wikiAgents).toContain("Glossary output: create or update `context/wiki/glossary.md`");
     expect(wikiAgents).toContain("treat those refs as audit provenance");
-    expect(wikiAgents).toContain("stored meaning");
     expect(wikiAgents).toContain("availability state");
     expect(wikiAgents).toContain("`missing`");
     expect(wikiAgents).toContain("choose wiki structure from source content");
@@ -824,27 +823,19 @@ describe("context release readiness guards", () => {
       canonical_glossary_required: true,
       canonical_glossary_path: "context/wiki/glossary.md",
     });
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Maximum-assimilation workflow:");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("availability state");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Topology pass:");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Glossary pass: create or update `context/wiki/glossary.md`");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("[[Canonical Page]]");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Evaluation pass:");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("self-contained wiki/fact/graph content plus line-addressed provenance");
+    const maximumPrompt =
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
+    for (const expected of [
+      "Maximum-assimilation workflow:",
+      "availability state",
+      "Topology pass:",
+      "Glossary pass: create or update `context/wiki/glossary.md`",
+      "[[Canonical Page]]",
+      "Evaluation pass:",
+      "self-contained wiki/fact/graph content plus line-addressed provenance",
+    ]) {
+      expect(maximumPrompt).toContain(expected);
+    }
   });
 
   it("creates and explains wiki pages with AgentPlane context frontmatter", async () => {

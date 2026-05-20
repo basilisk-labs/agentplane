@@ -373,16 +373,13 @@ Maximum-assimilation mode adds a stricter wiki maintenance contract:
   artifacts so maintained context remains useful even if \`context/raw/**\` is later removed.
 - Keep original source identity in a source registry with \`source_id\`, original path,
   \`sha256:\` hash, content type, line count, ingest time, and availability state.
-- Use line-addressed source refs as provenance pointers, not as retained content. If raw files are
-  missing, refs may be non-dereferenceable while wiki/fact/graph artifacts stay self-contained.
+- Use line-addressed source refs as provenance pointers, not retained content; missing raw refs may be non-dereferenceable while wiki/fact/graph artifacts stay self-contained.
 - Extract entities, aliases, relations, decisions, requirements, risks, workflows, and conflicts
   before writing narrative articles.
 - Choose the wiki structure from source content; do not create the default
   concepts/entities/decisions/modules/contradictions/reports scaffold unless source analysis
   justifies it. Record the topology decision before creating page families.
-- Create or maintain the canonical glossary as the root wiki file \`context/wiki/glossary.md\`.
-  Keep it as a navigation/alias layer over wiki pages and graph entities, then use glossary
-  canonical terms in synthesized prose while preserving source-local terms as aliases.
+- Create or maintain the canonical glossary as root file \`context/wiki/glossary.md\`; keep it as navigation/aliases over wiki pages and graph entities, then use canonical terms in prose.
 - Use Obsidian-compatible \`[[Page Title]]\` links for semantic wiki graph links; keep Markdown
   links for source refs, files, and external URLs.
 - Treat coverage gaps, unresolved entity identity, sensitive-source leakage risk, and missing line refs
@@ -424,16 +421,12 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
 - Keep original hashes in the source-set lock and cite source content with concrete line refs such as
   \`context/raw/<user-path>/note.md#lines=12-24\`; treat those refs as audit provenance, not as the
   stored meaning.
-- First pass: build or update canonical entities, glossary aliases, relation candidates, conflict
-  candidates, and coverage notes.
-- Glossary output: create or update \`context/wiki/glossary.md\` as the root glossary file. Do not
-  scatter canonical glossary state across reports or page-local notes.
+- First pass: build or update canonical entities, glossary aliases, relation candidates, conflicts, and coverage notes.
+- Glossary output: create or update \`context/wiki/glossary.md\` as the root glossary file; do not scatter canonical glossary state across reports or page-local notes.
 - Topology pass: choose wiki structure from source content; do not mechanically create
   \`concepts/\`, \`entities/\`, \`decisions/\`, \`modules/\`, \`contradictions/\`, or \`reports/\`.
 - Record a topology decision before page-family creation. It must classify the source shape (book/corpus, codebase, task history, product docs, research notes, ops logs, or another named shape), name canonical page families, justify page-vs-heading granularity, map source-local terms to canonical labels or aliases, and keep ambiguous identities as open questions.
-- Second pass: synthesize granular wiki articles from that graph/glossary layer; use canonical
-  glossary terms from \`context/wiki/glossary.md\` in prose and preserve source-local wording as
-  aliases or evidence details.
+- Second pass: synthesize granular wiki articles from that graph/glossary layer; use canonical terms from \`context/wiki/glossary.md\` and preserve source-local wording as aliases.
 - Create separate pages for reusable entities, concepts, decisions, requirements, risks, workflows,
   and modules; use stable headings for smaller objects inside broader pages.
 - Use Obsidian-compatible \`[[Page Title]]\` or \`[[Page Title#Section]]\` links for semantic wiki
