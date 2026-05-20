@@ -22,7 +22,9 @@ import {
   POLICY_FILES,
   shouldRewriteExistingContextFile,
 } from "./init-profile-switch.js";
+import { buildContextManifestYaml } from "./init-manifest.js";
 import { starterWikiPageFiles, wikiFrontmatter } from "./init-wiki.js";
+import { buildWikiPolicyMarkdown } from "./init-wiki-policy.js";
 import { cmdContextReindex } from "./reindex.js";
 
 const execFileAsync = promisify(execFile);
@@ -474,154 +476,8 @@ function buildCapabilitiesReadme(profile: ContextInitParsed["profile"]): string 
   return `# Context capabilities\n\nProfile: ${profile}\n\nReusable artefacts for prompts, playbooks, templates, checklists and rubrics.\n`;
 }
 
-function buildContextManifestYaml(
-  projectName: string,
-  profile: ContextInitParsed["profile"],
-  now: string,
-): string {
-  return `version: 1
-project:
-  name: "${projectName.replaceAll('"', String.raw`\"`)}"
-  root: "."
-workspace:
-  namespace: local.project
-  mode: ${profile}
-  layout_strategy: adaptive
-  page_granularity: topic_artifact
-  claim_granularity: atomic
-  root: context
-  raw: context/raw
-  wiki: context/wiki
-  capabilities: context/capabilities
-control:
-  root: .agentplane/context
-  policies:
-    rules: .agentplane/context/policies/context.rules.md
-    wiki_rules: .agentplane/context/policies/wiki.rules.md
-    capability_rules: .agentplane/context/policies/capability.rules.md
-    redaction: .agentplane/context/policies/redaction.rules.yaml
-    sync: .agentplane/context/policies/sync.rules.yaml
-lock:
-  path: .agentplane/context/manifest.lock.json
-derived:
-  root: .agentplane/context/derived
-  facts: .agentplane/context/derived/facts/facts.jsonl
-  graph:
-    entities: .agentplane/context/derived/graph/entities.jsonl
-    edges: .agentplane/context/derived/graph/edges.jsonl
-    provenance_edges: .agentplane/context/derived/graph/provenance_edges.jsonl
-  capabilities:
-    registry: .agentplane/context/derived/capabilities/capabilities.jsonl
-    edges: .agentplane/context/derived/capabilities/capability_edges.jsonl
-  reports:
-    events: .agentplane/context/derived/reports/assimilation-events.jsonl
-wiki:
-  contract:
-    manifest: .agentplane/context/agentplane.context.yaml
-    rules: .agentplane/context/policies/wiki.rules.md
-    agent_notes: context/wiki/AGENTS.md
-  frontmatter_required: true
-  source_refs_as_markdown_links: true
-  cross_links_required: true
-  language:
-    synthesized_prose: en
-    allow_source_language_for:
-      - direct_quotes
-      - source_titles
-      - proper_names
-      - glossary_aliases
-      - file_paths
-      - code_identifiers
-    translation_note_required: true
-  maintenance_mode: ${profile === "maximum-assimilation" ? "maximum_assimilation" : "adaptive"}
-  raw_deletion_resilience_required: ${profile === "maximum-assimilation" ? "true" : "false"}
-  entity_relation_first: ${profile === "maximum-assimilation" ? "true" : "false"}
-  glossary:
-    canonical_required: ${profile === "maximum-assimilation" ? "true" : "false"}
-    alias_normalization_required: ${profile === "maximum-assimilation" ? "true" : "false"}
-  source_addressing:
-    original_hash_required: true
-    line_refs_required: ${profile === "maximum-assimilation" ? "true" : "false"}
-  modalities:
-    - factual_claim
-    - observation
-    - assumption
-    - hypothesis
-    - decision
-    - policy
-    - preference
-    - requirement
-    - risk
-    - capability
-    - definition
-    - deprecation
-agentplane:
-  tasks_root: .agentplane/tasks
-service:
-  root: .agentplane/context/service
-  index:
-    type: sqlite
-    path: .agentplane/cache.sqlite
-    fts: true
-    cache_task_readmes: true
-    cache_acr_summaries: true
-generated_at: "${now}"
-remotes: []
-`;
-}
-
 function buildPolicyMarkdown(name: string): string {
   return `# ${name}\n\n- Keep raw sources in \`context/raw\`.\n- Keep durable machine artifacts under \`.agentplane/context/derived\`.\n- Keep service caches under \`.agentplane/context/service\`.\n`;
-}
-
-function buildWikiPolicyMarkdown(): string {
-  return `# Wiki rules
-
-- \`.agentplane/context/agentplane.context.yaml\` is the machine-readable context contract.
-- This file is the human-readable wiki policy referenced by that manifest.
-- \`context/wiki/AGENTS.md\` is agent-facing local guidance; keep it aligned with this policy, not broader than it.
-
-## Format
-
-- Wiki pages live under \`context/wiki/**\` and use AgentPlane frontmatter.
-- Each page frontmatter must include a stable \`canonical_id\`, \`title\`, \`modality\`, \`epistemic_status\`, \`visibility\`, \`source_refs\`, \`claims\`, \`graph_refs\`, \`conflicts\`, and \`updated_by\`.
-- Use the modalities listed in \`.agentplane/context/agentplane.context.yaml\`.
-- Keep source references as Markdown links where possible.
-- Use Obsidian-compatible \`[[Page Title]]\` or \`[[Page Title#Section]]\` links for semantic internal wiki links.
-- Keep normal Markdown links for source refs, external URLs, file paths, and line-addressed provenance.
-
-## Language
-
-- Write synthesized wiki prose in English by default.
-- Source titles, direct quotes, proper names, glossary aliases, file paths, and code identifiers may keep their source language.
-- When a non-English source term is important, keep it as an alias or quoted evidence detail and use the canonical English term in synthesized prose when identity is clear.
-- If a page intentionally uses a different prose language, state the reason in the page body or frontmatter and treat it as a local exception.
-
-## Topology
-
-- Choose the smallest source-backed wiki hierarchy that fits the project.
-- Do not force a universal \`concepts/\`, \`entities/\`, \`decisions/\`, \`modules/\`, \`contradictions/\`, and \`reports/\` layout unless the source analysis justifies it.
-- Prefer updating existing canonical pages over creating duplicates.
-- Create new pages only when the topic is reusable for future tasks or useful to a human reader.
-- Use stable headings inside broader pages for small objects that do not deserve standalone pages.
-- Record topology decisions before creating new page families when the source shape is ambiguous or broad.
-
-## Provenance
-
-- Keep raw sources in \`context/raw/**\`; preserve the user-created hierarchy when citing raw sources.
-- Keep durable machine artifacts under \`.agentplane/context/derived/**\`.
-- Keep service caches under \`.agentplane/context/service/**\`.
-- Do not manually edit \`.agentplane/context/derived/**\`; rebuild projections through context commands.
-- Every factual claim, decision, risk, workflow, and definition needs source refs or an explicit no-source reason.
-- Preserve conflicts and open questions instead of flattening contradictory sources into one unsourced claim.
-- Do not copy secrets or non-publishable source spans into public wiki pages.
-
-## Maintenance
-
-- Run \`agentplane context wiki lint <path>\` after creating or materially changing wiki pages.
-- Run \`agentplane context wiki index context/wiki\` after adding, moving, or materially renaming wiki pages.
-- Run \`agentplane context verify-task <task-id>\` before closing task-bound context work.
-`;
 }
 
 function buildRedactionRulesYaml(): string {
