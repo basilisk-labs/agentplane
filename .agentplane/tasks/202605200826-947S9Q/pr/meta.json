@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-20T09:41:40Z",
   "base": "main",
   "branch": "task/202605200826-947S9Q/hosted-close-pr-verification",
   "created_at": "2026-05-20T08:27:18.526Z",
-  "head_sha": "f0aaff1c90f4ea086a26f87469432d69287debbe",
+  "head_sha": "c2f5ae2b82c3194572996130b8ef96591427dbcc",
   "last_verified_at": "2026-05-20T09:28:41.599Z",
   "last_verified_sha": "f0aaff1c90f4ea086a26f87469432d69287debbe",
+  "merge_commit": "7bde18b89d8fe722bf8db6428357b31629772f56",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-20T09:41:40Z",
   "pr_number": 3962,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3962",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605200826-947S9Q",
-  "updated_at": "2026-05-20T09:22:15.760Z",
+  "updated_at": "2026-05-20T09:41:40Z",
   "verify": {
     "status": "pass"
   }
