@@ -29,7 +29,7 @@ quality_review:
   updated_at: "2026-05-20T09:28:41.599Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR quality gate passed for f0aaff1c9: GitHub PR #3962 checks are green, including PR verification and Release-ready manifest; local workflow lint, protection contract, routing, diff check, typecheck, and targeted workflow tests passed."
-  evaluated_sha: "2a316c63ec0ebfdbdc26c08b5d9604762244ddc9"
+  evaluated_sha: "f0aaff1c90f4ea086a26f87469432d69287debbe"
   blueprint_digest: "655c724346ac3b26a4318dcfcbbfb050cef48b19bbdead30f51c9d53ae95617e"
   evidence_refs:
     - ".agentplane/tasks/202605200826-947S9Q/README.md"
