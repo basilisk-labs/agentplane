@@ -35,9 +35,32 @@ derived:
   reports:
     events: .agentplane/context/derived/reports/assimilation-events.jsonl
 wiki:
+  contract:
+    manifest: .agentplane/context/agentplane.context.yaml
+    rules: .agentplane/context/policies/wiki.rules.md
+    agent_notes: context/wiki/AGENTS.md
   frontmatter_required: true
   source_refs_as_markdown_links: true
   cross_links_required: true
+  language:
+    synthesized_prose: en
+    allow_source_language_for:
+      - direct_quotes
+      - source_titles
+      - proper_names
+      - glossary_aliases
+      - file_paths
+      - code_identifiers
+    translation_note_required: true
+  maintenance_mode: adaptive
+  raw_deletion_resilience_required: false
+  entity_relation_first: false
+  glossary:
+    canonical_required: false
+    alias_normalization_required: false
+  source_addressing:
+    original_hash_required: true
+    line_refs_required: false
   modalities:
     - factual_claim
     - observation
