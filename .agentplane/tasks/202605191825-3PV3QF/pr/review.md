@@ -13,7 +13,7 @@ Created: 2026-05-19T18:26:31.579Z
 ## Verification
 
 - State: ok
-- Note: EVALUATOR quality gate passed for integration target 8e58c020032e43817562363a7ae53604e96c3871; hosted GitHub PR verification later confirmed on b5108eed4 with Core CI / PR verification success.
+- Note: EVALUATOR quality gate passed after preserving workflow_dispatch exact-sha recovery planning path; focused workflow checks and contract test passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,18 +24,18 @@ Created: 2026-05-19T18:26:31.579Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-19T18:48:17.663Z
+- Updated: 2026-05-20T05:08:46.061Z
 - Branch: task/202605191825-3PV3QF/github-verification-gates
-- Head: 8e58c020032e
+- Head: 5d2377eecb06
 
 ```text
  .../blueprint/resolved-snapshot.json               | 594 +++++++++++++++++++++
- .github/workflows/ci.yml                           | 346 +++++++++++-
+ .github/workflows/ci.yml                           | 358 ++++++++++++-
  ...check-github-protection-contract-script.test.ts |  12 +-
- .../commands/release/ci-workflow-contract.test.ts  |  21 +-
+ .../commands/release/ci-workflow-contract.test.ts  |  25 +-
  .../checks/check-github-protection-contract.mjs    |   2 +-
  scripts/checks/plan-github-ci.mjs                  |  67 +++
- 6 files changed, 1023 insertions(+), 19 deletions(-)
+ 6 files changed, 1039 insertions(+), 19 deletions(-)
 ```
 
 </details>
