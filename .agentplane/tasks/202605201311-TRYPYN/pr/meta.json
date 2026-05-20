@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-20T13:28:42Z",
   "base": "main",
   "branch": "task/202605201311-TRYPYN/context-ci-routing",
   "created_at": "2026-05-20T13:12:08.755Z",
-  "head_sha": "ba50f14147adda816512565204d27ed6f28ef84f",
+  "head_sha": "d59aa12807fa06068508c71ef2ad2c81ed4f9d87",
   "last_verified_at": "2026-05-20T13:20:34.573Z",
   "last_verified_sha": "4483996a8cdd672b81e721540f3b0776cfc093a1",
+  "merge_commit": "debe5dbf56799427e472aed79888fcf07158b8d2",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-20T13:28:42Z",
   "pr_number": 3971,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3971",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605201311-TRYPYN",
-  "updated_at": "2026-05-20T13:21:27.659Z",
+  "updated_at": "2026-05-20T13:28:42Z",
   "verify": {
     "status": "pass"
   }
