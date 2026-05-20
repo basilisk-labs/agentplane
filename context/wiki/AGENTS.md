@@ -21,10 +21,12 @@ agentplane_context:
 Profile: adaptive
 
 - Treat `context/wiki/**` as durable, source-backed project knowledge with stable AgentPlane frontmatter.
+- Treat `.agentplane/context/agentplane.context.yaml` as the machine-readable context contract and `.agentplane/context/policies/wiki.rules.md` as the human-readable wiki policy.
 - Analyze the base project, existing docs, task history, and raw sources before choosing a wiki structure.
 - Choose the smallest wiki hierarchy that fits this project; do not force a universal concepts/entities/decisions/modules layout.
 - Keep this initialized wiki minimal until first ingest; project-specific folders should appear from source-backed assimilation, not from empty scaffolding.
 - Preserve modality, source refs, cross-links, glossary aliases, and graph alignment when updating pages.
+- Write synthesized wiki prose in English by default; preserve source-language terms only for quotes, titles, proper names, aliases, paths, and code identifiers.
 - Prefer updating existing canonical pages over creating duplicates; describe small objects under stable headings when that is clearer.
 - Use `agentplane context wiki new`, `agentplane context wiki lint`, `agentplane context wiki explain`, `agentplane context wiki link`, and `agentplane context wiki index`.
 - When claims conflict, keep both claims, create a conflict candidate, and ask for review before promotion or overwrite.

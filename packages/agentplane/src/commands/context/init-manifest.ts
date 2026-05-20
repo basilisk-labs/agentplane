@@ -1,10 +1,17 @@
-version: 1
+import type { ContextInitParsed } from "./context.spec.js";
+
+export function buildContextManifestYaml(
+  projectName: string,
+  profile: ContextInitParsed["profile"],
+  now: string,
+): string {
+  return `version: 1
 project:
-  name: "agentplane"
+  name: "${projectName.replaceAll('"', String.raw`\"`)}"
   root: "."
 workspace:
   namespace: local.project
-  mode: adaptive
+  mode: ${profile}
   layout_strategy: adaptive
   page_granularity: topic_artifact
   claim_granularity: atomic
@@ -52,15 +59,15 @@ wiki:
       - file_paths
       - code_identifiers
     translation_note_required: true
-  maintenance_mode: adaptive
-  raw_deletion_resilience_required: false
-  entity_relation_first: false
+  maintenance_mode: ${profile === "maximum-assimilation" ? "maximum_assimilation" : "adaptive"}
+  raw_deletion_resilience_required: ${profile === "maximum-assimilation" ? "true" : "false"}
+  entity_relation_first: ${profile === "maximum-assimilation" ? "true" : "false"}
   glossary:
-    canonical_required: false
-    alias_normalization_required: false
+    canonical_required: ${profile === "maximum-assimilation" ? "true" : "false"}
+    alias_normalization_required: ${profile === "maximum-assimilation" ? "true" : "false"}
   source_addressing:
     original_hash_required: true
-    line_refs_required: false
+    line_refs_required: ${profile === "maximum-assimilation" ? "true" : "false"}
   modalities:
     - factual_claim
     - observation
@@ -84,5 +91,7 @@ service:
     fts: true
     cache_task_readmes: true
     cache_acr_summaries: true
-generated_at: "2026-05-18T12:56:57.610Z"
+generated_at: "${now}"
 remotes: []
+`;
+}
