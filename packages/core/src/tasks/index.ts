@@ -120,6 +120,7 @@ export {
 export {
   lintTasksFile,
   lintTasksSnapshot,
+  lintTaskVerifyStepsSection,
   readTasksExport,
   type TasksLintResult,
 } from "./tasks-lint.js";
