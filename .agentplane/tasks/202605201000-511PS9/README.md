@@ -4,7 +4,7 @@ title: "Unify task next-action route explanation"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -26,16 +26,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T10:23:41.341Z"
+  updated_at: "2026-05-20T11:36:55.607Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task."
+  note: "Fresh integration quality gate passed for published PR head 13286b7e42da22119986d13aa7340cf05eabc1ca. Evidence: GitHub hosted checks are green or skipped by policy; local ci:local:fast passed after CLI reference refresh; PR #3965 is open and mergeable. Note: final artifact-only commit e25a7be77 only refreshed AgentPlane PR metadata after publication."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-20T10:23:41.341Z"
+  updated_at: "2026-05-20T11:36:55.607Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task."
-  evaluated_sha: "8dea62f1d0e2728731bc1fea54252adc77e4cbe3"
+  note: "Fresh integration quality gate passed for published PR head 13286b7e42da22119986d13aa7340cf05eabc1ca. Evidence: GitHub hosted checks are green or skipped by policy; local ci:local:fast passed after CLI reference refresh; PR #3965 is open and mergeable. Note: final artifact-only commit e25a7be77 only refreshed AgentPlane PR metadata after publication."
+  evaluated_sha: "e25a7be772c9b2cda159ee4742910fd63078b2a7"
   blueprint_digest: "91f69fdec3d2fcfbaacff171c8dbdf8c35e59a81f753f14fb6181bbe078b0e88"
   evidence_refs:
     - ".agentplane/tasks/202605201000-511PS9/README.md"
@@ -66,8 +66,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality gate passed for implementation commit 8dea62f1d. Scope matched task objective; no unrelated source changes identified. Evidence reviewed: focused tests, typechecks, ESLint, policy routing, diff check, framework bootstrap, doctor, and CLI smoke. Residual note: ap task lint --verify-steps is opt-in because it exposes pre-existing historical Verify Steps pollution outside this task."
+  -
+    type: "verify"
+    at: "2026-05-20T11:36:55.607Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Fresh integration quality gate passed for published PR head 13286b7e42da22119986d13aa7340cf05eabc1ca. Evidence: GitHub hosted checks are green or skipped by policy; local ci:local:fast passed after CLI reference refresh; PR #3965 is open and mergeable. Note: final artifact-only commit e25a7be77 only refreshed AgentPlane PR metadata after publication."
 doc_version: 3
-doc_updated_at: "2026-05-20T10:23:41.422Z"
+doc_updated_at: "2026-05-20T11:36:55.765Z"
 doc_updated_by: "CODER"
 description: "Make the task route decision surface explain effective approval policy, checkout role, and ambiguity between next-action and recovery diagnostics."
 sections:
@@ -133,6 +139,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:22:23.042Z, excerpt_hash=sha256:ab9d05471bf3deb5a9ceb5770373bf359c46e290dd7f4abf927636f11af14959
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605201000-511PS9/blueprint/resolved-snapshot.json
+    - old_digest: 91f69fdec3d2fcfbaacff171c8dbdf8c35e59a81f753f14fb6181bbe078b0e88
+    - current_digest: 91f69fdec3d2fcfbaacff171c8dbdf8c35e59a81f753f14fb6181bbe078b0e88
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605201000-511PS9
+
+    ### 2026-05-20T11:36:55.607Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Fresh integration quality gate passed for published PR head 13286b7e42da22119986d13aa7340cf05eabc1ca. Evidence: GitHub hosted checks are green or skipped by policy; local ci:local:fast passed after CLI reference refresh; PR #3965 is open and mergeable. Note: final artifact-only commit e25a7be77 only refreshed AgentPlane PR metadata after publication.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:23:41.422Z, excerpt_hash=sha256:ab9d05471bf3deb5a9ceb5770373bf359c46e290dd7f4abf927636f11af14959
 
     Details:
 
@@ -222,6 +247,25 @@ Note: Quality gate passed for implementation commit 8dea62f1d. Scope matched tas
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:22:23.042Z, excerpt_hash=sha256:ab9d05471bf3deb5a9ceb5770373bf359c46e290dd7f4abf927636f11af14959
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605201000-511PS9/blueprint/resolved-snapshot.json
+- old_digest: 91f69fdec3d2fcfbaacff171c8dbdf8c35e59a81f753f14fb6181bbe078b0e88
+- current_digest: 91f69fdec3d2fcfbaacff171c8dbdf8c35e59a81f753f14fb6181bbe078b0e88
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605201000-511PS9
+
+### 2026-05-20T11:36:55.607Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Fresh integration quality gate passed for published PR head 13286b7e42da22119986d13aa7340cf05eabc1ca. Evidence: GitHub hosted checks are green or skipped by policy; local ci:local:fast passed after CLI reference refresh; PR #3965 is open and mergeable. Note: final artifact-only commit e25a7be77 only refreshed AgentPlane PR metadata after publication.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:23:41.422Z, excerpt_hash=sha256:ab9d05471bf3deb5a9ceb5770373bf359c46e290dd7f4abf927636f11af14959
 
 Details:
 
