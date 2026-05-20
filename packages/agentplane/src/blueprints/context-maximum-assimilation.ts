@@ -31,7 +31,7 @@ export const contextMaximumAssimilationEvidence: readonly EvidenceRequirement[] 
     "context_max.glossary",
     "artifact",
     "artifact_write",
-    "Canonical glossary updates used for term normalization and alias preservation; semantic wiki links use the source-shaped topology.",
+    "Root wiki glossary file `context/wiki/glossary.md` created or updated for canonical term normalization and alias preservation; semantic wiki links use the source-shaped topology.",
   ),
   evidence(
     "context_max.changed_paths",
@@ -96,6 +96,12 @@ export const contextMaximumAssimilationStopRules: readonly StopRule[] = [
     severity: "approval_required",
     reason:
       "Canonical term collisions, alias ambiguity, or identity uncertainty must be kept as conflict/open-question candidates before normalization.",
+  },
+  {
+    id: "context_max_missing_root_glossary_file",
+    severity: "stop",
+    reason:
+      "Maximum assimilation requires the canonical glossary to be created or maintained as `context/wiki/glossary.md`, not scattered across generated reports or page-local notes.",
   },
   {
     id: "context_max_raw_deletion_resilience_unproven",

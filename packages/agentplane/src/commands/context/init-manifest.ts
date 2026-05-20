@@ -65,6 +65,7 @@ wiki:
   glossary:
     canonical_required: ${profile === "maximum-assimilation" ? "true" : "false"}
     alias_normalization_required: ${profile === "maximum-assimilation" ? "true" : "false"}
+    canonical_path: ${profile === "maximum-assimilation" ? "context/wiki/glossary.md" : "null"}
   source_addressing:
     original_hash_required: true
     line_refs_required: ${profile === "maximum-assimilation" ? "true" : "false"}
