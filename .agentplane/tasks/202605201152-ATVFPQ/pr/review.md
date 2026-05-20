@@ -13,7 +13,7 @@ Created: 2026-05-20T11:53:03.337Z
 ## Verification
 
 - State: ok
-- Note: Command: bunx prettier --check .agentplane/context/agentplane.context.yaml .agentplane/context/policies/wiki.rules.md context/wiki/AGENTS.md packages/agentplane/src/commands/context/init.ts -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: ap context wiki lint context/wiki/AGENTS.md -> pass. Command: ap context check -> pass. Command: bunx eslint packages/agentplane/src/commands/context/init.ts -> pass. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts -> pass, 33 tests. Command: ap doctor -> OK with pre-existing warning about DONE task archive README 202605200640-7AXZRX missing from git index. Skipped: ap context verify-task 202605201152-ATVFPQ, because this is a docs/policy task and the command rejected it as not a context task.
+- Note: EVALUATOR quality gate passed. Evidence: local pre-push fast CI completed through format, schema freshness, policy routing, release parity, build, bundle build, CLI cold baseline, docs freshness, recipe inventory, scripts README, onboarding, hotspot threshold, vitest projects, lint, unit tests 321 files/1925 passed/2 skipped, and critical CLI chunks 5/5 passed before push. Hosted PR #3967 checks on head 0b158ea3a all passed: CodeQL, Core CI plan, verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, PR verification, Release-ready manifest, Docs CI docs, and change detection.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

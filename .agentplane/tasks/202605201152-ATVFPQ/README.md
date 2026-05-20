@@ -4,7 +4,7 @@ title: "Define context wiki contract surface"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T11:57:31.156Z"
-  updated_by: "DOCS"
-  note: "Command: bunx prettier --check .agentplane/context/agentplane.context.yaml .agentplane/context/policies/wiki.rules.md context/wiki/AGENTS.md packages/agentplane/src/commands/context/init.ts -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: ap context wiki lint context/wiki/AGENTS.md -> pass. Command: ap context check -> pass. Command: bunx eslint packages/agentplane/src/commands/context/init.ts -> pass. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts -> pass, 33 tests. Command: ap doctor -> OK with pre-existing warning about DONE task archive README 202605200640-7AXZRX missing from git index. Skipped: ap context verify-task 202605201152-ATVFPQ, because this is a docs/policy task and the command rejected it as not a context task."
+  updated_at: "2026-05-20T12:34:40.659Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed. Evidence: local pre-push fast CI completed through format, schema freshness, policy routing, release parity, build, bundle build, CLI cold baseline, docs freshness, recipe inventory, scripts README, onboarding, hotspot threshold, vitest projects, lint, unit tests 321 files/1925 passed/2 skipped, and critical CLI chunks 5/5 passed before push. Hosted PR #3967 checks on head 0b158ea3a all passed: CodeQL, Core CI plan, verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, PR verification, Release-ready manifest, Docs CI docs, and change detection."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-20T12:34:40.659Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed. Evidence: local pre-push fast CI completed through format, schema freshness, policy routing, release parity, build, bundle build, CLI cold baseline, docs freshness, recipe inventory, scripts README, onboarding, hotspot threshold, vitest projects, lint, unit tests 321 files/1925 passed/2 skipped, and critical CLI chunks 5/5 passed before push. Hosted PR #3967 checks on head 0b158ea3a all passed: CodeQL, Core CI plan, verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, PR verification, Release-ready manifest, Docs CI docs, and change detection."
+  evaluated_sha: "9c073bfdf51c13518f31c3a3303c252f5f2825df"
+  blueprint_digest: "2b00d837ef349d9bb4f691c50e1570ccfcd683e6fece96dbb41449a2ae77c745"
+  evidence_refs:
+    - ".agentplane/tasks/202605201152-ATVFPQ/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201152-ATVFPQ-context-wiki-contract/.agentplane/tasks/202605201152-ATVFPQ/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -43,8 +54,14 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: bunx prettier --check .agentplane/context/agentplane.context.yaml .agentplane/context/policies/wiki.rules.md context/wiki/AGENTS.md packages/agentplane/src/commands/context/init.ts -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: ap context wiki lint context/wiki/AGENTS.md -> pass. Command: ap context check -> pass. Command: bunx eslint packages/agentplane/src/commands/context/init.ts -> pass. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts -> pass, 33 tests. Command: ap doctor -> OK with pre-existing warning about DONE task archive README 202605200640-7AXZRX missing from git index. Skipped: ap context verify-task 202605201152-ATVFPQ, because this is a docs/policy task and the command rejected it as not a context task."
+  -
+    type: "verify"
+    at: "2026-05-20T12:34:40.659Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed. Evidence: local pre-push fast CI completed through format, schema freshness, policy routing, release parity, build, bundle build, CLI cold baseline, docs freshness, recipe inventory, scripts README, onboarding, hotspot threshold, vitest projects, lint, unit tests 321 files/1925 passed/2 skipped, and critical CLI chunks 5/5 passed before push. Hosted PR #3967 checks on head 0b158ea3a all passed: CodeQL, Core CI plan, verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, PR verification, Release-ready manifest, Docs CI docs, and change detection."
 doc_version: 3
-doc_updated_at: "2026-05-20T11:57:31.182Z"
+doc_updated_at: "2026-05-20T12:34:40.717Z"
 doc_updated_by: "DOCS"
 description: "Clarify the repository-local context/wiki contract by making the context manifest and wiki rules the explicit source for wiki format, language, topology, and provenance expectations without changing runtime enforcement."
 sections:
@@ -72,6 +89,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T11:53:03.295Z, excerpt_hash=sha256:bcc38c34ef4931bd578d7f99ea818892646e5319d4422c20fae7a280de2ff7ac
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201152-ATVFPQ-context-wiki-contract/.agentplane/tasks/202605201152-ATVFPQ/blueprint/resolved-snapshot.json
+    - old_digest: 2b00d837ef349d9bb4f691c50e1570ccfcd683e6fece96dbb41449a2ae77c745
+    - current_digest: 2b00d837ef349d9bb4f691c50e1570ccfcd683e6fece96dbb41449a2ae77c745
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605201152-ATVFPQ
+
+    ### 2026-05-20T12:34:40.659Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed. Evidence: local pre-push fast CI completed through format, schema freshness, policy routing, release parity, build, bundle build, CLI cold baseline, docs freshness, recipe inventory, scripts README, onboarding, hotspot threshold, vitest projects, lint, unit tests 321 files/1925 passed/2 skipped, and critical CLI chunks 5/5 passed before push. Hosted PR #3967 checks on head 0b158ea3a all passed: CodeQL, Core CI plan, verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, PR verification, Release-ready manifest, Docs CI docs, and change detection.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T11:57:31.182Z, excerpt_hash=sha256:bcc38c34ef4931bd578d7f99ea818892646e5319d4422c20fae7a280de2ff7ac
 
     Details:
 
@@ -124,6 +160,25 @@ Note: Command: bunx prettier --check .agentplane/context/agentplane.context.yaml
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T11:53:03.295Z, excerpt_hash=sha256:bcc38c34ef4931bd578d7f99ea818892646e5319d4422c20fae7a280de2ff7ac
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201152-ATVFPQ-context-wiki-contract/.agentplane/tasks/202605201152-ATVFPQ/blueprint/resolved-snapshot.json
+- old_digest: 2b00d837ef349d9bb4f691c50e1570ccfcd683e6fece96dbb41449a2ae77c745
+- current_digest: 2b00d837ef349d9bb4f691c50e1570ccfcd683e6fece96dbb41449a2ae77c745
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605201152-ATVFPQ
+
+### 2026-05-20T12:34:40.659Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed. Evidence: local pre-push fast CI completed through format, schema freshness, policy routing, release parity, build, bundle build, CLI cold baseline, docs freshness, recipe inventory, scripts README, onboarding, hotspot threshold, vitest projects, lint, unit tests 321 files/1925 passed/2 skipped, and critical CLI chunks 5/5 passed before push. Hosted PR #3967 checks on head 0b158ea3a all passed: CodeQL, Core CI plan, verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, PR verification, Release-ready manifest, Docs CI docs, and change detection.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T11:57:31.182Z, excerpt_hash=sha256:bcc38c34ef4931bd578d7f99ea818892646e5319d4422c20fae7a280de2ff7ac
 
 Details:
 
