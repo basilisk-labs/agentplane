@@ -62,7 +62,7 @@ framework:
   source: https://github.com/basilisk-labs/agentplane
   last_update: null
   cli:
-    expected_version: 0.6.3
+    expected_version: 0.6.4
 feedback:
   github_issues:
     enabled: true
@@ -99,7 +99,7 @@ evaluator:
     - agentplane doctor
     - node .agentplane/policy/check-routing.mjs
 observability:
-  runs_dir: .agentplane/runs
+  runs_dir: .agentplane/tasks/<task-id>/runs
   events: jsonl
 retry_policy:
   normal_exit_continuation: true
@@ -110,6 +110,7 @@ timeouts:
 in_scope_paths:
   - "**"
 ---
+
 
 
 
