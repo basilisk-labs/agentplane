@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605201000-511PS9/ambiguity-route-contract",
+  "created_at": "2026-05-20T10:03:29.826Z",
+  "head_sha": "bff12d10d45734b8311407622f14a38e8ca03d54",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605201000-511PS9",
+  "updated_at": "2026-05-20T10:03:29.826Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

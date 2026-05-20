@@ -25,6 +25,12 @@ type RouteRepairStep = {
   mutates: boolean;
 };
 
+type RouteAmbiguity = {
+  code: string;
+  summary: string;
+  resolution: string;
+};
+
 type TaskRouteDecision = {
   task: {
     id: string;
@@ -42,9 +48,20 @@ type TaskRouteDecision = {
     baseBranch: string | null;
     headSha: string | null;
     prBranch: string | null;
+    checkoutRole: "base" | "task_worktree" | "unknown";
+  };
+  approval: {
+    runtime: {
+      requirePlan: boolean;
+      requireNetwork: boolean;
+      requireVerify: boolean;
+    };
+    gatewayMutationApprovalRequired: boolean;
+    effectiveMutationApprovalRequired: boolean;
   };
   prFlow: PrFlowStatusReport | null;
   blockers: RouteBlocker[];
+  ambiguities: RouteAmbiguity[];
   nextAction: RouteNextAction;
   repairPlan: RouteRepairStep[];
 };
@@ -242,6 +259,58 @@ function deriveNextAction(opts: {
   };
 }
 
+function deriveCheckoutRole(resume: TaskResumeContext): TaskRouteDecision["workspace"]["checkoutRole"] {
+  if (!resume.branch || !resume.base_branch) return "unknown";
+  return resume.branch === resume.base_branch ? "base" : "task_worktree";
+}
+
+function deriveApprovalContract(ctx: CommandContext): TaskRouteDecision["approval"] {
+  const approvals = ctx.config.agents?.approvals;
+  return {
+    runtime: {
+      requirePlan: approvals?.require_plan === true,
+      requireNetwork: approvals?.require_network === true,
+      requireVerify: approvals?.require_verify === true,
+    },
+    gatewayMutationApprovalRequired: true,
+    effectiveMutationApprovalRequired: true,
+  };
+}
+
+function deriveAmbiguities(opts: {
+  decision: Omit<TaskRouteDecision, "ambiguities" | "repairPlan">;
+}): RouteAmbiguity[] {
+  const ambiguities: RouteAmbiguity[] = [];
+  const blockerCodes = new Set(opts.decision.blockers.map((blocker) => blocker.code));
+  if (
+    opts.decision.workflowMode === "branch_pr" &&
+    blockerCodes.has("on_base_checkout") &&
+    opts.decision.nextAction.code !== "start_or_recover_worktree" &&
+    opts.decision.nextAction.code !== "merge_close_tail"
+  ) {
+    ambiguities.push({
+      code: "base_checkout_owner_scope",
+      summary: "current checkout is the base branch while branch_pr owner-scoped work normally belongs in the task worktree",
+      resolution: "use the selected next action only if it is a base-lane action; otherwise run agentplane work resume <task-id>",
+    });
+  }
+  if (opts.decision.nextAction.requiresApproval && !opts.decision.nextAction.command) {
+    ambiguities.push({
+      code: "approval_without_local_command",
+      summary: "the selected next action requires approval but has no safe local command",
+      resolution: "treat this as a human/provider action and re-run task status --route after the external action completes",
+    });
+  }
+  if (blockerCodes.has("close_tail_open") && opts.decision.nextAction.code === "merge_close_tail") {
+    ambiguities.push({
+      code: "close_tail_provider_lane",
+      summary: "hosted close-tail is open, so local task mutation is not the next source of truth",
+      resolution: "wait for stable hosted checks and merge the close-tail PR through the provider, then pull/reconcile base state",
+    });
+  }
+  return ambiguities;
+}
+
 function deriveRepairPlan(decision: Omit<TaskRouteDecision, "repairPlan">): RouteRepairStep[] {
   const steps: RouteRepairStep[] = [];
   const id = decision.task.id;
@@ -392,10 +461,13 @@ export async function buildTaskRouteDecision(opts: {
       baseBranch: resume.base_branch,
       headSha: resume.head_sha,
       prBranch: resume.pr_branch,
+      checkoutRole: deriveCheckoutRole(resume),
     },
+    approval: deriveApprovalContract(ctx),
     prFlow,
     blockers,
     nextAction,
   };
-  return { ...partial, repairPlan: deriveRepairPlan(partial) };
+  const withAmbiguities = { ...partial, ambiguities: deriveAmbiguities({ decision: partial }) };
+  return { ...withAmbiguities, repairPlan: deriveRepairPlan(withAmbiguities) };
 }

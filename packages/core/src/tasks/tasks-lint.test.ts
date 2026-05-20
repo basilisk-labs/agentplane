@@ -10,6 +10,7 @@ import {
   buildTasksExportSnapshot,
   lintTasksFile,
   lintTasksSnapshot,
+  lintTaskVerifyStepsSection,
   saveConfig,
   type TasksExportSnapshot,
 } from "../index.js";
@@ -239,5 +240,22 @@ describe("tasks-lint", () => {
     expect(joined).toContain("B: verify must be a string[]");
     expect(joined).toContain("duplicate task id: B");
     expect(joined).toContain("A: depends_on references missing task: MISSING");
+  });
+
+  it("lintTaskVerifyStepsSection rejects executed output and empty Run commands", () => {
+    const errors = lintTaskVerifyStepsSection({
+      taskId: "202605201001-3TVWFX",
+      text: [
+        "1. Run",
+        " RUN  v4.1.6 /repo",
+        " Test Files  2 passed (2)",
+        '3. Run {"schemaVersion":1,"ready":false}; expected: ready=false',
+      ].join("\n"),
+    });
+
+    const joined = errors.join("\n");
+    expect(joined).toContain("empty Run command");
+    expect(joined).toContain("contains test output");
+    expect(joined).toContain("appears to contain execution output");
   });
 });

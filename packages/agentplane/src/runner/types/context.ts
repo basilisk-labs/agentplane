@@ -123,5 +123,6 @@ export type RunnerContextBundle = {
   recipe?: RunnerRecipeContext;
   blueprint?: BlueprintPlanArtifact;
   playbook?: RunnerExecutionPlaybookContract;
+  route_decision?: Record<string, unknown>;
   execution: RunnerExecutionContract;
 };

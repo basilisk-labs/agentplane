@@ -3,6 +3,7 @@ import { taskCloseDuplicateSpec } from "../../../commands/task/close-duplicate.c
 import { taskCloseNoopSpec } from "../../../commands/task/close-noop.command.js";
 import { taskCommentSpec } from "../../../commands/task/comment.command.js";
 import { taskDeriveSpec } from "../../../commands/task/derive.command.js";
+import { taskEvidenceCheckSpec } from "../../../commands/task/evidence-check.command.js";
 import { taskFindingsAddSpec } from "../../../commands/task/findings-add.command.js";
 import { taskFindingsSpec } from "../../../commands/task/findings.command.js";
 import {
@@ -82,6 +83,7 @@ import {
   loadTaskBeginSpec,
   loadTaskCompleteSpec,
   loadTaskDeriveSpec,
+  loadTaskEvidenceCheckSpec,
   loadTaskCloseDuplicateSpec,
   loadTaskStartReadySpec,
   loadTaskCloseNoopSpec,
@@ -159,6 +161,11 @@ export const TASK_COMMANDS = [
   declareCommand(taskCompleteSpec, { load: loadTaskCompleteSpec }),
   declareCommand(taskDeriveSpec, {
     load: loadTaskDeriveSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskEvidenceCheckSpec, {
+    load: loadTaskEvidenceCheckSpec,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
