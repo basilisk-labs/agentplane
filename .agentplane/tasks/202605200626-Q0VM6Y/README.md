@@ -1,10 +1,11 @@
 ---
 id: "202605200626-Q0VM6Y"
 title: "Add source-shaped topology gate"
-status: "DOING"
+result_summary: "Merged via PR #3956."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200626-Q0VM6Y-source-shaped-topology-gate/.agentplane/tasks/202605200626-Q0VM6Y/blueprint/resolved-snapshot.json"
   findings:
     - "Reviewed final shape after factoring maximum-assimilation evidence and stop rules into a dedicated blueprint module. The source-shaped topology requirement remains present in docs, init guidance, ingest prompt/extension gates, blueprint evidence, blueprint stop rules, and tests. Residual risk remains the same: topology artifact contents are enforced by workflow contract and review gates rather than a dedicated parser."
-commit: null
+commit:
+  hash: "2cbb4447909aa86f5eee13b7346455fc509387c7"
+  message: "Merge pull request #3956 from basilisk-labs/task/202605200626-Q0VM6Y/source-shaped-topology-gate"
 comments:
   -
     author: "CODER"
     body: "Start: Implement source-shaped topology gate in maximum-assimilation context prompts, blueprint evidence, docs, and focused tests from the dedicated branch_pr worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3956 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -78,9 +84,16 @@ events:
     author: "CONTEXT_CURATOR"
     state: "ok"
     note: "Raw init remains source-shaped: release-readiness test asserts context/raw contains only .gitkeep; isolated maximum-assimilation init contour produced only context/raw and context/raw/.gitkeep. Checks: bun run format:changed, bun test packages/agentplane/src/commands/context/release-readiness.test.ts, node .agentplane/policy/check-routing.mjs, ap doctor."
+  -
+    type: "status"
+    at: "2026-05-20T08:55:48.157Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3956 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-20T08:00:43.049Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-20T08:55:48.165Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make maximum-assimilation context tasks record and verify a source-shaped topology decision before narrative wiki synthesis; includes docs updates."
 sections:
   Summary: |-
