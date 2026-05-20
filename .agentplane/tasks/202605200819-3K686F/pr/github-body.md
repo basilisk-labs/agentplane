@@ -30,12 +30,22 @@ docs:cli:check passes, lint/format pass, context wiki lint/check pass, and routi
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T08:19:25.614Z
+- Updated: 2026-05-20T08:27:32.331Z
 - Branch: task/202605200819-3K686F/context-modes
-- Head: 6dfe8f4189a8
+- Head: 1cc0630396c4
 
 ```text
-No changes detected.
+ .agentplane/context/agentplane.context.yaml        |   2 +-
+ .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   2 +-
+ docs/user/local-context.mdx                        |   6 +-
+ .../src/cli/run-cli.core.context-init.test.ts      |  36 +-
+ .../src/commands/context/context.command.ts        |   6 +-
+ .../src/commands/context/context.spec.ts           |  19 +-
+ packages/agentplane/src/commands/context/init.ts   |  28 +-
+ .../src/commands/context/release-readiness.test.ts |   6 +-
+ packages/agentplane/src/context/ingest-task.ts     |   8 +-
+ 10 files changed, 622 insertions(+), 63 deletions(-)
 ```
 
 </details>
