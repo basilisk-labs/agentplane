@@ -4,7 +4,7 @@ title: "Add source-shaped topology gate"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T06:36:33.864Z"
-  updated_by: "EVALUATOR"
-  note: "Quality gate remains passed after hotspot factoring."
+  updated_at: "2026-05-20T08:00:43.020Z"
+  updated_by: "CONTEXT_CURATOR"
+  note: "Raw init remains source-shaped: release-readiness test asserts context/raw contains only .gitkeep; isolated maximum-assimilation init contour produced only context/raw and context/raw/.gitkeep. Checks: bun run format:changed, bun test packages/agentplane/src/commands/context/release-readiness.test.ts, node .agentplane/policy/check-routing.mjs, ap doctor."
   attempts: 0
 quality_review:
   state: "pass"
@@ -72,8 +72,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality gate remains passed after hotspot factoring."
+  -
+    type: "verify"
+    at: "2026-05-20T08:00:43.020Z"
+    author: "CONTEXT_CURATOR"
+    state: "ok"
+    note: "Raw init remains source-shaped: release-readiness test asserts context/raw contains only .gitkeep; isolated maximum-assimilation init contour produced only context/raw and context/raw/.gitkeep. Checks: bun run format:changed, bun test packages/agentplane/src/commands/context/release-readiness.test.ts, node .agentplane/policy/check-routing.mjs, ap doctor."
 doc_version: 3
-doc_updated_at: "2026-05-20T06:36:33.881Z"
+doc_updated_at: "2026-05-20T08:00:43.049Z"
 doc_updated_by: "CODER"
 description: "Make maximum-assimilation context tasks record and verify a source-shaped topology decision before narrative wiki synthesis; includes docs updates."
 sections:
@@ -183,6 +189,25 @@ sections:
     Details:
 
     Reviewed final shape after factoring maximum-assimilation evidence and stop rules into a dedicated blueprint module. The source-shaped topology requirement remains present in docs, init guidance, ingest prompt/extension gates, blueprint evidence, blueprint stop rules, and tests. Residual risk remains the same: topology artifact contents are enforced by workflow contract and review gates rather than a dedicated parser.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200626-Q0VM6Y-source-shaped-topology-gate/.agentplane/tasks/202605200626-Q0VM6Y/blueprint/resolved-snapshot.json
+    - old_digest: fdfe5d806a22dae410fb1f9dd01cca466b7cbd3aa4fdf39e5772f0c4d8e63a8b
+    - current_digest: fdfe5d806a22dae410fb1f9dd01cca466b7cbd3aa4fdf39e5772f0c4d8e63a8b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605200626-Q0VM6Y
+
+    ### 2026-05-20T08:00:43.020Z — VERIFY — ok
+
+    By: CONTEXT_CURATOR
+
+    Note: Raw init remains source-shaped: release-readiness test asserts context/raw contains only .gitkeep; isolated maximum-assimilation init contour produced only context/raw and context/raw/.gitkeep. Checks: bun run format:changed, bun test packages/agentplane/src/commands/context/release-readiness.test.ts, node .agentplane/policy/check-routing.mjs, ap doctor.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T06:36:33.881Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -314,6 +339,25 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T06:36:23.398Z, excerpt_
 Details:
 
 Reviewed final shape after factoring maximum-assimilation evidence and stop rules into a dedicated blueprint module. The source-shaped topology requirement remains present in docs, init guidance, ingest prompt/extension gates, blueprint evidence, blueprint stop rules, and tests. Residual risk remains the same: topology artifact contents are enforced by workflow contract and review gates rather than a dedicated parser.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200626-Q0VM6Y-source-shaped-topology-gate/.agentplane/tasks/202605200626-Q0VM6Y/blueprint/resolved-snapshot.json
+- old_digest: fdfe5d806a22dae410fb1f9dd01cca466b7cbd3aa4fdf39e5772f0c4d8e63a8b
+- current_digest: fdfe5d806a22dae410fb1f9dd01cca466b7cbd3aa4fdf39e5772f0c4d8e63a8b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605200626-Q0VM6Y
+
+### 2026-05-20T08:00:43.020Z — VERIFY — ok
+
+By: CONTEXT_CURATOR
+
+Note: Raw init remains source-shaped: release-readiness test asserts context/raw contains only .gitkeep; isolated maximum-assimilation init contour produced only context/raw and context/raw/.gitkeep. Checks: bun run format:changed, bun test packages/agentplane/src/commands/context/release-readiness.test.ts, node .agentplane/policy/check-routing.mjs, ap doctor.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T06:36:33.881Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current

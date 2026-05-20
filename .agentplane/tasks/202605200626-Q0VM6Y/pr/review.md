@@ -13,7 +13,7 @@ Created: 2026-05-20T06:27:11.740Z
 ## Verification
 
 - State: ok
-- Note: Quality gate remains passed after hotspot factoring.
+- Note: Raw init remains source-shaped: release-readiness test asserts context/raw contains only .gitkeep; isolated maximum-assimilation init contour produced only context/raw and context/raw/.gitkeep. Checks: bun run format:changed, bun test packages/agentplane/src/commands/context/release-readiness.test.ts, node .agentplane/policy/check-routing.mjs, ap doctor.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,20 +24,20 @@ Created: 2026-05-20T06:27:11.740Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T06:36:23.424Z
+- Updated: 2026-05-20T08:00:43.076Z
 - Branch: task/202605200626-Q0VM6Y/source-shaped-topology-gate
-- Head: bb068857a6c4
+- Head: a843ab4d304b
 
 ```text
  .../blueprint/resolved-snapshot.json               | 571 +++++++++++++++++++++
- docs/user/local-context.mdx                        |   8 +
+ docs/user/local-context.mdx                        |  10 +-
  packages/agentplane/src/blueprints/builtins.ts     | 107 +---
  .../src/blueprints/context-maximum-assimilation.ts | 118 +++++
  .../agentplane/src/blueprints/validate.test.ts     |   3 +
  packages/agentplane/src/commands/context/init.ts   |   1 +
- .../src/commands/context/release-readiness.test.ts |   2 +
+ .../src/commands/context/release-readiness.test.ts |   4 +
  packages/agentplane/src/context/ingest-task.ts     |   4 +
- 8 files changed, 713 insertions(+), 101 deletions(-)
+ 8 files changed, 716 insertions(+), 102 deletions(-)
 ```
 
 </details>

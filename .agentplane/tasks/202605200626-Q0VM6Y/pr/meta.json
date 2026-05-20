@@ -2,15 +2,15 @@
   "base": "main",
   "branch": "task/202605200626-Q0VM6Y/source-shaped-topology-gate",
   "created_at": "2026-05-20T06:27:11.740Z",
-  "head_sha": "bb068857a6c47efc0b6e110507e58fe29d21ff21",
-  "last_verified_at": "2026-05-20T06:36:33.864Z",
-  "last_verified_sha": "bb068857a6c47efc0b6e110507e58fe29d21ff21",
+  "head_sha": "a843ab4d304b21a8a79302cff6719da6b73933d4",
+  "last_verified_at": "2026-05-20T08:00:43.020Z",
+  "last_verified_sha": "a843ab4d304b21a8a79302cff6719da6b73933d4",
   "pr_number": 3956,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3956",
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202605200626-Q0VM6Y",
-  "updated_at": "2026-05-20T06:36:23.424Z",
+  "updated_at": "2026-05-20T08:00:43.076Z",
   "verify": {
     "status": "pass"
   }
