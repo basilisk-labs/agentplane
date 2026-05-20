@@ -18,6 +18,14 @@ export type TasksLintResult = {
   errors: string[];
 };
 
+const VERIFY_STEPS_OUTPUT_MARKERS = [
+  /^\s*RUN\s+v?\d+\.\d+\.\d+\s+/,
+  /^\s*Test Files\s+\d+\s+passed/,
+  /^\s*Tests\s+\d+\s+passed/,
+  /^\s*Start at\s+\d{2}:\d{2}:\d{2}/,
+  /^\s*Duration\s+\d/,
+] as const;
+
 function isCommentsArray(value: unknown): value is { author: string; body: string }[] {
   return (
     Array.isArray(value) &&
@@ -86,6 +94,34 @@ function hasCycle(dependsOn: Map<string, string[]>): string[] | null {
   }
 
   return null;
+}
+
+export function lintTaskVerifyStepsSection(opts: {
+  taskId: string;
+  text: string | null | undefined;
+}): string[] {
+  const text = opts.text ?? "";
+  const errors: string[] = [];
+  const lines = text.replaceAll("\r\n", "\n").split("\n");
+  for (const [index, line] of lines.entries()) {
+    const lineNo = index + 1;
+    if (/^\s*\d+\.\s*Run\s*(?:;.*)?$/.test(line)) {
+      errors.push(
+        `${opts.taskId}: Verify Steps line ${lineNo} has an empty Run command; write the exact command before the expected result`,
+      );
+    }
+    if (/^\s*\d+\.\s*Run\s+\{/.test(line) || line.length > 500) {
+      errors.push(
+        `${opts.taskId}: Verify Steps line ${lineNo} appears to contain execution output; move evidence to Verification`,
+      );
+    }
+    if (VERIFY_STEPS_OUTPUT_MARKERS.some((marker) => marker.test(line))) {
+      errors.push(
+        `${opts.taskId}: Verify Steps line ${lineNo} contains test output; keep Verify Steps as the ex-ante acceptance contract`,
+      );
+    }
+  }
+  return errors;
 }
 
 export function lintTasksSnapshot(

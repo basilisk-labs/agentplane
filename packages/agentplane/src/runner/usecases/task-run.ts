@@ -7,6 +7,7 @@ import { resolveRecipeBlueprintExtensions, type RecipeManifest } from "@agentpla
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { blueprintResolveInputFromTask } from "../../commands/blueprint/task-input.js";
+import { buildTaskRouteDecision } from "../../commands/shared/route-decision.js";
 import { CliError } from "../../shared/errors.js";
 import {
   buildBlueprintPlanArtifact,
@@ -407,6 +408,12 @@ export async function prepareTaskRunnerExecution(opts: {
     recipe: opts.recipe,
     basePrompts: base_prompts,
   });
+  const route_decision = await buildTaskRouteDecision({
+    ctx: executionContext.command,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+    taskId: opts.task_id,
+  });
   const framework_explain = appendFrameworkExplainBehaviorInputs(
     executionContext.frameworkExplain,
     collectFrameworkExplainBehaviorInputs(base_prompts),
@@ -435,6 +442,7 @@ export async function prepareTaskRunnerExecution(opts: {
     task: taskEnvelope.task,
     recipe: opts.recipe,
     blueprint,
+    route_decision: route_decision as unknown as Record<string, unknown>,
     execution: {
       adapter_id: configured_adapter_id,
       mode: opts.mode,

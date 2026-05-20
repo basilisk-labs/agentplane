@@ -1,11 +1,15 @@
-import { lintTasksSnapshot } from "@agentplaneorg/core/tasks";
+import { lintTaskVerifyStepsSection, lintTasksSnapshot } from "@agentplaneorg/core/tasks";
 
 import { mapCoreError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
 import { buildTasksExportSnapshotFromTasks } from "../../backends/task-backend/shared/export.js";
 import { loadCommandContext, listTasksMemo } from "../shared/task-backend.js";
 
-export async function cmdTaskLint(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+export async function cmdTaskLint(opts: {
+  cwd: string;
+  rootOverride?: string;
+  verifySteps?: boolean;
+}): Promise<number> {
   try {
     const ctx = await loadCommandContext({
       cwd: opts.cwd,
@@ -24,6 +28,15 @@ export async function cmdTaskLint(opts: { cwd: string; rootOverride?: string }):
     }
     const snapshot = buildTasksExportSnapshotFromTasks(tasks);
     const result = lintTasksSnapshot(snapshot, ctx.config);
+    if (opts.verifySteps === true) {
+      const verifyStepErrors = tasks.flatMap((task) =>
+        lintTaskVerifyStepsSection({
+          taskId: task.id,
+          text: task.sections?.["Verify Steps"],
+        }),
+      );
+      result.errors.push(...verifyStepErrors);
+    }
     if (result.errors.length > 0) {
       throw new CliError({
         exitCode: 3,

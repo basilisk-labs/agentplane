@@ -65,12 +65,23 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
     if (parsed.route) {
       entries.push(
         { label: "branch", value: decision.workspace.branch ?? "unknown" },
+        { label: "checkout_role", value: decision.workspace.checkoutRole },
         { label: "pr_branch", value: decision.workspace.prBranch ?? "missing" },
         { label: "next_code", value: decision.nextAction.code },
         { label: "next", value: decision.nextAction.command ?? decision.nextAction.summary },
+        {
+          label: "effective_mutation_approval",
+          value: String(decision.approval.effectiveMutationApprovalRequired),
+        },
       );
       for (const blocker of decision.blockers) {
         entries.push({ label: "blocker", value: `${blocker.code}: ${blocker.summary}` });
+      }
+      for (const ambiguity of decision.ambiguities) {
+        entries.push({
+          label: "ambiguity",
+          value: `${ambiguity.code}: ${ambiguity.summary}; resolution: ${ambiguity.resolution}`,
+        });
       }
     }
     output.report(entries, { header: infoMessage(`task status: ${parsed.taskId}`) });

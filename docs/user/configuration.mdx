@@ -5,9 +5,13 @@ description: "How .agentplane/WORKFLOW.md works and how to change it safely."
 
 ## Overview
 
-Agent Plane reads `.agentplane/WORKFLOW.md` and validates the YAML front matter as the project source of truth.
+Agent Plane reads `.agentplane/WORKFLOW.md` and validates the YAML front matter as the single
+repo-local workflow/config source of truth.
 The CLI still accepts legacy `config.json` as an import fallback for older workspaces, but saves
 changes back to `WORKFLOW.md`.
+
+`agentplane config show` is the runtime readback of that file. `agentplane quickstart` is startup
+guidance assembled from the configured route; it is not a second configuration source.
 
 Use CLI commands to read and update values safely:
 

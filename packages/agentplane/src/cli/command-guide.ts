@@ -179,7 +179,8 @@ export function renderQuickstart(): string {
   return [
     "# agentplane quickstart",
     "",
-    "The policy gateway file (AGENTS.md or CLAUDE.md) is the source of truth for agent policy; `.agentplane/WORKFLOW.md` is the source of truth for workflow/config state.",
+    "The policy gateway file (AGENTS.md or CLAUDE.md) is the source of truth for agent policy; `.agentplane/WORKFLOW.md` is the single repo-local workflow/config source.",
+    "`agentplane config show` is the runtime readback of `.agentplane/WORKFLOW.md`; `agentplane quickstart` is startup guidance, not a second config source.",
     "Keep this first screen short: use it for startup only, then go deeper with `agentplane role <ROLE>` or `agentplane help <command>`.",
     "Do not edit `.agentplane/tasks.json` by hand.",
     "If the repository is not initialized yet, stop and run `agentplane init` first.",

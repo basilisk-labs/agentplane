@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-20T11:55:30Z",
+  "base": "main",
+  "branch": "task/202605201000-511PS9/ambiguity-route-contract",
+  "created_at": "2026-05-20T10:03:29.826Z",
+  "head_sha": "c1da049cf62be1560294e53db0c47c01e06b5233",
+  "last_verified_at": "2026-05-20T11:50:41.746Z",
+  "last_verified_sha": "f37cb38652c4ae7bb0dd22610a60527a68b3959e",
+  "merge_commit": "63645a1cc3e1908fb5bca751360d416c122bb6ec",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-20T11:55:30Z",
+  "pr_number": 3965,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3965",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605201000-511PS9",
+  "updated_at": "2026-05-20T11:55:30Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -73,6 +73,10 @@ export const loadTaskDeriveSpec = (deps: RunDeps) =>
   import("../../../commands/task/derive.command.js").then((m) =>
     m.makeRunTaskDeriveHandler(deps.getCtx),
   );
+export const loadTaskEvidenceCheckSpec = (deps: RunDeps) =>
+  import("../../../commands/task/evidence-check.command.js").then((m) =>
+    m.makeRunTaskEvidenceCheckHandler(deps.getCtx),
+  );
 export const loadTaskCloseDuplicateSpec = (deps: RunDeps) =>
   import("../../../commands/task/close-duplicate.command.js").then((m) =>
     m.makeRunTaskCloseDuplicateHandler(deps.getCtx),

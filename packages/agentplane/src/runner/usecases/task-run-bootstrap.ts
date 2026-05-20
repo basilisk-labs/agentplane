@@ -11,6 +11,13 @@ export function renderTaskRunnerBootstrap(
   const stopRules = bundle.blueprint?.stopReasons ?? [];
   const playbook = bundle.playbook?.selected_playbook;
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
+  const routeDecision = bundle.route_decision as
+    | {
+        nextAction?: { code?: string; command?: string | null; summary?: string };
+        workspace?: { checkoutRole?: string };
+        approval?: { effectiveMutationApprovalRequired?: boolean };
+      }
+    | undefined;
   return [
     "# agentplane runner bootstrap",
     "",
@@ -27,8 +34,19 @@ export function renderTaskRunnerBootstrap(
     `- bundle_path: ${bundle.execution.artifact_paths.bundle_path}`,
     `- result_path: ${bundle.execution.artifact_paths.result_path}`,
     `- bootstrap_path: ${bundle.execution.artifact_paths.bootstrap_path}`,
+    ...(routeDecision
+      ? [
+          `- checkout_role: ${routeDecision.workspace?.checkoutRole ?? "unknown"}`,
+          `- route_next_action: ${routeDecision.nextAction?.code ?? "unknown"}`,
+          `- route_next_command: ${routeDecision.nextAction?.command ?? "none"}`,
+          `- effective_mutation_approval: ${String(
+            routeDecision.approval?.effectiveMutationApprovalRequired ?? true,
+          )}`,
+        ]
+      : []),
     "",
-    "Use bundle.json as the complete runner input. Do not reconstruct prompts from CLI argv.",
+    "Use bundle.json as the complete runner input. Do not reconstruct prompts or route decisions from CLI argv.",
+    "Follow route_decision in bundle.json unless local state has changed; if it may be stale, run `agentplane task next-action <task-id> --explain` before mutating.",
     ...(stopRules.length > 0
       ? [
           "",

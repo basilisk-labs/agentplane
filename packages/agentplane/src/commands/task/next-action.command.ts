@@ -5,6 +5,7 @@ import { buildTaskRouteDecision } from "../shared/route-decision.js";
 
 export type TaskNextActionParsed = {
   taskId: string;
+  explain: boolean;
   json: boolean;
 };
 
@@ -13,14 +14,27 @@ export const taskNextActionSpec: CommandSpec<TaskNextActionParsed> = {
   group: "Task",
   summary: "Print the single safest next command for a task route.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
-  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  options: [
+    {
+      kind: "boolean",
+      name: "explain",
+      default: false,
+      description:
+        "Include route context, approval policy, blockers, and ambiguity resolution hints.",
+    },
+    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
+  ],
   examples: [
     {
       cmd: "agentplane task next-action 202602030608-F1Q8AB",
       why: "Get the next safe command before manually chaining diagnostics.",
     },
   ],
-  parse: (raw) => ({ taskId: String(raw.args["task-id"]), json: raw.opts.json === true }),
+  parse: (raw) => ({
+    taskId: String(raw.args["task-id"]),
+    explain: raw.opts.explain === true,
+    json: raw.opts.json === true,
+  }),
 };
 
 export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
@@ -46,10 +60,35 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
         { label: "summary", value: decision.nextAction.summary },
         { label: "requires_approval", value: decision.nextAction.requiresApproval },
         { label: "command", value: decision.nextAction.command ?? "none" },
+        ...(parsed.explain
+          ? [
+              { label: "workflow", value: decision.workflowMode },
+              { label: "checkout_role", value: decision.workspace.checkoutRole },
+              { label: "branch", value: decision.workspace.branch ?? "unknown" },
+              { label: "base_branch", value: decision.workspace.baseBranch ?? "unknown" },
+              {
+                label: "effective_mutation_approval",
+                value: decision.approval.effectiveMutationApprovalRequired,
+              },
+              {
+                label: "runtime_approval",
+                value:
+                  `plan=${String(decision.approval.runtime.requirePlan)} ` +
+                  `network=${String(decision.approval.runtime.requireNetwork)} ` +
+                  `verify=${String(decision.approval.runtime.requireVerify)}`,
+              },
+            ]
+          : []),
         ...decision.blockers.map((blocker) => ({
           label: "blocker",
           value: `${blocker.code}: ${blocker.summary}`,
         })),
+        ...(parsed.explain
+          ? decision.ambiguities.map((ambiguity) => ({
+              label: "ambiguity",
+              value: `${ambiguity.code}: ${ambiguity.summary}; resolution: ${ambiguity.resolution}`,
+            }))
+          : []),
       ],
       { header: infoMessage(`task next-action: ${parsed.taskId}`) },
     );
