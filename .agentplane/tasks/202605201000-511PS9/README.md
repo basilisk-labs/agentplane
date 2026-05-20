@@ -4,7 +4,7 @@ title: "Unify task next-action route explanation"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -26,16 +26,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T11:36:55.607Z"
+  updated_at: "2026-05-20T11:50:41.746Z"
   updated_by: "EVALUATOR"
-  note: "Fresh integration quality gate passed for published PR head 13286b7e42da22119986d13aa7340cf05eabc1ca. Evidence: GitHub hosted checks are green or skipped by policy; local ci:local:fast passed after CLI reference refresh; PR #3965 is open and mergeable. Note: final artifact-only commit e25a7be77 only refreshed AgentPlane PR metadata after publication."
+  note: "Fresh quality gate passed for review fix commit f37cb3865. Review thread r3273173348 addressed by making unknown required evidence blocking in task evidence check strict mode and adding evidence-check.unit.test coverage. Focused checks passed: prettier on touched files, vitest evidence-check plus existing focused suites, and packages/agentplane tsc --noEmit."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-20T11:36:55.607Z"
+  updated_at: "2026-05-20T11:50:41.746Z"
   updated_by: "EVALUATOR"
-  note: "Fresh integration quality gate passed for published PR head 13286b7e42da22119986d13aa7340cf05eabc1ca. Evidence: GitHub hosted checks are green or skipped by policy; local ci:local:fast passed after CLI reference refresh; PR #3965 is open and mergeable. Note: final artifact-only commit e25a7be77 only refreshed AgentPlane PR metadata after publication."
-  evaluated_sha: "13286b7e42da22119986d13aa7340cf05eabc1ca"
+  note: "Fresh quality gate passed for review fix commit f37cb3865. Review thread r3273173348 addressed by making unknown required evidence blocking in task evidence check strict mode and adding evidence-check.unit.test coverage. Focused checks passed: prettier on touched files, vitest evidence-check plus existing focused suites, and packages/agentplane tsc --noEmit."
+  evaluated_sha: "f37cb38652c4ae7bb0dd22610a60527a68b3959e"
   blueprint_digest: "91f69fdec3d2fcfbaacff171c8dbdf8c35e59a81f753f14fb6181bbe078b0e88"
   evidence_refs:
     - ".agentplane/tasks/202605201000-511PS9/README.md"
@@ -72,8 +72,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Fresh integration quality gate passed for published PR head 13286b7e42da22119986d13aa7340cf05eabc1ca. Evidence: GitHub hosted checks are green or skipped by policy; local ci:local:fast passed after CLI reference refresh; PR #3965 is open and mergeable. Note: final artifact-only commit e25a7be77 only refreshed AgentPlane PR metadata after publication."
+  -
+    type: "verify"
+    at: "2026-05-20T11:50:41.746Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Fresh quality gate passed for review fix commit f37cb3865. Review thread r3273173348 addressed by making unknown required evidence blocking in task evidence check strict mode and adding evidence-check.unit.test coverage. Focused checks passed: prettier on touched files, vitest evidence-check plus existing focused suites, and packages/agentplane tsc --noEmit."
 doc_version: 3
-doc_updated_at: "2026-05-20T11:36:55.765Z"
+doc_updated_at: "2026-05-20T11:50:41.762Z"
 doc_updated_by: "CODER"
 description: "Make the task route decision surface explain effective approval policy, checkout role, and ambiguity between next-action and recovery diagnostics."
 sections:
@@ -158,6 +164,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:23:41.422Z, excerpt_hash=sha256:ab9d05471bf3deb5a9ceb5770373bf359c46e290dd7f4abf927636f11af14959
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605201000-511PS9/blueprint/resolved-snapshot.json
+    - old_digest: 91f69fdec3d2fcfbaacff171c8dbdf8c35e59a81f753f14fb6181bbe078b0e88
+    - current_digest: 91f69fdec3d2fcfbaacff171c8dbdf8c35e59a81f753f14fb6181bbe078b0e88
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605201000-511PS9
+
+    ### 2026-05-20T11:50:41.746Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Fresh quality gate passed for review fix commit f37cb3865. Review thread r3273173348 addressed by making unknown required evidence blocking in task evidence check strict mode and adding evidence-check.unit.test coverage. Focused checks passed: prettier on touched files, vitest evidence-check plus existing focused suites, and packages/agentplane tsc --noEmit.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T11:36:55.765Z, excerpt_hash=sha256:ab9d05471bf3deb5a9ceb5770373bf359c46e290dd7f4abf927636f11af14959
 
     Details:
 
@@ -266,6 +291,25 @@ Note: Fresh integration quality gate passed for published PR head 13286b7e42da22
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T10:23:41.422Z, excerpt_hash=sha256:ab9d05471bf3deb5a9ceb5770373bf359c46e290dd7f4abf927636f11af14959
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201000-511PS9-ambiguity-route-contract/.agentplane/tasks/202605201000-511PS9/blueprint/resolved-snapshot.json
+- old_digest: 91f69fdec3d2fcfbaacff171c8dbdf8c35e59a81f753f14fb6181bbe078b0e88
+- current_digest: 91f69fdec3d2fcfbaacff171c8dbdf8c35e59a81f753f14fb6181bbe078b0e88
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605201000-511PS9
+
+### 2026-05-20T11:50:41.746Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Fresh quality gate passed for review fix commit f37cb3865. Review thread r3273173348 addressed by making unknown required evidence blocking in task evidence check strict mode and adding evidence-check.unit.test coverage. Focused checks passed: prettier on touched files, vitest evidence-check plus existing focused suites, and packages/agentplane tsc --noEmit.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T11:36:55.765Z, excerpt_hash=sha256:ab9d05471bf3deb5a9ceb5770373bf359c46e290dd7f4abf927636f11af14959
 
 Details:
 

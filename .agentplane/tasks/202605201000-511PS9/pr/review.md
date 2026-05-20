@@ -13,7 +13,7 @@ Created: 2026-05-20T10:03:29.826Z
 ## Verification
 
 - State: ok
-- Note: Fresh integration quality gate passed for published PR head 13286b7e42da22119986d13aa7340cf05eabc1ca. Evidence: GitHub hosted checks are green or skipped by policy; local ci:local:fast passed after CLI reference refresh; PR #3965 is open and mergeable. Note: final artifact-only commit e25a7be77 only refreshed AgentPlane PR metadata after publication.
+- Note: Fresh quality gate passed for review fix commit f37cb3865. Review thread r3273173348 addressed by making unknown required evidence blocking in task evidence check strict mode and adding evidence-check.unit.test coverage. Focused checks passed: prettier on touched files, vitest evidence-check plus existing focused suites, and packages/agentplane tsc --noEmit.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,9 +24,9 @@ Created: 2026-05-20T10:03:29.826Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-20T11:12:34.439Z
+- Updated: 2026-05-20T11:50:41.786Z
 - Branch: task/202605201000-511PS9/ambiguity-route-contract
-- Head: 13286b7e42da
+- Head: f37cb38652c4
 
 ```text
  .agentplane/tasks/202605200959-2KQ8XN/README.md    | 210 ++++++++
@@ -45,7 +45,8 @@ Created: 2026-05-20T10:03:29.826Z
  .../src/cli/run-cli/command-catalog/task.ts        |   7 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
  .../src/commands/shared/route-decision.ts          |  80 ++-
- .../src/commands/task/evidence-check.command.ts    | 143 +++++
+ .../src/commands/task/evidence-check.command.ts    | 156 ++++++
+ .../src/commands/task/evidence-check.unit.test.ts  |  25 +
  .../agentplane/src/commands/task/lint.command.ts   |  23 +-
  packages/agentplane/src/commands/task/lint.ts      |  17 +-
  .../src/commands/task/next-action.command.ts       |  43 +-
@@ -57,7 +58,7 @@ Created: 2026-05-20T10:03:29.826Z
  packages/core/src/tasks/index.ts                   |   1 +
  packages/core/src/tasks/tasks-lint.test.ts         |  18 +
  packages/core/src/tasks/tasks-lint.ts              |  36 ++
- 28 files changed, 3988 insertions(+), 13 deletions(-)
+ 29 files changed, 4026 insertions(+), 13 deletions(-)
 ```
 
 </details>
