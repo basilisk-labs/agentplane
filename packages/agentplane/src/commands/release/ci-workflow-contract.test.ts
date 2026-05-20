@@ -49,7 +49,7 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain(
       'if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then',
     );
-    expect(workflow).toContain("echo \"selector_kind=recovery\"");
+    expect(workflow).toContain('echo "selector_kind=recovery"');
     expect(workflow).toContain("Resolve release-ready target");
     expect(workflow).toContain("github.event_name == 'workflow_dispatch' &&");
     expect(workflow).toContain("github.event.inputs.sha != '' &&");
