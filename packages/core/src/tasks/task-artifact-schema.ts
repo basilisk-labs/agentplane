@@ -8,6 +8,10 @@ import {
 } from "./task-artifact-schema.observations.js";
 import { TASK_PR_META_ZOD_SCHEMA, type TaskPrMeta } from "./task-artifact-schema.pr-metadata.js";
 import {
+  AGENTPLANE_RUNNER_HANDOFF_ZOD_SCHEMA,
+  type AgentPlaneRunnerHandoff,
+} from "./task-artifact-schema.runner-handoff.js";
+import {
   TASK_README_FRONTMATTER_ZOD_SCHEMA,
   TASKS_EXPORT_ZOD_SCHEMA,
 } from "./task-artifact-schema.task.js";
@@ -23,6 +27,14 @@ export type {
   TaskHandoffRunnerNextAction,
   TaskHandoffRunnerState,
 } from "./task-artifact-schema.handoff.js";
+export type {
+  AgentPlaneRunnerHandoff,
+  AgentPlaneRunnerHandoffMode,
+  AgentPlaneRunnerHandoffPublic,
+  AgentPlaneRunnerHandoffRepoRef,
+  AgentPlaneRunnerHandoffStatus,
+  AgentPlaneRunnerHandoffValidationOptions,
+} from "./task-artifact-schema.runner-handoff.js";
 
 export type { TaskPrMeta } from "./task-artifact-schema.pr-metadata.js";
 export type { AgentChangeRecord } from "./task-artifact-schema.acr.js";
@@ -43,6 +55,17 @@ export {
   TASK_OBSERVATION_STATUS_VALUES,
 } from "./task-artifact-schema.observations.js";
 export { ACR_VERSION, computeAcrRecordDigest } from "./task-artifact-schema.acr.js";
+export {
+  AGENTPLANE_RUNNER_HANDOFF_ZOD_SCHEMA,
+  listAgentPlaneRunnerHandoffSchemaErrors,
+  RUNNER_HANDOFF_EVIDENCE_KIND_VALUES,
+  RUNNER_HANDOFF_MODE_VALUES,
+  RUNNER_HANDOFF_REPO_REF_ZOD_SCHEMA,
+  RUNNER_HANDOFF_STATUS_VALUES,
+  RUNNER_HANDOFF_UPLOAD_TARGET_KIND_VALUES,
+  sanitizeAgentPlaneRunnerHandoff,
+  validateAgentPlaneRunnerHandoff,
+} from "./task-artifact-schema.runner-handoff.js";
 export { withTaskReadmeFrontmatterDefaults } from "./task-artifact-schema.task.js";
 
 export const ACR_SCHEMA = buildJsonSchemaDocument(ACR_ZOD_SCHEMA, {
@@ -76,6 +99,16 @@ export const TASK_HANDOFF_SCHEMA = buildJsonSchemaDocument(TASK_HANDOFF_ZOD_SCHE
   $id: "https://agentplane.org/schemas/task-handoff.schema.json",
   title: "Task handoff artifact (v1)",
 });
+
+export const AGENTPLANE_RUNNER_HANDOFF_SCHEMA = buildJsonSchemaDocument(
+  AGENTPLANE_RUNNER_HANDOFF_ZOD_SCHEMA,
+  {
+    $id: "https://agentplane.org/schemas/runner-handoff.schema.json",
+    title: "AgentPlane runner handoff (v1)",
+    description:
+      "Connector-neutral cloud-to-runner handoff contract for preparing a hosted runner without granting lifecycle authority or executing repository mutations by itself.",
+  },
+);
 
 const TASK_OBSERVATION_SCHEMA = buildJsonSchemaDocument(TASK_OBSERVATION_ZOD_SCHEMA, {
   $id: "https://agentplane.org/schemas/task-observation.schema.json",
@@ -128,6 +161,14 @@ export function validateTaskHandoff(value: unknown): TaskHandoff {
   return assertValid("handoff/latest.json", TASK_HANDOFF_ZOD_SCHEMA, value);
 }
 
+export function listAgentPlaneRunnerHandoffJsonSchemaErrors(value: unknown): string[] {
+  return schemaErrors("runner handoff", AGENTPLANE_RUNNER_HANDOFF_ZOD_SCHEMA, value);
+}
+
+export function validateAgentPlaneRunnerHandoffSchemaOnly(value: unknown): AgentPlaneRunnerHandoff {
+  return assertValid("runner handoff", AGENTPLANE_RUNNER_HANDOFF_ZOD_SCHEMA, value);
+}
+
 export function listTaskObservationSchemaErrors(value: unknown): string[] {
   return schemaErrors("task observation", TASK_OBSERVATION_ZOD_SCHEMA, value);
 }
@@ -154,6 +195,10 @@ export function renderTaskPrMetaSchemaJson(): string {
 
 export function renderTaskHandoffSchemaJson(): string {
   return `${JSON.stringify(TASK_HANDOFF_SCHEMA, null, 2)}\n`;
+}
+
+export function renderAgentPlaneRunnerHandoffSchemaJson(): string {
+  return `${JSON.stringify(AGENTPLANE_RUNNER_HANDOFF_SCHEMA, null, 2)}\n`;
 }
 
 export function renderTaskObservationSchemaJson(): string {
