@@ -1,0 +1,15 @@
+ .../blueprint/resolved-snapshot.json               | 599 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |   7 +-
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  20 +
+ .../src/commands/context/release-readiness.test.ts |  87 ++-
+ .../src/commands/release/apply.mutation.ts         |  36 +-
+ .../commands/release/apply.mutation.unit.test.ts   |  61 +++
+ .../agentplane/src/commands/task/lint.command.ts   |  14 +-
+ packages/agentplane/src/commands/task/lint.ts      |  40 +-
+ .../agentplane/src/commands/task/observations.ts   |  32 +-
+ .../src/commands/task/observations.unit.test.ts    |  20 +
+ packages/agentplane/src/context/verify-task.ts     |  37 ++
+ scripts/checks/plan-github-ci.mjs                  |   8 +
+ scripts/lib/local-ci-selection.mjs                 |  12 +
+ scripts/lib/test-route-registry.mjs                |   1 +
+ 14 files changed, 947 insertions(+), 27 deletions(-)

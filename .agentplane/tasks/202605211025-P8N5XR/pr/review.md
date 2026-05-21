@@ -24,12 +24,26 @@ Created: 2026-05-21T10:26:10.917Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T10:26:10.917Z
+- Updated: 2026-05-21T10:43:22.186Z
 - Branch: task/202605211025-P8N5XR/recent-issue-candidates
-- Head: 85752945e646
+- Head: e19ac5f74812
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 599 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |   7 +-
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  20 +
+ .../src/commands/context/release-readiness.test.ts |  87 ++-
+ .../src/commands/release/apply.mutation.ts         |  36 +-
+ .../commands/release/apply.mutation.unit.test.ts   |  61 +++
+ .../agentplane/src/commands/task/lint.command.ts   |  14 +-
+ packages/agentplane/src/commands/task/lint.ts      |  40 +-
+ .../agentplane/src/commands/task/observations.ts   |  32 +-
+ .../src/commands/task/observations.unit.test.ts    |  20 +
+ packages/agentplane/src/context/verify-task.ts     |  37 ++
+ scripts/checks/plan-github-ci.mjs                  |   8 +
+ scripts/lib/local-ci-selection.mjs                 |  12 +
+ scripts/lib/test-route-registry.mjs                |   1 +
+ 14 files changed, 947 insertions(+), 27 deletions(-)
 ```
 
 </details>
