@@ -40,7 +40,7 @@ quality_review:
   updated_at: "2026-05-21T10:46:38.860Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR quality gate passed. Evidence: PR #3995 required GitHub checks passed on head 927cad5e2; local gates passed: bun run typecheck, bun run format:check, bun run framework:dev:bootstrap, bun run test, bun run build, agentplane doctor, and node .agentplane/policy/check-routing.mjs. Hosted execution remains unimplemented."
-  evaluated_sha: "927cad5e2ef608baaa462c7d9592c35855118d34"
+  evaluated_sha: "987109ba40a1b08044ef86b0afee641db5c87151"
   blueprint_digest: "3999af497920e04c6c7d67117a3fd0e46f64f3f2fd4fcc0cd7dc2cb5572f4401"
   evidence_refs:
     - ".agentplane/tasks/202605201647-7QJP57/README.md"
