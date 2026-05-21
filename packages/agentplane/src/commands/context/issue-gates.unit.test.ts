@@ -146,6 +146,61 @@ describe("context GitHub issue regression gates", () => {
     ).rejects.toThrow(/wiki source missing from manifest lock/u);
   });
 
+  it("ignores body-only path examples when checking wiki source refs", async () => {
+    const root = await tempRoot();
+    await cmdContextInit({
+      ctx: { resolvedProject: { gitRoot: root } } as CommandContext,
+      cwd: root,
+      parsed: {
+        profile: "maximum-assimilation",
+        rawGitignore: "none",
+        derivedGitignore: "none",
+        repair: false,
+        force: false,
+      },
+    });
+    await write(
+      root,
+      "context/wiki/example.md",
+      [
+        "---",
+        'aliases: ["Example"]',
+        "agentplane_context:",
+        "  schema_version: 1",
+        "  artifact_type: wiki_page",
+        '  canonical_id: "wiki.example"',
+        '  title: "Example"',
+        "  modality: definition",
+        "  epistemic_status: sourced_claim",
+        "  visibility: project",
+        "  source_refs: []",
+        "  claims: []",
+        "  graph_refs:",
+        "    entities: []",
+        "    edges: []",
+        "  conflicts: []",
+        "  updated_by: CURATOR",
+        "---",
+        "",
+        "# Example",
+        "",
+        "```yaml",
+        "- path: context/raw/body-only-example.md",
+        "```",
+        "",
+        "## Sources",
+        "",
+        "- no-source: local test fixture",
+        "",
+      ].join("\n"),
+    );
+
+    await cmdContextDoctor({
+      cwd: root,
+      parsed: { fix: false, label: "check" },
+    });
+  });
+
   it("fails context check and suppresses stale projection search rows", async () => {
     const root = await tempRoot();
     await cmdContextInit({
@@ -203,10 +258,7 @@ describe("context GitHub issue regression gates", () => {
         '    - path: "context/raw/managed-agents.md"',
         '      ref: "context/raw/managed-agents.md"',
         '      label: "context/raw/managed-agents.md"',
-        "  graph_refs:",
-        "    entities:",
-        "      - concept:managed-agents",
-        "    edges: []",
+        '  graph_refs: { entities: ["concept:managed-agents"], edges: [] }',
         "---",
         "",
         "# Managed Agents",

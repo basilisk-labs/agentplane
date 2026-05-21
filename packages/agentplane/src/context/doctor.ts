@@ -204,10 +204,21 @@ async function collectWikiFiles(root: string): Promise<string[]> {
 }
 
 function extractWikiSourceRefs(text: string): string[] {
+  const frontmatter = /^---\n([\s\S]*?)\n---/u.exec(text.replaceAll("\r\n", "\n"))?.[1];
+  if (!frontmatter) return [];
+  const parsed = parseYaml(frontmatter) as unknown;
+  if (!isRecord(parsed) || !isRecord(parsed.agentplane_context)) return [];
+  const sourceRefs = parsed.agentplane_context.source_refs;
+  if (!Array.isArray(sourceRefs)) return [];
   const refs: string[] = [];
-  for (const match of text.matchAll(/^\s*-\s+path:\s*["']?([^"'\n]+)["']?/gmu)) {
-    const value = match[1]?.trim();
-    if (value) refs.push(value);
+  for (const entry of sourceRefs) {
+    if (typeof entry === "string" && entry.trim()) {
+      refs.push(entry.trim());
+      continue;
+    }
+    if (isRecord(entry) && typeof entry.path === "string" && entry.path.trim()) {
+      refs.push(entry.path.trim());
+    }
   }
   return refs;
 }

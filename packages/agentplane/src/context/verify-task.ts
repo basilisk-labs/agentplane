@@ -8,6 +8,7 @@ import {
 import { fileExists, isRecord, parseJsonlLines, readText, toPosix } from "./context-utils.js";
 import path from "node:path";
 import { readdir } from "node:fs/promises";
+import { parse as parseYaml } from "yaml";
 
 type ContextExtension = {
   assimilation?: {
@@ -213,10 +214,15 @@ async function validateGraph(root: string, errors: string[]): Promise<void> {
 function hasNonEmptyGraphRefs(text: string): boolean {
   const frontmatterMatch = /^---\n([\s\S]*?)\n---/u.exec(text.replaceAll("\r\n", "\n"));
   const frontmatter = frontmatterMatch?.[1] ?? "";
-  const graphRefsIndex = frontmatter.indexOf("graph_refs:");
-  if (graphRefsIndex === -1) return false;
-  const graphRefs = frontmatter.slice(graphRefsIndex);
-  return /(?:entities|edges):\s*\n\s*-\s+\S/u.test(graphRefs);
+  if (!frontmatter) return false;
+  const parsed = parseYaml(frontmatter) as unknown;
+  if (!isRecord(parsed) || !isRecord(parsed.agentplane_context)) return false;
+  const graphRefs = parsed.agentplane_context.graph_refs;
+  if (!isRecord(graphRefs)) return false;
+  return (
+    (Array.isArray(graphRefs.entities) && graphRefs.entities.length > 0) ||
+    (Array.isArray(graphRefs.edges) && graphRefs.edges.length > 0)
+  );
 }
 
 async function validateMaximumAssimilationDerivedConsistency(
