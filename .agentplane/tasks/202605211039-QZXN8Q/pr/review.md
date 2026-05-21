@@ -12,8 +12,8 @@ Created: 2026-05-21T10:40:55.586Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Quality gate passed from local evidence: focused context regressions, typecheck, exact-file eslint, policy routing, diff check, and ap doctor are green. GitHub PR #4000 is open for hosted checks and merge.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-05-21T10:40:55.586Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T10:51:23.131Z
+- Updated: 2026-05-21T10:51:28.934Z
 - Branch: task/202605211039-QZXN8Q/fix-open-context-issues
 - Head: 22bd6142911f
 

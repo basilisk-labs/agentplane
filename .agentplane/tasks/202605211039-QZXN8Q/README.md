@@ -4,7 +4,7 @@ title: "Fix open context GitHub issues"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -17,11 +17,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-21T10:51:55.998Z"
+  updated_by: "EVALUATOR"
+  note: "Quality gate passed from local evidence: focused context regressions, typecheck, exact-file eslint, policy routing, diff check, and ap doctor are green. GitHub PR #4000 is open for hosted checks and merge."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-21T10:51:55.998Z"
+  updated_by: "EVALUATOR"
+  note: "Quality gate passed from local evidence: focused context regressions, typecheck, exact-file eslint, policy routing, diff check, and ap doctor are green. GitHub PR #4000 is open for hosted checks and merge."
+  evaluated_sha: "68a44223fe1b9d4332356c382045fde8896e0e4f"
+  blueprint_digest: "18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15"
+  evidence_refs:
+    - ".agentplane/tasks/202605211039-QZXN8Q/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211039-QZXN8Q-fix-open-context-issues/.agentplane/tasks/202605211039-QZXN8Q/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -35,8 +46,20 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement approved GitHub context issue batch in branch_pr worktree, covering wiki lint/link contracts, manifest lock source inventory, stale projection health/search behavior, and maximum-assimilation derived artifact consistency."
+  -
+    type: "verify"
+    at: "2026-05-21T10:51:45.512Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented context issue gates and ran focused tests, typecheck, exact-file eslint, policy routing, git diff check, and ap doctor successfully. Commit: 22bd61429."
+  -
+    type: "verify"
+    at: "2026-05-21T10:51:55.998Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Quality gate passed from local evidence: focused context regressions, typecheck, exact-file eslint, policy routing, diff check, and ap doctor are green. GitHub PR #4000 is open for hosted checks and merge."
 doc_version: 3
-doc_updated_at: "2026-05-21T10:50:37.645Z"
+doc_updated_at: "2026-05-21T10:51:56.016Z"
 doc_updated_by: "CODER"
 description: "Batch-fix open GitHub context issues: Obsidian wiki contract, manifest source inventory, stale projections, and derived context consistency. Scope includes GitHub issues #3989, #3990, #3991, #3992, #3993, #3994, #3996, #3997, #3998. Investigate #3879 only for directly shared context runner recovery paths; otherwise leave it as separate follow-up."
 sections:
@@ -66,6 +89,47 @@ sections:
     - PASS: ap doctor (doctor OK; errors=0 warnings=0).
 
     GitHub issue coverage: #3989/#3990/#3992/#3993/#3994 covered by wiki lint/link/frontmatter/.obsidian rules; #3996/#3998 covered by complete manifest source inventory; #3997 covered by stale projection failure and stale search suppression; #3991 covered by maximum-assimilation graph_refs vs derived projection gate. #3879 remains a v0.7 runner/runtime backlog item per existing GitHub issue comment and is not fixed by this context contract batch.
+
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-21T10:51:45.512Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented context issue gates and ran focused tests, typecheck, exact-file eslint, policy routing, git diff check, and ap doctor successfully. Commit: 22bd61429.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T10:50:37.645Z, excerpt_hash=sha256:37671c5337839de06fb4f848de4b18c324851e9d05cfbd459b10eb6ce6d78bd9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211039-QZXN8Q-fix-open-context-issues/.agentplane/tasks/202605211039-QZXN8Q/blueprint/resolved-snapshot.json
+    - old_digest: 18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15
+    - current_digest: 18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605211039-QZXN8Q
+
+    ### 2026-05-21T10:51:55.998Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Quality gate passed from local evidence: focused context regressions, typecheck, exact-file eslint, policy routing, diff check, and ap doctor are green. GitHub PR #4000 is open for hosted checks and merge.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T10:51:45.528Z, excerpt_hash=sha256:37671c5337839de06fb4f848de4b18c324851e9d05cfbd459b10eb6ce6d78bd9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211039-QZXN8Q-fix-open-context-issues/.agentplane/tasks/202605211039-QZXN8Q/blueprint/resolved-snapshot.json
+    - old_digest: 18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15
+    - current_digest: 18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605211039-QZXN8Q
+
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
@@ -108,6 +172,47 @@ Executed in task worktree.
 - PASS: ap doctor (doctor OK; errors=0 warnings=0).
 
 GitHub issue coverage: #3989/#3990/#3992/#3993/#3994 covered by wiki lint/link/frontmatter/.obsidian rules; #3996/#3998 covered by complete manifest source inventory; #3997 covered by stale projection failure and stale search suppression; #3991 covered by maximum-assimilation graph_refs vs derived projection gate. #3879 remains a v0.7 runner/runtime backlog item per existing GitHub issue comment and is not fixed by this context contract batch.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-21T10:51:45.512Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented context issue gates and ran focused tests, typecheck, exact-file eslint, policy routing, git diff check, and ap doctor successfully. Commit: 22bd61429.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T10:50:37.645Z, excerpt_hash=sha256:37671c5337839de06fb4f848de4b18c324851e9d05cfbd459b10eb6ce6d78bd9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211039-QZXN8Q-fix-open-context-issues/.agentplane/tasks/202605211039-QZXN8Q/blueprint/resolved-snapshot.json
+- old_digest: 18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15
+- current_digest: 18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605211039-QZXN8Q
+
+### 2026-05-21T10:51:55.998Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Quality gate passed from local evidence: focused context regressions, typecheck, exact-file eslint, policy routing, diff check, and ap doctor are green. GitHub PR #4000 is open for hosted checks and merge.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T10:51:45.528Z, excerpt_hash=sha256:37671c5337839de06fb4f848de4b18c324851e9d05cfbd459b10eb6ce6d78bd9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211039-QZXN8Q-fix-open-context-issues/.agentplane/tasks/202605211039-QZXN8Q/blueprint/resolved-snapshot.json
+- old_digest: 18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15
+- current_digest: 18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605211039-QZXN8Q
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
