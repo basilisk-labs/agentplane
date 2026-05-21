@@ -1,10 +1,11 @@
 ---
 id: "202605211025-P8N5XR"
 title: "Harden recent issue candidates"
-status: "DOING"
+result_summary: "Merged via PR #3999."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -36,11 +37,16 @@ quality_review:
     - ".agentplane/tasks/202605211025-P8N5XR/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211025-P8N5XR-recent-issue-candidates/.agentplane/tasks/202605211025-P8N5XR/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "a720f50edf7ece6a1cdeba265f4beeefbb63d52d"
+  message: "Merge pull request #3999 from basilisk-labs/task/202605211025-P8N5XR/recent-issue-candidates"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the approved recent issue candidate hardening in the dedicated branch_pr worktree, with focused reproduction before each code change."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3999 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality gate passed for current task branch. Confirmed the implementation is bounded to the approved recent issue candidates: routed CI now exposes explicit prerequisite outputs before hosted gates, Verify Steps lint has changed-task scope for strict rollout, maximum-assimilation verify-task validates navigable glossary content for assimilation tasks, release mutation helpers are idempotent when version surfaces already match, and observations harvest avoids loading the full task registry when no journals exist. Focused tests, eslint, typecheck, docs CLI freshness, workflow lint, policy routing, doctor, changed Verify Steps lint, and diff whitespace checks passed."
+  -
+    type: "status"
+    at: "2026-05-21T11:34:55.969Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3999 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-21T10:41:26.026Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-21T11:34:55.976Z"
+doc_updated_by: "INTEGRATOR"
 description: "Verify and implement confirmed follow-ups from recent history: routed CI prerequisite preflight, legacy Verify Steps lint cleanup path, maximum-assimilation glossary validation, release version-surface idempotency, and observations harvest shortcut where reproducible."
 sections:
   Summary: |-
