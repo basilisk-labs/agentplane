@@ -1,0 +1,875 @@
+{
+  "suite": "release-ci-base",
+  "totalDurationMs": 2409914,
+  "chunks": [
+    {
+      "index": 1,
+      "durationMs": 14932,
+      "files": [
+        "packages/agentplane/src/adapters/task-backend/task-backend-adapter.test.ts",
+        "packages/agentplane/src/agents/agents-template.test.ts",
+        "packages/agentplane/src/agents/policy-routing-check.test.ts",
+        "packages/agentplane/src/architecture/layering.imports.test.ts",
+        "packages/agentplane/src/backends/task-backend.cloud-regression.test.ts",
+        "packages/agentplane/src/backends/task-backend.cloud.test.ts",
+        "packages/agentplane/src/backends/task-backend.load.test.ts",
+        "packages/agentplane/src/backends/task-backend.local-sqlite-gitignore.test.ts",
+        "packages/agentplane/src/backends/task-backend.local.test.ts",
+        "packages/agentplane/src/backends/task-backend.redmine.cache.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  108 passed (108); Duration  12.45s (transform 21.45s, setup 0ms, import 33.46s, tests 6.66s, environment 2ms)"
+    },
+    {
+      "index": 2,
+      "durationMs": 12065,
+      "files": [
+        "packages/agentplane/src/backends/task-backend.redmine.docs.test.ts",
+        "packages/agentplane/src/backends/task-backend.redmine.mapping.test.ts",
+        "packages/agentplane/src/backends/task-backend.redmine.remote.test.ts",
+        "packages/agentplane/src/backends/task-backend.redmine.write.test.ts",
+        "packages/agentplane/src/backends/task-backend.test.ts",
+        "packages/agentplane/src/backends/task-backend/cloud-backend-state.test.ts",
+        "packages/agentplane/src/backends/task-backend/cloud-backend-utils.test.ts",
+        "packages/agentplane/src/backends/task-backend/local-task-sqlite-cache.test.ts",
+        "packages/agentplane/src/backends/task-backend/redmine/env.test.ts",
+        "packages/agentplane/src/backends/task-backend/redmine/live.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  64 passed | 2 skipped (66); Duration  10.86s (transform 20.43s, setup 0ms, import 33.12s, tests 1.75s, environment 4ms)"
+    },
+    {
+      "index": 3,
+      "durationMs": 5388,
+      "files": [
+        "packages/agentplane/src/backends/task-index.test.ts",
+        "packages/agentplane/src/blueprints/execution.test.ts",
+        "packages/agentplane/src/blueprints/project-local.test.ts",
+        "packages/agentplane/src/blueprints/recipe-hints.test.ts",
+        "packages/agentplane/src/blueprints/resolve.test.ts",
+        "packages/agentplane/src/blueprints/snapshot.test.ts",
+        "packages/agentplane/src/blueprints/validate.test.ts",
+        "packages/agentplane/src/cli/archive.test.ts",
+        "packages/agentplane/src/cli/bootstrap-doc-build-freshness.test.ts",
+        "packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  84 passed (84); Duration  4.24s (transform 2.22s, setup 0ms, import 3.44s, tests 5.90s, environment 2ms)"
+    },
+    {
+      "index": 4,
+      "durationMs": 10350,
+      "files": [
+        "packages/agentplane/src/cli/check-cli-cold-baseline-script.test.ts",
+        "packages/agentplane/src/cli/check-github-protection-contract-script.test.ts",
+        "packages/agentplane/src/cli/check-knip-baseline-script.test.ts",
+        "packages/agentplane/src/cli/check-no-console-script.test.ts",
+        "packages/agentplane/src/cli/checksum.test.ts",
+        "packages/agentplane/src/cli/cli-contract.test.ts",
+        "packages/agentplane/src/cli/command-guide.test.ts",
+        "packages/agentplane/src/cli/dist-guard.test.ts",
+        "packages/agentplane/src/cli/error-map.test.ts",
+        "packages/agentplane/src/cli/exit-code.contract.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  47 passed (47); Duration  9.24s (transform 2.14s, setup 0ms, import 3.27s, tests 24.51s, environment 5ms)"
+    },
+    {
+      "index": 5,
+      "durationMs": 15808,
+      "files": [
+        "packages/agentplane/src/cli/fs-utils.test.ts",
+        "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts",
+        "packages/agentplane/src/cli/group-command.test.ts",
+        "packages/agentplane/src/cli/help.all-commands.contract.test.ts",
+        "packages/agentplane/src/cli/hotspot-report-script.test.ts",
+        "packages/agentplane/src/cli/http.test.ts",
+        "packages/agentplane/src/cli/init-recipes-cache.test.ts",
+        "packages/agentplane/src/cli/legacy-cli-regressions.test.ts",
+        "packages/agentplane/src/cli/local-ci-selection.test.ts",
+        "packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  82 passed (82); Duration  14.47s (transform 18.21s, setup 0ms, import 28.09s, tests 12.19s, environment 4ms)"
+    },
+    {
+      "index": 6,
+      "durationMs": 33145,
+      "files": [
+        "packages/agentplane/src/cli/output.test.ts",
+        "packages/agentplane/src/cli/pre-commit-hook-script.test.ts",
+        "packages/agentplane/src/cli/pre-commit-staged-files.test.ts",
+        "packages/agentplane/src/cli/pre-commit-test-fast-script.test.ts",
+        "packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts",
+        "packages/agentplane/src/cli/prompts.test.ts",
+        "packages/agentplane/src/cli/release-critical-lifecycle.test.ts",
+        "packages/agentplane/src/cli/release-smoke.test.ts",
+        "packages/agentplane/src/cli/repo-local-handoff.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.agent-mode.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  49 passed (49); Duration  32.21s (transform 33.21s, setup 0ms, import 45.00s, tests 39.25s, environment 2ms)"
+    },
+    {
+      "index": 7,
+      "durationMs": 7857,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.blueprint.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.boot.test.ts"
+      ],
+      "summary": "Test Files  2 passed (2); Tests  25 passed (25); Duration  6.74s (transform 8.01s, setup 0ms, import 5.61s, tests 5.87s, environment 0ms)"
+    },
+    {
+      "index": 8,
+      "durationMs": 9077,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  14 passed (14); Duration  7.95s (transform 4.16s, setup 0ms, import 5.32s, tests 2.10s, environment 0ms)"
+    },
+    {
+      "index": 9,
+      "durationMs": 9938,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts"
+      ],
+      "summary": "Test Files  2 passed (2); Tests  22 passed (22); Duration  8.55s (transform 9.20s, setup 0ms, import 12.29s, tests 3.72s, environment 1ms)"
+    },
+    {
+      "index": 10,
+      "durationMs": 12279,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.branch-meta.workflow-profile.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  10 passed (10); Duration  11.20s (transform 3.75s, setup 0ms, import 4.76s, tests 6.16s, environment 0ms)"
+    },
+    {
+      "index": 11,
+      "durationMs": 8896,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.branch-naming.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.codex-plugin.test.ts"
+      ],
+      "summary": "Test Files  2 passed (2); Tests  3 passed (3); Duration  7.66s (transform 8.23s, setup 0ms, import 11.26s, tests 1.85s, environment 0ms)"
+    },
+    {
+      "index": 12,
+      "durationMs": 24613,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.context-init.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  6 passed (6); Duration  23.59s (transform 3.46s, setup 0ms, import 4.24s, tests 19.08s, environment 0ms)"
+    },
+    {
+      "index": 13,
+      "durationMs": 22466,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.demo.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  3 passed (3); Duration  20.84s (transform 9.69s, setup 0ms, import 12.10s, tests 8.36s, environment 0ms)"
+    },
+    {
+      "index": 14,
+      "durationMs": 208333,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.group-root-usage.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.close.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.env.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.policy.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.refresh.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.guard.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.help-contract.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  113 passed (113); Duration  201.46s (transform 344.65s, setup 0ms, import 514.81s, tests 251.86s, environment 71ms)"
+    },
+    {
+      "index": 15,
+      "durationMs": 280723,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.hooks.install.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.hooks.uninstall.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.incidents.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.init-base-branch.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.insights-report.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  62 passed (62); Duration  276.75s (transform 141.24s, setup 0ms, import 293.67s, tests 553.60s, environment 12ms)"
+    },
+    {
+      "index": 16,
+      "durationMs": 191419,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.basic.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.format.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.paths.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  50 passed (50); Duration  184.67s (transform 114.77s, setup 0ms, import 219.68s, tests 404.83s, environment 20ms)"
+    },
+    {
+      "index": 17,
+      "durationMs": 103992,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.misc.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.pr-close-superseded.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.pr-close.test.ts"
+      ],
+      "summary": "Test Files  4 passed (4); Tests  30 passed (30); Duration  84.60s (transform 180.02s, setup 0ms, import 245.61s, tests 47.55s, environment 12ms)"
+    },
+    {
+      "index": 18,
+      "durationMs": 219082,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  19 passed (19); Duration  210.02s (transform 90.75s, setup 0ms, import 107.66s, tests 100.30s, environment 0ms)"
+    },
+    {
+      "index": 19,
+      "durationMs": 219730,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  4 passed (4); Duration  215.17s (transform 31.68s, setup 0ms, import 36.09s, tests 177.38s, environment 1ms)"
+    },
+    {
+      "index": 20,
+      "durationMs": 301853,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  5 passed (5); Duration  289.95s (transform 117.70s, setup 0ms, import 141.46s, tests 140.54s, environment 0ms)"
+    },
+    {
+      "index": 21,
+      "durationMs": 166003,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  6 passed (6); Duration  163.13s (transform 20.99s, setup 0ms, import 24.47s, tests 137.66s, environment 0ms)"
+    },
+    {
+      "index": 22,
+      "durationMs": 91754,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  8 passed (8); Duration  84.87s (transform 34.43s, setup 0ms, import 39.31s, tests 43.46s, environment 0ms)"
+    },
+    {
+      "index": 23,
+      "durationMs": 61033,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-feedback.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  1 passed (1); Duration  54.21s (transform 31.85s, setup 0ms, import 38.12s, tests 13.70s, environment 0ms)"
+    },
+    {
+      "index": 24,
+      "durationMs": 38640,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  8 passed (8); Duration  36.33s (transform 13.23s, setup 0ms, import 16.70s, tests 19.15s, environment 0ms)"
+    },
+    {
+      "index": 25,
+      "durationMs": 25740,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  9 passed (9); Duration  24.26s (transform 6.58s, setup 0ms, import 9.02s, tests 14.55s, environment 0ms)"
+    },
+    {
+      "index": 26,
+      "durationMs": 3903,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  2 passed (2); Duration  3.37s (transform 1.73s, setup 0ms, import 2.17s, tests 1.00s, environment 0ms)"
+    },
+    {
+      "index": 27,
+      "durationMs": 17146,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  6 passed (6); Duration  16.76s (transform 1.57s, setup 0ms, import 1.95s, tests 14.69s, environment 0ms)"
+    },
+    {
+      "index": 28,
+      "durationMs": 7288,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  3 passed (3); Duration  6.47s (transform 2.11s, setup 0ms, import 2.69s, tests 3.50s, environment 0ms)"
+    },
+    {
+      "index": 29,
+      "durationMs": 3976,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.validation.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  1 passed (1); Duration  3.58s (transform 1.92s, setup 0ms, import 2.37s, tests 1.08s, environment 0ms)"
+    },
+    {
+      "index": 30,
+      "durationMs": 7948,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  5 passed (5); Duration  7.56s (transform 1.46s, setup 0ms, import 1.83s, tests 5.59s, environment 0ms)"
+    },
+    {
+      "index": 31,
+      "durationMs": 6842,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  23 passed (23); Duration  6.50s (transform 1.54s, setup 0ms, import 1.90s, tests 4.48s, environment 0ms)"
+    },
+    {
+      "index": 32,
+      "durationMs": 7520,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  4 passed (4); Duration  6.92s (transform 2.29s, setup 0ms, import 2.86s, tests 3.89s, environment 0ms)"
+    },
+    {
+      "index": 33,
+      "durationMs": 6058,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  1 passed (1); Duration  4.71s (transform 2.44s, setup 0ms, import 3.25s, tests 855ms, environment 0ms)"
+    },
+    {
+      "index": 34,
+      "durationMs": 3278,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  1 passed (1); Duration  2.86s (transform 1.86s, setup 0ms, import 2.35s, tests 374ms, environment 0ms)"
+    },
+    {
+      "index": 35,
+      "durationMs": 24278,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  16 passed (16); Duration  23.80s (transform 4.49s, setup 0ms, import 5.57s, tests 18.05s, environment 0ms)"
+    },
+    {
+      "index": 36,
+      "durationMs": 16482,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.branch-pr-list-state.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.findings.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.incidents.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  55 passed (55); Duration  15.82s (transform 12.25s, setup 0ms, import 22.73s, tests 35.12s, environment 2ms)"
+    },
+    {
+      "index": 37,
+      "durationMs": 15193,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  115 passed (115); Duration  14.61s (transform 17.09s, setup 0ms, import 26.07s, tests 22.70s, environment 1ms)"
+    },
+    {
+      "index": 38,
+      "durationMs": 14479,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts",
+        "packages/agentplane/src/cli/run-cli.recipes.install-project.test.ts",
+        "packages/agentplane/src/cli/run-cli.recipes.remote-usage.test.ts",
+        "packages/agentplane/src/cli/run-cli.recipes.validation-list.test.ts",
+        "packages/agentplane/src/cli/run-cli.scenario.test.ts",
+        "packages/agentplane/src/cli/run-cli.test-helpers.test.ts",
+        "packages/agentplane/src/cli/run-cli/agent-mode.test.ts",
+        "packages/agentplane/src/cli/run-cli/command-catalog.test.ts",
+        "packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  53 passed (53); Duration  13.58s (transform 24.88s, setup 0ms, import 32.05s, tests 9.43s, environment 1ms)"
+    },
+    {
+      "index": 39,
+      "durationMs": 3182,
+      "files": [
+        "packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts",
+        "packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts",
+        "packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts",
+        "packages/agentplane/src/cli/run-cli/commands/init/steps/conflict-resolver.test.ts",
+        "packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts",
+        "packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts",
+        "packages/agentplane/src/cli/runtime-context.test.ts",
+        "packages/agentplane/src/cli/runtime-watch.test.ts",
+        "packages/agentplane/src/cli/spec/docs-render.test.ts",
+        "packages/agentplane/src/cli/spec/help-render.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  39 passed (39); Duration  2.64s (transform 1.61s, setup 0ms, import 2.23s, tests 1.08s, environment 1ms)"
+    },
+    {
+      "index": 40,
+      "durationMs": 12257,
+      "files": [
+        "packages/agentplane/src/cli/spec/parse.test.ts",
+        "packages/agentplane/src/cli/spec/registry.test.ts",
+        "packages/agentplane/src/cli/spec/suggest.test.ts",
+        "packages/agentplane/src/cli/stale-dist-policy.test.ts",
+        "packages/agentplane/src/cli/stale-dist-readonly.test.ts",
+        "packages/agentplane/src/cli/test-inventory.test.ts",
+        "packages/agentplane/src/cli/test-routing-check.test.ts",
+        "packages/agentplane/src/cli/update-check.test.ts",
+        "packages/agentplane/src/cli/verify-global-install-script.test.ts",
+        "packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  67 passed (67); Duration  11.88s (transform 312ms, setup 0ms, import 625ms, tests 17.49s, environment 1ms)"
+    },
+    {
+      "index": 41,
+      "durationMs": 4010,
+      "files": [
+        "packages/agentplane/src/commands/acr/acr.command.test.ts",
+        "packages/agentplane/src/commands/backend.test.ts",
+        "packages/agentplane/src/commands/blueprint/snapshot-artifact.test.ts",
+        "packages/agentplane/src/commands/blueprint/task-input.test.ts",
+        "packages/agentplane/src/commands/blueprints/catalog-cache.test.ts",
+        "packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts",
+        "packages/agentplane/src/commands/codex/plugin-install.test.ts",
+        "packages/agentplane/src/commands/context/harvest-tasks.test.ts",
+        "packages/agentplane/src/commands/context/issue-gates.unit.test.ts",
+        "packages/agentplane/src/commands/context/release-readiness.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  67 passed (67); Duration  3.61s (transform 6.10s, setup 0ms, import 9.86s, tests 1.20s, environment 1ms)"
+    },
+    {
+      "index": 42,
+      "durationMs": 7415,
+      "files": [
+        "packages/agentplane/src/commands/context/sqlite.unit.test.ts",
+        "packages/agentplane/src/commands/context/verify-task.maximum-assimilation.unit.test.ts",
+        "packages/agentplane/src/commands/context/wiki.obsidian.unit.test.ts",
+        "packages/agentplane/src/commands/doctor.branch-pr.memo.test.ts",
+        "packages/agentplane/src/commands/doctor.command.open-pr.test.ts",
+        "packages/agentplane/src/commands/doctor.command.runtime.test.ts",
+        "packages/agentplane/src/commands/doctor.command.task-docs.test.ts",
+        "packages/agentplane/src/commands/doctor.fast.test.ts",
+        "packages/agentplane/src/commands/doctor/archive.test.ts",
+        "packages/agentplane/src/commands/evidence/evidence.command.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  61 passed (61); Duration  6.84s (transform 5.17s, setup 0ms, import 8.80s, tests 11.82s, environment 1ms)"
+    },
+    {
+      "index": 43,
+      "durationMs": 7597,
+      "files": [
+        "packages/agentplane/src/commands/guard/impl/allow.test.ts",
+        "packages/agentplane/src/commands/guard/impl/close-message.test.ts",
+        "packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts",
+        "packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts",
+        "packages/agentplane/src/commands/guard/impl/commands.guard.unit.test.ts",
+        "packages/agentplane/src/commands/guard/impl/comment-commit.test.ts",
+        "packages/agentplane/src/commands/guard/impl/env.test.ts",
+        "packages/agentplane/src/commands/guard/impl/policy.test.ts",
+        "packages/agentplane/src/commands/guard/index.test.ts",
+        "packages/agentplane/src/commands/hooks/capabilities.test.ts"
+      ],
+      "summary": "Test Files  18 passed (18); Tests  147 passed (147); Duration  7.02s (transform 10.09s, setup 0ms, import 13.75s, tests 8.16s, environment 2ms)"
+    },
+    {
+      "index": 44,
+      "durationMs": 6444,
+      "files": [
+        "packages/agentplane/src/commands/hooks/task-context.test.ts",
+        "packages/agentplane/src/commands/incidents/shared.test.ts",
+        "packages/agentplane/src/commands/insights/insights-issue-publish.test.ts",
+        "packages/agentplane/src/commands/integrate-queue.spec.test.ts",
+        "packages/agentplane/src/commands/pr/input-validation.test.ts",
+        "packages/agentplane/src/commands/pr/integrate/cmd.test.ts",
+        "packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.test.ts",
+        "packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts",
+        "packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts",
+        "packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  48 passed (48); Duration  4.98s (transform 6.07s, setup 0ms, import 3.54s, tests 8.36s, environment 5ms)"
+    },
+    {
+      "index": 45,
+      "durationMs": 7690,
+      "files": [
+        "packages/agentplane/src/commands/pr/integrate/internal/worktree.test.ts",
+        "packages/agentplane/src/commands/pr/integrate/queue-mutex.test.ts",
+        "packages/agentplane/src/commands/pr/integrate/queue-state.test.ts",
+        "packages/agentplane/src/commands/pr/internal/batch-validation.test.ts",
+        "packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts",
+        "packages/agentplane/src/commands/pr/internal/pr-paths.test.ts",
+        "packages/agentplane/src/commands/pr/internal/review-template.test.ts",
+        "packages/agentplane/src/commands/recipes.cache.test.ts",
+        "packages/agentplane/src/commands/recipes.catalog-install.test.ts",
+        "packages/agentplane/src/commands/recipes.list.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  67 passed (67); Duration  6.72s (transform 12.69s, setup 0ms, import 18.03s, tests 1.38s, environment 2ms)"
+    },
+    {
+      "index": 46,
+      "durationMs": 10076,
+      "files": [
+        "packages/agentplane/src/commands/recipes.scenario.test.ts",
+        "packages/agentplane/src/commands/recipes.transaction.test.ts",
+        "packages/agentplane/src/commands/recipes/impl/constants.test.ts",
+        "packages/agentplane/src/commands/recipes/impl/overlay-project.test.ts",
+        "packages/agentplane/src/commands/recipes/impl/project-installed-recipes.test.ts",
+        "packages/agentplane/src/commands/recipes/impl/resolver.test.ts",
+        "packages/agentplane/src/commands/recipes/impl/scenario.test.ts",
+        "packages/agentplane/src/commands/release/apply.apply-flow.test.ts",
+        "packages/agentplane/src/commands/release/apply.mutation.unit.test.ts",
+        "packages/agentplane/src/commands/release/apply.preflight.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  53 passed (53); Duration  9.37s (transform 11.17s, setup 0ms, import 16.84s, tests 11.99s, environment 2ms)"
+    },
+    {
+      "index": 47,
+      "durationMs": 20455,
+      "files": [
+        "packages/agentplane/src/commands/release/apply.push-recovery.test.ts",
+        "packages/agentplane/src/commands/release/apply.version-mutation.test.ts",
+        "packages/agentplane/src/commands/release/audit-platform-publication-script.test.ts",
+        "packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts",
+        "packages/agentplane/src/commands/release/check-release-parity-script.test.ts",
+        "packages/agentplane/src/commands/release/check-release-version-script.test.ts",
+        "packages/agentplane/src/commands/release/ci-workflow-contract.test.ts",
+        "packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts",
+        "packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts",
+        "packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  42 passed (42); Duration  19.89s (transform 9.56s, setup 0ms, import 12.83s, tests 51.66s, environment 1ms)"
+    },
+    {
+      "index": 48,
+      "durationMs": 11849,
+      "files": [
+        "packages/agentplane/src/commands/release/local-release-e2e-script.test.ts",
+        "packages/agentplane/src/commands/release/npm-version-availability-script.test.ts",
+        "packages/agentplane/src/commands/release/plan.test.ts",
+        "packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts",
+        "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts",
+        "packages/agentplane/src/commands/release/release-check-script.test.ts",
+        "packages/agentplane/src/commands/release/release-ci-contract.test.ts",
+        "packages/agentplane/src/commands/release/release-incidents-script.test.ts",
+        "packages/agentplane/src/commands/release/release-ready-manifest-script.test.ts",
+        "packages/agentplane/src/commands/release/release-task-evidence-script.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  46 passed (46); Duration  11.41s (transform 10.34s, setup 0ms, import 13.68s, tests 23.60s, environment 1ms)"
+    },
+    {
+      "index": 49,
+      "durationMs": 7243,
+      "files": [
+        "packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts",
+        "packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts",
+        "packages/agentplane/src/commands/release/resolve-canonical-release-sha-script.test.ts",
+        "packages/agentplane/src/commands/release/resolve-release-ready-source-script.test.ts",
+        "packages/agentplane/src/commands/release/task-registry-ready-script.test.ts",
+        "packages/agentplane/src/commands/release/workflow-node-version-contract.test.ts",
+        "packages/agentplane/src/commands/release/write-publish-result-manifest-script.test.ts",
+        "packages/agentplane/src/commands/release/write-release-ready-manifest-script.test.ts",
+        "packages/agentplane/src/commands/runtime.command.test.ts",
+        "packages/agentplane/src/commands/scenario/impl/commands.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  41 passed (41); Duration  6.67s (transform 5.63s, setup 0ms, import 7.99s, tests 9.11s, environment 1ms)"
+    },
+    {
+      "index": 50,
+      "durationMs": 1909,
+      "files": [
+        "packages/agentplane/src/commands/shared/approval-requirements.test.ts",
+        "packages/agentplane/src/commands/shared/close-precheck.test.ts",
+        "packages/agentplane/src/commands/shared/comment-format.test.ts",
+        "packages/agentplane/src/commands/shared/diagnostics.test.ts",
+        "packages/agentplane/src/commands/shared/git-context.test.ts",
+        "packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts",
+        "packages/agentplane/src/commands/shared/network-approval.test.ts",
+        "packages/agentplane/src/commands/shared/operator-pipeline.test.ts",
+        "packages/agentplane/src/commands/shared/pr-meta.test.ts",
+        "packages/agentplane/src/commands/shared/reconcile-check.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  61 passed (61); Duration  1.41s (transform 1.25s, setup 0ms, import 2.34s, tests 110ms, environment 1ms)"
+    },
+    {
+      "index": 51,
+      "durationMs": 7647,
+      "files": [
+        "packages/agentplane/src/commands/shared/task-backend.test.ts",
+        "packages/agentplane/src/commands/shared/task-mutation.test.ts",
+        "packages/agentplane/src/commands/shared/task-store.test.ts",
+        "packages/agentplane/src/commands/task/block.unit.test.ts",
+        "packages/agentplane/src/commands/task/close-shared.unit.test.ts",
+        "packages/agentplane/src/commands/task/close-tail-state.test.ts",
+        "packages/agentplane/src/commands/task/comment.unit.test.ts",
+        "packages/agentplane/src/commands/task/doc.unit.test.ts",
+        "packages/agentplane/src/commands/task/evidence-check.unit.test.ts",
+        "packages/agentplane/src/commands/task/findings.unit.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  51 passed (51); Duration  7.02s (transform 6.23s, setup 0ms, import 7.06s, tests 6.63s, environment 1ms)"
+    },
+    {
+      "index": 52,
+      "durationMs": 11531,
+      "files": [
+        "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+        "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+        "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+        "packages/agentplane/src/commands/task/hosted-close-pr.command.test.ts",
+        "packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts",
+        "packages/agentplane/src/commands/task/hosted-close.command.test.ts",
+        "packages/agentplane/src/commands/task/hosted-merge-sync.test.ts",
+        "packages/agentplane/src/commands/task/lifecycle-commit-matrix.unit.test.ts",
+        "packages/agentplane/src/commands/task/list.stale-upstream.unit.test.ts",
+        "packages/agentplane/src/commands/task/migrate-doc.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  72 passed (72); Duration  10.62s (transform 19.86s, setup 0ms, import 23.03s, tests 10.15s, environment 10ms)"
+    },
+    {
+      "index": 53,
+      "durationMs": 5347,
+      "files": [
+        "packages/agentplane/src/commands/task/mutation-parity.unit.test.ts",
+        "packages/agentplane/src/commands/task/observations.unit.test.ts",
+        "packages/agentplane/src/commands/task/obsidian.unit.test.ts",
+        "packages/agentplane/src/commands/task/plan.unit.test.ts",
+        "packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts",
+        "packages/agentplane/src/commands/task/set-status.unit.test.ts",
+        "packages/agentplane/src/commands/task/shared.unit.test.ts",
+        "packages/agentplane/src/commands/task/shared.verify-steps.test.ts",
+        "packages/agentplane/src/commands/task/shared/git-log.test.ts",
+        "packages/agentplane/src/commands/task/shared/transition-command.unit.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  80 passed (80); Duration  4.14s (transform 4.54s, setup 0ms, import 5.97s, tests 5.03s, environment 1ms)"
+    },
+    {
+      "index": 54,
+      "durationMs": 8215,
+      "files": [
+        "packages/agentplane/src/commands/task/start.unit.test.ts",
+        "packages/agentplane/src/commands/task/update.unit.test.ts",
+        "packages/agentplane/src/commands/task/verify-record.unit.test.ts",
+        "packages/agentplane/src/commands/task/warn-owner.unit.test.ts",
+        "packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts",
+        "packages/agentplane/src/commands/upgrade.agent-mode.test.ts",
+        "packages/agentplane/src/commands/upgrade.cleanup.test.ts",
+        "packages/agentplane/src/commands/upgrade.json-merge.stability.test.ts",
+        "packages/agentplane/src/commands/upgrade.merge.test.ts",
+        "packages/agentplane/src/commands/upgrade.release-assets.unit.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  49 passed (49); Duration  7.41s (transform 12.27s, setup 0ms, import 18.26s, tests 5.85s, environment 1ms)"
+    },
+    {
+      "index": 55,
+      "durationMs": 7474,
+      "files": [
+        "packages/agentplane/src/commands/upgrade.safety.test.ts",
+        "packages/agentplane/src/commands/upgrade.spec-parse.test.ts",
+        "packages/agentplane/src/commands/upgrade.tarball-url.unit.test.ts",
+        "packages/agentplane/src/commands/upgrade.unit.test.ts",
+        "packages/agentplane/src/commands/workflow.maintenance.test.ts",
+        "packages/agentplane/src/commands/workflow.task-doc.test.ts",
+        "packages/agentplane/src/commands/workflow.test.ts",
+        "packages/agentplane/src/commands/workflow.verify-hooks.test.ts",
+        "packages/agentplane/src/harness/dynamic-tool-contract.test.ts",
+        "packages/agentplane/src/harness/hooks-lifecycle.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  79 passed (79); Duration  6.87s (transform 8.66s, setup 0ms, import 14.36s, tests 8.27s, environment 1ms)"
+    },
+    {
+      "index": 56,
+      "durationMs": 1450,
+      "files": [
+        "packages/agentplane/src/harness/reconcile.test.ts",
+        "packages/agentplane/src/harness/retry-policy.test.ts",
+        "packages/agentplane/src/harness/scheduler.test.ts",
+        "packages/agentplane/src/harness/state-machine.test.ts",
+        "packages/agentplane/src/harness/token-accounting.test.ts",
+        "packages/agentplane/src/harness/workspace-safety.test.ts",
+        "packages/agentplane/src/meta/release.test.ts",
+        "packages/agentplane/src/policy/engine.test.ts",
+        "packages/agentplane/src/policy/evaluate.test.ts",
+        "packages/agentplane/src/policy/taxonomy.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  39 passed (39); Duration  841ms (transform 499ms, setup 0ms, import 881ms, tests 94ms, environment 1ms)"
+    },
+    {
+      "index": 57,
+      "durationMs": 7523,
+      "files": [
+        "packages/agentplane/src/runner/adapters/codex.test.ts",
+        "packages/agentplane/src/runner/adapters/custom.test.ts",
+        "packages/agentplane/src/runner/artifacts.test.ts",
+        "packages/agentplane/src/runner/codex-approval-probe.test.ts",
+        "packages/agentplane/src/runner/codex-smoke.test.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/context/base-prompts.test.ts",
+        "packages/agentplane/src/runner/context/task-context.test.ts",
+        "packages/agentplane/src/runner/playbooks.test.ts",
+        "packages/agentplane/src/runner/policy-decision.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  53 passed (53); Duration  6.94s (transform 8.15s, setup 0ms, import 11.94s, tests 7.21s, environment 1ms)"
+    },
+    {
+      "index": 58,
+      "durationMs": 10710,
+      "files": [
+        "packages/agentplane/src/runner/process-supervision.test.ts",
+        "packages/agentplane/src/runner/result-manifest-policy.test.ts",
+        "packages/agentplane/src/runner/result-manifest.test.ts",
+        "packages/agentplane/src/runner/task-run-paths.test.ts",
+        "packages/agentplane/src/runner/trace.test.ts",
+        "packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts",
+        "packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts",
+        "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
+        "packages/agentplane/src/runtime/approvals/runtime.test.ts",
+        "packages/agentplane/src/runtime/behavior/resolve.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  40 passed (40); Duration  10.10s (transform 12.24s, setup 0ms, import 17.15s, tests 9.40s, environment 1ms)"
+    },
+    {
+      "index": 59,
+      "durationMs": 886,
+      "files": [
+        "packages/agentplane/src/runtime/capabilities/resolve.test.ts",
+        "packages/agentplane/src/runtime/execution-profile/resolve.test.ts",
+        "packages/agentplane/src/runtime/explain/resolve.test.ts",
+        "packages/agentplane/src/runtime/harness/resolve.test.ts",
+        "packages/agentplane/src/runtime/incidents/resolve.test.ts",
+        "packages/agentplane/src/runtime/prompt-fragments/json.test.ts",
+        "packages/agentplane/src/runtime/prompt-fragments/markdown.test.ts",
+        "packages/agentplane/src/runtime/prompt-modules/compiler.test.ts",
+        "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts",
+        "packages/agentplane/src/runtime/prompt-modules/model.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  50 passed (50); Duration  596ms (transform 417ms, setup 0ms, import 787ms, tests 90ms, environment 1ms)"
+    },
+    {
+      "index": 60,
+      "durationMs": 4506,
+      "files": [
+        "packages/agentplane/src/runtime/prompt-modules/mutations.test.ts",
+        "packages/agentplane/src/runtime/prompt-modules/registry.test.ts",
+        "packages/agentplane/src/runtime/protocol/resolve.test.ts",
+        "packages/agentplane/src/runtime/sgr/contracts.test.ts",
+        "packages/agentplane/src/runtime/shared/repo-cli-version.test.ts",
+        "packages/agentplane/src/runtime/shared/runtime-source.test.ts",
+        "packages/agentplane/src/runtime/task-intake/resolve.test.ts",
+        "packages/agentplane/src/shared/ansi.test.ts",
+        "packages/agentplane/src/shared/env.test.ts",
+        "packages/agentplane/src/shared/errors.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  35 passed (35); Duration  4.12s (transform 3.74s, setup 0ms, import 5.60s, tests 218ms, environment 1ms)"
+    },
+    {
+      "index": 61,
+      "durationMs": 1827,
+      "files": [
+        "packages/agentplane/src/shared/git-index-lock-guard.test.ts",
+        "packages/agentplane/src/shared/git-mutation.test.ts",
+        "packages/agentplane/src/shared/json-io.test.ts",
+        "packages/agentplane/src/shared/package-paths.test.ts",
+        "packages/agentplane/src/shared/protected-paths.test.ts",
+        "packages/agentplane/src/shared/runtime-env.test.ts",
+        "packages/agentplane/src/shared/trace-events.test.ts",
+        "packages/agentplane/src/shared/write-if-changed.test.ts",
+        "packages/agentplane/src/workflow-lifecycle/contract.test.ts",
+        "packages/agentplane/src/workflow-lifecycle/parity-check.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  27 passed (27); Duration  1.25s (transform 591ms, setup 0ms, import 964ms, tests 937ms, environment 1ms)"
+    },
+    {
+      "index": 62,
+      "durationMs": 4263,
+      "files": [
+        "packages/agentplane/src/workflow-runtime/build.test.ts",
+        "packages/agentplane/src/workflow-runtime/enforcement.test.ts",
+        "packages/agentplane/src/workflow-runtime/file-ops.test.ts",
+        "packages/agentplane/src/workflow-runtime/template.test.ts",
+        "packages/agentplane/src/workflow-runtime/validate.test.ts",
+        "packages/core/src/commit/commit-policy.test.ts",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/execution-profile.test.ts",
+        "packages/core/src/fs/atomic-write.test.ts",
+        "packages/core/src/git/base-branch.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  87 passed (87); Duration  3.63s (transform 1.68s, setup 0ms, import 3.82s, tests 2.42s, environment 2ms)"
+    },
+    {
+      "index": 63,
+      "durationMs": 3405,
+      "files": [
+        "packages/core/src/git/git-client.test.ts",
+        "packages/core/src/git/git-diff.test.ts",
+        "packages/core/src/git/git-utils.test.ts",
+        "packages/core/src/git/git-worktree.test.ts",
+        "packages/core/src/logger.test.ts",
+        "packages/core/src/process/run-process.test.ts",
+        "packages/core/src/project/project-root.test.ts",
+        "packages/core/src/tasks/task-artifact-schema.test.ts",
+        "packages/core/src/tasks/task-doc-mutation.test.ts",
+        "packages/core/src/tasks/task-doc.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  87 passed (87); Duration  2.90s (transform 535ms, setup 0ms, import 1.47s, tests 5.73s, environment 1ms)"
+    },
+    {
+      "index": 64,
+      "durationMs": 1924,
+      "files": [
+        "packages/core/src/tasks/task-readme-io.test.ts",
+        "packages/core/src/tasks/task-readme.test.ts",
+        "packages/core/src/tasks/task-status.test.ts",
+        "packages/core/src/tasks/task-store.test.ts",
+        "packages/core/src/tasks/tasks-export.test.ts",
+        "packages/core/src/tasks/tasks-lint.test.ts",
+        "packages/recipes/src/blueprint-extensions.test.ts",
+        "packages/recipes/src/index.test.ts",
+        "packages/recipes/src/overlay.test.ts",
+        "packages/testkit/src/cli-harness/recipe-archives.test.ts"
+      ],
+      "summary": "Test Files  10 passed (10); Tests  70 passed (70); Duration  1.49s (transform 1.01s, setup 0ms, import 1.88s, tests 1.16s, environment 1ms)"
+    },
+    {
+      "index": 65,
+      "durationMs": 3572,
+      "files": [
+        "packages/testkit/src/cli.test.ts",
+        "packages/testkit/src/index.test.ts"
+      ],
+      "summary": "Test Files  2 passed (2); Tests  3 passed (3); Duration  2.98s (transform 4.29s, setup 0ms, import 5.56s, tests 9ms, environment 0ms)"
+    }
+  ]
+}
