@@ -1,10 +1,11 @@
 ---
 id: "202605211431-A5GBYT"
 title: "Release AgentPlane v0.6.5"
-status: "DOING"
+result_summary: "Merged via PR #4007."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605211431-A5GBYT/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211431-A5GBYT-eval-63/.agentplane/tasks/202605211431-A5GBYT/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "76abebc7ac0aaa1f541854f3217505be81cc368f"
+  message: "Merge pull request #4007 from basilisk-labs/task/202605211431-A5GBYT/release-v0-6-5"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: Release v0.6.5 from current main after confirming clean base, empty incident registry, task registry readiness, npm/GitHub v0.6.4 publication, and no open GitHub PRs."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4007 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -66,8 +72,15 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Fresh evaluator gate for final release candidate head after verification artifact commit; hosted PR #4007 checks are green and release branch is ready for integration."
+  -
+    type: "status"
+    at: "2026-05-21T17:42:18.234Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4007 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-21T17:30:58.168Z"
+doc_updated_at: "2026-05-21T17:42:18.241Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare, verify, publish, and record evidence for the next patch release after v0.6.4."
 sections:
