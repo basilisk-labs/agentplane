@@ -1,0 +1,4 @@
+ .../blueprint/resolved-snapshot.json               | 594 +++++++++++++++++++++
+ .../task-backend/local-task-sqlite-cache.ts        |  36 +-
+ packages/agentplane/src/commands/task/list.run.ts  |  11 +-
+ 3 files changed, 624 insertions(+), 17 deletions(-)

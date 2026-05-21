@@ -22,12 +22,15 @@ Reduce task list wall time by avoiding unnecessary runtime and git work when exi
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T13:33:07.374Z
+- Updated: 2026-05-21T13:45:32.377Z
 - Branch: task/202605211331-F6AMAP/task-list-fast-path
-- Head: 6c86398a33cd
+- Head: acccaa6b28ee
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 594 +++++++++++++++++++++
+ .../task-backend/local-task-sqlite-cache.ts        |  36 +-
+ packages/agentplane/src/commands/task/list.run.ts  |  11 +-
+ 3 files changed, 624 insertions(+), 17 deletions(-)
 ```
 
 </details>
