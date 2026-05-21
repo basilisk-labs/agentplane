@@ -1,10 +1,11 @@
 ---
 id: "202605211039-QZXN8Q"
 title: "Fix open context GitHub issues"
-status: "DOING"
+result_summary: "Merged via PR #4000."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +34,16 @@ quality_review:
     - ".agentplane/tasks/202605211039-QZXN8Q/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211039-QZXN8Q-fix-open-context-issues/.agentplane/tasks/202605211039-QZXN8Q/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "f3eae2ecbf950eeeb87a894dbf3a17e05b1a4eb9"
+  message: "Merge pull request #4000 from basilisk-labs/task/202605211039-QZXN8Q/fix-open-context-issues"
 comments:
   -
     author: "CODER"
     body: "Start: Implement approved GitHub context issue batch in branch_pr worktree, covering wiki lint/link contracts, manifest lock source inventory, stale projection health/search behavior, and maximum-assimilation derived artifact consistency."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4000 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for code head 0c198bbf4 with evidence: focused context regression tests 30/30; typecheck; targeted eslint; policy routing; diff check; pre-push fast CI 57/57; hosted PR checks passed after review fixes; GitHub review threads resolved."
+  -
+    type: "status"
+    at: "2026-05-21T11:46:13.996Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4000 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-21T11:39:21.113Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-21T11:46:14.003Z"
+doc_updated_by: "INTEGRATOR"
 description: "Batch-fix open GitHub context issues: Obsidian wiki contract, manifest source inventory, stale projections, and derived context consistency. Scope includes GitHub issues #3989, #3990, #3991, #3992, #3993, #3994, #3996, #3997, #3998. Investigate #3879 only for directly shared context runner recovery paths; otherwise leave it as separate follow-up."
 sections:
   Summary: |-
