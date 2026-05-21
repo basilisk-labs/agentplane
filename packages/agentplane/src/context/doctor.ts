@@ -135,7 +135,9 @@ export async function cmdContextDoctor(opts: {
       }
     }
     if (staleProjection > 0) {
-      issues.push(`projection stale rows: ${staleProjection}; run agentplane context reindex --include-raw`);
+      issues.push(
+        `projection stale rows: ${staleProjection}; run agentplane context reindex --include-raw`,
+      );
     }
   }
 

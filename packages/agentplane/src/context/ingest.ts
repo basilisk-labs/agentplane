@@ -409,7 +409,9 @@ async function mergeCompleteSourceInventory(
       merged.push({ ...row, status: "deleted" });
     }
   }
-  return finalizeManifestRows(merged).toSorted((left, right) => left.path.localeCompare(right.path));
+  return finalizeManifestRows(merged).toSorted((left, right) =>
+    left.path.localeCompare(right.path),
+  );
 }
 
 function buildIndexModeSourceRows(

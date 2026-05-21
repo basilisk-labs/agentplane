@@ -255,8 +255,15 @@ async function validateMaximumAssimilationDerivedConsistency(
   const entities = await loadJsonlRows(path.join(graphRoot, "entities.jsonl"));
   const edges = await loadJsonlRows(path.join(graphRoot, "edges.jsonl"));
   const provenance = await loadJsonlRows(path.join(graphRoot, "provenance_edges.jsonl"));
-  const facts = await loadJsonlRows(path.join(root, ".agentplane/context/derived/facts/facts.jsonl"));
-  if (entities.length === 0 || edges.length === 0 || provenance.length === 0 || facts.length === 0) {
+  const facts = await loadJsonlRows(
+    path.join(root, ".agentplane/context/derived/facts/facts.jsonl"),
+  );
+  if (
+    entities.length === 0 ||
+    edges.length === 0 ||
+    provenance.length === 0 ||
+    facts.length === 0
+  ) {
     errors.push(
       `maximum-assimilation wiki declares graph_refs in ${pagesWithGraphRefs} page(s), but derived graph/fact/provenance projections are incomplete`,
     );
