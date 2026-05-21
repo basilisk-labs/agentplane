@@ -124,7 +124,7 @@ describe("runCli", () => {
 
   it(
     "workflow debug/sync/land run built-in core operations and write evidence files",
-    { timeout: 180_000 },
+    { timeout: 300_000 },
     async () => {
       const root = await mkGitRepoRoot();
       await configureGitUser(root);

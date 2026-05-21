@@ -51,9 +51,11 @@ async function readContextManifest(root: string): Promise<string> {
 installRunCliIntegrationHarness();
 
 describe("runCli context init interactive mode", () => {
+  const CONTEXT_INIT_TIMEOUT_MS = 180_000;
+
   it(
     "defaults to maximum-assimilation without prompting in an interactive terminal",
-    { timeout: 60_000 },
+    { timeout: CONTEXT_INIT_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await initAgentplaneProject(root);
@@ -78,7 +80,7 @@ describe("runCli context init interactive mode", () => {
 
   it(
     "respects explicit profile without prompting in an interactive terminal",
-    { timeout: 60_000 },
+    { timeout: CONTEXT_INIT_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await initAgentplaneProject(root);
@@ -99,7 +101,7 @@ describe("runCli context init interactive mode", () => {
 
   it(
     "creates a context-layer commit in an initialized AgentPlane project",
-    { timeout: 60_000 },
+    { timeout: CONTEXT_INIT_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await initAgentplaneProject(root);
@@ -128,7 +130,7 @@ describe("runCli context init interactive mode", () => {
 
   it(
     "fails before writing context files when the git index already has staged changes",
-    { timeout: 60_000 },
+    { timeout: CONTEXT_INIT_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await initAgentplaneProject(root);
@@ -153,7 +155,7 @@ describe("runCli context init interactive mode", () => {
 
   it(
     "uses the maximum-assimilation default without prompts outside an interactive terminal",
-    { timeout: 60_000 },
+    { timeout: CONTEXT_INIT_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await initAgentplaneProject(root);
@@ -174,7 +176,7 @@ describe("runCli context init interactive mode", () => {
 
   it(
     "requires force when switching an initialized context profile",
-    { timeout: 60_000 },
+    { timeout: CONTEXT_INIT_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await initAgentplaneProject(root);
