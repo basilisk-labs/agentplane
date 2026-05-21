@@ -260,6 +260,20 @@ function extractYamlScalar(frontmatter: string, key: string): string | null {
 
 function extractYamlList(frontmatter: string, key: string): string[] {
   const escaped = key.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
+  const flow = new RegExp(String.raw`(?:^|\n)\s*${escaped}:\s*\[([^\]\n]*)\]`, "u").exec(
+    frontmatter,
+  )?.[1];
+  if (flow !== undefined) {
+    return flow
+      .split(",")
+      .map((value) =>
+        value
+          .trim()
+          .replaceAll(/^["']|["']$/gu, "")
+          .trim(),
+      )
+      .filter(Boolean);
+  }
   const block = new RegExp(String.raw`(?:^|\n)\s*${escaped}:\s*\n((?:\s+-\s*.+\n?)+)`, "u").exec(
     frontmatter,
   )?.[1];
@@ -292,14 +306,18 @@ function registerWikiTarget(catalog: WikiLinkCatalog, target: string, canonical:
 async function buildWikiLinkCatalog(root: string): Promise<WikiLinkCatalog> {
   const catalog: WikiLinkCatalog = new Map();
   const files = await collectWikiFiles(root, "context/wiki");
-  for (const rel of files.filter((file) => isIndexableWikiPage(file))) {
+  for (const rel of files.filter(
+    (file) => file.endsWith(".md") && path.basename(file) !== "AGENTS.md",
+  )) {
     const wikiTarget = rel.replace(/^context\/wiki\//u, "").replace(/\.md$/u, "");
     const text = await readFile(path.join(root, rel), "utf8");
     const frontmatter = extractFrontmatter(text);
     const title = frontmatter ? extractYamlScalar(frontmatter, "title") : null;
     const aliases = frontmatter ? extractYamlList(frontmatter, "aliases") : [];
     registerWikiTarget(catalog, wikiTarget, wikiTarget);
-    registerWikiTarget(catalog, path.basename(wikiTarget), wikiTarget);
+    if (path.basename(wikiTarget) !== "index") {
+      registerWikiTarget(catalog, path.basename(wikiTarget), wikiTarget);
+    }
     if (title) registerWikiTarget(catalog, title, title);
     for (const alias of aliases) registerWikiTarget(catalog, alias, alias);
   }

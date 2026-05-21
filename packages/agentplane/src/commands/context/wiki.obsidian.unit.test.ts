@@ -131,4 +131,50 @@ describe("context wiki Obsidian compatibility", () => {
       "context wiki lint: ok (2 page(s))",
     );
   });
+
+  it("accepts index-page wikilinks and flow-style aliases", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/wiki/concepts/index.md",
+      [
+        "---",
+        'aliases: ["Concept Hub"]',
+        "agentplane_context:",
+        "  schema_version: 1",
+        "  artifact_type: wiki_page",
+        '  canonical_id: "wiki.concepts"',
+        '  title: "Concepts"',
+        "  modality: definition",
+        "  epistemic_status: sourced_claim",
+        "  source_refs: []",
+        "---",
+        "",
+        "# Concepts",
+        "",
+        "## Sources",
+        "",
+        "- no-source: local test fixture",
+        "",
+      ].join("\n"),
+    );
+    await write(
+      root,
+      "context/wiki/overview.md",
+      wikiPage({
+        title: "Overview",
+        body: "See [[concepts/index]] and [[Concept Hub]] for concepts [1].",
+      }),
+    );
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextWikiLint({
+      cwd: root,
+      parsed: { path: "context/wiki" },
+    });
+
+    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
+      "context wiki lint: ok (2 page(s))",
+    );
+  });
 });
