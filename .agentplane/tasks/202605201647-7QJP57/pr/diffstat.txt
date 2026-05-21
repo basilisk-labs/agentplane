@@ -4,11 +4,11 @@
  packages/core/schemas/runner-handoff.schema.json   | 193 +++++++++
  packages/core/src/index.ts                         |  12 +
  packages/core/src/schemas/index.ts                 |  12 +
- .../tasks/task-artifact-schema.runner-handoff.ts   | 188 +++++++++
+ .../tasks/task-artifact-schema.runner-handoff.ts   | 181 ++++++++
  .../core/src/tasks/task-artifact-schema.test.ts    | 203 ++++++++-
- packages/core/src/tasks/task-artifact-schema.ts    |  45 ++
+ packages/core/src/tasks/task-artifact-schema.ts    |  39 ++
  packages/spec/examples/runner-handoff.json         |  46 ++
  packages/spec/schemas/runner-handoff.schema.json   | 193 +++++++++
  schemas/runner-handoff.schema.json                 | 193 +++++++++
  scripts/generate/sync-schemas.mjs                  |   7 +
- 13 files changed, 1655 insertions(+), 7 deletions(-)
+ 13 files changed, 1642 insertions(+), 7 deletions(-)

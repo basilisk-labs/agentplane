@@ -4,7 +4,7 @@ title: "Prepare v0.7 runner handoff release lane"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -31,9 +31,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T17:06:34.794Z"
+  updated_at: "2026-05-21T10:23:58.160Z"
   updated_by: "CODER"
-  note: "Public v0.7 runner handoff contract implemented and checked. Passed: focused core schema tests, schemas:check, docs:ia:check, typecheck, bun run test, build, format:check, policy routing, doctor. Hosted execution remains unimplemented."
+  note: "Review fix applied after GitHub verify-static failure. Passed: bun run knip:check, focused core schema tests, bun run typecheck, bun run format:check, and framework:dev:bootstrap. Hosted execution remains unimplemented."
   attempts: 0
 commit: null
 comments:
@@ -54,8 +54,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Public v0.7 runner handoff contract implemented and checked. Passed: focused core schema tests, schemas:check, docs:ia:check, typecheck, bun run test, build, format:check, policy routing, doctor. Hosted execution remains unimplemented."
+  -
+    type: "verify"
+    at: "2026-05-21T10:23:58.160Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review fix applied after GitHub verify-static failure. Passed: bun run knip:check, focused core schema tests, bun run typecheck, bun run format:check, and framework:dev:bootstrap. Hosted execution remains unimplemented."
 doc_version: 3
-doc_updated_at: "2026-05-20T17:06:34.817Z"
+doc_updated_at: "2026-05-21T10:23:58.219Z"
 doc_updated_by: "CODER"
 description: "Prepare the public AgentPlane side of the v0.7 runner handoff release lane. Scope: public runner handoff contract/RFC, typed fixtures, docs/tests, route mapping, worktree and approval boundaries, artifact/evidence expectations, trace/export/ACR visibility, and compatibility with the private cloud-sync P4.1 contract. Out of scope: mutating agentplane-cloud-sync, production hosted repository execution without accepted contract and kill switch, connector-specific CLI logic, and secret/provider/customer payload storage."
 sections:
@@ -88,6 +94,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:04:44.919Z, excerpt_hash=sha256:50b5b2520357f32acc4d6a03140c408f5010623aa2f6d139c2fdeda6e0bd7fad
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201647-7QJP57-v0-7-runner-handoff/.agentplane/tasks/202605201647-7QJP57/blueprint/resolved-snapshot.json
+    - old_digest: 3999af497920e04c6c7d67117a3fd0e46f64f3f2fd4fcc0cd7dc2cb5572f4401
+    - current_digest: 3999af497920e04c6c7d67117a3fd0e46f64f3f2fd4fcc0cd7dc2cb5572f4401
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605201647-7QJP57
+
+    ### 2026-05-21T10:23:58.160Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Review fix applied after GitHub verify-static failure. Passed: bun run knip:check, focused core schema tests, bun run typecheck, bun run format:check, and framework:dev:bootstrap. Hosted execution remains unimplemented.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:06:34.817Z, excerpt_hash=sha256:50b5b2520357f32acc4d6a03140c408f5010623aa2f6d139c2fdeda6e0bd7fad
 
     Details:
 
@@ -156,6 +181,25 @@ Note: Public v0.7 runner handoff contract implemented and checked. Passed: focus
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:04:44.919Z, excerpt_hash=sha256:50b5b2520357f32acc4d6a03140c408f5010623aa2f6d139c2fdeda6e0bd7fad
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201647-7QJP57-v0-7-runner-handoff/.agentplane/tasks/202605201647-7QJP57/blueprint/resolved-snapshot.json
+- old_digest: 3999af497920e04c6c7d67117a3fd0e46f64f3f2fd4fcc0cd7dc2cb5572f4401
+- current_digest: 3999af497920e04c6c7d67117a3fd0e46f64f3f2fd4fcc0cd7dc2cb5572f4401
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605201647-7QJP57
+
+### 2026-05-21T10:23:58.160Z — VERIFY — ok
+
+By: CODER
+
+Note: Review fix applied after GitHub verify-static failure. Passed: bun run knip:check, focused core schema tests, bun run typecheck, bun run format:check, and framework:dev:bootstrap. Hosted execution remains unimplemented.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:06:34.817Z, excerpt_hash=sha256:50b5b2520357f32acc4d6a03140c408f5010623aa2f6d139c2fdeda6e0bd7fad
 
 Details:
 
