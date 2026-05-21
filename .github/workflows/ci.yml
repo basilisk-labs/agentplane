@@ -50,6 +50,8 @@ jobs:
       selector_kind: ${{ steps.plan.outputs.selector_kind }}
       bucket: ${{ steps.plan.outputs.bucket }}
       buckets: ${{ steps.plan.outputs.buckets }}
+      needs_recipes_inventory: ${{ steps.plan.outputs.needs_recipes_inventory }}
+      needs_workflow_lint: ${{ steps.plan.outputs.needs_workflow_lint }}
       changed_files: ${{ steps.plan.outputs.changed_files }}
       changed_files_count: ${{ steps.plan.outputs.changed_files_count }}
     steps:
@@ -69,6 +71,8 @@ jobs:
               echo "selector_kind=recovery"
               echo "bucket=recovery"
               echo "buckets=recovery"
+              echo "needs_recipes_inventory=true"
+              echo "needs_workflow_lint=false"
               echo "changed_files="
               echo "changed_files_count=0"
             } >> "$GITHUB_OUTPUT"
@@ -91,6 +95,7 @@ jobs:
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - name: Initialize recipes submodule
+        if: needs.plan.outputs.needs_recipes_inventory == 'true'
         run: git submodule update --init agentplane-recipes
       - uses: oven-sh/setup-bun@v2
         with:
@@ -99,7 +104,7 @@ jobs:
         with:
           node-version: "24"
       - name: Install actionlint
-        if: contains(needs.plan.outputs.buckets, 'workflow')
+        if: needs.plan.outputs.needs_workflow_lint == 'true'
         run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
       - name: Cache Bun artifacts
         uses: actions/cache@v5

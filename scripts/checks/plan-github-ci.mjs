@@ -61,6 +61,14 @@ appendOutput("route", executionPlan.route);
 appendOutput("selector_kind", selector.kind);
 appendOutput("bucket", selector.bucket ?? "");
 appendOutput("buckets", Array.isArray(selector.buckets) ? selector.buckets.join(",") : "");
+appendOutput(
+  "needs_recipes_inventory",
+  executionPlan.prerequisites?.recipesInventory === true ? "true" : "false",
+);
+appendOutput(
+  "needs_workflow_lint",
+  executionPlan.prerequisites?.workflowLint === true ? "true" : "false",
+);
 appendOutput("changed_files", executionPlan.changed_files.join("\n"));
 appendOutput("changed_files_count", String(executionPlan.changed_files.length));
 

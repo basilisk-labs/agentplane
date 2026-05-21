@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-21T11:34:11Z",
+  "base": "main",
+  "branch": "task/202605211025-P8N5XR/recent-issue-candidates",
+  "created_at": "2026-05-21T10:26:10.917Z",
+  "head_sha": "5184cfd8cca1c22d3d839d8e25dff5312b4ddf17",
+  "last_verified_at": "2026-05-21T10:41:26.006Z",
+  "last_verified_sha": "85752945e6468dce40ec9463b5c60f0e2a9df4dc",
+  "merge_commit": "a720f50edf7ece6a1cdeba265f4beeefbb63d52d",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-21T11:34:11Z",
+  "pr_number": 3999,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3999",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605211025-P8N5XR",
+  "updated_at": "2026-05-21T11:34:11Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-21T11:10:36Z",
+  "base": "main",
+  "branch": "task/202605201647-7QJP57/v0-7-runner-handoff",
+  "created_at": "2026-05-20T17:06:34.863Z",
+  "head_sha": "902a4b4bf66f2183f359b9bed474340c2acef5ef",
+  "last_verified_at": "2026-05-21T11:04:51.671Z",
+  "last_verified_sha": "21afc3b0bfb1a10e667c814c52ec638779dc1064",
+  "merge_commit": "f47e4da1b84daf1e2dbba181b1b20e4f7f8fed4b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-21T11:10:36Z",
+  "pr_number": 3995,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3995",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605201647-7QJP57",
+  "updated_at": "2026-05-21T11:10:36Z",
+  "verify": {
+    "status": "pass"
+  }
+}

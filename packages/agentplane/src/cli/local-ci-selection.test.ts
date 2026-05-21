@@ -61,6 +61,10 @@ const { buildLocalCiExecutionPlan, parseChangedFilesEnv, selectFastCiPlan, shoul
         reason: string | null;
         skipped: boolean;
       }[];
+      prerequisites: {
+        recipesInventory: boolean;
+        workflowLint: boolean;
+      };
     };
     parseChangedFilesEnv: (rawValue: unknown) => string[];
     selectFastCiPlan: (changedFiles: string[]) => FastCiPlan;
@@ -197,6 +201,22 @@ describe("local CI fast selection", () => {
     expect(plan.bucket).toBe("workflow");
     expect(plan.reason).toBe("workflow_contract_paths_only");
     expect(plan.testFiles).toEqual([]);
+  });
+
+  it("reports routed CI prerequisites from the selected command plan", () => {
+    const contextPlan = buildLocalCiExecutionPlan({
+      mode: "fast",
+      changedFiles: ["docs/user/local-context.mdx"],
+    });
+    expect(contextPlan.prerequisites.recipesInventory).toBe(true);
+    expect(contextPlan.prerequisites.workflowLint).toBe(false);
+
+    const workflowPlan = buildLocalCiExecutionPlan({
+      mode: "fast",
+      changedFiles: [".github/workflows/ci.yml"],
+    });
+    expect(workflowPlan.prerequisites.recipesInventory).toBe(true);
+    expect(workflowPlan.prerequisites.workflowLint).toBe(true);
   });
 
   it("routes isolated CLI help and spec paths to the cli-help bucket", () => {

@@ -12,6 +12,7 @@ import type { CommandContext } from "../shared/task-backend.js";
 import { makeRunTaskObservationsHarvestHandler } from "./observations.command.js";
 import {
   findBlockingObservationIssues,
+  harvestTaskObservations,
   summarizeObservationHarvest,
   summarizeObservationTriage,
 } from "./observations.js";
@@ -42,6 +43,25 @@ function observation(overrides: Partial<TaskObservation> = {}): TaskObservation 
 }
 
 describe("task observations", () => {
+  it("short-circuits harvest without loading tasks when no observation journals exist", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "agentplane-observations-empty-"));
+    temps.push(root);
+    await mkdir(path.join(root, ".agentplane", "tasks"), { recursive: true });
+
+    const commandContext = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: {
+        listTasks: () => {
+          throw new Error("listTasks should not run when no observations.jsonl files exist");
+        },
+      },
+      memo: {},
+    } as unknown as CommandContext;
+
+    await expect(harvestTaskObservations(commandContext)).resolves.toEqual([]);
+  });
+
   it("flags only unresolved blocking observations", () => {
     const issues = findBlockingObservationIssues([
       observation({ id: "obs-0001", severity: "critical" }),
