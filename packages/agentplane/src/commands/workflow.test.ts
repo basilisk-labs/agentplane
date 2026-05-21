@@ -612,6 +612,39 @@ describe("commands/workflow", () => {
     }
   });
 
+  it("task lint changed Verify Steps ignores task readmes changed only on base", async () => {
+    const root = await makeRepo();
+    await addTask(root, "202602050900-BASE1");
+    const readmePath = path.join(root, ".agentplane", "tasks", "202602050900-BASE1", "README.md");
+    const originalReadme = await readFile(readmePath, "utf8");
+    const legacyReadme = originalReadme.replace(
+      "## Verify Steps\n\n",
+      "## Verify Steps\n\n1. Run\n\n",
+    );
+    await writeFile(readmePath, legacyReadme, "utf8");
+    await execFileAsync("git", ["add", "--", ".agentplane/tasks/202602050900-BASE1/README.md"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", "Add legacy verify task"], { cwd: root });
+    await execFileAsync("git", ["switch", "-c", "task/changed-verify-scope"], { cwd: root });
+    await execFileAsync("git", ["switch", "main"], { cwd: root });
+    await writeFile(readmePath, `${legacyReadme}\nBase-only note.\n`, "utf8");
+    await execFileAsync("git", ["add", "--", ".agentplane/tasks/202602050900-BASE1/README.md"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", "Update legacy task on base"], { cwd: root });
+    await execFileAsync("git", ["switch", "task/changed-verify-scope"], { cwd: root });
+
+    const ioLint = captureStdIO();
+    try {
+      const code = await cmdTaskLint({ cwd: root, verifySteps: true, verifyStepsChanged: true });
+      expect(code).toBe(0);
+      expect(ioLint.stdout).toContain("OK");
+    } finally {
+      ioLint.restore();
+    }
+  });
+
   it("task lint rejects malformed task README payloads", async () => {
     const root = await makeRepo();
     const readmePath = path.join(root, ".agentplane", "tasks", "BROKEN", "README.md");

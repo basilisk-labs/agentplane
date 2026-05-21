@@ -10,9 +10,13 @@ async function changedVerifyStepTaskIds(gitRoot: string): Promise<Set<string>> {
   const refs = ["origin/main", "main"];
   for (const ref of refs) {
     try {
-      const { stdout } = await execFileAsync("git", ["diff", "--name-only", ref, "--"], {
-        cwd: gitRoot,
-      });
+      const { stdout } = await execFileAsync(
+        "git",
+        ["diff", "--name-only", `${ref}...HEAD`, "--"],
+        {
+          cwd: gitRoot,
+        },
+      );
       const ids = new Set<string>();
       for (const line of String(stdout ?? "").split(/\r?\n/u)) {
         const match = /^\.agentplane\/tasks\/([^/]+)\/README\.md$/u.exec(line.trim());
