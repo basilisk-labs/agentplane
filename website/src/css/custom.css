@@ -38,8 +38,8 @@
   --ifm-heading-color: rgb(var(--fg));
   --ifm-font-color-base: rgb(var(--fg));
   --ifm-code-font-size: 95%;
-  --ifm-global-radius: 14px;
-  --ifm-button-border-radius: 9999px;
+  --ifm-global-radius: 4px;
+  --ifm-button-border-radius: 4px;
   --ifm-navbar-background-color: rgb(var(--bg));
   --ifm-navbar-shadow: none;
   --ifm-footer-background-color: rgb(var(--bg));
@@ -59,9 +59,9 @@
   --glass-fill-soft: rgb(250 250 247 / 0.54);
   --glass-border: rgb(255 255 255 / 0.72);
   --glass-blur: 22px;
-  --chrome-radius: 999px;
-  --chrome-radius-inner: 999px;
-  --chrome-radius-control: 9999px;
+  --chrome-radius: 4px;
+  --chrome-radius-inner: 3px;
+  --chrome-radius-control: 4px;
   --docs-shell-column-gap: 0px;
   --docs-shell-outer-gutter: 0px;
   --docs-sidebar-top-offset: 5.25rem;
@@ -174,7 +174,7 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 .navbar__item.navbar__link {
   background: rgb(255 255 255 / 0);
   border: 1px solid transparent;
-  border-radius: 9999px;
+  border-radius: 4px;
   display: inline-flex;
   flex: 0 0 auto;
   font-family: var(--ifm-font-family-monospace);
@@ -255,7 +255,7 @@ html.nav-scrolled .navbar.navbar--fixed-top {
   align-items: center;
   background: rgb(var(--fg));
   border: 1px solid rgb(var(--fg));
-  border-radius: 6px;
+  border-radius: 4px;
   color: rgb(255 255 255);
   display: inline-flex;
   font-family: var(--ifm-font-family-monospace);
@@ -303,7 +303,7 @@ html.nav-scrolled .navbar__inner {
 
 .navbar-sidebar__item.menu__list-item .menu__link {
   border: 1px solid transparent;
-  border-radius: 14px;
+  border-radius: 4px;
   transition:
     border-color 180ms ease,
     background-color 180ms ease,
@@ -382,11 +382,11 @@ html.nav-scrolled .navbar__inner {
 }
 
 .menu__link {
-  border-radius: 14px;
+  border-radius: 4px;
 }
 
 .button {
-  border-radius: 9999px;
+  border-radius: 4px;
   box-shadow: none;
 }
 
@@ -482,12 +482,12 @@ html.nav-scrolled .navbar__inner {
 
 .theme-doc-markdown.markdown pre {
   border: 1px solid rgb(var(--border));
-  border-radius: 18px;
+  border-radius: 4px;
   box-shadow: none;
 }
 
 .theme-doc-markdown.markdown code {
-  border-radius: 8px;
+  border-radius: 4px;
   font-weight: 500;
 }
 
@@ -1113,7 +1113,7 @@ html.nav-floating-visible .navbar {
 html.nav-floating-visible .navbar__inner {
   background: linear-gradient(180deg, rgb(255 255 255 / 0.78), rgb(250 250 247 / 0.56));
   border: 1px solid rgb(255 255 255 / 0.72);
-  border-radius: 999px;
+  border-radius: 4px;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.88),
     inset 0 -1px 0 rgb(17 17 19 / 0.04),
@@ -1124,7 +1124,7 @@ html.nav-floating-visible .navbar__inner {
 }
 
 html.nav-floating-visible .navbar__item.navbar__link {
-  border-radius: 999px;
+  border-radius: 4px;
   padding: 0.5rem 0.62rem;
 }
 

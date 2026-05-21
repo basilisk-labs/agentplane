@@ -19,9 +19,9 @@ export const siteRoutes = {
 export const githubProofFallback = {
   stars: 51,
   forks: 6,
-  releases: 63,
-  latestRelease: "v0.6.3",
-  latestReleaseDate: "2026-05-19",
+  releases: 64,
+  latestRelease: "v0.6.4",
+  latestReleaseDate: "2026-05-20",
 } as const;
 
 export const docsUrl = siteRoutes.docs;
