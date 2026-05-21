@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-21T09:53:49Z",
   "base": "main",
   "branch": "task/202605210858-VEZQYS/obsidian-context-links",
   "created_at": "2026-05-21T08:58:57.055Z",
-  "head_sha": "d01c0d364358159b8bbceec8d05aded5a6781b53",
+  "head_sha": "95e2c395b7ff7c57d4ae59e7e912b3eafe6378c3",
   "last_verified_at": "2026-05-21T09:49:30.222Z",
   "last_verified_sha": "d01c0d364358159b8bbceec8d05aded5a6781b53",
+  "merge_commit": "ae44bb7389abe3ca132057929006f1e57a50c0f0",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-21T09:53:49Z",
   "pr_number": 3987,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3987",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605210858-VEZQYS",
-  "updated_at": "2026-05-21T09:49:30.266Z",
+  "updated_at": "2026-05-21T09:53:49Z",
   "verify": {
     "status": "pass"
   }
