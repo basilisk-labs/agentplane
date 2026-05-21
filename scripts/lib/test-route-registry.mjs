@@ -515,6 +515,7 @@ const RELEASE_TEST_FILES = [
   "packages/agentplane/src/commands/release/check-release-version-script.test.ts",
   "packages/agentplane/src/commands/release/task-registry-ready-script.test.ts",
   "packages/agentplane/src/commands/release/apply.apply-flow.test.ts",
+  "packages/agentplane/src/commands/release/apply.mutation.unit.test.ts",
   "packages/agentplane/src/commands/release/apply.preflight.test.ts",
   "packages/agentplane/src/commands/release/apply.push-recovery.test.ts",
   "packages/agentplane/src/commands/release/apply.version-mutation.test.ts",

@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
@@ -123,6 +123,31 @@ describe("runCli context init interactive mode", () => {
       expect(body).toContain("Context-Bootstrap: true");
       expect(body).toContain("Context-Bootstrap-Task: 202601010101-CTX1NT");
       expect(status.trim()).toBe("");
+    },
+  );
+
+  it(
+    "fails before writing context files when the git index already has staged changes",
+    { timeout: 60_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await initAgentplaneProject(root);
+      await writeFile(path.join(root, "existing.md"), "staged\n", "utf8");
+      await execFileAsync("git", ["add", "existing.md"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+
+      const rejected = captureStdIO();
+      try {
+        const code = await runCli(["context", "init", "--root", root]);
+        expect(code).not.toBe(0);
+        expect(rejected.stderr).toContain("Git index has staged changes");
+      } finally {
+        rejected.restore();
+      }
+
+      await expect(readContextManifest(root)).rejects.toThrow(/no such file or directory/u);
     },
   );
 

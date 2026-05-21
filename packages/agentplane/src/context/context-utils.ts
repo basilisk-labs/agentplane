@@ -65,7 +65,7 @@ export async function collectMatchingFiles(root: string, relPath: string): Promi
       for (const entry of entries) {
         const full = path.join(current, entry.name);
         if (entry.isDirectory()) {
-          if (entry.name === ".git") continue;
+          if (entry.name === ".git" || entry.name === ".obsidian") continue;
           stack.push(full);
         } else {
           out.push(toPosix(path.relative(root, full)));

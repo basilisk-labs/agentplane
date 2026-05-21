@@ -1,0 +1,14 @@
+ .../blueprint/resolved-snapshot.json               | 470 +++++++++++++++++++++
+ docs/developer/cloud-backend-integration-plan.mdx  |  21 +
+ docs/reference/runner-handoff.mdx                  |  79 ++++
+ packages/core/schemas/runner-handoff.schema.json   | 193 +++++++++
+ packages/core/src/index.ts                         |  12 +
+ packages/core/src/schemas/index.ts                 |  12 +
+ .../tasks/task-artifact-schema.runner-handoff.ts   | 181 ++++++++
+ .../core/src/tasks/task-artifact-schema.test.ts    | 239 ++++++++++-
+ packages/core/src/tasks/task-artifact-schema.ts    |  39 ++
+ packages/spec/examples/runner-handoff.json         |  46 ++
+ packages/spec/schemas/runner-handoff.schema.json   | 193 +++++++++
+ schemas/runner-handoff.schema.json                 | 193 +++++++++
+ scripts/generate/sync-schemas.mjs                  |   7 +
+ 13 files changed, 1678 insertions(+), 7 deletions(-)

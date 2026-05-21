@@ -7,6 +7,12 @@ export function starterWikiPageFiles(): ContextInitFile[] {
 
 export function wikiFrontmatter(canonicalId: string, title: string, modality: string): string {
   return `---
+aliases:
+  - "${title}"
+tags:
+  - agentplane/context
+cssclasses:
+  - agentplane-context
 agentplane_context:
   schema_version: 1
   artifact_type: wiki_page
@@ -83,7 +89,7 @@ function starterWikiPage([relative, title, modality, summary]: StarterWikiPage):
 
 ${summary}
 
-## Source References
+## Sources
 
 - no-source: generated starter page from \`agentplane context init\`; add source references before promotion.
 `,

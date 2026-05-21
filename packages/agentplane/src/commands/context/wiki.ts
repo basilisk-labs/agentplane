@@ -33,6 +33,13 @@ type WikiStatus =
   | "superseded"
   | "forbidden_for_use";
 
+type WikiLinkCatalogEntry = {
+  canonical: string;
+  aliases: string[];
+};
+
+type WikiLinkCatalog = Map<string, WikiLinkCatalogEntry>;
+
 const MODALITIES = new Set<WikiModality>([
   "factual_claim",
   "observation",
@@ -126,6 +133,11 @@ function yamlString(value: string): string {
   return JSON.stringify(value);
 }
 
+function renderYamlList(values: string[]): string {
+  if (values.length === 0) return "[]";
+  return `\n${values.map((value) => `  - ${yamlString(value)}`).join("\n")}`;
+}
+
 function renderSourceRefs(sourceRefs: string[]): string {
   if (sourceRefs.length === 0) return "  []";
   return sourceRefs
@@ -140,6 +152,13 @@ function renderSourceRefs(sourceRefs: string[]): string {
     .join("\n");
 }
 
+function renderSourceNotes(sourceRefs: string[]): string {
+  if (sourceRefs.length === 0) {
+    return "- no-source: add a source reference before promotion";
+  }
+  return sourceRefs.map((source, index) => `${index + 1}. [${source}](${source})`).join("\n");
+}
+
 function renderWikiPage(opts: {
   rel: string;
   title: string;
@@ -150,6 +169,11 @@ function renderWikiPage(opts: {
 }): string {
   const canonicalId = `wiki.${slug(opts.rel.replace(/^context\/wiki\//u, "").replace(/\.md$/u, ""))}`;
   return `---
+aliases:${renderYamlList([opts.title])}
+tags:
+  - agentplane/context
+cssclasses:
+  - agentplane-context
 agentplane_context:
   schema_version: 1
   artifact_type: wiki_page
@@ -174,9 +198,11 @@ ${renderSourceRefs(opts.sourceRefs)}
 
 <!-- Write source-backed synthesis here. Keep claims small, scoped, and linked. -->
 
-## Source References
+Use numeric source notes such as [1] in prose, then keep raw-data links in the Sources section.
 
-${opts.sourceRefs.length > 0 ? opts.sourceRefs.map((source) => `- [${source}](${source})`).join("\n") : "- no-source: add a source reference before promotion"}
+## Sources
+
+${renderSourceNotes(opts.sourceRefs)}
 
 ## Claims
 
@@ -224,12 +250,112 @@ function extractFrontmatter(text: string): string | null {
   return normalized.slice(4, end).trim();
 }
 
-function lintWikiText(rel: string, text: string): string[] {
-  const errors: string[] = [];
-  const base = path.basename(rel);
-  if ((base === "index.md" || base === "AGENTS.md") && !extractFrontmatter(text)) {
-    return errors;
+function extractYamlScalar(frontmatter: string, key: string): string | null {
+  const escaped = key.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
+  const match = new RegExp(String.raw`(?:^|\n)\s*${escaped}:\s*"?([^"\n]+)"?`, "u").exec(
+    frontmatter,
+  );
+  return match?.[1]?.trim() ?? null;
+}
+
+function extractYamlList(frontmatter: string, key: string): string[] {
+  const escaped = key.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
+  const flow = new RegExp(String.raw`(?:^|\n)\s*${escaped}:\s*\[([^\]\n]*)\]`, "u").exec(
+    frontmatter,
+  )?.[1];
+  if (flow !== undefined) {
+    return flow
+      .split(",")
+      .map((value) =>
+        value
+          .trim()
+          .replaceAll(/^["']|["']$/gu, "")
+          .trim(),
+      )
+      .filter(Boolean);
   }
+  const block = new RegExp(String.raw`(?:^|\n)\s*${escaped}:\s*\n((?:\s+-\s*.+\n?)+)`, "u").exec(
+    frontmatter,
+  )?.[1];
+  if (!block) return [];
+  return block.split("\n").flatMap((line) => {
+    const value = /^\s*-\s*"?([^"\n]+)"?\s*$/u.exec(line)?.[1]?.trim();
+    return value ? [value] : [];
+  });
+}
+
+function normalizeObsidianTarget(value: string): string {
+  return toPosix(value)
+    .trim()
+    .replace(/^context\/wiki\//u, "")
+    .replace(/\.md$/u, "");
+}
+
+function registerWikiTarget(catalog: WikiLinkCatalog, target: string, canonical: string): void {
+  const normalized = normalizeObsidianTarget(target);
+  if (!normalized) return;
+  const key = normalized.toLowerCase();
+  const entry = catalog.get(key);
+  if (entry) {
+    if (!entry.aliases.includes(normalized)) entry.aliases.push(normalized);
+    return;
+  }
+  catalog.set(key, { canonical, aliases: [normalized] });
+}
+
+async function buildWikiLinkCatalog(root: string): Promise<WikiLinkCatalog> {
+  const catalog: WikiLinkCatalog = new Map();
+  const files = await collectWikiFiles(root, "context/wiki");
+  for (const rel of files.filter(
+    (file) => file.endsWith(".md") && path.basename(file) !== "AGENTS.md",
+  )) {
+    const wikiTarget = rel.replace(/^context\/wiki\//u, "").replace(/\.md$/u, "");
+    const text = await readFile(path.join(root, rel), "utf8");
+    const frontmatter = extractFrontmatter(text);
+    const title = frontmatter ? extractYamlScalar(frontmatter, "title") : null;
+    const aliases = frontmatter ? extractYamlList(frontmatter, "aliases") : [];
+    registerWikiTarget(catalog, wikiTarget, wikiTarget);
+    if (path.basename(wikiTarget) !== "index") {
+      registerWikiTarget(catalog, path.basename(wikiTarget), wikiTarget);
+    }
+    if (title) registerWikiTarget(catalog, title, wikiTarget);
+    for (const alias of aliases) registerWikiTarget(catalog, alias, wikiTarget);
+  }
+  return catalog;
+}
+
+function lintObsidianLinks(rel: string, text: string, catalog?: WikiLinkCatalog): string[] {
+  if (!catalog) return [];
+  const errors: string[] = [];
+  const linkPattern = /!?\[\[([^\]\n]+)\]\]/gu;
+  for (const match of text.matchAll(linkPattern)) {
+    const raw = match[1]?.trim() ?? "";
+    const targetWithHeading = raw.split("|")[0]?.trim() ?? "";
+    if (!targetWithHeading || targetWithHeading.startsWith("#")) continue;
+    if (/^[a-z][a-z0-9+.-]*:\/\//iu.test(targetWithHeading)) continue;
+    const [targetPage] = targetWithHeading.split("#");
+    const normalized = normalizeObsidianTarget(targetPage ?? "");
+    if (!normalized) continue;
+    const entry = catalog.get(normalized.toLowerCase());
+    if (!entry) {
+      errors.push(`${rel}: unknown Obsidian wikilink target [[${targetWithHeading}]]`);
+      continue;
+    }
+    if (!entry.aliases.includes(normalized)) {
+      const heading = targetWithHeading.includes("#")
+        ? `#${targetWithHeading.split("#").slice(1).join("#")}`
+        : "";
+      const suggestion = `${entry.canonical}${heading}`;
+      errors.push(
+        `${rel}: Obsidian wikilink target case must match canonical page or alias: [[${targetWithHeading}]] -> [[${suggestion}]]`,
+      );
+    }
+  }
+  return errors;
+}
+
+function lintWikiText(rel: string, text: string, catalog?: WikiLinkCatalog): string[] {
+  const errors: string[] = [];
   const frontmatter = extractFrontmatter(text);
   if (!frontmatter) {
     errors.push(`${rel}: missing YAML frontmatter`);
@@ -249,6 +375,7 @@ function lintWikiText(rel: string, text: string): string[] {
   if (!/\[[^\]]+\]\([^)]+\)/u.test(text) && !text.includes("no-source:")) {
     errors.push(`${rel}: missing markdown source/cross-link or explicit no-source marker`);
   }
+  errors.push(...lintObsidianLinks(rel, text, catalog));
   return errors;
 }
 
@@ -321,9 +448,10 @@ export async function cmdContextWikiLint(opts: {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const rel = await normalizeWikiLintTarget(root, opts.parsed.path);
   const files = await collectWikiFiles(root, rel);
+  const catalog = await buildWikiLinkCatalog(root);
   const errors: string[] = [];
   for (const file of files) {
-    errors.push(...lintWikiText(file, await readFile(path.join(root, file), "utf8")));
+    errors.push(...lintWikiText(file, await readFile(path.join(root, file), "utf8"), catalog));
   }
   if (errors.length > 0) {
     throw new CliError({
