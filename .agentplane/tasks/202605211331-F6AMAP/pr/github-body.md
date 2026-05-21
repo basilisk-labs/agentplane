@@ -28,15 +28,15 @@ runtime/projection read path.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T13:45:32.377Z
+- Updated: 2026-05-21T13:48:46.807Z
 - Branch: task/202605211331-F6AMAP/task-list-fast-path
-- Head: acccaa6b28ee
+- Head: 550a6019a94c
 
 ```text
  .../blueprint/resolved-snapshot.json               | 594 +++++++++++++++++++++
- .../task-backend/local-task-sqlite-cache.ts        |  36 +-
+ .../task-backend/local-task-sqlite-cache.ts        |  37 +-
  packages/agentplane/src/commands/task/list.run.ts  |  11 +-
- 3 files changed, 624 insertions(+), 17 deletions(-)
+ 3 files changed, 624 insertions(+), 18 deletions(-)
 ```
 
 </details>
