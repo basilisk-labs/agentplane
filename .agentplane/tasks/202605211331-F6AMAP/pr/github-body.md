@@ -28,9 +28,9 @@ runtime/projection read path.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T13:48:46.807Z
+- Updated: 2026-05-21T14:13:23.440Z
 - Branch: task/202605211331-F6AMAP/task-list-fast-path
-- Head: 550a6019a94c
+- Head: 42f809dd3c03
 
 ```text
  .../blueprint/resolved-snapshot.json               | 594 +++++++++++++++++++++
