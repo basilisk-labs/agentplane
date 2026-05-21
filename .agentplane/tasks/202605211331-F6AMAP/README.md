@@ -4,7 +4,7 @@ title: "Optimize task list read-only fast path"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -19,11 +19,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-21T13:46:10.389Z"
+  updated_by: "EVALUATOR"
+  note: "Evaluator quality gate: focused task list, branch_pr listing, local backend SQLite cache tests, build, benchmark comparison, and diff whitespace checks passed; scope remains limited to task list runtime/projection read path."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-21T13:46:10.389Z"
+  updated_by: "EVALUATOR"
+  note: "Evaluator quality gate: focused task list, branch_pr listing, local backend SQLite cache tests, build, benchmark comparison, and diff whitespace checks passed; scope remains limited to task list runtime/projection read path."
+  evaluated_sha: "c9ffafe24993fbc2065cd80053d263d020b8e806"
+  blueprint_digest: "ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee"
+  evidence_refs:
+    - ".agentplane/tasks/202605211331-F6AMAP/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211331-F6AMAP-task-list-fast-path/.agentplane/tasks/202605211331-F6AMAP/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -37,8 +48,20 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement task list fast path in the dedicated branch_pr worktree, preserving existing rich route behavior and recording benchmark evidence."
+  -
+    type: "verify"
+    at: "2026-05-21T13:45:56.452Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts packages/agentplane/src/cli/run-cli.core.tasks.branch-pr-list-state.test.ts | Result: pass | Evidence: 2 files, 25 tests passed. Command: bun run test:project -- agentplane packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend/local-task-sqlite-cache.test.ts | Result: pass | Evidence: 2 files, 32 tests passed. Command: bun run --filter=agentplane build | Result: pass. Benchmarks: base runtime median 1976.904 ms before; changed CLI base-root median 911.283 ms after; worktree median 1341.430 ms after. Command: ap task list --limit 5 --quiet | Result: pass. Command: git diff --check | Result: pass."
+  -
+    type: "verify"
+    at: "2026-05-21T13:46:10.389Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Evaluator quality gate: focused task list, branch_pr listing, local backend SQLite cache tests, build, benchmark comparison, and diff whitespace checks passed; scope remains limited to task list runtime/projection read path."
 doc_version: 3
-doc_updated_at: "2026-05-21T13:44:28.952Z"
+doc_updated_at: "2026-05-21T13:46:10.426Z"
 doc_updated_by: "CODER"
 description: "Reduce task list wall time by avoiding unnecessary runtime and git work when existing SQLite task projection can serve simple read-only listings."
 sections:
@@ -64,6 +87,44 @@ sections:
     - Command: git diff --check
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-21T13:45:56.452Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts packages/agentplane/src/cli/run-cli.core.tasks.branch-pr-list-state.test.ts | Result: pass | Evidence: 2 files, 25 tests passed. Command: bun run test:project -- agentplane packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend/local-task-sqlite-cache.test.ts | Result: pass | Evidence: 2 files, 32 tests passed. Command: bun run --filter=agentplane build | Result: pass. Benchmarks: base runtime median 1976.904 ms before; changed CLI base-root median 911.283 ms after; worktree median 1341.430 ms after. Command: ap task list --limit 5 --quiet | Result: pass. Command: git diff --check | Result: pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T13:44:28.952Z, excerpt_hash=sha256:711866e063560d8c874d9642d8ac1a0d6523dfc43baa92f0148b49294b25dd8c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211331-F6AMAP-task-list-fast-path/.agentplane/tasks/202605211331-F6AMAP/blueprint/resolved-snapshot.json
+    - old_digest: ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee
+    - current_digest: ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605211331-F6AMAP
+
+    ### 2026-05-21T13:46:10.389Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Evaluator quality gate: focused task list, branch_pr listing, local backend SQLite cache tests, build, benchmark comparison, and diff whitespace checks passed; scope remains limited to task list runtime/projection read path.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T13:45:56.493Z, excerpt_hash=sha256:711866e063560d8c874d9642d8ac1a0d6523dfc43baa92f0148b49294b25dd8c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211331-F6AMAP-task-list-fast-path/.agentplane/tasks/202605211331-F6AMAP/blueprint/resolved-snapshot.json
+    - old_digest: ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee
+    - current_digest: ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605211331-F6AMAP
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -109,6 +170,44 @@ Reduce task list wall time by avoiding unnecessary runtime and git work when exi
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-21T13:45:56.452Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts packages/agentplane/src/cli/run-cli.core.tasks.branch-pr-list-state.test.ts | Result: pass | Evidence: 2 files, 25 tests passed. Command: bun run test:project -- agentplane packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend/local-task-sqlite-cache.test.ts | Result: pass | Evidence: 2 files, 32 tests passed. Command: bun run --filter=agentplane build | Result: pass. Benchmarks: base runtime median 1976.904 ms before; changed CLI base-root median 911.283 ms after; worktree median 1341.430 ms after. Command: ap task list --limit 5 --quiet | Result: pass. Command: git diff --check | Result: pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T13:44:28.952Z, excerpt_hash=sha256:711866e063560d8c874d9642d8ac1a0d6523dfc43baa92f0148b49294b25dd8c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211331-F6AMAP-task-list-fast-path/.agentplane/tasks/202605211331-F6AMAP/blueprint/resolved-snapshot.json
+- old_digest: ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee
+- current_digest: ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605211331-F6AMAP
+
+### 2026-05-21T13:46:10.389Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Evaluator quality gate: focused task list, branch_pr listing, local backend SQLite cache tests, build, benchmark comparison, and diff whitespace checks passed; scope remains limited to task list runtime/projection read path.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T13:45:56.493Z, excerpt_hash=sha256:711866e063560d8c874d9642d8ac1a0d6523dfc43baa92f0148b49294b25dd8c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211331-F6AMAP-task-list-fast-path/.agentplane/tasks/202605211331-F6AMAP/blueprint/resolved-snapshot.json
+- old_digest: ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee
+- current_digest: ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605211331-F6AMAP
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
