@@ -1,10 +1,11 @@
 ---
 id: "202605210633-3ZGMA1"
 title: "Fix README stale run examples"
-status: "DOING"
+result_summary: "Merged via PR #3982."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - ".agentplane/tasks/202605210633-3ZGMA1/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210633-3ZGMA1-readme-cli-drift/.agentplane/tasks/202605210633-3ZGMA1/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "ce9a341566f3344fc9b5d8a299d435c5c2227392"
+  message: "Merge pull request #3982 from basilisk-labs/task/202605210633-3ZGMA1/readme-cli-drift"
 comments:
   -
     author: "DOCS"
     body: "Start: updating public README command examples against current CLI help output and removing stale run/trace YAML onboarding claims."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3982 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -77,9 +83,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Post-commit quality gate pass for HEAD 706bd5839: README-only behavior change matches approved scope, stale public README run/trace/yaml examples are absent across README files, and required docs checks passed. Residual gap remains broader non-README docs with historical run/trace references, outside this task scope."
+  -
+    type: "status"
+    at: "2026-05-21T06:57:42.340Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3982 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-21T06:40:32.654Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-21T06:57:42.348Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove stale README references to the removed agentplane run/trace YAML workflow and align public README onboarding with the current CLI."
 sections:
   Summary: |-
