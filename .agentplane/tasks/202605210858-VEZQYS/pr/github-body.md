@@ -19,17 +19,17 @@ Fix case-sensitive Obsidian cross-link breakage during context assimilation, add
 - Note:
 
 ```text
-EVALUATOR quality gate passed for current commit f3a272f6, including actionlint installation for
-workflow-routed CI.
+EVALUATOR quality gate passed for current commit d01c0d36 after addressing PR review comments on
+index-page wikilinks and flow-style aliases.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T09:43:15.309Z
+- Updated: 2026-05-21T09:49:30.266Z
 - Branch: task/202605210858-VEZQYS/obsidian-context-links
-- Head: f3a272f61e3a
+- Head: d01c0d364358
 
 ```text
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
@@ -40,10 +40,10 @@ workflow-routed CI.
  .../agentplane/src/commands/context/init-wiki.ts   |   8 +-
  packages/agentplane/src/commands/context/init.ts   |  19 +-
  .../src/commands/context/release-readiness.test.ts |  18 +-
- .../commands/context/wiki.obsidian.unit.test.ts    | 134 +++++
- packages/agentplane/src/commands/context/wiki.ts   | 122 ++++-
+ .../commands/context/wiki.obsidian.unit.test.ts    | 180 +++++++
+ packages/agentplane/src/commands/context/wiki.ts   | 140 ++++-
  packages/agentplane/src/context/ingest-task.ts     |  13 +-
- 11 files changed, 907 insertions(+), 30 deletions(-)
+ 11 files changed, 971 insertions(+), 30 deletions(-)
 ```
 
 </details>

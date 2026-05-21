@@ -6,7 +6,7 @@
  .../agentplane/src/commands/context/init-wiki.ts   |   8 +-
  packages/agentplane/src/commands/context/init.ts   |  19 +-
  .../src/commands/context/release-readiness.test.ts |  18 +-
- .../commands/context/wiki.obsidian.unit.test.ts    | 134 +++++
- packages/agentplane/src/commands/context/wiki.ts   | 122 ++++-
+ .../commands/context/wiki.obsidian.unit.test.ts    | 180 +++++++
+ packages/agentplane/src/commands/context/wiki.ts   | 140 ++++-
  packages/agentplane/src/context/ingest-task.ts     |  13 +-
- 11 files changed, 907 insertions(+), 30 deletions(-)
+ 11 files changed, 971 insertions(+), 30 deletions(-)
