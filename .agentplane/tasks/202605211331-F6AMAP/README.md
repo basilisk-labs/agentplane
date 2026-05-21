@@ -4,7 +4,7 @@ title: "Optimize task list read-only fast path"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-21T13:46:10.389Z"
+  updated_at: "2026-05-21T14:13:49.802Z"
   updated_by: "EVALUATOR"
-  note: "Evaluator quality gate: focused task list, branch_pr listing, local backend SQLite cache tests, build, benchmark comparison, and diff whitespace checks passed; scope remains limited to task list runtime/projection read path."
+  note: "EVALUATOR quality gate passed after merge from main. Evidence: backend projection cache tests, task listing/query tests, branch_pr list-state test, exact-file eslint, git diff --check, policy routing, framework bootstrap, and PR artifact check passed; scope remains limited to task list read-only projection fast path."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-21T13:46:10.389Z"
+  updated_at: "2026-05-21T14:13:49.802Z"
   updated_by: "EVALUATOR"
-  note: "Evaluator quality gate: focused task list, branch_pr listing, local backend SQLite cache tests, build, benchmark comparison, and diff whitespace checks passed; scope remains limited to task list runtime/projection read path."
-  evaluated_sha: "c9ffafe24993fbc2065cd80053d263d020b8e806"
+  note: "EVALUATOR quality gate passed after merge from main. Evidence: backend projection cache tests, task listing/query tests, branch_pr list-state test, exact-file eslint, git diff --check, policy routing, framework bootstrap, and PR artifact check passed; scope remains limited to task list read-only projection fast path."
+  evaluated_sha: "dde96bd9fdca45fe2a32d5848aaa53ef91ae5e1e"
   blueprint_digest: "ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee"
   evidence_refs:
     - ".agentplane/tasks/202605211331-F6AMAP/README.md"
@@ -60,8 +60,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator quality gate: focused task list, branch_pr listing, local backend SQLite cache tests, build, benchmark comparison, and diff whitespace checks passed; scope remains limited to task list runtime/projection read path."
+  -
+    type: "verify"
+    at: "2026-05-21T14:13:49.802Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed after merge from main. Evidence: backend projection cache tests, task listing/query tests, branch_pr list-state test, exact-file eslint, git diff --check, policy routing, framework bootstrap, and PR artifact check passed; scope remains limited to task list read-only projection fast path."
 doc_version: 3
-doc_updated_at: "2026-05-21T13:46:10.426Z"
+doc_updated_at: "2026-05-21T14:13:49.837Z"
 doc_updated_by: "CODER"
 description: "Reduce task list wall time by avoiding unnecessary runtime and git work when existing SQLite task projection can serve simple read-only listings."
 sections:
@@ -114,6 +120,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T13:45:56.493Z, excerpt_hash=sha256:711866e063560d8c874d9642d8ac1a0d6523dfc43baa92f0148b49294b25dd8c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211331-F6AMAP-task-list-fast-path/.agentplane/tasks/202605211331-F6AMAP/blueprint/resolved-snapshot.json
+    - old_digest: ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee
+    - current_digest: ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605211331-F6AMAP
+
+    ### 2026-05-21T14:13:49.802Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed after merge from main. Evidence: backend projection cache tests, task listing/query tests, branch_pr list-state test, exact-file eslint, git diff --check, policy routing, framework bootstrap, and PR artifact check passed; scope remains limited to task list read-only projection fast path.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T13:46:10.426Z, excerpt_hash=sha256:711866e063560d8c874d9642d8ac1a0d6523dfc43baa92f0148b49294b25dd8c
 
     Details:
 
@@ -197,6 +222,25 @@ Note: Evaluator quality gate: focused task list, branch_pr listing, local backen
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T13:45:56.493Z, excerpt_hash=sha256:711866e063560d8c874d9642d8ac1a0d6523dfc43baa92f0148b49294b25dd8c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211331-F6AMAP-task-list-fast-path/.agentplane/tasks/202605211331-F6AMAP/blueprint/resolved-snapshot.json
+- old_digest: ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee
+- current_digest: ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605211331-F6AMAP
+
+### 2026-05-21T14:13:49.802Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed after merge from main. Evidence: backend projection cache tests, task listing/query tests, branch_pr list-state test, exact-file eslint, git diff --check, policy routing, framework bootstrap, and PR artifact check passed; scope remains limited to task list read-only projection fast path.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T13:46:10.426Z, excerpt_hash=sha256:711866e063560d8c874d9642d8ac1a0d6523dfc43baa92f0148b49294b25dd8c
 
 Details:
 

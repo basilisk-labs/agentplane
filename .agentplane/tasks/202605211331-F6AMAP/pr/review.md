@@ -13,7 +13,7 @@ Created: 2026-05-21T13:33:07.374Z
 ## Verification
 
 - State: ok
-- Note: Evaluator quality gate: focused task list, branch_pr listing, local backend SQLite cache tests, build, benchmark comparison, and diff whitespace checks passed; scope remains limited to task list runtime/projection read path.
+- Note: EVALUATOR quality gate passed after merge from main. Evidence: backend projection cache tests, task listing/query tests, branch_pr list-state test, exact-file eslint, git diff --check, policy routing, framework bootstrap, and PR artifact check passed; scope remains limited to task list read-only projection fast path.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
