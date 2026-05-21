@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202605211431-A5GBYT/release-v0-6-5",
   "created_at": "2026-05-21T14:32:18.252Z",
-  "head_sha": "22e16340d91f477c4e3f4d497fdb9282c4016efd",
+  "head_sha": "63b0b14d4513bc8c6cafce1b443ede2d24c39e32",
   "last_verified_at": null,
   "last_verified_sha": null,
   "pr_number": 4007,
@@ -10,7 +10,7 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202605211431-A5GBYT",
-  "updated_at": "2026-05-21T17:12:39.656Z",
+  "updated_at": "2026-05-21T17:19:41.962Z",
   "verify": {
     "status": "skipped"
   }

@@ -1,6 +1,7 @@
  .agentplane/WORKFLOW.md                            |   3 +-
  .../blueprint/resolved-snapshot.json               | 455 +++++++++++
  .../release-ci-base-focused-report.json            | 875 +++++++++++++++++++++
+ .agentplane/workflows/last-known-good.md           |   3 +-
  docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.6.5.md                            |  94 +++
  packages/agentplane/package.json                   |   6 +-
@@ -11,8 +12,8 @@
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
- packages/spec/examples/acr.json                    |  22 +-
+ packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
  scripts/checks/check-spec-examples.mjs             |   1 +
  scripts/lib/test-route-registry.mjs                |   8 +-
- 17 files changed, 1527 insertions(+), 73 deletions(-)
+ 18 files changed, 1515 insertions(+), 70 deletions(-)
