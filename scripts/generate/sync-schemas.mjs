@@ -5,6 +5,7 @@ import { defineScript, parseCheckSyncMode, runScriptMain } from "../lib/script-r
 
 import {
   renderAcrSchemaJson,
+  renderAgentPlaneRunnerHandoffSchemaJson,
   renderAgentplaneConfigSchemaJson,
   renderTaskHandoffSchemaJson,
   renderTaskObservationSchemaJson,
@@ -20,6 +21,7 @@ const GENERATED_RUNTIME_SCHEMAS = [
   "tasks-export.schema.json",
   "pr-meta.schema.json",
   "task-handoff.schema.json",
+  "runner-handoff.schema.json",
   "task-observation.schema.json",
 ];
 
@@ -81,6 +83,11 @@ const main = defineScript({
         label: "task handoff schema",
         rendered: renderTaskHandoffSchemaJson(),
         targets: schemaTargets("task-handoff.schema.json"),
+      },
+      {
+        label: "runner handoff schema",
+        rendered: renderAgentPlaneRunnerHandoffSchemaJson(),
+        targets: schemaTargets("runner-handoff.schema.json"),
       },
       {
         label: "task observation schema",

@@ -1,0 +1,79 @@
+---
+title: "Runner handoff contract"
+description: "Connector-neutral v0.7 contract for cloud-to-runner handoff without hosted execution authority."
+---
+
+# Runner handoff contract
+
+## Quick answer
+
+`AgentPlaneRunnerHandoff` is the public v0.7 contract a cloud service can use to ask a hosted
+runner layer to prepare work for an existing AgentPlane task and run. The handoff is a request
+envelope, not AgentPlane lifecycle authority and not a repository mutation command.
+
+The public contract lives in `@agentplaneorg/core`:
+
+```ts
+import {
+  validateAgentPlaneRunnerHandoff,
+  sanitizeAgentPlaneRunnerHandoff,
+  type AgentPlaneRunnerHandoff,
+} from "@agentplaneorg/core";
+```
+
+## Boundary
+
+Public AgentPlane owns:
+
+- typed schema validation;
+- connector-neutral `repo_ref` shape;
+- evidence and artifact target vocabulary;
+- execute-mode gating;
+- kill-switch validation;
+- sanitization helpers for list/public responses;
+- documentation and fixtures.
+
+The cloud service owns:
+
+- authenticated project-scoped APIs;
+- run existence checks;
+- feature flag and kill-switch configuration;
+- evidence/artifact upload target resolution;
+- hosted runner orchestration;
+- provider payloads and connector-specific state.
+
+The handoff must not store secrets, webhook payloads, private clone URLs, raw filesystem paths,
+customer identifiers, or connector-specific fields. Use pseudonymous IDs and upload target IDs,
+then let the cloud service resolve them server-side.
+
+## Shape
+
+Required fields:
+
+- `run_id`, `project_id`, `workspace_id`, and `task_id`;
+- optional `agent_task_id` and `plan_id`;
+- `repo_ref` as `{ kind: "git", repository, ref, commit_sha? }`;
+- `requested_by` as a principal;
+- `mode: "dry_run" | "execute"`;
+- `required_evidence` and `upload_targets`;
+- `created_at`, `expires_at`, `status`, and `kill_switch_checked`.
+
+`repo_ref.repository` is a slug such as `owner/repo`, not a URL or local path. `repo_ref.ref` must
+not be a raw path, URL, traversal path, lockfile ref, or shell-like string.
+
+## Safety rules
+
+- Missing task/run/project/workspace IDs fail validation.
+- Unsafe repository refs and raw paths fail validation.
+- `mode="execute"` fails unless validation receives explicit execute enablement.
+- A global kill switch blocks handoff validation.
+- Expired handoffs fail validation.
+- Public list responses should use `sanitizeAgentPlaneRunnerHandoff` before returning data.
+
+## What it does not do
+
+This contract does not start hosted execution, mutate Git repositories, approve AgentPlane task
+lifecycle transitions, store provider payloads, or add connector-specific CLI behavior.
+
+Hosted execution can be layered on top only after a later accepted release task defines the runner
+authority, execution state machine, repository mutation guardrails, and merge/close evidence path.

@@ -175,6 +175,27 @@ Verification:
 - docs IA check;
 - generated CLI reference check if command text changes.
 
+### C008: Add v0.7 runner handoff contract
+
+Scope:
+
+- add a public `AgentPlaneRunnerHandoff` schema/type to `@agentplaneorg/core`;
+- validate task/run/project/workspace IDs, safe `repo_ref`, expiry, execute-mode feature gating,
+  and global kill-switch state;
+- expose a sanitizer for public/list responses;
+- document evidence and artifact upload target expectations without giving the public CLI hosted
+  execution authority.
+
+Verification:
+
+- schema fixture validation;
+- unit tests for missing IDs, unsafe refs, execute gating, kill switch, expiry, and sanitization;
+- docs routing check.
+
+Status: prepared for the v0.7 release lane. The contract is intentionally connector-neutral and
+does not add hosted execution, repository mutation commands, or connector-specific public CLI
+logic.
+
 ## Stop rules
 
 Stop before implementation if:
