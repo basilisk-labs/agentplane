@@ -614,6 +614,7 @@ describe("commands/workflow", () => {
 
   it("task lint changed Verify Steps ignores task readmes changed only on base", async () => {
     const root = await makeRepo();
+    await execFileAsync("git", ["branch", "-M", "main"], { cwd: root });
     await addTask(root, "202602050900-BASE1");
     const readmePath = path.join(root, ".agentplane", "tasks", "202602050900-BASE1", "README.md");
     const originalReadme = await readFile(readmePath, "utf8");
