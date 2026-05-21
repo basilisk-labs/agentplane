@@ -1,10 +1,11 @@
 ---
 id: "202605210655-CF0BDW"
 title: "Align website design source and docs routing"
-status: "DOING"
+result_summary: "Merged via PR #3984."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Updated website design contract to current Geist/orange/compact-radius language, verified docs IA, links, browser navigation, typecheck, build, smoke, policy routing, and ap doctor."
   attempts: 0
-commit: null
+commit:
+  hash: "619c8da733765f86832bc1d5fc9d767e6b4847b5"
+  message: "Merge pull request #3984 from basilisk-labs/task/202605210655-CF0BDW/website-design-routing"
 comments:
   -
     author: "CODER"
     body: "Start: Updating the website design source, compact radius tokens, release proof metadata, and verifying docs/sidebar routes from the dedicated branch_pr worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3984 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Updated website design contract to current Geist/orange/compact-radius language, verified docs IA, links, browser navigation, typecheck, build, smoke, policy routing, and ap doctor."
+  -
+    type: "status"
+    at: "2026-05-21T07:55:41.884Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3984 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-21T07:11:45.430Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-21T07:55:41.890Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the website design source to reflect the current Geist/orange/compact-radius visual system, tighten live CSS radius tokens, update stale homepage release proof, and verify docs routes/sidebar links open correctly."
 sections:
   Summary: |-
