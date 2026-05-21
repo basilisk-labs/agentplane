@@ -12,8 +12,8 @@ Created: 2026-05-21T14:32:18.252Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Evaluator release gate passed: local release prepublish completed, release-ci-base rerouted heavy CLI tests and passed, hosted PR #4007 checks are green, and branch is clean for integration.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

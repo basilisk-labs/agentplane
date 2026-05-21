@@ -15,8 +15,13 @@ Prepare, verify, publish, and record evidence for the next patch release after v
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Evaluator release gate passed: local release prepublish completed, release-ci-base rerouted heavy
+CLI tests and passed, hosted PR #4007 checks are green, and branch is clean for integration.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
