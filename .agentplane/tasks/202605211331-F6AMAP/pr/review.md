@@ -1,0 +1,39 @@
+# PR Review
+
+Created: 2026-05-21T13:33:07.374Z
+
+## Task
+
+- Task: `202605211331-F6AMAP`
+- Title: Optimize task list read-only fast path
+- Status: DOING
+- Branch: `task/202605211331-F6AMAP/task-list-fast-path`
+- Canonical task record: `.agentplane/tasks/202605211331-F6AMAP/README.md`
+
+## Verification
+
+- State: ok
+- Note: EVALUATOR quality gate passed after merge from main. Evidence: backend projection cache tests, task listing/query tests, branch_pr list-state test, exact-file eslint, git diff --check, policy routing, framework bootstrap, and PR artifact check passed; scope remains limited to task list read-only projection fast path.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-21T14:13:23.440Z
+- Branch: task/202605211331-F6AMAP/task-list-fast-path
+- Head: 42f809dd3c03
+
+```text
+ .../blueprint/resolved-snapshot.json               | 594 +++++++++++++++++++++
+ .../task-backend/local-task-sqlite-cache.ts        |  37 +-
+ packages/agentplane/src/commands/task/list.run.ts  |  11 +-
+ 3 files changed, 624 insertions(+), 18 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->
