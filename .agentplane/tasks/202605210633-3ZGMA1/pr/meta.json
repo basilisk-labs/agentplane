@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-21T06:56:57Z",
   "base": "main",
   "branch": "task/202605210633-3ZGMA1/readme-cli-drift",
   "created_at": "2026-05-21T06:34:14.504Z",
-  "head_sha": "706bd5839dad991e2eb5dd60dab74c28e9627d86",
+  "head_sha": "4b5c86883dd727ebc28563cc97bf042971df7c46",
   "last_verified_at": "2026-05-21T06:40:32.625Z",
   "last_verified_sha": "706bd5839dad991e2eb5dd60dab74c28e9627d86",
+  "merge_commit": "ce9a341566f3344fc9b5d8a299d435c5c2227392",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-21T06:56:57Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605210633-3ZGMA1",
-  "updated_at": "2026-05-21T06:40:22.990Z",
+  "updated_at": "2026-05-21T06:56:57Z",
   "verify": {
     "status": "pass"
   }
