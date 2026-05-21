@@ -29,7 +29,7 @@ quality_review:
   updated_at: "2026-05-21T13:56:41.489Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR quality gate passed for code commit e0ce3333. Evidence: focused context-init suite passed 6/6 including staged-index prewrite regression, targeted eslint passed, diff-check and policy routing passed, framework bootstrap passed, hosted PR checks passed for PR #3986, and review thread PRRT_kwDORCLmJM6Du_F8 is resolved."
-  evaluated_sha: "57b72a1303905524c6d2872d006e7c075f9e3090"
+  evaluated_sha: "e0ce3333c3f8198336c8782fc35872f4f174dddf"
   blueprint_digest: "6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3"
   evidence_refs:
     - ".agentplane/tasks/202605210819-HMKXDR/README.md"
