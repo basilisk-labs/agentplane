@@ -113,7 +113,7 @@ describe("context wiki Obsidian compatibility", () => {
         cwd: root,
         parsed: { path: "context/wiki" },
       }),
-    ).rejects.toThrow(/\[\[payment api\]\] -> \[\[Payment API\]\]/u);
+    ).rejects.toThrow(/\[\[payment api\]\] -> \[\[modules\/payment-api\]\]/u);
 
     await write(
       root,

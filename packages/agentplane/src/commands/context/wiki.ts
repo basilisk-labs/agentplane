@@ -318,8 +318,8 @@ async function buildWikiLinkCatalog(root: string): Promise<WikiLinkCatalog> {
     if (path.basename(wikiTarget) !== "index") {
       registerWikiTarget(catalog, path.basename(wikiTarget), wikiTarget);
     }
-    if (title) registerWikiTarget(catalog, title, title);
-    for (const alias of aliases) registerWikiTarget(catalog, alias, alias);
+    if (title) registerWikiTarget(catalog, title, wikiTarget);
+    for (const alias of aliases) registerWikiTarget(catalog, alias, wikiTarget);
   }
   return catalog;
 }
@@ -356,10 +356,6 @@ function lintObsidianLinks(rel: string, text: string, catalog?: WikiLinkCatalog)
 
 function lintWikiText(rel: string, text: string, catalog?: WikiLinkCatalog): string[] {
   const errors: string[] = [];
-  const base = path.basename(rel);
-  if ((base === "index.md" || base === "AGENTS.md") && !extractFrontmatter(text)) {
-    return errors;
-  }
   const frontmatter = extractFrontmatter(text);
   if (!frontmatter) {
     errors.push(`${rel}: missing YAML frontmatter`);

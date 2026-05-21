@@ -8,7 +8,7 @@ import { parse as parseYaml } from "yaml";
 import { CliError } from "../shared/errors.js";
 import { resolveAgentplaneCacheSqlitePath } from "../shared/cache-paths.js";
 import { isRecord } from "../shared/guards.js";
-import { parseJsonlLines, fileExists, readText } from "./context-utils.js";
+import { parseJsonlLines, fileExists, readText, toPosix } from "./context-utils.js";
 import { readHarvestReport } from "./harvest-tasks-artifacts.js";
 import { readContextProjection } from "./reindex.js";
 import { checkSqliteProjection } from "./sqlite.js";
@@ -135,11 +135,12 @@ export async function cmdContextDoctor(opts: {
       }
     }
     if (staleProjection > 0) {
-      warnings.push(`projection stale rows: ${staleProjection}`);
+      issues.push(`projection stale rows: ${staleProjection}; run agentplane context reindex --include-raw`);
     }
   }
 
   const manifestSources = await collectManifestSources(root);
+  await checkWikiSourceRefs(root, manifestSources, issues);
   for (const file of [
     ".agentplane/context/derived/facts/facts.jsonl",
     ".agentplane/context/derived/graph/entities.jsonl",
@@ -161,7 +162,7 @@ export async function cmdContextDoctor(opts: {
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
-        message: `context ${label} failed: ${issues.length} issues`,
+        message: `context ${label} failed: ${issues.length} issues\n- ${issues.join("\n- ")}`,
       });
   }
   if (warnings.length > 0) {
@@ -172,6 +173,57 @@ export async function cmdContextDoctor(opts: {
 
   process.stdout.write(`context ${label}: ok\n`);
   return 0;
+}
+
+async function collectWikiFiles(root: string): Promise<string[]> {
+  const wikiRoot = path.join(root, "context/wiki");
+  const out: string[] = [];
+  async function walk(current: string): Promise<void> {
+    let entries;
+    try {
+      entries = await readdir(current, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const entry of entries) {
+      if (entry.name === ".obsidian") continue;
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        await walk(full);
+        continue;
+      }
+      if (entry.isFile() && entry.name.endsWith(".md")) {
+        out.push(full);
+      }
+    }
+  }
+  await walk(wikiRoot);
+  return out;
+}
+
+function extractWikiSourceRefs(text: string): string[] {
+  const refs: string[] = [];
+  for (const match of text.matchAll(/^\s*-\s+path:\s*["']?([^"'\n]+)["']?/gmu)) {
+    const value = match[1]?.trim();
+    if (value) refs.push(value);
+  }
+  return refs;
+}
+
+async function checkWikiSourceRefs(
+  root: string,
+  manifestSources: Set<string>,
+  issues: string[],
+): Promise<void> {
+  for (const file of await collectWikiFiles(root)) {
+    const rel = toPosix(path.relative(root, file));
+    const text = await readText(file);
+    for (const sourceRef of extractWikiSourceRefs(text)) {
+      if (sourceRef.startsWith("context/raw/") && !manifestSources.has(sourceRef)) {
+        issues.push(`wiki source missing from manifest lock: ${sourceRef} (${rel})`);
+      }
+    }
+  }
 }
 
 function contextDoctorRecoveryHint(root: string, fix: boolean, label: "check" | "doctor"): string {

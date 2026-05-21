@@ -7,6 +7,7 @@ import {
 } from "../commands/shared/task-backend.js";
 import { fileExists, isRecord, parseJsonlLines, readText, toPosix } from "./context-utils.js";
 import path from "node:path";
+import { readdir } from "node:fs/promises";
 
 type ContextExtension = {
   assimilation?: {
@@ -78,7 +79,8 @@ function normalizeChangedPath(projectRoot: string, value: string): string {
 }
 
 function hasPathPrefix(target: string, prefix: string): boolean {
-  return target === prefix || target.startsWith(`${prefix}/`);
+  const normalizedPrefix = prefix.replace(/\/+$/u, "");
+  return target === normalizedPrefix || target.startsWith(`${normalizedPrefix}/`);
 }
 
 function isTaskPathMatch(path: string, patterns: string[], taskId: string): boolean {
@@ -208,6 +210,59 @@ async function validateGraph(root: string, errors: string[]): Promise<void> {
   }
 }
 
+function hasNonEmptyGraphRefs(text: string): boolean {
+  const frontmatterMatch = /^---\n([\s\S]*?)\n---/u.exec(text.replaceAll("\r\n", "\n"));
+  const frontmatter = frontmatterMatch?.[1] ?? "";
+  const graphRefsIndex = frontmatter.indexOf("graph_refs:");
+  if (graphRefsIndex === -1) return false;
+  const graphRefs = frontmatter.slice(graphRefsIndex);
+  return /(?:entities|edges):\s*\n\s*-\s+\S/u.test(graphRefs);
+}
+
+async function validateMaximumAssimilationDerivedConsistency(
+  root: string,
+  context: ContextExtension,
+  errors: string[],
+): Promise<void> {
+  if (context.mode !== "maximum_assimilation") return;
+  const wikiRoot = path.join(root, "context/wiki");
+  const wikiPages: string[] = [];
+  async function walk(current: string): Promise<void> {
+    let entries;
+    try {
+      entries = await readdir(current, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const entry of entries) {
+      if (entry.name === ".obsidian") continue;
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        await walk(full);
+      } else if (entry.isFile() && entry.name.endsWith(".md")) {
+        wikiPages.push(full);
+      }
+    }
+  }
+  await walk(wikiRoot);
+  let pagesWithGraphRefs = 0;
+  for (const page of wikiPages) {
+    if (hasNonEmptyGraphRefs(await readText(page))) pagesWithGraphRefs += 1;
+  }
+  if (pagesWithGraphRefs === 0) return;
+
+  const graphRoot = path.join(root, ".agentplane/context/derived/graph");
+  const entities = await loadJsonlRows(path.join(graphRoot, "entities.jsonl"));
+  const edges = await loadJsonlRows(path.join(graphRoot, "edges.jsonl"));
+  const provenance = await loadJsonlRows(path.join(graphRoot, "provenance_edges.jsonl"));
+  const facts = await loadJsonlRows(path.join(root, ".agentplane/context/derived/facts/facts.jsonl"));
+  if (entities.length === 0 || edges.length === 0 || provenance.length === 0 || facts.length === 0) {
+    errors.push(
+      `maximum-assimilation wiki declares graph_refs in ${pagesWithGraphRefs} page(s), but derived graph/fact/provenance projections are incomplete`,
+    );
+  }
+}
+
 async function validateCapabilityArtifact(filePath: string, errors: string[]): Promise<void> {
   const text = await readText(filePath);
   if (filePath.endsWith(".jsonl")) {
@@ -307,6 +362,7 @@ async function validateContextArtifacts(opts: {
     }
   }
   await validateGraph(opts.root, errors);
+  await validateMaximumAssimilationDerivedConsistency(opts.root, opts.context, errors);
   await validateAcrContextExtension(opts.root, opts.task, opts.context, errors);
   return errors;
 }
