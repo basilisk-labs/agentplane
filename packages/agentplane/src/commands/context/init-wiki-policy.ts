@@ -9,9 +9,14 @@ export function buildWikiPolicyMarkdown(): string {
 
 - Wiki pages live under \`context/wiki/**\` and use AgentPlane frontmatter.
 - Each page frontmatter must include a stable \`canonical_id\`, \`title\`, \`modality\`, \`epistemic_status\`, \`visibility\`, \`source_refs\`, \`claims\`, \`graph_refs\`, \`conflicts\`, and \`updated_by\`.
+- Each generated page should also include Obsidian properties \`aliases\`, \`tags\`, and
+  \`cssclasses\` for better vault navigation and display.
 - Use the modalities listed in \`.agentplane/context/agentplane.context.yaml\`.
-- Keep source references as Markdown links where possible.
-- Use Obsidian-compatible \`[[Page Title]]\` or \`[[Page Title#Section]]\` links for semantic internal wiki links.
+- Cite source-backed prose with numeric notes such as \`[1]\`, then keep raw-data Markdown links in
+  a trailing \`## Sources\` section.
+- Use Obsidian-compatible wikilinks whose target case exactly matches a canonical page path, title,
+  or alias. Prefer \`[[canonical-page|Display Label]]\` or
+  \`[[canonical-page#Stable Heading|Display Label]]\` when display wording differs.
 - Keep normal Markdown links for source refs, external URLs, file paths, and line-addressed provenance.
 
 ## Language

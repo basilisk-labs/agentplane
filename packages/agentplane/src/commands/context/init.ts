@@ -382,8 +382,12 @@ Maximum-assimilation mode adds a stricter wiki maintenance contract:
   concepts/entities/decisions/modules/contradictions/reports scaffold unless source analysis
   justifies it. Record the topology decision before creating page families.
 - Create or maintain the canonical glossary as root file \`context/wiki/glossary.md\`; keep it as navigation/aliases over wiki pages and graph entities, then use canonical terms in prose.
-- Use Obsidian-compatible \`[[Page Title]]\` links for semantic wiki graph links; keep Markdown
-  links for source refs, files, and external URLs.
+- Create Obsidian page properties automatically for wiki pages: \`aliases\`, \`tags\`, and
+  \`cssclasses\` stay alongside AgentPlane frontmatter for better vault rendering.
+- Use Obsidian-compatible links whose target case exactly matches a canonical page path, title, or
+  alias; prefer \`[[canonical-page|Display Label]]\` when file path and display title differ.
+- Cite raw sources in prose with numeric notes like \`[1]\`; keep the raw-data Markdown links in a
+  trailing \`## Sources\` section.
 - Treat coverage gaps, unresolved entity identity, sensitive-source leakage risk, and missing line refs
   as blockers or explicit approval-required findings.
 - Require EVALUATOR review of topology, granularity, wikilinks, coverage, glossary safety,
@@ -431,8 +435,13 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
 - Second pass: synthesize granular wiki articles from that graph/glossary layer; use canonical terms from \`context/wiki/glossary.md\` and preserve source-local wording as aliases.
 - Create separate pages for reusable entities, concepts, decisions, requirements, risks, workflows,
   and modules; use stable headings for smaller objects inside broader pages.
-- Use Obsidian-compatible \`[[Page Title]]\` or \`[[Page Title#Section]]\` links for semantic wiki
-  graph links; keep Markdown links for source refs, files, and external URLs.
+- Ensure each wiki page has Obsidian properties \`aliases\`, \`tags\`, and \`cssclasses\` in YAML
+  frontmatter in addition to the \`agentplane_context\` manifest.
+- Use Obsidian-compatible wikilinks whose target case exactly matches a canonical page path, title,
+  or alias; prefer \`[[canonical-page|Display Label]]\` or
+  \`[[canonical-page#Stable Heading|Display Label]]\` when display wording differs.
+- Cite raw sources in prose with numeric notes like \`[1]\`; keep Markdown raw-data links in a
+  trailing \`## Sources\` section rather than scattering long source URLs through prose.
 - Record extraction coverage: covered source spans, intentionally omitted boilerplate, redacted
   spans, unresolved conflicts, and open questions.
 - Record EVALUATOR review for topology, granularity, wikilinks, line refs, glossary safety,
@@ -463,7 +472,7 @@ Profile: ${profile}
 - Add source references for factual claims and run \`agentplane context verify-task <task-id>\` before closing context assimilation work.
 ${maximumAssimilation}
 
-## Source References
+## Sources
 
 - no-source: generated policy notes from \`agentplane context init\`; add source references before promotion.
 `;

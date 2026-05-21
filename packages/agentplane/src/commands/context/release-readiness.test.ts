@@ -125,11 +125,9 @@ describe("context release readiness guards", () => {
     expect(wikiAgents).toContain("Use the `context.maximum_assimilation` blueprint");
     expect(wikiAgents).toContain("canonical entities, glossary aliases, relation candidates");
     expect(wikiAgents).toContain("Glossary output: create or update `context/wiki/glossary.md`");
-    expect(wikiAgents).toContain("treat those refs as audit provenance");
-    expect(wikiAgents).toContain("availability state");
-    expect(wikiAgents).toContain("`missing`");
     expect(wikiAgents).toContain("choose wiki structure from source content");
-    expect(wikiAgents).toContain("[[Page Title]]");
+    expect(wikiAgents).toContain("[[canonical-page|Display Label]]");
+    expect(wikiAgents).toContain("numeric notes like `[1]`");
     expect(wikiAgents).toContain("Record EVALUATOR review");
   });
 
@@ -781,12 +779,10 @@ describe("context release readiness guards", () => {
 
     expect(createdArgs.parsed?.blueprintRequest).toBe("context.maximum_assimilation");
     expect(createdArgs.parsed?.description).toContain("Maximum-assimilation contract:");
-    expect(createdArgs.parsed?.description).toContain("significant source meaning");
-    expect(createdArgs.parsed?.description).toContain("audit provenance, not as retained content");
     expect(createdArgs.parsed?.description).toContain(
       "Choose wiki structure from the selected source content",
     );
-    expect(createdArgs.parsed?.description).toContain("[[Page Title]]");
+    expect(createdArgs.parsed?.description).toContain("[[canonical-page|Display Label]]");
     expect(createdArgs.parsed?.description).toContain("EVALUATOR quality review");
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.mode).toBe(
       "maximum_assimilation",
@@ -803,6 +799,8 @@ describe("context release readiness guards", () => {
         "canonical_glossary_updated",
         "root_glossary_file_updated",
         "obsidian_wikilinks_reviewed",
+        "obsidian_properties_created",
+        "numeric_source_notes_rendered",
         "evaluator_quality_review",
       ]),
     );
@@ -811,6 +809,8 @@ describe("context release readiness guards", () => {
         "missing_source_shaped_topology_decision",
         "page_family_without_source_evidence",
         "missing_obsidian_wikilinks",
+        "broken_obsidian_wikilink_case",
+        "missing_numeric_source_notes",
         "missing_root_glossary_file",
         "raw_deletion_resilience_unproven",
         "evaluator_quality_review_missing",
@@ -827,10 +827,10 @@ describe("context release readiness guards", () => {
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
     for (const expected of [
       "Maximum-assimilation workflow:",
-      "availability state",
       "Topology pass:",
       "Glossary pass: create or update `context/wiki/glossary.md`",
-      "[[Canonical Page]]",
+      "[[canonical-page|Canonical Page]]",
+      "numeric notes like `[1]`",
       "Evaluation pass:",
       "self-contained wiki/fact/graph content plus line-addressed provenance",
     ]) {

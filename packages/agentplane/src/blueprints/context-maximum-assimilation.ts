@@ -31,7 +31,13 @@ export const contextMaximumAssimilationEvidence: readonly EvidenceRequirement[] 
     "context_max.glossary",
     "artifact",
     "artifact_write",
-    "Root wiki glossary file `context/wiki/glossary.md` created or updated for canonical term normalization and alias preservation; semantic wiki links use the source-shaped topology.",
+    "Root wiki glossary file `context/wiki/glossary.md` created or updated for canonical term normalization and alias preservation; semantic wiki links use source-shaped topology with case-stable Obsidian targets.",
+  ),
+  evidence(
+    "context_max.obsidian",
+    "artifact",
+    "artifact_write",
+    "Wiki pages include Obsidian properties for aliases/tags/cssclasses and use numeric source notes that point to raw-data links in each page's Sources section.",
   ),
   evidence(
     "context_max.changed_paths",
@@ -84,6 +90,18 @@ export const contextMaximumAssimilationStopRules: readonly StopRule[] = [
     severity: "stop",
     reason:
       "Claims, entities, relations, and wiki sections derived from source text require line-addressed source refs.",
+  },
+  {
+    id: "context_max_broken_obsidian_wikilink_case",
+    severity: "stop",
+    reason:
+      "Obsidian wikilink targets must match the exact case of a canonical page path, title, or alias so internal links do not break in case-sensitive vaults.",
+  },
+  {
+    id: "context_max_missing_numeric_source_notes",
+    severity: "approval_required",
+    reason:
+      "Source-backed wiki prose should cite raw evidence with numeric notes and collect raw-data links in a trailing Sources section.",
   },
   {
     id: "context_max_coverage_gap_without_reason",
