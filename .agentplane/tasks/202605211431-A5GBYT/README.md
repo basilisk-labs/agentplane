@@ -20,20 +20,20 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-21T17:30:58.152Z"
+  updated_at: "2026-05-21T17:34:13.418Z"
   updated_by: "EVALUATOR"
-  note: "Fresh evaluator gate for final release candidate head after verification artifact commit; hosted PR #4007 checks are green and release branch is ready for integration."
+  note: "Evaluator gate for release implementation head 63b0b14d4513bc8c6cafce1b443ede2d24c39e32: release candidate passed, hosted PR #4007 checks were green, and task-local artifact commits are excluded from the implementation head."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-21T17:30:58.152Z"
+  updated_at: "2026-05-21T17:34:13.418Z"
   updated_by: "EVALUATOR"
-  note: "Fresh evaluator gate for final release candidate head after verification artifact commit; hosted PR #4007 checks are green and release branch is ready for integration."
-  evaluated_sha: "1da356666a25a8fb757b6f507c660014621db07c"
+  note: "Evaluator gate for release implementation head 63b0b14d4513bc8c6cafce1b443ede2d24c39e32: release candidate passed, hosted PR #4007 checks were green, and task-local artifact commits are excluded from the implementation head."
+  evaluated_sha: "63b0b14d4513bc8c6cafce1b443ede2d24c39e32"
   blueprint_digest: "596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33"
   evidence_refs:
     - ".agentplane/tasks/202605211431-A5GBYT/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211431-A5GBYT-release-v0-6-5/.agentplane/tasks/202605211431-A5GBYT/blueprint/resolved-snapshot.json"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211431-A5GBYT-eval-63/.agentplane/tasks/202605211431-A5GBYT/blueprint/resolved-snapshot.json"
   findings: []
 commit: null
 comments:

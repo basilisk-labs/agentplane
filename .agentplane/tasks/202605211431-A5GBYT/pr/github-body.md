@@ -19,8 +19,9 @@ Prepare, verify, publish, and record evidence for the next patch release after v
 - Note:
 
 ```text
-Fresh evaluator gate for final release candidate head after verification artifact commit; hosted PR
-#4007 checks are green and release branch is ready for integration.
+Evaluator gate for release implementation head 63b0b14d4513bc8c6cafce1b443ede2d24c39e32: release
+candidate passed, hosted PR #4007 checks were green, and task-local artifact commits are excluded
+from the implementation head.
 ```
 - Canonical workflow state lives in the task README.
 
