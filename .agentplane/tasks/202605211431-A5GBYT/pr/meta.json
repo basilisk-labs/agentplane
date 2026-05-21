@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605211431-A5GBYT/release-v0-6-5",
+  "created_at": "2026-05-21T14:32:18.252Z",
+  "head_sha": "4b6cdb0d78be2955e0b5c73551016edd7da86c52",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605211431-A5GBYT",
+  "updated_at": "2026-05-21T14:32:18.252Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
