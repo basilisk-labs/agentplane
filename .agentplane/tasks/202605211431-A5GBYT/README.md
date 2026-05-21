@@ -4,7 +4,7 @@ title: "Release AgentPlane v0.6.5"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-21T17:24:41.295Z"
+  updated_at: "2026-05-21T17:30:58.152Z"
   updated_by: "EVALUATOR"
-  note: "Evaluator release gate passed: local release prepublish completed, release-ci-base rerouted heavy CLI tests and passed, hosted PR #4007 checks are green, and branch is clean for integration."
+  note: "Fresh evaluator gate for final release candidate head after verification artifact commit; hosted PR #4007 checks are green and release branch is ready for integration."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-21T17:24:41.295Z"
+  updated_at: "2026-05-21T17:30:58.152Z"
   updated_by: "EVALUATOR"
-  note: "Evaluator release gate passed: local release prepublish completed, release-ci-base rerouted heavy CLI tests and passed, hosted PR #4007 checks are green, and branch is clean for integration."
-  evaluated_sha: "86a0b16dd9aabf95b144f9ca0913663d623ece28"
+  note: "Fresh evaluator gate for final release candidate head after verification artifact commit; hosted PR #4007 checks are green and release branch is ready for integration."
+  evaluated_sha: "1da356666a25a8fb757b6f507c660014621db07c"
   blueprint_digest: "596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33"
   evidence_refs:
     - ".agentplane/tasks/202605211431-A5GBYT/README.md"
@@ -60,8 +60,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator release gate passed: local release prepublish completed, release-ci-base rerouted heavy CLI tests and passed, hosted PR #4007 checks are green, and branch is clean for integration."
+  -
+    type: "verify"
+    at: "2026-05-21T17:30:58.152Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Fresh evaluator gate for final release candidate head after verification artifact commit; hosted PR #4007 checks are green and release branch is ready for integration."
 doc_version: 3
-doc_updated_at: "2026-05-21T17:24:41.313Z"
+doc_updated_at: "2026-05-21T17:30:58.168Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare, verify, publish, and record evidence for the next patch release after v0.6.4."
 sections:
@@ -110,6 +116,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T17:24:31.133Z, excerpt_hash=sha256:131d2c0951d0a89e69dce20f983762cb4d8bed3c1aa01be541b1bd6f0b61ebd8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211431-A5GBYT-release-v0-6-5/.agentplane/tasks/202605211431-A5GBYT/blueprint/resolved-snapshot.json
+    - old_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
+    - current_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605211431-A5GBYT
+
+    ### 2026-05-21T17:30:58.152Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Fresh evaluator gate for final release candidate head after verification artifact commit; hosted PR #4007 checks are green and release branch is ready for integration.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T17:24:41.313Z, excerpt_hash=sha256:131d2c0951d0a89e69dce20f983762cb4d8bed3c1aa01be541b1bd6f0b61ebd8
 
     Details:
 
@@ -183,6 +208,25 @@ Note: Evaluator release gate passed: local release prepublish completed, release
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T17:24:31.133Z, excerpt_hash=sha256:131d2c0951d0a89e69dce20f983762cb4d8bed3c1aa01be541b1bd6f0b61ebd8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211431-A5GBYT-release-v0-6-5/.agentplane/tasks/202605211431-A5GBYT/blueprint/resolved-snapshot.json
+- old_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
+- current_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605211431-A5GBYT
+
+### 2026-05-21T17:30:58.152Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Fresh evaluator gate for final release candidate head after verification artifact commit; hosted PR #4007 checks are green and release branch is ready for integration.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T17:24:41.313Z, excerpt_hash=sha256:131d2c0951d0a89e69dce20f983762cb4d8bed3c1aa01be541b1bd6f0b61ebd8
 
 Details:
 

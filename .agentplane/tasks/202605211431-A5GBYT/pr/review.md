@@ -13,7 +13,7 @@ Created: 2026-05-21T14:32:18.252Z
 ## Verification
 
 - State: ok
-- Note: Evaluator release gate passed: local release prepublish completed, release-ci-base rerouted heavy CLI tests and passed, hosted PR #4007 checks are green, and branch is clean for integration.
+- Note: Fresh evaluator gate for final release candidate head after verification artifact commit; hosted PR #4007 checks are green and release branch is ready for integration.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
