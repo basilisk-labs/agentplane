@@ -27,12 +27,18 @@ links, browser navigation, typecheck, build, smoke, policy routing, and ap docto
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T06:55:57.101Z
+- Updated: 2026-05-21T07:46:22.971Z
 - Branch: task/202605210655-CF0BDW/website-design-routing
-- Head: a25ac4fc2bf7
+- Head: 7a2601983b59
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ marketing                                          |   2 +-
+ scripts/checks/check-design-language.mjs           |  47 +-
+ website/src/css/custom.css                         |  28 +-
+ website/src/data/homepage-content.ts               |   6 +-
+ website/static/img/social/docs/releases/v0.6.4.png | Bin 0 -> 41128 bytes
+ 6 files changed, 636 insertions(+), 19 deletions(-)
 ```
 
 </details>
