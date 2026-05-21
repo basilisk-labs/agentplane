@@ -29,7 +29,7 @@ quality_review:
   updated_at: "2026-05-21T14:13:49.802Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR quality gate passed after merge from main. Evidence: backend projection cache tests, task listing/query tests, branch_pr list-state test, exact-file eslint, git diff --check, policy routing, framework bootstrap, and PR artifact check passed; scope remains limited to task list read-only projection fast path."
-  evaluated_sha: "dde96bd9fdca45fe2a32d5848aaa53ef91ae5e1e"
+  evaluated_sha: "42f809dd3c03fcbb93f05e41de90b2c436ba4d60"
   blueprint_digest: "ecc86ecbd9afdcf4bd8ce70a2664e006992bb429e250d0e49f74701eeb4394ee"
   evidence_refs:
     - ".agentplane/tasks/202605211331-F6AMAP/README.md"
