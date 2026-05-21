@@ -146,9 +146,12 @@ The contract is stricter than the default adaptive profile:
   it as an alias/navigation layer over wiki pages and graph entities, use canonical terms from that
   glossary in synthesized prose when identity is clear, and preserve source-local wording as aliases
   or evidence details.
-- Use Obsidian-compatible `[[Page Title]]` and `[[Page Title#Section]]` links for semantic internal
-  wiki links. Keep standard Markdown links for source refs, external URLs, and file references so
+- Use Obsidian-compatible wikilinks whose target case exactly matches a canonical page path, title,
+  or alias. Prefer `[[canonical-page|Display Label]]` when the readable label differs from the file
+  path. Keep standard Markdown links for source refs, external URLs, and file references so
   AgentPlane provenance checks stay readable.
+- Cite raw sources in prose with numeric notes such as `[1]`, then keep raw-data Markdown links in a
+  trailing `## Sources` section.
 - Record a coverage report that separates assimilated spans, intentionally omitted boilerplate,
   duplicates, redacted private spans, unresolved identities, and conflicts.
 - Record an `EVALUATOR` quality review for source-shaped structure, granularity, useful wikilinks,
@@ -189,6 +192,9 @@ it names the page's modality, epistemic status, source refs, related claims, gra
 and intended visibility. It is not a replacement for atomic claim/fact/graph rows; it links the
 human-readable page to those machine-readable artifacts.
 
+Generated wiki pages also include Obsidian properties such as `aliases`, `tags`, and `cssclasses`
+so the same markdown reads cleanly in an Obsidian vault without `.obsidian/**` configuration.
+
 Use separate pages when a concept, entity, decision, requirement, policy, risk, definition, workflow,
 or module is likely to be reused. Keep related claims on one topic page when that is more readable,
 but keep each important claim's modality and source visible. Decisions extracted from task history
@@ -226,9 +232,10 @@ the source-local wording as an alias. For example, if a raw note says "MR Sync" 
 identifies it as `Meridian Relay`, the wiki sentence should use `[[Meridian Relay]]` or the local
 Markdown link to that page and preserve "MR Sync" as an alias/evidence detail.
 
-In maximum-assimilation mode, prefer `[[Meridian Relay]]` and `[[Meridian Relay#Sync workflow]]` for
-semantic wiki graph links. Use `[context/raw/...#lines=12-24](context/raw/...#lines=12-24)` for
-source refs and normal Markdown links for external or file references.
+In maximum-assimilation mode, prefer case-stable links such as
+`[[meridian-relay|Meridian Relay]]` and `[[meridian-relay#Sync workflow|Meridian Relay sync]]` for
+semantic wiki graph links. Use numeric source notes in prose, then list raw refs at the end:
+`1. [context/raw/...#lines=12-24](context/raw/...#lines=12-24)`.
 
 After adding, moving, or materially renaming wiki pages, CURATOR should refresh relevant `index.md`
 navigation pages. `agentplane context wiki index context/wiki` updates generated index sections so
