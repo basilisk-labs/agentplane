@@ -24,12 +24,21 @@ Created: 2026-05-21T10:40:55.586Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T10:40:55.586Z
+- Updated: 2026-05-21T10:51:23.131Z
 - Branch: task/202605211039-QZXN8Q/fix-open-context-issues
-- Head: 85752945e646
+- Head: 22bd6142911f
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 570 +++++++++++++++++++++
+ .../src/commands/context/release-readiness.test.ts | 235 ++++++++-
+ packages/agentplane/src/commands/context/search.ts |   3 +-
+ .../commands/context/wiki.obsidian.unit.test.ts    |   2 +-
+ packages/agentplane/src/commands/context/wiki.ts   |   8 +-
+ packages/agentplane/src/context/context-utils.ts   |   2 +-
+ packages/agentplane/src/context/doctor.ts          |  58 ++-
+ packages/agentplane/src/context/ingest.ts          |  47 +-
+ packages/agentplane/src/context/verify-task.ts     |  58 ++-
+ 9 files changed, 962 insertions(+), 21 deletions(-)
 ```
 
 </details>
