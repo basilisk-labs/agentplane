@@ -52,7 +52,7 @@ const SAFE_REPOSITORY_SLUG_SCHEMA = z
     /^(?!\/)(?!\\)(?![A-Za-z]:)(?!.*:\/\/)(?!.*\\)(?!.*(?:^|\/)\.\.(?:\/|$))(?!.*\.git$)[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/u,
   );
 
-export const RUNNER_HANDOFF_REPO_REF_ZOD_SCHEMA = z
+const RUNNER_HANDOFF_REPO_REF_ZOD_SCHEMA = z
   .object({
     kind: z.literal("git"),
     repository: SAFE_REPOSITORY_SLUG_SCHEMA,
@@ -61,14 +61,14 @@ export const RUNNER_HANDOFF_REPO_REF_ZOD_SCHEMA = z
   })
   .strict();
 
-export const RUNNER_HANDOFF_PRINCIPAL_ZOD_SCHEMA = z
+const RUNNER_HANDOFF_PRINCIPAL_ZOD_SCHEMA = z
   .object({
     type: z.enum(["human", "agent", "automation", "service", "unknown"]),
     id: SAFE_ID_SCHEMA,
   })
   .strict();
 
-export const RUNNER_HANDOFF_REQUIRED_EVIDENCE_ZOD_SCHEMA = z
+const RUNNER_HANDOFF_REQUIRED_EVIDENCE_ZOD_SCHEMA = z
   .object({
     kind: z.enum(RUNNER_HANDOFF_EVIDENCE_KIND_VALUES),
     id: SAFE_ID_SCHEMA,
@@ -76,7 +76,7 @@ export const RUNNER_HANDOFF_REQUIRED_EVIDENCE_ZOD_SCHEMA = z
   })
   .strict();
 
-export const RUNNER_HANDOFF_UPLOAD_TARGET_ZOD_SCHEMA = z
+const RUNNER_HANDOFF_UPLOAD_TARGET_ZOD_SCHEMA = z
   .object({
     kind: z.enum(RUNNER_HANDOFF_UPLOAD_TARGET_KIND_VALUES),
     target_id: SAFE_ID_SCHEMA,
@@ -84,7 +84,7 @@ export const RUNNER_HANDOFF_UPLOAD_TARGET_ZOD_SCHEMA = z
   })
   .strict();
 
-export const RUNNER_HANDOFF_KILL_SWITCH_CHECK_ZOD_SCHEMA = z
+const RUNNER_HANDOFF_KILL_SWITCH_CHECK_ZOD_SCHEMA = z
   .object({
     checked_at: ISO_UTC_TIMESTAMP,
     active: z.literal(false),
@@ -179,10 +179,3 @@ export function sanitizeAgentPlaneRunnerHandoff(
     },
   };
 }
-
-export {
-  RUNNER_HANDOFF_EVIDENCE_KIND_VALUES,
-  RUNNER_HANDOFF_MODE_VALUES,
-  RUNNER_HANDOFF_STATUS_VALUES,
-  RUNNER_HANDOFF_UPLOAD_TARGET_KIND_VALUES,
-};

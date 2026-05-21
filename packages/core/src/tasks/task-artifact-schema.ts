@@ -56,13 +56,7 @@ export {
 } from "./task-artifact-schema.observations.js";
 export { ACR_VERSION, computeAcrRecordDigest } from "./task-artifact-schema.acr.js";
 export {
-  AGENTPLANE_RUNNER_HANDOFF_ZOD_SCHEMA,
   listAgentPlaneRunnerHandoffSchemaErrors,
-  RUNNER_HANDOFF_EVIDENCE_KIND_VALUES,
-  RUNNER_HANDOFF_MODE_VALUES,
-  RUNNER_HANDOFF_REPO_REF_ZOD_SCHEMA,
-  RUNNER_HANDOFF_STATUS_VALUES,
-  RUNNER_HANDOFF_UPLOAD_TARGET_KIND_VALUES,
   sanitizeAgentPlaneRunnerHandoff,
   validateAgentPlaneRunnerHandoff,
 } from "./task-artifact-schema.runner-handoff.js";
@@ -100,7 +94,7 @@ export const TASK_HANDOFF_SCHEMA = buildJsonSchemaDocument(TASK_HANDOFF_ZOD_SCHE
   title: "Task handoff artifact (v1)",
 });
 
-export const AGENTPLANE_RUNNER_HANDOFF_SCHEMA = buildJsonSchemaDocument(
+const AGENTPLANE_RUNNER_HANDOFF_SCHEMA = buildJsonSchemaDocument(
   AGENTPLANE_RUNNER_HANDOFF_ZOD_SCHEMA,
   {
     $id: "https://agentplane.org/schemas/runner-handoff.schema.json",
