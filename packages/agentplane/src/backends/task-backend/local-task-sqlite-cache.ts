@@ -212,6 +212,29 @@ function buildFingerprintCacheKey(
   };
 }
 
+function buildReadmeFingerprintEntriesFromTasksDir(
+  tasksDir: string,
+): { path: string; mtimeMs: number; size: number }[] | null {
+  try {
+    const entries = readdirSync(tasksDir, { withFileTypes: true });
+    const readmes: { path: string; mtimeMs: number; size: number }[] = [];
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const readmePath = path.join(tasksDir, entry.name, "README.md");
+      const stats = statSync(readmePath);
+      if (!stats.isFile()) return null;
+      readmes.push({
+        path: readmePath,
+        mtimeMs: stats.mtimeMs,
+        size: stats.size,
+      });
+    }
+    return readmes.toSorted((a, b) => a.path.localeCompare(b.path));
+  } catch {
+    return null;
+  }
+}
+
 function stableCacheKeyJson(key: TaskProjectionCacheKey): string {
   return JSON.stringify(key);
 }
@@ -288,10 +311,9 @@ export async function readFreshSqliteTaskProjection(opts: {
 }): Promise<TaskSummary[] | null> {
   const dbPath = resolveTaskProjectionSqlitePath(opts.tasksDir);
   if (!existsSync(dbPath)) return null;
-  const gitCacheKey = buildGitCacheKey(opts.tasksDir);
-  const cacheKey =
-    gitCacheKey ??
-    (opts.fingerprintEntries ? buildFingerprintCacheKey(opts.fingerprintEntries) : null);
+  const fingerprintEntries =
+    opts.fingerprintEntries ?? buildReadmeFingerprintEntriesFromTasksDir(opts.tasksDir);
+  const cacheKey = fingerprintEntries ? buildFingerprintCacheKey(fingerprintEntries) : null;
   if (!cacheKey) return null;
 
   const db = await openSqliteDatabase(dbPath, { readonly: true });
@@ -330,10 +352,10 @@ export async function writeSqliteTaskProjection(opts: {
   if (gitRoot) await ensureRuntimeSqliteGitignore({ gitRoot }).catch(() => null);
 
   const dbPath = resolveTaskProjectionSqlitePath(opts.tasksDir);
-  const gitCacheKey = buildGitCacheKey(opts.tasksDir);
   const cacheKey =
-    gitCacheKey ??
-    (opts.fingerprintEntries ? buildFingerprintCacheKey(opts.fingerprintEntries) : null);
+    opts.fingerprintEntries
+      ? buildFingerprintCacheKey(opts.fingerprintEntries)
+      : buildGitCacheKey(opts.tasksDir);
   if (!cacheKey) return;
 
   mkdirSync(path.dirname(dbPath), { recursive: true });
