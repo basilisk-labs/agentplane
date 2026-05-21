@@ -4,7 +4,7 @@ title: "Harden Obsidian context wiki links and source notes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-21T09:20:25.744Z"
+  updated_at: "2026-05-21T09:34:37.962Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed for current commit 77326c7df with cited local verification evidence."
+  note: "EVALUATOR quality gate passed for current implementation commit 1d3fb0088 after splitting Obsidian context tests below hotspot budget."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-21T09:20:25.744Z"
+  updated_at: "2026-05-21T09:34:37.962Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed for current commit 77326c7df with cited local verification evidence."
-  evaluated_sha: "77326c7df97e1a13af97173de8d9615bf789a4ad"
+  note: "EVALUATOR quality gate passed for current implementation commit 1d3fb0088 after splitting Obsidian context tests below hotspot budget."
+  evaluated_sha: "1d3fb008823a181dccdecab722e2bba03aec499a"
   blueprint_digest: "35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5"
   evidence_refs:
     - ".agentplane/tasks/202605210858-VEZQYS/README.md"
@@ -66,8 +66,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for current commit 77326c7df with cited local verification evidence."
+  -
+    type: "verify"
+    at: "2026-05-21T09:34:37.962Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed for current implementation commit 1d3fb0088 after splitting Obsidian context tests below hotspot budget."
 doc_version: 3
-doc_updated_at: "2026-05-21T09:20:25.777Z"
+doc_updated_at: "2026-05-21T09:34:37.980Z"
 doc_updated_by: "CODER"
 description: "Fix case-sensitive Obsidian cross-link breakage during context assimilation, add automatic Obsidian-friendly context wiki elements, and support numeric source note references that resolve to raw-data links at the end of generated pages."
 sections:
@@ -149,6 +155,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
 
+    ### 2026-05-21T09:34:37.962Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed for current implementation commit 1d3fb0088 after splitting Obsidian context tests below hotspot budget.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T09:20:25.777Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210858-VEZQYS-obsidian-context-links/.agentplane/tasks/202605210858-VEZQYS/blueprint/resolved-snapshot.json
+    - old_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+    - current_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -165,6 +190,10 @@ sections:
     - Observation: Current task branch commit includes only the reviewed Obsidian wiki link/source-note implementation and task evidence updates.
       Impact: Quality gate now references the current implementation commit expected by branch_pr integration.
       Resolution: Rerun integrate with run-verify.
+
+    - Observation: Focused Obsidian tests were moved into wiki.obsidian.unit.test.ts and release-readiness stayed within the oversized-test budget.
+      Impact: Pre-push hotspot baseline no longer blocks publication while preserving coverage for generated Obsidian properties, numeric source notes, and case-stable wikilinks.
+      Resolution: Proceed with PR open and merge route.
 id_source: "generated"
 ---
 ## Summary
@@ -254,6 +283,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
 
+### 2026-05-21T09:34:37.962Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed for current implementation commit 1d3fb0088 after splitting Obsidian context tests below hotspot budget.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T09:20:25.777Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210858-VEZQYS-obsidian-context-links/.agentplane/tasks/202605210858-VEZQYS/blueprint/resolved-snapshot.json
+- old_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+- current_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -274,3 +322,7 @@ BlueprintSnapshotRef:
 - Observation: Current task branch commit includes only the reviewed Obsidian wiki link/source-note implementation and task evidence updates.
   Impact: Quality gate now references the current implementation commit expected by branch_pr integration.
   Resolution: Rerun integrate with run-verify.
+
+- Observation: Focused Obsidian tests were moved into wiki.obsidian.unit.test.ts and release-readiness stayed within the oversized-test budget.
+  Impact: Pre-push hotspot baseline no longer blocks publication while preserving coverage for generated Obsidian properties, numeric source notes, and case-stable wikilinks.
+  Resolution: Proceed with PR open and merge route.

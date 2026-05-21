@@ -16,15 +16,20 @@ Fix case-sensitive Obsidian cross-link breakage during context assimilation, add
 ## Verification
 
 - State: ok
-- Note: EVALUATOR quality gate passed for current commit 77326c7df with cited local verification evidence.
+- Note:
+
+```text
+EVALUATOR quality gate passed for current implementation commit 1d3fb0088 after splitting Obsidian
+context tests below hotspot budget.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T09:20:17.160Z
+- Updated: 2026-05-21T09:34:38.007Z
 - Branch: task/202605210858-VEZQYS/obsidian-context-links
-- Head: 77326c7df97e
+- Head: 1d3fb008823a
 
 ```text
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
@@ -33,10 +38,11 @@ Fix case-sensitive Obsidian cross-link breakage during context assimilation, add
  .../src/commands/context/init-wiki-policy.ts       |   9 +-
  .../agentplane/src/commands/context/init-wiki.ts   |   8 +-
  packages/agentplane/src/commands/context/init.ts   |  19 +-
- .../src/commands/context/release-readiness.test.ts | 123 ++++-
+ .../src/commands/context/release-readiness.test.ts |  18 +-
+ .../commands/context/wiki.obsidian.unit.test.ts    | 134 +++++
  packages/agentplane/src/commands/context/wiki.ts   | 122 ++++-
  packages/agentplane/src/context/ingest-task.ts     |  13 +-
- 9 files changed, 879 insertions(+), 24 deletions(-)
+ 10 files changed, 902 insertions(+), 30 deletions(-)
 ```
 
 </details>
