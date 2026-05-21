@@ -4,7 +4,7 @@ title: "Fix README stale run examples"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -25,16 +25,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-21T06:37:00.853Z"
+  updated_at: "2026-05-21T06:40:32.625Z"
   updated_by: "EVALUATOR"
-  note: "Independent quality gate pass: diff is limited to README.md plus task artifacts, stale README runner/trace examples are removed, package README had no matching stale surface, and required docs checks passed. Residual gap: broader docs still contain historical run/trace pages, outside this README-scoped task."
+  note: "Post-commit quality gate pass for HEAD 706bd5839: README-only behavior change matches approved scope, stale public README run/trace/yaml examples are absent across README files, and required docs checks passed. Residual gap remains broader non-README docs with historical run/trace references, outside this task scope."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-21T06:37:00.853Z"
+  updated_at: "2026-05-21T06:40:32.625Z"
   updated_by: "EVALUATOR"
-  note: "Independent quality gate pass: diff is limited to README.md plus task artifacts, stale README runner/trace examples are removed, package README had no matching stale surface, and required docs checks passed. Residual gap: broader docs still contain historical run/trace pages, outside this README-scoped task."
-  evaluated_sha: "a25ac4fc2bf7ad0551d2fccb3c29a82f4ee743ca"
+  note: "Post-commit quality gate pass for HEAD 706bd5839: README-only behavior change matches approved scope, stale public README run/trace/yaml examples are absent across README files, and required docs checks passed. Residual gap remains broader non-README docs with historical run/trace references, outside this task scope."
+  evaluated_sha: "706bd5839dad991e2eb5dd60dab74c28e9627d86"
   blueprint_digest: "7845963ecc4ace1ba2b90cb5fd5a04f7b732be38f730967707f3d635e108c15b"
   evidence_refs:
     - ".agentplane/tasks/202605210633-3ZGMA1/README.md"
@@ -65,8 +65,20 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Independent quality gate pass: diff is limited to README.md plus task artifacts, stale README runner/trace examples are removed, package README had no matching stale surface, and required docs checks passed. Residual gap: broader docs still contain historical run/trace pages, outside this README-scoped task."
+  -
+    type: "verify"
+    at: "2026-05-21T06:40:22.857Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Post-commit verification for HEAD 706bd5839. Commands: ap help --compact; ap help run --compact; ap help trace --compact; rg -n stale runner/trace README patterns -g README.md; bunx prettier --check README.md packages/agentplane/README.md; node .agentplane/policy/check-routing.mjs; git diff --check; agentplane doctor. Result: pass. Evidence: run/trace are not public commands, no README has stale run/trace/yaml patterns, formatting/routing/diff checks pass, doctor exits OK with one branch_pr open-task warning for this active task."
+  -
+    type: "verify"
+    at: "2026-05-21T06:40:32.625Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Post-commit quality gate pass for HEAD 706bd5839: README-only behavior change matches approved scope, stale public README run/trace/yaml examples are absent across README files, and required docs checks passed. Residual gap remains broader non-README docs with historical run/trace references, outside this task scope."
 doc_version: 3
-doc_updated_at: "2026-05-21T06:37:00.905Z"
+doc_updated_at: "2026-05-21T06:40:32.654Z"
 doc_updated_by: "DOCS"
 description: "Remove stale README references to the removed agentplane run/trace YAML workflow and align public README onboarding with the current CLI."
 sections:
@@ -117,6 +129,44 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T06:36:46.535Z, excerpt_hash=sha256:01b8374511f201deedade6def46d5a4120ce9b4e7e55862c0744cb22d97a2cf0
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210633-3ZGMA1-readme-cli-drift/.agentplane/tasks/202605210633-3ZGMA1/blueprint/resolved-snapshot.json
+    - old_digest: 7845963ecc4ace1ba2b90cb5fd5a04f7b732be38f730967707f3d635e108c15b
+    - current_digest: 7845963ecc4ace1ba2b90cb5fd5a04f7b732be38f730967707f3d635e108c15b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605210633-3ZGMA1
+
+    ### 2026-05-21T06:40:22.857Z — VERIFY — ok
+
+    By: DOCS
+
+    Note: Post-commit verification for HEAD 706bd5839. Commands: ap help --compact; ap help run --compact; ap help trace --compact; rg -n stale runner/trace README patterns -g README.md; bunx prettier --check README.md packages/agentplane/README.md; node .agentplane/policy/check-routing.mjs; git diff --check; agentplane doctor. Result: pass. Evidence: run/trace are not public commands, no README has stale run/trace/yaml patterns, formatting/routing/diff checks pass, doctor exits OK with one branch_pr open-task warning for this active task.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T06:37:00.905Z, excerpt_hash=sha256:01b8374511f201deedade6def46d5a4120ce9b4e7e55862c0744cb22d97a2cf0
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210633-3ZGMA1-readme-cli-drift/.agentplane/tasks/202605210633-3ZGMA1/blueprint/resolved-snapshot.json
+    - old_digest: 7845963ecc4ace1ba2b90cb5fd5a04f7b732be38f730967707f3d635e108c15b
+    - current_digest: 7845963ecc4ace1ba2b90cb5fd5a04f7b732be38f730967707f3d635e108c15b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605210633-3ZGMA1
+
+    ### 2026-05-21T06:40:32.625Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Post-commit quality gate pass for HEAD 706bd5839: README-only behavior change matches approved scope, stale public README run/trace/yaml examples are absent across README files, and required docs checks passed. Residual gap remains broader non-README docs with historical run/trace references, outside this task scope.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T06:40:22.910Z, excerpt_hash=sha256:01b8374511f201deedade6def46d5a4120ce9b4e7e55862c0744cb22d97a2cf0
 
     Details:
 
@@ -191,6 +241,44 @@ Note: Independent quality gate pass: diff is limited to README.md plus task arti
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T06:36:46.535Z, excerpt_hash=sha256:01b8374511f201deedade6def46d5a4120ce9b4e7e55862c0744cb22d97a2cf0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210633-3ZGMA1-readme-cli-drift/.agentplane/tasks/202605210633-3ZGMA1/blueprint/resolved-snapshot.json
+- old_digest: 7845963ecc4ace1ba2b90cb5fd5a04f7b732be38f730967707f3d635e108c15b
+- current_digest: 7845963ecc4ace1ba2b90cb5fd5a04f7b732be38f730967707f3d635e108c15b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605210633-3ZGMA1
+
+### 2026-05-21T06:40:22.857Z — VERIFY — ok
+
+By: DOCS
+
+Note: Post-commit verification for HEAD 706bd5839. Commands: ap help --compact; ap help run --compact; ap help trace --compact; rg -n stale runner/trace README patterns -g README.md; bunx prettier --check README.md packages/agentplane/README.md; node .agentplane/policy/check-routing.mjs; git diff --check; agentplane doctor. Result: pass. Evidence: run/trace are not public commands, no README has stale run/trace/yaml patterns, formatting/routing/diff checks pass, doctor exits OK with one branch_pr open-task warning for this active task.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T06:37:00.905Z, excerpt_hash=sha256:01b8374511f201deedade6def46d5a4120ce9b4e7e55862c0744cb22d97a2cf0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210633-3ZGMA1-readme-cli-drift/.agentplane/tasks/202605210633-3ZGMA1/blueprint/resolved-snapshot.json
+- old_digest: 7845963ecc4ace1ba2b90cb5fd5a04f7b732be38f730967707f3d635e108c15b
+- current_digest: 7845963ecc4ace1ba2b90cb5fd5a04f7b732be38f730967707f3d635e108c15b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605210633-3ZGMA1
+
+### 2026-05-21T06:40:32.625Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Post-commit quality gate pass for HEAD 706bd5839: README-only behavior change matches approved scope, stale public README run/trace/yaml examples are absent across README files, and required docs checks passed. Residual gap remains broader non-README docs with historical run/trace references, outside this task scope.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T06:40:22.910Z, excerpt_hash=sha256:01b8374511f201deedade6def46d5a4120ce9b4e7e55862c0744cb22d97a2cf0
 
 Details:
 
