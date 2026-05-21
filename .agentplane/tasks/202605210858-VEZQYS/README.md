@@ -4,7 +4,7 @@ title: "Harden Obsidian context wiki links and source notes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-21T09:09:41.942Z"
+  updated_at: "2026-05-21T09:20:25.744Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed for Obsidian context wiki behavior and source-note contract; targeted tests and local checks cover the changed surfaces."
+  note: "EVALUATOR quality gate passed for current commit 77326c7df with cited local verification evidence."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-21T09:09:41.942Z"
+  updated_at: "2026-05-21T09:20:25.744Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed for Obsidian context wiki behavior and source-note contract; targeted tests and local checks cover the changed surfaces."
-  evaluated_sha: "210d4e123b6381676958828be7f50f2a7039918c"
+  note: "EVALUATOR quality gate passed for current commit 77326c7df with cited local verification evidence."
+  evaluated_sha: "77326c7df97e1a13af97173de8d9615bf789a4ad"
   blueprint_digest: "35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5"
   evidence_refs:
     - ".agentplane/tasks/202605210858-VEZQYS/README.md"
@@ -60,8 +60,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality review passed for Obsidian context wiki behavior and source-note contract; targeted tests and local checks cover the changed surfaces."
+  -
+    type: "verify"
+    at: "2026-05-21T09:20:25.744Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed for current commit 77326c7df with cited local verification evidence."
 doc_version: 3
-doc_updated_at: "2026-05-21T09:09:41.974Z"
+doc_updated_at: "2026-05-21T09:20:25.777Z"
 doc_updated_by: "CODER"
 description: "Fix case-sensitive Obsidian cross-link breakage during context assimilation, add automatic Obsidian-friendly context wiki elements, and support numeric source note references that resolve to raw-data links at the end of generated pages."
 sections:
@@ -124,6 +130,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
 
+    ### 2026-05-21T09:20:25.744Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed for current commit 77326c7df with cited local verification evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T09:09:41.974Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210858-VEZQYS-obsidian-context-links/.agentplane/tasks/202605210858-VEZQYS/blueprint/resolved-snapshot.json
+    - old_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+    - current_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -136,6 +161,10 @@ sections:
     - Observation: Reviewed generated wiki output, lint behavior for case-drifted wikilinks, maximum-assimilation prompt/gate changes, and docs alignment.
       Impact: The change is scoped to context wiki generation/linting/prompt contracts and does not alter raw source storage or task Obsidian projection behavior.
       Resolution: Proceed with branch_pr publication/integration when approved.
+
+    - Observation: Current task branch commit includes only the reviewed Obsidian wiki link/source-note implementation and task evidence updates.
+      Impact: Quality gate now references the current implementation commit expected by branch_pr integration.
+      Resolution: Rerun integrate with run-verify.
 id_source: "generated"
 ---
 ## Summary
@@ -206,6 +235,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
 
+### 2026-05-21T09:20:25.744Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed for current commit 77326c7df with cited local verification evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T09:09:41.974Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210858-VEZQYS-obsidian-context-links/.agentplane/tasks/202605210858-VEZQYS/blueprint/resolved-snapshot.json
+- old_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+- current_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -222,3 +270,7 @@ BlueprintSnapshotRef:
 - Observation: Reviewed generated wiki output, lint behavior for case-drifted wikilinks, maximum-assimilation prompt/gate changes, and docs alignment.
   Impact: The change is scoped to context wiki generation/linting/prompt contracts and does not alter raw source storage or task Obsidian projection behavior.
   Resolution: Proceed with branch_pr publication/integration when approved.
+
+- Observation: Current task branch commit includes only the reviewed Obsidian wiki link/source-note implementation and task evidence updates.
+  Impact: Quality gate now references the current implementation commit expected by branch_pr integration.
+  Resolution: Rerun integrate with run-verify.

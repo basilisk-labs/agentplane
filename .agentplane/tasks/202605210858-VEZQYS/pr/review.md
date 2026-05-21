@@ -13,7 +13,7 @@ Created: 2026-05-21T08:58:57.055Z
 ## Verification
 
 - State: ok
-- Note: Quality review passed for Obsidian context wiki behavior and source-note contract; targeted tests and local checks cover the changed surfaces.
+- Note: EVALUATOR quality gate passed for current commit 77326c7df with cited local verification evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,9 +24,9 @@ Created: 2026-05-21T08:58:57.055Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T09:09:42.017Z
+- Updated: 2026-05-21T09:20:17.160Z
 - Branch: task/202605210858-VEZQYS/obsidian-context-links
-- Head: 210d4e123b63
+- Head: 77326c7df97e
 
 ```text
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
