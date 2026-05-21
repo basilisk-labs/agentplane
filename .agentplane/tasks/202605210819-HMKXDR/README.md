@@ -1,10 +1,11 @@
 ---
 id: "202605210819-HMKXDR"
 title: "Default context init to maximum assimilation"
-status: "DOING"
+result_summary: "Merged via PR #3986."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605210819-HMKXDR/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210819-HMKXDR-context-init-maximum-default/.agentplane/tasks/202605210819-HMKXDR/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "32b65bdeacda2017a0140ef70e11ba6947585a5f"
+  message: "Merge pull request #3986 from basilisk-labs/task/202605210819-HMKXDR/context-init-maximum-default"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the approved context init UX change in the task worktree, keeping legacy option code available while defaulting interactive init to maximum-assimilation and adding the context-layer post-init commit behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3986 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -72,9 +78,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for code commit e0ce3333. Evidence: focused context-init suite passed 6/6 including staged-index prewrite regression, targeted eslint passed, diff-check and policy routing passed, framework bootstrap passed, hosted PR checks passed for PR #3986, and review thread PRRT_kwDORCLmJM6Du_F8 is resolved."
+  -
+    type: "status"
+    at: "2026-05-21T14:10:07.627Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3986 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-21T13:56:41.544Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-21T14:10:07.636Z"
+doc_updated_by: "INTEGRATOR"
 description: "Temporarily hide interactive context init mode choices so default init uses maximum-assimilation without asking, while preserving the option code, and add a context-layer commit after initialization."
 sections:
   Summary: |-
