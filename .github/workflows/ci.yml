@@ -98,6 +98,9 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
+      - name: Install actionlint
+        if: contains(needs.plan.outputs.buckets, 'workflow')
+        run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
       - name: Cache Bun artifacts
         uses: actions/cache@v5
         with:
