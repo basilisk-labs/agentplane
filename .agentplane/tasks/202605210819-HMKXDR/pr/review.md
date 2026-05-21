@@ -13,7 +13,7 @@ Created: 2026-05-21T08:20:09.944Z
 ## Verification
 
 - State: ok
-- Note: Evaluator pass: approved scope is satisfied by commit dbd1b316f824. Evidence reviewed: focused context init suite passed 5/5, docs:cli:check passed, policy routing passed, ap doctor passed with no errors/warnings, exact-file ESLint passed, and tsc -b passed. Residual risk: GitHub hosted checks are pending on PR #3986 and integration is not performed in this turn.
+- Note: EVALUATOR quality gate passed for PR head e0ce3333. Evidence: focused context-init suite passed 6/6 including staged-index prewrite regression, targeted eslint passed, diff-check and policy routing passed, framework bootstrap passed, hosted PR checks passed, and GitHub review thread PRRT_kwDORCLmJM6Du_F8 was resolved after the fix.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

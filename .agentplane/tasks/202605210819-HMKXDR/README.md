@@ -4,7 +4,7 @@ title: "Default context init to maximum assimilation"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-21T08:27:37.013Z"
+  updated_at: "2026-05-21T13:50:35.203Z"
   updated_by: "EVALUATOR"
-  note: "Evaluator pass: approved scope is satisfied by commit dbd1b316f824. Evidence reviewed: focused context init suite passed 5/5, docs:cli:check passed, policy routing passed, ap doctor passed with no errors/warnings, exact-file ESLint passed, and tsc -b passed. Residual risk: GitHub hosted checks are pending on PR #3986 and integration is not performed in this turn."
+  note: "EVALUATOR quality gate passed for PR head e0ce3333. Evidence: focused context-init suite passed 6/6 including staged-index prewrite regression, targeted eslint passed, diff-check and policy routing passed, framework bootstrap passed, hosted PR checks passed, and GitHub review thread PRRT_kwDORCLmJM6Du_F8 was resolved after the fix."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-21T08:27:37.013Z"
+  updated_at: "2026-05-21T13:50:35.203Z"
   updated_by: "EVALUATOR"
-  note: "Evaluator pass: approved scope is satisfied by commit dbd1b316f824. Evidence reviewed: focused context init suite passed 5/5, docs:cli:check passed, policy routing passed, ap doctor passed with no errors/warnings, exact-file ESLint passed, and tsc -b passed. Residual risk: GitHub hosted checks are pending on PR #3986 and integration is not performed in this turn."
-  evaluated_sha: "d081d0851dd15aef6ebb9a871ed802c823cad365"
+  note: "EVALUATOR quality gate passed for PR head e0ce3333. Evidence: focused context-init suite passed 6/6 including staged-index prewrite regression, targeted eslint passed, diff-check and policy routing passed, framework bootstrap passed, hosted PR checks passed, and GitHub review thread PRRT_kwDORCLmJM6Du_F8 was resolved after the fix."
+  evaluated_sha: "adce174193cc66ccd53445184a2bae265513f13e"
   blueprint_digest: "6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3"
   evidence_refs:
     - ".agentplane/tasks/202605210819-HMKXDR/README.md"
@@ -60,8 +60,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator pass: approved scope is satisfied by commit dbd1b316f824. Evidence reviewed: focused context init suite passed 5/5, docs:cli:check passed, policy routing passed, ap doctor passed with no errors/warnings, exact-file ESLint passed, and tsc -b passed. Residual risk: GitHub hosted checks are pending on PR #3986 and integration is not performed in this turn."
+  -
+    type: "verify"
+    at: "2026-05-21T13:50:35.203Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed for PR head e0ce3333. Evidence: focused context-init suite passed 6/6 including staged-index prewrite regression, targeted eslint passed, diff-check and policy routing passed, framework bootstrap passed, hosted PR checks passed, and GitHub review thread PRRT_kwDORCLmJM6Du_F8 was resolved after the fix."
 doc_version: 3
-doc_updated_at: "2026-05-21T08:27:37.058Z"
+doc_updated_at: "2026-05-21T13:50:35.281Z"
 doc_updated_by: "CODER"
 description: "Temporarily hide interactive context init mode choices so default init uses maximum-assimilation without asking, while preserving the option code, and add a context-layer commit after initialization."
 sections:
@@ -113,6 +119,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T08:27:18.098Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210819-HMKXDR-context-init-maximum-default/.agentplane/tasks/202605210819-HMKXDR/blueprint/resolved-snapshot.json
+    - old_digest: 6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3
+    - current_digest: 6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605210819-HMKXDR
+
+    ### 2026-05-21T13:50:35.203Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed for PR head e0ce3333. Evidence: focused context-init suite passed 6/6 including staged-index prewrite regression, targeted eslint passed, diff-check and policy routing passed, framework bootstrap passed, hosted PR checks passed, and GitHub review thread PRRT_kwDORCLmJM6Du_F8 was resolved after the fix.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T08:27:37.058Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -188,6 +213,25 @@ Note: Evaluator pass: approved scope is satisfied by commit dbd1b316f824. Eviden
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T08:27:18.098Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210819-HMKXDR-context-init-maximum-default/.agentplane/tasks/202605210819-HMKXDR/blueprint/resolved-snapshot.json
+- old_digest: 6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3
+- current_digest: 6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605210819-HMKXDR
+
+### 2026-05-21T13:50:35.203Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed for PR head e0ce3333. Evidence: focused context-init suite passed 6/6 including staged-index prewrite regression, targeted eslint passed, diff-check and policy routing passed, framework bootstrap passed, hosted PR checks passed, and GitHub review thread PRRT_kwDORCLmJM6Du_F8 was resolved after the fix.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T08:27:37.058Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 
