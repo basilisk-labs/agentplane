@@ -4,7 +4,7 @@ title: "Fix open context GitHub issues"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -18,16 +18,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-21T10:51:55.998Z"
+  updated_at: "2026-05-21T10:59:52.363Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed from local evidence: focused context regressions, typecheck, exact-file eslint, policy routing, diff check, and ap doctor are green. GitHub PR #4000 is open for hosted checks and merge."
+  note: "Final branch head d3f360d8c passed pre-push fast CI: formatting, schema/template/policy/release checks, build, typecheck, bundle build, cold-start baseline, recipes/scripts freshness, onboarding scenario, hotspot baseline, vitest routing, targeted lint, and targeted context unit tests (57 tests passed)."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-21T10:51:55.998Z"
+  updated_at: "2026-05-21T10:59:52.363Z"
   updated_by: "EVALUATOR"
-  note: "Quality gate passed from local evidence: focused context regressions, typecheck, exact-file eslint, policy routing, diff check, and ap doctor are green. GitHub PR #4000 is open for hosted checks and merge."
-  evaluated_sha: "68a44223fe1b9d4332356c382045fde8896e0e4f"
+  note: "Final branch head d3f360d8c passed pre-push fast CI: formatting, schema/template/policy/release checks, build, typecheck, bundle build, cold-start baseline, recipes/scripts freshness, onboarding scenario, hotspot baseline, vitest routing, targeted lint, and targeted context unit tests (57 tests passed)."
+  evaluated_sha: "d3f360d8c8342c8874d948cdd192bc4d6a38962e"
   blueprint_digest: "18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15"
   evidence_refs:
     - ".agentplane/tasks/202605211039-QZXN8Q/README.md"
@@ -58,8 +58,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality gate passed from local evidence: focused context regressions, typecheck, exact-file eslint, policy routing, diff check, and ap doctor are green. GitHub PR #4000 is open for hosted checks and merge."
+  -
+    type: "verify"
+    at: "2026-05-21T10:59:52.363Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Final branch head d3f360d8c passed pre-push fast CI: formatting, schema/template/policy/release checks, build, typecheck, bundle build, cold-start baseline, recipes/scripts freshness, onboarding scenario, hotspot baseline, vitest routing, targeted lint, and targeted context unit tests (57 tests passed)."
 doc_version: 3
-doc_updated_at: "2026-05-21T10:51:56.016Z"
+doc_updated_at: "2026-05-21T10:59:52.410Z"
 doc_updated_by: "CODER"
 description: "Batch-fix open GitHub context issues: Obsidian wiki contract, manifest source inventory, stale projections, and derived context consistency. Scope includes GitHub issues #3989, #3990, #3991, #3992, #3993, #3994, #3996, #3997, #3998. Investigate #3879 only for directly shared context runner recovery paths; otherwise leave it as separate follow-up."
 sections:
@@ -118,6 +124,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T10:51:45.528Z, excerpt_hash=sha256:37671c5337839de06fb4f848de4b18c324851e9d05cfbd459b10eb6ce6d78bd9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211039-QZXN8Q-fix-open-context-issues/.agentplane/tasks/202605211039-QZXN8Q/blueprint/resolved-snapshot.json
+    - old_digest: 18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15
+    - current_digest: 18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605211039-QZXN8Q
+
+    ### 2026-05-21T10:59:52.363Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Final branch head d3f360d8c passed pre-push fast CI: formatting, schema/template/policy/release checks, build, typecheck, bundle build, cold-start baseline, recipes/scripts freshness, onboarding scenario, hotspot baseline, vitest routing, targeted lint, and targeted context unit tests (57 tests passed).
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T10:51:56.016Z, excerpt_hash=sha256:37671c5337839de06fb4f848de4b18c324851e9d05cfbd459b10eb6ce6d78bd9
 
     Details:
 
@@ -201,6 +226,25 @@ Note: Quality gate passed from local evidence: focused context regressions, type
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T10:51:45.528Z, excerpt_hash=sha256:37671c5337839de06fb4f848de4b18c324851e9d05cfbd459b10eb6ce6d78bd9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211039-QZXN8Q-fix-open-context-issues/.agentplane/tasks/202605211039-QZXN8Q/blueprint/resolved-snapshot.json
+- old_digest: 18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15
+- current_digest: 18e0ade17aae8b986cc912bccff42f183718c79ba21082f2d56af1cf29798d15
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605211039-QZXN8Q
+
+### 2026-05-21T10:59:52.363Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Final branch head d3f360d8c passed pre-push fast CI: formatting, schema/template/policy/release checks, build, typecheck, bundle build, cold-start baseline, recipes/scripts freshness, onboarding scenario, hotspot baseline, vitest routing, targeted lint, and targeted context unit tests (57 tests passed).
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T10:51:56.016Z, excerpt_hash=sha256:37671c5337839de06fb4f848de4b18c324851e9d05cfbd459b10eb6ce6d78bd9
 
 Details:
 

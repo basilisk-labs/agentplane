@@ -13,7 +13,7 @@ Created: 2026-05-21T10:40:55.586Z
 ## Verification
 
 - State: ok
-- Note: Quality gate passed from local evidence: focused context regressions, typecheck, exact-file eslint, policy routing, diff check, and ap doctor are green. GitHub PR #4000 is open for hosted checks and merge.
+- Note: Final branch head d3f360d8c passed pre-push fast CI: formatting, schema/template/policy/release checks, build, typecheck, bundle build, cold-start baseline, recipes/scripts freshness, onboarding scenario, hotspot baseline, vitest routing, targeted lint, and targeted context unit tests (57 tests passed).
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,21 +24,22 @@ Created: 2026-05-21T10:40:55.586Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T10:51:28.934Z
+- Updated: 2026-05-21T10:59:52.477Z
 - Branch: task/202605211039-QZXN8Q/fix-open-context-issues
-- Head: 22bd6142911f
+- Head: d3f360d8c834
 
 ```text
  .../blueprint/resolved-snapshot.json               | 570 +++++++++++++++++++++
- .../src/commands/context/release-readiness.test.ts | 235 ++++++++-
+ .../src/commands/context/issue-gates.unit.test.ts  | 263 ++++++++++
+ .../src/commands/context/release-readiness.test.ts |  17 +-
  packages/agentplane/src/commands/context/search.ts |   3 +-
  .../commands/context/wiki.obsidian.unit.test.ts    |   2 +-
  packages/agentplane/src/commands/context/wiki.ts   |   8 +-
  packages/agentplane/src/context/context-utils.ts   |   2 +-
- packages/agentplane/src/context/doctor.ts          |  58 ++-
- packages/agentplane/src/context/ingest.ts          |  47 +-
- packages/agentplane/src/context/verify-task.ts     |  58 ++-
- 9 files changed, 962 insertions(+), 21 deletions(-)
+ packages/agentplane/src/context/doctor.ts          |  60 ++-
+ packages/agentplane/src/context/ingest.ts          |  49 +-
+ packages/agentplane/src/context/verify-task.ts     |  65 ++-
+ 10 files changed, 1014 insertions(+), 25 deletions(-)
 ```
 
 </details>
