@@ -4,7 +4,7 @@ title: "Harden Obsidian context wiki links and source notes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-21T09:39:26.898Z"
+  updated_at: "2026-05-21T09:43:15.265Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed for current commit f267a89b, including the routed CI submodule initialization fix required by hosted merge gate."
+  note: "EVALUATOR quality gate passed for current commit f3a272f6, including actionlint installation for workflow-routed CI."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-21T09:39:26.898Z"
+  updated_at: "2026-05-21T09:43:15.265Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed for current commit f267a89b, including the routed CI submodule initialization fix required by hosted merge gate."
-  evaluated_sha: "f267a89ba50106671e08c9bcf9fcd5d85ab01b3a"
+  note: "EVALUATOR quality gate passed for current commit f3a272f6, including actionlint installation for workflow-routed CI."
+  evaluated_sha: "f3a272f61e3a424fc50a72e7e3147208474756c9"
   blueprint_digest: "35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5"
   evidence_refs:
     - ".agentplane/tasks/202605210858-VEZQYS/README.md"
@@ -78,8 +78,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for current commit f267a89b, including the routed CI submodule initialization fix required by hosted merge gate."
+  -
+    type: "verify"
+    at: "2026-05-21T09:43:15.265Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed for current commit f3a272f6, including actionlint installation for workflow-routed CI."
 doc_version: 3
-doc_updated_at: "2026-05-21T09:39:26.916Z"
+doc_updated_at: "2026-05-21T09:43:15.285Z"
 doc_updated_by: "CODER"
 description: "Fix case-sensitive Obsidian cross-link breakage during context assimilation, add automatic Obsidian-friendly context wiki elements, and support numeric source note references that resolve to raw-data links at the end of generated pages."
 sections:
@@ -199,6 +205,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
 
+    ### 2026-05-21T09:43:15.265Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed for current commit f3a272f6, including actionlint installation for workflow-routed CI.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T09:39:26.916Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210858-VEZQYS-obsidian-context-links/.agentplane/tasks/202605210858-VEZQYS/blueprint/resolved-snapshot.json
+    - old_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+    - current_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -223,6 +248,10 @@ sections:
     - Observation: Hosted verify-routed failed because docs:recipes:check ran without agentplane-recipes initialized; routed CI now initializes only that required submodule.
       Impact: The PR can re-run the same remote gate with the required recipe inventory source present, matching local pre-push behavior.
       Resolution: Push updated branch and re-check hosted PR gate.
+
+    - Observation: Hosted verify-routed now has explicit dependencies for both recipes inventory and workflow lint when mixed context+workflow paths are present.
+      Impact: The GitHub PR gate can evaluate the same workflow lint contract that passed locally.
+      Resolution: Push updated branch and re-run hosted checks.
 id_source: "generated"
 ---
 ## Summary
@@ -350,6 +379,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
 
+### 2026-05-21T09:43:15.265Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed for current commit f3a272f6, including actionlint installation for workflow-routed CI.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T09:39:26.916Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210858-VEZQYS-obsidian-context-links/.agentplane/tasks/202605210858-VEZQYS/blueprint/resolved-snapshot.json
+- old_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+- current_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -378,3 +426,7 @@ BlueprintSnapshotRef:
 - Observation: Hosted verify-routed failed because docs:recipes:check ran without agentplane-recipes initialized; routed CI now initializes only that required submodule.
   Impact: The PR can re-run the same remote gate with the required recipe inventory source present, matching local pre-push behavior.
   Resolution: Push updated branch and re-check hosted PR gate.
+
+- Observation: Hosted verify-routed now has explicit dependencies for both recipes inventory and workflow lint when mixed context+workflow paths are present.
+  Impact: The GitHub PR gate can evaluate the same workflow lint contract that passed locally.
+  Resolution: Push updated branch and re-run hosted checks.

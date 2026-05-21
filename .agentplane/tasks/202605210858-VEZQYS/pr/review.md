@@ -13,7 +13,7 @@ Created: 2026-05-21T08:58:57.055Z
 ## Verification
 
 - State: ok
-- Note: EVALUATOR quality gate passed for current commit f267a89b, including the routed CI submodule initialization fix required by hosted merge gate.
+- Note: EVALUATOR quality gate passed for current commit f3a272f6, including actionlint installation for workflow-routed CI.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,13 +24,13 @@ Created: 2026-05-21T08:58:57.055Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T09:39:26.944Z
+- Updated: 2026-05-21T09:43:15.309Z
 - Branch: task/202605210858-VEZQYS/obsidian-context-links
-- Head: f267a89ba501
+- Head: f3a272f61e3a
 
 ```text
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
- .github/workflows/ci.yml                           |   2 +
+ .github/workflows/ci.yml                           |   5 +
  docs/user/local-context.mdx                        |  17 +-
  .../src/blueprints/context-maximum-assimilation.ts |  20 +-
  .../src/commands/context/init-wiki-policy.ts       |   9 +-
@@ -40,7 +40,7 @@ Created: 2026-05-21T08:58:57.055Z
  .../commands/context/wiki.obsidian.unit.test.ts    | 134 +++++
  packages/agentplane/src/commands/context/wiki.ts   | 122 ++++-
  packages/agentplane/src/context/ingest-task.ts     |  13 +-
- 11 files changed, 904 insertions(+), 30 deletions(-)
+ 11 files changed, 907 insertions(+), 30 deletions(-)
 ```
 
 </details>
