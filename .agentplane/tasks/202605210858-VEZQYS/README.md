@@ -4,7 +4,7 @@ title: "Harden Obsidian context wiki links and source notes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-21T09:34:37.962Z"
+  updated_at: "2026-05-21T09:39:26.898Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed for current implementation commit 1d3fb0088 after splitting Obsidian context tests below hotspot budget."
+  note: "EVALUATOR quality gate passed for current commit f267a89b, including the routed CI submodule initialization fix required by hosted merge gate."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-21T09:34:37.962Z"
+  updated_at: "2026-05-21T09:39:26.898Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed for current implementation commit 1d3fb0088 after splitting Obsidian context tests below hotspot budget."
-  evaluated_sha: "1d3fb008823a181dccdecab722e2bba03aec499a"
+  note: "EVALUATOR quality gate passed for current commit f267a89b, including the routed CI submodule initialization fix required by hosted merge gate."
+  evaluated_sha: "f267a89ba50106671e08c9bcf9fcd5d85ab01b3a"
   blueprint_digest: "35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5"
   evidence_refs:
     - ".agentplane/tasks/202605210858-VEZQYS/README.md"
@@ -72,8 +72,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for current implementation commit 1d3fb0088 after splitting Obsidian context tests below hotspot budget."
+  -
+    type: "verify"
+    at: "2026-05-21T09:39:26.898Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed for current commit f267a89b, including the routed CI submodule initialization fix required by hosted merge gate."
 doc_version: 3
-doc_updated_at: "2026-05-21T09:34:37.980Z"
+doc_updated_at: "2026-05-21T09:39:26.916Z"
 doc_updated_by: "CODER"
 description: "Fix case-sensitive Obsidian cross-link breakage during context assimilation, add automatic Obsidian-friendly context wiki elements, and support numeric source note references that resolve to raw-data links at the end of generated pages."
 sections:
@@ -174,6 +180,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
 
+    ### 2026-05-21T09:39:26.898Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed for current commit f267a89b, including the routed CI submodule initialization fix required by hosted merge gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T09:34:37.980Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210858-VEZQYS-obsidian-context-links/.agentplane/tasks/202605210858-VEZQYS/blueprint/resolved-snapshot.json
+    - old_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+    - current_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -194,6 +219,10 @@ sections:
     - Observation: Focused Obsidian tests were moved into wiki.obsidian.unit.test.ts and release-readiness stayed within the oversized-test budget.
       Impact: Pre-push hotspot baseline no longer blocks publication while preserving coverage for generated Obsidian properties, numeric source notes, and case-stable wikilinks.
       Resolution: Proceed with PR open and merge route.
+
+    - Observation: Hosted verify-routed failed because docs:recipes:check ran without agentplane-recipes initialized; routed CI now initializes only that required submodule.
+      Impact: The PR can re-run the same remote gate with the required recipe inventory source present, matching local pre-push behavior.
+      Resolution: Push updated branch and re-check hosted PR gate.
 id_source: "generated"
 ---
 ## Summary
@@ -302,6 +331,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
 
+### 2026-05-21T09:39:26.898Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed for current commit f267a89b, including the routed CI submodule initialization fix required by hosted merge gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T09:34:37.980Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210858-VEZQYS-obsidian-context-links/.agentplane/tasks/202605210858-VEZQYS/blueprint/resolved-snapshot.json
+- old_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+- current_digest: 35668b115e73c6890d224fba4fbac8c65990b44a97294c9a418c091486a953d5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605210858-VEZQYS
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -326,3 +374,7 @@ BlueprintSnapshotRef:
 - Observation: Focused Obsidian tests were moved into wiki.obsidian.unit.test.ts and release-readiness stayed within the oversized-test budget.
   Impact: Pre-push hotspot baseline no longer blocks publication while preserving coverage for generated Obsidian properties, numeric source notes, and case-stable wikilinks.
   Resolution: Proceed with PR open and merge route.
+
+- Observation: Hosted verify-routed failed because docs:recipes:check ran without agentplane-recipes initialized; routed CI now initializes only that required submodule.
+  Impact: The PR can re-run the same remote gate with the required recipe inventory source present, matching local pre-push behavior.
+  Resolution: Push updated branch and re-check hosted PR gate.

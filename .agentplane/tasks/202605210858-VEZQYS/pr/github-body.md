@@ -19,20 +19,21 @@ Fix case-sensitive Obsidian cross-link breakage during context assimilation, add
 - Note:
 
 ```text
-EVALUATOR quality gate passed for current implementation commit 1d3fb0088 after splitting Obsidian
-context tests below hotspot budget.
+EVALUATOR quality gate passed for current commit f267a89b, including the routed CI submodule
+initialization fix required by hosted merge gate.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T09:34:38.007Z
+- Updated: 2026-05-21T09:39:26.944Z
 - Branch: task/202605210858-VEZQYS/obsidian-context-links
-- Head: 1d3fb008823a
+- Head: f267a89ba501
 
 ```text
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |   2 +
  docs/user/local-context.mdx                        |  17 +-
  .../src/blueprints/context-maximum-assimilation.ts |  20 +-
  .../src/commands/context/init-wiki-policy.ts       |   9 +-
@@ -42,7 +43,7 @@ context tests below hotspot budget.
  .../commands/context/wiki.obsidian.unit.test.ts    | 134 +++++
  packages/agentplane/src/commands/context/wiki.ts   | 122 ++++-
  packages/agentplane/src/context/ingest-task.ts     |  13 +-
- 10 files changed, 902 insertions(+), 30 deletions(-)
+ 11 files changed, 904 insertions(+), 30 deletions(-)
 ```
 
 </details>

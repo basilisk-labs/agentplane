@@ -1,4 +1,5 @@
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |   2 +
  docs/user/local-context.mdx                        |  17 +-
  .../src/blueprints/context-maximum-assimilation.ts |  20 +-
  .../src/commands/context/init-wiki-policy.ts       |   9 +-
@@ -8,4 +9,4 @@
  .../commands/context/wiki.obsidian.unit.test.ts    | 134 +++++
  packages/agentplane/src/commands/context/wiki.ts   | 122 ++++-
  packages/agentplane/src/context/ingest-task.ts     |  13 +-
- 10 files changed, 902 insertions(+), 30 deletions(-)
+ 11 files changed, 904 insertions(+), 30 deletions(-)
