@@ -143,6 +143,7 @@ async function loadOrBootstrapCommandContext(opts: {
 
 async function commitContextBootstrapIfChanged(root: string, paths: string[]): Promise<boolean> {
   const baseGitEnv = gitEnv();
+  if (!(await isInsideGitWorkTree(root, baseGitEnv))) return false;
   const stagedBefore = await gitStagedPaths(root);
   if (stagedBefore.length > 0) {
     throw new CliError({
@@ -174,6 +175,18 @@ async function commitContextBootstrapIfChanged(root: string, paths: string[]): P
     { env },
   );
   return true;
+}
+
+async function isInsideGitWorkTree(root: string, env: NodeJS.ProcessEnv): Promise<boolean> {
+  try {
+    const result = await execFileAsync("git", ["rev-parse", "--is-inside-work-tree"], {
+      cwd: root,
+      env,
+    });
+    return result.stdout.trim() === "true";
+  } catch {
+    return false;
+  }
 }
 
 async function filterGitIgnoredPaths(
