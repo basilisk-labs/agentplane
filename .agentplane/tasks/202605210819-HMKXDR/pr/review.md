@@ -24,18 +24,18 @@ Created: 2026-05-21T08:20:09.944Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T08:46:19.241Z
+- Updated: 2026-05-21T13:49:59.560Z
 - Branch: task/202605210819-HMKXDR/context-init-maximum-default
-- Head: 5c32ee09fdbc
+- Head: e0ce3333c3f8
 
 ```text
  .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
  docs/user/cli-reference.generated.mdx              |   2 +-
- .../src/cli/run-cli.core.context-init.test.ts      |  86 +++-
+ .../src/cli/run-cli.core.context-init.test.ts      | 113 +++-
  .../src/commands/context/context.command.ts        |   3 +
  .../src/commands/context/context.spec.ts           |   4 +-
- packages/agentplane/src/commands/context/init.ts   |  91 +++-
- 6 files changed, 707 insertions(+), 51 deletions(-)
+ packages/agentplane/src/commands/context/init.ts   |  94 +++-
+ 6 files changed, 737 insertions(+), 51 deletions(-)
 ```
 
 </details>
