@@ -370,6 +370,50 @@ function finalizeManifestRows(allRows: ManifestEntry[]): ManifestEntry[] {
   return out;
 }
 
+async function mergeCompleteSourceInventory(
+  root: string,
+  lock: ManifestLock,
+  rows: ManifestEntry[],
+): Promise<ManifestEntry[]> {
+  const byPath = new Map<string, ManifestEntry>();
+  for (const existing of lock.sources) {
+    byPath.set(existing.path, existing);
+  }
+  for (const row of rows) {
+    byPath.set(row.path, row);
+  }
+
+  const merged: ManifestEntry[] = [];
+  for (const row of byPath.values()) {
+    if (rows.some((candidate) => candidate.path === row.path)) {
+      merged.push(row);
+      continue;
+    }
+    try {
+      const abs = path.join(root, row.path);
+      const st = await stat(abs);
+      if (!st.isFile()) {
+        merged.push({ ...row, status: "deleted" });
+        continue;
+      }
+      const sha256 = await calculateSha256(abs);
+      merged.push({
+        ...row,
+        sha256,
+        size_bytes: st.size,
+        mtime: new Date(st.mtimeMs).toISOString(),
+        content_type: row.content_type || contentTypeForPath(row.path),
+        status: row.sha256 === sha256 ? "unchanged" : "changed",
+      });
+    } catch {
+      merged.push({ ...row, status: "deleted" });
+    }
+  }
+  return finalizeManifestRows(merged).toSorted((left, right) =>
+    left.path.localeCompare(right.path),
+  );
+}
+
 function buildIndexModeSourceRows(
   opts: ContextIngestParsed,
   rows: ManifestEntry[],
@@ -410,6 +454,7 @@ export async function cmdContextIngest(opts: {
   try {
     const lock = await readManifest(root);
     const rows = finalizeManifestRows(await collectCandidateRows(root, opts.parsed, lock));
+    const completeRows = await mergeCompleteSourceInventory(root, lock, rows);
 
     const indexModeRows = buildIndexModeSourceRows(opts.parsed, rows);
     if (opts.parsed.dryRun) {
@@ -418,7 +463,7 @@ export async function cmdContextIngest(opts: {
         `context ingest dry-run (${opts.parsed.mode})\n` +
           `- mode: ${opts.parsed.mode}\n` +
           `- source hints: ${indexModeRows.length}\n` +
-          `- total rows: ${rows.length}\n` +
+          `- total rows: ${completeRows.length}\n` +
           `- status: ${JSON.stringify(histogram)}\n` +
           `- allowed outputs: context task README + manifest.lock + reindex\n` +
           `- dry-run writes: none\n` +
@@ -439,7 +484,7 @@ export async function cmdContextIngest(opts: {
       generated_at: new Date().toISOString(),
       workspace_hash: defaultWorkspaceHash(root),
       wiki_scaffold: lock.wiki_scaffold,
-      sources: rows,
+      sources: completeRows,
     };
     await writeManifest(root, sourceLockedManifest);
 

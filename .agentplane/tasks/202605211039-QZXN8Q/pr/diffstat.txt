@@ -1,0 +1,11 @@
+ .../blueprint/resolved-snapshot.json               | 570 +++++++++++++++++++++
+ .../src/commands/context/issue-gates.unit.test.ts  | 315 ++++++++++++
+ .../src/commands/context/release-readiness.test.ts |  17 +-
+ packages/agentplane/src/commands/context/search.ts |   3 +-
+ .../commands/context/wiki.obsidian.unit.test.ts    |   2 +-
+ packages/agentplane/src/commands/context/wiki.ts   |   8 +-
+ packages/agentplane/src/context/context-utils.ts   |   2 +-
+ packages/agentplane/src/context/doctor.ts          |  71 ++-
+ packages/agentplane/src/context/ingest.ts          |  49 +-
+ packages/agentplane/src/context/verify-task.ts     |  71 ++-
+ 10 files changed, 1083 insertions(+), 25 deletions(-)

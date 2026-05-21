@@ -981,19 +981,16 @@ describe("context release readiness guards", () => {
     );
   });
 
-  it("allows initialized scaffold navigation files without page frontmatter", async () => {
+  it("requires AgentPlane frontmatter on initialized navigation files", async () => {
     const root = await tempRoot();
     await write(root, "context/wiki/AGENTS.md", "# Wiki Policy\n");
     await write(root, "context/wiki/index.md", "# Project Wiki\n");
-    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 
-    await cmdContextWikiLint({
-      cwd: root,
-      parsed: { path: "context/wiki" },
-    });
-
-    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
-      "context wiki lint: ok (2 page(s))",
-    );
+    await expect(
+      cmdContextWikiLint({
+        cwd: root,
+        parsed: { path: "context/wiki" },
+      }),
+    ).rejects.toThrow(/missing YAML frontmatter/u);
   });
 });

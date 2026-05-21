@@ -55,8 +55,9 @@ export async function cmdContextSearch(opts: {
     for (const row of projection.rows) {
       if (!pathMatchesScopes(row.path, scopes)) continue;
       if (row.body.toLowerCase().includes(query)) {
-        usedSQLite = true;
         const freshness = await buildFreshness(root, row.path, row.sha256);
+        if (freshness.stale) continue;
+        usedSQLite = true;
         results.push({
           path: row.path,
           score: scoreMatch(row.body, query),
