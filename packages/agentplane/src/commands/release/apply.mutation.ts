@@ -16,14 +16,16 @@ export async function replacePackageVersionInFile(
   nextVersion: string,
 ): Promise<void> {
   const text = await readFile(pkgJsonPath, "utf8");
-  const replaced = text.replace(/"version"\s*:\s*"[^"]*"/u, `"version": "${nextVersion}"`);
-  if (replaced === text) {
+  const match = /"version"\s*:\s*"([^"]*)"/u.exec(text);
+  if (!match) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message: `Failed to update version in ${pkgJsonPath} (missing "version" field).`,
     });
   }
+  if (match[1] === nextVersion) return;
+  const replaced = text.replace(/"version"\s*:\s*"[^"]*"/u, `"version": "${nextVersion}"`);
   await writeFile(pkgJsonPath, replaced, "utf8");
 }
 
@@ -32,6 +34,8 @@ export async function replaceRecipesRuntimeVersionInFile(
   nextVersion: string,
 ): Promise<void> {
   const text = await readFile(sourcePath, "utf8");
+  const match = /export\s+const\s+RECIPES_VERSION\s*=\s*["']([^"']*)["']\s*;/u.exec(text);
+  if (match?.[1] === nextVersion) return;
   const replaced = text.replace(
     /export\s+const\s+RECIPES_VERSION\s*=\s*["'][^"']*["']\s*;/u,
     `export const RECIPES_VERSION = "${nextVersion}";`,
@@ -51,19 +55,15 @@ export async function replaceAgentplanePackageMetadata(
   nextVersion: string,
 ): Promise<void> {
   const text = await readFile(pkgJsonPath, "utf8");
-  const withVersion = text.replace(/"version"\s*:\s*"[^"]*"/u, `"version": "${nextVersion}"`);
-  if (withVersion === text) {
+  if (!/"version"\s*:\s*"[^"]*"/u.test(text)) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message: `Failed to update version in ${pkgJsonPath} (missing "version" field).`,
     });
   }
-  const withDependency = withVersion.replace(
-    /("@agentplaneorg[/]core"\s*:\s*")[^"]*(")/u,
-    `$1${nextVersion}$2`,
-  );
-  if (withDependency === withVersion) {
+  const withVersion = text.replace(/"version"\s*:\s*"[^"]*"/u, `"version": "${nextVersion}"`);
+  if (!/"@agentplaneorg[/]core"\s*:\s*"[^"]*"/u.test(withVersion)) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
@@ -72,11 +72,11 @@ export async function replaceAgentplanePackageMetadata(
         "Ensure packages/agentplane/package.json declares this dependency.",
     });
   }
-  const withRecipesDependency = withDependency.replace(
-    /("@agentplaneorg\/recipes"\s*:\s*")[^"]*(")/u,
+  const withDependency = withVersion.replace(
+    /("@agentplaneorg[/]core"\s*:\s*")[^"]*(")/u,
     `$1${nextVersion}$2`,
   );
-  if (withRecipesDependency === withDependency) {
+  if (!/"@agentplaneorg\/recipes"\s*:\s*"[^"]*"/u.test(withDependency)) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
@@ -85,6 +85,10 @@ export async function replaceAgentplanePackageMetadata(
         "Ensure packages/agentplane/package.json declares this dependency.",
     });
   }
+  const withRecipesDependency = withDependency.replace(
+    /("@agentplaneorg\/recipes"\s*:\s*")[^"]*(")/u,
+    `$1${nextVersion}$2`,
+  );
   await writeFile(pkgJsonPath, withRecipesDependency, "utf8");
 }
 
@@ -95,11 +99,11 @@ export async function replacePackageDependencyVersion(
 ): Promise<void> {
   const text = await readFile(pkgJsonPath, "utf8");
   const pattern = new RegExp(
-    String.raw`("${dependencyName.replace("/", String.raw`\/`)}"\s*:\s*")[^"]*(")`,
+    String.raw`("${dependencyName.replace("/", String.raw`\/`)}"\s*:\s*")([^"]*)(")`,
     "u",
   );
-  const replaced = text.replace(pattern, `$1${nextVersion}$2`);
-  if (replaced === text) {
+  const match = pattern.exec(text);
+  if (!match) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
@@ -108,6 +112,8 @@ export async function replacePackageDependencyVersion(
         "Ensure the package.json declares this dependency.",
     });
   }
+  if (match[2] === nextVersion) return;
+  const replaced = text.replace(pattern, `$1${nextVersion}$3`);
   await writeFile(pkgJsonPath, replaced, "utf8");
 }
 

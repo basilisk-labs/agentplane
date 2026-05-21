@@ -567,7 +567,7 @@ describe("context release readiness guards", () => {
         "agentplane.context": {
           task_type: "context_assimilation",
           mode: "maximum_assimilation",
-          allowed_outputs: ["context/wiki/"],
+          allowed_outputs: ["context/wiki/glossary.md"],
           source_set: { files: [] },
         },
       },

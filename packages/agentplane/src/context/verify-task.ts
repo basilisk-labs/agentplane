@@ -167,6 +167,37 @@ async function validateWikiPage(filePath: string, errors: string[]): Promise<voi
   }
 }
 
+function stripYamlFrontmatter(text: string): string {
+  if (!text.startsWith("---")) return text;
+  const end = text.indexOf("\n---", 3);
+  return end === -1 ? text : text.slice(end + 4);
+}
+
+async function validateMaximumAssimilationGlossary(root: string, errors: string[]): Promise<void> {
+  const rel = "context/wiki/glossary.md";
+  const abs = path.join(root, rel);
+  if (!(await fileExists(abs))) {
+    errors.push(`${rel}: maximum assimilation requires a root glossary file`);
+    return;
+  }
+  const text = await readText(abs);
+  const body = stripYamlFrontmatter(text)
+    .split(/\r?\n/u)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .filter((line) => !line.startsWith("#"))
+    .filter((line) => !line.startsWith("<!--"));
+  const hasNavigableEntry = body.some(
+    (line) => /\[\[[^\]]+\]\]/u.test(line) || /\[[^\]]+\]\([^)]*context\/wiki\//u.test(line),
+  );
+  if (!hasNavigableEntry) {
+    errors.push(
+      `${rel}: maximum-assimilation glossary must include at least one navigable canonical wiki entry`,
+    );
+  }
+  await validateWikiPage(abs, errors);
+}
+
 async function validateFacts(filePath: string, errors: string[]): Promise<void> {
   for (const row of await loadJsonlRows(filePath)) {
     const id = String(row.id ?? "<unknown>");
@@ -305,6 +336,12 @@ async function validateContextArtifacts(opts: {
     if (rel.startsWith(".agentplane/context/derived/capabilities/")) {
       await validateCapabilityArtifact(abs, errors);
     }
+  }
+  if (
+    opts.task.blueprint_request === "context.maximum_assimilation" &&
+    !isProfileSwitchContextTask(opts.context)
+  ) {
+    await validateMaximumAssimilationGlossary(opts.root, errors);
   }
   await validateGraph(opts.root, errors);
   await validateAcrContextExtension(opts.root, opts.task, opts.context, errors);

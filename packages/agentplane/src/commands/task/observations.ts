@@ -13,7 +13,7 @@ import {
   type TaskObservationSeverity,
   type TaskObservationStatus,
 } from "@agentplaneorg/core/tasks";
-import { mkdir, readFile, appendFile } from "node:fs/promises";
+import { mkdir, readFile, appendFile, readdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 
@@ -66,6 +66,27 @@ async function readTextIfExists(filePath: string): Promise<string | null> {
     if ((err as { code?: string }).code === "ENOENT") return null;
     throw err;
   }
+}
+
+async function listObservationTaskIds(ctx: CommandContext): Promise<string[]> {
+  const tasksRoot = path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.workflow_dir);
+  let entries;
+  try {
+    entries = await readdir(tasksRoot, { withFileTypes: true });
+  } catch (err) {
+    if ((err as { code?: string }).code === "ENOENT") return [];
+    throw err;
+  }
+  const ids: string[] = [];
+  await Promise.all(
+    entries
+      .filter((entry) => entry.isDirectory())
+      .map(async (entry) => {
+        const observationPath = path.join(tasksRoot, entry.name, TASK_OBSERVATIONS_FILE);
+        if ((await readTextIfExists(observationPath)) !== null) ids.push(entry.name);
+      }),
+  );
+  return ids.toSorted((a, b) => a.localeCompare(b));
 }
 
 async function requireTask(ctx: CommandContext, taskId: string): Promise<TaskData> {
@@ -280,9 +301,14 @@ export function summarizeObservationTriage(observations: readonly TaskObservatio
 export async function harvestTaskObservations(
   ctx: CommandContext,
 ): Promise<TaskObservationHarvestEntry[]> {
-  const tasks = await listTasksMemo(ctx);
+  const observationTaskIds = await listObservationTaskIds(ctx);
+  if (observationTaskIds.length === 0) return [];
+  const allTasks = await listTasksMemo(ctx);
+  const tasksById = new Map(allTasks.map((task) => [task.id, task]));
   const entries: TaskObservationHarvestEntry[] = [];
-  for (const task of tasks.toSorted((a, b) => a.id.localeCompare(b.id))) {
+  for (const taskId of observationTaskIds) {
+    const task = tasksById.get(taskId);
+    if (!task) continue;
     const result = await readTaskObservations(ctx, task.id);
     if (result.observations.length === 0 && result.errors.length === 0) continue;
     entries.push({

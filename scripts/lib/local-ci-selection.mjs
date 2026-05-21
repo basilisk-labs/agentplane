@@ -497,6 +497,17 @@ function commandStep(label, command, options = {}) {
   };
 }
 
+function commandListRequires(steps, pattern) {
+  return steps.some((step) => !step.skipped && pattern.test(step.command));
+}
+
+function routePrerequisites(steps) {
+  return {
+    recipesInventory: commandListRequires(steps, /\bdocs:recipes:check\b/u),
+    workflowLint: commandListRequires(steps, /\bworkflows:lint\b/u),
+  };
+}
+
 function baselineStepReports({ includeBuild, runCliDocsCheck }) {
   return [
     commandStep("Format (check)", "bun run format:check"),
@@ -629,6 +640,7 @@ export function buildLocalCiExecutionPlan({ mode, changedFiles }) {
     changed_files: [...new Set(changedFiles)].toSorted((a, b) => a.localeCompare(b)),
     selector: plan,
     route,
+    prerequisites: routePrerequisites(steps),
     run_cli_docs_check: runCliDocsCheck,
     steps,
     skipped_steps: steps.filter((step) => step.skipped),
