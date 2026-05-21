@@ -4,7 +4,7 @@ title: "Prepare v0.7 runner handoff release lane"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -31,10 +31,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-21T10:23:58.160Z"
-  updated_by: "CODER"
-  note: "Review fix applied after GitHub verify-static failure. Passed: bun run knip:check, focused core schema tests, bun run typecheck, bun run format:check, and framework:dev:bootstrap. Hosted execution remains unimplemented."
+  updated_at: "2026-05-21T10:46:38.860Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed. Evidence: PR #3995 required GitHub checks passed on head 927cad5e2; local gates passed: bun run typecheck, bun run format:check, bun run framework:dev:bootstrap, bun run test, bun run build, agentplane doctor, and node .agentplane/policy/check-routing.mjs. Hosted execution remains unimplemented."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-21T10:46:38.860Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed. Evidence: PR #3995 required GitHub checks passed on head 927cad5e2; local gates passed: bun run typecheck, bun run format:check, bun run framework:dev:bootstrap, bun run test, bun run build, agentplane doctor, and node .agentplane/policy/check-routing.mjs. Hosted execution remains unimplemented."
+  evaluated_sha: "927cad5e2ef608baaa462c7d9592c35855118d34"
+  blueprint_digest: "3999af497920e04c6c7d67117a3fd0e46f64f3f2fd4fcc0cd7dc2cb5572f4401"
+  evidence_refs:
+    - ".agentplane/tasks/202605201647-7QJP57/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201647-7QJP57-v0-7-runner-handoff/.agentplane/tasks/202605201647-7QJP57/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -60,8 +71,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review fix applied after GitHub verify-static failure. Passed: bun run knip:check, focused core schema tests, bun run typecheck, bun run format:check, and framework:dev:bootstrap. Hosted execution remains unimplemented."
+  -
+    type: "verify"
+    at: "2026-05-21T10:46:38.860Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed. Evidence: PR #3995 required GitHub checks passed on head 927cad5e2; local gates passed: bun run typecheck, bun run format:check, bun run framework:dev:bootstrap, bun run test, bun run build, agentplane doctor, and node .agentplane/policy/check-routing.mjs. Hosted execution remains unimplemented."
 doc_version: 3
-doc_updated_at: "2026-05-21T10:23:58.219Z"
+doc_updated_at: "2026-05-21T10:46:38.930Z"
 doc_updated_by: "CODER"
 description: "Prepare the public AgentPlane side of the v0.7 runner handoff release lane. Scope: public runner handoff contract/RFC, typed fixtures, docs/tests, route mapping, worktree and approval boundaries, artifact/evidence expectations, trace/export/ACR visibility, and compatibility with the private cloud-sync P4.1 contract. Out of scope: mutating agentplane-cloud-sync, production hosted repository execution without accepted contract and kill switch, connector-specific CLI logic, and secret/provider/customer payload storage."
 sections:
@@ -113,6 +130,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:06:34.817Z, excerpt_hash=sha256:50b5b2520357f32acc4d6a03140c408f5010623aa2f6d139c2fdeda6e0bd7fad
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201647-7QJP57-v0-7-runner-handoff/.agentplane/tasks/202605201647-7QJP57/blueprint/resolved-snapshot.json
+    - old_digest: 3999af497920e04c6c7d67117a3fd0e46f64f3f2fd4fcc0cd7dc2cb5572f4401
+    - current_digest: 3999af497920e04c6c7d67117a3fd0e46f64f3f2fd4fcc0cd7dc2cb5572f4401
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605201647-7QJP57
+
+    ### 2026-05-21T10:46:38.860Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed. Evidence: PR #3995 required GitHub checks passed on head 927cad5e2; local gates passed: bun run typecheck, bun run format:check, bun run framework:dev:bootstrap, bun run test, bun run build, agentplane doctor, and node .agentplane/policy/check-routing.mjs. Hosted execution remains unimplemented.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T10:23:58.219Z, excerpt_hash=sha256:50b5b2520357f32acc4d6a03140c408f5010623aa2f6d139c2fdeda6e0bd7fad
 
     Details:
 
@@ -200,6 +236,25 @@ Note: Review fix applied after GitHub verify-static failure. Passed: bun run kni
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T17:06:34.817Z, excerpt_hash=sha256:50b5b2520357f32acc4d6a03140c408f5010623aa2f6d139c2fdeda6e0bd7fad
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201647-7QJP57-v0-7-runner-handoff/.agentplane/tasks/202605201647-7QJP57/blueprint/resolved-snapshot.json
+- old_digest: 3999af497920e04c6c7d67117a3fd0e46f64f3f2fd4fcc0cd7dc2cb5572f4401
+- current_digest: 3999af497920e04c6c7d67117a3fd0e46f64f3f2fd4fcc0cd7dc2cb5572f4401
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605201647-7QJP57
+
+### 2026-05-21T10:46:38.860Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed. Evidence: PR #3995 required GitHub checks passed on head 927cad5e2; local gates passed: bun run typecheck, bun run format:check, bun run framework:dev:bootstrap, bun run test, bun run build, agentplane doctor, and node .agentplane/policy/check-routing.mjs. Hosted execution remains unimplemented.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T10:23:58.219Z, excerpt_hash=sha256:50b5b2520357f32acc4d6a03140c408f5010623aa2f6d139c2fdeda6e0bd7fad
 
 Details:
 

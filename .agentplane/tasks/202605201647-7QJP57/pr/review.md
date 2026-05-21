@@ -13,7 +13,7 @@ Created: 2026-05-20T17:06:34.863Z
 ## Verification
 
 - State: ok
-- Note: Review fix applied after GitHub verify-static failure. Passed: bun run knip:check, focused core schema tests, bun run typecheck, bun run format:check, and framework:dev:bootstrap. Hosted execution remains unimplemented.
+- Note: EVALUATOR quality gate passed. Evidence: PR #3995 required GitHub checks passed on head 927cad5e2; local gates passed: bun run typecheck, bun run format:check, bun run framework:dev:bootstrap, bun run test, bun run build, agentplane doctor, and node .agentplane/policy/check-routing.mjs. Hosted execution remains unimplemented.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
