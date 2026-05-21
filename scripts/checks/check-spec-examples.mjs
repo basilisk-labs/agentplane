@@ -6,6 +6,7 @@ const EXAMPLE_ROUTES = [
   ["acr.json", "acr-v0.1.schema.json"],
   ["config.json", "config.schema.json"],
   ["pr-meta.json", "pr-meta.schema.json"],
+  ["runner-handoff.json", "runner-handoff.schema.json"],
   ["task-handoff.json", "task-handoff.schema.json"],
   ["task-readme-frontmatter.json", "task-readme-frontmatter.schema.json"],
   ["tasks.json", "tasks-export.schema.json"],

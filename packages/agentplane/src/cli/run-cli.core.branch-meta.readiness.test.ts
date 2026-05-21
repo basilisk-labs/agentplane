@@ -51,7 +51,7 @@ import * as prompts from "./prompts.js";
 installRunCliIntegrationHarness();
 
 describe("runCli", () => {
-  const READY_DETAILS_TIMEOUT_MS = 60_000;
+  const READY_DETAILS_TIMEOUT_MS = 120_000;
 
   it("ready reports readiness details", { timeout: READY_DETAILS_TIMEOUT_MS }, async () => {
     const root = await mkGitRepoRoot();

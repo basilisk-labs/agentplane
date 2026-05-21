@@ -374,7 +374,13 @@ export const VITEST_SUITES = {
   "release-ci-base": {
     chunkSize: 10,
     files: RELEASE_CI_BASE_FILES,
-    isolatedPatterns: [/\/run-cli\.core\.pr-flow\./],
+    isolatedPatterns: [
+      /\/run-cli\.core\.branch-meta\.readiness\.test\.ts$/,
+      /\/run-cli\.core\.branch-meta\.workflow-profile\.test\.ts$/,
+      /\/run-cli\.core\.context-init\.test\.ts$/,
+      /\/run-cli\.core\.demo\.test\.ts$/,
+      /\/run-cli\.core\.pr-flow\./,
+    ],
     maxWorkers: "4",
     pool: "forks",
   },

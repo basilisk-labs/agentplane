@@ -5,7 +5,7 @@
   "created_at": "2026-05-03T12:00:00.000Z",
   "producer": {
     "name": "agentplane",
-    "version": "0.6.4"
+    "version": "0.6.5"
   },
   "repository": {
     "vcs": "git",
@@ -31,7 +31,7 @@
     "toolchain": [
       {
         "name": "agentplane",
-        "version": "0.6.4"
+        "version": "0.6.5"
       }
     ]
   },

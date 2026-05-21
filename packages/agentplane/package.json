@@ -1,6 +1,6 @@
 {
   "name": "agentplane",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "CLI-first operational workflows and traces for AI agents.",
   "keywords": [
     "agentplane",
@@ -70,8 +70,8 @@
     "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack"
   },
   "dependencies": {
-    "@agentplaneorg/core": "0.6.4",
-    "@agentplaneorg/recipes": "0.6.4",
+    "@agentplaneorg/core": "0.6.5",
+    "@agentplaneorg/recipes": "0.6.5",
     "@clack/prompts": "^1.4.0",
     "yaml": "^2.7.1",
     "yauzl": "^3.3.0",
