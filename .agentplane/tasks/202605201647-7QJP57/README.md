@@ -1,10 +1,11 @@
 ---
 id: "202605201647-7QJP57"
 title: "Prepare v0.7 runner handoff release lane"
-status: "DOING"
+result_summary: "Merged via PR #3995."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -46,11 +47,16 @@ quality_review:
     - ".agentplane/tasks/202605201647-7QJP57/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201647-7QJP57-v0-7-runner-handoff/.agentplane/tasks/202605201647-7QJP57/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "f47e4da1b84daf1e2dbba181b1b20e4f7f8fed4b"
+  message: "Merge pull request #3995 from basilisk-labs/task/202605201647-7QJP57/v0-7-runner-handoff"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved public v0.7 runner handoff contract in this task worktree without hosted execution or connector-specific CLI logic."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3995 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -89,9 +95,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for review fix. Evidence: hardened repo_ref.ref rejects shell-like refs, command substitution, and .lock path components; focused core schema tests, schemas:check, knip:check, typecheck, format:check, and framework:dev:bootstrap passed. Hosted execution remains unimplemented."
+  -
+    type: "status"
+    at: "2026-05-21T11:11:17.167Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3995 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-21T11:04:51.753Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-21T11:11:17.175Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare the public AgentPlane side of the v0.7 runner handoff release lane. Scope: public runner handoff contract/RFC, typed fixtures, docs/tests, route mapping, worktree and approval boundaries, artifact/evidence expectations, trace/export/ACR visibility, and compatibility with the private cloud-sync P4.1 contract. Out of scope: mutating agentplane-cloud-sync, production hosted repository execution without accepted contract and kill switch, connector-specific CLI logic, and secret/provider/customer payload storage."
 sections:
   Summary: |-
