@@ -4,7 +4,7 @@ title: "Default context init to maximum assimilation"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,11 +19,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-21T08:27:37.013Z"
+  updated_by: "EVALUATOR"
+  note: "Evaluator pass: approved scope is satisfied by commit dbd1b316f824. Evidence reviewed: focused context init suite passed 5/5, docs:cli:check passed, policy routing passed, ap doctor passed with no errors/warnings, exact-file ESLint passed, and tsc -b passed. Residual risk: GitHub hosted checks are pending on PR #3986 and integration is not performed in this turn."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-21T08:27:37.013Z"
+  updated_by: "EVALUATOR"
+  note: "Evaluator pass: approved scope is satisfied by commit dbd1b316f824. Evidence reviewed: focused context init suite passed 5/5, docs:cli:check passed, policy routing passed, ap doctor passed with no errors/warnings, exact-file ESLint passed, and tsc -b passed. Residual risk: GitHub hosted checks are pending on PR #3986 and integration is not performed in this turn."
+  evaluated_sha: "d081d0851dd15aef6ebb9a871ed802c823cad365"
+  blueprint_digest: "6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3"
+  evidence_refs:
+    - ".agentplane/tasks/202605210819-HMKXDR/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210819-HMKXDR-context-init-maximum-default/.agentplane/tasks/202605210819-HMKXDR/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -37,8 +48,20 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement the approved context init UX change in the task worktree, keeping legacy option code available while defaulting interactive init to maximum-assimilation and adding the context-layer post-init commit behavior."
+  -
+    type: "verify"
+    at: "2026-05-21T08:27:18.058Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun test packages/agentplane/src/cli/run-cli.core.context-init.test.ts | Result: pass | Evidence: 5 pass, 0 fail, 27 expect calls. Command: bun run docs:cli:check | Result: pass | Evidence: generated CLI reference is up to date. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: ap doctor | Result: pass | Evidence: doctor OK with 0 errors and 0 warnings. Command: bunx eslint touched files and bun run typecheck | Result: pass | Evidence: both exited 0. Scope: context init defaulting, managed context bootstrap commit, generated CLI docs."
+  -
+    type: "verify"
+    at: "2026-05-21T08:27:37.013Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Evaluator pass: approved scope is satisfied by commit dbd1b316f824. Evidence reviewed: focused context init suite passed 5/5, docs:cli:check passed, policy routing passed, ap doctor passed with no errors/warnings, exact-file ESLint passed, and tsc -b passed. Residual risk: GitHub hosted checks are pending on PR #3986 and integration is not performed in this turn."
 doc_version: 3
-doc_updated_at: "2026-05-21T08:20:09.870Z"
+doc_updated_at: "2026-05-21T08:27:37.058Z"
 doc_updated_by: "CODER"
 description: "Temporarily hide interactive context init mode choices so default init uses maximum-assimilation without asking, while preserving the option code, and add a context-layer commit after initialization."
 sections:
@@ -63,6 +86,44 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-21T08:27:18.058Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Command: bun test packages/agentplane/src/cli/run-cli.core.context-init.test.ts | Result: pass | Evidence: 5 pass, 0 fail, 27 expect calls. Command: bun run docs:cli:check | Result: pass | Evidence: generated CLI reference is up to date. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: ap doctor | Result: pass | Evidence: doctor OK with 0 errors and 0 warnings. Command: bunx eslint touched files and bun run typecheck | Result: pass | Evidence: both exited 0. Scope: context init defaulting, managed context bootstrap commit, generated CLI docs.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T08:20:09.870Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210819-HMKXDR-context-init-maximum-default/.agentplane/tasks/202605210819-HMKXDR/blueprint/resolved-snapshot.json
+    - old_digest: 6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3
+    - current_digest: 6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605210819-HMKXDR
+
+    ### 2026-05-21T08:27:37.013Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Evaluator pass: approved scope is satisfied by commit dbd1b316f824. Evidence reviewed: focused context init suite passed 5/5, docs:cli:check passed, policy routing passed, ap doctor passed with no errors/warnings, exact-file ESLint passed, and tsc -b passed. Residual risk: GitHub hosted checks are pending on PR #3986 and integration is not performed in this turn.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T08:27:18.098Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210819-HMKXDR-context-init-maximum-default/.agentplane/tasks/202605210819-HMKXDR/blueprint/resolved-snapshot.json
+    - old_digest: 6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3
+    - current_digest: 6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605210819-HMKXDR
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -100,6 +161,44 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-21T08:27:18.058Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun test packages/agentplane/src/cli/run-cli.core.context-init.test.ts | Result: pass | Evidence: 5 pass, 0 fail, 27 expect calls. Command: bun run docs:cli:check | Result: pass | Evidence: generated CLI reference is up to date. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: ap doctor | Result: pass | Evidence: doctor OK with 0 errors and 0 warnings. Command: bunx eslint touched files and bun run typecheck | Result: pass | Evidence: both exited 0. Scope: context init defaulting, managed context bootstrap commit, generated CLI docs.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T08:20:09.870Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210819-HMKXDR-context-init-maximum-default/.agentplane/tasks/202605210819-HMKXDR/blueprint/resolved-snapshot.json
+- old_digest: 6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3
+- current_digest: 6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605210819-HMKXDR
+
+### 2026-05-21T08:27:37.013Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Evaluator pass: approved scope is satisfied by commit dbd1b316f824. Evidence reviewed: focused context init suite passed 5/5, docs:cli:check passed, policy routing passed, ap doctor passed with no errors/warnings, exact-file ESLint passed, and tsc -b passed. Residual risk: GitHub hosted checks are pending on PR #3986 and integration is not performed in this turn.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T08:27:18.098Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210819-HMKXDR-context-init-maximum-default/.agentplane/tasks/202605210819-HMKXDR/blueprint/resolved-snapshot.json
+- old_digest: 6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3
+- current_digest: 6d4be4b88e547e7c3603be3172e92887bc2d66e1664e20f98a9afada967d55b3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605210819-HMKXDR
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

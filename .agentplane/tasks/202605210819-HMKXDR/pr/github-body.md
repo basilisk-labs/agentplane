@@ -15,14 +15,21 @@ Temporarily hide interactive context init mode choices so default init uses maxi
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Evaluator pass: approved scope is satisfied by commit dbd1b316f824. Evidence reviewed: focused
+context init suite passed 5/5, docs:cli:check passed, policy routing passed, ap doctor passed with
+no errors/warnings, exact-file ESLint passed, and tsc -b passed. Residual risk: GitHub hosted checks
+are pending on PR #3986 and integration is not performed in this turn.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T08:26:46.260Z
+- Updated: 2026-05-21T08:26:53.901Z
 - Branch: task/202605210819-HMKXDR/context-init-maximum-default
 - Head: dbd1b316f824
 
