@@ -352,10 +352,9 @@ export async function writeSqliteTaskProjection(opts: {
   if (gitRoot) await ensureRuntimeSqliteGitignore({ gitRoot }).catch(() => null);
 
   const dbPath = resolveTaskProjectionSqlitePath(opts.tasksDir);
-  const cacheKey =
-    opts.fingerprintEntries
-      ? buildFingerprintCacheKey(opts.fingerprintEntries)
-      : buildGitCacheKey(opts.tasksDir);
+  const cacheKey = opts.fingerprintEntries
+    ? buildFingerprintCacheKey(opts.fingerprintEntries)
+    : buildGitCacheKey(opts.tasksDir);
   if (!cacheKey) return;
 
   mkdirSync(path.dirname(dbPath), { recursive: true });
