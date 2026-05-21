@@ -32,7 +32,7 @@ export const contextInitSpec: CommandSpec<{
       valueHint: "<adaptive|minimal|wiki|codebase|research|maximum-assimilation>",
       choices: ["adaptive", "minimal", "wiki", "codebase", "research", "maximum-assimilation"],
       description:
-        "Select initial context setup. Defaults to adaptive when omitted. User-facing interactive setup offers minimal, adaptive, and maximum-assimilation.",
+        "Select initial context setup. Defaults to maximum-assimilation when omitted. User-facing interactive setup currently uses the default without prompting.",
     },
     {
       kind: "string",
@@ -72,7 +72,7 @@ export const contextInitSpec: CommandSpec<{
         | "wiki"
         | "codebase"
         | "research"
-        | "maximum-assimilation") ?? "adaptive",
+        | "maximum-assimilation") ?? "maximum-assimilation",
     profileProvided: typeof raw.opts.profile === "string",
     rawGitignore: (raw.opts["raw-gitignore"] as "none" | "all") ?? "none",
     derivedGitignore: (raw.opts["derived-gitignore"] as "none" | "all") ?? "none",

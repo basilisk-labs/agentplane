@@ -244,6 +244,9 @@ async function resolveContextInitParsed(
     return parsed;
   }
 
+  const contextInitModePromptEnabled = process.env.AGENTPLANE_CONTEXT_INIT_MODE_PROMPT === "1";
+  if (!contextInitModePromptEnabled) return { ...parsed, profile: "maximum-assimilation" };
+
   process.stdout.write(
     infoMessage(
       [

@@ -4,7 +4,7 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
-import { gitEnv } from "@agentplaneorg/core/git";
+import { gitAddPaths, gitCommit, gitEnv, gitStagedPaths } from "@agentplaneorg/core/git";
 
 import { infoMessage } from "../../cli/output.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
@@ -69,7 +69,6 @@ export async function cmdContextInit(opts: {
         rootOverride: opts.rootOverride ?? null,
       }));
     const ctx = "ctx" in loaded ? loaded.ctx : loaded;
-    const bootstrapped = "bootstrapped" in loaded ? loaded.bootstrapped : false;
     const root = ctx.resolvedProject.gitRoot;
     const report = await createContextWorkspace(root, opts.parsed);
     const wroteGitignore = await ensureContextGitignore(root, opts.parsed);
@@ -78,7 +77,11 @@ export async function cmdContextInit(opts: {
       rootOverride: root,
       parsed: { includeTasks: false, includeRaw: true, reset: false },
     });
-    const committedBootstrap = bootstrapped ? await commitContextBootstrapIfChanged(root) : false;
+    const committedBootstrap = await commitContextBootstrapIfChanged(root, [
+      ...report.created,
+      ...report.rewritten,
+      ...(wroteGitignore ? [".gitignore"] : []),
+    ]);
 
     for (const created of report.created) {
       process.stdout.write(infoMessage(`wrote ${created}`) + "\n");
@@ -138,34 +141,67 @@ async function loadOrBootstrapCommandContext(opts: {
   }
 }
 
-async function commitContextBootstrapIfChanged(root: string): Promise<boolean> {
+async function commitContextBootstrapIfChanged(root: string, paths: string[]): Promise<boolean> {
   const baseGitEnv = gitEnv();
-  const status = await execFileAsync("git", ["status", "--porcelain"], {
-    cwd: root,
-    encoding: "utf8",
-    env: baseGitEnv,
-  });
-  if (!status.stdout.trim()) return false;
+  const stagedBefore = await gitStagedPaths(root);
+  if (stagedBefore.length > 0) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message:
+        "Git index has staged changes; commit or unstage them before running agentplane context init.",
+    });
+  }
+  const dedupedPaths = [...new Set(paths)].filter((entry) => entry.length > 0);
+  const committablePaths = await filterGitIgnoredPaths(root, dedupedPaths, baseGitEnv);
+  if (committablePaths.length === 0) return false;
+  await gitAddPaths(root, committablePaths);
+  const staged = await gitStagedPaths(root);
+  if (staged.length === 0) return false;
   const env = {
     ...baseGitEnv,
     AGENTPLANE_ALLOW_POLICY: "1",
     AGENTPLANE_TASK_ID: CONTEXT_BOOTSTRAP_TASK_ID,
   };
-  await execFileAsync("git", ["add", "."], { cwd: root, env: baseGitEnv });
-  await execFileAsync(
-    "git",
+  await gitCommit(
+    root,
     [
-      "commit",
-      "-m",
       "✅ CTX1NT task: initialize AgentPlane context",
-      "-m",
-      ["Context-Bootstrap: true", `Context-Bootstrap-Task: ${CONTEXT_BOOTSTRAP_TASK_ID}`].join(
-        "\n",
-      ),
-    ],
-    { cwd: root, env },
+      "",
+      "Context-Bootstrap: true",
+      `Context-Bootstrap-Task: ${CONTEXT_BOOTSTRAP_TASK_ID}`,
+    ].join("\n"),
+    { env },
   );
   return true;
+}
+
+async function filterGitIgnoredPaths(
+  root: string,
+  paths: string[],
+  env: NodeJS.ProcessEnv,
+): Promise<string[]> {
+  const kept: string[] = [];
+  for (const relative of paths) {
+    if (await isGitIgnoredPath(root, relative, env)) continue;
+    kept.push(relative);
+  }
+  return kept;
+}
+
+async function isGitIgnoredPath(
+  root: string,
+  relative: string,
+  env: NodeJS.ProcessEnv,
+): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["check-ignore", "--quiet", "--", relative], { cwd: root, env });
+    return true;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1) return false;
+    throw err;
+  }
 }
 
 type BootstrapTarget = {
