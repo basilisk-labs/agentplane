@@ -29,17 +29,18 @@ are pending on PR #3986 and integration is not performed in this turn.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-21T08:26:53.901Z
+- Updated: 2026-05-21T08:46:19.241Z
 - Branch: task/202605210819-HMKXDR/context-init-maximum-default
-- Head: dbd1b316f824
+- Head: 5c32ee09fdbc
 
 ```text
- docs/user/cli-reference.generated.mdx              |  2 +-
- .../src/cli/run-cli.core.context-init.test.ts      | 86 +++++++++++++++-------
- .../src/commands/context/context.command.ts        |  3 +
- .../src/commands/context/context.spec.ts           |  4 +-
- packages/agentplane/src/commands/context/init.ts   | 78 ++++++++++++++------
- 5 files changed, 122 insertions(+), 51 deletions(-)
+ .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   2 +-
+ .../src/cli/run-cli.core.context-init.test.ts      |  86 +++-
+ .../src/commands/context/context.command.ts        |   3 +
+ .../src/commands/context/context.spec.ts           |   4 +-
+ packages/agentplane/src/commands/context/init.ts   |  91 +++-
+ 6 files changed, 707 insertions(+), 51 deletions(-)
 ```
 
 </details>
