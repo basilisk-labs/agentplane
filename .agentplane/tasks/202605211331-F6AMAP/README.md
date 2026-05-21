@@ -1,10 +1,11 @@
 ---
 id: "202605211331-F6AMAP"
 title: "Optimize task list read-only fast path"
-status: "DOING"
+result_summary: "Merged via PR #4004."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605211331-F6AMAP/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211331-F6AMAP-task-list-fast-path/.agentplane/tasks/202605211331-F6AMAP/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "47188727d5bdc5d055f3b62eaefe8e124229490f"
+  message: "Merge pull request #4004 from basilisk-labs/task/202605211331-F6AMAP/task-list-fast-path"
 comments:
   -
     author: "CODER"
     body: "Start: Implement task list fast path in the dedicated branch_pr worktree, preserving existing rich route behavior and recording benchmark evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4004 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -66,9 +72,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed after merge from main. Evidence: backend projection cache tests, task listing/query tests, branch_pr list-state test, exact-file eslint, git diff --check, policy routing, framework bootstrap, and PR artifact check passed; scope remains limited to task list read-only projection fast path."
+  -
+    type: "status"
+    at: "2026-05-21T14:21:19.518Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4004 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-21T14:13:49.837Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-21T14:21:19.526Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reduce task list wall time by avoiding unnecessary runtime and git work when existing SQLite task projection can serve simple read-only listings."
 sections:
   Summary: |-
