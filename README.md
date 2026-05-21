@@ -4,16 +4,16 @@
 
 # Agentplane
 
-**CLI-first operational workflows and traces for AI agents.**
+**CLI-first operational workflows and evidence for AI agents.**
 
-Agentplane helps you run local agent workflows, record traces, manage context, apply recipes, and
-keep agent work reproducible and inspectable.
+Agentplane helps you route local agent work through tasks, plans, verification, context, recipes,
+and Git-visible evidence.
 
 ```text
-install -> init -> run -> trace -> export
+install -> init -> quickstart -> task -> verify -> acr
 ```
 
-Build, run, trace, and operationalize AI agents with reproducible local workflows.
+Operationalize AI-assisted engineering with reproducible local workflow records.
 
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
@@ -31,8 +31,8 @@ Build, run, trace, and operationalize AI agents with reproducible local workflow
 ```bash
 npm i -g agentplane
 agentplane init
-agentplane run ./agentplane.yaml
-agentplane trace open
+agentplane quickstart
+agentplane demo
 ```
 
 Requirements: Node.js 24+, Git, and a local terminal.
@@ -42,28 +42,27 @@ Requirements: Node.js 24+, Git, and a local terminal.
 ## What is Agentplane?
 
 Agentplane is not another agent framework. It is the operational layer around AI agents: workflows,
-orchestration, traces, local context, recipes, verification, and run artifacts.
+orchestration, local context, recipes, verification, task artifacts, and ACR evidence.
 
 Use Agentplane when you want agent work to be debuggable, reproducible, observable, and safe to
 operate beyond a single chat session.
 
 ## What Agentplane writes
 
-`agentplane init` and local workflow runs create inspectable operational artifacts:
+`agentplane init` and task lifecycle commands create inspectable operational artifacts:
 
 ```text
-AGENTS.md                         Repository policy gateway
-.agentplane/WORKFLOW.md           Workflow contract
-.agentplane/runs/<run-id>/         Run state
-.agentplane/traces/<run-id>.json   Trace spans
-.agentplane/exports/<run-id>.json  Exported artifacts
-.agentplane/tasks/<task-id>/       Task state and evidence
-.agentplane/tasks/<task-id>/acr.json Agent Change Record
+AGENTS.md or CLAUDE.md                 Repository policy gateway
+.agentplane/WORKFLOW.md                Workflow/config contract
+.agentplane/agents/                    Installed agent profiles
+.agentplane/tasks/<task-id>/README.md  Task intent, plan, verification, rollback, findings
+.agentplane/tasks/<task-id>/acr.json   Agent Change Record
+.agentplane/tasks/<task-id>/pr/        branch_pr review artifacts when that mode is active
 ```
 
 The default quickstart runs locally and writes local project artifacts. It does not require account
-creation. If you enable integrations that publish feedback, traces, or artifacts, the integration
-docs explain the destination and opt-in setting.
+creation. If you enable integrations that publish feedback or artifacts, the integration docs
+explain the destination and opt-in setting.
 
 ## Agent Change Record
 
@@ -111,9 +110,9 @@ Read [Local context](docs/user/local-context.mdx).
 ## First local workflow
 
 ```bash
-agentplane run ./agentplane.yaml
-agentplane trace list
-agentplane trace export <run-id> --format json
+agentplane task begin "Inspect Agentplane artifacts" --tag docs --verify "agentplane task verify-show <task-id>"
+agentplane task verify-show <task-id>
+agentplane task complete <task-id> --result "Inspected generated artifacts" --commit <git-rev>
 ```
 
 ## Agentplane is not
@@ -124,8 +123,8 @@ agentplane trace export <run-id> --format json
 - a replacement for every agent framework;
 - a black-box runtime that hides operational state.
 
-Agentplane is the local operational layer around agent workflows: runs, traces, context, recipes,
-checks, exports, and artifacts.
+Agentplane is the local operational layer around agent workflows: tasks, plans, context, recipes,
+checks, ACRs, and artifacts.
 
 ## Recipes
 
