@@ -371,10 +371,46 @@ describe("task-artifact-schema", () => {
       },
       { now: "2026-05-20T13:31:00.000Z" },
     );
+    const shellErrors = listAgentPlaneRunnerHandoffSchemaErrors(
+      {
+        ...validRunnerHandoff(),
+        repo_ref: {
+          kind: "git",
+          repository: "agentplane/agentplane",
+          ref: "main;rm-rf",
+        },
+      },
+      { now: "2026-05-20T13:31:00.000Z" },
+    );
+    const lockComponentErrors = listAgentPlaneRunnerHandoffSchemaErrors(
+      {
+        ...validRunnerHandoff(),
+        repo_ref: {
+          kind: "git",
+          repository: "agentplane/agentplane",
+          ref: "feature/foo.lock/bar",
+        },
+      },
+      { now: "2026-05-20T13:31:00.000Z" },
+    );
+    const commandSubstitutionErrors = listAgentPlaneRunnerHandoffSchemaErrors(
+      {
+        ...validRunnerHandoff(),
+        repo_ref: {
+          kind: "git",
+          repository: "agentplane/agentplane",
+          ref: "$(whoami)",
+        },
+      },
+      { now: "2026-05-20T13:31:00.000Z" },
+    );
 
     expect(rawPathErrors[0]).toContain("repo_ref.repository");
     expect(urlErrors[0]).toContain("repo_ref.repository");
     expect(traversalErrors[0]).toContain("repo_ref.ref");
+    expect(shellErrors[0]).toContain("repo_ref.ref");
+    expect(lockComponentErrors[0]).toContain("repo_ref.ref");
+    expect(commandSubstitutionErrors[0]).toContain("repo_ref.ref");
   });
 
   it("gates execute-mode runner handoffs behind explicit enablement", () => {
