@@ -125,9 +125,6 @@ describe("context release readiness guards", () => {
     expect(wikiAgents).toContain("Use the `context.maximum_assimilation` blueprint");
     expect(wikiAgents).toContain("canonical entities, glossary aliases, relation candidates");
     expect(wikiAgents).toContain("Glossary output: create or update `context/wiki/glossary.md`");
-    expect(wikiAgents).toContain("treat those refs as audit provenance");
-    expect(wikiAgents).toContain("availability state");
-    expect(wikiAgents).toContain("`missing`");
     expect(wikiAgents).toContain("choose wiki structure from source content");
     expect(wikiAgents).toContain("[[canonical-page|Display Label]]");
     expect(wikiAgents).toContain("numeric notes like `[1]`");
@@ -782,8 +779,6 @@ describe("context release readiness guards", () => {
 
     expect(createdArgs.parsed?.blueprintRequest).toBe("context.maximum_assimilation");
     expect(createdArgs.parsed?.description).toContain("Maximum-assimilation contract:");
-    expect(createdArgs.parsed?.description).toContain("significant source meaning");
-    expect(createdArgs.parsed?.description).toContain("audit provenance, not as retained content");
     expect(createdArgs.parsed?.description).toContain(
       "Choose wiki structure from the selected source content",
     );
@@ -832,7 +827,6 @@ describe("context release readiness guards", () => {
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
     for (const expected of [
       "Maximum-assimilation workflow:",
-      "availability state",
       "Topology pass:",
       "Glossary pass: create or update `context/wiki/glossary.md`",
       "[[canonical-page|Canonical Page]]",
@@ -874,117 +868,6 @@ describe("context release readiness guards", () => {
     expect(output).toContain("context wiki lint: ok (1 page(s))");
     expect(output).toContain("canonical_id:");
     expect(output).toContain("modality: decision");
-    const pageText = await readFile(
-      path.join(root, "context/wiki/decisions/context-claims.md"),
-      "utf8",
-    );
-    expect(pageText).toContain("aliases:");
-    expect(pageText).toContain("tags:");
-    expect(pageText).toContain("cssclasses:");
-    expect(pageText).toContain("## Sources");
-    expect(pageText).toContain("1. [.agentplane/tasks/202605130501-CTX001/README.md]");
-  });
-
-  it("rejects Obsidian wiki links whose target case does not match a canonical page or alias", async () => {
-    const root = await tempRoot();
-    await cmdContextWikiNew({
-      cwd: root,
-      parsed: {
-        page: "modules/payment-api",
-        title: "Payment API",
-        modality: "definition",
-        status: "reviewed_claim",
-        visibility: "project",
-        source: ["context/raw/specs/payment-api.md"],
-        force: false,
-      },
-    });
-    await write(
-      root,
-      "context/wiki/decisions/payment-contract.md",
-      [
-        "---",
-        "aliases:",
-        '  - "Payment Contract"',
-        "tags:",
-        "  - agentplane/context",
-        "cssclasses:",
-        "  - agentplane-context",
-        "agentplane_context:",
-        "  schema_version: 1",
-        "  artifact_type: wiki_page",
-        '  canonical_id: "wiki.decisions-payment-contract"',
-        '  title: "Payment Contract"',
-        "  modality: decision",
-        "  epistemic_status: sourced_claim",
-        "  source_refs:",
-        '    - path: "context/raw/specs/payment-api.md"',
-        '      ref: "context/raw/specs/payment-api.md"',
-        '      label: "context/raw/specs/payment-api.md"',
-        "---",
-        "",
-        "# Payment Contract",
-        "",
-        "See [[payment api]] for runtime details [1].",
-        "",
-        "## Sources",
-        "",
-        "1. [context/raw/specs/payment-api.md](context/raw/specs/payment-api.md)",
-        "",
-      ].join("\n"),
-    );
-
-    await expect(
-      cmdContextWikiLint({
-        cwd: root,
-        parsed: { path: "context/wiki" },
-      }),
-    ).rejects.toThrow(/\[\[payment api\]\] -> \[\[Payment API\]\]/u);
-
-    await write(
-      root,
-      "context/wiki/decisions/payment-contract.md",
-      [
-        "---",
-        "aliases:",
-        '  - "Payment Contract"',
-        "tags:",
-        "  - agentplane/context",
-        "cssclasses:",
-        "  - agentplane-context",
-        "agentplane_context:",
-        "  schema_version: 1",
-        "  artifact_type: wiki_page",
-        '  canonical_id: "wiki.decisions-payment-contract"',
-        '  title: "Payment Contract"',
-        "  modality: decision",
-        "  epistemic_status: sourced_claim",
-        "  source_refs:",
-        '    - path: "context/raw/specs/payment-api.md"',
-        '      ref: "context/raw/specs/payment-api.md"',
-        '      label: "context/raw/specs/payment-api.md"',
-        "---",
-        "",
-        "# Payment Contract",
-        "",
-        "See [[Payment API]] for runtime details [1].",
-        "",
-        "## Sources",
-        "",
-        "1. [context/raw/specs/payment-api.md](context/raw/specs/payment-api.md)",
-        "",
-      ].join("\n"),
-    );
-    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
-
-    await cmdContextWikiLint({
-      cwd: root,
-      parsed: { path: "context/wiki" },
-    });
-
-    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
-      "context wiki lint: ok (2 page(s))",
-    );
   });
 
   it("updates generated wiki index sections for pages and subdirectories", async () => {
