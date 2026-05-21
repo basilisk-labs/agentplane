@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605210633-3ZGMA1/readme-cli-drift",
+  "created_at": "2026-05-21T06:34:14.504Z",
+  "head_sha": "706bd5839dad991e2eb5dd60dab74c28e9627d86",
+  "last_verified_at": "2026-05-21T06:40:32.625Z",
+  "last_verified_sha": "706bd5839dad991e2eb5dd60dab74c28e9627d86",
+  "schema_version": 1,
+  "task_id": "202605210633-3ZGMA1",
+  "updated_at": "2026-05-21T06:40:22.990Z",
+  "verify": {
+    "status": "pass"
+  }
+}
