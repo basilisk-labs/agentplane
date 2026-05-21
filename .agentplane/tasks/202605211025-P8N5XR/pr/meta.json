@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202605211025-P8N5XR/recent-issue-candidates",
   "created_at": "2026-05-21T10:26:10.917Z",
-  "head_sha": "e19ac5f74812c77a964324f3dc0776c51bb32722",
+  "head_sha": "87c2cb86ba1ea3320b9d32e46b5088e3c46432cf",
   "last_verified_at": "2026-05-21T10:41:26.006Z",
   "last_verified_sha": "85752945e6468dce40ec9463b5c60f0e2a9df4dc",
   "pr_number": 3999,
@@ -10,7 +10,7 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202605211025-P8N5XR",
-  "updated_at": "2026-05-21T10:43:31.871Z",
+  "updated_at": "2026-05-21T10:53:56.729Z",
   "verify": {
     "status": "pass"
   }
