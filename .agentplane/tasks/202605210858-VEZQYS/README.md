@@ -1,10 +1,11 @@
 ---
 id: "202605210858-VEZQYS"
 title: "Harden Obsidian context wiki links and source notes"
-status: "DOING"
+result_summary: "Merged via PR #3987."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605210858-VEZQYS/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605210858-VEZQYS-obsidian-context-links/.agentplane/tasks/202605210858-VEZQYS/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "ae44bb7389abe3ca132057929006f1e57a50c0f0"
+  message: "Merge pull request #3987 from basilisk-labs/task/202605210858-VEZQYS/obsidian-context-links"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the approved context wiki hardening for Obsidian case-stable internal links, generated Obsidian-friendly context elements, and numeric source notes that point to raw-source references."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3987 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -90,9 +96,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed for current commit d01c0d36 after addressing PR review comments on index-page wikilinks and flow-style aliases."
+  -
+    type: "status"
+    at: "2026-05-21T09:54:33.129Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3987 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-21T09:49:30.241Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-21T09:54:33.137Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix case-sensitive Obsidian cross-link breakage during context assimilation, add automatic Obsidian-friendly context wiki elements, and support numeric source note references that resolve to raw-data links at the end of generated pages."
 sections:
   Summary: |-
