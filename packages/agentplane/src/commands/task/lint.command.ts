@@ -4,6 +4,7 @@ import { cmdTaskLint } from "./lint.js";
 
 export type TaskLintParsed = {
   verifySteps: boolean;
+  verifyStepsChanged: boolean;
 };
 
 export const taskLintSpec: CommandSpec<TaskLintParsed> = {
@@ -18,9 +19,19 @@ export const taskLintSpec: CommandSpec<TaskLintParsed> = {
       description:
         "Also lint task README Verify Steps for executed output or empty Run commands. Useful before enabling strict rollout.",
     },
+    {
+      kind: "boolean",
+      name: "verify-steps-changed",
+      default: false,
+      description:
+        "Lint Verify Steps only for changed task README files, so legacy historical pollution does not block strict rollout.",
+    },
   ],
   examples: [{ cmd: "agentplane task lint", why: "Validate the tasks export file." }],
-  parse: (raw) => ({ verifySteps: raw.opts["verify-steps"] === true }),
+  parse: (raw) => ({
+    verifySteps: raw.opts["verify-steps"] === true || raw.opts["verify-steps-changed"] === true,
+    verifyStepsChanged: raw.opts["verify-steps-changed"] === true,
+  }),
 };
 
 export async function runTaskLint(ctx: CommandCtx, parsed: TaskLintParsed): Promise<number> {
@@ -28,5 +39,6 @@ export async function runTaskLint(ctx: CommandCtx, parsed: TaskLintParsed): Prom
     cwd: ctx.cwd,
     rootOverride: ctx.rootOverride,
     verifySteps: parsed.verifySteps,
+    verifyStepsChanged: parsed.verifyStepsChanged,
   });
 }

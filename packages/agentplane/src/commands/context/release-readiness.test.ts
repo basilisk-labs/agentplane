@@ -567,7 +567,7 @@ describe("context release readiness guards", () => {
         "agentplane.context": {
           task_type: "context_assimilation",
           mode: "maximum_assimilation",
-          allowed_outputs: ["context/wiki/"],
+          allowed_outputs: ["context/wiki/glossary.md"],
           source_set: { files: [] },
         },
       },
@@ -593,6 +593,91 @@ describe("context release readiness guards", () => {
         parsed: { taskId: task.id },
       }),
     ).rejects.toThrow(/extensions\.agentplane\.context\.source_set\.files must not be empty/u);
+  });
+
+  it("rejects maximum-assimilation glossary files without navigable canonical entries", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/wiki/glossary.md",
+      `---
+agentplane_context:
+  source_refs:
+    - context/raw/specs/payment-api.md#L1-L10
+---
+
+# Glossary
+
+Canonical terms will be added later.
+`,
+    );
+    const task = {
+      id: "202605191451-CTXGLO",
+      status: "DOING",
+      owner: "CURATOR",
+      task_kind: "context",
+      mutation_scope: "context",
+      blueprint_request: "context.maximum_assimilation",
+      extensions: {
+        "agentplane.context": {
+          task_type: "context_assimilation",
+          mode: "maximum_assimilation",
+          allowed_outputs: ["context/wiki/glossary.md"],
+          source_set: {
+            files: [
+              {
+                path: "context/raw/specs/payment-api.md",
+                sha256: "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+              },
+            ],
+          },
+        },
+      },
+      runner: {
+        evidence: {
+          changed_paths: ["context/wiki/glossary.md"],
+        },
+      },
+    };
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { getTask: async () => task },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+
+    await expect(
+      cmdContextVerifyTask({
+        ctx,
+        cwd: root,
+        parsed: { taskId: task.id },
+      }),
+    ).rejects.toThrow(/glossary must include at least one navigable canonical wiki entry/u);
+
+    await write(
+      root,
+      "context/wiki/glossary.md",
+      `---
+agentplane_context:
+  source_refs:
+    - context/raw/specs/payment-api.md#L1-L10
+---
+
+# Glossary
+
+- Payment API -> [[payments/api]]
+`,
+    );
+
+    await expect(
+      cmdContextVerifyTask({
+        ctx,
+        cwd: root,
+        parsed: { taskId: task.id },
+      }),
+    ).resolves.toBe(0);
   });
 
   it("prints the context check label when check delegates to doctor", async () => {
