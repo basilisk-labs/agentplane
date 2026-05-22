@@ -113,6 +113,51 @@ describe("runCli route decision commands", () => {
     }
   });
 
+  it("safe-apply skips approval and provider-only repair steps", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const taskId = await createBranchPrTask(root);
+
+    const repairIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "flow",
+        "repair",
+        taskId,
+        "--safe-apply",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(repairIo.stdout) as {
+        applied: { code: string; status: string; reason?: string }[];
+      };
+      expect(parsed.applied).toContainEqual(
+        expect.objectContaining({
+          code: "approve_plan",
+          status: "skipped",
+          reason: "requires_approval_or_provider_action",
+        }),
+      );
+      expect(parsed.applied).not.toContainEqual(
+        expect.objectContaining({ code: "approve_plan", status: "applied" }),
+      );
+    } finally {
+      repairIo.restore();
+    }
+
+    const readme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme).toContain('plan_approval:\n  state: "pending"');
+  });
+
   it("treats done branch_pr tasks as terminal even when PR metadata is absent", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -327,6 +372,7 @@ describe("runCli route decision commands", () => {
         2,
       )}\n`,
     );
+    await writeFile(path.join(prDir, "review.md"), "# Review\n\nStale packet.\n");
     await writeFile(path.join(root, "non-task.txt"), "new implementation advance\n");
     await execFileAsync("git", ["add", "non-task.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "feat: advance implementation"], { cwd: root });
@@ -345,6 +391,35 @@ describe("runCli route decision commands", () => {
     } finally {
       nextIo.restore();
     }
+
+    const repairIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "flow",
+        "repair",
+        taskId,
+        "--safe-apply",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(repairIo.stdout) as {
+        applied: { code: string; status: string }[];
+      };
+      expect(parsed.applied).toContainEqual(
+        expect.objectContaining({ code: "update_pr_artifacts", status: "applied" }),
+      );
+    } finally {
+      repairIo.restore();
+    }
+
+    const updatedMeta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
+      head_sha?: string;
+      diffstat_sha256?: string;
+    };
+    expect(updatedMeta.head_sha).toBeUndefined();
+    expect(updatedMeta.diffstat_sha256).toMatch(/^sha256:/);
   });
 
   it("does not claim no repair when blockers are unmapped", async () => {

@@ -106,6 +106,7 @@ export async function cmdPrUpdate(opts: {
   rootOverride?: string;
   taskId: string;
   includeTaskIds?: string[];
+  silent?: boolean;
 }): Promise<number> {
   try {
     const output = createCliEmitter();
@@ -140,7 +141,7 @@ export async function cmdPrUpdate(opts: {
       meta,
     });
 
-    output.success("pr update", path.relative(resolved.gitRoot, prDir));
+    if (!opts.silent) output.success("pr update", path.relative(resolved.gitRoot, prDir));
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
