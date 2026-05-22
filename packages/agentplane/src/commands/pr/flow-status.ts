@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 
 import { gitRevParse, taskCloseBranchName } from "@agentplaneorg/core/git";
+import { runProcess } from "@agentplaneorg/core/process";
 
 import { createCliEmitter } from "../../cli/output.js";
 import { mapBackendError } from "../../cli/error-map.js";
@@ -13,11 +14,18 @@ import {
 } from "../shared/task-backend.js";
 import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
 import { parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
+import { readTaskHandoffLatest, resolveTaskHandoffPaths } from "../shared/task-handoff.js";
+import { normalizeGhTransportError } from "../shared/gh-transport.js";
+import { readIntegrationQueue, type IntegrationQueueEntry } from "../pr/integrate/queue-state.js";
+import { checkGithubUnresolvedReviewThreads } from "./internal/github-review-threads.js";
+import { ghEnv } from "./internal/gh-api.js";
 
 import { resolvePrPaths } from "./internal/pr-paths.js";
 import { tryLookupExistingGithubPrByBranch } from "./internal/sync-github.js";
 
 type ProviderName = "github";
+
+type GhPrCheckRow = { state?: string | null };
 
 export type RemotePrStatus =
   | { provider: ProviderName; state: "not_found"; source: "lookup" | "metadata" }
@@ -56,8 +64,69 @@ export type PrFlowStatusReport = {
   };
   pr: RemotePrStatus;
   closeTail: CloseTailStatus;
+  hostedChecks: HostedChecksStatus;
+  reviewThreads: ReviewThreadsStatus;
+  queue: QueueStatus;
+  handoff: HandoffStatus;
   nextAction: string;
 };
+
+export type HostedChecksStatus =
+  | { checked: true; total: number; pending: number; failing: number; passing: number }
+  | { checked: false; reason: string };
+
+export type ReviewThreadsStatus =
+  | { checked: true; unresolved: number }
+  | { checked: false; reason: string };
+
+export type QueueStatus =
+  | { present: false }
+  | {
+      present: true;
+      status: IntegrationQueueEntry["status"];
+      reason: string | null;
+      updatedAt: string | null;
+    };
+
+export type HandoffStatus =
+  | { present: false }
+  | {
+      present: true;
+      reason: string;
+      routeStatus: string | null;
+      nextActions: string[];
+    };
+
+function parseGhPrChecks(stdout: string): GhPrCheckRow[] {
+  const rows = JSON.parse(stdout) as GhPrCheckRow[];
+  return Array.isArray(rows) ? rows : [];
+}
+
+function isPendingGhCheckState(state: string): boolean {
+  return ["PENDING", "QUEUED", "IN_PROGRESS", "WAITING", "REQUESTED", "EXPECTED"].includes(state);
+}
+
+function isFailingGhCheckState(state: string): boolean {
+  return ["FAIL", "FAILURE", "ERROR", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED"].includes(state);
+}
+
+function summarizeHostedChecks(
+  checks: GhPrCheckRow[],
+): Extract<HostedChecksStatus, { checked: true }> {
+  const pending = checks.filter((check) =>
+    isPendingGhCheckState((check.state ?? "").toUpperCase()),
+  ).length;
+  const failing = checks.filter((check) =>
+    isFailingGhCheckState((check.state ?? "").toUpperCase()),
+  ).length;
+  return {
+    checked: true,
+    total: checks.length,
+    pending,
+    failing,
+    passing: Math.max(0, checks.length - pending - failing),
+  };
+}
 
 function shortSha(value: string | null | undefined): string | null {
   const trimmed = value?.trim() ?? "";
@@ -100,6 +169,78 @@ function remoteStatusFromMeta(meta: PrMeta | null): RemotePrStatus {
     };
   }
   return { provider: "github", state: "not_found", source: "metadata" };
+}
+
+async function resolveHostedChecksStatus(opts: {
+  gitRoot: string;
+  prNumber: number | null;
+}): Promise<HostedChecksStatus> {
+  if (opts.prNumber === null || opts.prNumber <= 0) {
+    return { checked: false, reason: "GitHub PR number is not recorded in PR metadata" };
+  }
+  try {
+    const result = await runProcess({
+      command: "gh",
+      args: ["pr", "checks", String(opts.prNumber), "--json", "name,state"],
+      cwd: opts.gitRoot,
+      env: ghEnv(),
+      encoding: "utf8",
+      maxBuffer: 10 * 1024 * 1024,
+      reject: false,
+    });
+    if (result.exitCode === 0 || result.exitCode === 8) {
+      return summarizeHostedChecks(parseGhPrChecks(String(result.stdout)));
+    }
+    return { checked: false, reason: normalizeGhTransportError(result.stderr || result.stdout) };
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    return {
+      checked: false,
+      reason: code === "ENOENT" ? "gh CLI is unavailable" : normalizeGhTransportError(err),
+    };
+  }
+}
+
+async function resolveReviewThreadsStatus(opts: {
+  gitRoot: string;
+  prNumber: number | null;
+}): Promise<ReviewThreadsStatus> {
+  const result = await checkGithubUnresolvedReviewThreads(opts);
+  if (!result.checked) return { checked: false, reason: result.reason };
+  return { checked: true, unresolved: result.unresolved.length };
+}
+
+async function resolveQueueStatus(opts: { gitRoot: string; taskId: string }): Promise<QueueStatus> {
+  const queue = await readIntegrationQueue(opts.gitRoot);
+  const entry = queue.entries.find((candidate) => candidate.task_id === opts.taskId);
+  if (!entry) return { present: false };
+  return {
+    present: true,
+    status: entry.status,
+    reason: entry.reason ?? null,
+    updatedAt: entry.updated_at ?? null,
+  };
+}
+
+async function resolveHandoffStatus(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  taskId: string;
+}): Promise<HandoffStatus> {
+  const handoff = await readTaskHandoffLatest(
+    resolveTaskHandoffPaths({
+      git_root: opts.gitRoot,
+      workflow_dir: opts.workflowDir,
+      task_id: opts.taskId,
+    }),
+  );
+  if (!handoff) return { present: false };
+  return {
+    present: true,
+    reason: handoff.reason,
+    routeStatus: handoff.route?.status ?? null,
+    nextActions: handoff.next_actions ?? [],
+  };
 }
 
 function remoteStatusFromObserved(
@@ -239,6 +380,17 @@ export async function resolvePrFlowStatus(opts: {
     baseBranch,
     remotePr: pr,
   });
+  const prNumber = pr.state === "not_found" ? null : pr.prNumber;
+  const [hostedChecks, reviewThreads, queue, handoff] = await Promise.all([
+    resolveHostedChecksStatus({ gitRoot: resolved.gitRoot, prNumber }),
+    resolveReviewThreadsStatus({ gitRoot: resolved.gitRoot, prNumber }),
+    resolveQueueStatus({ gitRoot: resolved.gitRoot, taskId: task.id }),
+    resolveHandoffStatus({
+      gitRoot: resolved.gitRoot,
+      workflowDir: config.paths.workflow_dir,
+      taskId: task.id,
+    }),
+  ]);
   const report: PrFlowStatusReport = {
     task: {
       id: task.id,
@@ -252,10 +404,34 @@ export async function resolvePrFlowStatus(opts: {
     },
     pr,
     closeTail,
+    hostedChecks,
+    reviewThreads,
+    queue,
+    handoff,
     nextAction: "",
   };
   report.nextAction = deriveNextAction(report);
   return report;
+}
+
+function renderHostedChecksLine(status: HostedChecksStatus): string {
+  if (!status.checked) return `unchecked: ${status.reason}`;
+  return `total=${status.total} passing=${status.passing} pending=${status.pending} failing=${status.failing}`;
+}
+
+function renderReviewThreadsLine(status: ReviewThreadsStatus): string {
+  if (!status.checked) return `unchecked: ${status.reason}`;
+  return `unresolved=${status.unresolved}`;
+}
+
+function renderQueueLine(status: QueueStatus): string {
+  if (!status.present) return "not_queued";
+  return `${status.status}${status.reason ? `: ${status.reason}` : ""}`;
+}
+
+function renderHandoffLine(status: HandoffStatus): string {
+  if (!status.present) return "none";
+  return `${status.routeStatus ?? "recorded"}: ${status.reason}`;
 }
 
 function renderPrLine(pr: RemotePrStatus): string {
@@ -298,6 +474,10 @@ export async function cmdPrFlowStatus(opts: {
         { label: "branch_head", value: shortSha(report.branch.headSha) ?? "unknown" },
         { label: "meta_head", value: shortSha(report.branch.metaHeadSha) ?? "unknown" },
         { label: "remote_pr", value: renderPrLine(report.pr) },
+        { label: "hosted_checks", value: renderHostedChecksLine(report.hostedChecks) },
+        { label: "review_threads", value: renderReviewThreadsLine(report.reviewThreads) },
+        { label: "queue", value: renderQueueLine(report.queue) },
+        { label: "handoff", value: renderHandoffLine(report.handoff) },
         { label: "close_tail", value: renderCloseTailLine(report.closeTail) },
         { label: "next", value: report.nextAction },
       ],

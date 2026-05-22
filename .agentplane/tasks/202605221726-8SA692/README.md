@@ -1,10 +1,10 @@
 ---
 id: "202605221726-8SA692"
 title: "Add combined hosted lifecycle status report"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,17 +23,50 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-22T23:15:08.379Z"
+  updated_by: "EVALUATOR"
+  note: "Evaluator check: combined report extends the existing branch_pr flow surface without adding a second lifecycle truth; unavailable GitHub/provider state degrades into explicit unchecked reasons and local queue/handoff evidence remains visible."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-22T23:15:08.379Z"
+  updated_by: "EVALUATOR"
+  note: "Evaluator check: combined report extends the existing branch_pr flow surface without adding a second lifecycle truth; unavailable GitHub/provider state degrades into explicit unchecked reasons and local queue/handoff evidence remains visible."
+  evaluated_sha: "fa202aa7f8123a8ce3fcba03affed3f37ae8a53e"
+  blueprint_digest: "d25e505733877eb7200a4fb76923472a539c38ba67e83aff07a561bdfe5a0bef"
+  evidence_refs:
+    - ".agentplane/tasks/202605221726-8SA692/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221726-8SA692-hosted-lifecycle-status-report/.agentplane/tasks/202605221726-8SA692/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: adding combined hosted lifecycle status report for branch_pr tasks."
+events:
+  -
+    type: "status"
+    at: "2026-05-22T23:11:41.641Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: adding combined hosted lifecycle status report for branch_pr tasks."
+  -
+    type: "verify"
+    at: "2026-05-22T23:15:03.751Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: pr flow status now combines lifecycle, remote PR, hosted checks, review threads, integration queue, handoff, close-tail, and next action; mocked output test covers degraded GitHub PR-number state plus queue/handoff, lint/typecheck/docs CLI checks passed."
+  -
+    type: "verify"
+    at: "2026-05-22T23:15:08.379Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Evaluator check: combined report extends the existing branch_pr flow surface without adding a second lifecycle truth; unavailable GitHub/provider state degrades into explicit unchecked reasons and local queue/handoff evidence remains visible."
 doc_version: 3
-doc_updated_at: "2026-05-22T17:27:52.436Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-22T23:15:08.407Z"
+doc_updated_by: "CODER"
 description: "Expose local AgentPlane lifecycle, queue/handoff state, GitHub PR state, hosted checks, review threads, and close-tail state in one command for branch_pr tasks."
 sections:
   Summary: |-
@@ -50,6 +83,44 @@ sections:
     3. Confirm command degrades clearly when GitHub auth or network is unavailable.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-22T23:15:03.751Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: pr flow status now combines lifecycle, remote PR, hosted checks, review threads, integration queue, handoff, close-tail, and next action; mocked output test covers degraded GitHub PR-number state plus queue/handoff, lint/typecheck/docs CLI checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-22T23:11:41.641Z, excerpt_hash=sha256:4ba29801faaa6b9b348da08e907a63ba8554ed7ae1c42136a0766f152bf6b6e9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221726-8SA692-hosted-lifecycle-status-report/.agentplane/tasks/202605221726-8SA692/blueprint/resolved-snapshot.json
+    - old_digest: d25e505733877eb7200a4fb76923472a539c38ba67e83aff07a561bdfe5a0bef
+    - current_digest: d25e505733877eb7200a4fb76923472a539c38ba67e83aff07a561bdfe5a0bef
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605221726-8SA692
+
+    ### 2026-05-22T23:15:08.379Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Evaluator check: combined report extends the existing branch_pr flow surface without adding a second lifecycle truth; unavailable GitHub/provider state degrades into explicit unchecked reasons and local queue/handoff evidence remains visible.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-22T23:15:03.778Z, excerpt_hash=sha256:4ba29801faaa6b9b348da08e907a63ba8554ed7ae1c42136a0766f152bf6b6e9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221726-8SA692-hosted-lifecycle-status-report/.agentplane/tasks/202605221726-8SA692/blueprint/resolved-snapshot.json
+    - old_digest: d25e505733877eb7200a4fb76923472a539c38ba67e83aff07a561bdfe5a0bef
+    - current_digest: d25e505733877eb7200a4fb76923472a539c38ba67e83aff07a561bdfe5a0bef
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605221726-8SA692
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -81,6 +152,44 @@ Add a combined hosted lifecycle status surface that keeps ap as lifecycle truth 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-22T23:15:03.751Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: pr flow status now combines lifecycle, remote PR, hosted checks, review threads, integration queue, handoff, close-tail, and next action; mocked output test covers degraded GitHub PR-number state plus queue/handoff, lint/typecheck/docs CLI checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-22T23:11:41.641Z, excerpt_hash=sha256:4ba29801faaa6b9b348da08e907a63ba8554ed7ae1c42136a0766f152bf6b6e9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221726-8SA692-hosted-lifecycle-status-report/.agentplane/tasks/202605221726-8SA692/blueprint/resolved-snapshot.json
+- old_digest: d25e505733877eb7200a4fb76923472a539c38ba67e83aff07a561bdfe5a0bef
+- current_digest: d25e505733877eb7200a4fb76923472a539c38ba67e83aff07a561bdfe5a0bef
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605221726-8SA692
+
+### 2026-05-22T23:15:08.379Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Evaluator check: combined report extends the existing branch_pr flow surface without adding a second lifecycle truth; unavailable GitHub/provider state degrades into explicit unchecked reasons and local queue/handoff evidence remains visible.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-22T23:15:03.778Z, excerpt_hash=sha256:4ba29801faaa6b9b348da08e907a63ba8554ed7ae1c42136a0766f152bf6b6e9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221726-8SA692-hosted-lifecycle-status-report/.agentplane/tasks/202605221726-8SA692/blueprint/resolved-snapshot.json
+- old_digest: d25e505733877eb7200a4fb76923472a539c38ba67e83aff07a561bdfe5a0bef
+- current_digest: d25e505733877eb7200a4fb76923472a539c38ba67e83aff07a561bdfe5a0bef
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605221726-8SA692
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
