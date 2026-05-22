@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-22T21:58:32Z",
   "base": "main",
   "branch": "task/202605221726-1DX1BA/flow-repair-safe-apply",
   "created_at": "2026-05-22T21:26:43.927Z",
   "diffstat_sha256": "sha256:da1fffbab6c25b2725d5acd7e24d594b0435c567f7ad1cf9cad5bb39332803bd",
   "last_verified_at": "2026-05-22T21:34:30.309Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "ccf58c36767ea9f34b78864c1c2f34bca3f4d4c3",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-22T21:58:32Z",
   "pr_number": 4038,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4038",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605221726-1DX1BA",
-  "updated_at": "2026-05-22T21:35:37.015Z",
+  "updated_at": "2026-05-22T21:58:32Z",
   "verify": {
     "status": "pass"
   }
