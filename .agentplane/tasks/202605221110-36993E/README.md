@@ -1,10 +1,11 @@
 ---
 id: "202605221110-36993E"
 title: "Harden legacy upgrade dirty state handling"
-status: "DOING"
+result_summary: "Merged via PR #4016."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Focused upgrade hardening verified: prettier check, targeted ESLint, typecheck, git diff --check, upgrade regression suite 15/15, release-smoke legacy upgrade suite 3/3, doctor OK, policy routing OK."
   attempts: 0
-commit: null
+commit:
+  hash: "879da102df945176bb19f894acb70f894be05380"
+  message: "Merge pull request #4016 from basilisk-labs/task/202605221110-36993E/harden-legacy-upgrade"
 comments:
   -
     author: "CODER"
     body: "Start: harden legacy upgrade handling so safe old-repo tracked drift emits warnings and does not block framework upgrade application."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4016 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused upgrade hardening verified: prettier check, targeted ESLint, typecheck, git diff --check, upgrade regression suite 15/15, release-smoke legacy upgrade suite 3/3, doctor OK, policy routing OK."
+  -
+    type: "status"
+    at: "2026-05-22T12:19:07.153Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4016 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T11:28:58.955Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T12:19:07.159Z"
+doc_updated_by: "INTEGRATOR"
 description: "Allow old repositories to upgrade across safe legacy dirty states with explicit warnings instead of aborting on unrelated tracked edits."
 sections:
   Summary: |-
