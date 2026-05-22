@@ -1,10 +1,11 @@
 ---
 id: "202605221715-WTN8N7"
 title: "Use candidate runtime or hosted truth for protected integrate"
-status: "DOING"
+result_summary: "Included release pipeline hardening task closed after batch merge."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -19,15 +20,31 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-22T17:37:26.094Z"
-  updated_by: "CODER"
-  note: "Verified: release pipeline hardening implemented in shared batch branch; targeted checks, framework bootstrap, docs checks, doctor, and ci:contract passed."
+  updated_at: "2026-05-22T18:13:19.171Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed after batch merge: blueprint snapshot recorded, PR #4022 implemented the included task, PR #4023 closed the primary task, and hosted checks were green."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-22T18:13:19.171Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed after batch merge: blueprint snapshot recorded, PR #4022 implemented the included task, PR #4023 closed the primary task, and hosted checks were green."
+  evaluated_sha: "ff82cb92e846c51297beb1a491aed29deb49c079"
+  blueprint_digest: "86f62c0a6104361b93285b76a2f7d2128724fd45cf976283cef509085470c822"
+  evidence_refs:
+    - ".agentplane/tasks/202605221715-WTN8N7/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202605221715-WTN8N7/blueprint/resolved-snapshot.json"
+  findings: []
+commit:
+  hash: "ff82cb92e846c51297beb1a491aed29deb49c079"
+  message: "Merge pull request #4023 from basilisk-labs/task-close/202605221715-424TFE/53b9f7c74c78"
 comments:
   -
     author: "CODER"
     body: "Start: Implement approved release pipeline hardening batch; this task is included in the shared batch worktree owned by primary task 202605221715-424TFE."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: included batch task was implemented by PR #4022, verified by local ci:contract and hosted GitHub checks, and reconciled after close-tail PR #4023."
 events:
   -
     type: "status"
@@ -42,9 +59,22 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: release pipeline hardening implemented in shared batch branch; targeted checks, framework bootstrap, docs checks, doctor, and ci:contract passed."
+  -
+    type: "verify"
+    at: "2026-05-22T18:13:19.171Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed after batch merge: blueprint snapshot recorded, PR #4022 implemented the included task, PR #4023 closed the primary task, and hosted checks were green."
+  -
+    type: "status"
+    at: "2026-05-22T18:13:19.779Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: included batch task was implemented by PR #4022, verified by local ci:contract and hosted GitHub checks, and reconciled after close-tail PR #4023."
 doc_version: 3
-doc_updated_at: "2026-05-22T17:37:26.111Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T18:13:19.780Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent base-checkout integrate from rejecting PR branches because main does not yet contain the candidate runtime contract."
 sections:
   Summary: |-
@@ -78,6 +108,25 @@ sections:
     - old_digest: none
     - current_digest: 86f62c0a6104361b93285b76a2f7d2128724fd45cf976283cef509085470c822
     - route_changed: unknown
+    - safe_command: agentplane blueprint snapshot 202605221715-WTN8N7
+
+    ### 2026-05-22T18:13:19.171Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed after batch merge: blueprint snapshot recorded, PR #4022 implemented the included task, PR #4023 closed the primary task, and hosted checks were green.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-22T17:37:26.111Z, excerpt_hash=sha256:4357364fef26b7f28e10a02ca7d44834e716c5c4da45195d6a1ecb55cef463e1
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605221715-WTN8N7/blueprint/resolved-snapshot.json
+    - old_digest: 86f62c0a6104361b93285b76a2f7d2128724fd45cf976283cef509085470c822
+    - current_digest: 86f62c0a6104361b93285b76a2f7d2128724fd45cf976283cef509085470c822
+    - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605221715-WTN8N7
 
     <!-- END VERIFICATION RESULTS -->
@@ -128,6 +177,25 @@ BlueprintSnapshotRef:
 - old_digest: none
 - current_digest: 86f62c0a6104361b93285b76a2f7d2128724fd45cf976283cef509085470c822
 - route_changed: unknown
+- safe_command: agentplane blueprint snapshot 202605221715-WTN8N7
+
+### 2026-05-22T18:13:19.171Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed after batch merge: blueprint snapshot recorded, PR #4022 implemented the included task, PR #4023 closed the primary task, and hosted checks were green.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-22T17:37:26.111Z, excerpt_hash=sha256:4357364fef26b7f28e10a02ca7d44834e716c5c4da45195d6a1ecb55cef463e1
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605221715-WTN8N7/blueprint/resolved-snapshot.json
+- old_digest: 86f62c0a6104361b93285b76a2f7d2128724fd45cf976283cef509085470c822
+- current_digest: 86f62c0a6104361b93285b76a2f7d2128724fd45cf976283cef509085470c822
+- route_changed: no
 - safe_command: agentplane blueprint snapshot 202605221715-WTN8N7
 
 <!-- END VERIFICATION RESULTS -->
