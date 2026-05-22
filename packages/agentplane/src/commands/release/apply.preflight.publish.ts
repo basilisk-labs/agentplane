@@ -1,4 +1,5 @@
 import path from "node:path";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { withDiagnosticContext } from "../shared/diagnostics.js";
@@ -10,6 +11,61 @@ import {
 import { execFileAsync, runProcess } from "@agentplaneorg/core/process";
 
 import { releasePushDescription, type ReleaseCommandLabel } from "./apply.preflight.git.js";
+
+type ReleasePrepublishPhase = "fast" | "heavy";
+
+async function resolveTreeDigest(gitRoot: string): Promise<string> {
+  const result = await execFileAsync("git", ["rev-parse", "HEAD^{tree}"], {
+    cwd: gitRoot,
+    env: withPreferredRuntimePath(process.env),
+  });
+  return String(result.stdout ?? "").trim();
+}
+
+function releasePrepublishProofPath(gitRoot: string): string {
+  return path.join(gitRoot, ".agentplane", ".release", "prepublish-proof.json");
+}
+
+async function readReleasePrepublishProof(
+  gitRoot: string,
+  phase: ReleasePrepublishPhase,
+  treeDigest: string,
+): Promise<boolean> {
+  try {
+    const payload = JSON.parse(await readFile(releasePrepublishProofPath(gitRoot), "utf8")) as {
+      tree_digest?: unknown;
+      phases?: Record<string, { ok?: unknown } | undefined>;
+    };
+    return payload.tree_digest === treeDigest && payload.phases?.[phase]?.ok === true;
+  } catch {
+    return false;
+  }
+}
+
+async function writeReleasePrepublishProof(
+  gitRoot: string,
+  phase: ReleasePrepublishPhase,
+  treeDigest: string,
+): Promise<void> {
+  const proofPath = releasePrepublishProofPath(gitRoot);
+  let phases: Record<string, unknown> = {};
+  try {
+    const payload = JSON.parse(await readFile(proofPath, "utf8")) as {
+      tree_digest?: unknown;
+      phases?: Record<string, unknown>;
+    };
+    if (payload.tree_digest === treeDigest && payload.phases) phases = payload.phases;
+  } catch {
+    phases = {};
+  }
+  phases[phase] = { ok: true, completed_at: new Date().toISOString() };
+  await mkdir(path.dirname(proofPath), { recursive: true });
+  await writeFile(
+    proofPath,
+    `${JSON.stringify({ schema_version: 1, tree_digest: treeDigest, phases }, null, 2)}\n`,
+    "utf8",
+  );
+}
 
 function releasePrepublishEnv(): NodeJS.ProcessEnv {
   const env = withPreferredRuntimePath({
@@ -75,7 +131,10 @@ export async function ensureNpmVersionsAvailable(
   }
 }
 
-async function runReleasePrepublishPhase(gitRoot: string, phase: "fast" | "heavy"): Promise<void> {
+async function runReleasePrepublishPhase(
+  gitRoot: string,
+  phase: ReleasePrepublishPhase,
+): Promise<void> {
   await runProcess({
     command: "bun",
     args: ["run", `release:prepublish:${phase}`],
@@ -90,9 +149,17 @@ export async function runReleasePrepublishGate(
   gitRoot: string,
   commandLabel: ReleaseCommandLabel = "release apply",
 ): Promise<void> {
+  const treeDigest = await resolveTreeDigest(gitRoot);
   for (const phase of ["fast", "heavy"] as const) {
+    if (await readReleasePrepublishProof(gitRoot, phase, treeDigest)) {
+      process.stdout.write(
+        `release prepublish ${phase}: reusable proof found for tree ${treeDigest}\n`,
+      );
+      continue;
+    }
     try {
       await runReleasePrepublishPhase(gitRoot, phase);
+      await writeReleasePrepublishProof(gitRoot, phase, treeDigest);
     } catch (err) {
       const details = String(
         (err as { stderr?: string; stdout?: string; message?: string } | null)?.stderr ??

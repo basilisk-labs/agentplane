@@ -85,13 +85,17 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then
             SHA="${{ github.event.inputs.sha }}"
             RUNTIME_SCRIPT=".agentplane/.release/runtime/scripts/resolve-release-ready-source.mjs"
-            node "${RUNTIME_SCRIPT}" \
+            if ! node "${RUNTIME_SCRIPT}" \
               --workflow ci.yml \
               --sha "${SHA}" \
               --wait \
               --timeout-ms 900000 \
               --poll-interval-ms 15000 \
-              --json > .agentplane/.release/ready/source.json
+              --json > .agentplane/.release/ready/source.json 2>.agentplane/.release/ready/source.err; then
+              cat .agentplane/.release/ready/source.json 2>/dev/null || true
+              cat .agentplane/.release/ready/source.err >&2 || true
+              exit 1
+            fi
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             node scripts/resolve-canonical-release-sha.mjs --json > .agentplane/.release/ready/canonical.json
             SHA="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/canonical.json','utf8')); process.stdout.write(String(payload.sha || ''));")"
@@ -99,13 +103,17 @@ jobs:
               echo "No canonical release candidate resolved from $(git rev-parse HEAD)." >&2
               exit 1
             fi
-            node "${RUNTIME_SCRIPT}" \
+            if ! node "${RUNTIME_SCRIPT}" \
               --workflow ci.yml \
               --sha "${SHA}" \
               --wait \
               --timeout-ms 900000 \
               --poll-interval-ms 15000 \
-              --json > .agentplane/.release/ready/source.json
+              --json > .agentplane/.release/ready/source.json 2>.agentplane/.release/ready/source.err; then
+              cat .agentplane/.release/ready/source.json 2>/dev/null || true
+              cat .agentplane/.release/ready/source.err >&2 || true
+              exit 1
+            fi
           else
             SHA="$(git rev-parse HEAD)"
             SOURCE_STATUS=0
@@ -113,15 +121,17 @@ jobs:
               --workflow ci.yml \
               --sha "${SHA}" \
               --run-id "${{ github.event.workflow_run.id }}" \
-              --json > .agentplane/.release/ready/source.json; then
+              --json > .agentplane/.release/ready/source.json 2>.agentplane/.release/ready/source.err; then
               SOURCE_STATUS=0
             else
               SOURCE_STATUS=$?
             fi
             if [ ! -f .agentplane/.release/ready/source.json ]; then
+              cat .agentplane/.release/ready/source.err >&2 || true
               exit "${SOURCE_STATUS}"
             fi
           fi
+          cat .agentplane/.release/ready/source.err >&2 || true
           RELEASE_READY_OK="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/source.json','utf8')); process.stdout.write(payload.ok ? 'true' : 'false');")"
           RELEASE_READY_STATE="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/source.json','utf8')); process.stdout.write(String(payload.state || 'unknown'));")"
           RELEASE_READY_RUN_ID="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/source.json','utf8')); process.stdout.write(String(payload.run?.id || ''));")"
@@ -140,9 +150,9 @@ jobs:
         run: |
           set -euo pipefail
           if [ -f scripts/release/check-task-registry-ready.mjs ]; then
-            node scripts/release/check-task-registry-ready.mjs
+            node scripts/release/check-task-registry-ready.mjs --allow-active-release-task
           elif [ -f .agentplane/.release/runtime/scripts/release/check-task-registry-ready.mjs ]; then
-            node .agentplane/.release/runtime/scripts/release/check-task-registry-ready.mjs
+            node .agentplane/.release/runtime/scripts/release/check-task-registry-ready.mjs --allow-active-release-task
           else
             echo "release task registry gate skipped: no compatible script exists for this historical target"
           fi
@@ -714,6 +724,13 @@ jobs:
         run: |
           set -euo pipefail
           git push --set-upstream origin "${{ steps.release_evidence.outputs.closure_branch }}"
+      - name: Dispatch Core CI for release evidence branch
+        if: steps.apply_release_evidence.outputs.created_commit == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run ci.yml --ref "${{ steps.release_evidence.outputs.closure_branch }}"
       - name: Open or recover release evidence PR
         if: |
           steps.release_evidence.outputs.actionable == 'true' &&
@@ -759,6 +776,7 @@ jobs:
           if [ -z "$pr_url" ]; then
             pr_url="${{ steps.create_release_evidence_pr.outputs.pr_url }}"
           fi
+          gh pr checks "$pr_url" --watch --interval 15
           if gh pr merge --merge --delete-branch "$pr_url"; then
             echo "Release evidence PR merged immediately: $pr_url"
           elif ! gh pr merge --auto --merge --delete-branch "$pr_url"; then

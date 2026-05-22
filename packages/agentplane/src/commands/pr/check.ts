@@ -34,6 +34,7 @@ export async function cmdPrCheck(opts: {
   cwd: string;
   rootOverride?: string;
   taskId: string;
+  branch?: string;
 }): Promise<number> {
   try {
     const output = createCliEmitter();
@@ -109,7 +110,9 @@ export async function cmdPrCheck(opts: {
       freshnessVerifyLogSha: null,
     };
 
-    const localBranch = localSnapshot.meta?.branch?.trim() ?? "";
+    const branchOverride = opts.branch?.trim() ?? "";
+    const localBranch =
+      branchOverride.length > 0 ? branchOverride : (localSnapshot.meta?.branch?.trim() ?? "");
     if (localBranch) {
       branchCache.value = localBranch;
     } else if (branchCache.value === undefined) {

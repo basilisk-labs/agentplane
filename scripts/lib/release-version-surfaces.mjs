@@ -112,6 +112,19 @@ function writeTextConst(text, surface, nextVersion) {
   return next;
 }
 
+function readWorkflowExpectedCliVersion(text) {
+  const match = /^(\s*expected_version:\s*)(\S+)\s*$/mu.exec(text);
+  return typeof match?.[2] === "string" ? match[2].trim() : null;
+}
+
+function writeWorkflowExpectedCliVersion(text, surface, nextVersion) {
+  const next = text.replace(/^(\s*expected_version:\s*)\S+\s*$/mu, `$1${nextVersion}`);
+  if (next === text) {
+    throw new Error(`${surface.file} must contain framework.cli.expected_version.`);
+  }
+  return next;
+}
+
 export function readReleaseVersionSurfaces(rootDir) {
   const manifest = readReleaseVersionSurfaceManifest(rootDir);
   const values = [];
@@ -151,6 +164,11 @@ export function readReleaseVersionSurfaces(rootDir) {
       }
       if (surface.kind === "typescript_string_const") {
         const value = readTextConst(readFileSync(absPath, "utf8"), surface);
+        values.push({ ...surface, exists: true, value });
+        continue;
+      }
+      if (surface.kind === "workflow_expected_cli_version") {
+        const value = readWorkflowExpectedCliVersion(readFileSync(absPath, "utf8"));
         values.push({ ...surface, exists: true, value });
         continue;
       }
@@ -205,6 +223,12 @@ export function applyReleaseVersionSurfaces(rootDir, nextVersion) {
     if (surface.kind === "typescript_string_const") {
       const before = readFileSync(absPath, "utf8");
       writeFileSync(absPath, writeTextConst(before, surface, nextVersion), "utf8");
+      changedPaths.push(surface.file);
+      continue;
+    }
+    if (surface.kind === "workflow_expected_cli_version") {
+      const before = readFileSync(absPath, "utf8");
+      writeFileSync(absPath, writeWorkflowExpectedCliVersion(before, surface, nextVersion), "utf8");
       changedPaths.push(surface.file);
       continue;
     }

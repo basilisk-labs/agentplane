@@ -193,23 +193,22 @@ export function buildIntegratedPrMeta(opts: {
   alreadyVerifiedSha: string | null;
 }): PrMeta {
   const nextMeta: PrMeta = {
-    ...opts.meta,
+    ...omitTrackedLiveHead(opts.meta),
     branch: opts.branch,
     base: opts.base,
     merge_strategy: opts.mergeStrategy,
     status: "MERGED",
     merged_at: nowOrExisting(opts.meta.merged_at, opts.at),
     merge_commit: opts.mergeHash,
-    head_sha: opts.branchHeadSha,
     updated_at: opts.at,
   };
 
   if (opts.verifyCommands.length > 0 && (opts.shouldRunVerify || opts.alreadyVerifiedSha)) {
-    nextMeta.last_verified_sha = opts.branchHeadSha;
     nextMeta.last_verified_at = opts.at;
     nextMeta.verify = opts.meta.verify
       ? { ...opts.meta.verify, status: "pass" }
       : { status: "pass", command: opts.verifyCommands.join(" && ") };
+    setLastVerifiedDiffstatDigest(nextMeta, opts.meta[DIFFSTAT_DIGEST_FIELD]);
   }
 
   return withPrArtifactLifecycleState(

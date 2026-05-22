@@ -228,9 +228,22 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("Release task registry (check)");
     expect(workflow).toContain("if: steps.source.outputs.release_ready_ok == 'true'");
     expect(workflow).toContain("node scripts/release/check-task-registry-ready.mjs");
+    expect(workflow).toContain("--allow-active-release-task");
     expect(workflow.indexOf("Resolve release-ready source")).toBeLessThan(
       workflow.indexOf("Release task registry (check)"),
     );
+  });
+
+  it("prints resolver diagnostics and dispatches branch CI for release evidence PRs", async () => {
+    const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+
+    expect(workflow).toContain("source.err");
+    expect(workflow).toContain("cat .agentplane/.release/ready/source.err");
+    expect(workflow).toContain("Dispatch Core CI for release evidence branch");
+    expect(workflow).toContain(
+      'gh workflow run ci.yml --ref "${{ steps.release_evidence.outputs.closure_branch }}"',
+    );
+    expect(workflow).toContain('gh pr checks "$pr_url" --watch --interval 15');
   });
 
   it("serializes publish runs by release identity instead of branch ref", async () => {

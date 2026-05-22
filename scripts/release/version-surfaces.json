@@ -58,6 +58,12 @@
       "required": false
     },
     {
+      "id": "workflow.expected_cli_version",
+      "file": ".agentplane/WORKFLOW.md",
+      "kind": "workflow_expected_cli_version",
+      "required": false
+    },
+    {
       "id": "acr.producer.version",
       "file": "packages/spec/examples/acr.json",
       "kind": "json",

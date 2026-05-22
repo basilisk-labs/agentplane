@@ -24,6 +24,8 @@ async function makeRepo(tasks: { id: string; status: string; title?: string }[])
         `title: ${task.title ?? "Test task"}`,
         `status: ${task.status}`,
         "depends_on: []",
+        "tags:",
+        task.title?.startsWith("Release AgentPlane") ? '  - "release"' : '  - "code"',
         "---",
         "",
       ].join("\n"),
@@ -75,6 +77,79 @@ describe("check-task-registry-ready script", () => {
     expect(result.stderr).toContain(
       "finish, close, or explicitly move it out of the release scope",
     );
+  });
+
+  it("allows the current version release task only when explicitly requested", async () => {
+    const root = await makeRepo([
+      { id: "202605190001-ABC123", status: "DOING", title: "Release AgentPlane v0.6.3" },
+    ]);
+
+    await expect(
+      execFileAsync("node", [SCRIPT_PATH, "--allow-active-release-task"], { cwd: root }),
+    ).resolves.toBeDefined();
+  });
+
+  it("does not allow unrelated DOING tasks that merely mention the release version", async () => {
+    const root = await makeRepo([
+      { id: "202605190001-ABC123", status: "DOING", title: "Fix release notes for v0.6.3" },
+    ]);
+
+    const result = await execFileAsync("node", [SCRIPT_PATH, "--allow-active-release-task"], {
+      cwd: root,
+    }).then(
+      () => ({ ok: true as const, stderr: "" }),
+      (error: unknown) => {
+        const stderr =
+          typeof error === "object" &&
+          error !== null &&
+          "stderr" in error &&
+          typeof (error as { stderr?: unknown }).stderr === "string"
+            ? (error as { stderr: string }).stderr
+            : "";
+        return { ok: false as const, stderr };
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("DOING task blocks release readiness");
+  });
+
+  it("still blocks open release observations on the allowed active release task", async () => {
+    const root = await makeRepo([
+      { id: "202605190001-ABC123", status: "DOING", title: "Release AgentPlane v0.6.3" },
+    ]);
+    await appendFile(
+      path.join(root, ".agentplane", "tasks", "202605190001-ABC123", "observations.jsonl"),
+      `${JSON.stringify({
+        schema_version: "0.1",
+        id: "obs-release-risk",
+        task_id: "202605190001-ABC123",
+        severity: "high",
+        summary: "Release blocker",
+        recommended_action: { type: "none" },
+        status: "open",
+      })}\n`,
+      "utf8",
+    );
+
+    const result = await execFileAsync("node", [SCRIPT_PATH, "--allow-active-release-task"], {
+      cwd: root,
+    }).then(
+      () => ({ ok: true as const, stderr: "" }),
+      (error: unknown) => {
+        const stderr =
+          typeof error === "object" &&
+          error !== null &&
+          "stderr" in error &&
+          typeof (error as { stderr?: unknown }).stderr === "string"
+            ? (error as { stderr: string }).stderr
+            : "";
+        return { ok: false as const, stderr };
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("obs-release-risk requires severity triage");
   });
 
   it("fails release readiness on open medium actionable observations", async () => {

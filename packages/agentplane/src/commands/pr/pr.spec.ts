@@ -135,15 +135,32 @@ export const prUpdateSpec: CommandSpec<PrUpdateParsed> = {
   }),
 };
 
-export type PrCheckParsed = { taskId: string };
+export type PrCheckParsed = { taskId: string; branch: string | null };
 
 export const prCheckSpec: CommandSpec<PrCheckParsed> = {
   id: ["pr", "check"],
   group: "PR",
   summary: "Check that PR artifacts are present and valid.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
-  examples: [{ cmd: "agentplane pr check 202602030608-F1Q8AB", why: "Check artifacts." }],
-  parse: (raw) => ({ taskId: String(raw.args["task-id"]) }),
+  options: [
+    {
+      kind: "string",
+      name: "branch",
+      valueHint: "<name>",
+      description: "Task branch to validate when local artifacts are stale or ambiguous.",
+    },
+  ],
+  examples: [
+    { cmd: "agentplane pr check 202602030608-F1Q8AB", why: "Check artifacts." },
+    {
+      cmd: "agentplane pr check 202602030608-F1Q8AB --branch task/202602030608-F1Q8AB/demo",
+      why: "Validate artifacts from the selected task branch.",
+    },
+  ],
+  parse: (raw) => ({
+    taskId: String(raw.args["task-id"]),
+    branch: typeof raw.opts.branch === "string" ? raw.opts.branch : null,
+  }),
 };
 
 export type PrFlowStatusParsed = { taskId: string; json: boolean };
