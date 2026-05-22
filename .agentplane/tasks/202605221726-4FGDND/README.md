@@ -1,10 +1,11 @@
 ---
 id: "202605221726-4FGDND"
 title: "Add integration queue stale handoff recovery"
-status: "DOING"
+result_summary: "Merged via PR #4040."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ quality_review:
     - ".agentplane/tasks/202605221726-4FGDND/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221726-4FGDND-integration-queue-handoff-recovery/.agentplane/tasks/202605221726-4FGDND/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "ab9694fc0494ebf3510e927c4a02c30a6ea5d83d"
+  message: "Merge pull request #4040 from basilisk-labs/task/202605221726-4FGDND/integration-queue-handoff-recovery"
 comments:
   -
     author: "CODER"
     body: "Start: adding bounded stale handoff recovery for integration queue provider states."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4040 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator check: recovery is bounded to provider-terminal states; OPEN provider PRs are retained, MERGED waits for close-tail evidence, and CLOSED/not_found become rework instead of being silently released."
+  -
+    type: "status"
+    at: "2026-05-22T22:24:09.523Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4040 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T22:05:16.239Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T22:24:09.530Z"
+doc_updated_by: "INTEGRATOR"
 description: "Detect and recover integration queue entries stuck in claimed or handoff when the provider PR is already merged, closed, missing, or blocked by stale metadata."
 sections:
   Summary: |-
