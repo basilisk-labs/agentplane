@@ -30,8 +30,7 @@ export async function resolveBranchHeadSha(opts: {
 }): Promise<string | null> {
   try {
     const { stdout } = await execFileAsync("git", ["rev-parse", opts.branch], {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
+      ...gitLookupOptions(opts.gitRoot),
     });
     return stdout.trim() || null;
   } catch (err) {
@@ -56,8 +55,7 @@ export async function resolveRenderableBranchHead(opts: {
       "git",
       ["log", "-1", "--pretty=%s", branchHeadSha],
       {
-        cwd: opts.gitRoot,
-        env: gitEnv(),
+        ...gitLookupOptions(opts.gitRoot),
       },
     );
     const subject = subjectStdout.trim();
@@ -79,8 +77,7 @@ export async function resolvePrDiffBaseRef(opts: {
   if (!candidate) return opts.baseBranch;
   try {
     const { stdout } = await execFileAsync("git", ["rev-parse", "--verify", candidate], {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
+      ...gitLookupOptions(opts.gitRoot),
     });
     if (!stdout.trim()) return opts.baseBranch;
     if (await isAncestor(opts.gitRoot, candidate, opts.baseBranch)) return opts.baseBranch;
@@ -91,14 +88,40 @@ export async function resolvePrDiffBaseRef(opts: {
   }
 }
 
+const PR_SYNC_GIT_TIMEOUT_MS = 10_000;
+
+function gitLookupOptions(gitRoot: string): {
+  cwd: string;
+  env: NodeJS.ProcessEnv;
+  timeout: number;
+} {
+  return {
+    cwd: gitRoot,
+    env: gitEnv(),
+    timeout: PR_SYNC_GIT_TIMEOUT_MS,
+  };
+}
+
+function isGitLookupTimeoutError(err: unknown): boolean {
+  if (!err || typeof err !== "object") return false;
+  const error = err as {
+    code?: unknown;
+    timedOut?: unknown;
+    message?: unknown;
+  };
+  if (error.timedOut === true) return true;
+  if (error.code === "ETIMEDOUT" || error.code === "TIMEOUT") return true;
+  return typeof error.message === "string" && /\btimed out\b/i.test(error.message);
+}
+
 async function isAncestor(gitRoot: string, ancestor: string, descendant: string): Promise<boolean> {
   try {
     await execFileAsync("git", ["merge-base", "--is-ancestor", ancestor, descendant], {
-      cwd: gitRoot,
-      env: gitEnv(),
+      ...gitLookupOptions(gitRoot),
     });
     return true;
   } catch (err) {
+    if (isGitLookupTimeoutError(err)) throw err;
     const exitCode = (err as { code?: unknown; exitCode?: unknown } | null)?.code;
     const normalizedExitCode =
       typeof exitCode === "number" ? exitCode : (err as { exitCode?: unknown } | null)?.exitCode;
@@ -132,6 +155,7 @@ export async function computePrDiffstat(opts: {
   try {
     return await gitDiffStat(opts.gitRoot, diffBaseRef, opts.branch, {
       excludePaths,
+      timeoutMs: PR_SYNC_GIT_TIMEOUT_MS,
     });
   } catch (err) {
     if (!isUnknownRevisionError(err)) throw err;

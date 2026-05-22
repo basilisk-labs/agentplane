@@ -49,6 +49,7 @@ async function resolveDiffBase(
   base: string,
   branch: string,
   range: GitDiffRange = "three-dot",
+  timeoutMs?: number,
 ): Promise<string> {
   assertSafeGitRef(base);
   assertSafeGitRef(branch);
@@ -56,6 +57,7 @@ async function resolveDiffBase(
   const { stdout } = await execFileAsync("git", ["merge-base", base, branch], {
     cwd,
     env: gitEnv(),
+    ...(timeoutMs === undefined ? {} : { timeout: timeoutMs }),
   });
   const mergeBase = String(stdout).trim();
   if (!mergeBase) throw new Error("Failed to resolve git merge-base");
@@ -83,11 +85,17 @@ export async function gitShowFile(cwd: string, ref: string, relPath: string): Pr
   return String(stdout);
 }
 
-export async function gitDiffNames(cwd: string, base: string, branch: string): Promise<string[]> {
-  const diffBase = await resolveDiffBase(cwd, base, branch);
+export async function gitDiffNames(
+  cwd: string,
+  base: string,
+  branch: string,
+  opts?: { timeoutMs?: number },
+): Promise<string[]> {
+  const diffBase = await resolveDiffBase(cwd, base, branch, "three-dot", opts?.timeoutMs);
   const { stdout } = await execFileAsync("git", ["diff", "--name-only", diffBase, branch], {
     cwd,
     env: gitEnv(),
+    ...(opts?.timeoutMs === undefined ? {} : { timeout: opts.timeoutMs }),
   });
   return String(stdout)
     .split("\n")
@@ -146,9 +154,9 @@ export async function gitDiffStat(
   cwd: string,
   base: string,
   branch: string,
-  opts?: { excludePaths?: string[] },
+  opts?: { excludePaths?: string[]; timeoutMs?: number },
 ): Promise<string> {
-  const diffBase = await resolveDiffBase(cwd, base, branch);
+  const diffBase = await resolveDiffBase(cwd, base, branch, "three-dot", opts?.timeoutMs);
   const excludePaths = (opts?.excludePaths ?? [])
     .map((relPath) => relPath.trim())
     .filter((relPath) => relPath.length > 0);
@@ -156,7 +164,7 @@ export async function gitDiffStat(
   if (excludePaths.length > 0) {
     for (const relPath of excludePaths) assertSafeGitPath(relPath);
     const excluded = new Set(excludePaths.map((relPath) => toGitPath(relPath)));
-    const changedPaths = await gitDiffNames(cwd, base, branch);
+    const changedPaths = await gitDiffNames(cwd, base, branch, { timeoutMs: opts?.timeoutMs });
     const includedPaths = changedPaths
       .map((relPath) => relPath.trim())
       .filter((relPath) => relPath.length > 0)
@@ -173,6 +181,7 @@ export async function gitDiffStat(
   const { stdout } = await execFileAsync("git", args, {
     cwd,
     env: gitEnv(),
+    ...(opts?.timeoutMs === undefined ? {} : { timeout: opts.timeoutMs }),
   });
   return String(stdout).trimEnd();
 }
