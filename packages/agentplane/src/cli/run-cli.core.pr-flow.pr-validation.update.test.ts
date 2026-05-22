@@ -230,7 +230,7 @@ describe("runCli PR validation and hydration flow (pr update scenarios)", () => 
     expect(meta.pr_number).toBe(321);
     expect(meta.pr_url).toBe("https://github.com/example/repo/pull/321");
     expect(meta.status).toBe("OPEN");
-    expect(meta.head_sha).toBe("remote-head-sha");
+    expect(meta.head_sha).toBeUndefined();
     expect(meta.merged_at).toBeUndefined();
     expect(meta.merge_commit).toBeUndefined();
     expect(meta.artifact_state).not.toBe("merged");

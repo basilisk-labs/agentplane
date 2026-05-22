@@ -71,6 +71,7 @@ async function warnOnStaleVerifyAfterUpdate(opts: {
         baseBranch: opts.meta.base,
         branch,
         prDir: opts.prDir,
+        tasksPath: config.paths.tasks_path,
       })
     : "";
   const verifyLogText = await readTextIfExists(path.join(opts.prDir, "verify.log"));

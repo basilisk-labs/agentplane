@@ -131,6 +131,7 @@ export async function cmdPrCheck(opts: {
         baseBranch: localSnapshot.meta.base,
         branch: branchForFreshness,
         prDir,
+        tasksPath: config.paths.tasks_path,
       });
       currentDiffstatText = currentDiffstat ? `${currentDiffstat}\n` : "";
     }

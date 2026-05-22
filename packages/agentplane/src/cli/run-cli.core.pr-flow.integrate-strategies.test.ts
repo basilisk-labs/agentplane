@@ -140,6 +140,8 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       ioTask.restore();
     }
     await approveTaskPlan(root, taskId);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await recordVerificationOk(root, taskId);
     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
@@ -150,6 +152,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "wip"], { cwd: root });
 
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await recordVerificationOk(root, taskId);
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
@@ -254,6 +257,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       },
     );
 
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await recordVerificationOk(root, taskId);
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
@@ -339,6 +343,8 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
         ioTask.restore();
       }
       await approveTaskPlan(root, taskId);
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await recordVerificationOk(root, taskId);
       await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
@@ -349,6 +355,8 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await recordVerificationOk(root, taskId);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
@@ -427,6 +435,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
         ioTask.restore();
       }
       await approveTaskPlan(root, taskId);
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await recordVerificationOk(root, taskId);
       await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
@@ -437,6 +446,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await recordVerificationOk(root, taskId);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
@@ -521,6 +531,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await recordVerificationOk(root, taskId);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
@@ -620,6 +631,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await recordVerificationOk(root, taskId);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);

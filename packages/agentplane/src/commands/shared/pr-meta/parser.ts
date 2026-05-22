@@ -10,6 +10,9 @@ import {
 } from "./helpers.js";
 import type { PrMeta } from "./model.js";
 
+const DIFFSTAT_DIGEST_FIELD = "diffstat_sha256";
+const LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD = "last_verified_diffstat_sha256";
+
 export function parsePrMeta(raw: string, taskId: string): PrMeta {
   let parsed: unknown;
   try {
@@ -64,6 +67,8 @@ type ForwardCompatiblePrMetaRecord = {
   artifact_state?: unknown;
   artifact_state_reason?: unknown;
   artifact_state_updated_at?: unknown;
+  diffstat_sha256?: unknown;
+  last_verified_diffstat_sha256?: unknown;
 };
 
 function buildForwardCompatiblePrMeta(
@@ -93,7 +98,7 @@ function buildForwardCompatiblePrMeta(
       ? artifactStateCandidate
       : undefined;
 
-  return {
+  const meta: PrMeta = {
     schema_version: 1,
     task_id: taskId,
     related_task_ids: normalizeRelatedTaskIds(parsed.related_task_ids, taskId),
@@ -122,6 +127,13 @@ function buildForwardCompatiblePrMeta(
     artifact_state_reason: asNonEmptyString(parsed.artifact_state_reason),
     artifact_state_updated_at: asNonEmptyString(parsed.artifact_state_updated_at),
   };
+  const diffstatDigest = asNonEmptyString(parsed.diffstat_sha256);
+  if (diffstatDigest) meta[DIFFSTAT_DIGEST_FIELD] = diffstatDigest;
+  const lastVerifiedDiffstatDigest = asNonEmptyString(parsed.last_verified_diffstat_sha256);
+  if (lastVerifiedDiffstatDigest) {
+    meta[LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD] = lastVerifiedDiffstatDigest;
+  }
+  return meta;
 }
 
 function asMergeStrategy(value: unknown): "squash" | "merge" | "rebase" | undefined {

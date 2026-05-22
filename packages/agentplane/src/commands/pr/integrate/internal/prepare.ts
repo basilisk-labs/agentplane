@@ -233,25 +233,34 @@ export async function prepareIntegrate(opts: {
     baseBranch: base,
     branch,
     prDir,
+    tasksPath: loadedConfig.paths.tasks_path,
   });
   const currentDiffstatText = currentDiffstat ? `${currentDiffstat}\n` : "";
   const currentDiffstatDigest = digestPrDiffstatText(currentDiffstatText);
-  let freshness = await assessPrArtifactFreshness({
-    gitRoot: resolved.gitRoot,
-    workflowDir: loadedConfig.paths.workflow_dir,
-    tasksPath: loadedConfig.paths.tasks_path,
-    taskId: opts.taskId,
-    branchHeadSha,
-    metaHeadSha: metaSource.head_sha ?? null,
-    metaLastVerifiedSha: metaSource.last_verified_sha ?? null,
-    metaDiffstatDigest: metaSource[PR_DIFFSTAT_DIGEST_FIELD] ?? null,
-    metaLastVerifiedDiffstatDigest: metaSource[PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD] ?? null,
-    currentDiffstatDigest,
-    metaVerifyStatus: metaSource.verify?.status ?? null,
-    taskVerificationState: task.verification?.state ?? null,
-    verifyLogText,
-    requiresVerify: Boolean(task.verify && task.verify.length > 0),
-  });
+  let freshness = protectedBaseRequiresPrMerge
+    ? {
+        reviewFresh: true,
+        verifyFresh: true,
+        verifySatisfied: true,
+        verifyLogSha: null,
+        effectiveVerifiedSha: null,
+      }
+    : await assessPrArtifactFreshness({
+        gitRoot: resolved.gitRoot,
+        workflowDir: loadedConfig.paths.workflow_dir,
+        tasksPath: loadedConfig.paths.tasks_path,
+        taskId: opts.taskId,
+        branchHeadSha,
+        metaHeadSha: metaSource.head_sha ?? null,
+        metaLastVerifiedSha: metaSource.last_verified_sha ?? null,
+        metaDiffstatDigest: metaSource[PR_DIFFSTAT_DIGEST_FIELD] ?? null,
+        metaLastVerifiedDiffstatDigest: metaSource[PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD] ?? null,
+        currentDiffstatDigest,
+        metaVerifyStatus: metaSource.verify?.status ?? null,
+        taskVerificationState: task.verification?.state ?? null,
+        verifyLogText,
+        requiresVerify: Boolean(task.verify && task.verify.length > 0),
+      });
   if (!freshness.reviewFresh && worktreePath) {
     await ensurePrArtifactsSynced({
       cwd: worktreePath,
@@ -311,11 +320,9 @@ export async function prepareIntegrate(opts: {
   ensureVerificationSatisfiedIfRequired(task, loadedConfig);
   assertEvaluatorQualityReviewPassed({
     task,
-    expectedSha: await resolveQualityReviewExpectedSha(
-      resolved.gitRoot,
-      opts.taskId,
-      branchHeadSha,
-    ),
+    expectedSha: protectedBaseRequiresPrMerge
+      ? null
+      : await resolveQualityReviewExpectedSha(resolved.gitRoot, opts.taskId, branchHeadSha),
     command: "integrate",
   });
   const initialVerifyState = computeVerifyState({

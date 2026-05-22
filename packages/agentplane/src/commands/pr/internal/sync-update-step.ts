@@ -37,6 +37,7 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
     baseBranch: common.baseBranch,
     branch: common.branch,
     prDir: common.prDir,
+    tasksPath: common.tasksPath,
   });
   let nextMeta: PrMeta = buildUpdatedPrMeta({
     meta: common.existingMeta!,

@@ -220,7 +220,7 @@ describe(
       expect(meta.pr_number).toBe(321);
       expect(meta.pr_url).toBe("https://github.com/example/repo/pull/321");
       expect(meta.status).toBe("OPEN");
-      expect(meta.head_sha).toBe("remote-head-sha");
+      expect(meta.head_sha).toBeUndefined();
 
       const rawLog = await readFile(logPath, "utf8");
       expect(rawLog).toContain(`head=example%3Atask%2F${taskId}%2Fexisting-pr`);
@@ -449,7 +449,7 @@ describe(
       expect(meta.pr_number).toBe(777);
       expect(meta.pr_url).toBe("https://github.com/example/repo/pull/777");
       expect(meta.status).toBe("OPEN");
-      expect(meta.head_sha).toBe("remote-head-sha");
+      expect(meta.head_sha).toBeUndefined();
 
       const { stdout: statusOut } = await execFileAsync(
         "git",
@@ -552,8 +552,8 @@ describe(
       const githubBodyAfter = await readFile(path.join(prDir, "github-body.md"), "utf8");
       expect(reviewAfter).not.toBe(reviewBefore);
       expect(githubBodyAfter).not.toBe(githubBodyBefore);
-      expect(reviewAfter).toContain("Head: remote-head-");
-      expect(githubBodyAfter).toContain("Head: remote-head-");
+      expect(reviewAfter).toContain("Head: computed live by");
+      expect(githubBodyAfter).toContain("Head: computed live by");
     });
   },
 );

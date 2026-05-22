@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605221340-G8VYEJ/release-v0-6-6",
+  "created_at": "2026-05-22T15:52:49.579Z",
+  "diffstat_sha256": "sha256:3c7a92aadf7d7f27b68db1bc7fffb4bd187b7af3c0c60afb40d1edffb3f561c3",
+  "last_verified_at": "2026-05-22T16:01:03.720Z",
+  "last_verified_diffstat_sha256": "sha256:3c7a92aadf7d7f27b68db1bc7fffb4bd187b7af3c0c60afb40d1edffb3f561c3",
+  "pr_number": 4019,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4019",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605221340-G8VYEJ",
+  "updated_at": "2026-05-22T15:53:11.691Z",
+  "verify": {
+    "status": "pass"
+  }
+}
