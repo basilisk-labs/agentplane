@@ -1,0 +1,4 @@
+ .../src/commands/pr/internal/sync-branch.test.ts   | 97 ++++++++++++++++++++++
+ .../src/commands/pr/internal/sync-branch.ts        | 40 +++++++--
+ packages/core/src/git/git-diff.ts                  | 19 +++--
+ 3 files changed, 143 insertions(+), 13 deletions(-)
