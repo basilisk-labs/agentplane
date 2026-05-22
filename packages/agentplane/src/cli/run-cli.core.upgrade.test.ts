@@ -125,7 +125,8 @@ describe("runCli", () => {
       }
 
       const gitignorePath = path.join(root, ".gitignore");
-      const staleGitignore = (await readFile(gitignorePath, "utf8"))
+      const gitignoreBeforeUpgrade = await readFile(gitignorePath, "utf8");
+      const staleGitignore = gitignoreBeforeUpgrade
         .split(/\r?\n/u)
         .filter(
           (line) =>

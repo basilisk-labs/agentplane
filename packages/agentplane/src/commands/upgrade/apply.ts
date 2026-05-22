@@ -51,7 +51,7 @@ async function isRuntimeSqliteGitignoreOnlyDiff(
   dirty: string[],
 ): Promise<boolean> {
   const dirtyPaths = dirty
-    .map(parseGitStatusPath)
+    .map((line) => parseGitStatusPath(line))
     .filter((relPath): relPath is string => relPath !== null);
   if (dirtyPaths.length === 0 || dirtyPaths.some((relPath) => relPath !== ".gitignore")) {
     return false;

@@ -94,9 +94,9 @@ async function listUpgradeAutoCommitTrackedDiff(gitRoot: string): Promise<string
     .map((line) => line.trimEnd())
     .filter(Boolean);
   return lines
-    .map(parseGitStatusPath)
+    .map((line) => parseGitStatusPath(line))
     .filter((relPath): relPath is string => relPath !== null)
-    .filter(isUpgradeAutoCommitPath);
+    .filter((relPath) => isUpgradeAutoCommitPath(relPath));
 }
 
 export async function cmdUpgradeParsed(opts: {
