@@ -1,0 +1,3 @@
+ .../src/commands/pr/integrate/cmd.test.ts          | 73 ++++++++++++++++++++++
+ .../pr/integrate/internal/github-pr-merge.ts       | 11 ++++
+ 2 files changed, 84 insertions(+)
