@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605221726-4FGDND/integration-queue-handoff-recovery",
+  "created_at": "2026-05-22T22:00:49.427Z",
+  "diffstat_sha256": "sha256:97e820f00f909ac77402d1ebccfa2f12d83b0d87a07b6a872d5d7b12baa2fac0",
+  "last_verified_at": "2026-05-22T22:05:16.211Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pr_number": 4040,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4040",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605221726-4FGDND",
+  "updated_at": "2026-05-22T22:05:45.166Z",
+  "verify": {
+    "status": "pass"
+  }
+}
