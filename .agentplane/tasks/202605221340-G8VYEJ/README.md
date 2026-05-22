@@ -21,10 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-22T16:01:03.720Z"
-  updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed: local release:prepublish completed before candidate preparation; post-bump format, release:parity, registry availability, release:check, docs:site:check, ap doctor, policy routing, pre-push fast route, and hosted PR checks for #4019 passed. PR branch is one commit over origin/main and PR meta has no tracked head_sha."
-  attempts: 0
+  updated_at: "2026-05-22T16:23:27.117Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.6."
 quality_review:
   state: "pass"
   updated_at: "2026-05-22T16:01:03.720Z"
@@ -78,8 +77,8 @@ events:
     to: "DONE"
     note: "Verified: PR #4019 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T16:11:23.560Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-22T16:23:27.117Z"
+doc_updated_by: "DEUS"
 description: "Prepare and publish the next patch release from current main after validating repository state, full checks, release candidate, hosted merge, and npm/GitHub release evidence."
 sections:
   Summary: |-
@@ -98,25 +97,19 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    ### 2026-05-22T16:01:03.720Z — VERIFY — ok
-
-    By: EVALUATOR
-
-    Note: EVALUATOR quality gate passed: local release:prepublish completed before candidate preparation; post-bump format, release:parity, registry availability, release:check, docs:site:check, ap doctor, policy routing, pre-push fast route, and hosted PR checks for #4019 passed. PR branch is one commit over origin/main and PR meta has no tracked head_sha.
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-22T13:43:09.190Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221340-G8VYEJ-release-v0-6-6/.agentplane/tasks/202605221340-G8VYEJ/blueprint/resolved-snapshot.json
-    - old_digest: a05c9163c2dac4a4f7692255d17c66e9a694aa039d4ffb4dfe85836072d6a0a1
-    - current_digest: a05c9163c2dac4a4f7692255d17c66e9a694aa039d4ffb4dfe85836072d6a0a1
-    - route_changed: no
-    - safe_command: agentplane blueprint snapshot 202605221340-G8VYEJ
-
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.6.
+    - Details:
+      - release_sha: 92ca8827543c84a2584dfd886917e1b24d5a51d7
+      - version: 0.6.6
+      - tag: v0.6.6
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.6
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26299153438
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -150,25 +143,19 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-### 2026-05-22T16:01:03.720Z — VERIFY — ok
-
-By: EVALUATOR
-
-Note: EVALUATOR quality gate passed: local release:prepublish completed before candidate preparation; post-bump format, release:parity, registry availability, release:check, docs:site:check, ap doctor, policy routing, pre-push fast route, and hosted PR checks for #4019 passed. PR branch is one commit over origin/main and PR meta has no tracked head_sha.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-22T13:43:09.190Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
-
-Details:
-
-BlueprintSnapshotRef:
-- state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221340-G8VYEJ-release-v0-6-6/.agentplane/tasks/202605221340-G8VYEJ/blueprint/resolved-snapshot.json
-- old_digest: a05c9163c2dac4a4f7692255d17c66e9a694aa039d4ffb4dfe85836072d6a0a1
-- current_digest: a05c9163c2dac4a4f7692255d17c66e9a694aa039d4ffb4dfe85836072d6a0a1
-- route_changed: no
-- safe_command: agentplane blueprint snapshot 202605221340-G8VYEJ
-
+- State: ok
+- Note: Hosted publish confirmed for v0.6.6.
+- Details:
+  - release_sha: 92ca8827543c84a2584dfd886917e1b24d5a51d7
+  - version: 0.6.6
+  - tag: v0.6.6
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.6
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26299153438
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
