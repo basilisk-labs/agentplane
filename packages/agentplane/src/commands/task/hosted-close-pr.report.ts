@@ -25,11 +25,18 @@ function reportNotice(output: ReturnType<typeof createCliEmitter>, notice: Hoste
   output.info(notice.message);
 }
 
-export function reportHostedClosePrOutcome(outcome: HostedClosePrOutcome): void {
-  reportHostedClosePrExecutionResult({ notices: [], outcome });
+export function reportHostedClosePrOutcome(
+  outcome: HostedClosePrOutcome,
+  opts?: { silent?: boolean },
+): void {
+  reportHostedClosePrExecutionResult({ notices: [], outcome }, opts);
 }
 
-export function reportHostedClosePrExecutionResult(result: HostedClosePrExecutionResult): void {
+export function reportHostedClosePrExecutionResult(
+  result: HostedClosePrExecutionResult,
+  opts?: { silent?: boolean },
+): void {
+  if (opts?.silent) return;
   const output = createCliEmitter();
   for (const notice of result.notices) {
     reportNotice(output, notice);

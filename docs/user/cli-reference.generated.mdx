@@ -3625,7 +3625,7 @@ agentplane evidence verify 202605031625-886KZ6
 
 ### flow repair
 
-Print a dry-run repair plan for task workflow drift.
+Print or apply safe repair steps for task workflow drift.
 
 Usage:
 
@@ -3635,7 +3635,8 @@ agentplane flow repair <task-id> [options]
 
 Options:
 
-- `--dry-run`: Print planned repairs without mutating. Currently required. (default=true)
+- `--dry-run`: Print planned repairs without mutating. (default=true)
+- `--safe-apply`: Apply only deterministic safe repairs; approval and provider merge actions are never executed. (default=false)
 - `--json`: Emit JSON. (default=false)
 
 Examples:
@@ -3645,3 +3646,9 @@ agentplane flow repair 202602030608-F1Q8AB --dry-run
 ```
 
 - Classify workflow drift and print safe next commands.
+
+```sh
+agentplane flow repair 202602030608-F1Q8AB --safe-apply
+```
+
+- Apply safe local/lifecycle repairs and print any skipped provider or approval actions.
