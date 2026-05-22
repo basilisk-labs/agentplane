@@ -32,6 +32,19 @@ function parseFrontMatter(text) {
   return out;
 }
 
+function readFrontMatterList(text, key) {
+  const lines = text.replaceAll("\r\n", "\n").split("\n");
+  const start = lines.findIndex((line) => line.trim() === `${key}:`);
+  if (start === -1) return [];
+  const values = [];
+  for (const line of lines.slice(start + 1)) {
+    if (/^[A-Za-z0-9_-]+:\s*/u.test(line)) break;
+    const match = /^\s*-\s*["']?([^"']+)["']?\s*$/u.exec(line);
+    if (match?.[1]) values.push(match[1].trim());
+  }
+  return values;
+}
+
 function listTaskDirs(tasksRoot) {
   if (!existsSync(tasksRoot)) return [];
   return readdirSync(tasksRoot)
@@ -79,11 +92,17 @@ function parseMinorPatch(version) {
 
 export function checkTaskState(repoRoot, opts = {}) {
   const packageJson = readJson(path.join(repoRoot, "packages", "agentplane", "package.json"));
+  const packageVersion = String(packageJson.version ?? "").trim();
   const currentPatch = parseMinorPatch(String(packageJson.version));
   const tasksRoot = path.join(repoRoot, ".agentplane", "tasks");
   const taskIds = listTaskDirs(tasksRoot);
   const seen = new Set();
   const failures = [];
+  const ignoredReleaseTaskIds = new Set(
+    (Array.isArray(opts.ignoreReleaseTaskIds) ? opts.ignoreReleaseTaskIds : [])
+      .map((entry) => String(entry ?? "").trim())
+      .filter(Boolean),
+  );
 
   for (const taskId of taskIds) {
     if (seen.has(taskId)) {
@@ -95,8 +114,10 @@ export function checkTaskState(repoRoot, opts = {}) {
     const readmePath = path.join(tasksRoot, taskId, "README.md");
     const relReadmePath = normalizePath(path.relative(repoRoot, readmePath));
     let frontMatter;
+    let readmeText;
     try {
-      frontMatter = parseFrontMatter(readFileSync(readmePath, "utf8"));
+      readmeText = readFileSync(readmePath, "utf8");
+      frontMatter = parseFrontMatter(readmeText);
     } catch (error) {
       failures.push(
         `${relReadmePath}: unreadable task file (${error instanceof Error ? error.message : String(error)})`,
@@ -105,12 +126,23 @@ export function checkTaskState(repoRoot, opts = {}) {
     }
     const status = String(frontMatter.status ?? "").trim();
     const title = String(frontMatter.title ?? "").trim();
+    const tags = new Set(readFrontMatterList(readmeText, "tags"));
 
     if (!status) {
       failures.push(`${relReadmePath}: missing status`);
       continue;
     }
-    if (opts.releaseReady === true && status === "DOING") {
+    const activeReleaseTaskDoingAllowed =
+      opts.releaseReady === true &&
+      opts.allowActiveReleaseTask === true &&
+      status === "DOING" &&
+      packageVersion &&
+      tags.has("release") &&
+      title === `Release AgentPlane v${packageVersion}`;
+    const doingAllowedForRelease =
+      opts.releaseReady === true &&
+      (ignoredReleaseTaskIds.has(taskId) || activeReleaseTaskDoingAllowed);
+    if (opts.releaseReady === true && status === "DOING" && !doingAllowedForRelease) {
       failures.push(
         `${relReadmePath}: DOING task blocks release readiness; finish, close, or explicitly move it out of the release scope before candidate/publish.`,
       );
@@ -170,8 +202,20 @@ export function checkTaskState(repoRoot, opts = {}) {
 const main = defineScript({
   name: SCRIPT_NAME,
   async run({ argv }) {
-    const { flags } = parseScriptArgs(argv, { booleanFlags: ["release-ready"] });
-    checkTaskState(process.cwd(), { releaseReady: flags["release-ready"] === true });
+    const { flags } = parseScriptArgs(argv, {
+      booleanFlags: ["release-ready", "allow-active-release-task"],
+      valueFlags: ["ignore-release-task"],
+    });
+    const ignoreReleaseTaskIds = Array.isArray(flags["ignore-release-task"])
+      ? flags["ignore-release-task"]
+      : typeof flags["ignore-release-task"] === "string"
+        ? [flags["ignore-release-task"]]
+        : [];
+    checkTaskState(process.cwd(), {
+      releaseReady: flags["release-ready"] === true,
+      ignoreReleaseTaskIds,
+      allowActiveReleaseTask: flags["allow-active-release-task"] === true,
+    });
   },
 });
 

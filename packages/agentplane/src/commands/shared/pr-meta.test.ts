@@ -237,9 +237,7 @@ describe("pr-meta shell invocations", () => {
         artifact_state: "merged",
         merge_strategy: "squash",
         merge_commit: "deadbeef",
-        head_sha: "deadbeef",
         merged_at: "2026-01-28T00:00:00Z",
-        last_verified_sha: "deadbeef",
         last_verified_at: "2026-01-28T00:00:00Z",
       }),
     );

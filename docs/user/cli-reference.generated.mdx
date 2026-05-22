@@ -1286,8 +1286,12 @@ Check that PR artifacts are present and valid.
 Usage:
 
 ```text
-agentplane pr check <task-id>
+agentplane pr check <task-id> [options]
 ```
+
+Options:
+
+- `--branch <name>`: Task branch to validate when local artifacts are stale or ambiguous.
 
 Examples:
 
@@ -1296,6 +1300,12 @@ agentplane pr check 202602030608-F1Q8AB
 ```
 
 - Check artifacts.
+
+```sh
+agentplane pr check 202602030608-F1Q8AB --branch task/202602030608-F1Q8AB/demo
+```
+
+- Validate artifacts from the selected task branch.
 
 ### pr close
 

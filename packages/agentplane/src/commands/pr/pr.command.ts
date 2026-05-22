@@ -85,6 +85,7 @@ export function makeRunPrCheckHandler(getCtx: (cmd: string) => Promise<CommandCo
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,
+      branch: p.branch ?? undefined,
     });
   };
 }

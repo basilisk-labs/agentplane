@@ -288,6 +288,33 @@ describe("check-release-parity script", () => {
     expect(acr.agent?.toolchain).toEqual([]);
   });
 
+  it("updates workflow expected CLI version during release version writes", async () => {
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-parity-",
+      coreVersion: "2.3.4",
+      cliVersion: "2.3.4",
+      recipesVersion: "2.3.4",
+      dependencyVersion: "2.3.4",
+      recipesDependencyVersion: "2.3.4",
+    });
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "WORKFLOW.md"),
+      "framework:\n  cli:\n    expected_version: 2.3.4\n",
+      "utf8",
+    );
+    const versionSurfaces = (await import(VERSION_SURFACES_MODULE_PATH)) as {
+      applyReleaseVersionSurfaces(rootDir: string, nextVersion: string): string[];
+    };
+
+    const changedPaths = versionSurfaces.applyReleaseVersionSurfaces(root, "2.3.5");
+
+    expect(changedPaths).toContain(".agentplane/WORKFLOW.md");
+    await expect(
+      readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8"),
+    ).resolves.toContain("expected_version: 2.3.5");
+  });
+
   it("fails when the publishable package manifest leaks a workspace protocol dependency", async () => {
     const root = await initReleaseWorkspace({
       prefix: "agentplane-release-parity-",

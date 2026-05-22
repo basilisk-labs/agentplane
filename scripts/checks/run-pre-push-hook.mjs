@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import os from "node:os";
 import path from "node:path";
 
@@ -89,6 +90,68 @@ function trackedChangesShort() {
   return String(read("git", ["status", "--short", "--untracked-files=no"])).trim();
 }
 
+function sha256Text(text) {
+  return createHash("sha256").update(text).digest("hex");
+}
+
+function proofPath() {
+  const gitDir = readQuiet("git", ["rev-parse", "--git-dir"]);
+  if (!gitDir) return "";
+  return path.join(gitDir, "agentplane", "pre-push-proof.json");
+}
+
+function proofKey({ updates, mode, ciScript, changedFiles }) {
+  return {
+    schema_version: 1,
+    mode,
+    ci_script: ciScript,
+    updates: updates.map((update) => ({
+      local_ref: update.localRef,
+      local_sha: update.localSha,
+      remote_ref: update.remoteRef,
+      remote_sha: update.remoteSha,
+    })),
+    changed_files_digest: sha256Text(changedFiles.toSorted().join("\n")),
+  };
+}
+
+function sameProofKey(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function readReusableProof(key) {
+  const filePath = proofPath();
+  if (!filePath || !existsSync(filePath)) return null;
+  try {
+    const payload = JSON.parse(readFileSync(filePath, "utf8"));
+    if (payload?.ok !== true) return null;
+    if (!sameProofKey(payload.key, key)) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+function writeReusableProof(key) {
+  const filePath = proofPath();
+  if (!filePath) return;
+  mkdirSync(path.dirname(filePath), { recursive: true });
+  writeFileSync(
+    filePath,
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        ok: true,
+        created_at: new Date().toISOString(),
+        key,
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+}
+
 function readLocalGitConfigBool(name) {
   try {
     return String(
@@ -136,6 +199,10 @@ function isUnder(filePath, prefix) {
   return filePath === prefix || filePath.startsWith(`${prefix}/`);
 }
 
+function isBranchRef(ref) {
+  return String(ref ?? "").startsWith("refs/heads/");
+}
+
 function isDocsOnlyPath(filePath) {
   return (
     DOC_FILE_RE.test(filePath) ||
@@ -147,6 +214,20 @@ function isDocsOnlyPath(filePath) {
 
 function isTaskArtifactPath(filePath) {
   return filePath === ".agentplane/tasks.json" || isUnder(filePath, ".agentplane/tasks");
+}
+
+function isReleaseEvidenceOnlyPush(updates, changedFiles) {
+  const branchNames = updates
+    .filter((update) => isBranchRef(update.remoteRef) && !/^0+$/u.test(update.localSha))
+    .map((update) => update.remoteRef.replace(/^refs\/heads\//u, ""));
+  return (
+    branchNames.length === 1 &&
+    branchNames[0].startsWith("task-close/") &&
+    changedFiles.length > 0 &&
+    changedFiles.every((filePath) =>
+      /^\.agentplane\/tasks\/\d{12}-[A-Z0-9]{6}\/README\.md$/u.test(filePath),
+    )
+  );
 }
 
 function isMutatingPath(filePath) {
@@ -326,6 +407,25 @@ function main() {
     newBranchFallbackRef: resolveDefaultBaseRef(),
   });
   enforceTaskBoundOutgoingCommits(diffRange);
+  const key = proofKey({ updates, mode, ciScript, changedFiles });
+  if (!trackedChangesShort()) {
+    const proof = readReusableProof(key);
+    if (proof) {
+      process.stdout.write(
+        `Skipping pre-push checks: reusable proof exists for this exact push (${proof.created_at}).\n`,
+      );
+      return;
+    }
+  }
+  if (!isReleasePush && isReleaseEvidenceOnlyPush(updates, changedFiles)) {
+    process.stdout.write("Running lightweight checks for release evidence-only task closure.\n");
+    runWithEnv("bun", ["run", "format:check"], sanitizeCiEnv(process.env));
+    failIfTrackedChanges(
+      "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
+    );
+    writeReusableProof(key);
+    return;
+  }
   const ciEnv =
     changedFiles.length > 0
       ? sanitizeCiEnv({ ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") })
@@ -363,6 +463,7 @@ function main() {
     runWithEnv("node", ["scripts/check-release-notes.mjs"], sanitizeCiEnv(process.env));
     runWithEnv("bun", ["run", "release:prepublish"], sanitizeCiEnv(process.env));
   }
+  writeReusableProof(key);
 }
 
 try {

@@ -706,7 +706,7 @@ async function probeNpmPublished(pkgSpec, repoRoot) {
 
 function checkReleaseTaskRegistry(repoRoot) {
   try {
-    checkTaskState(repoRoot, { releaseReady: true, quiet: true });
+    checkTaskState(repoRoot, { releaseReady: true, quiet: true, allowActiveReleaseTask: true });
     return {
       ready: true,
       reasonCode: "ready",
