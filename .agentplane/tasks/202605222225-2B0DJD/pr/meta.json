@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-22T22:43:44Z",
   "base": "main",
   "branch": "task/202605222225-2B0DJD/already-merged-pr-delete-branch",
   "created_at": "2026-05-22T22:28:13.725Z",
   "diffstat_sha256": "sha256:5652f134335f6dd418e2045821b1d52f67ef7e11b69bc7bcf772164f5a1c55eb",
   "last_verified_at": "2026-05-22T22:28:37.130Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "6e376e75d41c58a9123b338e4bc6b1937d7d4dca",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-22T22:43:44Z",
   "pr_number": 4042,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4042",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605222225-2B0DJD",
-  "updated_at": "2026-05-22T22:29:12.162Z",
+  "updated_at": "2026-05-22T22:43:44Z",
   "verify": {
     "status": "pass"
   }

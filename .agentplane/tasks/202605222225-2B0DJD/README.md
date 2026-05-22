@@ -1,10 +1,11 @@
 ---
 id: "202605222225-2B0DJD"
 title: "Treat already-merged PR delete-branch failures as integration progress"
-status: "DOING"
+result_summary: "Merged via PR #4042."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605222225-2B0DJD/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605222225-2B0DJD-already-merged-pr-delete-branch/.agentplane/tasks/202605222225-2B0DJD/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "6e376e75d41c58a9123b338e4bc6b1937d7d4dca"
+  message: "Merge pull request #4042 from basilisk-labs/task/202605222225-2B0DJD/already-merged-pr-delete-branch"
 comments:
   -
     author: "CODER"
     body: "Start: treating already-merged GitHub PR delete-branch failures as successful protected-base merge progress."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4042 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator check: already-merged gh output is treated as protected-base merge completion while unrelated gh failures still flow through the existing handoff path; targeted regression, lint, and typecheck passed."
+  -
+    type: "status"
+    at: "2026-05-22T22:44:32.577Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4042 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T22:28:37.159Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T22:44:32.587Z"
+doc_updated_by: "INTEGRATOR"
 description: "When branch_pr integrate drives gh pr merge with --delete-branch and GitHub reports the task PR was already merged, local branch deletion can fail because the branch is still attached to a worktree. The integrate command should classify this as progress toward hosted close rather than surfacing E_HANDOFF after the merge has succeeded. Keep true merge failures as handoff/errors."
 sections:
   Summary: |-
