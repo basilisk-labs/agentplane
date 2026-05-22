@@ -41,6 +41,11 @@ function summarizeGithubFailure(err: unknown): string {
   return text || "unknown failure";
 }
 
+function isAlreadyMergedGithubPrFailure(err: unknown): boolean {
+  const text = summarizeGithubFailure(err).toLowerCase();
+  return /\bpull request\b/.test(text) && /\balready merged\b/.test(text);
+}
+
 function getGithubToken(): GithubToken | null {
   if (
     typeof process.env.GH_TOKEN === "string" &&
@@ -112,6 +117,12 @@ async function runGhCliMerge(opts: {
         detail: `GitHub PR merged with gh --merge: ${opts.prTarget}`,
       };
     } catch (directErr) {
+      if (isAlreadyMergedGithubPrFailure(directErr)) {
+        return {
+          status: "merged",
+          detail: `GitHub PR was already merged with gh --merge: ${opts.prTarget}`,
+        };
+      }
       throw new Error(
         `gh auto=${summarizeGithubFailure(autoErr)}; gh direct=${summarizeGithubFailure(directErr)}`,
       );
