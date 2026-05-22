@@ -38,9 +38,19 @@ const testEnv = {
   GIT_COMMITTER_EMAIL: "agentplane-ci@example.com",
 };
 const VITEST_TIMEOUT_MS = "60000";
+const DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS = 10 * 60 * 1000;
+const LOCAL_VITEST_SUITE_TIMEOUT_MS = parsePositiveIntegerEnv(
+  baseEnv.AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS,
+  DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS,
+);
 const LOCAL_FAST_VITEST_MAX_WORKERS =
   String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "4";
 const FAST_TEST_EXCLUDES = ["**/cli-smoke.test.ts", "**/run-cli*.test.ts"];
+
+function parsePositiveIntegerEnv(rawValue, fallback) {
+  const value = Number.parseInt(String(rawValue ?? "").trim(), 10);
+  return Number.isInteger(value) && value > 0 ? value : fallback;
+}
 
 function parseListValue(rawValue) {
   return String(rawValue ?? "")
@@ -109,8 +119,31 @@ function renderExecutionPlan(report) {
   }
 }
 
-function run(cmd, args, env = baseEnv) {
-  execFileSync(cmd, args, { stdio: "inherit", env });
+function formatCommand(cmd, args) {
+  return [cmd, ...args].join(" ");
+}
+
+function isTimeoutFailure(error) {
+  return error?.code === "ETIMEDOUT" || (error?.killed === true && error?.signal);
+}
+
+function run(cmd, args, env = baseEnv, options = {}) {
+  try {
+    execFileSync(cmd, args, {
+      stdio: "inherit",
+      env,
+      ...(options.timeoutMs ? { timeout: options.timeoutMs } : {}),
+    });
+  } catch (error) {
+    if (options.timeoutMs && isTimeoutFailure(error)) {
+      const label = options.timeoutLabel ?? "Command";
+      process.stderr.write(
+        `${label} timed out after ${options.timeoutMs}ms: ${formatCommand(cmd, args)}\n` +
+          "Set AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS to adjust the local Vitest process timeout.\n",
+      );
+    }
+    throw error;
+  }
 }
 
 function runStep(label, fn) {
@@ -118,8 +151,8 @@ function runStep(label, fn) {
   fn();
 }
 
-function runCommand(cmd, args, env = baseEnv) {
-  run(cmd, args, env);
+function runCommand(cmd, args, env = baseEnv, options = {}) {
+  run(cmd, args, env, options);
 }
 
 function buildVitestRunArgs({
@@ -147,7 +180,10 @@ function buildVitestRunArgs({
 }
 
 function runVitestSuite(options, env = baseEnv) {
-  runCommand("bunx", buildVitestRunArgs(options), env);
+  runCommand("bunx", buildVitestRunArgs(options), env, {
+    timeoutLabel: "Vitest suite",
+    timeoutMs: LOCAL_VITEST_SUITE_TIMEOUT_MS,
+  });
 }
 
 function existingLintTargets(targets) {
