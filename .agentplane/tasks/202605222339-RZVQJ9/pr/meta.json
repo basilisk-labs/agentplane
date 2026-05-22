@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-22T23:49:31Z",
   "base": "main",
   "branch": "task/202605222339-RZVQJ9/pr-flow-status-ci-route",
   "created_at": "2026-05-22T23:40:42.951Z",
   "diffstat_sha256": "sha256:97cd9037b3dfb4dd98b07cc51eb31bede90aa82d783bd44c7c30e091c72d3965",
   "last_verified_at": "2026-05-22T23:44:31.177Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "5104f0eb6c7173340c722a551c214b1e19ffcb37",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-22T23:49:31Z",
   "pr_number": 4050,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4050",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605222339-RZVQJ9",
-  "updated_at": "2026-05-22T23:44:57.151Z",
+  "updated_at": "2026-05-22T23:49:31Z",
   "verify": {
     "status": "pass"
   }

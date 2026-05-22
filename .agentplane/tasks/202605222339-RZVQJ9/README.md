@@ -1,10 +1,11 @@
 ---
 id: "202605222339-RZVQJ9"
 title: "Narrow pr flow status local CI route"
-status: "DOING"
+result_summary: "Merged via PR #4050."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ quality_review:
     - ".agentplane/tasks/202605222339-RZVQJ9/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605222339-RZVQJ9-pr-flow-status-ci-route/.agentplane/tasks/202605222339-RZVQJ9/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "5104f0eb6c7173340c722a551c214b1e19ffcb37"
+  message: "Merge pull request #4050 from basilisk-labs/task/202605222339-RZVQJ9/pr-flow-status-ci-route"
 comments:
   -
     author: "CODER"
     body: "Start: narrowing local CI routing for pr flow status changes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4050 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator check: route is narrow, ordered before broader cli-core/pr catch-alls, preserves task artifact neutrality, and smoke output confirms targeted pr-flow-status selection."
+  -
+    type: "status"
+    at: "2026-05-22T23:50:08.360Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4050 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T23:44:31.205Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T23:50:08.365Z"
+doc_updated_by: "INTEGRATOR"
 description: "Pre-push currently routes pr flow status changes through the broad pr test bucket, causing long or stalled pushes. Add a narrower local CI route for pr flow status files so small status-report changes run the focused status test and standard static checks."
 sections:
   Summary: |-
