@@ -1,10 +1,11 @@
 ---
 id: "202605221726-1DX1BA"
 title: "Make flow repair apply safe branch_pr repairs"
-status: "DOING"
+result_summary: "Merged via PR #4038."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ quality_review:
     - ".agentplane/tasks/202605221726-1DX1BA/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221726-1DX1BA-flow-repair-safe-apply/.agentplane/tasks/202605221726-1DX1BA/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "ccf58c36767ea9f34b78864c1c2f34bca3f4d4c3"
+  message: "Merge pull request #4038 from basilisk-labs/task/202605221726-1DX1BA/flow-repair-safe-apply"
 comments:
   -
     author: "CODER"
     body: "Start: implementing safe-apply flow repair for deterministic branch_pr repairs while keeping provider merge and approval actions gated."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4038 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator check: safe-apply is bounded to deterministic local repairs, JSON output remains machine-readable during nested pr update, and provider merge/approval steps are explicitly skipped."
+  -
+    type: "status"
+    at: "2026-05-22T21:59:09.899Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4038 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T21:34:30.337Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T21:59:09.907Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend flow repair beyond dry-run for safe mechanical branch_pr repairs such as PR metadata refresh, branch fetch, hosted close-tail opening, and stale worktree cleanup while keeping merge/publish/provider actions approval-gated."
 sections:
   Summary: |-
