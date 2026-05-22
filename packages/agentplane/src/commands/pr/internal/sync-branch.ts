@@ -113,18 +113,25 @@ export async function computePrDiffstat(opts: {
   baseBranch: string;
   branch: string;
   prDir: string;
+  tasksPath?: string;
 }): Promise<string> {
   const diffBaseRef = await resolvePrDiffBaseRef({
     gitRoot: opts.gitRoot,
     baseBranch: opts.baseBranch,
   });
   const taskDir = path.dirname(opts.prDir);
+  const excludePaths = [path.relative(opts.gitRoot, taskDir)];
+  if (opts.tasksPath) {
+    const relTasksPath = path.isAbsolute(opts.tasksPath)
+      ? path.relative(opts.gitRoot, opts.tasksPath)
+      : opts.tasksPath;
+    if (relTasksPath && !relTasksPath.startsWith("..") && !path.isAbsolute(relTasksPath)) {
+      excludePaths.push(relTasksPath);
+    }
+  }
   try {
     return await gitDiffStat(opts.gitRoot, diffBaseRef, opts.branch, {
-      excludePaths: [
-        path.relative(opts.gitRoot, opts.prDir),
-        path.relative(opts.gitRoot, path.join(taskDir, "README.md")),
-      ],
+      excludePaths,
     });
   } catch (err) {
     if (!isUnknownRevisionError(err)) throw err;

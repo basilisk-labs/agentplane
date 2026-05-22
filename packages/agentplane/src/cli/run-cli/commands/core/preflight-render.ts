@@ -15,6 +15,7 @@ function renderTaskArtifactDrift(report: PreflightReport): string {
     `tasks=${drift.task_ids.join(", ")}`,
     `active_parallel=${drift.counts.active_parallel_task_artifact}`,
     `stale_done_handoff=${drift.counts.stale_done_handoff}`,
+    `blueprint_evidence=${drift.counts.task_blueprint_evidence}`,
     `unknown=${drift.counts.unknown_task_artifact}`,
     `actionable=${drift.actionable ? "yes" : "no"}`,
   ];

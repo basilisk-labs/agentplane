@@ -6,7 +6,12 @@ import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { gitRevParse } from "../../shared/git-ops.js";
-import { assessPrArtifactFreshness } from "./freshness.js";
+import {
+  assessPrArtifactFreshness,
+  digestPrDiffstatText,
+  PR_DIFFSTAT_DIGEST_FIELD,
+  PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD,
+} from "./freshness.js";
 import { readPrArtifactFromBranch } from "./pr-paths.js";
 import { parsePrMeta, type PrMeta } from "../../shared/pr-meta.js";
 import {
@@ -142,6 +147,7 @@ export async function evaluateSnapshotFreshness(opts: {
   tasksPath?: string;
   taskId: string;
   branchHeadSha: string | null;
+  currentDiffstatText: string | null;
   taskVerificationState: unknown;
   requiresVerify: boolean;
 }): Promise<void> {
@@ -154,6 +160,11 @@ export async function evaluateSnapshotFreshness(opts: {
     branchHeadSha: opts.branchHeadSha,
     metaHeadSha: opts.snapshot.meta.head_sha ?? null,
     metaLastVerifiedSha: opts.snapshot.meta.last_verified_sha ?? null,
+    metaDiffstatDigest: opts.snapshot.meta[PR_DIFFSTAT_DIGEST_FIELD] ?? null,
+    metaLastVerifiedDiffstatDigest:
+      opts.snapshot.meta[PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD] ?? null,
+    currentDiffstatDigest:
+      opts.currentDiffstatText === null ? null : digestPrDiffstatText(opts.currentDiffstatText),
     metaVerifyStatus: opts.snapshot.meta.verify?.status ?? null,
     taskVerificationState: opts.taskVerificationState,
     verifyLogText: opts.snapshot.texts.verifyLogText,
@@ -177,23 +188,25 @@ export function finalizeSnapshotErrors(opts: {
   if (opts.branchHeadSha && opts.snapshot.freshnessEvaluated) {
     if (!opts.snapshot.freshnessReviewFresh) {
       errors.push(
-        `PR artifacts stale: head_sha=${meta.head_sha ?? "<missing>"} current_head=${opts.branchHeadSha}`,
+        `PR artifacts stale: recorded_head=${meta.head_sha ?? "<live>"} current_head=${opts.branchHeadSha}`,
       );
     }
     if (opts.requiresVerify && !opts.snapshot.freshnessVerifySatisfied) {
       if (meta.verify?.status !== "pass") {
         errors.push("Verify requirements not satisfied (meta.verify.status != pass)");
       }
-      if (
-        (!meta.last_verified_sha || !meta.last_verified_at) &&
-        !opts.snapshot.freshnessVerifyLogSha
-      ) {
-        errors.push("Verify metadata missing (last_verified_sha/last_verified_at)");
+      if (!meta.last_verified_at && !opts.snapshot.freshnessVerifyLogSha) {
+        errors.push("Verify metadata missing (last_verified_at)");
       }
     }
-    if (opts.requiresVerify && meta.last_verified_sha && !opts.snapshot.freshnessVerifyFresh) {
+    const lastVerifiedDiffstatDigest = meta[PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD];
+    if (
+      opts.requiresVerify &&
+      (meta.last_verified_sha || lastVerifiedDiffstatDigest) &&
+      !opts.snapshot.freshnessVerifyFresh
+    ) {
       errors.push(
-        `Verify state stale: last_verified_sha=${meta.last_verified_sha} current_head=${opts.branchHeadSha}`,
+        `Verify state stale: recorded_verify=${String(meta.last_verified_sha ?? lastVerifiedDiffstatDigest)}`,
       );
     }
     return errors;
@@ -202,8 +215,8 @@ export function finalizeSnapshotErrors(opts: {
     if (meta.verify?.status !== "pass") {
       errors.push("Verify requirements not satisfied (meta.verify.status != pass)");
     }
-    if (!meta.last_verified_sha || !meta.last_verified_at) {
-      errors.push("Verify metadata missing (last_verified_sha/last_verified_at)");
+    if (!meta.last_verified_at) {
+      errors.push("Verify metadata missing (last_verified_at)");
     }
   }
   return errors;

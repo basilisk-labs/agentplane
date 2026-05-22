@@ -1,7 +1,6 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { buildTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core/commit";
 import { gitEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
@@ -10,7 +9,6 @@ import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commi
 import { isTaskLocalAdvancePath } from "../../shared/task-local-freshness.js";
 import { type CommandContext } from "../../shared/task-backend.js";
 import { stageAllowlist } from "./allow.js";
-import { appendDcoSignoff } from "./dco.js";
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "./env.js";
 import { guardCommitCheck } from "./policy.js";
 
@@ -81,24 +79,19 @@ export async function commitRefreshedTaskArtifacts(opts: {
     workflowDir: opts.ctx.config.paths.workflow_dir,
     taskId: opts.taskId,
     allowTaskOnly: true,
-    emptyAllowMessage:
-      "PR artifact refresh produced no task-local files to stage for the follow-up commit.",
+    emptyAllowMessage: "PR artifact refresh produced no task-local files to stage for the amend.",
     noMatchMessage:
       "PR artifact refresh produced changes outside the active task artifact scope; inspect the working tree before retrying the commit flow.",
     mutationKind: "pr_artifact_update",
   });
 
-  const message = buildTaskArtifactRefreshCommitSubject({
-    taskId: opts.taskId,
-    baseSubject: opts.sourceMessage,
-  });
   await guardCommitCheck({
     ctx: opts.ctx,
     cwd: opts.cwd,
     rootOverride: opts.rootOverride,
     baseBranchOverride: null,
     taskId: opts.taskId,
-    message,
+    message: opts.sourceMessage,
     allow: [],
     allowBase: false,
     allowTasks: true,
@@ -120,11 +113,7 @@ export async function commitRefreshedTaskArtifacts(opts: {
     allowCI: false,
     gitIdentity: await resolveCanonicalGitIdentity(),
   });
-  await opts.ctx.git.commit({
-    message,
-    body: appendDcoSignoff({ config: opts.ctx.config }),
-    env,
-  });
+  await opts.ctx.git.commitAmendNoEdit({ env });
   return await opts.ctx.git.headHashSubject();
 }
 

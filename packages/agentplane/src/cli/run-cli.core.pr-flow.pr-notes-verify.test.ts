@@ -625,7 +625,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
   });
 
   it(
-    "pr check fails when review metadata is stale relative to branch head",
+    "pr check fails when review metadata is stale relative to branch diffstat",
     { timeout: PR_FLOW_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
@@ -695,7 +695,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
   );
 
   it(
-    "pr check fails when verify metadata is stale relative to branch head",
+    "pr check fails when verify metadata is stale relative to branch diffstat",
     { timeout: PR_FLOW_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
@@ -793,7 +793,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
   );
 
   it(
-    "pr check accepts verify-log-backed verification when pr meta verify fields drift",
+    "pr check rejects verification when pr meta verify status drifts despite verify log",
     { timeout: PR_FLOW_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
@@ -877,9 +877,8 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
       const io = captureStdIO();
       try {
         const code = await runCli(["pr", "check", taskId, "--root", root]);
-        expect(code).toBe(0);
-        expect(io.stderr).not.toContain("Verify metadata missing");
-        expect(io.stderr).not.toContain("Verify state stale");
+        expect(code).toBe(3);
+        expect(io.stderr).toContain("Verify requirements not satisfied");
       } finally {
         io.restore();
       }

@@ -244,7 +244,6 @@ export function buildGithubPrTitle(task: TaskData): string {
 export function renderPrAutoSummary(opts: {
   updatedAt: string;
   branch: string;
-  headSha: string | null;
   diffstat: string;
 }): string {
   return [
@@ -253,7 +252,7 @@ export function renderPrAutoSummary(opts: {
     "",
     `- Updated: ${opts.updatedAt}`,
     `- Branch: ${opts.branch}`,
-    `- Head: ${opts.headSha ? opts.headSha.slice(0, 12) : "No commits yet"}`,
+    "- Head: computed live by `agentplane pr check` / `agentplane integrate`",
     "",
     "```text",
     opts.diffstat || "No changes detected.",

@@ -40,6 +40,7 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
   ctx: CommandContext;
   taskId: string;
   branch: string;
+  strategy?: "commit" | "amend";
 }): Promise<boolean> {
   if (opts.ctx.config.workflow_mode !== "branch_pr") return false;
 
@@ -72,20 +73,23 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
   }
 
   await opts.ctx.git.stage(taskPacketPaths);
-  await opts.ctx.git.commit({
-    message: buildTaskArtifactRefreshCommitSubject({ taskId: opts.taskId }),
-    body: appendDcoSignoff({ config: opts.ctx.config }),
-    env: buildGitCommitEnv({
-      taskId: opts.taskId,
-      allowTasks: true,
-      allowBase: false,
-      allowPolicy: false,
-      allowConfig: false,
-      allowHooks: false,
-      allowCI: false,
-      gitIdentity: await resolveCanonicalGitIdentity(),
-    }),
+  const env = buildGitCommitEnv({
+    taskId: opts.taskId,
+    allowTasks: true,
+    allowBase: false,
+    allowPolicy: false,
+    allowConfig: false,
+    allowHooks: false,
+    allowCI: false,
+    gitIdentity: await resolveCanonicalGitIdentity(),
   });
+  await (opts.strategy === "amend"
+    ? opts.ctx.git.commitAmendNoEdit({ env })
+    : opts.ctx.git.commit({
+        message: buildTaskArtifactRefreshCommitSubject({ taskId: opts.taskId }),
+        body: appendDcoSignoff({ config: opts.ctx.config }),
+        env,
+      }));
   opts.ctx.git.invalidateStatus();
   return true;
 }

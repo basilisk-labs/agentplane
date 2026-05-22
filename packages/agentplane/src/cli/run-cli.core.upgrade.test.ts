@@ -110,6 +110,70 @@ describe("runCli", () => {
     expect(subject).toContain("upgrade: apply framework");
   });
 
+  it(
+    "upgrade includes runtime .gitignore cache lines in the upgrade commit",
+    { timeout: WORKFLOW_RUNTIME_ARTIFACTS_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+
+      let io = captureStdIO();
+      try {
+        expect(await runCli(["init", "--yes", "--root", root])).toBe(0);
+      } finally {
+        io.restore();
+      }
+
+      const gitignorePath = path.join(root, ".gitignore");
+      const gitignoreBeforeUpgrade = await readFile(gitignorePath, "utf8");
+      const staleGitignore = gitignoreBeforeUpgrade
+        .split(/\r?\n/u)
+        .filter(
+          (line) =>
+            line !== ".agentplane/cache.sqlite" &&
+            line !== ".agentplane/cache.sqlite-wal" &&
+            line !== ".agentplane/cache.sqlite-shm",
+        )
+        .join("\n");
+      await writeFile(gitignorePath, `${staleGitignore.trimEnd()}\n`, "utf8");
+      await commitAll(root, "fixture: stale runtime gitignore");
+
+      io = captureStdIO();
+      try {
+        expect(await runCli(["upgrade", "--yes", "--root", root])).toBe(0);
+        expect(io.stdout).toContain("Upgrade commit:");
+      } finally {
+        io.restore();
+      }
+
+      const gitignoreText = await readFile(gitignorePath, "utf8");
+      expect(gitignoreText).toContain(".agentplane/cache.sqlite");
+      expect(gitignoreText).toContain(".agentplane/cache.sqlite-wal");
+      expect(gitignoreText).toContain(".agentplane/cache.sqlite-shm");
+
+      const execFileAsync = promisify(execFile);
+      const { stdout: statusOut } = await execFileAsync(
+        "git",
+        ["status", "--short", "--untracked-files=no"],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
+      );
+      expect(String(statusOut ?? "").trim()).toBe("");
+
+      const { stdout: showOut } = await execFileAsync(
+        "git",
+        ["show", "--name-only", "--format=", "HEAD"],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
+      );
+      expect(String(showOut ?? "")).toContain(".gitignore");
+    },
+  );
+
   it("upgrade --dry-run reports changes without modifying files", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -768,38 +832,6 @@ Legacy verification plan.
       }
     },
   );
-
-  it("upgrade fails on dirty tracked tree before applying in default apply mode", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
-    await writeFile(path.join(root, "tracked.txt"), "dirty\n", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "tracked.txt"], { cwd: root, env: cleanGitEnv() });
-    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root, env: cleanGitEnv() });
-    await writeFile(path.join(root, "tracked.txt"), "dirty changed\n", "utf8");
-
-    const { bundlePath, checksumPath } = await createUpgradeBundle({
-      "AGENTS.md": "# AGENTS\n\nUpdated\n",
-    });
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "upgrade",
-        "--bundle",
-        bundlePath,
-        "--checksum",
-        checksumPath,
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(5);
-      expect(io.stderr).toContain("requires a clean tracked working tree");
-    } finally {
-      io.restore();
-    }
-  });
 
   it("upgrade requires --yes in non-tty mode when require_network=true and it would fetch remote assets", async () => {
     const root = await mkGitRepoRoot();

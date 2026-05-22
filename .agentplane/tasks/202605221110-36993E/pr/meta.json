@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-22T12:18:27Z",
+  "base": "main",
+  "branch": "task/202605221110-36993E/harden-legacy-upgrade",
+  "created_at": "2026-05-22T11:18:27.014Z",
+  "head_sha": "dfa59d567161c155a0579331656cc81753351220",
+  "last_verified_at": "2026-05-22T11:28:58.936Z",
+  "last_verified_sha": "87c0699ba34efd41c2aa64b85e6aeab18befdc63",
+  "merge_commit": "879da102df945176bb19f894acb70f894be05380",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-22T12:18:27Z",
+  "pr_number": 4016,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4016",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605221110-36993E",
+  "updated_at": "2026-05-22T12:18:27Z",
+  "verify": {
+    "status": "pass"
+  }
+}

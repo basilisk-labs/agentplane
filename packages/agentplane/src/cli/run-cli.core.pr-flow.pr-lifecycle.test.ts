@@ -205,7 +205,7 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
 
     const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
     const before = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
-    expect(before.head_sha).toMatch(/^[0-9a-f]{40}$/u);
+    expect(before.head_sha).toBeUndefined();
 
     await writeFile(path.join(root, "blocker.txt"), "blocked\n", "utf8");
 
@@ -235,11 +235,11 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     const after = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
     const { stdout: headStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
     const headSha = headStdout.trim();
-    expect(after.head_sha).toBe(headSha);
-    expect(after.head_sha).not.toBe(before.head_sha);
+    expect(headSha).toMatch(/^[0-9a-f]{40}$/u);
+    expect(after.head_sha).toBeUndefined();
   });
 
-  it("commit creates a clean artifact follow-up commit after a task-scoped branch_pr change", async () => {
+  it("commit amends refreshed artifacts into the task commit after a task-scoped branch_pr change", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -259,7 +259,7 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
         "--title",
         "Branch PR guard commit sync",
         "--description",
-        "Commit should keep pr/meta head_sha current on task branches",
+        "Commit should fold refreshed PR artifacts into the task commit on task branches",
         "--priority",
         "med",
         "--owner",
@@ -291,7 +291,7 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
 
     const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
     const before = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
-    expect(before.head_sha).toMatch(/^[0-9a-f]{40}$/u);
+    expect(before.head_sha).toBeUndefined();
     const suffix = extractTaskSuffix(taskId);
 
     await writeFile(path.join(root, "src.ts"), "export const value = 1;\n", "utf8");
@@ -316,14 +316,9 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
 
     const after = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
     const { stdout: headStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
-    const { stdout: parentStdout } = await execFileAsync("git", ["rev-parse", "HEAD^"], {
-      cwd: root,
-    });
     const headSha = headStdout.trim();
-    const parentSha = parentStdout.trim();
     expect(headSha).toMatch(/^[0-9a-f]{40}$/u);
-    expect(after.head_sha).toBe(parentSha);
-    expect(after.head_sha).not.toBe(before.head_sha);
+    expect(after.head_sha).toBeUndefined();
 
     const { stdout: subjectsStdout } = await execFileAsync("git", ["log", "-2", "--pretty=%s"], {
       cwd: root,
@@ -331,11 +326,8 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     const subjects = subjectsStdout
       .split("\n")
       .map((line) => line.trim())
-      .filter(Boolean);
-    expect(subjects[0]).toBe(`🧩 ${suffix} workflow: refresh task artifacts after commit`);
-    expect(subjects[1]).toBe(
-      `🧩 ${suffix} workflow: refresh branch_pr artifacts after guard commit`,
-    );
+      .find(Boolean);
+    expect(subjects).toBe(`🧩 ${suffix} workflow: refresh branch_pr artifacts after guard commit`);
 
     const { stdout: statusStdout } = await execFileAsync(
       "git",
@@ -407,7 +399,7 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
 
     const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
     const before = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
-    expect(before.head_sha).toMatch(/^[0-9a-f]{40}$/u);
+    expect(before.head_sha).toBeUndefined();
 
     await runCliSilent([
       "task",
@@ -439,7 +431,7 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     }
 
     const after = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
-    expect(after.head_sha).toBe(before.head_sha);
+    expect(after.head_sha).toBeUndefined();
 
     const { stdout: taskStatus } = await execFileAsync(
       "git",
@@ -775,26 +767,20 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     }
 
     const { stdout: headOut } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
-    const { stdout: parentOut } = await execFileAsync("git", ["rev-parse", "HEAD^"], {
-      cwd: root,
-    });
     const { stdout: subjectOut } = await execFileAsync("git", ["log", "-2", "--pretty=%s"], {
       cwd: root,
     });
     const subjects = subjectOut
       .split("\n")
       .map((line) => line.trim())
-      .filter(Boolean);
-    expect(subjects[0]).toBe(
-      `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`,
-    );
-    expect(subjects[1]).toBe("change");
+      .find(Boolean);
+    expect(subjects).toBe("change");
 
     const meta = JSON.parse(
       await readFile(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"), "utf8"),
     ) as { head_sha?: string | null };
-    expect(meta.head_sha).toBe(parentOut.trim());
-    expect(meta.head_sha).not.toBe(headOut.trim());
+    expect(headOut.trim()).toMatch(/^[0-9a-f]{40}$/u);
+    expect(meta.head_sha).toBeUndefined();
 
     const { stdout: readmeTrackedOut } = await execFileAsync(
       "git",

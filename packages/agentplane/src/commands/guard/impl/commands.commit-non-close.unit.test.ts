@@ -137,7 +137,7 @@ describe("guard command implementations: commit non-close", () => {
     });
   });
 
-  it("cmdCommit creates a follow-up task-artifact commit when PR refresh leaves task-local drift", async () => {
+  it("cmdCommit amends task artifacts into the implementation commit when PR refresh leaves task-local drift", async () => {
     const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
@@ -186,8 +186,8 @@ describe("guard command implementations: commit non-close", () => {
       message: "🧩 7SRWEX workflow: implementation body",
       env: { AGENTPLANE_TASK_ID: "202604130818-7SRWEX" },
     });
-    expect(ctx.git.commit).toHaveBeenNthCalledWith(2, {
-      message: "derived:202604130818-7SRWEX:🧩 7SRWEX workflow: implementation body",
+    expect(ctx.git.commit).toHaveBeenCalledTimes(1);
+    expect(ctx.git.commitAmendNoEdit).toHaveBeenCalledWith({
       env: {
         AGENTPLANE_TASK_ID: "202604130818-7SRWEX",
         AGENTPLANE_ALLOW_TASKS: "1",
@@ -369,7 +369,7 @@ describe("guard command implementations: commit non-close", () => {
       expect(
         stdout.mock.calls.some(([text]) =>
           String(text).includes(
-            "refresh=99aabbccddee ♻️ ABC123 task: refresh task artifacts after commit",
+            "amended=99aabbccddee ♻️ ABC123 task: refresh task artifacts after commit",
           ),
         ),
       ).toBe(true);

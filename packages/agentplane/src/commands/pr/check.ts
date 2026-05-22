@@ -27,6 +27,7 @@ import {
   type PrArtifactTexts,
   validateSnapshotContents,
 } from "./internal/pr-artifact-snapshot.js";
+import { computePrDiffstat } from "./internal/sync-branch.js";
 
 export async function cmdPrCheck(opts: {
   ctx?: CommandContext;
@@ -123,6 +124,17 @@ export async function cmdPrCheck(opts: {
       gitRoot: resolved.gitRoot,
       branchForFreshness,
     });
+    let currentDiffstatText: string | null = null;
+    if (branchForFreshness && localSnapshot.meta?.base) {
+      const currentDiffstat = await computePrDiffstat({
+        gitRoot: resolved.gitRoot,
+        baseBranch: localSnapshot.meta.base,
+        branch: branchForFreshness,
+        prDir,
+        tasksPath: config.paths.tasks_path,
+      });
+      currentDiffstatText = currentDiffstat ? `${currentDiffstat}\n` : "";
+    }
     await evaluateSnapshotFreshness({
       snapshot: localSnapshot,
       gitRoot: resolved.gitRoot,
@@ -130,6 +142,7 @@ export async function cmdPrCheck(opts: {
       tasksPath: config.paths.tasks_path,
       taskId: task.id,
       branchHeadSha,
+      currentDiffstatText,
       taskVerificationState: task.verification?.state ?? null,
       requiresVerify,
     });
@@ -163,6 +176,7 @@ export async function cmdPrCheck(opts: {
         tasksPath: config.paths.tasks_path,
         taskId: task.id,
         branchHeadSha,
+        currentDiffstatText,
         taskVerificationState: task.verification?.state ?? null,
         requiresVerify,
       });

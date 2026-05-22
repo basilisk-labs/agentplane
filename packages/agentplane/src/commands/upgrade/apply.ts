@@ -12,6 +12,12 @@ import { gitEnv } from "@agentplaneorg/core/git";
 
 import type { UpgradeReviewRecord } from "./types.js";
 
+const RUNTIME_SQLITE_GITIGNORE_LINES = new Set([
+  ".agentplane/cache.sqlite",
+  ".agentplane/cache.sqlite-wal",
+  ".agentplane/cache.sqlite-shm",
+]);
+
 async function safeRemovePath(targetPath: string): Promise<void> {
   try {
     await rm(targetPath, { recursive: true, force: true });
@@ -30,37 +36,155 @@ export async function cleanupAutoUpgradeArtifacts(opts: {
   await safeRemovePath(path.join(opts.upgradeStateDir, "agent"));
 }
 
-export async function ensureCleanTrackedTreeForUpgrade(gitRoot: string): Promise<void> {
-  const { stdout } = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
+function parseGitStatusPath(line: string): string | null {
+  const trimmed = line.trimEnd();
+  if (trimmed.length < 4) return null;
+  const rawPath = trimmed.slice(3).trim();
+  if (!rawPath) return null;
+  const renameArrow = " -> ";
+  const normalized = rawPath.includes(renameArrow) ? rawPath.split(renameArrow).at(-1) : rawPath;
+  return normalized?.replaceAll("\\", "/") ?? null;
+}
+
+async function isRuntimeSqliteGitignoreOnlyDiff(
+  gitRoot: string,
+  dirty: string[],
+): Promise<boolean> {
+  const dirtyPaths = dirty
+    .map((line) => parseGitStatusPath(line))
+    .filter((relPath): relPath is string => relPath !== null);
+  if (dirtyPaths.length === 0 || dirtyPaths.some((relPath) => relPath !== ".gitignore")) {
+    return false;
+  }
+  const { stdout } = await execFileAsync("git", ["diff", "HEAD", "--", ".gitignore"], {
     cwd: gitRoot,
     env: gitEnv(),
     maxBuffer: 10 * 1024 * 1024,
   });
-  const dirty = String(stdout ?? "")
+  const changedLines = String(stdout ?? "")
     .split(/\r?\n/u)
-    .map((line) => line.trimEnd())
-    .filter((line) => line.length > 0);
-  if (dirty.length === 0) return;
-  throw new CliError({
-    exitCode: exitCodeForError("E_GIT"),
-    code: "E_GIT",
-    message:
-      "Upgrade --auto requires a clean tracked working tree.\n" +
-      `Found tracked changes:\n${dirty.map((line) => `  ${line}`).join("\n")}`,
-    context: withDiagnosticContext(
-      { command: "upgrade" },
-      {
-        state: "managed upgrade cannot apply over tracked local edits",
-        likelyCause:
-          "auto-apply upgrade is about to replace framework-managed files, but the repository already has tracked modifications",
-        nextAction: {
-          command: "git status --short --untracked-files=no",
-          reason: "inspect or clear tracked changes before rerunning `agentplane upgrade --yes`",
-          reasonCode: "upgrade_dirty_tree",
-        },
-      },
+    .filter((line) => /^[+-](?![+-]{2})/u.test(line))
+    .map((line) => line.slice(1).trim());
+  return (
+    changedLines.length > 0 &&
+    changedLines.every((line) => RUNTIME_SQLITE_GITIGNORE_LINES.has(line))
+  );
+}
+
+export type PreparedTrackedTreeForUpgrade = {
+  dirtyLines: string[];
+  dirtyPaths: string[];
+  patchRelPath: string | null;
+  unstagedPaths: string[];
+};
+
+function parseGitStatusIndex(line: string): string {
+  return line.length > 0 ? (line[0] ?? " ") : " ";
+}
+
+type TrackedStatusEntry = {
+  display: string;
+  indexStatus: string;
+  relPath: string;
+};
+
+function parseGitStatusPorcelainZ(raw: Buffer | string): TrackedStatusEntry[] {
+  const text = Buffer.isBuffer(raw) ? raw.toString("utf8") : String(raw ?? "");
+  const records = text.split("\0").filter((record) => record.length > 0);
+  const entries: TrackedStatusEntry[] = [];
+  for (let i = 0; i < records.length; i += 1) {
+    const record = records[i] ?? "";
+    if (record.length < 4) continue;
+    const status = record.slice(0, 2);
+    const relPath = record.slice(3).replaceAll("\\", "/");
+    entries.push({
+      display: `${status} ${relPath}`,
+      indexStatus: status[0] ?? " ",
+      relPath,
+    });
+    if (status.includes("R") || status.includes("C")) {
+      i += 1;
+    }
+  }
+  return entries;
+}
+
+async function writeDirtyTrackedPatch(opts: {
+  gitRoot: string;
+  upgradeStateDir: string;
+  dirtyLines: string[];
+  dirtyPaths: string[];
+}): Promise<string | null> {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["diff", "HEAD", "--binary", "--", ...opts.dirtyPaths],
+    {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+      maxBuffer: 20 * 1024 * 1024,
+    },
+  );
+  const patch = String(stdout ?? "");
+  if (patch.trim().length === 0) return null;
+
+  const dirtyDir = path.join(opts.upgradeStateDir, "user-dirty");
+  await mkdir(dirtyDir, { recursive: true });
+  const patchPath = path.join(dirtyDir, "tracked.patch");
+  const statusPath = path.join(dirtyDir, "status.txt");
+  await writeFile(patchPath, patch, "utf8");
+  await writeFile(statusPath, `${opts.dirtyLines.join("\n")}\n`, "utf8");
+  return path.relative(opts.gitRoot, patchPath).replaceAll("\\", "/");
+}
+
+export async function prepareTrackedTreeForUpgrade(opts: {
+  gitRoot: string;
+  upgradeStateDir: string;
+}): Promise<PreparedTrackedTreeForUpgrade> {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["status", "--porcelain", "-z", "--untracked-files=no"],
+    {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+      encoding: "buffer",
+      maxBuffer: 10 * 1024 * 1024,
+    },
+  );
+  const statusEntries = parseGitStatusPorcelainZ(stdout);
+  const dirty = statusEntries.map((entry) => entry.display);
+  if (dirty.length === 0 || (await isRuntimeSqliteGitignoreOnlyDiff(opts.gitRoot, dirty))) {
+    return { dirtyLines: [], dirtyPaths: [], patchRelPath: null, unstagedPaths: [] };
+  }
+
+  const dirtyPaths = [...new Set(statusEntries.map((entry) => entry.relPath))];
+  const stagedPaths = [
+    ...new Set(
+      statusEntries
+        .filter((entry) => parseGitStatusIndex(entry.indexStatus) !== " ")
+        .map((entry) => entry.relPath),
     ),
+  ];
+  const patchRelPath = await writeDirtyTrackedPatch({
+    gitRoot: opts.gitRoot,
+    upgradeStateDir: opts.upgradeStateDir,
+    dirtyLines: dirty,
+    dirtyPaths,
   });
+
+  if (stagedPaths.length > 0) {
+    await execFileAsync("git", ["reset", "HEAD", "--", ...stagedPaths], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+      maxBuffer: 10 * 1024 * 1024,
+    });
+  }
+
+  return {
+    dirtyLines: dirty,
+    dirtyPaths,
+    patchRelPath,
+    unstagedPaths: stagedPaths,
+  };
 }
 
 export async function createUpgradeCommit(opts: {
@@ -116,7 +240,7 @@ export async function createUpgradeCommit(opts: {
     .split("\0")
     .map((entry) => entry.trim())
     .some(Boolean);
-  if (!staged) return null;
+  if (staged === false) return null;
 
   const subject = `⬆️ upgrade: apply framework ${opts.versionLabel}`;
   const body =

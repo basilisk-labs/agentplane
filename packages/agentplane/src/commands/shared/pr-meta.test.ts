@@ -10,7 +10,6 @@ import {
   parsePrMetaForwardCompatible,
   parsePrMeta,
   resolvePrBatchIncludedTaskIds,
-  resolvePrArtifactHeadSha,
   resolveShellInvocation,
   runShellCommand,
   withPrArtifactLifecycleState,
@@ -98,7 +97,6 @@ describe("pr-meta shell invocations", () => {
           status: "FUTURE_OPEN",
           verify: { status: "pass" },
           base: "main",
-          head_sha: "deadbeef",
           artifact_state: "remote_staged",
           artifact_state_reason: "task branch is not published",
           artifact_state_updated_at: "2026-01-28T00:00:00Z",
@@ -114,7 +112,6 @@ describe("pr-meta shell invocations", () => {
         status: undefined,
         verify: { status: "pass" },
         base: "main",
-        head_sha: "deadbeef",
         artifact_state: "remote_staged",
         artifact_state_reason: "task branch is not published",
         artifact_state_updated_at: "2026-01-28T00:00:00Z",
@@ -135,7 +132,6 @@ describe("pr-meta shell invocations", () => {
       at: "2026-01-27T00:00:00Z",
       previousMeta: null,
       base: "main",
-      headSha: "deadbeef",
     });
 
     expect(nextMeta.related_task_ids).toEqual(["202601010102-BBBBB", "202601010103-CCCCC"]);
@@ -161,12 +157,10 @@ describe("pr-meta shell invocations", () => {
         created_at: "2026-01-27T00:00:00Z",
         updated_at: "2026-01-27T00:00:00Z",
         base: "main",
-        head_sha: "deadbeef",
         verify: { status: "skipped" },
       },
       branch: "task/202601010101-ABCDE/example",
       base: "main",
-      headSha: "deadbeef",
       at: "2026-01-28T00:00:00Z",
     });
 
@@ -260,7 +254,6 @@ describe("pr-meta shell invocations", () => {
           branch: "task/202601010101-ABCDE/example",
           created_at: "2026-01-27T00:00:00Z",
           updated_at: "2026-01-27T00:00:00Z",
-          head_sha: "deadbeef",
           verify: { status: "skipped" },
         },
         at: "2026-01-28T00:00:00Z",
@@ -269,8 +262,6 @@ describe("pr-meta shell invocations", () => {
     ).toEqual(
       expect.objectContaining({
         updated_at: "2026-01-27T00:00:00Z",
-        head_sha: "deadbeef",
-        last_verified_sha: "deadbeef",
         last_verified_at: "2026-01-28T00:00:00Z",
         verify: { status: "pass" },
       }),
@@ -286,7 +277,6 @@ describe("pr-meta shell invocations", () => {
           branch: "task/202601010101-ABCDE/example",
           created_at: "2026-01-27T00:00:00Z",
           updated_at: "2026-01-27T00:00:00Z",
-          head_sha: "deadbeef",
           verify: { status: "skipped" },
         },
         observed: {
@@ -294,7 +284,6 @@ describe("pr-meta shell invocations", () => {
           prUrl: "https://github.com/example/repo/pull/321",
           status: "OPEN",
           base: "main",
-          headSha: "deadbeef",
         },
         at: "2026-01-28T00:00:00Z",
       }),
@@ -304,7 +293,6 @@ describe("pr-meta shell invocations", () => {
         pr_url: "https://github.com/example/repo/pull/321",
         status: "OPEN",
         base: "main",
-        head_sha: "deadbeef",
         updated_at: "2026-01-28T00:00:00Z",
       }),
     );
@@ -328,7 +316,6 @@ describe("pr-meta shell invocations", () => {
         prUrl: "https://github.com/example/repo/pull/321",
         status: "OPEN",
         base: "main",
-        headSha: "deadbeef",
       },
       at: "2026-01-28T00:00:00Z",
     });
@@ -339,7 +326,6 @@ describe("pr-meta shell invocations", () => {
         pr_url: "https://github.com/example/repo/pull/321",
         status: "OPEN",
         base: "main",
-        head_sha: "deadbeef",
         updated_at: "2026-01-28T00:00:00Z",
       }),
     );
@@ -361,7 +347,6 @@ describe("pr-meta shell invocations", () => {
           pr_url: "https://github.com/example/repo/pull/321",
           status: "OPEN",
           base: "main",
-          head_sha: "deadbeef",
           verify: { status: "skipped" },
         },
         observed: {
@@ -369,7 +354,6 @@ describe("pr-meta shell invocations", () => {
           prUrl: "https://github.com/example/repo/pull/321",
           status: "OPEN",
           base: "main",
-          headSha: "deadbeef",
         },
         at: "2026-01-28T00:00:00Z",
       }).updated_at,
@@ -389,7 +373,6 @@ describe("pr-meta shell invocations", () => {
           pr_url: "https://github.com/example/repo/pull/321",
           status: "OPEN",
           base: "main",
-          head_sha: "deadbeef",
           verify: { status: "skipped" },
         },
         observed: {
@@ -397,20 +380,13 @@ describe("pr-meta shell invocations", () => {
           prUrl: "https://github.com/example/repo/pull/321",
           status: "OPEN",
           base: "main",
-          headSha: "cafebabe",
         },
         at: "2026-01-28T00:00:00Z",
-      }).head_sha,
-    ).toBe("deadbeef");
+      }).updated_at,
+    ).toBe("2026-01-27T00:00:00Z");
   });
 
-  it("preserves the previous rendered head for task-local-only advances", () => {
-    const effectiveHeadSha = resolvePrArtifactHeadSha({
-      previousHeadSha: "deadbeef",
-      currentHeadSha: "cafebabe",
-      preservePrevious: true,
-    });
-
+  it("keeps metadata byte-stable for task-local-only advances because live head is computed at runtime", () => {
     const nextMeta = buildUpdatedPrMeta({
       meta: {
         schema_version: 1,
@@ -419,16 +395,14 @@ describe("pr-meta shell invocations", () => {
         created_at: "2026-01-27T00:00:00Z",
         updated_at: "2026-01-27T00:00:00Z",
         base: "main",
-        head_sha: "deadbeef",
         verify: { status: "skipped" },
       },
       branch: "task/202601010101-ABCDE/example",
       base: "main",
-      headSha: effectiveHeadSha,
       at: "2026-01-28T00:00:00Z",
     });
 
-    expect(nextMeta.head_sha).toBe("deadbeef");
+    expect(nextMeta.head_sha).toBeUndefined();
     expect(nextMeta.updated_at).toBe("2026-01-27T00:00:00Z");
   });
 });

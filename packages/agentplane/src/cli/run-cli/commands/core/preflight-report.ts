@@ -24,8 +24,13 @@ type TaskArtifactKind = "task_readme" | "handoff" | "pr_artifact" | "blueprint" 
 type TaskArtifactClassification =
   | "active_parallel_task_artifact"
   | "stale_done_handoff"
+  | "task_blueprint_evidence"
   | "unknown_task_artifact";
-type TaskArtifactAction = "ignore_parallel_agent" | "cleanup_candidate" | "inspect";
+type TaskArtifactAction =
+  | "ignore_parallel_agent"
+  | "cleanup_candidate"
+  | "commit_with_task_evidence"
+  | "inspect";
 type TaskArtifactDriftItem = {
   path: string;
   task_id: string;
@@ -149,6 +154,18 @@ function classifyTaskArtifactDriftItem(opts: {
       reason: "handoff artifact belongs to a completed task and may be stale closure residue",
     };
   }
+  if (opts.artifactKind === "blueprint") {
+    return {
+      path: opts.path,
+      task_id: opts.taskId,
+      artifact_kind: opts.artifactKind,
+      classification: "task_blueprint_evidence",
+      action: "commit_with_task_evidence",
+      status: opts.status,
+      reason:
+        "blueprint artifact is task-local verification evidence and must travel with the task artifact commit",
+    };
+  }
   return {
     path: opts.path,
     task_id: opts.taskId,
@@ -217,6 +234,7 @@ async function detectTaskArtifactDrift(opts: {
   const counts: Record<TaskArtifactClassification, number> = {
     active_parallel_task_artifact: 0,
     stale_done_handoff: 0,
+    task_blueprint_evidence: 0,
     unknown_task_artifact: 0,
   };
   for (const item of items) {
@@ -384,6 +402,7 @@ export async function buildPreflightReport(opts: {
     counts: {
       active_parallel_task_artifact: 0,
       stale_done_handoff: 0,
+      task_blueprint_evidence: 0,
       unknown_task_artifact: 0,
     },
   };
