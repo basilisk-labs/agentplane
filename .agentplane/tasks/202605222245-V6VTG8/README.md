@@ -1,10 +1,11 @@
 ---
 id: "202605222245-V6VTG8"
 title: "Narrow pre-push PR-flow test selection for small integrate changes"
-status: "DOING"
+result_summary: "Merged via PR #4044."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605222245-V6VTG8/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605222245-V6VTG8-narrow-pr-integrate-ci-selection/.agentplane/tasks/202605222245-V6VTG8/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "063c81fa4f3342ab17d9f90d94ea56cdfbdd4cc9"
+  message: "Merge pull request #4044 from basilisk-labs/task/202605222245-V6VTG8/narrow-pr-integrate-ci-selection"
 comments:
   -
     author: "CODER"
     body: "Start: narrowing pre-push local CI selection for small PR integrate command changes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4044 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator check: pre-push routing is narrowed by path-specific PR integrate bucket while generic PR paths still keep the existing pr bucket; regression coverage asserts pr-flow suites are excluded for integrate internals."
+  -
+    type: "status"
+    at: "2026-05-22T23:01:42.825Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4044 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T22:48:36.403Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T23:01:42.833Z"
+doc_updated_by: "INTEGRATOR"
 description: "A small protected-base integrate transport change triggered the pre-push fast CI targeted pr selector to run the broad pr-flow Vitest bucket and hang for more than ten minutes. Tighten changed-file routing so focused integrate internals and cmd tests do not fan out to unrelated PR lifecycle suites, or add a bounded timeout/reporting guard for that selector."
 sections:
   Summary: |-
