@@ -21,6 +21,7 @@ export type FastCiPlan =
         | "cli-core"
         | "cli-runtime"
         | "pr"
+        | "pr-flow-status"
         | "pr-integrate"
         | "release"
         | "upgrade"
