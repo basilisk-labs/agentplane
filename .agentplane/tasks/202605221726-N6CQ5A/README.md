@@ -1,10 +1,11 @@
 ---
 id: "202605221726-N6CQ5A"
 title: "Add compact active task route summary"
-status: "DOING"
+result_summary: "Merged via PR #4036."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - ".agentplane/tasks/202605221726-N6CQ5A/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221726-N6CQ5A-active-route-summary/.agentplane/tasks/202605221726-N6CQ5A/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "ddf3257dd4a532d34ea379fe50e70a1a0524febd"
+  message: "Merge pull request #4036 from basilisk-labs/task/202605221726-N6CQ5A/active-route-summary"
 comments:
   -
     author: "CODER"
     body: "Start: implementing compact active task route summary to avoid full historical startup scans while preserving explicit full listing access and route blockers."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4036 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,9 +70,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Verified: reviewed active task route summary implementation; --all keeps full history, default listing stays active-only, SQLite projection status filtering is bounded, and full-fast local CI passed."
+  -
+    type: "status"
+    at: "2026-05-22T21:22:11.282Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4036 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T20:50:12.219Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T21:22:11.288Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make read-only startup and active-work inspection avoid full historical task scans by default while still surfacing anomalies, route blockers, and active branch_pr work."
 sections:
   Summary: |-

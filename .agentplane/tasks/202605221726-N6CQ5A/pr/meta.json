@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-22T21:21:26Z",
   "base": "main",
   "branch": "task/202605221726-N6CQ5A/active-route-summary",
   "created_at": "2026-05-22T20:36:46.619Z",
   "diffstat_sha256": "sha256:4b35e337d370bc4fe8e6b9095e472ec14b58f5ef6fff0aff646d43225d9c019c",
   "last_verified_at": "2026-05-22T20:50:12.190Z",
   "last_verified_diffstat_sha256": "sha256:4b35e337d370bc4fe8e6b9095e472ec14b58f5ef6fff0aff646d43225d9c019c",
+  "merge_commit": "ddf3257dd4a532d34ea379fe50e70a1a0524febd",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-22T21:21:26Z",
   "pr_number": 4036,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4036",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605221726-N6CQ5A",
-  "updated_at": "2026-05-22T20:50:01.283Z",
+  "updated_at": "2026-05-22T21:21:26Z",
   "verify": {
     "status": "pass"
   }
