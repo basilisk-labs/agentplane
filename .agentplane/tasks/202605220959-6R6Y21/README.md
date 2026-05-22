@@ -1,10 +1,11 @@
 ---
 id: "202605220959-6R6Y21"
 title: "Fix open upgrade and blueprint artifact issues"
-status: "DOING"
+result_summary: "Merged via PR #4013."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +34,16 @@ quality_review:
     - ".agentplane/tasks/202605220959-6R6Y21/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605220959-6R6Y21-fix-open-issues/.agentplane/tasks/202605220959-6R6Y21/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "05e5ed433c6c5b7326cd9834830f009a10d6464a"
+  message: "Merge pull request #4013 from basilisk-labs/task/202605220959-6R6Y21/fix-open-issues"
 comments:
   -
     author: "CODER"
     body: "Start: fixing GitHub issues #4010, #4011, and #4012 by hardening upgrade commit boundaries and blueprint task artifact handling in the task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4013 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Verified: EVALUATOR quality gate re-run after lint-fix commit b40ef2939. Hosted verify-routed failure was targeted ESLint only; local targeted ESLint, focused Vitest, typecheck, format, diff check, doctor, and routing checks now pass. BlueprintSnapshotRef: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838"
+  -
+    type: "status"
+    at: "2026-05-22T10:29:43.837Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4013 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T10:18:20.895Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T10:29:43.845Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub issues #4010, #4011, and #4012 by hardening upgrade commit boundaries and clarifying blueprint task artifact handling."
 sections:
   Summary: |-
