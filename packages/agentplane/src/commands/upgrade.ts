@@ -21,7 +21,7 @@ import {
   applyManagedFiles,
   cleanupAutoUpgradeArtifacts,
   createUpgradeCommit,
-  ensureCleanTrackedTreeForUpgrade,
+  prepareTrackedTreeForUpgrade,
   persistUpgradeState,
 } from "./upgrade/apply.js";
 import { materializeUpgradeSource, type MaterializedUpgrade } from "./upgrade/materialize.js";
@@ -120,9 +120,6 @@ export async function cmdUpgradeParsed(opts: {
     rootOverride: opts.rootOverride ?? null,
   });
   const loaded = await loadConfig(resolved.agentplaneDir);
-  if (flags.mode === "auto" && !flags.dryRun) {
-    await ensureCleanTrackedTreeForUpgrade(resolved.gitRoot);
-  }
   const commandCtx = await loadCommandContext({
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
@@ -243,6 +240,26 @@ export async function cmdUpgradeParsed(opts: {
         });
         process.stdout.write(`Upgrade plan written: ${relRunDir}\n`);
         return 0;
+      }
+
+      const trackedDirtyPreparation = await prepareTrackedTreeForUpgrade({
+        gitRoot: resolved.gitRoot,
+        upgradeStateDir,
+      });
+      if (trackedDirtyPreparation.dirtyLines.length > 0) {
+        process.stderr.write(
+          `${warnMessage("upgrade: pre-existing tracked changes detected; continuing with preservation")}\n`,
+        );
+        if (trackedDirtyPreparation.patchRelPath) {
+          process.stderr.write(
+            `- Saved pre-upgrade tracked diff: ${trackedDirtyPreparation.patchRelPath}\n`,
+          );
+        }
+        if (trackedDirtyPreparation.unstagedPaths.length > 0) {
+          process.stderr.write(
+            `- Unstaged pre-existing paths before creating the upgrade commit: ${trackedDirtyPreparation.unstagedPaths.join(", ")}\n`,
+          );
+        }
       }
 
       await applyManagedFiles({

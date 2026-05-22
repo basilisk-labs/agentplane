@@ -71,9 +71,50 @@ async function isRuntimeSqliteGitignoreOnlyDiff(
   );
 }
 
-export async function ensureCleanTrackedTreeForUpgrade(gitRoot: string): Promise<void> {
+export type PreparedTrackedTreeForUpgrade = {
+  dirtyLines: string[];
+  dirtyPaths: string[];
+  patchRelPath: string | null;
+  unstagedPaths: string[];
+};
+
+function parseGitStatusIndex(line: string): string {
+  return line.length > 0 ? (line[0] ?? " ") : " ";
+}
+
+async function writeDirtyTrackedPatch(opts: {
+  gitRoot: string;
+  upgradeStateDir: string;
+  dirtyLines: string[];
+  dirtyPaths: string[];
+}): Promise<string | null> {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["diff", "HEAD", "--binary", "--", ...opts.dirtyPaths],
+    {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+      maxBuffer: 20 * 1024 * 1024,
+    },
+  );
+  const patch = String(stdout ?? "");
+  if (patch.trim().length === 0) return null;
+
+  const dirtyDir = path.join(opts.upgradeStateDir, "user-dirty");
+  await mkdir(dirtyDir, { recursive: true });
+  const patchPath = path.join(dirtyDir, "tracked.patch");
+  const statusPath = path.join(dirtyDir, "status.txt");
+  await writeFile(patchPath, patch, "utf8");
+  await writeFile(statusPath, `${opts.dirtyLines.join("\n")}\n`, "utf8");
+  return path.relative(opts.gitRoot, patchPath).replaceAll("\\", "/");
+}
+
+export async function prepareTrackedTreeForUpgrade(opts: {
+  gitRoot: string;
+  upgradeStateDir: string;
+}): Promise<PreparedTrackedTreeForUpgrade> {
   const { stdout } = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
-    cwd: gitRoot,
+    cwd: opts.gitRoot,
     env: gitEnv(),
     maxBuffer: 10 * 1024 * 1024,
   });
@@ -81,28 +122,46 @@ export async function ensureCleanTrackedTreeForUpgrade(gitRoot: string): Promise
     .split(/\r?\n/u)
     .map((line) => line.trimEnd())
     .filter((line) => line.length > 0);
-  if (dirty.length === 0) return;
-  if (await isRuntimeSqliteGitignoreOnlyDiff(gitRoot, dirty)) return;
-  throw new CliError({
-    exitCode: exitCodeForError("E_GIT"),
-    code: "E_GIT",
-    message:
-      "Upgrade --auto requires a clean tracked working tree.\n" +
-      `Found tracked changes:\n${dirty.map((line) => `  ${line}`).join("\n")}`,
-    context: withDiagnosticContext(
-      { command: "upgrade" },
-      {
-        state: "managed upgrade cannot apply over tracked local edits",
-        likelyCause:
-          "auto-apply upgrade is about to replace framework-managed files, but the repository already has tracked modifications",
-        nextAction: {
-          command: "git status --short --untracked-files=no",
-          reason: "inspect or clear tracked changes before rerunning `agentplane upgrade --yes`",
-          reasonCode: "upgrade_dirty_tree",
-        },
-      },
+  if (dirty.length === 0 || (await isRuntimeSqliteGitignoreOnlyDiff(opts.gitRoot, dirty))) {
+    return { dirtyLines: [], dirtyPaths: [], patchRelPath: null, unstagedPaths: [] };
+  }
+
+  const dirtyPaths = [
+    ...new Set(
+      dirty
+        .map((line) => parseGitStatusPath(line))
+        .filter((relPath): relPath is string => relPath !== null),
     ),
+  ];
+  const stagedPaths = [
+    ...new Set(
+      dirty
+        .filter((line) => parseGitStatusIndex(line) !== " ")
+        .map((line) => parseGitStatusPath(line))
+        .filter((relPath): relPath is string => relPath !== null),
+    ),
+  ];
+  const patchRelPath = await writeDirtyTrackedPatch({
+    gitRoot: opts.gitRoot,
+    upgradeStateDir: opts.upgradeStateDir,
+    dirtyLines: dirty,
+    dirtyPaths,
   });
+
+  if (stagedPaths.length > 0) {
+    await execFileAsync("git", ["reset", "HEAD", "--", ...stagedPaths], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+      maxBuffer: 10 * 1024 * 1024,
+    });
+  }
+
+  return {
+    dirtyLines: dirty,
+    dirtyPaths,
+    patchRelPath,
+    unstagedPaths: stagedPaths,
+  };
 }
 
 export async function createUpgradeCommit(opts: {
@@ -158,7 +217,7 @@ export async function createUpgradeCommit(opts: {
     .split("\0")
     .map((entry) => entry.trim())
     .some(Boolean);
-  if (!staged) return null;
+  if (staged === false) return null;
 
   const subject = `⬆️ upgrade: apply framework ${opts.versionLabel}`;
   const body =
