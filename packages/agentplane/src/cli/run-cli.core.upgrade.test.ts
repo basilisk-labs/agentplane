@@ -110,6 +110,70 @@ describe("runCli", () => {
     expect(subject).toContain("upgrade: apply framework");
   });
 
+  it(
+    "upgrade includes runtime .gitignore cache lines in the upgrade commit",
+    { timeout: WORKFLOW_RUNTIME_ARTIFACTS_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+
+      let io = captureStdIO();
+      try {
+        expect(await runCli(["init", "--yes", "--root", root])).toBe(0);
+      } finally {
+        io.restore();
+      }
+
+      const gitignorePath = path.join(root, ".gitignore");
+      const gitignoreBeforeUpgrade = await readFile(gitignorePath, "utf8");
+      const staleGitignore = gitignoreBeforeUpgrade
+        .split(/\r?\n/u)
+        .filter(
+          (line) =>
+            line !== ".agentplane/cache.sqlite" &&
+            line !== ".agentplane/cache.sqlite-wal" &&
+            line !== ".agentplane/cache.sqlite-shm",
+        )
+        .join("\n");
+      await writeFile(gitignorePath, `${staleGitignore.trimEnd()}\n`, "utf8");
+      await commitAll(root, "fixture: stale runtime gitignore");
+
+      io = captureStdIO();
+      try {
+        expect(await runCli(["upgrade", "--yes", "--root", root])).toBe(0);
+        expect(io.stdout).toContain("Upgrade commit:");
+      } finally {
+        io.restore();
+      }
+
+      const gitignoreText = await readFile(gitignorePath, "utf8");
+      expect(gitignoreText).toContain(".agentplane/cache.sqlite");
+      expect(gitignoreText).toContain(".agentplane/cache.sqlite-wal");
+      expect(gitignoreText).toContain(".agentplane/cache.sqlite-shm");
+
+      const execFileAsync = promisify(execFile);
+      const { stdout: statusOut } = await execFileAsync(
+        "git",
+        ["status", "--short", "--untracked-files=no"],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
+      );
+      expect(String(statusOut ?? "").trim()).toBe("");
+
+      const { stdout: showOut } = await execFileAsync(
+        "git",
+        ["show", "--name-only", "--format=", "HEAD"],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
+      );
+      expect(String(showOut ?? "")).toContain(".gitignore");
+    },
+  );
+
   it("upgrade --dry-run reports changes without modifying files", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

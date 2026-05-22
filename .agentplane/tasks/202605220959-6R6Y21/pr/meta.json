@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605220959-6R6Y21/fix-open-issues",
+  "created_at": "2026-05-22T10:00:06.472Z",
+  "head_sha": "b40ef293923a3067828d7417cb8be660f9932680",
+  "last_verified_at": "2026-05-22T10:18:20.831Z",
+  "last_verified_sha": "b40ef293923a3067828d7417cb8be660f9932680",
+  "pr_number": 4013,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4013",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605220959-6R6Y21",
+  "updated_at": "2026-05-22T10:18:20.989Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -12,6 +12,12 @@ import { gitEnv } from "@agentplaneorg/core/git";
 
 import type { UpgradeReviewRecord } from "./types.js";
 
+const RUNTIME_SQLITE_GITIGNORE_LINES = new Set([
+  ".agentplane/cache.sqlite",
+  ".agentplane/cache.sqlite-wal",
+  ".agentplane/cache.sqlite-shm",
+]);
+
 async function safeRemovePath(targetPath: string): Promise<void> {
   try {
     await rm(targetPath, { recursive: true, force: true });
@@ -30,6 +36,41 @@ export async function cleanupAutoUpgradeArtifacts(opts: {
   await safeRemovePath(path.join(opts.upgradeStateDir, "agent"));
 }
 
+function parseGitStatusPath(line: string): string | null {
+  const trimmed = line.trimEnd();
+  if (trimmed.length < 4) return null;
+  const rawPath = trimmed.slice(3).trim();
+  if (!rawPath) return null;
+  const renameArrow = " -> ";
+  const normalized = rawPath.includes(renameArrow) ? rawPath.split(renameArrow).at(-1) : rawPath;
+  return normalized?.replaceAll("\\", "/") ?? null;
+}
+
+async function isRuntimeSqliteGitignoreOnlyDiff(
+  gitRoot: string,
+  dirty: string[],
+): Promise<boolean> {
+  const dirtyPaths = dirty
+    .map((line) => parseGitStatusPath(line))
+    .filter((relPath): relPath is string => relPath !== null);
+  if (dirtyPaths.length === 0 || dirtyPaths.some((relPath) => relPath !== ".gitignore")) {
+    return false;
+  }
+  const { stdout } = await execFileAsync("git", ["diff", "HEAD", "--", ".gitignore"], {
+    cwd: gitRoot,
+    env: gitEnv(),
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  const changedLines = String(stdout ?? "")
+    .split(/\r?\n/u)
+    .filter((line) => /^[+-](?![+-]{2})/u.test(line))
+    .map((line) => line.slice(1).trim());
+  return (
+    changedLines.length > 0 &&
+    changedLines.every((line) => RUNTIME_SQLITE_GITIGNORE_LINES.has(line))
+  );
+}
+
 export async function ensureCleanTrackedTreeForUpgrade(gitRoot: string): Promise<void> {
   const { stdout } = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
     cwd: gitRoot,
@@ -41,6 +82,7 @@ export async function ensureCleanTrackedTreeForUpgrade(gitRoot: string): Promise
     .map((line) => line.trimEnd())
     .filter((line) => line.length > 0);
   if (dirty.length === 0) return;
+  if (await isRuntimeSqliteGitignoreOnlyDiff(gitRoot, dirty)) return;
   throw new CliError({
     exitCode: exitCodeForError("E_GIT"),
     code: "E_GIT",

@@ -15,6 +15,7 @@ import { checkTaskReadmeMigrationState } from "./doctor/workspace.js";
 import { runOperatorPipeline } from "./shared/operator-pipeline.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
+import { ensureRuntimeSqliteGitignore } from "../runtime/shared/runtime-gitignore.js";
 import { migrateTaskDocsInWorkspace } from "./task/migrate-doc.js";
 import {
   applyManagedFiles,
@@ -28,6 +29,7 @@ import { planManagedUpgrade } from "./upgrade/plan.js";
 import {
   CONFIG_REL_PATH,
   WORKFLOW_REL_PATH,
+  isAllowedUpgradePath,
   normalizeVersionForConfig,
   toUpgradeBaselineKey,
 } from "./upgrade/policy.js";
@@ -65,6 +67,38 @@ async function isTrackedFile(gitRoot: string, relPath: string): Promise<boolean>
   }
 }
 
+function parseGitStatusPath(line: string): string | null {
+  const trimmed = line.trimEnd();
+  if (trimmed.length < 4) return null;
+  const rawPath = trimmed.slice(3).trim();
+  if (!rawPath) return null;
+  const renameArrow = " -> ";
+  const normalized = rawPath.includes(renameArrow) ? rawPath.split(renameArrow).at(-1) : rawPath;
+  return normalized?.replaceAll("\\", "/") ?? null;
+}
+
+function isUpgradeAutoCommitPath(relPath: string): boolean {
+  if (relPath === ".gitignore") return true;
+  if (relPath === CONFIG_REL_PATH || relPath === WORKFLOW_REL_PATH) return true;
+  return isAllowedUpgradePath(relPath);
+}
+
+async function listUpgradeAutoCommitTrackedDiff(gitRoot: string): Promise<string[]> {
+  const { stdout } = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
+    cwd: gitRoot,
+    env: gitEnv(),
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  const lines = String(stdout ?? "")
+    .split(/\r?\n/u)
+    .map((line) => line.trimEnd())
+    .filter(Boolean);
+  return lines
+    .map((line) => parseGitStatusPath(line))
+    .filter((relPath): relPath is string => relPath !== null)
+    .filter((relPath) => isUpgradeAutoCommitPath(relPath));
+}
+
 export async function cmdUpgradeParsed(opts: {
   cwd: string;
   rootOverride?: string;
@@ -86,15 +120,15 @@ export async function cmdUpgradeParsed(opts: {
     rootOverride: opts.rootOverride ?? null,
   });
   const loaded = await loadConfig(resolved.agentplaneDir);
+  if (flags.mode === "auto" && !flags.dryRun) {
+    await ensureCleanTrackedTreeForUpgrade(resolved.gitRoot);
+  }
   const commandCtx = await loadCommandContext({
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
     resolvedProject: resolved,
     config: loaded.config,
   });
-  if (flags.mode === "auto" && !flags.dryRun) {
-    await ensureCleanTrackedTreeForUpgrade(resolved.gitRoot);
-  }
   const upgradeStateDir = path.join(resolved.agentplaneDir, ".upgrade");
   const lockPath = path.join(upgradeStateDir, "lock.json");
   const statePath = path.join(upgradeStateDir, "state.json");
@@ -237,6 +271,7 @@ export async function cmdUpgradeParsed(opts: {
           migratedTaskDocs.changed > 0 ? `changed=${migratedTaskDocs.changed}` : "already current";
         process.stdout.write(`Task README migration: ${details}\n`);
       }
+      await ensureRuntimeSqliteGitignore({ gitRoot: resolved.gitRoot });
 
       const hasManagedMutations = additions.length > 0 || updates.length > 0 || removals.length > 0;
       const legacyConfigWasTracked = await isTrackedFile(resolved.gitRoot, CONFIG_REL_PATH);
@@ -279,6 +314,7 @@ export async function cmdUpgradeParsed(opts: {
           ...workflowArtifacts.commitPaths,
           ...(shouldMutateConfig ? [WORKFLOW_REL_PATH] : []),
           ...(shouldMutateConfig && legacyConfigWasTracked ? [CONFIG_REL_PATH] : []),
+          ...(await listUpgradeAutoCommitTrackedDiff(resolved.gitRoot)),
         ]),
       ];
       const commit = await createUpgradeCommit({
