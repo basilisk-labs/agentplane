@@ -1,10 +1,11 @@
 ---
 id: "202605221046-C2M96D"
 title: "Amend refreshed task artifacts after commit"
-status: "DOING"
+result_summary: "Merged via PR #4015."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -35,7 +36,9 @@ quality_review:
     - ".agentplane/tasks/202605221046-C2M96D/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221046-C2M96D-amend-task-artifacts/.agentplane/tasks/202605221046-C2M96D/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "fc4030e8ba8c9c2c4e74c22dd5128dd9a89c4edd"
+  message: "Merge pull request #4015 from basilisk-labs/task/202605221046-C2M96D/amend-task-artifacts"
 comments:
   -
     author: "CODER"
@@ -46,6 +49,9 @@ comments:
   -
     author: "CODER"
     body: "Start: resuming with approved deeper scope to remove self-referential PR artifact head SHA gates and enable one-commit task branches."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4015 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -98,9 +104,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified hosted verify-unit fix: added missing gitBranchUpstream/gitDiffStat test doubles for integrate prepare diffstat freshness path; vitest prepare.test.ts passed (14 tests), typecheck passed, targeted ESLint passed, full test:fast passed (325 files, 1947 passed, 2 skipped)."
+  -
+    type: "status"
+    at: "2026-05-22T12:55:46.545Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4015 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T12:37:15.489Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T12:55:46.553Z"
+doc_updated_by: "INTEGRATOR"
 description: "Optimize branch_pr task branches so refreshed task README, blueprint, and PR artifacts are folded into the active task commit with amend instead of creating extra artifact-only commits."
 sections:
   Summary: |-
