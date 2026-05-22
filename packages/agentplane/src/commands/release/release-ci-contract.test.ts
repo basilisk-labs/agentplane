@@ -111,6 +111,18 @@ describe("release CI contract", () => {
     );
   });
 
+  it("bounds local CI Vitest subprocesses with an operator-tunable suite timeout", async () => {
+    const localCi = await readRootText("scripts/checks/run-local-ci.mjs");
+
+    expect(localCi).toContain("AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS");
+    expect(localCi).toContain("DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS = 10 * 60 * 1000");
+    expect(localCi).toContain("timeout: options.timeoutMs");
+    expect(localCi).toContain('timeoutLabel: "Vitest suite"');
+    expect(localCi.indexOf("timeout: options.timeoutMs")).toBeLessThan(
+      localCi.indexOf("Set AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS"),
+    );
+  });
+
   it("keeps the developer reinstall helper on the minimal runtime build path", async () => {
     const wrapper = await readRootText("scripts/reinstall-global-agentplane.sh");
     const reinstall = await readRootText("scripts/workflow/reinstall-global-agentplane.sh");
