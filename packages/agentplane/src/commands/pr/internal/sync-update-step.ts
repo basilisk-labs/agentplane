@@ -21,6 +21,7 @@ import {
   shouldPersistObservedGithubPrIdentity,
   tryLookupExistingGithubPrByBranch,
 } from "./sync-github.js";
+import { digestPrDiffstatText } from "./freshness.js";
 import type { PrSyncCommonState } from "./sync-model.js";
 
 export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta: PrMeta }> {
@@ -43,7 +44,7 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
     branch: common.branch,
     at: common.now,
     base: common.baseBranch,
-    headSha: common.renderedHeadSha,
+    diffstatDigest: digestPrDiffstatText(diffstat ? `${diffstat}\n` : ""),
   });
   const observedGithubPr = await tryLookupExistingGithubPrByBranch({
     gitRoot: common.resolved.gitRoot,
@@ -60,9 +61,6 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
   const nextAutoSummary = renderPrAutoSummary({
     updatedAt: nextMeta.updated_at,
     branch: common.branch,
-    headSha: common.artifactRefresh
-      ? (nextMeta.head_sha ?? common.renderedHeadSha ?? null)
-      : (nextMeta.head_sha ?? common.renderedHeadSha ?? common.headSha ?? null),
     diffstat,
   });
   const nextReview = renderPrReviewDocument({

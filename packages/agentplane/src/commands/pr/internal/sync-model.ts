@@ -36,6 +36,5 @@ export type PrSyncCommonState = {
   baseBranch: string | null;
   headSha: string | null;
   artifactRefresh: boolean;
-  renderedHeadSha: string | undefined;
   renderUpdatedAt: string;
 };

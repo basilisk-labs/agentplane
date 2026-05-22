@@ -1,0 +1,24 @@
+ .../blueprint/resolved-snapshot.json               | 572 +++++++++++++++++++++
+ .../cli/run-cli.core.pr-flow.pr-lifecycle.test.ts  |  44 +-
+ .../run-cli.core.pr-flow.pr-notes-verify.test.ts   |  11 +-
+ .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   8 +-
+ .../impl/commands.commit-non-close.unit.test.ts    |   8 +-
+ .../src/commands/guard/impl/commit-refresh.ts      |  17 +-
+ .../agentplane/src/commands/guard/impl/commit.ts   |   4 +-
+ packages/agentplane/src/commands/pr/check.ts       |  13 +
+ .../commands/pr/integrate/internal/prepare.test.ts |  10 +-
+ .../src/commands/pr/integrate/internal/prepare.ts  |  25 +-
+ .../src/commands/pr/internal/auto-commit.ts        |  30 +-
+ .../src/commands/pr/internal/freshness.ts          |  60 ++-
+ .../commands/pr/internal/pr-artifact-snapshot.ts   |  35 +-
+ .../src/commands/pr/internal/review-template.ts    |   3 +-
+ .../src/commands/pr/internal/sync-model.ts         |   1 -
+ .../src/commands/pr/internal/sync-open-step.ts     |   8 +-
+ .../src/commands/pr/internal/sync-update-step.ts   |   6 +-
+ .../agentplane/src/commands/pr/internal/sync.ts    |  25 +-
+ packages/agentplane/src/commands/pr/update.ts      |  28 +-
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  34 +-
+ packages/agentplane/src/commands/shared/pr-meta.ts |   1 -
+ .../src/commands/shared/pr-meta/builders.ts        |  84 +--
+ packages/testkit/src/guard.ts                      |   3 +
+ 23 files changed, 812 insertions(+), 218 deletions(-)

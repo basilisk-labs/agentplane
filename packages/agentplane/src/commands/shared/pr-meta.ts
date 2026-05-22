@@ -9,7 +9,6 @@ export {
   buildOpenedPrMeta,
   buildUpdatedPrMeta,
   buildVerifiedPrMeta,
-  resolvePrArtifactHeadSha,
   resolvePrBatchIncludedTaskIds,
 } from "./pr-meta/builders.js";
 export { parsePrMeta, parsePrMetaForwardCompatible } from "./pr-meta/parser.js";

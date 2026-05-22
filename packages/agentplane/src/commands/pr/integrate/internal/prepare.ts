@@ -27,11 +27,17 @@ import { assertEvaluatorQualityReviewPassed } from "../../../task/quality-review
 
 import { readPrArtifact, resolvePrPaths } from "../../internal/pr-paths.js";
 import { ensurePrArtifactsSynced } from "../../internal/sync.js";
+import { computePrDiffstat } from "../../internal/sync-branch.js";
 
 import { readAndValidatePrArtifacts, ensureCommittedPrArtifactsOnBranch } from "../artifacts.js";
 import { computeVerifyState } from "../verify.js";
 import { parsePrMetaForwardCompatible, type PrMeta } from "../../../shared/pr-meta.js";
-import { assessPrArtifactFreshness } from "../../internal/freshness.js";
+import {
+  assessPrArtifactFreshness,
+  digestPrDiffstatText,
+  PR_DIFFSTAT_DIGEST_FIELD,
+  PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD,
+} from "../../internal/freshness.js";
 import { requiresPullRequestMergePath } from "./github-protection.js";
 
 type PreparedIntegrate = {
@@ -222,6 +228,14 @@ export async function prepareIntegrate(opts: {
 
   const changedPaths = await gitDiffNames(resolved.gitRoot, base, branch);
   const branchHeadSha = await gitRevParse(resolved.gitRoot, [branch]);
+  const currentDiffstat = await computePrDiffstat({
+    gitRoot: resolved.gitRoot,
+    baseBranch: base,
+    branch,
+    prDir,
+  });
+  const currentDiffstatText = currentDiffstat ? `${currentDiffstat}\n` : "";
+  const currentDiffstatDigest = digestPrDiffstatText(currentDiffstatText);
   let freshness = await assessPrArtifactFreshness({
     gitRoot: resolved.gitRoot,
     workflowDir: loadedConfig.paths.workflow_dir,
@@ -230,6 +244,9 @@ export async function prepareIntegrate(opts: {
     branchHeadSha,
     metaHeadSha: metaSource.head_sha ?? null,
     metaLastVerifiedSha: metaSource.last_verified_sha ?? null,
+    metaDiffstatDigest: metaSource[PR_DIFFSTAT_DIGEST_FIELD] ?? null,
+    metaLastVerifiedDiffstatDigest: metaSource[PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD] ?? null,
+    currentDiffstatDigest,
     metaVerifyStatus: metaSource.verify?.status ?? null,
     taskVerificationState: task.verification?.state ?? null,
     verifyLogText,
@@ -268,6 +285,10 @@ export async function prepareIntegrate(opts: {
         branchHeadSha,
         metaHeadSha: repairedMetaSource.head_sha ?? null,
         metaLastVerifiedSha: repairedMetaSource.last_verified_sha ?? null,
+        metaDiffstatDigest: repairedMetaSource[PR_DIFFSTAT_DIGEST_FIELD] ?? null,
+        metaLastVerifiedDiffstatDigest:
+          repairedMetaSource[PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD] ?? null,
+        currentDiffstatDigest,
         metaVerifyStatus: repairedMetaSource.verify?.status ?? null,
         taskVerificationState: task.verification?.state ?? null,
         verifyLogText,
@@ -282,7 +303,7 @@ export async function prepareIntegrate(opts: {
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message:
-        `PR artifacts stale for ${opts.taskId}: meta.head_sha=${metaSource.head_sha ?? "<missing>"} ` +
+        `PR artifacts stale for ${opts.taskId}: recorded_head=${metaSource.head_sha ?? "<live>"} ` +
         `current_head=${branchHeadSha} (refresh the task branch artifacts before integrate)`,
     });
   }

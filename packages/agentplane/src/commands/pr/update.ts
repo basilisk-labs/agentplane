@@ -12,8 +12,14 @@ import {
 } from "../shared/task-backend.js";
 
 import { maybeAutoCommitTaskPrArtifacts } from "./internal/auto-commit.js";
-import { assessPrArtifactFreshness } from "./internal/freshness.js";
+import {
+  assessPrArtifactFreshness,
+  digestPrDiffstatText,
+  PR_DIFFSTAT_DIGEST_FIELD,
+  PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD,
+} from "./internal/freshness.js";
 import { syncPrArtifacts } from "./internal/sync.js";
+import { computePrDiffstat } from "./internal/sync-branch.js";
 
 async function readTextIfExists(filePath: string): Promise<string | null> {
   try {
@@ -34,9 +40,12 @@ async function warnOnStaleVerifyAfterUpdate(opts: {
   prDir: string;
   resolved: { gitRoot: string };
   meta: {
+    base?: string | null;
     branch?: string | null;
     head_sha?: string | null;
     last_verified_sha?: string | null;
+    [PR_DIFFSTAT_DIGEST_FIELD]?: unknown;
+    [PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD]?: unknown;
     verify?: { status?: string | null } | null;
   };
 }): Promise<void> {
@@ -56,6 +65,14 @@ async function warnOnStaleVerifyAfterUpdate(opts: {
   if (!requiresVerify) return;
 
   const branchHeadSha = await gitRevParse(opts.resolved.gitRoot, [`${branch}^{commit}`]);
+  const currentDiffstat = opts.meta.base
+    ? await computePrDiffstat({
+        gitRoot: opts.resolved.gitRoot,
+        baseBranch: opts.meta.base,
+        branch,
+        prDir: opts.prDir,
+      })
+    : "";
   const verifyLogText = await readTextIfExists(path.join(opts.prDir, "verify.log"));
   const freshness = await assessPrArtifactFreshness({
     gitRoot: opts.resolved.gitRoot,
@@ -65,15 +82,19 @@ async function warnOnStaleVerifyAfterUpdate(opts: {
     branchHeadSha,
     metaHeadSha: opts.meta.head_sha ?? null,
     metaLastVerifiedSha: opts.meta.last_verified_sha ?? null,
+    metaDiffstatDigest: opts.meta[PR_DIFFSTAT_DIGEST_FIELD] ?? null,
+    metaLastVerifiedDiffstatDigest: opts.meta[PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD] ?? null,
+    currentDiffstatDigest: digestPrDiffstatText(currentDiffstat ? `${currentDiffstat}\n` : ""),
     metaVerifyStatus: opts.meta.verify?.status ?? null,
     taskVerificationState: task.verification?.state ?? null,
     verifyLogText,
     requiresVerify,
   });
 
-  if (opts.meta.last_verified_sha && !freshness.verifyFresh) {
+  const lastVerifiedDiffstatDigest = opts.meta[PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD];
+  if ((opts.meta.last_verified_sha || lastVerifiedDiffstatDigest) && !freshness.verifyFresh) {
     opts.output.warn(
-      `Verify state stale: last_verified_sha=${opts.meta.last_verified_sha} current_head=${branchHeadSha}; run \`agentplane verify ${opts.taskId} --ok --by <ROLE> --note "Verified: ..."\` before integrating`,
+      `Verify state stale: recorded_verify=${String(opts.meta.last_verified_sha ?? lastVerifiedDiffstatDigest)} current_head=${branchHeadSha}; run \`agentplane verify ${opts.taskId} --ok --by <ROLE> --note "Verified: ..."\` before integrating`,
     );
   }
 }
@@ -103,6 +124,7 @@ export async function cmdPrUpdate(opts: {
         ctx: commandCtx,
         taskId: opts.taskId,
         branch: meta.branch,
+        strategy: "amend",
       });
     }
 

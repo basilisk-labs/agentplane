@@ -24,6 +24,7 @@ import {
   tryCreateGithubPr,
   tryLookupExistingGithubPrByBranch,
 } from "./sync-github.js";
+import { digestPrDiffstatText } from "./freshness.js";
 import type { PrOpenOutcome, PrRemoteMode, PrSyncCommonState } from "./sync-model.js";
 
 export async function runPrOpenSync(
@@ -41,9 +42,6 @@ export async function runPrOpenSync(
         prDir: common.prDir,
       })
     : "";
-  const renderedSummaryHeadSha = common.artifactRefresh
-    ? common.renderedHeadSha
-    : (common.renderedHeadSha ?? common.headSha);
   let nextMeta: PrMeta = buildOpenedPrMeta({
     taskId: common.task.id,
     relatedTaskIds: common.relatedTaskIds,
@@ -51,7 +49,7 @@ export async function runPrOpenSync(
     at: common.now,
     previousMeta: common.existingMeta,
     base: common.baseBranch,
-    headSha: common.renderedHeadSha,
+    diffstatDigest: digestPrDiffstatText(diffstat ? `${diffstat}\n` : ""),
   });
   const linkedExistingOutcome =
     typeof nextMeta.pr_number === "number" && nextMeta.pr_number > 0
@@ -69,7 +67,6 @@ export async function runPrOpenSync(
     autoSummary: renderPrAutoSummary({
       updatedAt: common.renderUpdatedAt,
       branch: common.branch,
-      headSha: renderedSummaryHeadSha ?? null,
       diffstat,
     }),
   });
@@ -145,7 +142,6 @@ export async function runPrOpenSync(
   const nextAutoSummary = renderPrAutoSummary({
     updatedAt: common.renderUpdatedAt,
     branch: common.branch,
-    headSha: renderedSummaryHeadSha ?? null,
     diffstat,
   });
   const nextReview = renderPrReviewDocument({

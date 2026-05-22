@@ -211,7 +211,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
   });
 
   it(
-    "pr check falls back to PR artifacts committed on the task branch",
+    "pr check reports missing local artifacts when branch fallback is stale",
     { timeout: PR_FLOW_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
@@ -285,8 +285,8 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       const io = captureStdIO();
       try {
         const code = await runCli(["pr", "check", taskId, "--root", root]);
-        expect(code).toBe(0);
-        expect(io.stdout).toContain("✅ pr check");
+        expect(code).toBe(3);
+        expect(io.stderr).toContain("Missing PR directory:");
       } finally {
         io.restore();
       }
@@ -641,7 +641,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
     );
     const meta = JSON.parse(metaRaw) as { branch?: string; head_sha?: string | null };
     expect(meta.branch).toBe("main");
-    expect(meta.head_sha).toMatch(/^[0-9a-f]{40}$/u);
+    expect(meta.head_sha).toBeUndefined();
   });
 
   it("pr open keeps incidents.md unchanged while creating PR artifacts", async () => {

@@ -11,8 +11,7 @@ import { CliError } from "../../../shared/errors.js";
 import { emitTraceEvent } from "../../../shared/trace-events.js";
 import type { TaskData } from "../../../backends/task-backend.js";
 import { INCIDENTS_POLICY_PATH } from "../../../runtime/incidents/index.js";
-import { resolvePrArtifactHeadSha, parsePrMeta, type PrMeta } from "../../shared/pr-meta.js";
-import { isTaskLocalOnlyAdvance } from "../../shared/task-local-freshness.js";
+import { parsePrMeta, type PrMeta } from "../../shared/pr-meta.js";
 import {
   loadBackendTask,
   loadCommandContext,
@@ -66,29 +65,10 @@ async function buildPrSyncCommonState(opts: {
     taskId: opts.task.id,
     branch: opts.branch,
   });
-  const preservePreviousHead =
-    Boolean(opts.existingMeta?.head_sha) &&
-    Boolean(headSha) &&
-    (await isTaskLocalOnlyAdvance({
-      gitRoot: opts.resolved.gitRoot,
-      workflowDir: opts.workflowDir,
-      tasksPath: opts.tasksPath,
-      taskId: opts.task.id,
-      fromRef: opts.existingMeta?.head_sha ?? null,
-      toRef: headSha!,
-    }));
-  const renderedHeadSha = artifactRefresh
-    ? (opts.existingMeta?.head_sha ?? undefined)
-    : resolvePrArtifactHeadSha({
-        previousHeadSha: opts.existingMeta?.head_sha ?? null,
-        currentHeadSha: headSha,
-        preservePrevious: preservePreviousHead,
-      });
   const preservedRenderUpdatedAt =
     opts.existingMeta &&
     (opts.existingMeta.branch ?? null) === opts.branch &&
-    (opts.existingMeta.base ?? null) === (opts.baseBranch ?? null) &&
-    (opts.existingMeta.head_sha ?? null) === (renderedHeadSha ?? null)
+    (opts.existingMeta.base ?? null) === (opts.baseBranch ?? null)
       ? opts.existingMeta.updated_at
       : null;
   const renderUpdatedAt = preservedRenderUpdatedAt ?? now;
@@ -115,7 +95,6 @@ async function buildPrSyncCommonState(opts: {
     baseBranch: opts.baseBranch,
     headSha,
     artifactRefresh,
-    renderedHeadSha,
     renderUpdatedAt,
   };
 }
