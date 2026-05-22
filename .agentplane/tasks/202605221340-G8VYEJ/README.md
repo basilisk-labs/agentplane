@@ -1,10 +1,11 @@
 ---
 id: "202605221340-G8VYEJ"
 title: "Release AgentPlane v0.6.6"
-status: "BLOCKED"
+result_summary: "Merged via PR #4019."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -35,7 +36,9 @@ quality_review:
     - ".agentplane/tasks/202605221340-G8VYEJ/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221340-G8VYEJ-release-v0-6-6/.agentplane/tasks/202605221340-G8VYEJ/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "92ca8827543c84a2584dfd886917e1b24d5a51d7"
+  message: "Merge pull request #4019 from basilisk-labs/task/202605221340-G8VYEJ/release-v0-6-6"
 comments:
   -
     author: "INTEGRATOR"
@@ -43,6 +46,9 @@ comments:
   -
     author: "INTEGRATOR"
     body: "blocked: release readiness gate requires the release task to be outside DOING before candidate and publish checks | details: continuing candidate preparation from the dedicated release branch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4019 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,8 +70,15 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed: local release:prepublish completed before candidate preparation; post-bump format, release:parity, registry availability, release:check, docs:site:check, ap doctor, policy routing, pre-push fast route, and hosted PR checks for #4019 passed. PR branch is one commit over origin/main and PR meta has no tracked head_sha."
+  -
+    type: "status"
+    at: "2026-05-22T16:11:23.553Z"
+    author: "INTEGRATOR"
+    from: "BLOCKED"
+    to: "DONE"
+    note: "Verified: PR #4019 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T16:01:04.425Z"
+doc_updated_at: "2026-05-22T16:11:23.560Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare and publish the next patch release from current main after validating repository state, full checks, release candidate, hosted merge, and npm/GitHub release evidence."
 sections:
