@@ -1,10 +1,11 @@
 ---
 id: "202605221726-8SA692"
 title: "Add combined hosted lifecycle status report"
-status: "DOING"
+result_summary: "Merged via PR #4048."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - ".agentplane/tasks/202605221726-8SA692/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221726-8SA692-hosted-lifecycle-status-report/.agentplane/tasks/202605221726-8SA692/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "598eed4ecdee5d884e32865963e6fc0a4c3df879"
+  message: "Merge pull request #4048 from basilisk-labs/task/202605221726-8SA692/hosted-lifecycle-status-report"
 comments:
   -
     author: "CODER"
     body: "Start: adding combined hosted lifecycle status report for branch_pr tasks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4048 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,9 +70,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator check: combined report extends the existing branch_pr flow surface without adding a second lifecycle truth; unavailable GitHub/provider state degrades into explicit unchecked reasons and local queue/handoff evidence remains visible."
+  -
+    type: "status"
+    at: "2026-05-22T23:38:46.991Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4048 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T23:15:08.407Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T23:38:46.998Z"
+doc_updated_by: "INTEGRATOR"
 description: "Expose local AgentPlane lifecycle, queue/handoff state, GitHub PR state, hosted checks, review threads, and close-tail state in one command for branch_pr tasks."
 sections:
   Summary: |-
