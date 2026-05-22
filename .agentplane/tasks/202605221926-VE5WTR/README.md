@@ -1,10 +1,11 @@
 ---
 id: "202605221926-VE5WTR"
 title: "Bound local CI targeted test process duration"
-status: "DOING"
+result_summary: "Merged via PR #4030."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605221926-VE5WTR/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221926-VE5WTR-local-ci-vitest-timeout/.agentplane/tasks/202605221926-VE5WTR/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "34fae8706be3a3c2fbe73a3035db08bc3281387e"
+  message: "Merge pull request #4030 from basilisk-labs/task/202605221926-VE5WTR/local-ci-vitest-timeout"
 comments:
   -
     author: "CODER"
     body: "Start: adding suite-level timeout supervision around local CI Vitest invocations after pre-push exposed a hung targeted PR suite."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4030 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Reviewed one-commit branch after PR artifact refresh; local focused checks passed and PR diff contains the intended run-local-ci timeout guard."
+  -
+    type: "status"
+    at: "2026-05-22T19:37:42.664Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4030 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T19:31:44.787Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T19:37:42.672Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent local pre-push and run-local-ci targeted Vitest suites from hanging indefinitely by adding a bounded process timeout and actionable diagnostics for suite-level stalls."
 sections:
   Summary: |-
