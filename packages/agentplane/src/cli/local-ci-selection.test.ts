@@ -218,6 +218,19 @@ describe("local CI fast selection", () => {
     );
   });
 
+  it("routes local CI route registry maintenance to the hooks bucket", () => {
+    const plan = selectFastCiPlan([
+      "scripts/lib/local-ci-selection.mjs",
+      "scripts/lib/local-ci-selection.d.ts",
+      "scripts/lib/test-route-registry.mjs",
+      "packages/agentplane/src/cli/local-ci-selection.test.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("hooks");
+    expect(plan.reason).toBe("hook_and_ci_routing_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/local-ci-selection.test.ts");
+  });
+
   it("routes the pre-commit test-fast decision script to the hooks bucket", () => {
     const plan = selectFastCiPlan(["scripts/run-pre-commit-test-fast.mjs"]);
     expect(plan.kind).toBe("targeted");
