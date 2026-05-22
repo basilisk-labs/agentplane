@@ -1,10 +1,11 @@
 ---
 id: "202605221726-R90HC5"
 title: "Enforce batch primary task artifact scaffold"
-status: "TODO"
+result_summary: "Merged via PR #4025."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -27,12 +28,24 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
-comments: []
-events: []
+commit:
+  hash: "2af1dc2325ea7d7818f285890f163aae46cc1b0f"
+  message: "Merge pull request #4025 from basilisk-labs/task/202605221726-R90HC5/register-open-backlog"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4025 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+events:
+  -
+    type: "status"
+    at: "2026-05-22T18:21:30.242Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #4025 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T17:27:52.749Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-22T18:21:30.247Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent shared batch worktrees from referencing a primary task that lacks a readable task README and explicit included-task manifest."
 sections:
   Summary: |-
