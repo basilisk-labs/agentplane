@@ -1,0 +1,3 @@
+ packages/agentplane/src/cli/local-ci-selection.test.ts | 13 +++++++++++++
+ scripts/lib/local-ci-selection.mjs                     |  2 ++
+ 2 files changed, 15 insertions(+)
