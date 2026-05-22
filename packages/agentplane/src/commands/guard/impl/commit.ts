@@ -320,7 +320,7 @@ export async function cmdCommit(opts: {
       quiet: opts.quiet,
     });
     ctx.git.invalidateStatus();
-    const refreshCommit = await commitRefreshedTaskArtifacts({
+    const amendedCommit = await commitRefreshedTaskArtifacts({
       ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
@@ -336,7 +336,7 @@ export async function cmdCommit(opts: {
           formatCommitRef(primaryCommit),
           [
             autoStaged.length > 0 ? `staged=${autoStaged.join(", ")}` : null,
-            refreshCommit ? `refresh=${formatCommitRef(refreshCommit)}` : null,
+            amendedCommit ? `amended=${formatCommitRef(amendedCommit)}` : null,
           ]
             .filter(Boolean)
             .join("; ") || undefined,

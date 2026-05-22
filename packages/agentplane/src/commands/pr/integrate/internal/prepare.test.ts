@@ -8,7 +8,9 @@ const mocks = vi.hoisted(() => ({
   readFile: vi.fn(),
   ensureGitClean: vi.fn(),
   gitDiffNames: vi.fn(),
+  gitDiffStat: vi.fn(),
   gitBranchExists: vi.fn(),
+  gitBranchUpstream: vi.fn(),
   gitCurrentBranch: vi.fn(),
   gitRevParse: vi.fn(),
   findWorktreeForBranch: vi.fn(),
@@ -34,10 +36,12 @@ vi.mock("../../../guard/index.js", () => ({ ensureGitClean: mocks.ensureGitClean
 vi.mock("@agentplaneorg/core/git", () => ({
   findWorktreeForBranch: mocks.findWorktreeForBranch,
   gitDiffNames: mocks.gitDiffNames,
+  gitDiffStat: mocks.gitDiffStat,
   resolveBaseBranch: mocks.resolveBaseBranch,
 }));
 vi.mock("../../../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
+  gitBranchUpstream: mocks.gitBranchUpstream,
   gitCurrentBranch: mocks.gitCurrentBranch,
   gitRevParse: mocks.gitRevParse,
 }));
@@ -120,6 +124,8 @@ function seedCommon(): void {
   mocks.readAndValidatePrArtifacts.mockResolvedValue({ verifyLogText: "ok" });
   mocks.ensureCommittedPrArtifactsOnBranch.mockResolvedValue();
   mocks.gitDiffNames.mockResolvedValue(["src/app.ts"]);
+  mocks.gitDiffStat.mockResolvedValue("src/app.ts | 1 +\n");
+  mocks.gitBranchUpstream.mockResolvedValue(null);
   mocks.gitRevParse.mockResolvedValue("deadbeef");
   mocks.resolveTaskBranchFromContext.mockResolvedValue(null);
   mocks.computeVerifyState.mockReturnValue({
@@ -262,7 +268,7 @@ describe("pr/integrate/internal/prepare", () => {
     });
   });
 
-  it("rejects stale PR metadata when head_sha no longer matches the branch head", async () => {
+  it("rejects stale PR metadata when the recorded head no longer matches the branch head", async () => {
     const { prepareIntegrate } = await import("./prepare.js");
     seedCommon();
     mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
@@ -276,7 +282,7 @@ describe("pr/integrate/internal/prepare", () => {
     await expect(promise).rejects.toMatchObject<CliError>({
       code: "E_VALIDATION",
     });
-    await expect(promise).rejects.toThrow(/meta\.head_sha=stalebeef/u);
+    await expect(promise).rejects.toThrow(/recorded_head=stalebeef/u);
   });
 
   it("repairs stale PR metadata from the task worktree before integrate fails", async () => {

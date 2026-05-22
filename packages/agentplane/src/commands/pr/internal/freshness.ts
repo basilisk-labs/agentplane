@@ -1,5 +1,14 @@
+import { createHash } from "node:crypto";
+
 import { extractLastVerifiedSha } from "../../shared/pr-meta.js";
 import { isTaskLocalOnlyAdvance } from "../../shared/task-local-freshness.js";
+
+export const PR_DIFFSTAT_DIGEST_FIELD = "diffstat_sha256";
+export const PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD = "last_verified_diffstat_sha256";
+
+export function digestPrDiffstatText(text: string): string {
+  return `sha256:${createHash("sha256").update(text, "utf8").digest("hex")}`;
+}
 
 function normalizeSha(value: unknown): string | null {
   if (typeof value !== "string") return null;
@@ -23,6 +32,9 @@ export async function assessPrArtifactFreshness(opts: {
   branchHeadSha: string;
   metaHeadSha: unknown;
   metaLastVerifiedSha: unknown;
+  metaDiffstatDigest: unknown;
+  metaLastVerifiedDiffstatDigest: unknown;
+  currentDiffstatDigest: string | null;
   metaVerifyStatus: unknown;
   taskVerificationState: unknown;
   verifyLogText: string | null;
@@ -30,19 +42,25 @@ export async function assessPrArtifactFreshness(opts: {
 }): Promise<PrArtifactFreshness> {
   const metaHeadSha = normalizeSha(opts.metaHeadSha);
   const metaLastVerifiedSha = normalizeSha(opts.metaLastVerifiedSha);
+  const metaDiffstatDigest = normalizeSha(opts.metaDiffstatDigest);
+  const metaLastVerifiedDiffstatDigest = normalizeSha(opts.metaLastVerifiedDiffstatDigest);
   const verifyLogSha = normalizeSha(extractLastVerifiedSha(opts.verifyLogText ?? ""));
   const metaVerifyPassed = opts.metaVerifyStatus === "pass";
 
   const reviewFresh =
+    (metaDiffstatDigest !== null &&
+      opts.currentDiffstatDigest !== null &&
+      metaDiffstatDigest === opts.currentDiffstatDigest) ||
     metaHeadSha === opts.branchHeadSha ||
-    (await isTaskLocalOnlyAdvance({
-      gitRoot: opts.gitRoot,
-      workflowDir: opts.workflowDir,
-      tasksPath: opts.tasksPath,
-      taskId: opts.taskId,
-      fromRef: metaHeadSha,
-      toRef: opts.branchHeadSha,
-    }));
+    (metaHeadSha !== null &&
+      (await isTaskLocalOnlyAdvance({
+        gitRoot: opts.gitRoot,
+        workflowDir: opts.workflowDir,
+        tasksPath: opts.tasksPath,
+        taskId: opts.taskId,
+        fromRef: metaHeadSha,
+        toRef: opts.branchHeadSha,
+      })));
 
   if (!opts.requiresVerify) {
     return {
@@ -56,19 +74,21 @@ export async function assessPrArtifactFreshness(opts: {
 
   const verifiedFromMeta =
     metaVerifyPassed &&
-    (metaLastVerifiedSha === opts.branchHeadSha ||
-      (await isTaskLocalOnlyAdvance({
-        gitRoot: opts.gitRoot,
-        workflowDir: opts.workflowDir,
-        tasksPath: opts.tasksPath,
-        taskId: opts.taskId,
-        fromRef: metaLastVerifiedSha,
-        toRef: opts.branchHeadSha,
-      })));
+    ((metaLastVerifiedDiffstatDigest !== null &&
+      opts.currentDiffstatDigest !== null &&
+      metaLastVerifiedDiffstatDigest === opts.currentDiffstatDigest) ||
+      metaLastVerifiedSha === opts.branchHeadSha ||
+      (metaLastVerifiedSha !== null &&
+        (await isTaskLocalOnlyAdvance({
+          gitRoot: opts.gitRoot,
+          workflowDir: opts.workflowDir,
+          tasksPath: opts.tasksPath,
+          taskId: opts.taskId,
+          fromRef: metaLastVerifiedSha,
+          toRef: opts.branchHeadSha,
+        }))));
   const verifiedFromLog = verifyLogSha === opts.branchHeadSha;
-  const verifiedFromTaskState =
-    opts.taskVerificationState === "ok" && reviewFresh && metaLastVerifiedSha === null;
-  const verifySatisfied = verifiedFromMeta || verifiedFromLog || verifiedFromTaskState;
+  const verifySatisfied = verifiedFromMeta || verifiedFromLog;
 
   return {
     reviewFresh,
