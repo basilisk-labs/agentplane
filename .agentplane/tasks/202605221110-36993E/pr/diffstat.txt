@@ -1,0 +1,4 @@
+ .../src/cli/run-cli.core.upgrade.test.ts           |  91 +++++++++++++++++-
+ packages/agentplane/src/commands/upgrade.ts        |  25 ++++-
+ packages/agentplane/src/commands/upgrade/apply.ts  | 105 ++++++++++++++++-----
+ 3 files changed, 191 insertions(+), 30 deletions(-)

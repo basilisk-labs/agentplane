@@ -833,38 +833,6 @@ Legacy verification plan.
     },
   );
 
-  it("upgrade fails on dirty tracked tree before applying in default apply mode", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
-    await writeFile(path.join(root, "tracked.txt"), "dirty\n", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "tracked.txt"], { cwd: root, env: cleanGitEnv() });
-    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root, env: cleanGitEnv() });
-    await writeFile(path.join(root, "tracked.txt"), "dirty changed\n", "utf8");
-
-    const { bundlePath, checksumPath } = await createUpgradeBundle({
-      "AGENTS.md": "# AGENTS\n\nUpdated\n",
-    });
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "upgrade",
-        "--bundle",
-        bundlePath,
-        "--checksum",
-        checksumPath,
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(5);
-      expect(io.stderr).toContain("requires a clean tracked working tree");
-    } finally {
-      io.restore();
-    }
-  });
-
   it("upgrade requires --yes in non-tty mode when require_network=true and it would fetch remote assets", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

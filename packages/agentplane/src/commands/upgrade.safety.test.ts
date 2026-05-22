@@ -11,7 +11,7 @@ import { cmdUpgradeParsed } from "./upgrade.js";
 const execFileAsync = promisify(execFile);
 
 describe("upgrade safety invariants", () => {
-  it("explains the dirty-tree state before auto upgrade", async () => {
+  it("preserves dirty tracked state before auto upgrade", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await writeFile(path.join(root, "tracked.txt"), "seed\n", "utf8");
@@ -46,13 +46,18 @@ describe("upgrade safety invariants", () => {
           yes: true,
         },
       }),
-    ).rejects.toMatchObject({
-      code: "E_GIT",
-      context: {
-        diagnostic_state: "managed upgrade cannot apply over tracked local edits",
-        diagnostic_next_action_command: "git status --short --untracked-files=no",
-      },
-    });
+    ).resolves.toBe(0);
+
+    await expect(readFile(path.join(root, "tracked.txt"), "utf8")).resolves.toBe("dirty\n");
+    await expect(
+      readFile(path.join(root, ".agentplane", ".upgrade", "user-dirty", "tracked.patch"), "utf8"),
+    ).resolves.toContain("dirty");
+    const { stdout: statusOut } = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=no"],
+      { cwd: root },
+    );
+    expect(String(statusOut ?? "")).toContain(" M tracked.txt");
   });
 
   it("rejects bundles that include .agentplane/tasks/** in the manifest (and does not touch local tasks)", async () => {
