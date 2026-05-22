@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605222245-V6VTG8/narrow-pr-integrate-ci-selection",
+  "created_at": "2026-05-22T22:48:31.426Z",
+  "diffstat_sha256": "sha256:baee0e36e03d40f5e78464b75640726c9d11bfa9723f737559088032eb4e36f6",
+  "last_verified_at": "2026-05-22T22:48:36.375Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pr_number": 4044,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4044",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605222245-V6VTG8",
+  "updated_at": "2026-05-22T22:49:06.148Z",
+  "verify": {
+    "status": "pass"
+  }
+}
