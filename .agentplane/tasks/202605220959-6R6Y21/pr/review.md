@@ -13,7 +13,7 @@ Created: 2026-05-22T10:00:06.472Z
 ## Verification
 
 - State: ok
-- Note: Verified: EVALUATOR quality gate re-run after implementation commit d191d3340. The fix covers #4010/#4011 by committing runtime SQLite .gitignore upgrade leftovers and allowlisted managed leftovers, and covers #4012 by classifying blueprint artifacts as task_blueprint_evidence. BlueprintSnapshotRef: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838
+- Note: Verified: EVALUATOR quality gate re-run after lint-fix commit b40ef2939. Hosted verify-routed failure was targeted ESLint only; local targeted ESLint, focused Vitest, typecheck, format, diff check, doctor, and routing checks now pass. BlueprintSnapshotRef: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,19 +24,19 @@ Created: 2026-05-22T10:00:06.472Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-22T10:11:06.313Z
+- Updated: 2026-05-22T10:18:20.989Z
 - Branch: task/202605220959-6R6Y21/fix-open-issues
-- Head: d191d3340c96
+- Head: b40ef293923a
 
 ```text
  .../blueprint/resolved-snapshot.json               | 570 +++++++++++++++++++++
  .../cli/run-cli.core.branch-meta.readiness.test.ts |  81 ++-
- .../src/cli/run-cli.core.upgrade.test.ts           |  63 +++
+ .../src/cli/run-cli.core.upgrade.test.ts           |  64 +++
  .../cli/run-cli/commands/core/preflight-render.ts  |   1 +
  .../cli/run-cli/commands/core/preflight-report.ts  |  21 +-
  packages/agentplane/src/commands/upgrade.ts        |  42 +-
  packages/agentplane/src/commands/upgrade/apply.ts  |  42 ++
- 7 files changed, 815 insertions(+), 5 deletions(-)
+ 7 files changed, 816 insertions(+), 5 deletions(-)
 ```
 
 </details>

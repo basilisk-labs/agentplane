@@ -4,7 +4,7 @@ title: "Fix open upgrade and blueprint artifact issues"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -18,16 +18,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-22T10:10:30.141Z"
+  updated_at: "2026-05-22T10:18:20.831Z"
   updated_by: "EVALUATOR"
-  note: "Verified: EVALUATOR quality gate re-run after implementation commit d191d3340. The fix covers #4010/#4011 by committing runtime SQLite .gitignore upgrade leftovers and allowlisted managed leftovers, and covers #4012 by classifying blueprint artifacts as task_blueprint_evidence. BlueprintSnapshotRef: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838"
+  note: "Verified: EVALUATOR quality gate re-run after lint-fix commit b40ef2939. Hosted verify-routed failure was targeted ESLint only; local targeted ESLint, focused Vitest, typecheck, format, diff check, doctor, and routing checks now pass. BlueprintSnapshotRef: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838"
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-22T10:10:30.141Z"
+  updated_at: "2026-05-22T10:18:20.831Z"
   updated_by: "EVALUATOR"
-  note: "Verified: EVALUATOR quality gate re-run after implementation commit d191d3340. The fix covers #4010/#4011 by committing runtime SQLite .gitignore upgrade leftovers and allowlisted managed leftovers, and covers #4012 by classifying blueprint artifacts as task_blueprint_evidence. BlueprintSnapshotRef: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838"
-  evaluated_sha: "d191d3340c9631c6b4aea41101e0986244850812"
+  note: "Verified: EVALUATOR quality gate re-run after lint-fix commit b40ef2939. Hosted verify-routed failure was targeted ESLint only; local targeted ESLint, focused Vitest, typecheck, format, diff check, doctor, and routing checks now pass. BlueprintSnapshotRef: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838"
+  evaluated_sha: "b40ef293923a3067828d7417cb8be660f9932680"
   blueprint_digest: "cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838"
   evidence_refs:
     - ".agentplane/tasks/202605220959-6R6Y21/README.md"
@@ -64,8 +64,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Verified: EVALUATOR quality gate re-run after implementation commit d191d3340. The fix covers #4010/#4011 by committing runtime SQLite .gitignore upgrade leftovers and allowlisted managed leftovers, and covers #4012 by classifying blueprint artifacts as task_blueprint_evidence. BlueprintSnapshotRef: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838"
+  -
+    type: "verify"
+    at: "2026-05-22T10:18:20.831Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Verified: EVALUATOR quality gate re-run after lint-fix commit b40ef2939. Hosted verify-routed failure was targeted ESLint only; local targeted ESLint, focused Vitest, typecheck, format, diff check, doctor, and routing checks now pass. BlueprintSnapshotRef: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838"
 doc_version: 3
-doc_updated_at: "2026-05-22T10:10:30.190Z"
+doc_updated_at: "2026-05-22T10:18:20.895Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issues #4010, #4011, and #4012 by hardening upgrade commit boundaries and clarifying blueprint task artifact handling."
 sections:
@@ -137,6 +143,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-22T10:09:05.364Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605220959-6R6Y21-fix-open-issues/.agentplane/tasks/202605220959-6R6Y21/blueprint/resolved-snapshot.json
+    - old_digest: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838
+    - current_digest: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605220959-6R6Y21
+
+    ### 2026-05-22T10:18:20.831Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Verified: EVALUATOR quality gate re-run after lint-fix commit b40ef2939. Hosted verify-routed failure was targeted ESLint only; local targeted ESLint, focused Vitest, typecheck, format, diff check, doctor, and routing checks now pass. BlueprintSnapshotRef: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-22T10:10:30.190Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -235,6 +260,25 @@ Note: Verified: EVALUATOR quality gate re-run after implementation commit d191d3
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-22T10:09:05.364Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605220959-6R6Y21-fix-open-issues/.agentplane/tasks/202605220959-6R6Y21/blueprint/resolved-snapshot.json
+- old_digest: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838
+- current_digest: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605220959-6R6Y21
+
+### 2026-05-22T10:18:20.831Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Verified: EVALUATOR quality gate re-run after lint-fix commit b40ef2939. Hosted verify-routed failure was targeted ESLint only; local targeted ESLint, focused Vitest, typecheck, format, diff check, doctor, and routing checks now pass. BlueprintSnapshotRef: cbd6cbc9c91eea107af28b205fade48933638e0957e81159a25e5cf45a21e838
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-22T10:10:30.190Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 

@@ -1,8 +1,8 @@
  .../blueprint/resolved-snapshot.json               | 570 +++++++++++++++++++++
  .../cli/run-cli.core.branch-meta.readiness.test.ts |  81 ++-
- .../src/cli/run-cli.core.upgrade.test.ts           |  63 +++
+ .../src/cli/run-cli.core.upgrade.test.ts           |  64 +++
  .../cli/run-cli/commands/core/preflight-render.ts  |   1 +
  .../cli/run-cli/commands/core/preflight-report.ts  |  21 +-
  packages/agentplane/src/commands/upgrade.ts        |  42 +-
  packages/agentplane/src/commands/upgrade/apply.ts  |  42 ++
- 7 files changed, 815 insertions(+), 5 deletions(-)
+ 7 files changed, 816 insertions(+), 5 deletions(-)
