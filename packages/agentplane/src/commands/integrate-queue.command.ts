@@ -13,6 +13,7 @@ import { sleep } from "../backends/task-backend/shared/concurrency.js";
 import type { CommandContext } from "./shared/task-backend.js";
 import { gitRevParse } from "./shared/git-ops.js";
 import { cmdIntegrate } from "./pr/integrate/cmd.js";
+import { resolvePrFlowStatus } from "./pr/flow-status.js";
 import { prepareIntegrate } from "./pr/integrate/internal/prepare.js";
 import {
   claimNextQueuedEntry,
@@ -32,6 +33,7 @@ import type {
   IntegrateQueueRunNextParsed,
 } from "./integrate-queue.spec.js";
 import { integrateQueueSpec } from "./integrate-queue.spec.js";
+import { decideIntegrationQueueRecovery } from "./integrate-queue-recovery.js";
 
 const DEFAULT_QUEUE_POLL_INTERVAL_MS = 30_000;
 const DEFAULT_QUEUE_WAIT_TIMEOUT_MS = 10 * 60_000;
@@ -116,6 +118,49 @@ async function rejectIfQueuedEntryIsStale(opts: {
   entry: IntegrationQueueEntry;
 }): Promise<IntegrationQueueEntry | null> {
   return (await rejectIfQueuedHeadChanged(opts)) ?? (await rejectIfQueuedBaseConflicts(opts));
+}
+
+async function recoverStaleActiveLane(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string | null;
+  gitRoot: string;
+  entry: IntegrationQueueEntry;
+  quiet: boolean;
+}): Promise<boolean> {
+  const report = await resolvePrFlowStatus({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? undefined,
+    taskId: opts.entry.task_id,
+  });
+  const decision = decideIntegrationQueueRecovery({ entry: opts.entry, report });
+  if (decision.action === "keep") {
+    if (!opts.quiet) {
+      createCliEmitter().line(
+        `integration queue lane retained: task=${opts.entry.task_id} status=${opts.entry.status} reason=${decision.reason}`,
+      );
+    }
+    return false;
+  }
+
+  const updated = await withIntegrationQueueMutex(opts.gitRoot, async () => {
+    const queue = await readIntegrationQueue(opts.gitRoot);
+    const current = queue.entries.find((entry) => entry.task_id === opts.entry.task_id);
+    if (current?.status !== "handoff") return false;
+    await writeIntegrationQueue(
+      opts.gitRoot,
+      markQueueEntry(queue, opts.entry.task_id, decision.status, decision.reason),
+    );
+    return true;
+  });
+  if (!updated) return false;
+  if (!opts.quiet) {
+    createCliEmitter().line(
+      `integration queue recovered: task=${opts.entry.task_id} status=${decision.status} reason=${decision.reason}`,
+    );
+  }
+  return true;
 }
 
 export function makeRunIntegrateQueueHandler(
@@ -287,6 +332,19 @@ export function makeRunIntegrateQueueRunNextHandler(
       if (!claimed.entry) {
         const activeLane = findActiveLane(claimed.state.entries);
         if (p.wait && (activeLane || hasQueuedEntries(claimed.state.entries))) {
+          if (
+            activeLane &&
+            (await recoverStaleActiveLane({
+              ctx: commandCtx,
+              cwd: ctx.cwd,
+              rootOverride: ctx.rootOverride,
+              gitRoot,
+              entry: activeLane,
+              quiet: p.quiet,
+            }))
+          ) {
+            continue;
+          }
           const elapsedMs = Date.now() - startedAt;
           if (elapsedMs >= timeoutMs) {
             throw new CliError({
