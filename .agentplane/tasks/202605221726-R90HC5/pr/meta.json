@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605221726-R90HC5/batch-ownership-scaffold",
+  "created_at": "2026-05-22T18:21:30.292Z",
+  "diffstat_sha256": "sha256:dbd70e08c883ee49220f57837c3af8903f23020e2f389501ff83907113e9196d",
+  "last_verified_at": "2026-05-22T18:26:24.720Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pr_number": 4027,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4027",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605221726-R90HC5",
+  "updated_at": "2026-05-22T18:26:53.937Z",
+  "verify": {
+    "status": "pass"
+  }
+}

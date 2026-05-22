@@ -446,6 +446,47 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
       ]);
       expect(prOpenCode).toBe(0);
 
+      const includedShow = captureStdIO();
+      try {
+        const showCode = await runCli(["task", "show", includedTaskId, "--root", root]);
+        expect(showCode).toBe(0);
+        const included = JSON.parse(includedShow.stdout) as {
+          extensions?: {
+            branch_pr_batch?: {
+              role?: string;
+              primary_task_id?: string;
+              branch?: string;
+              included_task_ids?: string[];
+            };
+          };
+        };
+        expect(included.extensions?.branch_pr_batch).toMatchObject({
+          role: "included",
+          primary_task_id: primaryTaskId,
+          branch,
+          included_task_ids: [includedTaskId],
+        });
+      } finally {
+        includedShow.restore();
+      }
+
+      const includedStatus = captureStdIO();
+      try {
+        const statusCode = await runCli([
+          "task",
+          "status",
+          includedTaskId,
+          "--route",
+          "--root",
+          root,
+        ]);
+        expect(statusCode).toBe(0);
+        expect(includedStatus.stdout).toContain("pr_branch:");
+        expect(includedStatus.stdout).toContain(branch);
+      } finally {
+        includedStatus.restore();
+      }
+
       await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
       const touchedFile = path.join(root, "src", "hosted-close-batch.ts");
       await mkdir(path.dirname(touchedFile), { recursive: true });

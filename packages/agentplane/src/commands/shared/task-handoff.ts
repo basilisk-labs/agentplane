@@ -28,6 +28,24 @@ function trimOrNull(value: string | null | undefined): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function readBranchPrBatchExtension(task: {
+  extensions?: Record<string, unknown>;
+}): { primaryTaskId: string | null; branch: string | null; base: string | null } | null {
+  const batch = isRecord(task.extensions?.branch_pr_batch) ? task.extensions.branch_pr_batch : null;
+  if (!batch || batch.role !== "included") return null;
+  return {
+    primaryTaskId: trimOrNull(
+      typeof batch.primary_task_id === "string" ? batch.primary_task_id : null,
+    ),
+    branch: trimOrNull(typeof batch.branch === "string" ? batch.branch : null),
+    base: trimOrNull(typeof batch.base === "string" ? batch.base : null),
+  };
+}
+
 function normalizeStringList(values: string[] | undefined): string[] | undefined {
   if (!values?.length) return undefined;
   const normalized = values.map((value) => value.trim()).filter((value) => value.length > 0);
@@ -138,7 +156,14 @@ export async function readTaskPrMetaSummary(opts: {
     };
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
-    if (code === "ENOENT") return { branch: null, base: null };
+    if (code === "ENOENT") {
+      const task = await opts.ctx.taskBackend.getTask(opts.task_id);
+      const batch = task ? readBranchPrBatchExtension(task) : null;
+      if (!batch?.branch || !batch.primaryTaskId) return { branch: null, base: null };
+      const primaryTask = await opts.ctx.taskBackend.getTask(batch.primaryTaskId);
+      if (!primaryTask) return { branch: null, base: null };
+      return { branch: batch.branch, base: batch.base };
+    }
     throw err;
   }
 }

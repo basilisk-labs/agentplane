@@ -99,6 +99,73 @@ async function buildPrSyncCommonState(opts: {
   };
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function withBranchPrBatchExtension(opts: {
+  task: TaskData;
+  role: "primary" | "included";
+  primaryTaskId: string;
+  includedTaskIds: string[];
+  branch: string;
+  base: string | null;
+  updatedAt: string;
+}): TaskData {
+  const extensions = isRecord(opts.task.extensions) ? { ...opts.task.extensions } : {};
+  extensions.branch_pr_batch = {
+    role: opts.role,
+    primary_task_id: opts.primaryTaskId,
+    included_task_ids: opts.includedTaskIds,
+    branch: opts.branch,
+    base: opts.base,
+    updated_at: opts.updatedAt,
+  };
+  return { ...opts.task, extensions };
+}
+
+async function recordBranchPrBatchOwnership(opts: {
+  ctx: CommandContext;
+  primaryTask: TaskData;
+  includedTaskIds: string[];
+  branch: string;
+  base: string | null;
+  updatedAt: string;
+}): Promise<TaskData> {
+  if (opts.includedTaskIds.length === 0) return opts.primaryTask;
+
+  const nextPrimary = withBranchPrBatchExtension({
+    task: opts.primaryTask,
+    role: "primary",
+    primaryTaskId: opts.primaryTask.id,
+    includedTaskIds: opts.includedTaskIds,
+    branch: opts.branch,
+    base: opts.base,
+    updatedAt: opts.updatedAt,
+  });
+  await opts.ctx.taskBackend.writeTask(nextPrimary);
+
+  await Promise.all(
+    opts.includedTaskIds.map(async (taskId) => {
+      const includedTask = await opts.ctx.taskBackend.getTask(taskId);
+      if (!includedTask) return;
+      await opts.ctx.taskBackend.writeTask(
+        withBranchPrBatchExtension({
+          task: includedTask,
+          role: "included",
+          primaryTaskId: opts.primaryTask.id,
+          includedTaskIds: opts.includedTaskIds,
+          branch: opts.branch,
+          base: opts.base,
+          updatedAt: opts.updatedAt,
+        }),
+      );
+    }),
+  );
+
+  return nextPrimary;
+}
+
 export async function ensurePrArtifactsSynced(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -263,11 +330,19 @@ export async function syncPrArtifacts(opts: {
         includeTaskIds: opts.includeTaskIds,
         primaryBranch: branch,
       });
+      const taskWithBatchOwnership = await recordBranchPrBatchOwnership({
+        ctx,
+        primaryTask: task,
+        includedTaskIds: validatedIncludedTaskIds,
+        branch,
+        base: baseBranch,
+        updatedAt: nowIso(),
+      });
 
       await mkdir(prDir, { recursive: true });
 
       const common = await buildPrSyncCommonState({
-        task,
+        task: taskWithBatchOwnership,
         resolved,
         workflowDir: config.paths.workflow_dir,
         tasksPath: config.paths.tasks_path,

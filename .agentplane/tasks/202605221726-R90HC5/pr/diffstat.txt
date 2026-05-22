@@ -1,0 +1,4 @@
+ .../src/cli/run-cli.core.task-hosted-close.test.ts | 41 ++++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    | 77 +++++++++++++++++++++-
+ .../agentplane/src/commands/shared/task-handoff.ts | 27 +++++++-
+ 3 files changed, 143 insertions(+), 2 deletions(-)
