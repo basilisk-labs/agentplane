@@ -508,6 +508,85 @@ describe("runCli", () => {
     }
   });
 
+  it("preflight --json classifies blueprint artifacts as task evidence", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202604100023-BLUEPT";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    const blueprintDir = path.join(taskDir, "blueprint");
+    await mkdir(blueprintDir, { recursive: true });
+    await writeFile(
+      path.join(taskDir, "README.md"),
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "Task with blueprint evidence",
+          status: "DOING",
+          priority: "med",
+          owner: "CODER",
+          depends_on: [],
+          tags: ["code"],
+          verify: [],
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-04-10T00:23:00.000Z",
+          doc_updated_by: "CODER",
+          description: "Active task with blueprint evidence.",
+          sections: {
+            Summary: "Task with blueprint evidence",
+            Scope: "- In scope: blueprint artifact classification.",
+            Plan: "Classify blueprint evidence explicitly.",
+            "Verify Steps": "1. Run preflight.",
+            Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+            "Rollback Plan": "- Remove the artifact.",
+            Findings: "",
+          },
+        },
+        "## Summary\n\nTask with blueprint evidence\n",
+      ),
+      "utf8",
+    );
+    await writeFile(path.join(blueprintDir, "resolved-snapshot.json"), "{}\n", "utf8");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        task_artifact_drift?: {
+          actionable?: boolean;
+          counts?: { task_blueprint_evidence?: number; unknown_task_artifact?: number };
+          items?: {
+            path?: string;
+            artifact_kind?: string;
+            classification?: string;
+            action?: string;
+            status?: string;
+            reason?: string;
+          }[];
+        };
+      };
+      expect(payload.task_artifact_drift?.actionable).toBe(true);
+      expect(payload.task_artifact_drift?.counts?.task_blueprint_evidence).toBe(1);
+      expect(payload.task_artifact_drift?.counts?.unknown_task_artifact).toBe(0);
+      expect(payload.task_artifact_drift?.items).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: `.agentplane/tasks/${taskId}/blueprint/resolved-snapshot.json`,
+            artifact_kind: "blueprint",
+            classification: "task_blueprint_evidence",
+            action: "commit_with_task_evidence",
+            status: "DOING",
+          }),
+        ]),
+      );
+      expect(payload.task_artifact_drift?.items?.[0]?.reason).toContain(
+        "task-local verification evidence",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
   it("preflight --json classifies completed-task handoff artifacts as cleanup candidates", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -588,7 +667,7 @@ describe("runCli", () => {
       const code = await runCli(["preflight", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain(
-        "- task artifact drift: tasks=202604100023-OTHER; active_parallel=0; stale_done_handoff=0; unknown=1; actionable=yes",
+        "- task artifact drift: tasks=202604100023-OTHER; active_parallel=0; stale_done_handoff=0; blueprint_evidence=0; unknown=1; actionable=yes",
       );
       expect(io.stdout).toContain(
         "- git status --short --untracked-files=all -- .agentplane/tasks: actionable task artifact drift detected for 202604100023-OTHER",
