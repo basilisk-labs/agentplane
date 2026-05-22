@@ -1,10 +1,11 @@
 ---
 id: "202605222302-CC7XZ9"
 title: "Keep CI route registry edits in targeted hooks local CI"
-status: "DOING"
+result_summary: "Merged via PR #4046."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605222302-CC7XZ9/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605222302-CC7XZ9-hooks-route-ci-registry-files/.agentplane/tasks/202605222302-CC7XZ9/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "5e98cd4c5476ef7f1dc90219a835f2ccc23d4226"
+  message: "Merge pull request #4046 from basilisk-labs/task/202605222302-CC7XZ9/hooks-route-ci-registry-files"
 comments:
   -
     author: "CODER"
     body: "Start: keeping local CI routing registry edits in the targeted hooks bucket."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4046 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator check: CI routing registry files are covered by the existing hooks bucket without broadening generic scripts handling; regression coverage prevents full-fast fallback for selector maintenance edits."
+  -
+    type: "status"
+    at: "2026-05-22T23:10:54.112Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4046 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T23:04:42.230Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T23:10:54.117Z"
+doc_updated_by: "INTEGRATOR"
 description: "Local CI selection changes should not force full-fast solely because they touch scripts/lib/test-route-registry.mjs or scripts/lib/local-ci-selection.d.ts. Add these CI routing files to the hooks/local-CI bucket so selector maintenance runs targeted hooks checks instead of broad release/upgrade unit suites during pre-push."
 sections:
   Summary: |-
