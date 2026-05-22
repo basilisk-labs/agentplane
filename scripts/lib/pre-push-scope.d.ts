@@ -9,5 +9,6 @@ export function parsePrePushStdin(rawStdin: unknown): PrePushUpdate[];
 export function hasReleaseTagPush(updates: PrePushUpdate[]): boolean;
 export function selectBranchDiffRange(
   updates: PrePushUpdate[],
+  opts?: { gitCwd?: string; newBranchFallbackRef?: string | null },
 ): { from: string; to: string } | null;
 export function readChangedFilesForRange(range: { from: string; to: string } | null): string[];

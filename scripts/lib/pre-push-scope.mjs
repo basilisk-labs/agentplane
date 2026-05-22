@@ -19,16 +19,42 @@ function isBranchRef(ref) {
   return String(ref ?? "").startsWith("refs/heads/");
 }
 
-function readGitText(args) {
+function isAgentPlaneTaskBranchRef(ref) {
+  const branch = String(ref ?? "").replace(/^refs\/heads\//, "");
+  return branch.startsWith("task/") || branch.startsWith("task-close/");
+}
+
+function readGitText(args, cwd) {
   try {
-    return execFileSync("git", args, { encoding: "utf8" }).trim();
+    return execFileSync("git", args, {
+      cwd,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
   } catch {
     return "";
   }
 }
 
-function gitRefExists(ref) {
-  return readGitText(["rev-parse", "--verify", "--quiet", ref]).length > 0;
+function gitRefExists(ref, cwd) {
+  return readGitText(["rev-parse", "--verify", "--quiet", ref], cwd).length > 0;
+}
+
+function isAncestorRef(ancestorRef, descendantRef, cwd) {
+  try {
+    execFileSync("git", ["merge-base", "--is-ancestor", ancestorRef, descendantRef], {
+      cwd,
+      stdio: "ignore",
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function resolveMergeBase(baseRef, headRef, cwd) {
+  if (!baseRef || !headRef) return "";
+  return readGitText(["merge-base", baseRef, headRef], cwd);
 }
 
 export function hasReleaseTagPush(updates) {
@@ -68,10 +94,23 @@ export function selectBranchDiffRange(updates, opts = {}) {
   if (isAllZeroSha(update.localSha)) return null;
   const fallbackRef =
     typeof opts.newBranchFallbackRef === "string" ? opts.newBranchFallbackRef.trim() : "";
+  const gitCwd = typeof opts.gitCwd === "string" && opts.gitCwd.trim() ? opts.gitCwd : undefined;
   if (isAllZeroSha(update.remoteSha)) {
     return fallbackRef ? { from: fallbackRef, to: update.localSha } : null;
   }
-  if (!gitRefExists(update.remoteSha) && fallbackRef) {
+  const remoteRefExists = gitRefExists(update.remoteSha, gitCwd);
+  if (
+    fallbackRef &&
+    isAgentPlaneTaskBranchRef(update.remoteRef) &&
+    remoteRefExists &&
+    !isAncestorRef(update.remoteSha, update.localSha, gitCwd)
+  ) {
+    return {
+      from: resolveMergeBase(fallbackRef, update.localSha, gitCwd) || fallbackRef,
+      to: update.localSha,
+    };
+  }
+  if (!remoteRefExists && fallbackRef) {
     return { from: fallbackRef, to: update.localSha };
   }
   return { from: update.remoteSha, to: update.localSha };
