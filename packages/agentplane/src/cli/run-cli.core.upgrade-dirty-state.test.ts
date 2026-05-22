@@ -77,12 +77,13 @@ describe("runCli upgrade dirty state", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
-    await writeFile(path.join(root, "tracked.txt"), "dirty\n", "utf8");
+    const trackedRelPath = "tracked file.txt";
+    await writeFile(path.join(root, trackedRelPath), "dirty\n", "utf8");
     const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "tracked.txt"], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["add", trackedRelPath], { cwd: root, env: cleanGitEnv() });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root, env: cleanGitEnv() });
-    await writeFile(path.join(root, "tracked.txt"), "dirty staged\n", "utf8");
-    await execFileAsync("git", ["add", "tracked.txt"], { cwd: root, env: cleanGitEnv() });
+    await writeFile(path.join(root, trackedRelPath), "dirty staged\n", "utf8");
+    await execFileAsync("git", ["add", trackedRelPath], { cwd: root, env: cleanGitEnv() });
 
     const { bundlePath, checksumPath } = await createUpgradeBundle({
       "AGENTS.md": "# AGENTS\n\nUpdated\n",
@@ -101,7 +102,7 @@ describe("runCli upgrade dirty state", () => {
       ]);
       expect(code).toBe(0);
       expect(io.stderr).toContain("Unstaged pre-existing paths");
-      expect(io.stderr).toContain("tracked.txt");
+      expect(io.stderr).toContain(trackedRelPath);
     } finally {
       io.restore();
     }
@@ -111,7 +112,7 @@ describe("runCli upgrade dirty state", () => {
       ["status", "--short", "--untracked-files=no"],
       { cwd: root, env: cleanGitEnv() },
     );
-    expect(String(statusOut ?? "")).toContain(" M tracked.txt");
+    expect(String(statusOut ?? "")).toContain(` M "${trackedRelPath}"`);
 
     const { stdout: showOut } = await execFileAsync(
       "git",
@@ -119,6 +120,6 @@ describe("runCli upgrade dirty state", () => {
       { cwd: root, env: cleanGitEnv() },
     );
     expect(String(showOut ?? "")).toContain("AGENTS.md");
-    expect(String(showOut ?? "")).not.toContain("tracked.txt");
+    expect(String(showOut ?? "")).not.toContain(trackedRelPath);
   });
 });

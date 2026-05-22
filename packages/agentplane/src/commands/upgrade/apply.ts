@@ -82,6 +82,33 @@ function parseGitStatusIndex(line: string): string {
   return line.length > 0 ? (line[0] ?? " ") : " ";
 }
 
+type TrackedStatusEntry = {
+  display: string;
+  indexStatus: string;
+  relPath: string;
+};
+
+function parseGitStatusPorcelainZ(raw: Buffer | string): TrackedStatusEntry[] {
+  const text = Buffer.isBuffer(raw) ? raw.toString("utf8") : String(raw ?? "");
+  const records = text.split("\0").filter((record) => record.length > 0);
+  const entries: TrackedStatusEntry[] = [];
+  for (let i = 0; i < records.length; i += 1) {
+    const record = records[i] ?? "";
+    if (record.length < 4) continue;
+    const status = record.slice(0, 2);
+    const relPath = record.slice(3).replaceAll("\\", "/");
+    entries.push({
+      display: `${status} ${relPath}`,
+      indexStatus: status[0] ?? " ",
+      relPath,
+    });
+    if (status.includes("R") || status.includes("C")) {
+      i += 1;
+    }
+  }
+  return entries;
+}
+
 async function writeDirtyTrackedPatch(opts: {
   gitRoot: string;
   upgradeStateDir: string;
@@ -113,32 +140,28 @@ export async function prepareTrackedTreeForUpgrade(opts: {
   gitRoot: string;
   upgradeStateDir: string;
 }): Promise<PreparedTrackedTreeForUpgrade> {
-  const { stdout } = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
-    cwd: opts.gitRoot,
-    env: gitEnv(),
-    maxBuffer: 10 * 1024 * 1024,
-  });
-  const dirty = String(stdout ?? "")
-    .split(/\r?\n/u)
-    .map((line) => line.trimEnd())
-    .filter((line) => line.length > 0);
+  const { stdout } = await execFileAsync(
+    "git",
+    ["status", "--porcelain", "-z", "--untracked-files=no"],
+    {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+      encoding: "buffer",
+      maxBuffer: 10 * 1024 * 1024,
+    },
+  );
+  const statusEntries = parseGitStatusPorcelainZ(stdout);
+  const dirty = statusEntries.map((entry) => entry.display);
   if (dirty.length === 0 || (await isRuntimeSqliteGitignoreOnlyDiff(opts.gitRoot, dirty))) {
     return { dirtyLines: [], dirtyPaths: [], patchRelPath: null, unstagedPaths: [] };
   }
 
-  const dirtyPaths = [
-    ...new Set(
-      dirty
-        .map((line) => parseGitStatusPath(line))
-        .filter((relPath): relPath is string => relPath !== null),
-    ),
-  ];
+  const dirtyPaths = [...new Set(statusEntries.map((entry) => entry.relPath))];
   const stagedPaths = [
     ...new Set(
-      dirty
-        .filter((line) => parseGitStatusIndex(line) !== " ")
-        .map((line) => parseGitStatusPath(line))
-        .filter((relPath): relPath is string => relPath !== null),
+      statusEntries
+        .filter((entry) => parseGitStatusIndex(entry.indexStatus) !== " ")
+        .map((entry) => entry.relPath),
     ),
   ];
   const patchRelPath = await writeDirtyTrackedPatch({
