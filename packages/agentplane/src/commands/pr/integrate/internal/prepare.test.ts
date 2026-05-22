@@ -28,6 +28,7 @@ const mocks = vi.hoisted(() => ({
   extractLastVerifiedSha: vi.fn(),
   isTaskLocalOnlyAdvance: vi.fn(),
   ensurePrArtifactsSynced: vi.fn(),
+  requiresPullRequestMergePath: vi.fn(),
 }));
 
 vi.mock("../../../../cli/fs-utils.js", () => ({ fileExists: mocks.fileExists }));
@@ -74,6 +75,9 @@ vi.mock("../../../shared/task-local-freshness.js", () => ({
 vi.mock("../../internal/sync.js", () => ({
   ensurePrArtifactsSynced: mocks.ensurePrArtifactsSynced,
 }));
+vi.mock("./github-protection.js", () => ({
+  requiresPullRequestMergePath: mocks.requiresPullRequestMergePath,
+}));
 
 function mkCtx(workflowMode: "direct" | "branch_pr" = "branch_pr") {
   return {
@@ -81,6 +85,17 @@ function mkCtx(workflowMode: "direct" | "branch_pr" = "branch_pr") {
     config: {
       workflow_mode: workflowMode,
       paths: { tasks_path: ".agentplane/tasks.json" },
+    },
+  };
+}
+
+function mkCtxWithTasksPath(tasksPath: string) {
+  const ctx = mkCtx("branch_pr");
+  return {
+    ...ctx,
+    config: {
+      ...ctx.config,
+      paths: { tasks_path: tasksPath },
     },
   };
 }
@@ -136,6 +151,7 @@ function seedCommon(): void {
   mocks.extractLastVerifiedSha.mockReturnValue(null);
   mocks.isTaskLocalOnlyAdvance.mockResolvedValue(false);
   mocks.ensurePrArtifactsSynced.mockResolvedValue({ branch: "task/T-1" });
+  mocks.requiresPullRequestMergePath.mockResolvedValue(false);
 }
 
 describe("pr/integrate/internal/prepare", () => {
@@ -384,6 +400,56 @@ describe("pr/integrate/internal/prepare", () => {
     ).resolves.toMatchObject({
       branchHeadSha: "artifactsha",
     });
+  });
+
+  it("does not require self-referential evaluated_sha freshness for protected-base PR merge", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.requiresPullRequestMergePath.mockResolvedValue(true);
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.loadTaskFromContext.mockResolvedValue({
+      id: "T-1",
+      verify: [],
+      quality_review: qualityReview("previous-head"),
+    });
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: undefined,
+      last_verified_sha: null,
+      diffstat_sha256: "sha256:current",
+      last_verified_diffstat_sha256: "sha256:current",
+      verify: { status: "pass" },
+    });
+    mocks.gitRevParse.mockResolvedValue("current-head");
+
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).resolves.toMatchObject({
+      branchHeadSha: "current-head",
+      protectedBaseRequiresPrMerge: true,
+    });
+  });
+
+  it("excludes only the configured task registry path from diffstat", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtxWithTasksPath("custom/tasks.json"));
+    mocks.requiresPullRequestMergePath.mockResolvedValue(true);
+
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).resolves.toMatchObject({
+      branchHeadSha: "deadbeef",
+    });
+
+    expect(mocks.gitDiffStat).toHaveBeenCalledWith(
+      "/repo",
+      "main",
+      "task/T-1",
+      expect.objectContaining({
+        excludePaths: [".agentplane/tasks/T-1", "custom/tasks.json"],
+      }),
+    );
   });
 
   it("accepts verify-log-backed verification when meta verify sha is missing", async () => {

@@ -40,6 +40,7 @@ export async function runPrOpenSync(
         baseBranch: common.baseBranch,
         branch: common.branch,
         prDir: common.prDir,
+        tasksPath: common.tasksPath,
       })
     : "";
   let nextMeta: PrMeta = buildOpenedPrMeta({

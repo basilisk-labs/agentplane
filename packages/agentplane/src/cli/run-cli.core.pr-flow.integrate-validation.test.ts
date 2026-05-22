@@ -286,6 +286,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "feature"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await recordVerificationOk(root, taskId);
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
     await runCliSilent([
@@ -386,6 +387,9 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       "--root",
       root,
     ]);
+    await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+    await runCliSilent(["pr", "update", taskId, "--branch", branch, "--root", root]);
+    await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh pr artifacts`);
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);

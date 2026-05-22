@@ -165,8 +165,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
     expect(meta.pr_number).toBe(654);
     expect(meta.pr_url).toBe("https://github.com/example/repo/pull/654");
     expect(meta.status).toBe("OPEN");
-    expect(meta.head_sha).toMatch(/^[0-9a-f]{40}$/);
-    expect(meta.head_sha).not.toBe("remote-head-sha");
+    expect(meta.head_sha).toBeUndefined();
 
     const logText = await readFile(logPath, "utf8");
     const log = logText
@@ -370,7 +369,6 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
     expect(meta.pr_number).toBe(655);
     expect(meta.pr_url).toBe("https://github.com/example/repo/pull/655");
     expect(meta.status).toBe("OPEN");
-    expect(meta.head_sha).toMatch(/^[0-9a-f]{40}$/);
-    expect(meta.head_sha).not.toBe("remote-head-sha");
+    expect(meta.head_sha).toBeUndefined();
   });
 });
