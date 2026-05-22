@@ -1,0 +1,3 @@
+ .../release/task-registry-ready-script.test.ts     | 46 +++++++++++++++++++++-
+ scripts/checks/check-task-state.mjs                | 34 +++++++++++++++-
+ 2 files changed, 77 insertions(+), 3 deletions(-)
