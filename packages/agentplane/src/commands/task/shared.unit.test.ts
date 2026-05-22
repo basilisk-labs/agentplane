@@ -544,9 +544,11 @@ describe("task shared helpers", () => {
       owner: ["me"],
       tag: ["x"],
       quiet: true,
+      all: false,
       strictRead: false,
     });
 
+    expect(parseTaskListFilters(["--all"]).all).toBe(true);
     expect(parseTaskListFilters(["--strict-read"]).strictRead).toBe(true);
     expect(() => parseTaskListFilters(["--status"])).toThrow(CliError);
     expect(() => parseTaskListFilters(["--owner"])).toThrow(CliError);

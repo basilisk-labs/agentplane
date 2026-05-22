@@ -15,6 +15,7 @@ export type TaskListFilters = {
   tag: string[];
   limit?: number;
   quiet: boolean;
+  all?: boolean;
   strictRead?: boolean;
 };
 
@@ -22,12 +23,23 @@ export function parseTaskListFilters(
   args: string[],
   opts?: { allowLimit?: boolean },
 ): TaskListFilters {
-  const out: TaskListFilters = { status: [], owner: [], tag: [], quiet: false, strictRead: false };
+  const out: TaskListFilters = {
+    status: [],
+    owner: [],
+    tag: [],
+    quiet: false,
+    all: false,
+    strictRead: false,
+  };
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (!arg) continue;
     if (arg === "--quiet") {
       out.quiet = true;
+      continue;
+    }
+    if (arg === "--all") {
+      out.all = true;
       continue;
     }
     if (arg === "--strict-read") {

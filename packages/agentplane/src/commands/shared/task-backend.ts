@@ -272,7 +272,24 @@ export async function writeTasksOrFallback(
   }
 }
 
-export async function listTaskSummariesMemo(ctx: CommandContext): Promise<TaskSummary[]> {
+export async function listTaskSummariesMemo(
+  ctx: CommandContext,
+  opts: { projectionStatus?: readonly string[] } = {},
+): Promise<TaskSummary[]> {
+  if (
+    opts.projectionStatus &&
+    opts.projectionStatus.length > 0 &&
+    ctx.taskBackend.capabilities?.projection_read_mode === "native"
+  ) {
+    if (!ctx.taskBackend.listProjectionTasks) {
+      throw new CliError({
+        exitCode: 1,
+        code: "E_INTERNAL",
+        message: `Backend ${ctx.taskBackend.id} advertises native projection reads but does not implement listProjectionTasks()`,
+      });
+    }
+    return await ctx.taskBackend.listProjectionTasks({ status: opts.projectionStatus });
+  }
   ctx.memo.taskProjection ??= (async () => {
     if (ctx.taskBackend.capabilities?.projection_read_mode === "native") {
       if (!ctx.taskBackend.listProjectionTasks) {

@@ -490,7 +490,7 @@ agentplane task doc show 202602030608-F1Q8AB --section Summary
 
 ### task list
 
-List tasks with compact resolved blueprint route hints.
+List active tasks with compact resolved blueprint route hints.
 
 Usage:
 
@@ -500,6 +500,7 @@ agentplane task list [options]
 
 Options:
 
+- `--all`: Include historical DONE tasks instead of the default active-task view. (default=false)
 - `--status <status>`: Repeatable. Filter by status. (repeatable)
 - `--owner <owner>`: Repeatable. Filter by owner id. (repeatable)
 - `--tag <tag>`: Repeatable. Filter by tag. (repeatable)
@@ -513,7 +514,13 @@ Examples:
 agentplane task list
 ```
 
-- List all tasks.
+- List active tasks.
+
+```sh
+agentplane task list --all
+```
+
+- List all historical tasks.
 
 ```sh
 agentplane task list --status TODO --owner CODER
