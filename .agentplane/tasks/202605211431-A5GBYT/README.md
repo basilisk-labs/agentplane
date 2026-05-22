@@ -21,10 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-21T17:34:13.418Z"
-  updated_by: "EVALUATOR"
-  note: "Evaluator gate for release implementation head 63b0b14d4513bc8c6cafce1b443ede2d24c39e32: release candidate passed, hosted PR #4007 checks were green, and task-local artifact commits are excluded from the implementation head."
-  attempts: 0
+  updated_at: "2026-05-21T17:55:45.649Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.5."
 quality_review:
   state: "pass"
   updated_at: "2026-05-21T17:34:13.418Z"
@@ -80,8 +79,8 @@ events:
     to: "DONE"
     note: "Verified: PR #4007 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-21T17:42:18.241Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-21T17:55:45.649Z"
+doc_updated_by: "DEUS"
 description: "Prepare, verify, publish, and record evidence for the next patch release after v0.6.4."
 sections:
   Summary: |-
@@ -102,63 +101,19 @@ sections:
     7. Run postpublish readbacks: `npm view agentplane version`, `git ls-remote --tags origin v0.6.5`, `gh release view v0.6.5`, and release smoke/audit scripts. Expected: all external release surfaces report v0.6.5.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    ### 2026-05-21T17:24:31.111Z — VERIFY — ok
-
-    By: INTEGRATOR
-
-    Note: Release candidate v0.6.5 passed local release:prepublish via ap release candidate --push --yes; hosted PR #4007 checks are green and mergeStateStatus is CLEAN at head 63b0b14d4513bc8c6cafce1b443ede2d24c39e32.
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T14:32:18.064Z, excerpt_hash=sha256:131d2c0951d0a89e69dce20f983762cb4d8bed3c1aa01be541b1bd6f0b61ebd8
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211431-A5GBYT-release-v0-6-5/.agentplane/tasks/202605211431-A5GBYT/blueprint/resolved-snapshot.json
-    - old_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
-    - current_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
-    - route_changed: no
-    - safe_command: agentplane blueprint snapshot 202605211431-A5GBYT
-
-    ### 2026-05-21T17:24:41.295Z — VERIFY — ok
-
-    By: EVALUATOR
-
-    Note: Evaluator release gate passed: local release prepublish completed, release-ci-base rerouted heavy CLI tests and passed, hosted PR #4007 checks are green, and branch is clean for integration.
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T17:24:31.133Z, excerpt_hash=sha256:131d2c0951d0a89e69dce20f983762cb4d8bed3c1aa01be541b1bd6f0b61ebd8
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211431-A5GBYT-release-v0-6-5/.agentplane/tasks/202605211431-A5GBYT/blueprint/resolved-snapshot.json
-    - old_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
-    - current_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
-    - route_changed: no
-    - safe_command: agentplane blueprint snapshot 202605211431-A5GBYT
-
-    ### 2026-05-21T17:30:58.152Z — VERIFY — ok
-
-    By: EVALUATOR
-
-    Note: Fresh evaluator gate for final release candidate head after verification artifact commit; hosted PR #4007 checks are green and release branch is ready for integration.
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T17:24:41.313Z, excerpt_hash=sha256:131d2c0951d0a89e69dce20f983762cb4d8bed3c1aa01be541b1bd6f0b61ebd8
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211431-A5GBYT-release-v0-6-5/.agentplane/tasks/202605211431-A5GBYT/blueprint/resolved-snapshot.json
-    - old_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
-    - current_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
-    - route_changed: no
-    - safe_command: agentplane blueprint snapshot 202605211431-A5GBYT
-
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.5.
+    - Details:
+      - release_sha: 78f88bcefaa136a0940b4fa0a0b2ac785a617a7a
+      - version: 0.6.5
+      - tag: v0.6.5
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.5
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26243388120
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -194,63 +149,19 @@ Release plan: version=0.6.5, tag=v0.6.5, scope=next patch release from current m
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-### 2026-05-21T17:24:31.111Z — VERIFY — ok
-
-By: INTEGRATOR
-
-Note: Release candidate v0.6.5 passed local release:prepublish via ap release candidate --push --yes; hosted PR #4007 checks are green and mergeStateStatus is CLEAN at head 63b0b14d4513bc8c6cafce1b443ede2d24c39e32.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T14:32:18.064Z, excerpt_hash=sha256:131d2c0951d0a89e69dce20f983762cb4d8bed3c1aa01be541b1bd6f0b61ebd8
-
-Details:
-
-BlueprintSnapshotRef:
-- state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211431-A5GBYT-release-v0-6-5/.agentplane/tasks/202605211431-A5GBYT/blueprint/resolved-snapshot.json
-- old_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
-- current_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
-- route_changed: no
-- safe_command: agentplane blueprint snapshot 202605211431-A5GBYT
-
-### 2026-05-21T17:24:41.295Z — VERIFY — ok
-
-By: EVALUATOR
-
-Note: Evaluator release gate passed: local release prepublish completed, release-ci-base rerouted heavy CLI tests and passed, hosted PR #4007 checks are green, and branch is clean for integration.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T17:24:31.133Z, excerpt_hash=sha256:131d2c0951d0a89e69dce20f983762cb4d8bed3c1aa01be541b1bd6f0b61ebd8
-
-Details:
-
-BlueprintSnapshotRef:
-- state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211431-A5GBYT-release-v0-6-5/.agentplane/tasks/202605211431-A5GBYT/blueprint/resolved-snapshot.json
-- old_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
-- current_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
-- route_changed: no
-- safe_command: agentplane blueprint snapshot 202605211431-A5GBYT
-
-### 2026-05-21T17:30:58.152Z — VERIFY — ok
-
-By: EVALUATOR
-
-Note: Fresh evaluator gate for final release candidate head after verification artifact commit; hosted PR #4007 checks are green and release branch is ready for integration.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-21T17:24:41.313Z, excerpt_hash=sha256:131d2c0951d0a89e69dce20f983762cb4d8bed3c1aa01be541b1bd6f0b61ebd8
-
-Details:
-
-BlueprintSnapshotRef:
-- state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605211431-A5GBYT-release-v0-6-5/.agentplane/tasks/202605211431-A5GBYT/blueprint/resolved-snapshot.json
-- old_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
-- current_digest: 596a8dd64715acb0f243c8b716b1f17832bb54c0a45854dc87e404971d840c33
-- route_changed: no
-- safe_command: agentplane blueprint snapshot 202605211431-A5GBYT
-
+- State: ok
+- Note: Hosted publish confirmed for v0.6.5.
+- Details:
+  - release_sha: 78f88bcefaa136a0940b4fa0a0b2ac785a617a7a
+  - version: 0.6.5
+  - tag: v0.6.5
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.5
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26243388120
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
