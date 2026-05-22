@@ -1,0 +1,3 @@
+ .../agentplane/src/cli/local-ci-selection.test.ts  | 77 ++++++++++++++++++++++
+ scripts/lib/pre-push-scope.mjs                     | 40 ++++++++++-
+ 2 files changed, 115 insertions(+), 2 deletions(-)

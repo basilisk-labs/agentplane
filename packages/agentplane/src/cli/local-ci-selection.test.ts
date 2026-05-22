@@ -1,3 +1,8 @@
+import { execFileSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import * as localCiSelectionModule from "../../../../scripts/lib/local-ci-selection.mjs";
@@ -84,9 +89,37 @@ const {
   readChangedFilesForRange: (range: { from: string; to: string } | null) => string[];
   selectBranchDiffRange: (
     updates: PrePushUpdate[],
-    opts?: { newBranchFallbackRef?: string | null },
+    opts?: { gitCwd?: string; newBranchFallbackRef?: string | null },
   ) => { from: string; to: string } | null;
 };
+
+function git(args: string[], options: { cwd?: string } = {}): string {
+  return execFileSync("git", args, {
+    cwd: options.cwd,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  }).trim();
+}
+
+function withTempGitRepo<T>(fn: (repoPath: string) => T): T {
+  const repoPath = mkdtempSync(path.join(os.tmpdir(), "agentplane-prepush-scope-"));
+  try {
+    git(["init", "-b", "main"], { cwd: repoPath });
+    git(["config", "user.name", "Test User"], { cwd: repoPath });
+    git(["config", "user.email", "test@example.com"], { cwd: repoPath });
+    return fn(repoPath);
+  } finally {
+    rmSync(repoPath, { force: true, recursive: true });
+  }
+}
+
+function commitFile(repoPath: string, filePath: string, contents: string, message: string): string {
+  mkdirSync(path.dirname(filePath), { recursive: true });
+  writeFileSync(filePath, contents);
+  git(["add", "."], { cwd: repoPath });
+  git(["commit", "-m", message], { cwd: repoPath });
+  return git(["rev-parse", "HEAD"], { cwd: repoPath });
+}
 
 describe("local CI fast selection", () => {
   it("treats docs and policy changes as docs-only", () => {
@@ -573,6 +606,56 @@ describe("pre-push scope selection", () => {
   it("selects a diff range when pushing HEAD to a branch", () => {
     const updates = parsePrePushStdin("HEAD aaa refs/heads/task/T-1/fix bbb\n");
     expect(selectBranchDiffRange(updates)).toEqual({ from: "bbb", to: "aaa" });
+  });
+
+  it("selects task branch push scope from the base ref when a fallback is available", () => {
+    const updates = parsePrePushStdin("HEAD aaa refs/heads/task/T-1/fix bbb\n");
+    expect(selectBranchDiffRange(updates, { newBranchFallbackRef: "origin/main" })).toEqual({
+      from: "origin/main",
+      to: "aaa",
+    });
+  });
+
+  it("keeps fast-forward task branch pushes scoped to outgoing commits", () => {
+    withTempGitRepo((repoPath) => {
+      const baseSha = commitFile(repoPath, path.join(repoPath, "README.md"), "base\n", "base");
+      git(["checkout", "-b", "task/T-1/fix"], { cwd: repoPath });
+      const remoteSha = commitFile(repoPath, path.join(repoPath, "src/index.ts"), "one\n", "one");
+      const localSha = commitFile(repoPath, path.join(repoPath, "src/index.ts"), "two\n", "two");
+
+      const updates = parsePrePushStdin(`HEAD ${localSha} refs/heads/task/T-1/fix ${remoteSha}\n`);
+
+      expect(
+        selectBranchDiffRange(updates, { gitCwd: repoPath, newBranchFallbackRef: baseSha }),
+      ).toEqual({
+        from: remoteSha,
+        to: localSha,
+      });
+    });
+  });
+
+  it("uses base scope for amended task branch force-pushes", () => {
+    withTempGitRepo((repoPath) => {
+      const baseSha = commitFile(repoPath, path.join(repoPath, "README.md"), "base\n", "base");
+      git(["checkout", "-b", "task/T-1/fix"], { cwd: repoPath });
+      const remoteSha = commitFile(repoPath, path.join(repoPath, "src/index.ts"), "code\n", "old");
+      git(["reset", "--hard", baseSha], { cwd: repoPath });
+      const localSha = commitFile(
+        repoPath,
+        path.join(repoPath, "src/index.ts"),
+        "code\n",
+        "amended",
+      );
+
+      const updates = parsePrePushStdin(`HEAD ${localSha} refs/heads/task/T-1/fix ${remoteSha}\n`);
+
+      expect(
+        selectBranchDiffRange(updates, { gitCwd: repoPath, newBranchFallbackRef: baseSha }),
+      ).toEqual({
+        from: baseSha,
+        to: localSha,
+      });
+    });
   });
 
   it("does not select a diff range for new branch pushes", () => {
