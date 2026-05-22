@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-22T19:37:03Z",
   "base": "main",
   "branch": "task/202605221926-VE5WTR/local-ci-vitest-timeout",
   "created_at": "2026-05-22T19:26:34.440Z",
   "diffstat_sha256": "sha256:14fd6f7ac8fdf0588fba98d5b7c449bb414b303a001b76941d4f1621f07ff83d",
   "last_verified_at": "2026-05-22T19:31:44.772Z",
   "last_verified_diffstat_sha256": "sha256:14fd6f7ac8fdf0588fba98d5b7c449bb414b303a001b76941d4f1621f07ff83d",
+  "merge_commit": "34fae8706be3a3c2fbe73a3035db08bc3281387e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-22T19:37:03Z",
   "pr_number": 4030,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4030",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605221926-VE5WTR",
-  "updated_at": "2026-05-22T19:30:34.074Z",
+  "updated_at": "2026-05-22T19:37:03Z",
   "verify": {
     "status": "pass"
   }
