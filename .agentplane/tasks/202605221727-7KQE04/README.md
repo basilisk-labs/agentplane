@@ -1,10 +1,11 @@
 ---
 id: "202605221727-7KQE04"
 title: "Split mutable hosted metadata from tracked evidence"
-status: "DOING"
+result_summary: "Merged via PR #4034."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ quality_review:
     - ".agentplane/tasks/202605221727-7KQE04/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221727-7KQE04-hosted-metadata-split/.agentplane/tasks/202605221727-7KQE04/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "63b584e659b483492183c9955b1d07a4ee1c483b"
+  message: "Merge pull request #4034 from basilisk-labs/task/202605221727-7KQE04/hosted-metadata-split"
 comments:
   -
     author: "CODER"
     body: "Start: splitting mutable hosted PR metadata from tracked evidence so artifact refresh does not self-invalidate reviewed implementation commits."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4034 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Verified: reviewed recovery closure for 7KQE04; implementation contract is already in main commit 77531d807 and targeted PR metadata suites passed in this worktree."
+  -
+    type: "status"
+    at: "2026-05-22T20:32:55.834Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4034 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T20:28:40.071Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T20:32:55.843Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move volatile PR/check/head metadata out of tracked task artifacts or make it computed live so evidence updates do not invalidate reviewed implementation commits."
 sections:
   Summary: |-

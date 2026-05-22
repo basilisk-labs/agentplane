@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-22T20:32:14Z",
   "base": "main",
   "branch": "task/202605221727-7KQE04/hosted-metadata-split",
   "created_at": "2026-05-22T20:22:38.312Z",
   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "last_verified_at": "2026-05-22T20:28:40.042Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "63b584e659b483492183c9955b1d07a4ee1c483b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-22T20:32:14Z",
   "pr_number": 4034,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4034",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605221727-7KQE04",
-  "updated_at": "2026-05-22T20:28:15.540Z",
+  "updated_at": "2026-05-22T20:32:14Z",
   "verify": {
     "status": "pass"
   }
