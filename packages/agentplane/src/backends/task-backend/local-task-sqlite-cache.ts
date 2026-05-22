@@ -308,6 +308,7 @@ function parseTaskSummaryPayload(value: unknown): TaskSummary | null {
 export async function readFreshSqliteTaskProjection(opts: {
   tasksDir: string;
   fingerprintEntries?: readonly { path: string; mtimeMs: number; size: number }[];
+  status?: readonly string[];
 }): Promise<TaskSummary[] | null> {
   const dbPath = resolveTaskProjectionSqlitePath(opts.tasksDir);
   if (!existsSync(dbPath)) return null;
@@ -326,9 +327,25 @@ export async function readFreshSqliteTaskProjection(opts: {
       .get(TASK_SQLITE_CACHE_OWNER) as TaskProjectionMetadataRow | undefined;
     if (!metadataMatches(row, opts.tasksDir, cacheKey)) return null;
 
-    const rows = db
-      .prepare("SELECT payload_json FROM task_projection_summary ORDER BY id")
-      .all() as TaskProjectionRow[];
+    const statuses = [
+      ...new Set(
+        (opts.status ?? [])
+          .map((status) => status.trim().toUpperCase())
+          .filter((status) => status.length > 0),
+      ),
+    ];
+    const rows =
+      statuses.length > 0
+        ? (db
+            .prepare(
+              `SELECT payload_json FROM task_projection_summary WHERE status IN (${statuses
+                .map(() => "?")
+                .join(", ")}) ORDER BY id`,
+            )
+            .all(...statuses) as TaskProjectionRow[])
+        : (db
+            .prepare("SELECT payload_json FROM task_projection_summary ORDER BY id")
+            .all() as TaskProjectionRow[]);
     const tasks: TaskSummary[] = [];
     for (const item of rows) {
       const task = parseTaskSummaryPayload(item.payload_json);

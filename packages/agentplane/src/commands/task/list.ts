@@ -20,6 +20,32 @@ import {
 } from "./blueprint-summary.js";
 import { annotateBranchPrTaskListState, taskListStatusKey } from "./shared/branch-pr-list-state.js";
 
+const DEFAULT_ACTIVE_TASK_LIST_STATUSES = [
+  "TODO",
+  "DOING",
+  "BLOCKED",
+  "MERGED_PENDING_CLOSE",
+] as const;
+
+function resolveProjectionStatusesForList(filters: TaskListFilters): string[] | undefined {
+  if (filters.all && filters.status.length === 0) return undefined;
+  const requested = filters.status.length > 0 ? filters.status : DEFAULT_ACTIVE_TASK_LIST_STATUSES;
+  const statuses = new Set<string>();
+  for (const status of requested) {
+    const normalized = status.trim().toUpperCase();
+    if (!normalized) continue;
+    if (normalized === "MERGED_PENDING_CLOSE") {
+      statuses.add("TODO");
+      statuses.add("DOING");
+      statuses.add("BLOCKED");
+      continue;
+    }
+    statuses.add(normalized);
+  }
+  if (statuses.size > 0) statuses.add("DONE");
+  return statuses.size > 0 ? [...statuses] : undefined;
+}
+
 export async function warnIfLocalTaskStateBehindUpstream(ctx: CommandContext): Promise<void> {
   try {
     const branch = await gitCurrentBranch(ctx.resolvedProject.gitRoot);
@@ -47,13 +73,18 @@ export async function cmdTaskListWithFilters(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const projectionStatus = resolveProjectionStatusesForList(opts.filters);
     const tasks = await annotateBranchPrTaskListState({
       ctx,
-      tasks: await listTaskSummariesMemo(ctx),
+      tasks: await listTaskSummariesMemo(ctx, { projectionStatus }),
     });
     await warnIfLocalTaskStateBehindUpstream(ctx);
     handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
-    const { depState, items } = queryTaskProjection({ tasks, filters: opts.filters });
+    const { depState, items } = queryTaskProjection({
+      tasks,
+      filters: opts.filters,
+      defaultStatuses: opts.filters.all ? undefined : [...DEFAULT_ACTIVE_TASK_LIST_STATUSES],
+    });
     const resolveBlueprint = await createTaskBlueprintLifecycleResolver({
       config: ctx.config,
       projectRoot: ctx.resolvedProject.gitRoot,

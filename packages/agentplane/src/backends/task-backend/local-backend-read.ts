@@ -73,12 +73,23 @@ async function readRequiredTask(context: LocalBackendContext, taskId: string): P
   });
 }
 
-function sortedCachedProjection(cachedIndex: {
-  byId: Record<string, TaskIndexEntry>;
-}): TaskSummary[] {
+function sortedCachedProjection(
+  cachedIndex: { byId: Record<string, TaskIndexEntry> },
+  statuses?: ReadonlySet<string>,
+): TaskSummary[] {
   return Object.values(cachedIndex.byId)
     .map((entry) => entry.task)
+    .filter((task) => !statuses || statuses.has(String(task.status).trim().toUpperCase()))
     .toSorted((a, b) => a.id.localeCompare(b.id));
+}
+
+function normalizeProjectionStatusFilter(statuses?: readonly string[]): Set<string> | undefined {
+  const normalized = new Set(
+    (statuses ?? [])
+      .map((status) => status.trim().toUpperCase())
+      .filter((status) => status.length > 0),
+  );
+  return normalized.size > 0 ? normalized : undefined;
 }
 
 type ReadmeStatEntry = {
@@ -104,22 +115,27 @@ function readFreshCachedProjection(opts: {
   cachedIndex: Awaited<ReturnType<typeof loadTaskIndex>>;
   fingerprint: TaskIndexReadmeFingerprint;
   hasMissingReadmes: boolean;
+  statuses?: ReadonlySet<string>;
 }): TaskSummary[] | null {
   if (!opts.cachedIndex) return null;
   if (opts.hasMissingReadmes) return null;
   if (!taskReadmeFingerprintEquals(opts.cachedIndex.readmes, opts.fingerprint)) return null;
-  return sortedCachedProjection(opts.cachedIndex);
+  return sortedCachedProjection(opts.cachedIndex, opts.statuses);
 }
 
 export async function listLocalTasks(
   context: LocalBackendContext,
   mode: "full" | "projection",
-  opts: { writeIndex?: boolean } = {},
+  opts: { writeIndex?: boolean; status?: readonly string[] } = {},
 ): Promise<TaskData[] | TaskSummary[]> {
   const projectionOnly = mode === "projection";
   const writeIndex = opts.writeIndex ?? true;
+  const projectionStatuses = normalizeProjectionStatusFilter(opts.status);
   if (projectionOnly) {
-    const sqliteProjection = await readFreshSqliteTaskProjection({ tasksDir: context.root });
+    const sqliteProjection = await readFreshSqliteTaskProjection({
+      tasksDir: context.root,
+      status: opts.status,
+    });
     if (sqliteProjection) {
       context.setLastListWarnings?.([]);
       return sqliteProjection;
@@ -163,13 +179,16 @@ export async function listLocalTasks(
       cachedIndex,
       fingerprint: readmeFingerprint,
       hasMissingReadmes,
+      statuses: projectionStatuses,
     });
     if (cachedProjection) {
-      await writeSqliteTaskProjection({
-        tasksDir: context.root,
-        tasks: cachedProjection,
-        fingerprintEntries: readmeFingerprint.entries,
-      });
+      if (!projectionStatuses) {
+        await writeSqliteTaskProjection({
+          tasksDir: context.root,
+          tasks: cachedProjection,
+          fingerprintEntries: readmeFingerprint.entries,
+        });
+      }
       context.setLastListWarnings?.([]);
       return cachedProjection;
     }
@@ -301,7 +320,9 @@ export async function listLocalTasks(
   }
 
   context.setLastListWarnings?.(warnings);
-  return tasks;
+  return projectionOnly && projectionStatuses
+    ? tasks.filter((task) => projectionStatuses.has(String(task.status).trim().toUpperCase()))
+    : tasks;
 }
 
 export async function getLocalTask(

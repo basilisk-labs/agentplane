@@ -9,8 +9,14 @@ export type TaskListParsed = { filters: TaskListFilters };
 export const taskListSpec: CommandSpec<TaskListParsed> = {
   id: ["task", "list"],
   group: "Task",
-  summary: "List tasks with compact resolved blueprint route hints.",
+  summary: "List active tasks with compact resolved blueprint route hints.",
   options: [
+    {
+      kind: "boolean",
+      name: "all",
+      default: false,
+      description: "Include historical DONE tasks instead of the default active-task view.",
+    },
     {
       kind: "string",
       name: "status",
@@ -42,7 +48,8 @@ export const taskListSpec: CommandSpec<TaskListParsed> = {
     { kind: "boolean", name: "quiet", default: false, description: "Suppress summary output." },
   ],
   examples: [
-    { cmd: "agentplane task list", why: "List all tasks." },
+    { cmd: "agentplane task list", why: "List active tasks." },
+    { cmd: "agentplane task list --all", why: "List all historical tasks." },
     { cmd: "agentplane task list --status TODO --owner CODER", why: "List filtered tasks." },
   ],
   validateRaw: (raw) => {
@@ -76,6 +83,7 @@ export const taskListSpec: CommandSpec<TaskListParsed> = {
       tag: toStringList(raw.opts.tag),
       limit: typeof raw.opts.limit === "string" ? Number.parseInt(raw.opts.limit, 10) : undefined,
       quiet: raw.opts.quiet === true,
+      all: raw.opts.all === true,
       strictRead: raw.opts["strict-read"] === true,
     },
   }),

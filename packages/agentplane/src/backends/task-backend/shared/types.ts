@@ -199,7 +199,7 @@ export type TaskBackendQueryPort = {
 };
 
 export type TaskBackendProjectionPort = {
-  listProjectionTasks?(): Promise<TaskSummary[]>;
+  listProjectionTasks?(opts?: { status?: readonly string[] }): Promise<TaskSummary[]>;
   getLastListWarnings?(): string[];
 };
 
