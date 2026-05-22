@@ -1,0 +1,5 @@
+ .../agentplane/src/cli/local-ci-selection.test.ts  | 23 ++++++++++++++++++++++
+ scripts/lib/local-ci-selection.d.ts                |  2 ++
+ scripts/lib/local-ci-selection.mjs                 | 23 ++++++++++++++++++++++
+ scripts/lib/test-route-registry.mjs                | 10 ++++++++++
+ 4 files changed, 58 insertions(+)

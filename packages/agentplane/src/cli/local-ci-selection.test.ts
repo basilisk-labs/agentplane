@@ -339,6 +339,29 @@ describe("local CI fast selection", () => {
     );
   });
 
+  it("routes PR integrate command paths to a narrow integrate bucket", () => {
+    const plan = selectFastCiPlan([
+      ".agentplane/tasks/202605222225-2B0DJD/README.md",
+      ".agentplane/tasks/202605222225-2B0DJD/pr/meta.json",
+      "packages/agentplane/src/commands/pr/integrate/cmd.test.ts",
+      "packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("pr-integrate");
+    expect(plan.reason).toBe("pr_integrate_paths_only");
+    expect(plan.lintTargets).toEqual([
+      "packages/agentplane/src/commands/pr/integrate/cmd.test.ts",
+      "packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge.ts",
+    ]);
+    expect(plan.testFiles).toContain("packages/agentplane/src/commands/pr/integrate/cmd.test.ts");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts",
+    );
+    expect(plan.testFiles).not.toContain(
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts",
+    );
+  });
+
   it("ignores task artifacts when routing PR bucket changes", () => {
     const plan = selectFastCiPlan([
       ".agentplane/tasks/202604130750-E2J835/README.md",

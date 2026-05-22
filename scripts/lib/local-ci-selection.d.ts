@@ -20,6 +20,8 @@ export type FastCiPlan =
         | "cli-help"
         | "cli-core"
         | "cli-runtime"
+        | "pr"
+        | "pr-integrate"
         | "release"
         | "upgrade"
         | "guard"

@@ -474,6 +474,10 @@ const PR_FLOW_DISCOVERY_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.pr-flow(?:\..+)?\.test\.ts$/,
 ];
 
+const PR_INTEGRATE_DISCOVERY_PATTERNS = [
+  /^packages\/agentplane\/src\/commands\/pr\/integrate(?:\/|\.|$).+\.test\.ts$/,
+];
+
 const GUARD_DISCOVERY_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/guard\/.+\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.guard(?:\..+)?\.test\.ts$/,
@@ -503,6 +507,11 @@ const PR_TEST_FILES = [
   "packages/agentplane/src/commands/pr/input-validation.test.ts",
   ...discoverTestFiles(["packages/agentplane/src/cli"], PR_FLOW_DISCOVERY_PATTERNS),
 ];
+
+const PR_INTEGRATE_TEST_FILES = discoverTestFiles(
+  ["packages/agentplane/src/commands/pr/integrate"],
+  PR_INTEGRATE_DISCOVERY_PATTERNS,
+);
 
 const CLI_RUNTIME_TEST_FILES = [
   "packages/agentplane/src/cli/runtime-context.test.ts",
@@ -563,6 +572,7 @@ export const LOCAL_CI_TARGET_TEST_FILES = {
   guard: GUARD_TEST_FILES,
   hooks: HOOKS_TEST_FILES,
   pr: PR_TEST_FILES,
+  "pr-integrate": PR_INTEGRATE_TEST_FILES,
   release: RELEASE_TEST_FILES,
   task: TASK_TEST_FILES,
   upgrade: UPGRADE_TEST_FILES,
