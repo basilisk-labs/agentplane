@@ -27,6 +27,7 @@ type FastCiPlan =
         | "release"
         | "upgrade"
         | "guard"
+        | "pr-flow-status"
         | "mixed";
       buckets?: string[];
       reason: string;
@@ -350,6 +351,25 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts",
     );
+  });
+
+  it("routes PR flow status paths to the narrow status bucket", () => {
+    const plan = selectFastCiPlan([
+      ".agentplane/tasks/202605222339-RZVQJ9/README.md",
+      ".agentplane/tasks/202605222339-RZVQJ9/pr/meta.json",
+      "packages/agentplane/src/commands/pr/flow-status.ts",
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("pr-flow-status");
+    expect(plan.reason).toBe("pr_flow_status_paths_only");
+    expect(plan.lintTargets).toEqual([
+      "packages/agentplane/src/commands/pr/flow-status.ts",
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts",
+    ]);
+    expect(plan.testFiles).toEqual([
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts",
+    ]);
   });
 
   it("routes PR integrate command paths to a narrow integrate bucket", () => {

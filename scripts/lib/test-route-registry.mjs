@@ -508,6 +508,10 @@ const PR_TEST_FILES = [
   ...discoverTestFiles(["packages/agentplane/src/cli"], PR_FLOW_DISCOVERY_PATTERNS),
 ];
 
+const PR_FLOW_STATUS_TEST_FILES = [
+  "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts",
+];
+
 const PR_INTEGRATE_TEST_FILES = discoverTestFiles(
   ["packages/agentplane/src/commands/pr/integrate"],
   PR_INTEGRATE_DISCOVERY_PATTERNS,
@@ -572,6 +576,7 @@ export const LOCAL_CI_TARGET_TEST_FILES = {
   guard: GUARD_TEST_FILES,
   hooks: HOOKS_TEST_FILES,
   pr: PR_TEST_FILES,
+  "pr-flow-status": PR_FLOW_STATUS_TEST_FILES,
   "pr-integrate": PR_INTEGRATE_TEST_FILES,
   release: RELEASE_TEST_FILES,
   task: TASK_TEST_FILES,

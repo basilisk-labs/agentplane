@@ -10,6 +10,7 @@ const {
   guard: GUARD_TEST_FILES,
   hooks: HOOKS_TEST_FILES,
   pr: PR_TEST_FILES,
+  "pr-flow-status": PR_FLOW_STATUS_TEST_FILES,
   "pr-integrate": PR_INTEGRATE_TEST_FILES,
   release: RELEASE_TEST_FILES,
   task: TASK_TEST_FILES,
@@ -103,6 +104,10 @@ const CLI_CORE_BUCKET_PATTERNS = [
 const PR_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/pr(?:\/|\.|$)/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.pr-flow(?:\..+)?\.test\.ts$/,
+];
+const PR_FLOW_STATUS_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/commands\/pr\/flow-status\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.pr-flow\.status\.test\.ts$/,
 ];
 const PR_INTEGRATE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/pr\/integrate(?:\/|\.|$)/,
@@ -210,6 +215,13 @@ const TARGET_BUCKET_DEFINITIONS = [
     reason: "cli_help_and_spec_paths_only",
     patterns: CLI_HELP_BUCKET_PATTERNS,
     testFiles: CLI_HELP_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "pr-flow-status",
+    reason: "pr_flow_status_paths_only",
+    patterns: PR_FLOW_STATUS_BUCKET_PATTERNS,
+    testFiles: PR_FLOW_STATUS_TEST_FILES,
     vitestPool: "threads",
   },
   {
@@ -408,6 +420,18 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: effectiveFiles,
       testFiles: CLI_HELP_TEST_FILES,
+      vitestPool: "threads",
+    };
+  }
+
+  if (everyPathMatches(effectiveFiles, PR_FLOW_STATUS_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "pr-flow-status",
+      reason: "pr_flow_status_paths_only",
+      files,
+      lintTargets: effectiveFiles,
+      testFiles: PR_FLOW_STATUS_TEST_FILES,
       vitestPool: "threads",
     };
   }
