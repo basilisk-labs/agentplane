@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-22T19:24:28Z",
   "base": "main",
   "branch": "task/202605221846-3ER2XX/pr-sync-git-timeouts",
   "created_at": "2026-05-22T18:46:35.458Z",
   "diffstat_sha256": "sha256:4a992c170fd5e8aeafe00f9cca08a9c4db00b9a2e874c4ea2574301ad001b15d",
   "last_verified_at": "2026-05-22T19:19:42.442Z",
   "last_verified_diffstat_sha256": "sha256:f9bbb11de95729529268364a5f1cbb78512f3f84df0cf75ff06894fdda9db079",
+  "merge_commit": "5fb685c753359e2255e8bba69ecf6b57a41c89cb",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-22T19:24:28Z",
   "pr_number": 4028,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4028",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605221846-3ER2XX",
-  "updated_at": "2026-05-22T18:49:37.708Z",
+  "updated_at": "2026-05-22T19:24:28Z",
   "verify": {
     "status": "pass"
   }
