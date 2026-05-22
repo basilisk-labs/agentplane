@@ -1,10 +1,11 @@
 ---
 id: "202605221941-83R8S3"
 title: "Classify amended task-branch pre-push scope from base"
-status: "DOING"
+result_summary: "Merged via PR #4032."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -36,11 +37,16 @@ quality_review:
     - ".agentplane/tasks/202605221941-83R8S3/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221941-83R8S3-task-branch-prepush-base-scope/.agentplane/tasks/202605221941-83R8S3/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "535485c364c9e71ac79c0bfd0039234e14fd141c"
+  message: "Merge pull request #4032 from basilisk-labs/task/202605221941-83R8S3/task-branch-prepush-base-scope"
 comments:
   -
     author: "CODER"
     body: "Start: fixing pre-push changed-file scope for amended task branch force-pushes so local CI does not miss code changes shared by the old and new branch heads."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4032 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -79,9 +85,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Reworked regression tests to avoid process.chdir in worker threads; focused selection test, eslint, and typecheck pass locally."
+  -
+    type: "status"
+    at: "2026-05-22T20:21:12.288Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4032 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T20:00:44.495Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T20:21:12.295Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent pre-push local CI from misclassifying amended or force-pushed task branches as docs-only when the branch still contains code changes by selecting changed files against the task branch base/merge-base instead of only remoteSha..localSha."
 sections:
   Summary: |-
