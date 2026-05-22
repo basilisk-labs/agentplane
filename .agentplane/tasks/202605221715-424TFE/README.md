@@ -1,10 +1,11 @@
 ---
 id: "202605221715-424TFE"
 title: "Cache release prepublish proof by tree digest"
-status: "DOING"
+result_summary: "Merged via PR #4022."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605221715-424TFE/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221715-424TFE-release-pipeline-hardening/.agentplane/tasks/202605221715-424TFE/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "53b9f7c74c78197c31e9709bdd82f65293cca0a2"
+  message: "Merge pull request #4022 from basilisk-labs/task/202605221715-424TFE/release-pipeline-hardening"
 comments:
   -
     author: "CODER"
     body: "Start: Implement approved release pipeline hardening batch; this task is included in the shared batch worktree owned by primary task 202605221715-424TFE."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4022 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed: PR #4022 has one implementation commit, task worktree pr check passed, local ci:contract/doctor/targeted checks passed, and GitHub hosted checks are green including Core CI, Docs CI, Workflows Lint, CodeQL, PR verification, Release-ready manifest, and test-windows."
+  -
+    type: "status"
+    at: "2026-05-22T18:09:18.207Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4022 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T18:03:09.479Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-22T18:09:18.215Z"
+doc_updated_by: "INTEGRATOR"
 description: "Avoid rerunning expensive release:prepublish heavy checks when an exact release tree already has matching proof."
 sections:
   Summary: |-
