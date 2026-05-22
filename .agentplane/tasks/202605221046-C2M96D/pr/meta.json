@@ -1,16 +1,22 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-22T12:55:03Z",
   "base": "main",
   "branch": "task/202605221046-C2M96D/amend-task-artifacts",
   "created_at": "2026-05-22T10:49:12.805Z",
   "diffstat_sha256": "sha256:67c8a3dc59f62c6c2db50132c7a3bf2a928550c0f008127bf5bea9d7152c5c25",
+  "head_sha": "77531d807a6a6f9f2bf22d18835f073ce8c53e4e",
   "last_verified_at": "2026-05-22T12:37:15.471Z",
   "last_verified_diffstat_sha256": "sha256:4e880850a7d69c2a83eb5e3e503a395652f8dfed71606c3e4f9b22ced2a68fed",
+  "merge_commit": "fc4030e8ba8c9c2c4e74c22dd5128dd9a89c4edd",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-22T12:55:03Z",
   "pr_number": 4015,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4015",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605221046-C2M96D",
-  "updated_at": "2026-05-22T12:17:47.567Z",
+  "updated_at": "2026-05-22T12:55:03Z",
   "verify": {
     "status": "pass"
   }
