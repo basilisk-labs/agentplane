@@ -34,6 +34,7 @@ async function createBranchPrTask(root: string): Promise<string> {
       "CODER",
       "--tag",
       "code",
+      "--allow-duplicate",
       "--root",
       root,
     ]);

@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605221745-CH6ENY/batch-ownership-context",
+  "created_at": "2026-05-23T03:48:17.200Z",
+  "diffstat_sha256": "sha256:7cfee6741bc64b4f94757bba2e9327958d6d130ee3bfb6c76bbb4ff0eda74e26",
+  "last_verified_at": "2026-05-23T04:16:09.682Z",
+  "last_verified_diffstat_sha256": "sha256:7cfee6741bc64b4f94757bba2e9327958d6d130ee3bfb6c76bbb4ff0eda74e26",
+  "pr_number": 4071,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4071",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605221745-CH6ENY",
+  "updated_at": "2026-05-23T03:56:45.011Z",
+  "verify": {
+    "status": "pass"
+  }
+}

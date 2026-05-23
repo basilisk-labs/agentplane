@@ -31,6 +31,28 @@ type TaskBriefRoute = {
   repair_plan: { code: string; command: string | null; summary: string; mutates: boolean }[];
 };
 
+type TaskBriefBatchOwnership =
+  | { role: "none" }
+  | {
+      role: "primary" | "included";
+      primary_task_id: string;
+      included_task_ids: string[];
+      all_task_ids: string[];
+      branch: string | null;
+      task_states: {
+        id: string;
+        status: string;
+        owner: string | null;
+        verification: string | null;
+      }[];
+      next_owner_action: {
+        code: string;
+        summary: string;
+        command: string | null;
+        requires_approval: boolean;
+      };
+    };
+
 type TaskBrief = {
   contract: AgentWorkContextContract;
   task: {
@@ -49,6 +71,7 @@ type TaskBrief = {
     pr_branch: string | null;
   };
   route: TaskBriefRoute;
+  batch_ownership: TaskBriefBatchOwnership;
   next_action: {
     code: string;
     summary: string;
@@ -186,6 +209,12 @@ function buildSourceConfidence(opts: {
       freshness: routeFreshness,
       confidence: routeConfidence,
     },
+    batch_ownership: {
+      source: "local_git",
+      freshness: "live_local",
+      confidence: "medium",
+      note: "derived from local branch_pr PR metadata",
+    },
     verify_steps: {
       source: "task_doc",
       freshness: "live_local",
@@ -265,6 +294,23 @@ async function buildTaskBrief(opts: {
     projectRoot: opts.commandCtx.resolvedProject.gitRoot,
   });
   const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: opts.commandCtx, task });
+  const batchOwnership =
+    route.batchOwnership.role === "none"
+      ? ({ role: "none" } as const)
+      : ({
+          role: route.batchOwnership.role,
+          primary_task_id: route.batchOwnership.primaryTaskId,
+          included_task_ids: route.batchOwnership.includedTaskIds,
+          all_task_ids: route.batchOwnership.allTaskIds,
+          branch: route.batchOwnership.branch,
+          task_states: route.batchOwnership.taskStates,
+          next_owner_action: {
+            code: route.batchOwnership.nextOwnerAction.code,
+            summary: route.batchOwnership.nextOwnerAction.summary,
+            command: route.batchOwnership.nextOwnerAction.command,
+            requires_approval: route.batchOwnership.nextOwnerAction.requiresApproval,
+          },
+        } as const);
 
   return {
     contract: agentWorkContextContract(),
@@ -295,6 +341,7 @@ async function buildTaskBrief(opts: {
       ambiguities: route.ambiguities.map((ambiguity) => ({ ...ambiguity })),
       repair_plan: route.repairPlan.map((step) => ({ ...step })),
     },
+    batch_ownership: batchOwnership,
     next_action: {
       code: route.nextAction.code,
       summary: route.nextAction.summary,
@@ -364,6 +411,32 @@ export function makeRunTaskBriefHandler(getCtx: (cmd: string) => Promise<Command
       ],
       { header: infoMessage(`task brief: ${parsed.taskId}`) },
     );
+    if (brief.batch_ownership.role !== "none") {
+      output.report([
+        { label: "batch_role", value: brief.batch_ownership.role },
+        { label: "batch_primary", value: brief.batch_ownership.primary_task_id },
+        { label: "batch_branch", value: brief.batch_ownership.branch ?? "missing" },
+        {
+          label: "batch_included",
+          value: brief.batch_ownership.included_task_ids.join(", ") || "none",
+        },
+        {
+          label: "batch_states",
+          value: brief.batch_ownership.task_states
+            .map(
+              (state) =>
+                `${state.id}:${state.status}:verification=${state.verification ?? "pending"}`,
+            )
+            .join(", "),
+        },
+        {
+          label: "batch_next",
+          value:
+            brief.batch_ownership.next_owner_action.command ??
+            brief.batch_ownership.next_owner_action.summary,
+        },
+      ]);
+    }
     for (const blocker of brief.blockers) {
       output.line(`blocker: ${blocker.code}: ${blocker.summary}`);
     }

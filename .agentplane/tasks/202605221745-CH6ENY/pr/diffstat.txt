@@ -1,0 +1,7 @@
+ .../cli/run-cli.core.route-decision.batch.test.ts  | 253 +++++++++++++++++++++
+ .../src/cli/run-cli.core.route-decision.test.ts    |   1 +
+ .../src/commands/shared/route-batch-ownership.ts   | 158 +++++++++++++
+ .../src/commands/shared/route-decision.ts          |  37 ++-
+ .../agentplane/src/commands/task/brief.command.ts  |  73 ++++++
+ .../agentplane/src/commands/task/status.command.ts |  26 +++
+ 6 files changed, 541 insertions(+), 7 deletions(-)

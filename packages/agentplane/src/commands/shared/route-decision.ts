@@ -3,6 +3,11 @@ import { CliError } from "../../shared/errors.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
 import { isTaskLocalOnlyAdvance } from "./task-local-freshness.js";
 import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.shared.js";
+import {
+  resolveBatchOwnership,
+  type RouteBatchOwnership,
+  type RouteBatchNextAction,
+} from "./route-batch-ownership.js";
 
 import { loadBackendTask, loadCommandContext, type CommandContext } from "./task-backend.js";
 
@@ -11,12 +16,7 @@ type RouteBlocker = {
   summary: string;
 };
 
-type RouteNextAction = {
-  code: string;
-  command: string | null;
-  summary: string;
-  requiresApproval: boolean;
-};
+type RouteNextAction = RouteBatchNextAction;
 
 type RouteRepairStep = {
   code: string;
@@ -66,6 +66,7 @@ type TaskRouteDecision = {
     gatewayMutationApprovalRequired: boolean;
     effectiveMutationApprovalRequired: boolean;
   };
+  batchOwnership: RouteBatchOwnership;
   prFlow: PrFlowStatusReport | null;
   blockers: RouteBlocker[];
   ambiguities: RouteAmbiguity[];
@@ -120,6 +121,7 @@ async function deriveBlockers(opts: {
   resume: TaskResumeContext;
   workflowMode: string;
   prFlow: PrFlowStatusReport | null;
+  batchOwnership: RouteBatchOwnership;
 }): Promise<RouteBlocker[]> {
   const blockers: RouteBlocker[] = [];
   if (opts.task.status === "DONE") return blockers;
@@ -127,7 +129,11 @@ async function deriveBlockers(opts: {
     addBlocker(blockers, "plan_not_approved", "task plan is not approved");
   }
   if (opts.workflowMode === "branch_pr") {
-    if (!opts.resume.pr_branch && !opts.prFlow?.branch.name) {
+    if (
+      opts.batchOwnership.role !== "included" &&
+      !opts.resume.pr_branch &&
+      !opts.prFlow?.branch.name
+    ) {
       addBlocker(blockers, "missing_pr_branch", "branch_pr task has no recorded PR branch");
     }
     if (opts.resume.branch === opts.resume.base_branch) {
@@ -178,6 +184,7 @@ function deriveNextAction(opts: {
   workflowMode: string;
   prFlow: PrFlowStatusReport | null;
   blockers: readonly RouteBlocker[];
+  batchOwnership: RouteBatchOwnership;
 }): RouteNextAction {
   const id = opts.task.id;
   if (opts.task.status === "DONE") {
@@ -212,6 +219,9 @@ function deriveNextAction(opts: {
       summary: "continue the direct-mode task from the current checkout",
       requiresApproval: false,
     };
+  }
+  if (opts.batchOwnership.role === "included") {
+    return opts.batchOwnership.nextOwnerAction;
   }
   if (opts.resume.runner.next_action === "wait") {
     return {
@@ -485,6 +495,12 @@ function buildRouteSourceConfidence(opts: {
       freshness: routeFreshness,
       confidence: routeConfidence,
     },
+    batch_ownership: {
+      source: "pr_artifact",
+      freshness: "live_local",
+      confidence: "medium",
+      note: "derived from local branch_pr PR metadata",
+    },
     remote: {
       source: "remote_provider",
       freshness: remoteFreshness,
@@ -530,12 +546,17 @@ export async function buildTaskRouteDecision(opts: {
       if (!isCliUsageOrIo(err)) throw err;
     }
   }
+  const batchOwnership =
+    ctx.config.workflow_mode === "branch_pr"
+      ? await resolveBatchOwnership({ ctx, task })
+      : { role: "none" as const };
   const blockers = await deriveBlockers({
     ctx,
     task,
     resume,
     workflowMode: ctx.config.workflow_mode,
     prFlow,
+    batchOwnership,
   });
   const nextAction = deriveNextAction({
     task,
@@ -543,6 +564,7 @@ export async function buildTaskRouteDecision(opts: {
     workflowMode: ctx.config.workflow_mode,
     prFlow,
     blockers,
+    batchOwnership,
   });
   const partial = {
     task: taskSummary(task),
@@ -556,6 +578,7 @@ export async function buildTaskRouteDecision(opts: {
       checkoutRole: deriveCheckoutRole(resume),
     },
     approval: deriveApprovalContract(ctx),
+    batchOwnership,
     prFlow,
     blockers,
     nextAction,
