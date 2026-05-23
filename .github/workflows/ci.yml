@@ -27,25 +27,10 @@ env:
   AGENTPLANE_RELEASE_RECOVERY_SHA: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '' && github.event.inputs.sha || '' }}
 
 jobs:
-  changes:
-    runs-on: ubuntu-24.04
-    outputs:
-      core: ${{ steps.filter.outputs.core }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ env.AGENTPLANE_CI_REF }}
-          fetch-depth: 0
-      - uses: dorny/paths-filter@v4
-        id: filter
-        with:
-          filters: .github/path-filters.yml
-          predicate-quantifier: some
-
   plan:
-    needs: changes
     runs-on: ubuntu-24.04
     outputs:
+      core: ${{ steps.plan.outputs.core }}
       route: ${{ steps.plan.outputs.route }}
       selector_kind: ${{ steps.plan.outputs.selector_kind }}
       bucket: ${{ steps.plan.outputs.bucket }}
@@ -68,6 +53,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then
             {
               echo "route=full-fast"
+              echo "core=true"
               echo "selector_kind=recovery"
               echo "bucket=recovery"
               echo "buckets=recovery"
@@ -81,11 +67,9 @@ jobs:
           node scripts/checks/plan-github-ci.mjs
 
   verify-routed:
-    needs:
-      - changes
-      - plan
+    needs: plan
     if: >-
-      (needs.changes.outputs.core == 'true' ||
+      (needs.plan.outputs.core == 'true' ||
         (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
       !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
       needs.plan.outputs.route != 'full-fast'
@@ -122,11 +106,9 @@ jobs:
         run: bun run ci:local:fast
 
   verify-contract:
-    needs:
-      - changes
-      - plan
+    needs: plan
     if: >-
-      (needs.changes.outputs.core == 'true' ||
+      (needs.plan.outputs.core == 'true' ||
         (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
       !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
       needs.plan.outputs.route == 'full-fast'
@@ -170,11 +152,9 @@ jobs:
         run: bun run hotspots:check
 
   verify-static:
-    needs:
-      - changes
-      - plan
+    needs: plan
     if: >-
-      (needs.changes.outputs.core == 'true' ||
+      (needs.plan.outputs.core == 'true' ||
         (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
       !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
       needs.plan.outputs.route == 'full-fast'
@@ -213,11 +193,9 @@ jobs:
         run: bun run knip:check
 
   verify-unit:
-    needs:
-      - changes
-      - plan
+    needs: plan
     if: >-
-      (needs.changes.outputs.core == 'true' ||
+      (needs.plan.outputs.core == 'true' ||
         (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
       !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
       needs.plan.outputs.route == 'full-fast'
@@ -258,11 +236,9 @@ jobs:
           GIT_COMMITTER_EMAIL: agentplane-ci@example.com
 
   verify-cli-critical:
-    needs:
-      - changes
-      - plan
+    needs: plan
     if: >-
-      (needs.changes.outputs.core == 'true' ||
+      (needs.plan.outputs.core == 'true' ||
         (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
       !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
       needs.plan.outputs.route == 'full-fast'
@@ -302,11 +278,9 @@ jobs:
           GIT_COMMITTER_EMAIL: agentplane-ci@example.com
 
   verify-workflow:
-    needs:
-      - changes
-      - plan
+    needs: plan
     if: >-
-      (needs.changes.outputs.core == 'true' ||
+      (needs.plan.outputs.core == 'true' ||
         (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
       !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
       needs.plan.outputs.route == 'full-fast'
@@ -348,11 +322,9 @@ jobs:
           node packages/agentplane/bin/agentplane.js doctor
 
   verify-coverage:
-    needs:
-      - changes
-      - plan
+    needs: plan
     if: >-
-      (needs.changes.outputs.core == 'true' ||
+      (needs.plan.outputs.core == 'true' ||
         (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
       !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
       needs.plan.outputs.route == 'full-fast'
@@ -389,11 +361,9 @@ jobs:
         run: bun run coverage:significant-suite
 
   test-windows:
-    needs:
-      - changes
-      - plan
+    needs: plan
     if: >-
-      (needs.changes.outputs.core == 'true' ||
+      (needs.plan.outputs.core == 'true' ||
         (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
       !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
       needs.plan.outputs.route == 'full-fast'
@@ -439,7 +409,6 @@ jobs:
           GIT_COMMITTER_EMAIL: agentplane-ci@example.com
 
   recovery-validate:
-    needs: changes
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.sha != ''
     runs-on: ubuntu-24.04
     steps:
@@ -473,7 +442,6 @@ jobs:
   release-ready:
     name: Release-ready manifest
     needs:
-      - changes
       - plan
       - verify-routed
       - verify-contract
@@ -509,7 +477,7 @@ jobs:
           ) &&
           (
             (
-              needs.changes.outputs.core == 'true' &&
+              needs.plan.outputs.core == 'true' &&
               (
                 needs.verify-routed.result == 'success' ||
                 (
@@ -523,7 +491,7 @@ jobs:
                 )
               )
             ) ||
-            needs.changes.outputs.core != 'true'
+            needs.plan.outputs.core != 'true'
           )
         )
       )
@@ -584,7 +552,6 @@ jobs:
   pr-verification:
     name: PR verification
     needs:
-      - changes
       - plan
       - verify-routed
       - verify-contract
@@ -605,8 +572,12 @@ jobs:
           HEAD_REF: ${{ github.head_ref }}
         run: |
           set -euo pipefail
-          echo "core=${{ needs.changes.outputs.core }}"
+          echo "core=${{ needs.plan.outputs.core }}"
           echo "route=${{ needs.plan.outputs.route }}"
+          echo "selector_kind=${{ needs.plan.outputs.selector_kind }}"
+          echo "bucket=${{ needs.plan.outputs.bucket }}"
+          echo "buckets=${{ needs.plan.outputs.buckets }}"
+          echo "changed_files_count=${{ needs.plan.outputs.changed_files_count }}"
           echo "verify-routed=${{ needs.verify-routed.result }}"
           echo "verify-contract=${{ needs.verify-contract.result }}"
           echo "verify-static=${{ needs.verify-static.result }}"
@@ -617,6 +588,29 @@ jobs:
           echo "test-windows=${{ needs.test-windows.result }}"
           echo "recovery-validate=${{ needs.recovery-validate.result }}"
           echo "release-ready=${{ needs.release-ready.result }}"
+          {
+            echo "## PR verification route"
+            echo
+            echo "- core: ${{ needs.plan.outputs.core }}"
+            echo "- route: ${{ needs.plan.outputs.route }}"
+            echo "- selector: ${{ needs.plan.outputs.selector_kind }}"
+            echo "- bucket: ${{ needs.plan.outputs.bucket }}"
+            echo "- buckets: ${{ needs.plan.outputs.buckets }}"
+            echo "- changed files: ${{ needs.plan.outputs.changed_files_count }}"
+            echo
+            echo "## Job results"
+            echo
+            echo "- verify-routed: ${{ needs.verify-routed.result }}"
+            echo "- verify-contract: ${{ needs.verify-contract.result }}"
+            echo "- verify-static: ${{ needs.verify-static.result }}"
+            echo "- verify-unit: ${{ needs.verify-unit.result }}"
+            echo "- verify-cli-critical: ${{ needs.verify-cli-critical.result }}"
+            echo "- verify-workflow: ${{ needs.verify-workflow.result }}"
+            echo "- verify-coverage: ${{ needs.verify-coverage.result }}"
+            echo "- test-windows: ${{ needs.test-windows.result }}"
+            echo "- recovery-validate: ${{ needs.recovery-validate.result }}"
+            echo "- release-ready: ${{ needs.release-ready.result }}"
+          } >> "$GITHUB_STEP_SUMMARY"
 
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then
             [ "${{ needs.recovery-validate.result }}" = "success" ]
@@ -634,7 +628,7 @@ jobs:
               ;;
           esac
 
-          if [ "${{ needs.changes.outputs.core }}" != "true" ]; then
+          if [ "${{ needs.plan.outputs.core }}" != "true" ]; then
             exit 0
           fi
 

@@ -21,6 +21,36 @@ function isZeroSha(value) {
   return /^0+$/u.test(String(value ?? ""));
 }
 
+const CORE_INCLUDE_PATTERNS = [
+  /^packages\//u,
+  /^schemas\//u,
+  /^scripts\//u,
+  /^\.agentplane\//u,
+  /^package\.json$/u,
+  /^bun\.lock$/u,
+  /^tsconfig[^/]*\.json$/u,
+  /^eslint\.config\.cjs$/u,
+  /^vitest\.config\.ts$/u,
+  /^\.github\/workflows\//u,
+  /^\.github\/path-filters\.yml$/u,
+];
+
+const CORE_EXCLUDE_PATTERNS = [
+  /^scripts\/generate-website-docs\.mjs$/u,
+  /^scripts\/check-design-language\.mjs$/u,
+  /^\.agentplane\/tasks\//u,
+];
+
+function isCoreRelevantFile(filePath) {
+  if (CORE_EXCLUDE_PATTERNS.some((pattern) => pattern.test(filePath))) return false;
+  return CORE_INCLUDE_PATTERNS.some((pattern) => pattern.test(filePath));
+}
+
+function isCoreRelevantChange(changedFiles) {
+  if (changedFiles.length === 0) return true;
+  return changedFiles.some((filePath) => isCoreRelevantFile(filePath));
+}
+
 function listChangedFiles() {
   const eventName = process.env.GITHUB_EVENT_NAME ?? "";
   const event = readEventPayload();
@@ -56,7 +86,9 @@ function appendOutput(name, value) {
 const changedFiles = listChangedFiles();
 const executionPlan = buildLocalCiExecutionPlan({ mode: "fast", changedFiles });
 const selector = executionPlan.selector;
+const coreRelevant = isCoreRelevantChange(changedFiles);
 
+appendOutput("core", coreRelevant ? "true" : "false");
 appendOutput("route", executionPlan.route);
 appendOutput("selector_kind", selector.kind);
 appendOutput("bucket", selector.bucket ?? "");
@@ -72,4 +104,6 @@ appendOutput(
 appendOutput("changed_files", executionPlan.changed_files.join("\n"));
 appendOutput("changed_files_count", String(executionPlan.changed_files.length));
 
-process.stdout.write(`${JSON.stringify(executionPlan, null, 2)}\n`);
+process.stdout.write(
+  `${JSON.stringify({ ...executionPlan, core_relevant: coreRelevant }, null, 2)}\n`,
+);

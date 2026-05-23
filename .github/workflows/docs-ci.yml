@@ -2,9 +2,31 @@ name: Docs CI
 
 on:
   pull_request:
+    paths:
+      - "website/**"
+      - "docs/**"
+      - "DESIGN.md"
+      - "scripts/generate-website-docs.mjs"
+      - "scripts/check-design-language.mjs"
+      - "scripts/check-docs-ia.mjs"
+      - "packages/**"
+      - "package.json"
+      - "bun.lock"
+      - ".github/workflows/docs-ci.yml"
   push:
     branches:
       - main
+    paths:
+      - "website/**"
+      - "docs/**"
+      - "DESIGN.md"
+      - "scripts/generate-website-docs.mjs"
+      - "scripts/check-design-language.mjs"
+      - "scripts/check-docs-ia.mjs"
+      - "packages/**"
+      - "package.json"
+      - "bun.lock"
+      - ".github/workflows/docs-ci.yml"
 
 permissions:
   contents: read
@@ -14,34 +36,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  changes:
-    runs-on: ubuntu-24.04
-    outputs:
-      docs: ${{ steps.filter.outputs.docs }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - uses: dorny/paths-filter@v4
-        id: filter
-        with:
-          filters: |
-            docs:
-              - "website/**"
-              - "docs/**"
-              - "DESIGN.md"
-              - "scripts/generate-website-docs.mjs"
-              - "scripts/check-design-language.mjs"
-              - "scripts/check-docs-ia.mjs"
-              - "packages/**"
-              - "package.json"
-              - "bun.lock"
-              - ".github/workflows/docs-ci.yml"
-
   docs:
-    needs: changes
-    if: needs.changes.outputs.docs == 'true'
     runs-on: ubuntu-24.04
+    env:
+      GTM_CONTAINER_ID: GTM-P4FNLHQF
+      GA_MEASUREMENT_ID: G-L8T8ZZ8RSG
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
@@ -50,6 +49,15 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
+      - name: Cache Bun artifacts
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/bun
+          key: ${{ runner.os }}-docs-bun-${{ hashFiles('bun.lock', 'website/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-docs-bun-
       - name: Install root dependencies
         run: bun install --frozen-lockfile --ignore-scripts
       - name: Install website dependencies
@@ -64,3 +72,11 @@ jobs:
         run: bun run docs:site:build
       - name: Validate design language constraints
         run: bun run docs:site:check:design
+      - name: Upload website build artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v7
+        with:
+          name: pages-build-${{ github.sha }}
+          path: website/build
+          if-no-files-found: error
+          retention-days: 1
