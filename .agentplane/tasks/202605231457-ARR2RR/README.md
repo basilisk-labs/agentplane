@@ -1,10 +1,11 @@
 ---
 id: "202605231457-ARR2RR"
 title: "Refactor public docs IA and harden docs site navigation checks"
-status: "DOING"
+result_summary: "Merged via PR #4098."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605231457-ARR2RR/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231457-ARR2RR-docs-ia-context-navigation/.agentplane/tasks/202605231457-ARR2RR/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "822de0e9feaefb13dcc08e39871731922322e8e9"
+  message: "Merge pull request #4098 from basilisk-labs/task/202605231457-ARR2RR/docs-ia-context-navigation"
 comments:
   -
     author: "DOCS"
     body: "Start: Refactor public docs IA around user journeys and agent-facing context usage, then add a built-site navigation smoke check so broken Docusaurus client routing is caught before deploy."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4098 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -84,9 +90,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator review: PR #4098 has one commit, GitHub checks are green, outdated package.json review thread resolved, docs build now runs navigation smoke through Docusaurus postBuild, and local/browser evidence is recorded in DOCS verification."
+  -
+    type: "status"
+    at: "2026-05-23T15:46:17.404Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4098 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T15:41:11.568Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-23T15:46:17.413Z"
+doc_updated_by: "INTEGRATOR"
 description: "Restructure the public documentation around user-facing journeys and agent-facing context usage, add a dedicated Context section with mode guidance, simplify docs site verification, and add a browser-level smoke check that catches broken Docusaurus client navigation."
 sections:
   Summary: |-
