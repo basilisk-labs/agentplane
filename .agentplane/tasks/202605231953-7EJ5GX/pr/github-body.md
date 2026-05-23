@@ -19,12 +19,9 @@ Update AgentPlane prompt/bootstrap surfaces so agents use task active, task brie
 - Note:
 
 ```text
-Verified prompt/bootstrap cognitive-load sync. Commands: bunx vitest run
-packages/agentplane/src/cli/bootstrap-doc-build-freshness.test.ts
-packages/agentplane/src/cli/prompts.test.ts
-packages/agentplane/src/runner/context/base-prompts.test.ts => pass (3 files, 23 tests); node
-.agentplane/policy/check-routing.mjs => pass; ap doctor => pass with pre-existing branch_pr
-normalization warnings unrelated to this task.
+Hosted checks for PR #4116 are green: Analyze actions/javascript-typescript, CodeQL, docs, plan,
+test-windows, verify-cli-critical, verify-contract, verify-coverage, verify-static, verify-unit,
+verify-workflow, and PR verification passed. Local targeted checks already recorded by UPDATER.
 ```
 - Canonical workflow state lives in the task README.
 

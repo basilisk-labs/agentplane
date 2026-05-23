@@ -4,7 +4,7 @@ title: "Sync agent prompt guidance with compact context commands"
 status: "DOING"
 priority: "med"
 owner: "UPDATER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-23T20:02:34.883Z"
-  updated_by: "UPDATER"
-  note: "Verified prompt/bootstrap cognitive-load sync. Commands: bunx vitest run packages/agentplane/src/cli/bootstrap-doc-build-freshness.test.ts packages/agentplane/src/cli/prompts.test.ts packages/agentplane/src/runner/context/base-prompts.test.ts => pass (3 files, 23 tests); node .agentplane/policy/check-routing.mjs => pass; ap doctor => pass with pre-existing branch_pr normalization warnings unrelated to this task."
+  updated_at: "2026-05-23T20:08:40.876Z"
+  updated_by: "EVALUATOR"
+  note: "Hosted checks for PR #4116 are green: Analyze actions/javascript-typescript, CodeQL, docs, plan, test-windows, verify-cli-critical, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow, and PR verification passed. Local targeted checks already recorded by UPDATER."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-23T20:08:40.876Z"
+  updated_by: "EVALUATOR"
+  note: "Hosted checks for PR #4116 are green: Analyze actions/javascript-typescript, CodeQL, docs, plan, test-windows, verify-cli-critical, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow, and PR verification passed. Local targeted checks already recorded by UPDATER."
+  evaluated_sha: "a242947e1976c964ad1b17a511e2fd4d3f6cb2cd"
+  blueprint_digest: "8cbc007810710a3cdebc633257d104f0a12728e3a80230bf6821a7cf6a7d32af"
+  evidence_refs:
+    - ".agentplane/tasks/202605231953-7EJ5GX/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231953-7EJ5GX-prompt-context-commands/.agentplane/tasks/202605231953-7EJ5GX/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -43,8 +54,14 @@ events:
     author: "UPDATER"
     state: "ok"
     note: "Verified prompt/bootstrap cognitive-load sync. Commands: bunx vitest run packages/agentplane/src/cli/bootstrap-doc-build-freshness.test.ts packages/agentplane/src/cli/prompts.test.ts packages/agentplane/src/runner/context/base-prompts.test.ts => pass (3 files, 23 tests); node .agentplane/policy/check-routing.mjs => pass; ap doctor => pass with pre-existing branch_pr normalization warnings unrelated to this task."
+  -
+    type: "verify"
+    at: "2026-05-23T20:08:40.876Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Hosted checks for PR #4116 are green: Analyze actions/javascript-typescript, CodeQL, docs, plan, test-windows, verify-cli-critical, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow, and PR verification passed. Local targeted checks already recorded by UPDATER."
 doc_version: 3
-doc_updated_at: "2026-05-23T20:02:35.056Z"
+doc_updated_at: "2026-05-23T20:08:41.917Z"
 doc_updated_by: "UPDATER"
 description: "Update AgentPlane prompt/bootstrap surfaces so agents use task active, task brief, route next-action, and source-confidence guidance before manual branch_pr command assembly."
 sections:
@@ -74,6 +91,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T20:02:09.831Z, excerpt_hash=sha256:3a5de728f2d5f9acaf1aca7b2430855bb25d06fc4f206ab6b88300986e7775b7
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231953-7EJ5GX-prompt-context-commands/.agentplane/tasks/202605231953-7EJ5GX/blueprint/resolved-snapshot.json
+    - old_digest: 8cbc007810710a3cdebc633257d104f0a12728e3a80230bf6821a7cf6a7d32af
+    - current_digest: 8cbc007810710a3cdebc633257d104f0a12728e3a80230bf6821a7cf6a7d32af
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605231953-7EJ5GX
+
+    ### 2026-05-23T20:08:40.876Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Hosted checks for PR #4116 are green: Analyze actions/javascript-typescript, CodeQL, docs, plan, test-windows, verify-cli-critical, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow, and PR verification passed. Local targeted checks already recorded by UPDATER.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T20:02:35.056Z, excerpt_hash=sha256:3a5de728f2d5f9acaf1aca7b2430855bb25d06fc4f206ab6b88300986e7775b7
 
     Details:
 
@@ -130,6 +166,25 @@ Note: Verified prompt/bootstrap cognitive-load sync. Commands: bunx vitest run p
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T20:02:09.831Z, excerpt_hash=sha256:3a5de728f2d5f9acaf1aca7b2430855bb25d06fc4f206ab6b88300986e7775b7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231953-7EJ5GX-prompt-context-commands/.agentplane/tasks/202605231953-7EJ5GX/blueprint/resolved-snapshot.json
+- old_digest: 8cbc007810710a3cdebc633257d104f0a12728e3a80230bf6821a7cf6a7d32af
+- current_digest: 8cbc007810710a3cdebc633257d104f0a12728e3a80230bf6821a7cf6a7d32af
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605231953-7EJ5GX
+
+### 2026-05-23T20:08:40.876Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Hosted checks for PR #4116 are green: Analyze actions/javascript-typescript, CodeQL, docs, plan, test-windows, verify-cli-critical, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow, and PR verification passed. Local targeted checks already recorded by UPDATER.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T20:02:35.056Z, excerpt_hash=sha256:3a5de728f2d5f9acaf1aca7b2430855bb25d06fc4f206ab6b88300986e7775b7
 
 Details:
 
