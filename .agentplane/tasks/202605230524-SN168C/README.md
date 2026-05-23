@@ -1,10 +1,11 @@
 ---
 id: "202605230524-SN168C"
 title: "Refresh CLI help snapshot for active work commands"
-status: "DOING"
+result_summary: "Merged via PR #4075."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +34,16 @@ quality_review:
     - ".agentplane/tasks/202605230524-SN168C/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605230524-SN168C-refresh-help-snapshot/.agentplane/tasks/202605230524-SN168C/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "714f3f112bdf2c46fbb9dd44aa5b3ce96d06f5ab"
+  message: "Merge pull request #4075 from basilisk-labs/task/202605230524-SN168C/refresh-help-snapshot"
 comments:
   -
     author: "CODER"
     body: "Start: refresh stale CLI help snapshot found by release prepublish heavy."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4075 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -58,9 +64,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Hosted PR #4075 checks passed: CodeQL, docs, PR verification, Release-ready manifest, test-windows, verify-cli-critical, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow."
+  -
+    type: "status"
+    at: "2026-05-23T05:45:53.120Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4075 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T05:40:54.370Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T05:45:53.126Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update stale CLI help snapshot coverage after active work and task brief commands changed the registered help output. This unblocks release prepublish heavy validation for v0.6.7."
 sections:
   Summary: |-

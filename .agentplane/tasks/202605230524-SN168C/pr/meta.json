@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T05:45:17Z",
   "base": "main",
   "branch": "task/202605230524-SN168C/refresh-help-snapshot",
   "created_at": "2026-05-23T05:25:16.141Z",
   "diffstat_sha256": "sha256:6f16b6bd9f6ff3941dfa76a0e26a1c6a3270e540c7eb66c6b2a809b5a90d10cf",
   "last_verified_at": "2026-05-23T05:40:54.342Z",
   "last_verified_diffstat_sha256": "sha256:6f16b6bd9f6ff3941dfa76a0e26a1c6a3270e540c7eb66c6b2a809b5a90d10cf",
+  "merge_commit": "714f3f112bdf2c46fbb9dd44aa5b3ce96d06f5ab",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T05:45:17Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605230524-SN168C",
-  "updated_at": "2026-05-23T05:25:16.141Z",
+  "updated_at": "2026-05-23T05:45:17Z",
   "verify": {
     "status": "pass"
   }
