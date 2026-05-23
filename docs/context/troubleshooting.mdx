@@ -1,0 +1,43 @@
+---
+title: "Context troubleshooting"
+description: "Fix common Agentplane context setup, search, ingestion, and review problems."
+---
+
+# Context troubleshooting
+
+## Search finds nothing
+
+Run:
+
+```bash
+agentplane context check
+agentplane context search "<known term>" --scope all
+```
+
+If source files were added recently, reindex or finish the context learning task that owns them.
+
+## The agent created duplicate pages
+
+Search for both names, choose the canonical page, move useful sourced claims there, and preserve the
+other wording as an alias or open question.
+
+## Maximum assimilation is too large
+
+Split the source set into batches. Keep the same topology and glossary unless the next source batch
+proves the model is wrong.
+
+## A source contains private material
+
+Do not copy it into public wiki pages or task summaries. Record redaction in the coverage report and
+keep only safe metadata.
+
+## Context feels stale
+
+Use a fresh learning task from changed files or completed tasks:
+
+```bash
+agentplane context learn changes
+agentplane context learn tasks --tag <tag> --limit 20 --dry-run
+```
+
+Review the generated task before promotion.

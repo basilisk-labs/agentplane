@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605231457-ARR2RR/docs-ia-context-navigation",
+  "created_at": "2026-05-23T14:57:40.263Z",
+  "diffstat_sha256": "sha256:4bb7970b7300bee5ef5547c410a3ba284c875961c2078b60f6256ec1b4b57661",
+  "last_verified_at": "2026-05-23T15:41:11.552Z",
+  "last_verified_diffstat_sha256": "sha256:4bb7970b7300bee5ef5547c410a3ba284c875961c2078b60f6256ec1b4b57661",
+  "schema_version": 1,
+  "task_id": "202605231457-ARR2RR",
+  "updated_at": "2026-05-23T14:57:40.263Z",
+  "verify": {
+    "status": "pass"
+  }
+}

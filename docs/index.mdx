@@ -9,27 +9,33 @@ Agentplane is a CLI-first operational workflow and observability layer for AI ag
 agent work inspectable through local workflows, traces, context, recipes, artifacts, and Git-native
 evidence.
 
-## Start in order
+## Choose your path
 
-1. [Quickstart](start/quickstart) - install, init, run, and inspect the first trace.
-2. [What Agentplane writes](start/files-written) - understand the repo-local artifacts.
-3. [Agent Change Records](reference/acr) - understand evidence around AI-authored code.
-4. [Task Observations](reference/task-observations) - capture agent-discovered gaps and follow-ups.
-5. [Workflow guides](workflow-guides) - use Agentplane with Claude Code, Codex, Cursor, or Aider.
+| Goal                                              | Start with                                    |
+| ------------------------------------------------- | --------------------------------------------- |
+| Try Agentplane locally                            | [Quickstart](start/quickstart)                |
+| Understand what gets written to the repo          | [What Agentplane writes](start/files-written) |
+| Give an agent durable project knowledge           | [Context](context)                            |
+| Choose the context mode for a project             | [Context modes](context/modes)                |
+| Hand work to Claude Code, Codex, Cursor, or Aider | [Workflow guides](workflow-guides)            |
+| Review AI-authored code in Git                    | [Agent Change Records](reference/acr)         |
+| Reuse task lessons and workflow recipes           | [Recipes](recipes)                            |
 
-## Most common jobs
+## Documentation layers
 
-- I want to try Agentplane locally -> [Quickstart](start/quickstart)
-- I want to review AI-authored code -> [Agent Change Records](reference/acr)
-- I want to inspect a run -> [Traces](concepts/traces)
-- I want reusable agent behavior -> [Recipes](recipes)
-- I want my agent to use repo knowledge -> [Context engineering](concepts/context-engineering)
-- I want to compare Agentplane -> [Compare](compare)
+- **Start**: install, initialize, and inspect the first artifacts.
+- **Context**: maintain project knowledge that humans can review and agents can reuse.
+- **Agent workflows**: use Agentplane with coding agents and CI.
+- **Review and evidence**: inspect traces, Agent Change Records, and task observations.
+- **Reference**: command, workflow file, trace, evidence, and schema details.
+- **Help**: troubleshooting and recovery.
 
 ## Core references
 
 - [Overview](user/overview)
 - [Setup](user/setup)
+- [Context quickstart](context/quickstart)
+- [Agent guide to project context](context/agent-guide)
 - [CLI reference](reference/cli)
 - [Workflow file reference](reference/workflow-file)
 - [Trace schema](reference/trace-schema)

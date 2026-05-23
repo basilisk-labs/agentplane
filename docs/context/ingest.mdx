@@ -1,0 +1,52 @@
+---
+title: "Add documents to context"
+description: "Learn from files, changed context sources, and completed tasks without creating duplicate knowledge."
+---
+
+# Add documents to context
+
+Use context learning when source material should become reusable project knowledge.
+
+## Learn from files
+
+```bash
+agentplane context learn files ./notes.md
+agentplane context learn files ./docs/specs
+```
+
+This creates a `CURATOR` task. The agent should read the source set, search existing context, and
+write sourced updates.
+
+## Learn from changed context sources
+
+```bash
+agentplane context learn changes
+```
+
+Use this after editing `context/**` by hand.
+
+## Learn from completed tasks
+
+```bash
+agentplane context learn tasks --tag release --limit 20 --dry-run
+agentplane context learn tasks --tag branch_pr --batch-size 25
+```
+
+This turns completed task history into extraction tasks. It is useful when repeated fixes, release
+rules, or workflow lessons should become durable context.
+
+## Agent write order
+
+1. Lock the source set and hashes.
+2. Search existing wiki, facts, graph, and glossary.
+3. Reuse canonical names and record source-local aliases.
+4. Write wiki pages or sections only where they improve reuse.
+5. Add fact and graph rows for claims and relationships that should be machine-readable.
+6. Reindex and run checks.
+7. Record coverage, conflicts, and review notes.
+
+## Avoid duplicates
+
+If a source mentions something that probably already exists, update the existing page or section.
+Create a new page only when the concept, entity, decision, risk, workflow, or module is likely to be
+reused independently.

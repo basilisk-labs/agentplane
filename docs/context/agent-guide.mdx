@@ -1,0 +1,64 @@
+---
+title: "Agent guide to project context"
+description: "How coding agents should search, update, verify, and cite Agentplane context."
+---
+
+# Agent guide to project context
+
+Use this page when an agent needs project knowledge before editing code or docs.
+
+## Before editing
+
+```bash
+agentplane context search "<task topic>"
+agentplane context check
+```
+
+Read matching wiki pages and source refs before creating new terms, pages, facts, or graph edges.
+
+## When writing context
+
+- Keep claims source-backed.
+- Prefer updating canonical pages over creating duplicates.
+- Record aliases when source wording differs from the canonical term.
+- Keep ambiguous identities as conflicts or open questions.
+- Use Markdown links for source refs and wiki links where they help later readers.
+- Do not copy secrets or private credentials into context.
+
+## Page granularity
+
+Create a separate page when the item is reusable:
+
+- concept;
+- entity;
+- decision;
+- requirement;
+- risk;
+- workflow;
+- module;
+- policy.
+
+Keep smaller material under headings inside a broader page.
+
+## Verification
+
+Run the checks declared by the task. For context-bearing tasks, the usual minimum is:
+
+```bash
+agentplane context check
+agentplane context search "<known new term>"
+agentplane task verify-show <task-id>
+```
+
+If the task changed wiki pages, facts, graph rows, or provenance, record what changed and why in the
+task verification note.
+
+## Finish criteria
+
+Context work is done only when:
+
+- source set is named;
+- new or changed claims have source refs;
+- duplicate concepts were checked;
+- generated projection was refreshed when required;
+- reviewer can see coverage, conflicts, omissions, and follow-ups.

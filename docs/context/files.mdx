@@ -1,0 +1,50 @@
+---
+title: "What context writes"
+description: "Understand Agentplane context source files, generated projections, and task evidence."
+---
+
+# What context writes
+
+Agentplane context separates editable knowledge from generated projections.
+
+## Editable source layer
+
+```text
+context/
+|-- raw/              source material you provide
+|-- wiki/             human-readable project knowledge
+|-- facts/            structured claims as JSONL
+|-- graph/            entities and relationships as JSONL
+`-- capabilities/     reusable agent capability notes
+```
+
+These files can be reviewed in Git. Treat them as the source of truth for durable context.
+
+## Generated layer
+
+```text
+.agentplane/context/derived/
+.agentplane/cache.sqlite
+```
+
+Generated artifacts and cache tables are rebuildable. They make search fast, but they are not the
+source of truth.
+
+## Task evidence
+
+Context learning runs through normal Agentplane tasks:
+
+```text
+.agentplane/tasks/<task-id>/
+|-- README.md
+|-- acr.json
+`-- runs/
+```
+
+Task evidence explains what source set was used, which wiki/fact/graph outputs changed, and which
+checks passed.
+
+## Review rule
+
+Review source and knowledge files first. Treat generated projections as verification output unless a
+task explicitly changes projection behavior.

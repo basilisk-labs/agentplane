@@ -1,0 +1,61 @@
+---
+title: "Context quickstart"
+description: "Initialize Agentplane context, add a source, search it, and hand it to an agent."
+---
+
+# Context quickstart
+
+This path creates a small, reviewable context layer for a repository.
+
+## Initialize context
+
+```bash
+agentplane context init
+agentplane context check
+```
+
+`context init` creates the editable context workspace and the root wiki contract. In an empty
+directory it can bootstrap an Agentplane project first. In a non-empty directory that is not already
+an Agentplane project, run `agentplane init` explicitly before context setup.
+
+## Add the first source
+
+Use explicit files when you know what should become reusable knowledge:
+
+```bash
+agentplane context learn files ./notes.md
+```
+
+Use changed context files when you edited `context/**` directly:
+
+```bash
+agentplane context learn changes
+```
+
+Both commands create a normal Agentplane task for a `CURATOR` agent. The agent reads the source,
+searches existing context, writes sourced wiki/fact/graph updates, and records verification.
+
+## Search before handing off work
+
+```bash
+agentplane context search "release checklist"
+agentplane context show context/wiki/release.md#section=publish-gate
+```
+
+Agents should search before creating new pages or terms. If a concept already exists, update the
+canonical page or section instead of creating a duplicate.
+
+## Give this to an agent
+
+Send the agent to [Agent guide](agent-guide) and include the task goal. The minimum instruction is:
+
+```text
+Search Agentplane context first, reuse canonical wiki terms, keep every new claim source-backed,
+run context checks, and record verification before finishing.
+```
+
+## Next
+
+- Choose [adaptive or maximum-assimilation](modes).
+- Learn [what files context writes](files).
+- Review [context changes before merging](review).

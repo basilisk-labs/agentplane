@@ -57,7 +57,8 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain(
       "!(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&",
     );
-    expect(workflow).toContain("github.event_name == 'pull_request' ||");
+    expect(workflow).toContain("github.event_name == 'pull_request' &&");
+    expect(workflow).toContain("startsWith(github.head_ref, 'release/')");
     expect(workflow).toContain("github.event_name == 'push' &&");
     expect(workflow).toContain("github.ref == 'refs/heads/main'");
     expect(workflow).toContain("needs.changes.outputs.core == 'true' &&");
