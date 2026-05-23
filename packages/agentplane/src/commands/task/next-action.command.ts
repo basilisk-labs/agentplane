@@ -6,6 +6,7 @@ import { buildTaskRouteDecision } from "../shared/route-decision.js";
 export type TaskNextActionParsed = {
   taskId: string;
   explain: boolean;
+  remote: boolean;
   json: boolean;
 };
 
@@ -22,6 +23,12 @@ export const taskNextActionSpec: CommandSpec<TaskNextActionParsed> = {
       description:
         "Include route context, approval policy, blockers, and ambiguity resolution hints.",
     },
+    {
+      kind: "boolean",
+      name: "remote",
+      default: false,
+      description: "Include hosted PR/check/review state using configured remote tools.",
+    },
     { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
   ],
   examples: [
@@ -33,6 +40,7 @@ export const taskNextActionSpec: CommandSpec<TaskNextActionParsed> = {
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     explain: raw.opts.explain === true,
+    remote: raw.opts.remote === true,
     json: raw.opts.json === true,
   }),
 };
@@ -42,6 +50,7 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
     const decision = await buildTaskRouteDecision({
       ctx: await getCtx("task next-action"),
       cwd: ctx.cwd,
+      includeRemote: parsed.remote,
       rootOverride: ctx.rootOverride ?? null,
       taskId: parsed.taskId,
     });
@@ -51,6 +60,12 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
         task: decision.task,
         next_action: decision.nextAction,
         blockers: decision.blockers,
+        source_confidence: {
+          next_action: decision.sourceConfidence.next_action,
+          blockers: decision.sourceConfidence.blockers,
+          route: decision.sourceConfidence.route,
+          remote: decision.sourceConfidence.remote,
+        },
       });
       return 0;
     }

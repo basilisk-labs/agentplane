@@ -6,6 +6,7 @@ import { buildTaskRouteDecision } from "../shared/route-decision.js";
 export type TaskStatusParsed = {
   taskId: string;
   route: boolean;
+  remote: boolean;
   json: boolean;
 };
 
@@ -20,6 +21,12 @@ export const taskStatusSpec: CommandSpec<TaskStatusParsed> = {
       name: "route",
       default: false,
       description: "Include route blockers, next action, and repair-plan hints.",
+    },
+    {
+      kind: "boolean",
+      name: "remote",
+      default: false,
+      description: "Include hosted PR/check/review state using configured remote tools.",
     },
     { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
   ],
@@ -36,6 +43,7 @@ export const taskStatusSpec: CommandSpec<TaskStatusParsed> = {
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     route: raw.opts.route === true,
+    remote: raw.opts.remote === true,
     json: raw.opts.json === true,
   }),
 };
@@ -46,12 +54,18 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
     const decision = await buildTaskRouteDecision({
       ctx: commandCtx,
       cwd: ctx.cwd,
+      includeRemote: parsed.remote,
       rootOverride: ctx.rootOverride ?? null,
       taskId: parsed.taskId,
     });
     const output = createCliEmitter();
     if (parsed.json) {
-      output.json(parsed.route ? decision : decision.task);
+      if (parsed.route) {
+        const { sourceConfidence, ...routeDecision } = decision;
+        output.json({ ...routeDecision, source_confidence: sourceConfidence });
+      } else {
+        output.json(decision.task);
+      }
       return 0;
     }
     const entries = [

@@ -704,6 +704,7 @@ agentplane task next-action <task-id> [options]
 Options:
 
 - `--explain`: Include route context, approval policy, blockers, and ambiguity resolution hints. (default=false)
+- `--remote`: Include hosted PR/check/review state using configured remote tools. (default=false)
 - `--json`: Emit JSON. (default=false)
 
 Examples:
@@ -858,6 +859,7 @@ agentplane task status <task-id> [options]
 Options:
 
 - `--route`: Include route blockers, next action, and repair-plan hints. (default=false)
+- `--remote`: Include hosted PR/check/review state using configured remote tools. (default=false)
 - `--json`: Emit JSON. (default=false)
 
 Examples:
