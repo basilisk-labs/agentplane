@@ -26,8 +26,9 @@ describe("Task hosted-close workflow contract", () => {
     expect(workflow).toContain('"repos/${{ github.repository }}/check-runs"');
     expect(workflow).toContain('-f name="PR verification"');
     expect(workflow).toContain('-f head_sha="$closure_sha"');
-    expect(workflow).toContain('if gh pr merge --merge --delete-branch "$pr_url"; then');
-    expect(workflow).toContain("gh pr merge --auto --merge --delete-branch");
+    expect(workflow).toContain('if gh pr merge --rebase --delete-branch "$pr_url"; then');
+    expect(workflow).toContain("gh pr merge --auto --rebase --delete-branch");
+    expect(workflow).not.toContain("gh pr merge --merge");
     expect(workflow).not.toContain("gh pr merge --squash");
     expect(workflow).toContain(
       "Hosted closure PR created but neither direct merge nor auto-merge could be enabled",

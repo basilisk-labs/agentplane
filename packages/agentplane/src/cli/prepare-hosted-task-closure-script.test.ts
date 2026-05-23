@@ -98,6 +98,31 @@ describe("prepare-hosted-task-closure script", () => {
     expect(parsed.pr_body).toContain("## Scope");
   });
 
+  it("does not duplicate the task id marker from source PR titles", async () => {
+    const root = await makeTempRoot();
+    const eventPath = await writeEventFixture(root, {
+      pull_request: {
+        merged: true,
+        number: 4106,
+        title:
+          "🚧 WJT2KR task: Avoid extra branch_pr artifact commit on PR open [202605231744-WJT2KR]",
+        merge_commit_sha: "1234567890abcdef1234567890abcdef12345678",
+        head: {
+          ref: "task/202605231744-WJT2KR/pr-open-amend-artifacts",
+          sha: "abcdef1234567890abcdef1234567890abcdef12",
+        },
+        base: { ref: "main" },
+      },
+    });
+
+    const result = await runScript(["--event-json", eventPath]);
+    expect(result.exitCode).toBe(0);
+    const parsed = JSON.parse(result.stdout) as { pr_title?: string };
+    expect(parsed.pr_title).toBe(
+      "🧩 WJT2KR task-close: Avoid extra branch_pr artifact commit on PR open [202605231744-WJT2KR]",
+    );
+  });
+
   it("returns a no-op payload for non-task PR branches", async () => {
     const root = await makeTempRoot();
     const eventPath = await writeEventFixture(root, {

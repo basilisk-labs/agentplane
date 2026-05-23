@@ -243,7 +243,12 @@ function splitVerificationText(value: string): string[] {
     .replaceAll(/^Verified:\s*/giu, "")
     .replaceAll(/^Verify:\s*/giu, "")
     .trim();
-  const colon = /\bpassed:\s*(.+)$/iu.exec(withoutPrefix)?.[1];
+  const commandMatches = [...withoutPrefix.matchAll(/\bCommand:\s*(.+?)\s*;\s*Result:\s*pass\b/giu)]
+    .map((match) => match[1]?.trim() ?? "")
+    .filter(Boolean);
+  if (commandMatches.length > 0) return commandMatches;
+
+  const colon = /\b(?:passed|checks passed|commands passed):\s*(.+)$/iu.exec(withoutPrefix)?.[1];
   const source = colon ?? withoutPrefix;
   return source
     .split(/[;,]/u)
@@ -252,7 +257,14 @@ function splitVerificationText(value: string): string[] {
 }
 
 function normalizeCheckLabel(value: string): string {
-  const text = value.trim().replaceAll(/\s+/g, " ");
+  const text = value
+    .trim()
+    .replaceAll(/\s+/g, " ")
+    .replaceAll(/\bResult:\s*pass(?:ed)?\.?/giu, "")
+    .replaceAll(/\bEvidence:\s*/giu, "")
+    .replaceAll(/\bScope:\s*[^.]+\.?/giu, "")
+    .trim()
+    .replaceAll(/\s+/g, " ");
   const lower = text.toLowerCase();
   if (lower === "typecheck" || lower === "type check") return "Typecheck";
   if (lower === "lint") return "Lint";

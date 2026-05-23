@@ -348,7 +348,7 @@ describe("pr/integrate/cmd", () => {
         "pr",
         "merge",
         "--auto",
-        "--merge",
+        "--rebase",
         "--delete-branch",
         "https://github.com/example/repo/pull/338",
       ],
@@ -445,8 +445,9 @@ describe("pr/integrate/cmd", () => {
       expect(caught).toMatchObject({ code: "E_HANDOFF" });
       expect(fetchMock).toHaveBeenCalledTimes(2);
       expect(JSON.stringify(fetchMock.mock.calls[1]?.[1])).toContain("enablePullRequestAutoMerge");
+      expect(JSON.stringify(fetchMock.mock.calls[1]?.[1])).toContain("REBASE");
       expect(String((caught as Error).message)).toContain(
-        "GitHub PR merge queued through GitHub API auto-merge",
+        "GitHub PR rebase merge queued through GitHub API auto-merge",
       );
       expect(mocks.runSquashMerge).not.toHaveBeenCalled();
       expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
@@ -738,7 +739,7 @@ describe("pr/integrate/cmd", () => {
         "pr",
         "merge",
         "--auto",
-        "--merge",
+        "--rebase",
         "--delete-branch",
         "https://github.com/example/repo/pull/339",
       ],

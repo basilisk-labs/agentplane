@@ -147,6 +147,14 @@ function extractTaskSuffix(taskId) {
 function titleFromSourcePullTitle(value, taskId) {
   const title = normalizeOneLine(value, 140);
   if (!title) return "Merged task";
+  const stripMarkers = (input) =>
+    normalizeOneLine(
+      String(input ?? "")
+        .replaceAll(`[${taskId}]`, "")
+        .replaceAll(`(${taskId})`, "")
+        .trim(),
+      96,
+    );
   const patterns = [
     /^task:\s*(.+?)\s*\[[^\]]+\]$/iu,
     /^[^:]+:\s*(.+?)\s*\([A-Z0-9]{4,8}\)$/iu,
@@ -154,9 +162,9 @@ function titleFromSourcePullTitle(value, taskId) {
   ];
   for (const pattern of patterns) {
     const match = pattern.exec(title);
-    if (match?.[1]) return normalizeOneLine(match[1], 96);
+    if (match?.[1]) return stripMarkers(match[1]);
   }
-  return normalizeOneLine(title.replace(`[${taskId}]`, "").replace(`(${taskId})`, ""), 96);
+  return stripMarkers(title);
 }
 
 function buildClosureMetadata(payload, prefix, closePrefix = "task-close") {

@@ -131,8 +131,10 @@ bun run workflow:wait-remote-checks -- --timeout-ms 600000
 ```
 
 Hosted checks are the gate. Do not integrate or finish on base branch until `bun run workflow:wait-remote-checks` returns green.
-`agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass
-`--merge-strategy squash` only when compacting history is intentional.
+Local `agentplane integrate` defaults to `merge` so task branch commits stay in base history. On
+protected bases, the GitHub PR finalization path prefers rebase merge so task commits remain visible
+without an extra GitHub merge commit. Pass `--merge-strategy squash` only when compacting history is
+intentional.
 
 Hosted merge shortcut:
 

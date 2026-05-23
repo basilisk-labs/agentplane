@@ -93,6 +93,44 @@ async function runGhCliMerge(opts: {
 }): Promise<ProtectedBaseGithubMergeResult> {
   const cli = await checkGithubCli(opts.gitRoot);
   if (!cli.ok) throw new Error(cli.reason);
+  let autoRebaseErr: unknown = null;
+  try {
+    await execFileAsync(
+      "gh",
+      ["pr", "merge", "--auto", "--rebase", "--delete-branch", opts.prTarget],
+      {
+        cwd: opts.gitRoot,
+        env: ghEnv(),
+      },
+    );
+    return {
+      status: "auto_merge_enabled",
+      detail: `GitHub PR merge queued with gh --auto --rebase: ${opts.prTarget}`,
+    };
+  } catch (autoErr) {
+    autoRebaseErr = autoErr;
+  }
+
+  let directRebaseErr: unknown = null;
+  try {
+    await execFileAsync("gh", ["pr", "merge", "--rebase", "--delete-branch", opts.prTarget], {
+      cwd: opts.gitRoot,
+      env: ghEnv(),
+    });
+    return {
+      status: "merged",
+      detail: `GitHub PR merged with gh --rebase: ${opts.prTarget}`,
+    };
+  } catch (directErr) {
+    if (isAlreadyMergedGithubPrFailure(directErr)) {
+      return {
+        status: "merged",
+        detail: `GitHub PR was already merged with gh --rebase: ${opts.prTarget}`,
+      };
+    }
+    directRebaseErr = directErr;
+  }
+
   try {
     await execFileAsync(
       "gh",
@@ -104,9 +142,9 @@ async function runGhCliMerge(opts: {
     );
     return {
       status: "auto_merge_enabled",
-      detail: `GitHub PR merge queued with gh --auto --merge: ${opts.prTarget}`,
+      detail: `GitHub PR merge queued with gh --auto --merge fallback: ${opts.prTarget}`,
     };
-  } catch (autoErr) {
+  } catch (autoMergeErr) {
     try {
       await execFileAsync("gh", ["pr", "merge", "--merge", "--delete-branch", opts.prTarget], {
         cwd: opts.gitRoot,
@@ -114,17 +152,17 @@ async function runGhCliMerge(opts: {
       });
       return {
         status: "merged",
-        detail: `GitHub PR merged with gh --merge: ${opts.prTarget}`,
+        detail: `GitHub PR merged with gh --merge fallback: ${opts.prTarget}`,
       };
     } catch (directErr) {
       if (isAlreadyMergedGithubPrFailure(directErr)) {
         return {
           status: "merged",
-          detail: `GitHub PR was already merged with gh --merge: ${opts.prTarget}`,
+          detail: `GitHub PR was already merged with gh --merge fallback: ${opts.prTarget}`,
         };
       }
       throw new Error(
-        `gh auto=${summarizeGithubFailure(autoErr)}; gh direct=${summarizeGithubFailure(directErr)}`,
+        `gh auto_rebase=${summarizeGithubFailure(autoRebaseErr)}; gh direct_rebase=${summarizeGithubFailure(directRebaseErr)}; gh auto_merge=${summarizeGithubFailure(autoMergeErr)}; gh direct_merge=${summarizeGithubFailure(directErr)}`,
       );
     }
   }
@@ -217,6 +255,8 @@ async function runGithubApiMerge(opts: {
   }
   const pr = await resolveGithubPrRef(opts);
   const ownerRepo = `${pr.owner}/${pr.repo}`;
+  let pullRequestId = "";
+  let autoRebaseErr: unknown = null;
   try {
     const data = await githubGraphql<{
       repository?: { pullRequest?: { id?: string } | null } | null;
@@ -226,8 +266,39 @@ async function runGithubApiMerge(opts: {
         "query($owner:String!,$repo:String!,$number:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$number){id}}}",
       variables: { owner: pr.owner, repo: pr.repo, number: pr.number },
     });
-    const pullRequestId = data.repository?.pullRequest?.id;
+    pullRequestId = data.repository?.pullRequest?.id ?? "";
     if (!pullRequestId) throw new Error(`GitHub PR #${pr.number} was not found in ${ownerRepo}`);
+    await githubGraphql({
+      token,
+      query:
+        "mutation($pullRequestId:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$pullRequestId,mergeMethod:REBASE}){pullRequest{number}}}",
+      variables: { pullRequestId },
+    });
+    return {
+      status: "auto_merge_enabled",
+      detail: `GitHub PR rebase merge queued through GitHub API auto-merge: ${ownerRepo}#${pr.number}`,
+    };
+  } catch (autoErr) {
+    autoRebaseErr = autoErr;
+  }
+
+  let directRebaseErr: unknown = null;
+  try {
+    await githubRestJson({
+      token,
+      method: "PUT",
+      path: `/repos/${encodeURIComponent(pr.owner)}/${encodeURIComponent(pr.repo)}/pulls/${pr.number}/merge`,
+      body: { merge_method: "rebase" },
+    });
+    return {
+      status: "merged",
+      detail: `GitHub PR rebase-merged through GitHub API: ${ownerRepo}#${pr.number}`,
+    };
+  } catch (directErr) {
+    directRebaseErr = directErr;
+  }
+
+  try {
     await githubGraphql({
       token,
       query:
@@ -236,9 +307,9 @@ async function runGithubApiMerge(opts: {
     });
     return {
       status: "auto_merge_enabled",
-      detail: `GitHub PR merge queued through GitHub API auto-merge: ${ownerRepo}#${pr.number}`,
+      detail: `GitHub PR merge queued through GitHub API auto-merge fallback: ${ownerRepo}#${pr.number}`,
     };
-  } catch (autoErr) {
+  } catch (autoMergeErr) {
     try {
       await githubRestJson({
         token,
@@ -248,11 +319,11 @@ async function runGithubApiMerge(opts: {
       });
       return {
         status: "merged",
-        detail: `GitHub PR merged through GitHub API: ${ownerRepo}#${pr.number}`,
+        detail: `GitHub PR merged through GitHub API fallback: ${ownerRepo}#${pr.number}`,
       };
     } catch (directErr) {
       throw new Error(
-        `api auto=${summarizeGithubFailure(autoErr)}; api direct=${summarizeGithubFailure(directErr)}`,
+        `api auto_rebase=${summarizeGithubFailure(autoRebaseErr)}; api direct_rebase=${summarizeGithubFailure(directRebaseErr)}; api auto_merge=${summarizeGithubFailure(autoMergeErr)}; api direct_merge=${summarizeGithubFailure(directErr)}`,
       );
     }
   }

@@ -34,7 +34,7 @@ describe("command-guide", () => {
       "agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000",
     );
     expect(text).toContain("primary integration route is the task GitHub PR");
-    expect(text).toContain("gh pr merge --auto --merge");
+    expect(text).toContain("gh pr merge --auto --rebase");
     expect(text).not.toContain("--merge-strategy squash --run-verify");
   });
 
