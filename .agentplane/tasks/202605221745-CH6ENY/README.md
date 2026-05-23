@@ -1,10 +1,11 @@
 ---
 id: "202605221745-CH6ENY"
 title: "Expose batch ownership in agent context"
-status: "DOING"
+result_summary: "Merged via PR #4071."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -33,11 +34,16 @@ verification:
   updated_by: "CODER"
   note: "Removed exported-only batch task state type after verify-static/knip flagged it; local knip, format, and batch tests pass."
   attempts: 0
-commit: null
+commit:
+  hash: "2dc6456c6fff980641e0dcd87cc631b5462ff0a1"
+  message: "Merge pull request #4071 from basilisk-labs/task/202605221745-CH6ENY/batch-ownership-context"
 comments:
   -
     author: "CODER"
     body: "Start: Implement batch ownership metadata in task route and brief output, with tests covering JSON fields and safe satellite next-action guidance."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4071 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed exported-only batch task state type after verify-static/knip flagged it; local knip, format, and batch tests pass."
+  -
+    type: "status"
+    at: "2026-05-23T04:22:57.802Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4071 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T04:16:09.709Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T04:22:57.810Z"
+doc_updated_by: "INTEGRATOR"
 description: "Expose primary batch task, included task ids, shared worktree branch, per-task verification state, and next owner action in route/brief output so agents do not confuse satellite tasks with integration owners."
 sections:
   Summary: |-
