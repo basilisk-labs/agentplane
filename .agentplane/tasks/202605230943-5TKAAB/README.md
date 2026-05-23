@@ -20,11 +20,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "ok"
+  updated_at: "2026-05-23T10:55:47.231Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.8."
 commit:
   hash: "da065aae65278348dc3e137e897e3b7f126f0865"
   message: "Merge pull request #4093 from basilisk-labs/task/202605230943-5TKAAB/release-v0-6-8"
@@ -61,8 +60,8 @@ events:
     to: "DONE"
     note: "Verified: PR #4093 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T10:48:32.232Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-23T10:55:47.231Z"
+doc_updated_by: "DEUS"
 description: "Prepare and publish the next patch release from current main after validating repository state, release notes, candidate PR, hosted publish, and npm/GitHub release evidence."
 sections:
   Summary: |-
@@ -81,6 +80,19 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.8.
+    - Details:
+      - release_sha: da065aae65278348dc3e137e897e3b7f126f0865
+      - version: 0.6.8
+      - tag: v0.6.8
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.8
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26330723587
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -114,6 +126,19 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+- State: ok
+- Note: Hosted publish confirmed for v0.6.8.
+- Details:
+  - release_sha: da065aae65278348dc3e137e897e3b7f126f0865
+  - version: 0.6.8
+  - tag: v0.6.8
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.8
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26330723587
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
