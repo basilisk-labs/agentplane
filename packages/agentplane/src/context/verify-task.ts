@@ -262,6 +262,24 @@ async function validateMaximumAssimilationDerivedConsistency(
   errors: string[],
 ): Promise<void> {
   if (context.mode !== "maximum_assimilation") return;
+  if (isProfileSwitchContextTask(context)) return;
+  const graphRoot = path.join(root, ".agentplane/context/derived/graph");
+  const entities = await loadJsonlRows(path.join(graphRoot, "entities.jsonl"));
+  const edges = await loadJsonlRows(path.join(graphRoot, "edges.jsonl"));
+  const provenance = await loadJsonlRows(path.join(graphRoot, "provenance_edges.jsonl"));
+  const facts = await loadJsonlRows(
+    path.join(root, ".agentplane/context/derived/facts/facts.jsonl"),
+  );
+  if (
+    entities.length === 0 ||
+    edges.length === 0 ||
+    provenance.length === 0 ||
+    facts.length === 0
+  ) {
+    errors.push(
+      "maximum-assimilation requires non-empty derived facts, graph entities, graph edges, and provenance before verification",
+    );
+  }
   const wikiRoot = path.join(root, "context/wiki");
   const wikiPages: string[] = [];
   async function walk(current: string): Promise<void> {
@@ -287,24 +305,6 @@ async function validateMaximumAssimilationDerivedConsistency(
     if (hasNonEmptyGraphRefs(await readText(page))) pagesWithGraphRefs += 1;
   }
   if (pagesWithGraphRefs === 0) return;
-
-  const graphRoot = path.join(root, ".agentplane/context/derived/graph");
-  const entities = await loadJsonlRows(path.join(graphRoot, "entities.jsonl"));
-  const edges = await loadJsonlRows(path.join(graphRoot, "edges.jsonl"));
-  const provenance = await loadJsonlRows(path.join(graphRoot, "provenance_edges.jsonl"));
-  const facts = await loadJsonlRows(
-    path.join(root, ".agentplane/context/derived/facts/facts.jsonl"),
-  );
-  if (
-    entities.length === 0 ||
-    edges.length === 0 ||
-    provenance.length === 0 ||
-    facts.length === 0
-  ) {
-    errors.push(
-      `maximum-assimilation wiki declares graph_refs in ${pagesWithGraphRefs} page(s), but derived graph/fact/provenance projections are incomplete`,
-    );
-  }
 }
 
 async function validateCapabilityArtifact(filePath: string, errors: string[]): Promise<void> {

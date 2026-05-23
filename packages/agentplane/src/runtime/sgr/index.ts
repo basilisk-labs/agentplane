@@ -4,6 +4,8 @@ export {
   validateContextExtractionSgrResult,
   validateEvaluatorSgrResult,
   type BlueprintRouteDecisionSgrResult,
+  type ContextExtractionItem,
   type ContextExtractionSgrResult,
+  type SgrSourceRef,
   type EvaluatorSgrResult,
 } from "./contracts.js";

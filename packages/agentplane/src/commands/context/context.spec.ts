@@ -478,6 +478,38 @@ export const contextGraphValidateSpec: CommandSpec<Record<string, never>> = {
   parse: () => ({}),
 };
 
+export const contextExtractionApplySpec: CommandSpec<{
+  file: string;
+  taskId: string;
+  dryRun: boolean;
+}> = {
+  id: ["context", "extraction", "apply"],
+  group: "Context",
+  summary: "Apply a validated context_extraction SGR result into derived JSONL artifacts.",
+  description:
+    "Materializes facts, graph entities, graph edges, and provenance rows from a context_extraction SGR JSON file. Use this before writing maximum-assimilation wiki articles.",
+  args: [{ name: "file", required: true, valueHint: "<sgr-json>" }],
+  options: [
+    {
+      kind: "string",
+      name: "task-id",
+      valueHint: "<task-id>",
+      description: "Override or attach the context task id to generated rows.",
+    },
+    {
+      kind: "boolean",
+      name: "dry-run",
+      default: false,
+      description: "Validate and summarize without writing derived artifacts.",
+    },
+  ],
+  parse: (raw) => ({
+    file: String(raw.args.file),
+    taskId: typeof raw.opts["task-id"] === "string" ? raw.opts["task-id"] : "",
+    dryRun: raw.opts["dry-run"] === true,
+  }),
+};
+
 export const contextGraphExportSpec: CommandSpec<{ format: "json" | "jsonl" | "csv" }> = {
   id: ["context", "graph", "export"],
   group: "Context",

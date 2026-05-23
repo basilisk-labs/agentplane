@@ -6,6 +6,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../shared/task-backend.js";
 import { cmdContextDoctor } from "./doctor.js";
+import { cmdContextExtractionApply } from "./extraction.js";
+import { cmdContextGraphValidate } from "./graph.js";
 import { cmdContextIngest } from "./ingest.js";
 import { cmdContextInit } from "./init.js";
 import { cmdContextReindex, readContextProjection } from "./reindex.js";
@@ -171,6 +173,109 @@ describe("context release readiness guards", () => {
     expect(first.title).toBe("context assimilation (explicit sources: first.md)");
     expect(second.title).toBe("context assimilation (explicit sources: second.md)");
     expect(first.title).not.toBe(second.title);
+  });
+
+  it("applies context_extraction SGR into non-empty derived facts and graph rows", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/extraction.json",
+      JSON.stringify(
+        {
+          schema_version: 1,
+          kind: "context_extraction",
+          task_id: "202605130501-CTXMAX",
+          reasoning: [
+            {
+              label: "entity-first",
+              summary: "Extract entities and relations before wiki synthesis.",
+            },
+          ],
+          source_refs: [{ path: "context/raw/research/source.md", lines: "1-6" }],
+          extracted_items: [
+            {
+              id: "entity.maximum-assimilation",
+              kind: "graph_entity",
+              summary: "Maximum assimilation is the canonical context workflow under test.",
+              source_refs: [{ path: "context/raw/research/source.md", lines: "1-2" }],
+              confidence: 0.9,
+              status: "accepted",
+              entity: {
+                id: "entity.maximum-assimilation",
+                kind: "concept",
+                label: "Maximum assimilation",
+                aliases: ["maximum-assimilation"],
+              },
+            },
+            {
+              id: "entity.derived-graph",
+              kind: "graph_entity",
+              summary: "Derived graph stores formal extraction rows.",
+              source_refs: [{ path: "context/raw/research/source.md", lines: "3-4" }],
+              confidence: 0.88,
+              status: "accepted",
+              entity: {
+                id: "entity.derived-graph",
+                kind: "concept",
+                label: "Derived graph",
+              },
+            },
+            {
+              id: "fact.maximum-assimilation.entity-first",
+              kind: "fact",
+              summary:
+                "Maximum assimilation requires formal entity and relation extraction before narrative wiki synthesis.",
+              source_refs: [{ path: "context/raw/research/source.md", lines: "1-6" }],
+              confidence: 0.92,
+              status: "accepted",
+            },
+            {
+              id: "edge.maximum-assimilation.produces.derived-graph",
+              kind: "graph_edge",
+              summary: "Maximum assimilation produces a derived graph layer.",
+              source_refs: [{ path: "context/raw/research/source.md", lines: "5-6" }],
+              confidence: 0.87,
+              status: "accepted",
+              edge: {
+                from: "entity.maximum-assimilation",
+                to: "entity.derived-graph",
+                relation: "produces",
+              },
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+    );
+
+    await cmdContextExtractionApply({
+      cwd: root,
+      parsed: { file: "context/extraction.json", taskId: "202605130501-CTXMAX", dryRun: false },
+    });
+    await cmdContextGraphValidate({ cwd: root, parsed: {} });
+
+    const facts = await readFile(
+      path.join(root, ".agentplane/context/derived/facts/facts.jsonl"),
+      "utf8",
+    );
+    const entities = await readFile(
+      path.join(root, ".agentplane/context/derived/graph/entities.jsonl"),
+      "utf8",
+    );
+    const edges = await readFile(
+      path.join(root, ".agentplane/context/derived/graph/edges.jsonl"),
+      "utf8",
+    );
+    const provenance = await readFile(
+      path.join(root, ".agentplane/context/derived/graph/provenance_edges.jsonl"),
+      "utf8",
+    );
+
+    expect(facts).toContain("fact.maximum-assimilation.entity-first");
+    expect(entities).toContain("entity.maximum-assimilation");
+    expect(edges).toContain("edge.maximum-assimilation.produces.derived-graph");
+    expect(provenance).toContain("context/raw/research/source.md#lines=1-6");
   });
 
   it("creates starter wiki structure on first context ingest with selected sources", async () => {

@@ -1,0 +1,5 @@
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |  2 +
+ packages/agentplane/src/commands/context/init.ts   |  5 +--
+ .../src/commands/context/release-readiness.test.ts | 44 +++++++++++++++++++++-
+ packages/agentplane/src/context/ingest-task.ts     | 19 +++++++++-
+ 4 files changed, 65 insertions(+), 5 deletions(-)
