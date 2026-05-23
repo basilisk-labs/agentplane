@@ -274,8 +274,17 @@ export async function writeTasksOrFallback(
 
 export async function listTaskSummariesMemo(
   ctx: CommandContext,
-  opts: { projectionStatus?: readonly string[] } = {},
+  opts: { projectionStatus?: readonly string[]; fallbackToCanonicalOnEmpty?: boolean } = {},
 ): Promise<TaskSummary[]> {
+  const filterByProjectionStatus = (summaries: TaskSummary[]): TaskSummary[] => {
+    if (!opts.projectionStatus || opts.projectionStatus.length === 0) return summaries;
+    const statuses = new Set(opts.projectionStatus.map((status) => status.trim().toUpperCase()));
+    return summaries.filter((summary) => statuses.has(String(summary.status).trim().toUpperCase()));
+  };
+  const canonicalSummaries = async (): Promise<TaskSummary[]> => {
+    const tasks = await ctx.taskBackend.listTasks();
+    return tasks.map((task) => toTaskSummary(task));
+  };
   if (
     opts.projectionStatus &&
     opts.projectionStatus.length > 0 &&
@@ -288,7 +297,9 @@ export async function listTaskSummariesMemo(
         message: `Backend ${ctx.taskBackend.id} advertises native projection reads but does not implement listProjectionTasks()`,
       });
     }
-    return await ctx.taskBackend.listProjectionTasks({ status: opts.projectionStatus });
+    const projected = await ctx.taskBackend.listProjectionTasks({ status: opts.projectionStatus });
+    if (projected.length > 0 || opts.fallbackToCanonicalOnEmpty !== true) return projected;
+    return filterByProjectionStatus(await canonicalSummaries());
   }
   ctx.memo.taskProjection ??= (async () => {
     if (ctx.taskBackend.capabilities?.projection_read_mode === "native") {
@@ -301,10 +312,9 @@ export async function listTaskSummariesMemo(
       }
       return await ctx.taskBackend.listProjectionTasks();
     }
-    const tasks = await ctx.taskBackend.listTasks();
-    return tasks.map((task) => toTaskSummary(task));
+    return await canonicalSummaries();
   })();
-  return await ctx.memo.taskProjection;
+  return filterByProjectionStatus(await ctx.memo.taskProjection);
 }
 
 export async function listTasksMemo(ctx: CommandContext): Promise<TaskData[]> {

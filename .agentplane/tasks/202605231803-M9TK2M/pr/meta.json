@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605231803-M9TK2M/fix-agent-context-load",
+  "created_at": "2026-05-23T18:12:14.991Z",
+  "diffstat_sha256": "sha256:bf28f1e209c96f22588e7578cf57a7675c94101222f27aaf5db49edff9a4dc4f",
+  "last_verified_at": "2026-05-23T19:28:04.610Z",
+  "last_verified_diffstat_sha256": "sha256:bf28f1e209c96f22588e7578cf57a7675c94101222f27aaf5db49edff9a4dc4f",
+  "schema_version": 1,
+  "task_id": "202605231803-M9TK2M",
+  "updated_at": "2026-05-23T18:12:14.991Z",
+  "verify": {
+    "status": "pass"
+  }
+}

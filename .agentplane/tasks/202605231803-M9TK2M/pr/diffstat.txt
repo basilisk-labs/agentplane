@@ -1,0 +1,9 @@
+ .../src/cli/run-cli.core.route-decision.test.ts    | 18 ++++++++--
+ .../src/commands/shared/route-decision.ts          |  5 +--
+ .../src/commands/shared/task-backend.test.ts       | 29 +++++++++++++++
+ .../agentplane/src/commands/shared/task-backend.ts | 20 ++++++++---
+ .../src/commands/shared/work-start-command.ts      | 27 ++++++++++++++
+ .../agentplane/src/commands/task/active.command.ts |  1 +
+ .../agentplane/src/commands/task/brief.command.ts  | 41 ++++++++++++++++++++--
+ packages/agentplane/src/commands/task/list.ts      |  5 ++-
+ 8 files changed, 133 insertions(+), 13 deletions(-)

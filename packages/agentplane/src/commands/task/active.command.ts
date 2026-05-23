@@ -237,6 +237,7 @@ async function buildActiveWorkItems(opts: {
     ctx: opts.ctx,
     tasks: await listTaskSummariesMemo(opts.ctx, {
       projectionStatus: projectionStatuses(opts.filters),
+      fallbackToCanonicalOnEmpty: true,
     }),
   });
   handleTaskListWarnings({ backend: opts.ctx.taskBackend, strictRead: opts.filters.strictRead });
