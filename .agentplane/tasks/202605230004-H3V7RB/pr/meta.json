@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T00:12:31Z",
   "base": "main",
   "branch": "task/202605230004-H3V7RB/pr-flow-status-knip-cleanup",
   "created_at": "2026-05-23T00:04:30.082Z",
   "diffstat_sha256": "sha256:017395c2d8d7b7b3c73cf76a4732df3b8069edd282177ddf26f38c50b4902ffe",
   "last_verified_at": "2026-05-23T00:07:04.967Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "bd57a99946d8dfad409f843d5ca410db7ab3d457",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T00:12:31Z",
   "pr_number": 4053,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4053",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605230004-H3V7RB",
-  "updated_at": "2026-05-23T00:07:48.479Z",
+  "updated_at": "2026-05-23T00:12:31Z",
   "verify": {
     "status": "pass"
   }
