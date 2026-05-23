@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T01:08:05Z",
   "base": "main",
   "branch": "task/202605230049-AFT9YW/hosted-close-pr-ci-route",
   "created_at": "2026-05-23T00:49:49.508Z",
   "diffstat_sha256": "sha256:4e6fd98cdc3a03729fe66c19406ab33cde59af99863eb88aa37413bfc7ce2dad",
   "last_verified_at": "2026-05-23T01:02:16.822Z",
   "last_verified_diffstat_sha256": "sha256:4e6fd98cdc3a03729fe66c19406ab33cde59af99863eb88aa37413bfc7ce2dad",
+  "merge_commit": "a1b5b819ffecffb68651a5fa808492bdae61dbba",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T01:08:05Z",
   "pr_number": 4058,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4058",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605230049-AFT9YW",
-  "updated_at": "2026-05-23T00:54:59.809Z",
+  "updated_at": "2026-05-23T01:08:05Z",
   "verify": {
     "status": "pass"
   }
