@@ -54,14 +54,26 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Context",
+      items: [
+        "context/index",
+        "context/quickstart",
+        "context/modes",
+        "context/files",
+        "context/ingest",
+        "context/agent-guide",
+        "context/review",
+        "context/troubleshooting",
+      ],
+    },
+    {
+      type: "category",
       label: "Core concepts",
       items: [
         "concepts/harness-engineering",
         "concepts/traces",
         "concepts/context-engineering",
-        "recipes/index",
-        "reference/acr",
-        "reference/evidence",
+        "concepts/agent-workflows",
       ],
     },
     {
@@ -87,6 +99,7 @@ const sidebars: SidebarsConfig = {
         "reference/evidence",
         "reference/task-observations",
         "reference/acr-schema",
+        "user/local-context",
       ],
     },
     {
@@ -95,6 +108,7 @@ const sidebars: SidebarsConfig = {
       items: [
         "examples/debug-agent-run-with-traces",
         "examples/export-traces",
+        "recipes/index",
         "recipes/tdd",
         "recipes/security-review",
         "recipes/docs-update",

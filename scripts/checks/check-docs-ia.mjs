@@ -8,6 +8,7 @@ const DOCS_INDEX_PATH = path.join(DOCS_DIR, "index.mdx");
 const SIDEBARS_PATH = path.join(ROOT, "website", "sidebars.ts");
 
 const NAV_DOC_ROOTS = new Set([
+  "context",
   "user",
   "workflow-guides",
   "recipes",
@@ -16,7 +17,7 @@ const NAV_DOC_ROOTS = new Set([
   "archive",
 ]);
 const INDEX_DOC_ROOTS = new Set([...NAV_DOC_ROOTS, "releases"]);
-const INDEX_ROUTE_ALIASES = new Set(["workflow-guides", "recipes", "releases"]);
+const INDEX_ROUTE_ALIASES = new Set(["context", "workflow-guides", "recipes", "releases"]);
 
 const staleReferenceRules = [
   {

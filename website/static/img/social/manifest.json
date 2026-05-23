@@ -165,6 +165,70 @@
       "svgSha256": "dd93fe6aa6d094c9602bb8e0b3b47f37f5645a5db4598ac0987acef4fcd2eaa1"
     },
     {
+      "route": "/docs/context/agent-guide",
+      "output": "static/img/social/docs/context/agent-guide.png",
+      "section": "Context",
+      "title": "Agent guide to project context",
+      "breadcrumb": "docs / context / agent-guide",
+      "svgSha256": "a31249872b00ccbcfefbe6fc3667960a1d3223454839ab6f6997c33ad49d4520"
+    },
+    {
+      "route": "/docs/context/files",
+      "output": "static/img/social/docs/context/files.png",
+      "section": "Context",
+      "title": "What context writes",
+      "breadcrumb": "docs / context / files",
+      "svgSha256": "36affe35c752ba518f1b4708a53e31cefb60b121bcc8d27d99bd681574b51793"
+    },
+    {
+      "route": "/docs/context",
+      "output": "static/img/social/docs/context.png",
+      "section": "Context",
+      "title": "Context",
+      "breadcrumb": "docs / context",
+      "svgSha256": "b4a8736df8d6fbe67b0f3d3755c27c21eb7f289c99da7ddb0603bce03b0ecb74"
+    },
+    {
+      "route": "/docs/context/ingest",
+      "output": "static/img/social/docs/context/ingest.png",
+      "section": "Context",
+      "title": "Add documents to context",
+      "breadcrumb": "docs / context / ingest",
+      "svgSha256": "93f53dd5919cc5911b985d4bafe785c5e7a249c7fb8598d9dfde03faa9c5f536"
+    },
+    {
+      "route": "/docs/context/modes",
+      "output": "static/img/social/docs/context/modes.png",
+      "section": "Context",
+      "title": "Choose a context mode",
+      "breadcrumb": "docs / context / modes",
+      "svgSha256": "1e780ceb16129ff3fa02d8e7f8a87aa68397f8707df9cab36c5462c96da90124"
+    },
+    {
+      "route": "/docs/context/quickstart",
+      "output": "static/img/social/docs/context/quickstart.png",
+      "section": "Context",
+      "title": "Context quickstart",
+      "breadcrumb": "docs / context / quickstart",
+      "svgSha256": "9b74efa9ad0408c17803fb229c9613ca3c6ca991803bc001eadec93759ac2d7c"
+    },
+    {
+      "route": "/docs/context/review",
+      "output": "static/img/social/docs/context/review.png",
+      "section": "Context",
+      "title": "Review context changes",
+      "breadcrumb": "docs / context / review",
+      "svgSha256": "e824acc4fca60e305d6f280e6b2bebe40426b7612e5e09db03a42c16145f800a"
+    },
+    {
+      "route": "/docs/context/troubleshooting",
+      "output": "static/img/social/docs/context/troubleshooting.png",
+      "section": "Context",
+      "title": "Context troubleshooting",
+      "breadcrumb": "docs / context / troubleshooting",
+      "svgSha256": "b3d532a1890fe0ffc9888042ca3f0228a344e700fccd3ec45db645167c51e34d"
+    },
+    {
       "route": "/docs/contributing/citation-guidelines",
       "output": "static/img/social/docs/contributing/citation-guidelines.png",
       "section": "Contributing",

@@ -1,0 +1,50 @@
+---
+title: "Context"
+description: "Use Agentplane context to give humans and agents durable project knowledge without relying on chat history."
+---
+
+# Context
+
+Agentplane context is repo-owned project knowledge for humans and agents. It keeps conventions,
+source notes, wiki pages, facts, graph relationships, and task-derived knowledge close to the code
+so later agent runs can search and reuse it.
+
+## Start here
+
+1. [Context quickstart](quickstart) - initialize context and run the first search.
+2. [Choose a context mode](modes) - pick `adaptive` or `maximum-assimilation`.
+3. [What context writes](files) - understand the files under `context/**` and `.agentplane/**`.
+4. [Add documents](ingest) - ingest notes, specs, task history, or changed files.
+5. [Agent guide](agent-guide) - give a coding agent the rules for using context.
+6. [Review context changes](review) - check provenance, duplicates, and coverage before merging.
+
+## What context is for
+
+Use context when project knowledge should survive a single chat:
+
+- repository conventions and local workflow rules;
+- product, architecture, and domain notes;
+- source-backed decisions, risks, and requirements;
+- agent instructions that should be inspected and reviewed;
+- completed task evidence that should become reusable knowledge.
+
+Do not use context for secrets, live data that must be fetched fresh, or one-off prompt text that
+will not be useful later.
+
+## Mental model
+
+Context has three layers:
+
+| Layer      | Audience      | Purpose                                                                                           |
+| ---------- | ------------- | ------------------------------------------------------------------------------------------------- |
+| Source     | Human + agent | Raw material and evidence under `context/raw/**` or task records.                                 |
+| Knowledge  | Human + agent | Wiki pages, facts, graph rows, glossary, and capability notes.                                    |
+| Projection | Agent + CLI   | Rebuildable search and derived artifacts under `.agentplane/context/derived/**` and cache tables. |
+
+Humans mostly read and review the knowledge layer. Agents search all three layers, write sourced
+updates, and rebuild projections.
+
+## Related pages
+
+- [Context engineering](../concepts/context-engineering) explains the broader discipline.
+- [Local context implementation](../developer/local-context) documents maintainer-facing contracts.

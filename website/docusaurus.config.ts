@@ -19,6 +19,16 @@ function blogEditUrl(blogPath: string): string {
   return repoEditUrl(`website/blog/${blogPath}`);
 }
 
+function docsNavigationCheckPlugin() {
+  return {
+    name: "agentplane-docs-navigation-check",
+    async postBuild() {
+      const { checkDocsNavigation } = await import("./scripts/check-navigation.mjs");
+      checkDocsNavigation();
+    },
+  };
+}
+
 const config = {
   title: "Agentplane",
   tagline: "Build, run, trace, and operationalize AI agents with reproducible local workflows.",
@@ -40,6 +50,7 @@ const config = {
     },
   },
   themes: ["@docusaurus/theme-mermaid"],
+  plugins: [docsNavigationCheckPlugin],
   i18n: {
     defaultLocale: "en",
     locales: ["en"],

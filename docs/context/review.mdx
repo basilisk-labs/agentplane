@@ -1,0 +1,38 @@
+---
+title: "Review context changes"
+description: "Review wiki, facts, graph, provenance, and coverage before merging context work."
+---
+
+# Review context changes
+
+Context review checks whether project knowledge became more useful without becoming unsourced,
+duplicated, or unsafe.
+
+## Review checklist
+
+- The source set is named and traceable.
+- Wiki changes cite source refs.
+- Fact rows include source refs, status, and confidence.
+- Graph edges point to known entities.
+- Aliases do not collapse different meanings.
+- Private or secret material is omitted or redacted.
+- Generated projections are not treated as source truth.
+- The task verification note names commands and results.
+
+## Maximum-assimilation review
+
+For maximum assimilation, also check:
+
+- topology decision explains why the page structure fits the source;
+- glossary records canonical labels and aliases;
+- coverage report separates assimilated content, duplicates, omissions, redactions, conflicts, and
+  open questions;
+- the wiki/fact/graph layer remains useful even when raw sources are unavailable.
+
+## Common rework reasons
+
+- A new page duplicates an existing page.
+- A claim has no source ref.
+- A raw source was summarized but important constraints disappeared.
+- A glossary alias was guessed.
+- A task added prose but did not refresh search/projection outputs when required.
