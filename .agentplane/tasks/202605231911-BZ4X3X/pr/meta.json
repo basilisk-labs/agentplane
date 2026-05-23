@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605231911-BZ4X3X/github-label-radius",
+  "created_at": "2026-05-23T19:12:04.195Z",
+  "diffstat_sha256": "sha256:f4d2a761d302bb9cf235ba07d809ad7be056e461ca538611916a17e664872a61",
+  "last_verified_at": "2026-05-23T19:22:46.955Z",
+  "last_verified_diffstat_sha256": "sha256:f4d2a761d302bb9cf235ba07d809ad7be056e461ca538611916a17e664872a61",
+  "schema_version": 1,
+  "task_id": "202605231911-BZ4X3X",
+  "updated_at": "2026-05-23T19:12:04.195Z",
+  "verify": {
+    "status": "pass"
+  }
+}

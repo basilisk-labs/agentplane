@@ -1,6 +1,7 @@
 .button {
   align-items: center;
   border: 1px solid rgb(17 17 19 / 0.16);
+  border-radius: var(--ifm-global-radius);
   color: rgb(var(--fg));
   display: inline-flex;
   font-family: var(--ifm-font-family-monospace);

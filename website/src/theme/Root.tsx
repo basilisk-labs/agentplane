@@ -177,11 +177,11 @@ function NavbarGithubButton(): null {
     const link = document.createElement("a");
     link.className = "github-button";
     link.href = "https://github.com/basilisk-labs/agentplane";
-    link.textContent = "Star";
+    link.textContent = "Github";
     link.setAttribute("data-icon", "octicon-star");
     link.setAttribute("data-size", "large");
     link.setAttribute("data-show-count", "true");
-    link.setAttribute("aria-label", "Star basilisk-labs/agentplane on GitHub");
+    link.setAttribute("aria-label", "Open basilisk-labs/agentplane on GitHub");
 
     const handleClick = () => {
       const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
@@ -202,8 +202,8 @@ function NavbarGithubButton(): null {
       const fallbackLink = document.createElement("a");
       fallbackLink.className = "navbar-github-button-fallback";
       fallbackLink.href = "https://github.com/basilisk-labs/agentplane";
-      fallbackLink.setAttribute("aria-label", "Star basilisk-labs/agentplane on GitHub");
-      fallbackLink.textContent = "Star";
+      fallbackLink.setAttribute("aria-label", "Open basilisk-labs/agentplane on GitHub");
+      fallbackLink.textContent = "Github";
       fallbackLink.addEventListener("click", handleClick);
       host.appendChild(fallbackLink);
     }, 2500);
