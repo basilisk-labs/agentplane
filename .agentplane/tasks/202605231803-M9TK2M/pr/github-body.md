@@ -27,7 +27,14 @@ Fix active work selection and task brief guidance so agents can reliably choose 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/cli/run-cli.core.route-decision.test.ts    | 18 ++++++++--
+ .../src/commands/shared/route-decision.ts          | 26 ++++++++++++--
+ .../src/commands/shared/task-backend.test.ts       | 29 +++++++++++++++
+ .../agentplane/src/commands/shared/task-backend.ts | 20 ++++++++---
+ .../agentplane/src/commands/task/active.command.ts |  1 +
+ .../agentplane/src/commands/task/brief.command.ts  | 41 ++++++++++++++++++++--
+ packages/agentplane/src/commands/task/list.ts      |  5 ++-
+ 7 files changed, 127 insertions(+), 13 deletions(-)
 ```
 
 </details>

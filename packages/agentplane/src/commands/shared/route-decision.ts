@@ -8,6 +8,7 @@ import {
   type RouteBatchOwnership,
   type RouteBatchNextAction,
 } from "./route-batch-ownership.js";
+import { workStartCommand } from "./work-start-command.js";
 
 import { loadBackendTask, loadCommandContext, type CommandContext } from "./task-backend.js";
 
@@ -90,28 +91,6 @@ function taskSummary(task: TaskData): TaskRouteDecision["task"] {
     verification: task.verification?.state ?? null,
     commit: typeof commit === "string" && commit.trim() ? commit : null,
   };
-}
-
-function taskWorkSlug(task: Pick<TaskData, "id" | "title">): string {
-  const fromTitle = task.title
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, "-")
-    .replaceAll(/^-+|-+$/g, "")
-    .replaceAll(/-{2,}/g, "-")
-    .slice(0, 48)
-    .replaceAll(/-+$/g, "");
-  if (fromTitle) return fromTitle;
-  const suffix =
-    task.id
-      .split("-")
-      .pop()
-      ?.toLowerCase()
-      .replaceAll(/[^a-z0-9]+/g, "-") ?? "";
-  return suffix || "work";
-}
-
-function workStartCommand(task: Pick<TaskData, "id" | "owner" | "title">): string {
-  return `agentplane work start ${task.id} --agent ${task.owner} --slug ${taskWorkSlug(task)} --worktree`;
 }
 
 function addBlocker(blockers: RouteBlocker[], code: string, summary: string): void {
