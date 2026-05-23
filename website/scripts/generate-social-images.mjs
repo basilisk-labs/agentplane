@@ -1,4 +1,5 @@
 import { Buffer } from "node:buffer";
+import { createHash } from "node:crypto";
 import { constants as fsConstants } from "node:fs";
 import { access, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -12,12 +13,14 @@ const repoRoot = path.resolve(websiteRoot, "..");
 const docsRoot = path.join(repoRoot, "docs");
 const logoPath = path.join(repoRoot, "docs", "assets", "agentplane.svg");
 const socialRoot = path.join(websiteRoot, "static", "img", "social");
+const manifestPath = path.join(socialRoot, "manifest.json");
 
 const WIDTH = 1280;
 const HEIGHT = 640;
 
 const args = new Set(process.argv.slice(2));
 const check = args.has("--check");
+const strict = args.has("--strict");
 
 function escapeXml(value) {
   return value
@@ -169,11 +172,17 @@ function renderGrid() {
 }
 
 async function renderCard(entry, logoDataUri) {
+  return sharp(Buffer.from(renderCardSvg(entry, logoDataUri)))
+    .png()
+    .toBuffer();
+}
+
+function renderCardSvg(entry, logoDataUri) {
   const titleLines = wrapWords(entry.title, entry.title.length > 28 ? 32 : 25, 2);
   const titleFontSize = titleLines.length > 1 ? 64 : 80;
   const titleLineHeight = titleLines.length > 1 ? 76 : 90;
 
-  const svg = `
+  return `
 <svg width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}" xmlns="http://www.w3.org/2000/svg">
   <rect width="${WIDTH}" height="${HEIGHT}" fill="#ffffff"/>
   <rect x="32" y="32" width="1216" height="576" rx="6" fill="#ffffff"/>
@@ -196,8 +205,6 @@ async function renderCard(entry, logoDataUri) {
   <text x="56" y="532" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="27" fill="#5b6472">${escapeXml(entry.breadcrumb)}</text>
   <path d="M32 36h18M32 36v18M1248 608h-18M1248 608v-18" stroke="#b8c0ca" stroke-width="1.1" fill="none"/>
 </svg>`;
-
-  return sharp(Buffer.from(svg)).png().toBuffer();
 }
 
 async function fileExists(filePath) {
@@ -212,7 +219,7 @@ async function fileExists(filePath) {
 async function main() {
   const logo = await readFile(logoPath, "utf8");
   const logoDataUri = `data:image/svg+xml;base64,${Buffer.from(logo).toString("base64")}`;
-  const docs = await collectDocs(docsRoot);
+  const docs = (await collectDocs(docsRoot)).sort();
   const entries = [];
 
   for (const doc of docs) {
@@ -236,13 +243,34 @@ async function main() {
   let written = 0;
   let unchanged = 0;
   const expectedOutputs = new Set(entries.map((entry) => path.resolve(entry.outputPath)));
+  const expectedManifest = renderManifest(entries, logo);
 
   for (const entry of entries) {
-    const png = await renderCard(entry, logoDataUri);
-
     if (check) {
       const exists = await fileExists(entry.outputPath);
-      const current = exists ? await readFile(entry.outputPath) : null;
+
+      if (!exists) {
+        stale = true;
+        console.error(`missing social image: ${path.relative(websiteRoot, entry.outputPath)}`);
+        continue;
+      }
+
+      const metadata = await sharp(entry.outputPath).metadata();
+      const matchesShape =
+        metadata.format === "png" && metadata.width === WIDTH && metadata.height === HEIGHT;
+
+      if (!matchesShape) {
+        stale = true;
+        console.error(`invalid social image: ${path.relative(websiteRoot, entry.outputPath)}`);
+        continue;
+      }
+
+      if (!strict) {
+        continue;
+      }
+
+      const png = await renderCard(entry, logoDataUri);
+      const current = await readFile(entry.outputPath);
       const matches = current && Buffer.compare(current, png) === 0;
 
       if (!matches) {
@@ -253,6 +281,7 @@ async function main() {
       continue;
     }
 
+    const png = await renderCard(entry, logoDataUri);
     const exists = await fileExists(entry.outputPath);
     const current = exists ? await readFile(entry.outputPath) : null;
     const matches = current && Buffer.compare(current, png) === 0;
@@ -268,7 +297,12 @@ async function main() {
   }
 
   if (!check) {
+    await mkdir(path.dirname(manifestPath), { recursive: true });
+    await writeFile(manifestPath, expectedManifest);
     await removeStaleSocialImages(socialRoot, expectedOutputs);
+  } else {
+    await checkManifest(expectedManifest);
+    await checkForUnexpectedSocialImages(socialRoot, expectedOutputs);
   }
 
   if (stale) {
@@ -281,6 +315,69 @@ async function main() {
       ? `checked ${entries.length} docs social images`
       : `generated ${written} docs social images (${unchanged} unchanged)`,
   );
+}
+
+function renderManifest(entries, logo) {
+  return `${JSON.stringify(
+    {
+      version: 1,
+      width: WIDTH,
+      height: HEIGHT,
+      logoSha256: sha256(logo),
+      entries: entries.map((entry) => ({
+        route: entry.route,
+        output: path.relative(websiteRoot, entry.outputPath).split(path.sep).join("/"),
+        section: entry.section,
+        title: entry.title,
+        breadcrumb: entry.breadcrumb,
+        svgSha256: sha256(renderCardSvg(entry, "")),
+      })),
+    },
+    null,
+    2,
+  )}\n`;
+}
+
+function sha256(value) {
+  return createHash("sha256").update(value).digest("hex");
+}
+
+async function checkManifest(expectedManifest) {
+  const exists = await fileExists(manifestPath);
+
+  if (!exists) {
+    throw new Error(`missing social image manifest: ${path.relative(websiteRoot, manifestPath)}`);
+  }
+
+  const current = await readFile(manifestPath, "utf8");
+  if (current !== expectedManifest) {
+    throw new Error(`stale social image manifest: ${path.relative(websiteRoot, manifestPath)}`);
+  }
+}
+
+async function checkForUnexpectedSocialImages(directory, expectedOutputs) {
+  const entries = await readdir(directory, { withFileTypes: true }).catch((error) => {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      return [];
+    }
+    throw error;
+  });
+
+  for (const entry of entries) {
+    const absolute = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      await checkForUnexpectedSocialImages(absolute, expectedOutputs);
+      continue;
+    }
+
+    if (
+      entry.isFile() &&
+      entry.name.endsWith(".png") &&
+      !expectedOutputs.has(path.resolve(absolute))
+    ) {
+      throw new Error(`unexpected social image: ${path.relative(websiteRoot, absolute)}`);
+    }
+  }
 }
 
 async function removeStaleSocialImages(directory, expectedOutputs) {

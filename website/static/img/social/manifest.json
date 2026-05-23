@@ -1,0 +1,1528 @@
+{
+  "version": 1,
+  "width": 1280,
+  "height": 640,
+  "logoSha256": "46705a9c5a2caa6e471117f8adf9aa1fe74d8c4b24378eb0b2308fb198350d31",
+  "entries": [
+    {
+      "route": "/docs/adr/0001-zod-config-parity",
+      "output": "static/img/social/docs/adr/0001-zod-config-parity.png",
+      "section": "Adr",
+      "title": "0001 Zod Config Parity",
+      "breadcrumb": "docs / adr / 0001-zod-config-parity",
+      "svgSha256": "da6d2925850adca77cb9f13edade880cb852eacbe44c51f6ac3005ddee2c25c3"
+    },
+    {
+      "route": "/docs/adr/0002-adr-process",
+      "output": "static/img/social/docs/adr/0002-adr-process.png",
+      "section": "Adr",
+      "title": "0002 Adr Process",
+      "breadcrumb": "docs / adr / 0002-adr-process",
+      "svgSha256": "5e28d74fd3c27a76907998e86cc608e7061851413583dd24c95b127ec7d2273a"
+    },
+    {
+      "route": "/docs/adr/0003-refactor-sequencing",
+      "output": "static/img/social/docs/adr/0003-refactor-sequencing.png",
+      "section": "Adr",
+      "title": "0003 Refactor Sequencing",
+      "breadcrumb": "docs / adr / 0003-refactor-sequencing",
+      "svgSha256": "7d399cb0d9852577b7bf6dfa39619859c9a7d73c9572c7d8185c6411f7e812eb"
+    },
+    {
+      "route": "/docs/adr/0004-keep-custom-cli-stack",
+      "output": "static/img/social/docs/adr/0004-keep-custom-cli-stack.png",
+      "section": "Adr",
+      "title": "0004 Keep Custom Cli Stack",
+      "breadcrumb": "docs / adr / 0004-keep-custom-cli-stack",
+      "svgSha256": "3e4d5b853fb31098748a7f24b75a8f7bbe3f75ccf3cb2a6cfdcc0a846ec59cc3"
+    },
+    {
+      "route": "/docs/adr/0005-defer-biome-migration",
+      "output": "static/img/social/docs/adr/0005-defer-biome-migration.png",
+      "section": "Adr",
+      "title": "0005 Defer Biome Migration",
+      "breadcrumb": "docs / adr / 0005-defer-biome-migration",
+      "svgSha256": "495e26b159d9d4e96ed81eab5519ac8d4aeafe360412b10ac2061d18df156bbe"
+    },
+    {
+      "route": "/docs/adr/0006-no-effect-fp-ts-migration",
+      "output": "static/img/social/docs/adr/0006-no-effect-fp-ts-migration.png",
+      "section": "Adr",
+      "title": "0006 No Effect Fp Ts Migration",
+      "breadcrumb": "docs / adr / 0006-no-effect-fp-ts-migration",
+      "svgSha256": "f22c9e5131b84311e011a38969393d2908512c93d5a2f36b1f8ca134276d1052"
+    },
+    {
+      "route": "/docs/adr/0007-freeze-yaml-parser-stack",
+      "output": "static/img/social/docs/adr/0007-freeze-yaml-parser-stack.png",
+      "section": "Adr",
+      "title": "0007 Freeze Yaml Parser Stack",
+      "breadcrumb": "docs / adr / 0007-freeze-yaml-parser-stack",
+      "svgSha256": "dcfdf0c97283126c177916f0ce2fe05afb000b3f7468805e5ed22b2bd3250ba9"
+    },
+    {
+      "route": "/docs/adr/0008-keep-yauzl-for-zip-validation",
+      "output": "static/img/social/docs/adr/0008-keep-yauzl-for-zip-validation.png",
+      "section": "Adr",
+      "title": "0008 Keep Yauzl For Zip Validation",
+      "breadcrumb": "docs / adr / 0008-keep-yauzl-for-zip-validation",
+      "svgSha256": "19d81ca27b233ff78e4d8ad9fe1c68f35409ffa761bf4ecb91897fa268d26335"
+    },
+    {
+      "route": "/docs/adr/0009-recipes-index-signing-algorithm-policy",
+      "output": "static/img/social/docs/adr/0009-recipes-index-signing-algorithm-policy.png",
+      "section": "Adr",
+      "title": "0009 Recipes Index Signing Algorithm Policy",
+      "breadcrumb": "docs / adr / 0009-recipes-index-signing-algorithm-policy",
+      "svgSha256": "87fb1545af86e99e788bd04cfd71b9ff1b842ee26e6fa1266bbdd17cab9c2e57"
+    },
+    {
+      "route": "/docs/adr/0010-core-root-export-compatibility",
+      "output": "static/img/social/docs/adr/0010-core-root-export-compatibility.png",
+      "section": "Adr",
+      "title": "0010 Core Root Export Compatibility",
+      "breadcrumb": "docs / adr / 0010-core-root-export-compatibility",
+      "svgSha256": "8b2f4e46ab758905bfff11363cc48670ec290147ed6a1cc43e33fb0292db652a"
+    },
+    {
+      "route": "/docs/adr/0011-v0.3-surface-freeze",
+      "output": "static/img/social/docs/adr/0011-v0.3-surface-freeze.png",
+      "section": "Adr",
+      "title": "0011 V0.3 Surface Freeze",
+      "breadcrumb": "docs / adr / 0011-v0.3-surface-freeze",
+      "svgSha256": "2f120264b38f4c4de80b1e717a13a9e80d44b0990f1b60a6f7f343b90df148e8"
+    },
+    {
+      "route": "/docs/adr/0012-v0.4-surface-transition",
+      "output": "static/img/social/docs/adr/0012-v0.4-surface-transition.png",
+      "section": "Adr",
+      "title": "0012 V0.4 Surface Transition",
+      "breadcrumb": "docs / adr / 0012-v0.4-surface-transition",
+      "svgSha256": "758f42a16adb62fdca23b799c4e092a8635be5a27144a34abae85dd5a843e807"
+    },
+    {
+      "route": "/docs/adr/0013-zod-contract-ssot",
+      "output": "static/img/social/docs/adr/0013-zod-contract-ssot.png",
+      "section": "Adr",
+      "title": "ADR 0013: Zod Contract SSOT",
+      "breadcrumb": "docs / adr / 0013-zod-contract-ssot",
+      "svgSha256": "f98432d3adf6ad2823afd748a0f0e31ed0e0cdb06d60f12816b715329fddda37"
+    },
+    {
+      "route": "/docs/archive/v0-3/cli-bug-ledger-v0-3-x",
+      "output": "static/img/social/docs/archive/v0-3/cli-bug-ledger-v0-3-x.png",
+      "section": "Archive",
+      "title": "CLI bug ledger (v0.3.x archive)",
+      "breadcrumb": "docs / archive / v0-3 / cli-bug-ledger-v0-3-x",
+      "svgSha256": "78f8ff2aeed47987bb908d9559190fe42a13ad25811969935a96385ec43a470c"
+    },
+    {
+      "route": "/docs/archive/v0-3/framework-refactor-program",
+      "output": "static/img/social/docs/archive/v0-3/framework-refactor-program.png",
+      "section": "Archive",
+      "title": "Framework refactor program (v0.3 archive)",
+      "breadcrumb": "docs / archive / v0-3 / framework-refactor-program",
+      "svgSha256": "52f89812917992c6a30022c7f4f462248a02b1c7c84ed2eb832eac15b1639110"
+    },
+    {
+      "route": "/docs/compare",
+      "output": "static/img/social/docs/compare.png",
+      "section": "Compare",
+      "title": "How Agentplane compares",
+      "breadcrumb": "docs / compare",
+      "svgSha256": "0c3b2da108e048621b9923ec74eb5d94fa4004babc52fddb4327cae1ce130dd3"
+    },
+    {
+      "route": "/docs/concepts/agent-workflows",
+      "output": "static/img/social/docs/concepts/agent-workflows.png",
+      "section": "Concepts",
+      "title": "Agent workflows",
+      "breadcrumb": "docs / concepts / agent-workflows",
+      "svgSha256": "f83e0c168af7212eb7737f2ae361bac5734821d9f1ecf41a67e58758d68d89bb"
+    },
+    {
+      "route": "/docs/concepts/context-engineering",
+      "output": "static/img/social/docs/concepts/context-engineering.png",
+      "section": "Concepts",
+      "title": "Context engineering for AI agents",
+      "breadcrumb": "docs / concepts / context-engineering",
+      "svgSha256": "76a91d56f2dc282b7b6d5662003a0028dc2917ac448b1d1708e5c5d624e38648"
+    },
+    {
+      "route": "/docs/concepts/harness-engineering",
+      "output": "static/img/social/docs/concepts/harness-engineering.png",
+      "section": "Concepts",
+      "title": "Harness engineering for AI agents",
+      "breadcrumb": "docs / concepts / harness-engineering",
+      "svgSha256": "a87e50ceaa7016264858be253131645e820c764019445fd0097a2aecb839205b"
+    },
+    {
+      "route": "/docs/concepts/traces",
+      "output": "static/img/social/docs/concepts/traces.png",
+      "section": "Concepts",
+      "title": "Traces for AI agent runs",
+      "breadcrumb": "docs / concepts / traces",
+      "svgSha256": "dd93fe6aa6d094c9602bb8e0b3b47f37f5645a5db4598ac0987acef4fcd2eaa1"
+    },
+    {
+      "route": "/docs/contributing/citation-guidelines",
+      "output": "static/img/social/docs/contributing/citation-guidelines.png",
+      "section": "Contributing",
+      "title": "Citation guidelines",
+      "breadcrumb": "docs / contributing / citation-guidelines",
+      "svgSha256": "22983b4e632cb104c7d9c45d391690650c3018b0ea5b0d9b445b1170e1704c48"
+    },
+    {
+      "route": "/docs/developer/agent-change-record-implementation",
+      "output": "static/img/social/docs/developer/agent-change-record-implementation.png",
+      "section": "Developer",
+      "title": "ACR implementation plan",
+      "breadcrumb": "docs / developer / agent-change-record-implementation",
+      "svgSha256": "6f120dc6e6dad6c99355789548f327af84564d6142f18f2486227047df141363"
+    },
+    {
+      "route": "/docs/developer/architecture",
+      "output": "static/img/social/docs/developer/architecture.png",
+      "section": "Developer",
+      "title": "Architecture",
+      "breadcrumb": "docs / developer / architecture",
+      "svgSha256": "9da13d75b727c5906c8b1b30a55ede567c74c8e01a3a7ea47b1152040f5dae1d"
+    },
+    {
+      "route": "/docs/developer/blueprints",
+      "output": "static/img/social/docs/developer/blueprints.png",
+      "section": "Developer",
+      "title": "Blueprints",
+      "breadcrumb": "docs / developer / blueprints",
+      "svgSha256": "b5657a36757353e5c124c7c590a85acb0691240a6bbfd9c27d98a8c3c3cc94f7"
+    },
+    {
+      "route": "/docs/developer/cli-contract",
+      "output": "static/img/social/docs/developer/cli-contract.png",
+      "section": "Developer",
+      "title": "CLI contract",
+      "breadcrumb": "docs / developer / cli-contract",
+      "svgSha256": "9c4062ec296645b53661bd56ceb47cf23b3ad72677535c076ea67df2c6d6f8bc"
+    },
+    {
+      "route": "/docs/developer/cli-help-json",
+      "output": "static/img/social/docs/developer/cli-help-json.png",
+      "section": "Developer",
+      "title": "CLI Help JSON Contract (spec-driven CLI)",
+      "breadcrumb": "docs / developer / cli-help-json",
+      "svgSha256": "981552558bdd86e8e522b6c169e535a5f66973751e2496a53ab740d5eb3980dc"
+    },
+    {
+      "route": "/docs/developer/close-taxonomy",
+      "output": "static/img/social/docs/developer/close-taxonomy.png",
+      "section": "Developer",
+      "title": "Close taxonomy",
+      "breadcrumb": "docs / developer / close-taxonomy",
+      "svgSha256": "bb7393f2c886f47fcb8fc56d94e1491cc9f5963a803e378263bb63b3b11063c4"
+    },
+    {
+      "route": "/docs/developer/cloud-backend-integration-plan",
+      "output": "static/img/social/docs/developer/cloud-backend-integration-plan.png",
+      "section": "Developer",
+      "title": "Cloud backend integration plan",
+      "breadcrumb": "docs / developer / cloud-backend-integration-plan",
+      "svgSha256": "4db48ea369dca09f8028b768354521ba062a469d7171aba6246ff4c464952f92"
+    },
+    {
+      "route": "/docs/developer/code-quality",
+      "output": "static/img/social/docs/developer/code-quality.png",
+      "section": "Developer",
+      "title": "Code Quality Gates",
+      "breadcrumb": "docs / developer / code-quality",
+      "svgSha256": "6e26ae7597e87b81001e7f0316553b1d64055b7f0fe5679b5f556bdb90e556a6"
+    },
+    {
+      "route": "/docs/developer/contributing",
+      "output": "static/img/social/docs/developer/contributing.png",
+      "section": "Developer",
+      "title": "Contributing",
+      "breadcrumb": "docs / developer / contributing",
+      "svgSha256": "a9581a850619b3552009145c1b48895ca3d80dfa4550213e74fa57d11ec992ef"
+    },
+    {
+      "route": "/docs/developer/design-principles",
+      "output": "static/img/social/docs/developer/design-principles.png",
+      "section": "Developer",
+      "title": "Design principles",
+      "breadcrumb": "docs / developer / design-principles",
+      "svgSha256": "d2f76deb90f8086270431c2f60a60b75cea6abb9f0ad57e29e4a86507197f052"
+    },
+    {
+      "route": "/docs/developer/documentation-information-architecture",
+      "output": "static/img/social/docs/developer/documentation-information-architecture.png",
+      "section": "Developer",
+      "title": "Documentation information architecture",
+      "breadcrumb": "docs / developer / documentation-information-architecture",
+      "svgSha256": "5682ce238a36070c62566537d792d783bcc78e8d4fe7ab4d9efb1b56160f5b57"
+    },
+    {
+      "route": "/docs/developer/evaluation-and-recursive-improvement",
+      "output": "static/img/social/docs/developer/evaluation-and-recursive-improvement.png",
+      "section": "Developer",
+      "title": "Evaluation and recursive improvement",
+      "breadcrumb": "docs / developer / evaluation-and-recursive-improvement",
+      "svgSha256": "83ba4d4f56947ea3ad0885a275b9bc7db83c0a14360a41d86a07ca34d8f1d423"
+    },
+    {
+      "route": "/docs/developer/harness-dev",
+      "output": "static/img/social/docs/developer/harness-dev.png",
+      "section": "Developer",
+      "title": "Harness/dev documentation",
+      "breadcrumb": "docs / developer / harness-dev",
+      "svgSha256": "09382309da50e0a4654e7be49d16b0fda082fd024f99a7aa9f726034788cc458"
+    },
+    {
+      "route": "/docs/developer/harness-engineering",
+      "output": "static/img/social/docs/developer/harness-engineering.png",
+      "section": "Developer",
+      "title": "Harness Engineering",
+      "breadcrumb": "docs / developer / harness-engineering",
+      "svgSha256": "502f1554987a24781ae307dddde73cba06aa30800f499f84ab2b07bc3d2a3be5"
+    },
+    {
+      "route": "/docs/developer/incident-archive",
+      "output": "static/img/social/docs/developer/incident-archive.png",
+      "section": "Developer",
+      "title": "Incident Archive",
+      "breadcrumb": "docs / developer / incident-archive",
+      "svgSha256": "b2de9557df3d59636ed62286c306ef1d9d32478b648d8b42348529d8ace32060"
+    },
+    {
+      "route": "/docs/developer/local-context",
+      "output": "static/img/social/docs/developer/local-context.png",
+      "section": "Developer",
+      "title": "Local context implementation",
+      "breadcrumb": "docs / developer / local-context",
+      "svgSha256": "5d52a96842d2a354bcfad23c58e4d921f37646bb9e86cfc4f0af830eea0e73c2"
+    },
+    {
+      "route": "/docs/developer/modular-prompt-assembly",
+      "output": "static/img/social/docs/developer/modular-prompt-assembly.png",
+      "section": "Developer",
+      "title": "Modular prompt assembly",
+      "breadcrumb": "docs / developer / modular-prompt-assembly",
+      "svgSha256": "2bded1c814f2abdadf320bd12b29a368543997576356df895577375b5d22fc3c"
+    },
+    {
+      "route": "/docs/developer/module-topology",
+      "output": "static/img/social/docs/developer/module-topology.png",
+      "section": "Developer",
+      "title": "Module topology",
+      "breadcrumb": "docs / developer / module-topology",
+      "svgSha256": "e7f6354b7e3c8d82992c89a748ca6505740a62e163e84f64ecb4c352e8b8bcf2"
+    },
+    {
+      "route": "/docs/developer/performance-baselines",
+      "output": "static/img/social/docs/developer/performance-baselines.png",
+      "section": "Developer",
+      "title": "Performance baselines",
+      "breadcrumb": "docs / developer / performance-baselines",
+      "svgSha256": "75383f6a6e12c3aeae759dd97b814815dbd84d0b0022f3bd1ad435f00da1f189"
+    },
+    {
+      "route": "/docs/developer/project-layout",
+      "output": "static/img/social/docs/developer/project-layout.png",
+      "section": "Developer",
+      "title": "Project layout",
+      "breadcrumb": "docs / developer / project-layout",
+      "svgSha256": "84c7ad452c534767f6dd5f3c90be98c64362c5584143438216dac88a83af80e4"
+    },
+    {
+      "route": "/docs/developer/recipes-development",
+      "output": "static/img/social/docs/developer/recipes-development.png",
+      "section": "Developer",
+      "title": "Recipes development",
+      "breadcrumb": "docs / developer / recipes-development",
+      "svgSha256": "446b4447f6a4928c357a3fe7e514b7a5937bf9b02112ba42195025188a349745"
+    },
+    {
+      "route": "/docs/developer/recipes-how-it-works",
+      "output": "static/img/social/docs/developer/recipes-how-it-works.png",
+      "section": "Developer",
+      "title": "How recipes work",
+      "breadcrumb": "docs / developer / recipes-how-it-works",
+      "svgSha256": "8c82f714d472bb250d5fe64f421957734eec163d0e613696327d1b2317235532"
+    },
+    {
+      "route": "/docs/developer/recipes-safety",
+      "output": "static/img/social/docs/developer/recipes-safety.png",
+      "section": "Developer",
+      "title": "Recipes safety",
+      "breadcrumb": "docs / developer / recipes-safety",
+      "svgSha256": "670dce635ba658704b7d04ed56a11fd1532d8a6fd0bcb1495debe0afcb318af1"
+    },
+    {
+      "route": "/docs/developer/recipes-spec",
+      "output": "static/img/social/docs/developer/recipes-spec.png",
+      "section": "Developer",
+      "title": "Recipes specification",
+      "breadcrumb": "docs / developer / recipes-spec",
+      "svgSha256": "ac044d90f43081654c48b8b1b27be5db3e2e83500ca7c9970e68dca1caf05e81"
+    },
+    {
+      "route": "/docs/developer/release-and-publishing",
+      "output": "static/img/social/docs/developer/release-and-publishing.png",
+      "section": "Developer",
+      "title": "Release and publishing",
+      "breadcrumb": "docs / developer / release-and-publishing",
+      "svgSha256": "ed926c71d98dfa168f1817ad7a400b8125f892eecef9c6b8f582c6eb81d7c35e"
+    },
+    {
+      "route": "/docs/developer/schema-validation-strategy",
+      "output": "static/img/social/docs/developer/schema-validation-strategy.png",
+      "section": "Developer",
+      "title": "Schema Validation Strategy",
+      "breadcrumb": "docs / developer / schema-validation-strategy",
+      "svgSha256": "0eb52884c7958e2771767c98de84f25598ed04116d7a7d2897b45643463878d1"
+    },
+    {
+      "route": "/docs/developer/testing-and-quality",
+      "output": "static/img/social/docs/developer/testing-and-quality.png",
+      "section": "Developer",
+      "title": "Testing and quality",
+      "breadcrumb": "docs / developer / testing-and-quality",
+      "svgSha256": "6721440f3b6cc1b0f087f4d44b2e24884cc2f385d1aa7e86ada5386a59cd5d09"
+    },
+    {
+      "route": "/docs/developer/typescript-esm-imports",
+      "output": "static/img/social/docs/developer/typescript-esm-imports.png",
+      "section": "Developer",
+      "title": "TypeScript ESM imports",
+      "breadcrumb": "docs / developer / typescript-esm-imports",
+      "svgSha256": "21bdb2be92fbd4be06b04d618f23314135163af6a03822710ef2ea53169927fb"
+    },
+    {
+      "route": "/docs/developer/website-success-metrics",
+      "output": "static/img/social/docs/developer/website-success-metrics.png",
+      "section": "Developer",
+      "title": "Website success metrics",
+      "breadcrumb": "docs / developer / website-success-metrics",
+      "svgSha256": "aed51758126754c391f2f317dd19777f8ef9e45a8410101da2eb196e6924f77b"
+    },
+    {
+      "route": "/docs/developer/workflow-contract",
+      "output": "static/img/social/docs/developer/workflow-contract.png",
+      "section": "Developer",
+      "title": "Workflow Contract",
+      "breadcrumb": "docs / developer / workflow-contract",
+      "svgSha256": "37ac49b4894be87e3f833c5e3caec515e4d392810f0b511c485dce4cd9cd4648"
+    },
+    {
+      "route": "/docs/developer/workflow-harness-test-matrix",
+      "output": "static/img/social/docs/developer/workflow-harness-test-matrix.png",
+      "section": "Developer",
+      "title": "Workflow Harness Test Matrix",
+      "breadcrumb": "docs / developer / workflow-harness-test-matrix",
+      "svgSha256": "77e0a75d73aa03d0754a82c1da403bddc31828eb05a017a31b69856e8ce3c465"
+    },
+    {
+      "route": "/docs/examples/debug-agent-run-with-traces",
+      "output": "static/img/social/docs/examples/debug-agent-run-with-traces.png",
+      "section": "Examples",
+      "title": "Debug an agent run with traces",
+      "breadcrumb": "docs / examples / debug-agent-run-with-traces",
+      "svgSha256": "44f617e2e589a06102d4deda5ee456dcb9ef427ba0ac36829a35dd186d47617c"
+    },
+    {
+      "route": "/docs/examples/export-traces",
+      "output": "static/img/social/docs/examples/export-traces.png",
+      "section": "Examples",
+      "title": "Export traces",
+      "breadcrumb": "docs / examples / export-traces",
+      "svgSha256": "e134e92ca58bcedabfdc10782dd7c54b2cf9c0412101c00c4c8e79b2398b17de"
+    },
+    {
+      "route": "/docs/help/broken-workflow-runbook",
+      "output": "static/img/social/docs/help/broken-workflow-runbook.png",
+      "section": "Help",
+      "title": "Broken workflow runbook",
+      "breadcrumb": "docs / help / broken-workflow-runbook",
+      "svgSha256": "dd2d0adcea0d44cf6d48bf6d1514b424e66dbe490baa9ab05d84ee06097e8e32"
+    },
+    {
+      "route": "/docs/help/glossary",
+      "output": "static/img/social/docs/help/glossary.png",
+      "section": "Help",
+      "title": "Glossary",
+      "breadcrumb": "docs / help / glossary",
+      "svgSha256": "99b02e9abd1b2b8dcf77aa9bddac356b092586d8ff6056a1994b681840ee25e6"
+    },
+    {
+      "route": "/docs/help/legacy-upgrade-recovery",
+      "output": "static/img/social/docs/help/legacy-upgrade-recovery.png",
+      "section": "Help",
+      "title": "Upgrade recovery",
+      "breadcrumb": "docs / help / legacy-upgrade-recovery",
+      "svgSha256": "2918286b2999ab2045949812b1b3cf42e8d063ad8bbcd97324ebca18038d255b"
+    },
+    {
+      "route": "/docs/help/troubleshooting-by-symptom",
+      "output": "static/img/social/docs/help/troubleshooting-by-symptom.png",
+      "section": "Help",
+      "title": "Troubleshooting by symptom",
+      "breadcrumb": "docs / help / troubleshooting-by-symptom",
+      "svgSha256": "434c1266fa682d988324939c9fa2ca56ea943d1dabc40b2389cfa2e427dd7b5f"
+    },
+    {
+      "route": "/docs/help/troubleshooting",
+      "output": "static/img/social/docs/help/troubleshooting.png",
+      "section": "Help",
+      "title": "Troubleshooting",
+      "breadcrumb": "docs / help / troubleshooting",
+      "svgSha256": "0379ba9215a4f559dd9ecc36658c532332158892b4db2597dd28133b9a00ea37"
+    },
+    {
+      "route": "/docs",
+      "output": "static/img/social/docs.png",
+      "section": "Docs",
+      "title": "Agentplane Documentation",
+      "breadcrumb": "docs",
+      "svgSha256": "9a8ea9a62e6169d3cc34e2fd635ff9e6b6e8c0957c4c37cc8ea9f904904445dc"
+    },
+    {
+      "route": "/docs/internal/git-mutation-model",
+      "output": "static/img/social/docs/internal/git-mutation-model.png",
+      "section": "Internal",
+      "title": "Git Mutation Model",
+      "breadcrumb": "docs / internal / git-mutation-model",
+      "svgSha256": "6c5849a5b8c1c513538c87e4503ac0cb7c16666a4548769a216db0fc91d99400"
+    },
+    {
+      "route": "/docs/launch/checklist",
+      "output": "static/img/social/docs/launch/checklist.png",
+      "section": "Launch",
+      "title": "Checklist",
+      "breadcrumb": "docs / launch / checklist",
+      "svgSha256": "a85a04f3fcff51b989b1197a9f4fdde3c3e1ff6676a0fab272b91f8df55a53db"
+    },
+    {
+      "route": "/docs/launch/hn",
+      "output": "static/img/social/docs/launch/hn.png",
+      "section": "Launch",
+      "title": "Hn",
+      "breadcrumb": "docs / launch / hn",
+      "svgSha256": "4fbaf3a8b6906e964cef857aebac80b5f471ab48d3076ed8cd450c866b2c70a3"
+    },
+    {
+      "route": "/docs/launch/reddit",
+      "output": "static/img/social/docs/launch/reddit.png",
+      "section": "Launch",
+      "title": "Reddit",
+      "breadcrumb": "docs / launch / reddit",
+      "svgSha256": "a9f6b599ef6a2239dcabfcc9c698976c7d0aa7787709d81e85fd7e85d2acaeef"
+    },
+    {
+      "route": "/docs/launch/twitter",
+      "output": "static/img/social/docs/launch/twitter.png",
+      "section": "Launch",
+      "title": "Twitter",
+      "breadcrumb": "docs / launch / twitter",
+      "svgSha256": "03492c79e5f85aa0081ba2a9034553b0d2414741790a25988d9a021fbf39e70d"
+    },
+    {
+      "route": "/docs/listing",
+      "output": "static/img/social/docs/listing.png",
+      "section": "Listing",
+      "title": "Listing submission profile",
+      "breadcrumb": "docs / listing",
+      "svgSha256": "79f9acb7822d06ed8585dd485d23ec40890ab6168cc3289b1daa9be1f2538918"
+    },
+    {
+      "route": "/docs/manifesto",
+      "output": "static/img/social/docs/manifesto.png",
+      "section": "Manifesto",
+      "title": "Why Agentplane exists",
+      "breadcrumb": "docs / manifesto",
+      "svgSha256": "91687bcc12c8eb803913994399e84e86b9d0d589ac3543dd5d3e8d174013e076"
+    },
+    {
+      "route": "/docs/recipes/docs-update",
+      "output": "static/img/social/docs/recipes/docs-update.png",
+      "section": "Recipes",
+      "title": "Docs update recipe",
+      "breadcrumb": "docs / recipes / docs-update",
+      "svgSha256": "d8d7b8373ab31614565e88e1e16e2f69a5bfd378488d355f49aa685458d5f581"
+    },
+    {
+      "route": "/docs/recipes",
+      "output": "static/img/social/docs/recipes.png",
+      "section": "Recipes",
+      "title": "Recipes",
+      "breadcrumb": "docs / recipes",
+      "svgSha256": "011712a81c399d1e074ac58f5a226a631aa9911dc1865663d5b1e0361430e62e"
+    },
+    {
+      "route": "/docs/recipes/security-review",
+      "output": "static/img/social/docs/recipes/security-review.png",
+      "section": "Recipes",
+      "title": "Security review recipe",
+      "breadcrumb": "docs / recipes / security-review",
+      "svgSha256": "eabed7771bf3dc06cdf58c9fcef5ba416cc49f52865488ff1967a1edc92826f9"
+    },
+    {
+      "route": "/docs/recipes/tdd",
+      "output": "static/img/social/docs/recipes/tdd.png",
+      "section": "Recipes",
+      "title": "TDD recipe",
+      "breadcrumb": "docs / recipes / tdd",
+      "svgSha256": "6ebeabff51ca6530a9e31ae910a1b057cfc7de3f4caa8b8ca2f088757b4f3e7e"
+    },
+    {
+      "route": "/docs/reference/acr-schema",
+      "output": "static/img/social/docs/reference/acr-schema.png",
+      "section": "Reference",
+      "title": "ACR schema",
+      "breadcrumb": "docs / reference / acr-schema",
+      "svgSha256": "be0a83a1834bc97cd6bef378ecabf27a23c8a934ce8eab4e3346ebc5a5211c8e"
+    },
+    {
+      "route": "/docs/reference/acr",
+      "output": "static/img/social/docs/reference/acr.png",
+      "section": "Reference",
+      "title": "Agent Change Records",
+      "breadcrumb": "docs / reference / acr",
+      "svgSha256": "c8797c4e268055a099d7871844d885afb21310f366b67d28dee29ffe265457d3"
+    },
+    {
+      "route": "/docs/reference/cli",
+      "output": "static/img/social/docs/reference/cli.png",
+      "section": "Reference",
+      "title": "CLI reference",
+      "breadcrumb": "docs / reference / cli",
+      "svgSha256": "bbbb99ac37d56f72656973ecda02b2248665d519c9128c3dc589c181ac783077"
+    },
+    {
+      "route": "/docs/reference/evidence",
+      "output": "static/img/social/docs/reference/evidence.png",
+      "section": "Reference",
+      "title": "Evidence bundles",
+      "breadcrumb": "docs / reference / evidence",
+      "svgSha256": "14298a13ade6e5d2f38a2113ed6d52d5488a5231e597176215c759da907062a2"
+    },
+    {
+      "route": "/docs/reference/generated-reference",
+      "output": "static/img/social/docs/reference/generated-reference.png",
+      "section": "Reference",
+      "title": "Generated Reference",
+      "breadcrumb": "docs / reference / generated-reference",
+      "svgSha256": "a0b26cc56366e51b27b6d2c6e8885fa9ca489c26d55b6bd311ba92cdb97a8d46"
+    },
+    {
+      "route": "/docs/reference/runner-handoff",
+      "output": "static/img/social/docs/reference/runner-handoff.png",
+      "section": "Reference",
+      "title": "Runner handoff contract",
+      "breadcrumb": "docs / reference / runner-handoff",
+      "svgSha256": "0da8c812b24dc49ff8d9f45a332d207b98a2a616ed26ec723970f1a4de7ccda7"
+    },
+    {
+      "route": "/docs/reference/task-observations",
+      "output": "static/img/social/docs/reference/task-observations.png",
+      "section": "Reference",
+      "title": "Task Observations",
+      "breadcrumb": "docs / reference / task-observations",
+      "svgSha256": "73720e98a6e74b380e2c5d5f421d75ffae0861ffdcaff4d3b90f0729cae3af5a"
+    },
+    {
+      "route": "/docs/reference/trace-schema",
+      "output": "static/img/social/docs/reference/trace-schema.png",
+      "section": "Reference",
+      "title": "Trace schema",
+      "breadcrumb": "docs / reference / trace-schema",
+      "svgSha256": "1b98e17610f0e3f8e374d321c4c3494aa436a03330c3162cc7ce9792c4d4462e"
+    },
+    {
+      "route": "/docs/reference/workflow-file",
+      "output": "static/img/social/docs/reference/workflow-file.png",
+      "section": "Reference",
+      "title": "Workflow file reference",
+      "breadcrumb": "docs / reference / workflow-file",
+      "svgSha256": "74a2e25e62aba9db64ed5beba4da4508f7c9ae441b10e97d4ca59121d7c273e0"
+    },
+    {
+      "route": "/docs/releases/TEMPLATE",
+      "output": "static/img/social/docs/releases/TEMPLATE.png",
+      "section": "Releases",
+      "title": "TEMPLATE",
+      "breadcrumb": "docs / releases / TEMPLATE",
+      "svgSha256": "0af0b3ce45c78a1ff3e9a15d7a0693ca98313a19f37922ad3ca38b3a99cf5f7c"
+    },
+    {
+      "route": "/docs/releases",
+      "output": "static/img/social/docs/releases.png",
+      "section": "Releases",
+      "title": "Release Notes",
+      "breadcrumb": "docs / releases",
+      "svgSha256": "b4ea2310df8914ec33d59f6f998a5cf36b9e456479de9f2e3063aff6f154fbd1"
+    },
+    {
+      "route": "/docs/releases/v0.1.3",
+      "output": "static/img/social/docs/releases/v0.1.3.png",
+      "section": "Releases",
+      "title": "V0.1.3",
+      "breadcrumb": "docs / releases / v0.1.3",
+      "svgSha256": "acd0ff09da11e4ddc95442723b949f51e889a041bed7643a288970798a8e873d"
+    },
+    {
+      "route": "/docs/releases/v0.1.4",
+      "output": "static/img/social/docs/releases/v0.1.4.png",
+      "section": "Releases",
+      "title": "V0.1.4",
+      "breadcrumb": "docs / releases / v0.1.4",
+      "svgSha256": "e71145401843dd04e8a5e547a6b08347e44abfeffb334ef3f5c991912faf411b"
+    },
+    {
+      "route": "/docs/releases/v0.1.5",
+      "output": "static/img/social/docs/releases/v0.1.5.png",
+      "section": "Releases",
+      "title": "V0.1.5",
+      "breadcrumb": "docs / releases / v0.1.5",
+      "svgSha256": "5b95b99bd1c7d84b2d16db00301a15e77c557a33a1de8494ca93b7ec615cee0b"
+    },
+    {
+      "route": "/docs/releases/v0.1.6",
+      "output": "static/img/social/docs/releases/v0.1.6.png",
+      "section": "Releases",
+      "title": "V0.1.6",
+      "breadcrumb": "docs / releases / v0.1.6",
+      "svgSha256": "8b4b12d51dc2807d392bd924068df85e51ebc2945a91cce33573f4d21097158c"
+    },
+    {
+      "route": "/docs/releases/v0.1.7",
+      "output": "static/img/social/docs/releases/v0.1.7.png",
+      "section": "Releases",
+      "title": "V0.1.7",
+      "breadcrumb": "docs / releases / v0.1.7",
+      "svgSha256": "82985463b30e876caf21260e0dfaca34ddcae4b38cc1ea3178e7857ec6db17a7"
+    },
+    {
+      "route": "/docs/releases/v0.1.8",
+      "output": "static/img/social/docs/releases/v0.1.8.png",
+      "section": "Releases",
+      "title": "V0.1.8",
+      "breadcrumb": "docs / releases / v0.1.8",
+      "svgSha256": "d8b02791d9f2beab7ce187cf9952a431472a5567ee5e9f109ad78855edeaff27"
+    },
+    {
+      "route": "/docs/releases/v0.1.9",
+      "output": "static/img/social/docs/releases/v0.1.9.png",
+      "section": "Releases",
+      "title": "V0.1.9",
+      "breadcrumb": "docs / releases / v0.1.9",
+      "svgSha256": "0e4885582febf5d2c2d00cf2b07cecec1b656f037c9d909792a37244be7854c3"
+    },
+    {
+      "route": "/docs/releases/v0.2.0",
+      "output": "static/img/social/docs/releases/v0.2.0.png",
+      "section": "Releases",
+      "title": "V0.2.0",
+      "breadcrumb": "docs / releases / v0.2.0",
+      "svgSha256": "256f9c5f85d24787942c51c54faeb88255ac3d3a2d76e1191e23e37fde02b710"
+    },
+    {
+      "route": "/docs/releases/v0.2.1",
+      "output": "static/img/social/docs/releases/v0.2.1.png",
+      "section": "Releases",
+      "title": "V0.2.1",
+      "breadcrumb": "docs / releases / v0.2.1",
+      "svgSha256": "b4862f19bffa98f3e44a83880eed971b4723b95250194b29154f236830dbc58e"
+    },
+    {
+      "route": "/docs/releases/v0.2.10",
+      "output": "static/img/social/docs/releases/v0.2.10.png",
+      "section": "Releases",
+      "title": "V0.2.10",
+      "breadcrumb": "docs / releases / v0.2.10",
+      "svgSha256": "0d1b07aced645f41e0eefa269311cbffea305b15eadd4896b4e771205d216921"
+    },
+    {
+      "route": "/docs/releases/v0.2.11",
+      "output": "static/img/social/docs/releases/v0.2.11.png",
+      "section": "Releases",
+      "title": "V0.2.11",
+      "breadcrumb": "docs / releases / v0.2.11",
+      "svgSha256": "a30e167704bafee26346e4e9f66b3a48783d5089f04bc6a2f7c542c510c05ecb"
+    },
+    {
+      "route": "/docs/releases/v0.2.12",
+      "output": "static/img/social/docs/releases/v0.2.12.png",
+      "section": "Releases",
+      "title": "V0.2.12",
+      "breadcrumb": "docs / releases / v0.2.12",
+      "svgSha256": "6ed0bcf4782541ed95f9f98b03dd5498e1b8cb13b4e5be0b03596f5704a84247"
+    },
+    {
+      "route": "/docs/releases/v0.2.13",
+      "output": "static/img/social/docs/releases/v0.2.13.png",
+      "section": "Releases",
+      "title": "V0.2.13",
+      "breadcrumb": "docs / releases / v0.2.13",
+      "svgSha256": "5fcc809a51035d489133f340b957865e2e202173c1c5cd125faab085cc611fcd"
+    },
+    {
+      "route": "/docs/releases/v0.2.14",
+      "output": "static/img/social/docs/releases/v0.2.14.png",
+      "section": "Releases",
+      "title": "V0.2.14",
+      "breadcrumb": "docs / releases / v0.2.14",
+      "svgSha256": "67717d8bc7892c43abf2b2739cf261f31fb8e8443c1e1d3e7d2de03a901e796d"
+    },
+    {
+      "route": "/docs/releases/v0.2.15",
+      "output": "static/img/social/docs/releases/v0.2.15.png",
+      "section": "Releases",
+      "title": "V0.2.15",
+      "breadcrumb": "docs / releases / v0.2.15",
+      "svgSha256": "e835f61fc7c7afcc14f6399bf795fb58e655bc9fb87a8a0d173f6c8dfeb44ad1"
+    },
+    {
+      "route": "/docs/releases/v0.2.16",
+      "output": "static/img/social/docs/releases/v0.2.16.png",
+      "section": "Releases",
+      "title": "V0.2.16",
+      "breadcrumb": "docs / releases / v0.2.16",
+      "svgSha256": "0b1e098d4fafdb7a3c790914e8eaec0769803e22c753c06a05571c2b83aaff9f"
+    },
+    {
+      "route": "/docs/releases/v0.2.17",
+      "output": "static/img/social/docs/releases/v0.2.17.png",
+      "section": "Releases",
+      "title": "V0.2.17",
+      "breadcrumb": "docs / releases / v0.2.17",
+      "svgSha256": "5a6246d5f3206cd727743c69a1b09939188188d1d60caebbe26f5fe43f7e87b4"
+    },
+    {
+      "route": "/docs/releases/v0.2.18",
+      "output": "static/img/social/docs/releases/v0.2.18.png",
+      "section": "Releases",
+      "title": "V0.2.18",
+      "breadcrumb": "docs / releases / v0.2.18",
+      "svgSha256": "8fdd85858d75c983312b8206cceb60836fa845ec02c2854b385973a8771420d4"
+    },
+    {
+      "route": "/docs/releases/v0.2.19",
+      "output": "static/img/social/docs/releases/v0.2.19.png",
+      "section": "Releases",
+      "title": "V0.2.19",
+      "breadcrumb": "docs / releases / v0.2.19",
+      "svgSha256": "92f0e5cc7bad9c071e3c2a9e7c065d276800b2e81b6fa1861d14a888bc4e3436"
+    },
+    {
+      "route": "/docs/releases/v0.2.2",
+      "output": "static/img/social/docs/releases/v0.2.2.png",
+      "section": "Releases",
+      "title": "V0.2.2",
+      "breadcrumb": "docs / releases / v0.2.2",
+      "svgSha256": "54cb64efa3be5cc23cdb5db0fa039279e91b7d8305e50fdea24e420e7723c8ae"
+    },
+    {
+      "route": "/docs/releases/v0.2.20",
+      "output": "static/img/social/docs/releases/v0.2.20.png",
+      "section": "Releases",
+      "title": "V0.2.20",
+      "breadcrumb": "docs / releases / v0.2.20",
+      "svgSha256": "5cb6465faae80c1a281e8eb502728a7e751ac068c8bfbbc825b5ec00a4ab8b9b"
+    },
+    {
+      "route": "/docs/releases/v0.2.21",
+      "output": "static/img/social/docs/releases/v0.2.21.png",
+      "section": "Releases",
+      "title": "V0.2.21",
+      "breadcrumb": "docs / releases / v0.2.21",
+      "svgSha256": "ea251fd8dfac14eeac1754a80b63a695b0edbf265f029bbde41ebe77c8b72395"
+    },
+    {
+      "route": "/docs/releases/v0.2.22",
+      "output": "static/img/social/docs/releases/v0.2.22.png",
+      "section": "Releases",
+      "title": "V0.2.22",
+      "breadcrumb": "docs / releases / v0.2.22",
+      "svgSha256": "03a44d93a6a0f5a8da790a52e2e168f4f4ca3ad000d0be7b6abdb7c163a77818"
+    },
+    {
+      "route": "/docs/releases/v0.2.23",
+      "output": "static/img/social/docs/releases/v0.2.23.png",
+      "section": "Releases",
+      "title": "V0.2.23",
+      "breadcrumb": "docs / releases / v0.2.23",
+      "svgSha256": "d612a885e0d5e35c40b42c0a379da277ec71212820adbd6b334b46efa74af8f0"
+    },
+    {
+      "route": "/docs/releases/v0.2.24",
+      "output": "static/img/social/docs/releases/v0.2.24.png",
+      "section": "Releases",
+      "title": "V0.2.24",
+      "breadcrumb": "docs / releases / v0.2.24",
+      "svgSha256": "97c3062bf0c892be4a9f4a62780420bcb0e8f5ed2ee24ad43e14c76d53398c4c"
+    },
+    {
+      "route": "/docs/releases/v0.2.25",
+      "output": "static/img/social/docs/releases/v0.2.25.png",
+      "section": "Releases",
+      "title": "V0.2.25",
+      "breadcrumb": "docs / releases / v0.2.25",
+      "svgSha256": "77c5a7fd201b33bdae934708735a3d75fe560fbabe8f3f5637d3c22bb0f9df4d"
+    },
+    {
+      "route": "/docs/releases/v0.2.26",
+      "output": "static/img/social/docs/releases/v0.2.26.png",
+      "section": "Releases",
+      "title": "V0.2.26",
+      "breadcrumb": "docs / releases / v0.2.26",
+      "svgSha256": "f486a46a0145ae9b237c31b642c369f050e61d7622f8a3f96c655ec780dae6e0"
+    },
+    {
+      "route": "/docs/releases/v0.2.3",
+      "output": "static/img/social/docs/releases/v0.2.3.png",
+      "section": "Releases",
+      "title": "V0.2.3",
+      "breadcrumb": "docs / releases / v0.2.3",
+      "svgSha256": "b7fbabe5db6b56f42e78b1d1cb7c4e8bd2c84e9c88f125553bb693a85df89d1c"
+    },
+    {
+      "route": "/docs/releases/v0.2.4",
+      "output": "static/img/social/docs/releases/v0.2.4.png",
+      "section": "Releases",
+      "title": "V0.2.4",
+      "breadcrumb": "docs / releases / v0.2.4",
+      "svgSha256": "a78d0f0b61cbdd5231278683df73c32e5f83d4065295f8834b41acc4d22e0e40"
+    },
+    {
+      "route": "/docs/releases/v0.2.5",
+      "output": "static/img/social/docs/releases/v0.2.5.png",
+      "section": "Releases",
+      "title": "V0.2.5",
+      "breadcrumb": "docs / releases / v0.2.5",
+      "svgSha256": "0ba823a6a03638c83ef13ed93194b610f0c17745d165b191ad28b9ec64f25850"
+    },
+    {
+      "route": "/docs/releases/v0.2.6",
+      "output": "static/img/social/docs/releases/v0.2.6.png",
+      "section": "Releases",
+      "title": "V0.2.6",
+      "breadcrumb": "docs / releases / v0.2.6",
+      "svgSha256": "55b3cd5c7d721aab004c1b7c534b5c0735f493222d73e31ed083fbbd159c3f4a"
+    },
+    {
+      "route": "/docs/releases/v0.2.7",
+      "output": "static/img/social/docs/releases/v0.2.7.png",
+      "section": "Releases",
+      "title": "V0.2.7",
+      "breadcrumb": "docs / releases / v0.2.7",
+      "svgSha256": "ca986c19a257a273f6d5363b9702c46504493eeefc260762ad147793feaec2ff"
+    },
+    {
+      "route": "/docs/releases/v0.2.8",
+      "output": "static/img/social/docs/releases/v0.2.8.png",
+      "section": "Releases",
+      "title": "V0.2.8",
+      "breadcrumb": "docs / releases / v0.2.8",
+      "svgSha256": "bfb52ebfc594e2c35d024f09628da6fa12264e27a8daa9f86bbb38795aaab29e"
+    },
+    {
+      "route": "/docs/releases/v0.2.9",
+      "output": "static/img/social/docs/releases/v0.2.9.png",
+      "section": "Releases",
+      "title": "V0.2.9",
+      "breadcrumb": "docs / releases / v0.2.9",
+      "svgSha256": "95af86a18973e625303c27c2a552f90db7025d79ac6bc8836c4f4379ae6349e1"
+    },
+    {
+      "route": "/docs/releases/v0.3.0",
+      "output": "static/img/social/docs/releases/v0.3.0.png",
+      "section": "Releases",
+      "title": "V0.3.0",
+      "breadcrumb": "docs / releases / v0.3.0",
+      "svgSha256": "ea9bf394ec14976a370395232bdc840cbda1c4ba3bd5bf2dbfa223d2709ea689"
+    },
+    {
+      "route": "/docs/releases/v0.3.1",
+      "output": "static/img/social/docs/releases/v0.3.1.png",
+      "section": "Releases",
+      "title": "V0.3.1",
+      "breadcrumb": "docs / releases / v0.3.1",
+      "svgSha256": "354301d42e55e8d37350e1f7c5a85d6218ec1e2dadec3347f3e82b136e9c796d"
+    },
+    {
+      "route": "/docs/releases/v0.3.10",
+      "output": "static/img/social/docs/releases/v0.3.10.png",
+      "section": "Releases",
+      "title": "V0.3.10",
+      "breadcrumb": "docs / releases / v0.3.10",
+      "svgSha256": "aa98e51945da1fb28f50de5f11fa36cb73c44f1119b6bd08c240614aa26eceb0"
+    },
+    {
+      "route": "/docs/releases/v0.3.11",
+      "output": "static/img/social/docs/releases/v0.3.11.png",
+      "section": "Releases",
+      "title": "V0.3.11",
+      "breadcrumb": "docs / releases / v0.3.11",
+      "svgSha256": "52b54fe303d36163f705064691bae787e4862392fa92b7c32329bb2400915208"
+    },
+    {
+      "route": "/docs/releases/v0.3.12",
+      "output": "static/img/social/docs/releases/v0.3.12.png",
+      "section": "Releases",
+      "title": "V0.3.12",
+      "breadcrumb": "docs / releases / v0.3.12",
+      "svgSha256": "c9bcf78e8dbd25060316e9ac01619f251ba0d5492b4cbcb01e2b41aa89c72e83"
+    },
+    {
+      "route": "/docs/releases/v0.3.13",
+      "output": "static/img/social/docs/releases/v0.3.13.png",
+      "section": "Releases",
+      "title": "V0.3.13",
+      "breadcrumb": "docs / releases / v0.3.13",
+      "svgSha256": "e43b4f92b292a9418a8b8aa90fd0399f3fa6130ca5552bffcbae004e01dadf14"
+    },
+    {
+      "route": "/docs/releases/v0.3.14",
+      "output": "static/img/social/docs/releases/v0.3.14.png",
+      "section": "Releases",
+      "title": "V0.3.14",
+      "breadcrumb": "docs / releases / v0.3.14",
+      "svgSha256": "b5b35ef62d668ad1cfb9454bbce02b67a247d18855dc6adb1302e5deedd08b37"
+    },
+    {
+      "route": "/docs/releases/v0.3.15",
+      "output": "static/img/social/docs/releases/v0.3.15.png",
+      "section": "Releases",
+      "title": "V0.3.15",
+      "breadcrumb": "docs / releases / v0.3.15",
+      "svgSha256": "432ff563fd4b79e2dbb2dbb762e895f0e086208563e02b0e034aaf8345f88335"
+    },
+    {
+      "route": "/docs/releases/v0.3.16",
+      "output": "static/img/social/docs/releases/v0.3.16.png",
+      "section": "Releases",
+      "title": "V0.3.16",
+      "breadcrumb": "docs / releases / v0.3.16",
+      "svgSha256": "992b508c65c979e1da495c597848ce3b4dccdbfecfd2f557b4c80f5ed607b7cf"
+    },
+    {
+      "route": "/docs/releases/v0.3.17",
+      "output": "static/img/social/docs/releases/v0.3.17.png",
+      "section": "Releases",
+      "title": "V0.3.17",
+      "breadcrumb": "docs / releases / v0.3.17",
+      "svgSha256": "fb7c5e0be96687906ea19ac5ed38a0d4221ae7770c0f14c4348840376e6f48fe"
+    },
+    {
+      "route": "/docs/releases/v0.3.18",
+      "output": "static/img/social/docs/releases/v0.3.18.png",
+      "section": "Releases",
+      "title": "V0.3.18",
+      "breadcrumb": "docs / releases / v0.3.18",
+      "svgSha256": "6613a84eac9459baff5f404f5763017e4224ee67e7a80d4b1b0689e83d6faa43"
+    },
+    {
+      "route": "/docs/releases/v0.3.19",
+      "output": "static/img/social/docs/releases/v0.3.19.png",
+      "section": "Releases",
+      "title": "V0.3.19",
+      "breadcrumb": "docs / releases / v0.3.19",
+      "svgSha256": "8d744ccf9a3030787d41d8a21bbdc46571e3bd7ebfb93d2bc7809f8152285650"
+    },
+    {
+      "route": "/docs/releases/v0.3.2",
+      "output": "static/img/social/docs/releases/v0.3.2.png",
+      "section": "Releases",
+      "title": "V0.3.2",
+      "breadcrumb": "docs / releases / v0.3.2",
+      "svgSha256": "b04b2d05c2454db7a24158fc8d871b504be3c592c2017c084e7371a4155bf8f6"
+    },
+    {
+      "route": "/docs/releases/v0.3.20",
+      "output": "static/img/social/docs/releases/v0.3.20.png",
+      "section": "Releases",
+      "title": "V0.3.20",
+      "breadcrumb": "docs / releases / v0.3.20",
+      "svgSha256": "f52c34ded5fc2b882843be953ef7c724642628e9aba01d600bc17f710ccc97aa"
+    },
+    {
+      "route": "/docs/releases/v0.3.21",
+      "output": "static/img/social/docs/releases/v0.3.21.png",
+      "section": "Releases",
+      "title": "V0.3.21",
+      "breadcrumb": "docs / releases / v0.3.21",
+      "svgSha256": "5e971fd04828bd9de2891bc67b0b775ba86e24f8fe6971e5009eaa534c162c28"
+    },
+    {
+      "route": "/docs/releases/v0.3.22",
+      "output": "static/img/social/docs/releases/v0.3.22.png",
+      "section": "Releases",
+      "title": "V0.3.22",
+      "breadcrumb": "docs / releases / v0.3.22",
+      "svgSha256": "495a33e9fd2b49cc475342ca460db7d14c867f57c3fef30b05fd009a6b9cc112"
+    },
+    {
+      "route": "/docs/releases/v0.3.23",
+      "output": "static/img/social/docs/releases/v0.3.23.png",
+      "section": "Releases",
+      "title": "V0.3.23",
+      "breadcrumb": "docs / releases / v0.3.23",
+      "svgSha256": "25828c603283be1ed075329d12153bdd2f22f1b6a373c718ab85ae27313bd5f5"
+    },
+    {
+      "route": "/docs/releases/v0.3.24",
+      "output": "static/img/social/docs/releases/v0.3.24.png",
+      "section": "Releases",
+      "title": "V0.3.24",
+      "breadcrumb": "docs / releases / v0.3.24",
+      "svgSha256": "370438cb82356ac676e1af0d7f451427f5cbe3503367b524504b0f2c69d7e6cb"
+    },
+    {
+      "route": "/docs/releases/v0.3.25",
+      "output": "static/img/social/docs/releases/v0.3.25.png",
+      "section": "Releases",
+      "title": "V0.3.25",
+      "breadcrumb": "docs / releases / v0.3.25",
+      "svgSha256": "e7c7d27d2afb5a07d9f8862d840959174907addbb2efc863129d0ca3c2a6a60e"
+    },
+    {
+      "route": "/docs/releases/v0.3.26",
+      "output": "static/img/social/docs/releases/v0.3.26.png",
+      "section": "Releases",
+      "title": "V0.3.26",
+      "breadcrumb": "docs / releases / v0.3.26",
+      "svgSha256": "16eb8ab3ce8ab0c3a506930843a15fffb55bc53d44fecbc66b03f4b2808c8b2e"
+    },
+    {
+      "route": "/docs/releases/v0.3.27",
+      "output": "static/img/social/docs/releases/v0.3.27.png",
+      "section": "Releases",
+      "title": "V0.3.27",
+      "breadcrumb": "docs / releases / v0.3.27",
+      "svgSha256": "400237fa3ad9b5aaaf9d70edc2c6ac99a85dcaf29702659f9f667b1b9fde2125"
+    },
+    {
+      "route": "/docs/releases/v0.3.28",
+      "output": "static/img/social/docs/releases/v0.3.28.png",
+      "section": "Releases",
+      "title": "V0.3.28",
+      "breadcrumb": "docs / releases / v0.3.28",
+      "svgSha256": "35cbe4e1fdb4c323c4c1f4a7d87f7e61e35c157afff4d8424187d7d2945a3987"
+    },
+    {
+      "route": "/docs/releases/v0.3.29",
+      "output": "static/img/social/docs/releases/v0.3.29.png",
+      "section": "Releases",
+      "title": "V0.3.29",
+      "breadcrumb": "docs / releases / v0.3.29",
+      "svgSha256": "b664aa41821540391c74670f974f4817ffa60caac09e337eb9da04fd2ff64c96"
+    },
+    {
+      "route": "/docs/releases/v0.3.3",
+      "output": "static/img/social/docs/releases/v0.3.3.png",
+      "section": "Releases",
+      "title": "V0.3.3",
+      "breadcrumb": "docs / releases / v0.3.3",
+      "svgSha256": "95e49677c2d318cabe20e12a36bb667db7b6506d1362e976afe2b0d6a2a6d72a"
+    },
+    {
+      "route": "/docs/releases/v0.3.4",
+      "output": "static/img/social/docs/releases/v0.3.4.png",
+      "section": "Releases",
+      "title": "V0.3.4",
+      "breadcrumb": "docs / releases / v0.3.4",
+      "svgSha256": "5339c120c72103ed319c56fd07868d7b09e0b9afb8560c4519c7b1d5f7d626b5"
+    },
+    {
+      "route": "/docs/releases/v0.3.5",
+      "output": "static/img/social/docs/releases/v0.3.5.png",
+      "section": "Releases",
+      "title": "V0.3.5",
+      "breadcrumb": "docs / releases / v0.3.5",
+      "svgSha256": "1b6dfa1c058efd6a2ee433fe6503694689c1b8ceea07a7d2985024ed5ae0713b"
+    },
+    {
+      "route": "/docs/releases/v0.3.6",
+      "output": "static/img/social/docs/releases/v0.3.6.png",
+      "section": "Releases",
+      "title": "V0.3.6",
+      "breadcrumb": "docs / releases / v0.3.6",
+      "svgSha256": "14b1aaf1b2db8a7210e1e490d2ab0b210e60611ff3657258b88a26ec473fdb3d"
+    },
+    {
+      "route": "/docs/releases/v0.3.7",
+      "output": "static/img/social/docs/releases/v0.3.7.png",
+      "section": "Releases",
+      "title": "V0.3.7",
+      "breadcrumb": "docs / releases / v0.3.7",
+      "svgSha256": "f6f649e737004946fff4abc6fd782342cf513c7de04ed63e4958f981ae6e4527"
+    },
+    {
+      "route": "/docs/releases/v0.3.8",
+      "output": "static/img/social/docs/releases/v0.3.8.png",
+      "section": "Releases",
+      "title": "V0.3.8",
+      "breadcrumb": "docs / releases / v0.3.8",
+      "svgSha256": "e51f4d8e43039c56b875900a29247881479459b0032d71e709a67781f6cb522b"
+    },
+    {
+      "route": "/docs/releases/v0.3.9",
+      "output": "static/img/social/docs/releases/v0.3.9.png",
+      "section": "Releases",
+      "title": "V0.3.9",
+      "breadcrumb": "docs / releases / v0.3.9",
+      "svgSha256": "d773af91086f928e0a0acd99d5744441d18f470a6382b97fd7b7f1aa1f777667"
+    },
+    {
+      "route": "/docs/releases/v0.4.0",
+      "output": "static/img/social/docs/releases/v0.4.0.png",
+      "section": "Releases",
+      "title": "V0.4.0",
+      "breadcrumb": "docs / releases / v0.4.0",
+      "svgSha256": "9471e97526bfbd388310f6218644c6e3337a8dfc3dedebb488c4dcd98410fb96"
+    },
+    {
+      "route": "/docs/releases/v0.4.1",
+      "output": "static/img/social/docs/releases/v0.4.1.png",
+      "section": "Releases",
+      "title": "V0.4.1",
+      "breadcrumb": "docs / releases / v0.4.1",
+      "svgSha256": "7b46f50396ab63fbb3d60f351dcc59cdc4fdb38400a78c8a37d4a9b8a7bf9f5b"
+    },
+    {
+      "route": "/docs/releases/v0.4.2",
+      "output": "static/img/social/docs/releases/v0.4.2.png",
+      "section": "Releases",
+      "title": "V0.4.2",
+      "breadcrumb": "docs / releases / v0.4.2",
+      "svgSha256": "498dcc9d272ae290647fe078c4cf971b4b3871b29b68d3185124312b4f88aab9"
+    },
+    {
+      "route": "/docs/releases/v0.4.3",
+      "output": "static/img/social/docs/releases/v0.4.3.png",
+      "section": "Releases",
+      "title": "V0.4.3",
+      "breadcrumb": "docs / releases / v0.4.3",
+      "svgSha256": "929d8de001eca9f8467d3d6588409d50835f387521e8f8a2f64360c30d996dca"
+    },
+    {
+      "route": "/docs/releases/v0.4.4",
+      "output": "static/img/social/docs/releases/v0.4.4.png",
+      "section": "Releases",
+      "title": "V0.4.4",
+      "breadcrumb": "docs / releases / v0.4.4",
+      "svgSha256": "41926712a627cee941ba4e7adec46c16518c0f69f79b31da8ab700faf3c59f22"
+    },
+    {
+      "route": "/docs/releases/v0.5.0-rc.1",
+      "output": "static/img/social/docs/releases/v0.5.0-rc.1.png",
+      "section": "Releases",
+      "title": "V0.5.0 Rc.1",
+      "breadcrumb": "docs / releases / v0.5.0-rc.1",
+      "svgSha256": "1dff7ccc43afac968b4daa46932a5ef76eb5ddc20da7ce6a91472d8b50439afe"
+    },
+    {
+      "route": "/docs/releases/v0.5.0",
+      "output": "static/img/social/docs/releases/v0.5.0.png",
+      "section": "Releases",
+      "title": "V0.5.0",
+      "breadcrumb": "docs / releases / v0.5.0",
+      "svgSha256": "c175ac10a88209372858d11faf356bf85eb38b97eab3f542d7fc758ab26541fb"
+    },
+    {
+      "route": "/docs/releases/v0.6.0",
+      "output": "static/img/social/docs/releases/v0.6.0.png",
+      "section": "Releases",
+      "title": "V0.6.0",
+      "breadcrumb": "docs / releases / v0.6.0",
+      "svgSha256": "f54f07b7b7389fdc5cca9b38737e0f2f71e8c8eaabd38f07f20619ce78b8ad39"
+    },
+    {
+      "route": "/docs/releases/v0.6.1",
+      "output": "static/img/social/docs/releases/v0.6.1.png",
+      "section": "Releases",
+      "title": "V0.6.1",
+      "breadcrumb": "docs / releases / v0.6.1",
+      "svgSha256": "934cb2f270d4a7b3e62bd158ef355ca6dd17f45a60b994718c83bbe1b0d7c3ac"
+    },
+    {
+      "route": "/docs/releases/v0.6.2",
+      "output": "static/img/social/docs/releases/v0.6.2.png",
+      "section": "Releases",
+      "title": "V0.6.2",
+      "breadcrumb": "docs / releases / v0.6.2",
+      "svgSha256": "eee5ef37c04328ab8431f14cf76a50846a4a529c49a51dde7213cb37f2d819f6"
+    },
+    {
+      "route": "/docs/releases/v0.6.3",
+      "output": "static/img/social/docs/releases/v0.6.3.png",
+      "section": "Releases",
+      "title": "V0.6.3",
+      "breadcrumb": "docs / releases / v0.6.3",
+      "svgSha256": "a061e5321723c170c0a9376e803d6529c309af08bda9b5221fdfc971ab813931"
+    },
+    {
+      "route": "/docs/releases/v0.6.4",
+      "output": "static/img/social/docs/releases/v0.6.4.png",
+      "section": "Releases",
+      "title": "V0.6.4",
+      "breadcrumb": "docs / releases / v0.6.4",
+      "svgSha256": "ef0c1839109d70c40e50953ab6dd0ba959a1809832f5663f7d1f684b5090db3c"
+    },
+    {
+      "route": "/docs/releases/v0.6.5",
+      "output": "static/img/social/docs/releases/v0.6.5.png",
+      "section": "Releases",
+      "title": "V0.6.5",
+      "breadcrumb": "docs / releases / v0.6.5",
+      "svgSha256": "9b03f08d015323332ccb3be3c9a6202c19a197f5307e04c0bc04f37241b46e1f"
+    },
+    {
+      "route": "/docs/releases/v0.6.6",
+      "output": "static/img/social/docs/releases/v0.6.6.png",
+      "section": "Releases",
+      "title": "V0.6.6",
+      "breadcrumb": "docs / releases / v0.6.6",
+      "svgSha256": "4713332757acc69564259f5548de356b0ff9b4b32594d9da87b9c7434902f822"
+    },
+    {
+      "route": "/docs/releases/v0.6.7",
+      "output": "static/img/social/docs/releases/v0.6.7.png",
+      "section": "Releases",
+      "title": "V0.6.7",
+      "breadcrumb": "docs / releases / v0.6.7",
+      "svgSha256": "aee27df32adf833ee4ff20f77d6ce90c546f555392da55f9946e042b191337c6"
+    },
+    {
+      "route": "/docs/showcase",
+      "output": "static/img/social/docs/showcase.png",
+      "section": "Showcase",
+      "title": "Showcase",
+      "breadcrumb": "docs / showcase",
+      "svgSha256": "9db9f9b482e4a807d9360d86255622ab7ac020e4dc21217a24587ff9b72e9016"
+    },
+    {
+      "route": "/docs/start/first-local-run",
+      "output": "static/img/social/docs/start/first-local-run.png",
+      "section": "Start",
+      "title": "First local run",
+      "breadcrumb": "docs / start / first-local-run",
+      "svgSha256": "b5fb3a8e3a4a0a89047848aa1746d92544ddc39ec71be3380669fae4cae41a96"
+    },
+    {
+      "route": "/docs/start/quickstart",
+      "output": "static/img/social/docs/start/quickstart.png",
+      "section": "Start",
+      "title": "Quickstart",
+      "breadcrumb": "docs / start / quickstart",
+      "svgSha256": "16247066a5f39a429daaf54f86a33321a0ed7608f4d37b773f145804d72e021a"
+    },
+    {
+      "route": "/docs/start/what-agentplane-writes",
+      "output": "static/img/social/docs/start/what-agentplane-writes.png",
+      "section": "Start",
+      "title": "What files does Agentplane write?",
+      "breadcrumb": "docs / start / what-agentplane-writes",
+      "svgSha256": "7ecb5e4619b7354e2ecaf2b952bf24d8bc89ec09b3c85bf148beed06f38d0bc3"
+    },
+    {
+      "route": "/docs/user/agent-bootstrap.generated",
+      "output": "static/img/social/docs/user/agent-bootstrap.generated.png",
+      "section": "User",
+      "title": "Agent bootstrap",
+      "breadcrumb": "docs / user / agent-bootstrap.generated",
+      "svgSha256": "901cf7543102bdb0a8f9a463c4fa1eb49e9a591b4e51b3c0a830a1550d936166"
+    },
+    {
+      "route": "/docs/user/agent-discovery",
+      "output": "static/img/social/docs/user/agent-discovery.png",
+      "section": "User",
+      "title": "Agent discovery endpoints",
+      "breadcrumb": "docs / user / agent-discovery",
+      "svgSha256": "2f9690de78d434d7461e6c27a8645d9ab2ab43708554586c4e890aac66a36969"
+    },
+    {
+      "route": "/docs/user/agents",
+      "output": "static/img/social/docs/user/agents.png",
+      "section": "User",
+      "title": "Agents",
+      "breadcrumb": "docs / user / agents",
+      "svgSha256": "4afbbce6d55de4d756bfd92f8932b5853c2c9f3196f77da4abd10538512595c9"
+    },
+    {
+      "route": "/docs/user/branching-and-pr-artifacts",
+      "output": "static/img/social/docs/user/branching-and-pr-artifacts.png",
+      "section": "User",
+      "title": "Branching and PR Artifacts",
+      "breadcrumb": "docs / user / branching-and-pr-artifacts",
+      "svgSha256": "621c872dfa0e779c76dd041c02c213ba130d9aac0eeae670f8b600c2161e0107"
+    },
+    {
+      "route": "/docs/user/breaking-changes",
+      "output": "static/img/social/docs/user/breaking-changes.png",
+      "section": "User",
+      "title": "Breaking changes",
+      "breadcrumb": "docs / user / breaking-changes",
+      "svgSha256": "7ad026011339b02eff9d840f5643463b58e2915e7dff650699375b35ebad3c74"
+    },
+    {
+      "route": "/docs/user/cli-reference.generated",
+      "output": "static/img/social/docs/user/cli-reference.generated.png",
+      "section": "User",
+      "title": "Cli Reference.generated",
+      "breadcrumb": "docs / user / cli-reference.generated",
+      "svgSha256": "78e3adeea67219ba9edbaaf2e4701aebcd7fc4cbb357bdd9ac1ff0d735f93794"
+    },
+    {
+      "route": "/docs/user/commands",
+      "output": "static/img/social/docs/user/commands.png",
+      "section": "User",
+      "title": "Commands",
+      "breadcrumb": "docs / user / commands",
+      "svgSha256": "0da57ead8e04207c480c3e1288433aad5d8e906ff318bc9b877141b04b14b36b"
+    },
+    {
+      "route": "/docs/user/configuration",
+      "output": "static/img/social/docs/user/configuration.png",
+      "section": "User",
+      "title": "Configuration",
+      "breadcrumb": "docs / user / configuration",
+      "svgSha256": "23d6fc76e1b626f81114b3b6f696e9819395646bb9fcfe2fc4d8b962e87fd4e8"
+    },
+    {
+      "route": "/docs/user/indexing-and-webmaster-operations",
+      "output": "static/img/social/docs/user/indexing-and-webmaster-operations.png",
+      "section": "User",
+      "title": "Indexing and webmaster operations",
+      "breadcrumb": "docs / user / indexing-and-webmaster-operations",
+      "svgSha256": "7528b081e47fc42f9444456a738294e65ad7c8961137e23373ab15fb5c8bcc02"
+    },
+    {
+      "route": "/docs/user/local-context",
+      "output": "static/img/social/docs/user/local-context.png",
+      "section": "User",
+      "title": "Local context for AI agent workflows",
+      "breadcrumb": "docs / user / local-context",
+      "svgSha256": "aaa1d1996861a3a307fbdb33f548bbc46f40cb893424cca061d91c836f0c8620"
+    },
+    {
+      "route": "/docs/user/overview",
+      "output": "static/img/social/docs/user/overview.png",
+      "section": "User",
+      "title": "What is Agentplane?",
+      "breadcrumb": "docs / user / overview",
+      "svgSha256": "15ba9e9050fc2b029ff4adc5a9ef508a1cfa721dce0d638f855bc5cde878c8e4"
+    },
+    {
+      "route": "/docs/user/prerequisites",
+      "output": "static/img/social/docs/user/prerequisites.png",
+      "section": "User",
+      "title": "Prerequisites",
+      "breadcrumb": "docs / user / prerequisites",
+      "svgSha256": "0b98ba89a9ca84c443e77325f0fb1bf297546b21751803c9fdd87ff75051de56"
+    },
+    {
+      "route": "/docs/user/setup",
+      "output": "static/img/social/docs/user/setup.png",
+      "section": "User",
+      "title": "Setup",
+      "breadcrumb": "docs / user / setup",
+      "svgSha256": "b5f249b93171a29e2047bef46442b899e5ae3d9ef12deaf0966a984974ea84be"
+    },
+    {
+      "route": "/docs/user/task-lifecycle",
+      "output": "static/img/social/docs/user/task-lifecycle.png",
+      "section": "User",
+      "title": "Task lifecycle",
+      "breadcrumb": "docs / user / task-lifecycle",
+      "svgSha256": "20b40b8bdc4e4966b62207959802b9fa7e757e67647adc43cec0176597ec3d40"
+    },
+    {
+      "route": "/docs/user/tasks-and-backends",
+      "output": "static/img/social/docs/user/tasks-and-backends.png",
+      "section": "User",
+      "title": "Tasks and backends",
+      "breadcrumb": "docs / user / tasks-and-backends",
+      "svgSha256": "5c003d36802bf41a5ed9208e1fbdea1b4684641e6bcc7e4a4ad65060843b7e64"
+    },
+    {
+      "route": "/docs/user/website-ia",
+      "output": "static/img/social/docs/user/website-ia.png",
+      "section": "User",
+      "title": "Website information architecture",
+      "breadcrumb": "docs / user / website-ia",
+      "svgSha256": "eb0043d1efabf6294320e31c7ae7984dde5f4c313ef530d979d3b7760b19f8ac"
+    },
+    {
+      "route": "/docs/user/workflow-migration",
+      "output": "static/img/social/docs/user/workflow-migration.png",
+      "section": "User",
+      "title": "Workflow contract recovery",
+      "breadcrumb": "docs / user / workflow-migration",
+      "svgSha256": "62e601050bffd9d8b4c284f04de9cda95af97e6f8e3168d97383d42db4d2b498"
+    },
+    {
+      "route": "/docs/user/workflow",
+      "output": "static/img/social/docs/user/workflow.png",
+      "section": "User",
+      "title": "Workflow",
+      "breadcrumb": "docs / user / workflow",
+      "svgSha256": "3dce6270e016a51656817126413b433b793f7c7827294fabec1164f8be9d0396"
+    },
+    {
+      "route": "/docs/workflow-guides/aider",
+      "output": "static/img/social/docs/workflow-guides/aider.png",
+      "section": "Workflow Guides",
+      "title": "Agentplane + Aider",
+      "breadcrumb": "docs / workflow-guides / aider",
+      "svgSha256": "3302095d6356d2628d3b01cbd5d6b39ee8394f7c4d11afc86608c3f8e7a8bbc4"
+    },
+    {
+      "route": "/docs/workflow-guides/branch-pr",
+      "output": "static/img/social/docs/workflow-guides/branch-pr.png",
+      "section": "Workflow Guides",
+      "title": "Agentplane + branch_pr workflow",
+      "breadcrumb": "docs / workflow-guides / branch-pr",
+      "svgSha256": "e7a93e6a5b0d8962abe9d2570724182b41301ec3a19ad42cc1e9c4219ab29c9d"
+    },
+    {
+      "route": "/docs/workflow-guides/claude-code",
+      "output": "static/img/social/docs/workflow-guides/claude-code.png",
+      "section": "Workflow Guides",
+      "title": "Use Agentplane with Claude Code",
+      "breadcrumb": "docs / workflow-guides / claude-code",
+      "svgSha256": "97f7830b9371fbdaeef4f8284fdc740c9347f779ab242ed7d8c1c08276f73e21"
+    },
+    {
+      "route": "/docs/workflow-guides/codex",
+      "output": "static/img/social/docs/workflow-guides/codex.png",
+      "section": "Workflow Guides",
+      "title": "Use Agentplane with Codex",
+      "breadcrumb": "docs / workflow-guides / codex",
+      "svgSha256": "dca6a7ae4273844a5038bb9129e5dec0a19f77168a0ac755e3f410502a52f8e8"
+    },
+    {
+      "route": "/docs/workflow-guides/cursor",
+      "output": "static/img/social/docs/workflow-guides/cursor.png",
+      "section": "Workflow Guides",
+      "title": "Agentplane + Cursor",
+      "breadcrumb": "docs / workflow-guides / cursor",
+      "svgSha256": "c6aa558961007cdf08ae3ab68e8086989ec4740a415c212323ec86fc6aecc731"
+    },
+    {
+      "route": "/docs/workflow-guides/github-actions",
+      "output": "static/img/social/docs/workflow-guides/github-actions.png",
+      "section": "Workflow Guides",
+      "title": "Agentplane + GitHub Actions",
+      "breadcrumb": "docs / workflow-guides / github-actions",
+      "svgSha256": "e19657f0f3d0e6691742c05e17d5cc4662e38ab8cc4efbb12c0b156f7577e83f"
+    },
+    {
+      "route": "/docs/workflow-guides",
+      "output": "static/img/social/docs/workflow-guides.png",
+      "section": "Workflow Guides",
+      "title": "Use with agents",
+      "breadcrumb": "docs / workflow-guides",
+      "svgSha256": "fa0f31309f7e89f825ad19696890e00dedbba29581efc37415cb3f18780b9a96"
+    }
+  ]
+}

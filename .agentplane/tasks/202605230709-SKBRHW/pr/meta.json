@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605230709-SKBRHW/refresh-social-images",
+  "created_at": "2026-05-23T07:09:24.197Z",
+  "diffstat_sha256": "sha256:8cccc0ae8521b91dcd6296580891d8925ac1446391b2af4de681ef1393d86e98",
+  "last_verified_at": "2026-05-23T07:20:43.122Z",
+  "last_verified_diffstat_sha256": "sha256:8cccc0ae8521b91dcd6296580891d8925ac1446391b2af4de681ef1393d86e98",
+  "schema_version": 1,
+  "task_id": "202605230709-SKBRHW",
+  "updated_at": "2026-05-23T07:09:24.197Z",
+  "verify": {
+    "status": "pass"
+  }
+}
