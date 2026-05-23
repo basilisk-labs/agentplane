@@ -495,7 +495,13 @@ jobs:
         (
           !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
           (
-            github.event_name == 'pull_request' ||
+            (
+              github.event_name == 'pull_request' &&
+              (
+                startsWith(github.head_ref, 'release/') ||
+                contains(github.head_ref, '/release-')
+              )
+            ) ||
             (
               github.event_name == 'push' &&
               github.ref == 'refs/heads/main'
@@ -595,6 +601,8 @@ jobs:
     steps:
       - name: Evaluate aggregate verification
         shell: bash
+        env:
+          HEAD_REF: ${{ github.head_ref }}
         run: |
           set -euo pipefail
           echo "core=${{ needs.changes.outputs.core }}"
@@ -616,7 +624,16 @@ jobs:
             exit 0
           fi
 
-          [ "${{ needs.release-ready.result }}" = "success" ]
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            [ "${{ needs.release-ready.result }}" = "success" ]
+          fi
+
+          case "${HEAD_REF}" in
+            release/*|*/release-*)
+              [ "${{ needs.release-ready.result }}" = "success" ]
+              ;;
+          esac
+
           if [ "${{ needs.changes.outputs.core }}" != "true" ]; then
             exit 0
           fi
