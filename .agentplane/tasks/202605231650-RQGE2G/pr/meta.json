@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605231650-RQGE2G/repo-evidence-hero",
+  "created_at": "2026-05-23T16:51:31.967Z",
+  "diffstat_sha256": "sha256:676ccdb1bc8f00da9e9a7e08ba0e131a790c23b6a2301bd5ba2e263a042a55e2",
+  "last_verified_at": "2026-05-23T17:06:12.204Z",
+  "last_verified_diffstat_sha256": "sha256:676ccdb1bc8f00da9e9a7e08ba0e131a790c23b6a2301bd5ba2e263a042a55e2",
+  "schema_version": 1,
+  "task_id": "202605231650-RQGE2G",
+  "updated_at": "2026-05-23T16:51:31.967Z",
+  "verify": {
+    "status": "pass"
+  }
+}
