@@ -1,12 +1,18 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T11:08:10Z",
   "base": "main",
   "branch": "task/202605231100-W8XDSA/ci-dispatch-aggregate",
   "created_at": "2026-05-23T11:00:44.146Z",
   "diffstat_sha256": "sha256:a4d9533c6bc1926292eba97b33e3672f983897b4020e023f407f5b68bdb414b6",
   "last_verified_at": null,
+  "merge_commit": "9f85c1e40375dd9ffe972afee51b130f59967e25",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T11:08:10Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605231100-W8XDSA",
-  "updated_at": "2026-05-23T11:00:44.146Z",
+  "updated_at": "2026-05-23T11:08:10Z",
   "verify": {
     "status": "skipped"
   }

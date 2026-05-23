@@ -1,10 +1,11 @@
 ---
 id: "202605231100-W8XDSA"
 title: "Fix workflow_dispatch aggregate CI for evidence branches"
-status: "DOING"
+result_summary: "Merged via PR #4096."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "9f85c1e40375dd9ffe972afee51b130f59967e25"
+  message: "Merge pull request #4096 from basilisk-labs/task/202605231100-W8XDSA/ci-dispatch-aggregate"
 comments:
   -
     author: "CODER"
     body: "Start: fix workflow_dispatch PR verification aggregate for manually dispatched evidence branch CI."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4096 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -37,9 +43,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: fix workflow_dispatch PR verification aggregate for manually dispatched evidence branch CI."
+  -
+    type: "status"
+    at: "2026-05-23T11:08:54.536Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4096 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T11:00:44.109Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T11:08:54.539Z"
+doc_updated_by: "INTEGRATOR"
 description: "Allow manually dispatched Core CI runs without an exact release SHA to satisfy PR verification from normal full-fast jobs without requiring a skipped release-ready manifest."
 sections:
   Summary: |-
