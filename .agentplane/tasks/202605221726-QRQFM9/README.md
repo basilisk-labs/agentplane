@@ -1,10 +1,11 @@
 ---
 id: "202605221726-QRQFM9"
 title: "Promote MERGED_PENDING_CLOSE to first-class task state"
-status: "DOING"
+result_summary: "Merged via PR #4052."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ quality_review:
     - ".agentplane/tasks/202605221726-QRQFM9/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221726-QRQFM9-merged-pending-close-state/.agentplane/tasks/202605221726-QRQFM9/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "76a9e4ff188361d800f6ceb42b3a48d60631a680"
+  message: "Merge pull request #4052 from basilisk-labs/task/202605221726-QRQFM9/merged-pending-close-state"
 comments:
   -
     author: "CODER"
     body: "Start: promoting merged-pending-close release gate handling and verifying existing task projections."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4052 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator check: projection tests cover task list/search/next; release readiness now has a distinct MERGED_PENDING_CLOSE failure path, while DONE remains unchanged and still requires hosted close metadata."
+  -
+    type: "status"
+    at: "2026-05-23T00:29:59.709Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4052 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-22T23:56:57.638Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T00:29:59.717Z"
+doc_updated_by: "INTEGRATOR"
 description: "Represent implementation-merged-but-not-hosted-closed branch_pr tasks as a distinct queue/list/release-gate state instead of ordinary DOING work."
 sections:
   Summary: |-
