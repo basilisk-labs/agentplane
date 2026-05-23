@@ -19,7 +19,7 @@ on:
         default: "main"
 
 permissions:
-  actions: read
+  actions: write
   contents: write
   id-token: write
   packages: write
@@ -625,19 +625,19 @@ jobs:
       - name: Prepare release task evidence
         if: always()
         id: release_evidence
+        continue-on-error: true
         env:
           RELEASE_SHA: ${{ needs.detect.outputs.sha }}
           REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           mkdir -p .agentplane/.release/publish
-          if bun scripts/release-task-evidence.mjs prepare \
+          if ! bun scripts/release-task-evidence.mjs prepare \
             --release-sha "${RELEASE_SHA}" \
             --publish-result .agentplane/.release/publish/publish-result.json \
             --repo "${REPO}" > .agentplane/.release/publish/release-task-evidence.json; then
-            true
-          else
-            true
+            echo "::warning::release task evidence prepare failed; publish-result remains the authoritative publication outcome"
+            printf '%s\n' '{"actionable":false,"reason":"release task evidence prepare failed"}' > .agentplane/.release/publish/release-task-evidence.json
           fi
           node <<'EOF'
           const fs = require("node:fs");
@@ -672,6 +672,7 @@ jobs:
       - name: Check for existing release evidence PR
         if: steps.release_evidence.outputs.actionable == 'true'
         id: release_evidence_existing
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -694,6 +695,7 @@ jobs:
           steps.release_evidence_existing.outputs.pr_url == '' &&
           steps.release_evidence_existing.outputs.branch_exists != 'true'
         id: apply_release_evidence
+        continue-on-error: true
         env:
           REPO: ${{ github.repository }}
         run: |
@@ -721,11 +723,13 @@ jobs:
           echo "closure_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Push release evidence branch
         if: steps.apply_release_evidence.outputs.created_commit == 'true'
+        continue-on-error: true
         run: |
           set -euo pipefail
           git push --set-upstream origin "${{ steps.release_evidence.outputs.closure_branch }}"
       - name: Dispatch Core CI for release evidence branch
         if: steps.apply_release_evidence.outputs.created_commit == 'true'
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -736,6 +740,7 @@ jobs:
           steps.release_evidence.outputs.actionable == 'true' &&
           steps.release_evidence_existing.outputs.pr_url == ''
         id: create_release_evidence_pr
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           PR_TITLE: ${{ steps.release_evidence.outputs.pr_title }}
@@ -768,6 +773,7 @@ jobs:
         if: |
           steps.release_evidence.outputs.actionable == 'true' &&
           (steps.release_evidence_existing.outputs.pr_url != '' || steps.create_release_evidence_pr.outputs.pr_url != '')
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

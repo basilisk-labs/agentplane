@@ -137,8 +137,12 @@ describe("publish workflow contract", () => {
     );
     expect(workflow).toContain('--ghcr-outcome "${{ steps.publish_ghcr.outcome }}"');
     expect(workflow).toContain("if: always()");
+    expect(workflow).toContain("actions: write");
     expect(workflow).toContain("pull-requests: write");
     expect(workflow).toContain("Prepare release task evidence");
+    expect(workflow).toContain(
+      "::warning::release task evidence prepare failed; publish-result remains the authoritative publication outcome",
+    );
     expect(workflow).toContain("bun scripts/release-task-evidence.mjs prepare");
     expect(workflow).toContain(".agentplane/.release/publish/release-task-evidence.json");
     expect(workflow).toContain("Check for existing release evidence PR");
@@ -153,7 +157,11 @@ describe("publish workflow contract", () => {
       workflow.indexOf("Upload release-distribution artifact"),
     );
     for (const stepName of [
+      "Prepare release task evidence",
       "Check for existing release evidence PR",
+      "Apply release task evidence on a follow-up branch",
+      "Push release evidence branch",
+      "Dispatch Core CI for release evidence branch",
       "Open or recover release evidence PR",
       "Enable auto-merge for release evidence PR",
     ]) {
@@ -164,7 +172,17 @@ describe("publish workflow contract", () => {
         stepIndex,
         nextStepIndex === -1 ? workflow.length : nextStepIndex,
       );
-      expect(stepBlock).toContain("GH_TOKEN: ${{ github.token }}");
+      expect(stepBlock).toContain("continue-on-error: true");
+      if (
+        [
+          "Check for existing release evidence PR",
+          "Dispatch Core CI for release evidence branch",
+          "Open or recover release evidence PR",
+          "Enable auto-merge for release evidence PR",
+        ].includes(stepName)
+      ) {
+        expect(stepBlock).toContain("GH_TOKEN: ${{ github.token }}");
+      }
     }
   });
 

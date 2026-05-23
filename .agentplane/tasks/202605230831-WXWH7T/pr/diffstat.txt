@@ -1,0 +1,3 @@
+ .github/workflows/publish.yml                        | 16 +++++++++++-----
+ .../release/publish-workflow-contract.test.ts        | 20 +++++++++++++++++++-
+ 2 files changed, 30 insertions(+), 6 deletions(-)
