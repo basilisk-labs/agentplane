@@ -4,7 +4,7 @@ title: "Implement executable evaluator quality review"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -29,34 +29,37 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-23T20:57:07.278Z"
+  updated_at: "2026-05-23T21:14:05.785Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR review: committed implementation adds an executable review path, blocks bare pass notes, and documents the new quality contract."
-  evaluated_sha: "189d45f52d56e3f6ad06fc5be91c45619f8b4d54"
+  note: "EVALUATOR review: committed implementation and CI follow-up add an executable review path, block bare pass notes, and cover lifecycle fixtures."
+  evaluated_sha: "9445a7babd8931e75688a75fd2f2841484553564"
   blueprint_digest: "2a5ea3d6ff30a612b8851bd7232b29e5c478a66f618a719a2778aa58152bcc78"
   evidence_refs:
     - ".agentplane/tasks/202605232011-MAW1PK/README.md"
-    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260523-205707278-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260523-205707278-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260523-205707278-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260523-211405785-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260523-211405785-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260523-211405785-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605232011-MAW1PK/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/evaluator/evaluator.command.ts"
     - "packages/agentplane/src/commands/task/quality-review-gate.ts"
     - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
     - "packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
+    - "packages/agentplane/src/commands/workflow.test.ts"
+    - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+    - "packages/agentplane/src/cli/release-critical-lifecycle.test.ts"
     - "docs/user/commands.mdx"
     - "docs/user/cli-reference.generated.mdx"
-    - "commit: 189d45f52d56e3f6ad06fc5be91c45619f8b4d54"
+    - "commit: 9445a7babd8931e75688a75fd2f2841484553564"
+    - "check: bun run lint:core"
+    - "check: bun test packages/agentplane/src/cli/release-critical-lifecycle.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
     - "check: bun run format:changed"
-    - "check: bun test packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
     - "check: bun run typecheck"
     - "check: bun run docs:cli:check"
     - "check: node .agentplane/policy/check-routing.mjs"
-    - "check: ap help evaluator run / framework bootstrap"
   findings:
-    - "The evaluator run command now produces prompt, quality-report, and opinion artifacts, and recorded reviews are rejected when tracked changes are dirty, so evaluated_sha refers to committed code."
-    - "The finish/integrate gate now requires EVALUATOR pass reviews to cite a quality-report.json artifact and include non-empty findings, making formal one-line approvals insufficient."
-    - "Focused parser and gate tests cover the new review contract, while docs:cli:check, typecheck, format:changed, policy routing, and framework bootstrap/help passed on the committed implementation."
+    - "The evaluator run command produces prompt, quality-report, and opinion artifacts; recorded reviews reject dirty tracked implementation paths outside the current task subtree, so evaluated_sha points at committed code."
+    - "The finish/integrate gate requires quality-report.json evidence and non-empty findings, which prevents a formal one-line EVALUATOR approval from satisfying closure."
+    - "CI follow-up updated lifecycle fixtures to exercise evaluator run instead of verify --by EVALUATOR; local lint:core and targeted failing unit suites now pass."
 commit: null
 comments:
   -
