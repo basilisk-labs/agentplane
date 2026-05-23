@@ -1,10 +1,11 @@
 ---
 id: "202605230004-H3V7RB"
 title: "Remove unused pr flow status exported types"
-status: "DOING"
+result_summary: "Merged via PR #4053."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605230004-H3V7RB-pr-flow-status-knip-cleanup/.agentplane/tasks/202605230004-H3V7RB/blueprint/resolved-snapshot.json"
   findings:
     - "Reviewed diff: only four helper status aliases in packages/agentplane/src/commands/pr/flow-status.ts changed from exported to module-local. PrFlowStatusReport remains exported and report shape is unchanged. Recorded CODER evidence includes knip baseline pass, focused pr-flow status test pass, lint pass, and format pass."
-commit: null
+commit:
+  hash: "bd57a99946d8dfad409f843d5ca410db7ab3d457"
+  message: "Merge pull request #4053 from basilisk-labs/task/202605230004-H3V7RB/pr-flow-status-knip-cleanup"
 comments:
   -
     author: "CODER"
     body: "Start: removing the unused pr flow status exported helper type surface that verify-static/knip reports after the lifecycle status work."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4053 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator pass: scope is limited to removing unused exported helper types, and verification evidence covers the knip failure plus focused behavior and style checks."
+  -
+    type: "status"
+    at: "2026-05-23T00:13:15.193Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4053 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T00:07:04.995Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T00:13:15.201Z"
+doc_updated_by: "INTEGRATOR"
 description: "Knip baseline flags exported status-report types from the hosted lifecycle report as unused. Make those helper types internal so verify-static passes without widening the public type surface."
 sections:
   Summary: |-
