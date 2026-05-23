@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T03:41:21Z",
   "base": "main",
   "branch": "task/202605230332-RYW28Y/agent-context-guidance",
   "created_at": "2026-05-23T03:33:01.016Z",
   "diffstat_sha256": "sha256:ba9ee5517fbf5d98c5a5af82dbdda19d151d618cff65f9ae5625869c3ec614aa",
   "last_verified_at": "2026-05-23T03:34:58.864Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "7d5b81ff1f5e74ecebf0f62d3832231aacf8402f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T03:41:21Z",
   "pr_number": 4068,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4068",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605230332-RYW28Y",
-  "updated_at": "2026-05-23T03:35:47.698Z",
+  "updated_at": "2026-05-23T03:41:21Z",
   "verify": {
     "status": "pass"
   }

@@ -1,10 +1,11 @@
 ---
 id: "202605230332-RYW28Y"
 title: "Route agent context guidance through task brief"
-status: "DOING"
+result_summary: "Merged via PR #4068."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605230332-RYW28Y/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605230332-RYW28Y-agent-context-guidance/.agentplane/tasks/202605230332-RYW28Y/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "7d5b81ff1f5e74ecebf0f62d3832231aacf8402f"
+  message: "Merge pull request #4068 from basilisk-labs/task/202605230332-RYW28Y/agent-context-guidance"
 comments:
   -
     author: "CODER"
     body: "Start: implement runtime guidance routing through task active and task brief context surfaces."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4068 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Review: code scope owns the runtime renderer/checker changes; all focused docs/guidance checks and task-scope/knip gates passed."
+  -
+    type: "status"
+    at: "2026-05-23T03:42:05.654Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4068 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T03:34:58.891Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T03:42:05.662Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update installed quickstart, role supplements, generated bootstrap docs, and onboarding checks so agents use task active and task brief before low-level route/recovery command stitching."
 sections:
   Summary: |-
