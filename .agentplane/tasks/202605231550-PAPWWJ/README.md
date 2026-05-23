@@ -1,10 +1,11 @@
 ---
 id: "202605231550-PAPWWJ"
 title: "Improve docs usability and agent-agnostic workflow guides"
-status: "DOING"
+result_summary: "Merged via PR #4100."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +34,16 @@ quality_review:
     - ".agentplane/tasks/202605231550-PAPWWJ/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231550-PAPWWJ-docs-usability-agent-guides/.agentplane/tasks/202605231550-PAPWWJ/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "9cd6a73d762254299b3e398aa79568b38061503f"
+  message: "Merge pull request #4100 from basilisk-labs/task/202605231550-PAPWWJ/docs-usability-agent-guides"
 comments:
   -
     author: "DOCS"
     body: "Start: Updating the public documentation design contract and workflow guide information architecture from confirmed website sources, with stable-route compatibility and local build verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4100 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -76,9 +82,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed after CSS review fix: the unresolved review finding was valid, the orphan declaration was removed, docs site and formatting checks pass, and the UX/documentation scope remains intact."
+  -
+    type: "status"
+    at: "2026-05-23T16:41:31.216Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4100 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T16:36:32.076Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-23T16:41:31.225Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update website design contract and docs so links are visibly usable, user guides minimize direct CLI command burden, and model-specific workflow guide pages are consolidated into one agent-agnostic guide."
 sections:
   Summary: |-
