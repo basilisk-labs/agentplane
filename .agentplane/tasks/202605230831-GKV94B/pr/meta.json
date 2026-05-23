@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605230831-GKV94B/release-next-action-diagnostic",
+  "created_at": "2026-05-23T09:15:33.390Z",
+  "diffstat_sha256": "sha256:767eddd42627e84c5b942448abc45f528c05ccf6bca5e6087fb649a98000f208",
+  "last_verified_at": "2026-05-23T09:24:57.474Z",
+  "last_verified_diffstat_sha256": "sha256:767eddd42627e84c5b942448abc45f528c05ccf6bca5e6087fb649a98000f208",
+  "schema_version": 1,
+  "task_id": "202605230831-GKV94B",
+  "updated_at": "2026-05-23T09:15:33.390Z",
+  "verify": {
+    "status": "pass"
+  }
+}
