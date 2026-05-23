@@ -1,10 +1,11 @@
 ---
 id: "202605230831-R45MPG"
 title: "Persist and clean branch_pr batch ownership"
-status: "DOING"
+result_summary: "Merged via PR #4083."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Commands: bun test packages/agentplane/src/commands/pr/internal/sync-batch-ownership.test.ts; bun test packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts; bun run lint:core; bun run hotspots:check. Result: pass. Evidence: batch ownership test 1 pass/22 expects; hosted-close suite 5 pass/89 expects; lint clean; oversized test baseline OK. Scope: branch_pr batch ownership persistence, route fallback, stale cleanup, lint/static hotspot gates."
   attempts: 0
-commit: null
+commit:
+  hash: "fed48719d00aceaaa48e9b7cc1d0915e31a94571"
+  message: "Merge pull request #4083 from basilisk-labs/task/202605230831-R45MPG/batch-ownership-cleanup"
 comments:
   -
     author: "CODER"
     body: "Start: implement branch_pr batch ownership persistence and stale cleanup from a fresh main worktree, with regression coverage for removed and changed include-task sets."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4083 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Commands: bun test packages/agentplane/src/commands/pr/internal/sync-batch-ownership.test.ts; bun test packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts; bun run lint:core; bun run hotspots:check. Result: pass. Evidence: batch ownership test 1 pass/22 expects; hosted-close suite 5 pass/89 expects; lint clean; oversized test baseline OK. Scope: branch_pr batch ownership persistence, route fallback, stale cleanup, lint/static hotspot gates."
+  -
+    type: "status"
+    at: "2026-05-23T09:31:18.617Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4083 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T08:46:21.016Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T09:31:18.624Z"
+doc_updated_by: "INTEGRATOR"
 description: "Carry forward the useful PR #4027 batch ownership idea from current main, including cleanup when include-task changes or becomes empty."
 sections:
   Summary: |-
