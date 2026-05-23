@@ -4,7 +4,7 @@ title: "Implement executable evaluator quality review"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,36 @@ verification:
   updated_by: "CODER"
   note: "Implemented executable evaluator run command, stricter quality-review gate, docs, and focused tests. Checks passed: format:changed, focused bun tests, typecheck, docs:cli:check, policy routing, framework bootstrap/help."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-23T20:57:07.278Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR review: committed implementation adds an executable review path, blocks bare pass notes, and documents the new quality contract."
+  evaluated_sha: "189d45f52d56e3f6ad06fc5be91c45619f8b4d54"
+  blueprint_digest: "2a5ea3d6ff30a612b8851bd7232b29e5c478a66f618a719a2778aa58152bcc78"
+  evidence_refs:
+    - ".agentplane/tasks/202605232011-MAW1PK/README.md"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260523-205707278-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260523-205707278-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260523-205707278-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605232011-MAW1PK/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/evaluator/evaluator.command.ts"
+    - "packages/agentplane/src/commands/task/quality-review-gate.ts"
+    - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+    - "packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
+    - "docs/user/commands.mdx"
+    - "docs/user/cli-reference.generated.mdx"
+    - "commit: 189d45f52d56e3f6ad06fc5be91c45619f8b4d54"
+    - "check: bun run format:changed"
+    - "check: bun test packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
+    - "check: bun run typecheck"
+    - "check: bun run docs:cli:check"
+    - "check: node .agentplane/policy/check-routing.mjs"
+    - "check: ap help evaluator run / framework bootstrap"
+  findings:
+    - "The evaluator run command now produces prompt, quality-report, and opinion artifacts, and recorded reviews are rejected when tracked changes are dirty, so evaluated_sha refers to committed code."
+    - "The finish/integrate gate now requires EVALUATOR pass reviews to cite a quality-report.json artifact and include non-empty findings, making formal one-line approvals insufficient."
+    - "Focused parser and gate tests cover the new review contract, while docs:cli:check, typecheck, format:changed, policy routing, and framework bootstrap/help passed on the committed implementation."
 commit: null
 comments:
   -
