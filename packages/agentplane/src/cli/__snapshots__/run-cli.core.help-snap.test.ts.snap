@@ -15,13 +15,15 @@ Commands:
   Task:
     ready  Report dependency readiness details for a task.
     task  Task lifecycle and task-store commands.
+    task active  Select active agent work with next actions, blockers, dependency readiness, and freshness.
     task begin  Create, plan, approve, and start or route a task through the normal lifecycle.
+    task brief  Print an agent-ready task brief without remote lookups by default.
     task comment  Append a comment to a task.
     task complete  Record OK verification and finish a direct task, or print the branch_pr close route.
     task doc  Task doc commands (show/set).
     task doc set  Update a task README section.
     task doc show  Print task README content (entire doc or one section).
-    task list  List tasks with compact resolved blueprint route hints.
+    task list  List active tasks with compact resolved blueprint route hints.
     task new  Create a new task (prints the generated task id).
     task next  List ready tasks (default status=TODO) with optional filters.
     task next-action  Print the single safest next command for a task route.
@@ -177,7 +179,7 @@ Commands:
     evidence verify  Verify a task evidence bundle manifest and referenced file hashes.
   Workflow:
     flow  Inspect and repair high-level task workflow routes.
-    flow repair  Print a dry-run repair plan for task workflow drift.
+    flow repair  Print or apply safe repair steps for task workflow drift.
   Framework Dev:
     codex  Codex integration commands.
     codex plugin  Install and inspect bundled Codex plugin integrations.
