@@ -1,10 +1,11 @@
 ---
 id: "202605231650-RQGE2G"
 title: "Redesign homepage repo evidence hero block"
-status: "DOING"
+result_summary: "Merged via PR #4103."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -34,11 +35,16 @@ quality_review:
     - ".agentplane/tasks/202605231650-RQGE2G/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231650-RQGE2G-repo-evidence-hero/.agentplane/tasks/202605231650-RQGE2G/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "63e26c7dca676d55f5df4cd675466d787fc7edf9"
+  message: "Merge pull request #4103 from basilisk-labs/task/202605231650-RQGE2G/repo-evidence-hero"
 comments:
   -
     author: "CODER"
     body: "Start: Redesigning the homepage hero repo evidence block in the dedicated branch_pr worktree, keeping the orange visual system and validating with website checks plus browser screenshots."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4103 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality review passed: scope is limited to the homepage hero repo evidence block and task artifacts; visual checks show no text overflow at desktop 1440x1000 or mobile 390x844; docs:site:check and design-language checks pass."
+  -
+    type: "status"
+    at: "2026-05-23T17:16:57.002Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4103 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T17:06:12.255Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T17:16:57.007Z"
+doc_updated_by: "INTEGRATOR"
 description: "Redesign the homepage hero repo evidence block so it matches the orange AgentPlane visual system and reads as usable repository evidence rather than a blue dashboard-style widget."
 sections:
   Summary: |-
