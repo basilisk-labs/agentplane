@@ -28,6 +28,23 @@ export function selectedSourceRows(
   return sourceRows;
 }
 
+function basenameForTitle(sourcePath: string): string {
+  const parts = sourcePath.split(/[\\/]+/u).filter(Boolean);
+  return parts.at(-1) ?? sourcePath;
+}
+
+function buildTitleSourceHint(rows: ManifestEntry[]): string {
+  if (rows.length === 0) {
+    return "";
+  }
+  const names = rows.map((row) => basenameForTitle(row.path));
+  if (names.length === 1) {
+    return `: ${names[0]}`;
+  }
+  const first = names.slice(0, 2).join(", ");
+  return names.length === 2 ? `: ${first}` : `: ${first} +${names.length - 2}`;
+}
+
 function buildIngestMetadata(
   opts: Omit<ContextIngestParsed, "runTask">,
   sourceRows: ManifestEntry[],
@@ -47,7 +64,7 @@ function buildIngestMetadata(
   const blueprintId: NonNullable<TaskNewParsed["blueprintRequest"]> = maximumAssimilation
     ? "context.maximum_assimilation"
     : "context.assimilation";
-  const title = `context assimilation (${modeLabel})`;
+  const title = `context assimilation (${modeLabel}${buildTitleSourceHint(modeSource)})`;
   const promptRef = CONTEXT_ASSIMILATION_PROMPT_ADDRESS;
   const description = [
     `Source context assimilation for ${modeLabel}.`,
