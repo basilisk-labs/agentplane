@@ -117,8 +117,11 @@ function mkTask(overrides: Partial<TaskData>): TaskData {
       note: "Quality gate passed",
       evaluated_sha: qualityReviewSha,
       blueprint_digest: "d1",
-      evidence_refs: [".agentplane/tasks/T-1/README.md"],
-      findings: [],
+      evidence_refs: [
+        ".agentplane/tasks/T-1/README.md",
+        ".agentplane/tasks/T-1/quality/run/quality-report.json",
+      ],
+      findings: ["Reviewed scope, diff, verification evidence, and residual risk."],
     },
     doc: "## Summary\nTask summary\n\n## Scope\nIn-scope files\n\n## Plan\n1. Implement\n\n## Risks\nLow\n\n## Verification\nBlueprintSnapshotRef:\n- state: current\n\n## Rollback Plan\nRevert commit",
     ...overrides,
