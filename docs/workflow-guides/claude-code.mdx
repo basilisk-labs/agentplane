@@ -1,77 +1,12 @@
 ---
-title: "Use Agentplane with Claude Code"
-description: "Use Claude Code for edits while Agentplane records task intent, approved plan, verification, finish state, and ACR inside Git."
+title: "Claude Code workflow moved"
+description: "Claude Code uses the same Agentplane harness contract as other coding agents."
 ---
 
-Claude Code can edit your repository. Agentplane makes those edits reviewable after the chat is
-gone by recording task intent, approved plan, verification, finish state, and ACR inside Git.
+# Claude Code workflow moved
 
-## What this guide gives you
+This tool-specific page is kept only for old links.
 
-A local flow for Claude Code work that leaves durable repository evidence instead of relying on
-chat history.
-
-## When to use
-
-- You run Claude Code in the same checkout where Git history matters.
-- You want a concrete task, plan, verification result, and finish record.
-- You do not want a hosted workflow system between Claude Code and your repository.
-
-## Copy-paste flow
-
-```bash
-npm i -g agentplane
-agentplane init
-agentplane quickstart
-
-agentplane task new --title "Implement quickstart copy update" --description "Update the quickstart copy and verify the site build." --priority med --owner CODER --tag code
-agentplane task plan set <task-id> --text "Update the copy, keep scope to the quickstart page, run the site build." --updated-by CODER
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-agentplane task start-ready <task-id> --author CODER --body "Start: quickstart copy update with Claude Code; scope is limited to the approved page and build verification."
-```
-
-Then run Claude Code in the repository and ask it to follow the repo `AGENTS.md` policy.
-
-After Claude Code edits files:
-
-```bash
-agentplane task verify-show <task-id>
-# run the checks listed by verify-show
-agentplane verify <task-id> --ok --by CODER --note "Approved checks passed after Claude Code edits."
-agentplane finish <task-id> --author CODER --body "Verified: approved checks passed and the task scope is complete." --result "Pricing copy update completed" --commit <git-rev>
-```
-
-## Expected repo artifacts
-
-- task README with the approved plan
-- Git diff from Claude Code edits
-- verification entry with the checks you ran
-- finish record tied to the final commit
-- `.agentplane/tasks/<task-id>/acr.json`
-
-## Reviewer checklist
-
-Before merging, verify:
-
-- The task exists under `.agentplane/tasks/<task-id>/`.
-- The plan was approved or explicitly waived.
-- Verification evidence exists.
-- `acr.json` validates.
-- The finish record links to the work commit.
-
-## Common mistakes
-
-- Starting Claude Code before creating the task boundary.
-- Letting the session drift outside the approved plan.
-- Treating a passing diff as enough without verification evidence.
-- Forgetting to generate or refresh ACR before review.
-
-## Limitations
-
-Agentplane does not drive Claude Code or inspect Claude's private chat context. It records the
-repository workflow around the code changes.
-
-## Next
-
-Add [ACR validation](../reference/acr) or use [GitHub Actions](github-actions) as a CI
-gate.
+Use the unified [coding agent workflow guide](./) instead. Agentplane's contract is
+agent-agnostic: the agent writes code and uses the CLI; the human sets the task, guardrails, and
+review boundary through the harness.

@@ -29,7 +29,7 @@ function HomeJsonLd(): ReactNode {
     mainEntity: [
       [
         "What is Agentplane?",
-        "Agentplane is a CLI-first operational workflow and observability layer for AI agents. It helps developers run local workflows, record traces, manage context, apply recipes, and keep agent work inspectable.",
+        "Agentplane is an agent-agnostic harness for governed coding-agent work. It keeps task intent, guardrails, verification evidence, traces, and Agent Change Records inspectable in Git.",
       ],
       [
         "Does Agentplane replace AI agent frameworks?",

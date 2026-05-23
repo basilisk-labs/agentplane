@@ -1,51 +1,12 @@
 ---
-title: "Agentplane + Aider"
-description: "Run Aider for code edits while Agentplane records the task lifecycle around the change."
+title: "Aider workflow moved"
+description: "Aider work uses the same Agentplane harness contract as other coding agents."
 ---
 
-Use this when Aider is the tool making code changes and you want explicit task and verification
-evidence in the repository.
+# Aider workflow moved
 
-## When to use
+This tool-specific page is kept only for old links.
 
-- You already use Aider for terminal-based code edits.
-- You want task state and closure separate from Aider's conversation log.
-- You need a clean verification note before finish.
-
-## Copy-paste flow
-
-```bash
-npm i -g agentplane
-agentplane init
-agentplane task new --title "Add focused regression test" --description "Add a regression test and verify it fails before the fix or passes after the fix." --priority med --owner CODER --tag code
-agentplane task plan set <task-id> --text "Use Aider for the smallest test/code change, then run the focused test." --updated-by CODER
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-agentplane task start-ready <task-id> --author CODER --body "Start: Aider-assisted regression test work with focused verification."
-```
-
-Run Aider from the same checkout:
-
-```bash
-aider
-```
-
-After Aider edits files:
-
-```bash
-agentplane task verify-show <task-id>
-# run the focused test listed by verify-show
-agentplane verify <task-id> --ok --by CODER --note "Focused regression test passed."
-agentplane finish <task-id> --author CODER --body "Verified: focused regression test passed and the Aider diff is scoped." --result "Regression coverage added" --commit <git-rev>
-```
-
-## Expected repo artifacts
-
-- Agentplane task README
-- Aider-generated code diff in Git
-- verification note with the command result
-- finish record with the Git revision
-
-## Limitations
-
-Agentplane does not manage Aider configuration or model keys. Keep secrets in your normal local
-environment and out of committed files.
+Use the unified [coding agent workflow guide](./) instead. Agentplane's contract is
+agent-agnostic: the agent writes code and uses the CLI; the human sets the task, guardrails, and
+review boundary through the harness.

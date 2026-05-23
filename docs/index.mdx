@@ -1,31 +1,31 @@
 ---
 title: "Agentplane Documentation"
-description: "Docs for Agentplane, the CLI-first operational workflow and observability layer for AI agents."
+description: "Docs for Agentplane, the agent-agnostic harness for governed coding-agent work."
 ---
 
 # Agentplane documentation
 
-Agentplane is a CLI-first operational workflow and observability layer for AI agents. It keeps
-agent work inspectable through local workflows, traces, context, recipes, artifacts, and Git-native
-evidence.
+Agentplane is an agent-agnostic harness for governed coding-agent work. The agent writes code,
+uses the CLI, and records evidence; the human sets tasks, guardrails, and review boundaries through
+the harness.
 
 ## Choose your path
 
-| Goal                                              | Start with                                    |
-| ------------------------------------------------- | --------------------------------------------- |
-| Try Agentplane locally                            | [Quickstart](start/quickstart)                |
-| Understand what gets written to the repo          | [What Agentplane writes](start/files-written) |
-| Give an agent durable project knowledge           | [Context](context)                            |
-| Choose the context mode for a project             | [Context modes](context/modes)                |
-| Hand work to Claude Code, Codex, Cursor, or Aider | [Workflow guides](workflow-guides)            |
-| Review AI-authored code in Git                    | [Agent Change Records](reference/acr)         |
-| Reuse task lessons and workflow recipes           | [Recipes](recipes)                            |
+| Goal                                     | Start with                                    |
+| ---------------------------------------- | --------------------------------------------- |
+| Try Agentplane locally                   | [Quickstart](start/quickstart)                |
+| Understand what gets written to the repo | [What Agentplane writes](start/files-written) |
+| Give an agent durable project knowledge  | [Context](context)                            |
+| Choose the context mode for a project    | [Context modes](context/modes)                |
+| Hand work to any coding agent            | [Workflow guides](workflow-guides)            |
+| Review AI-authored code in Git           | [Agent Change Records](reference/acr)         |
+| Reuse task lessons and workflow recipes  | [Recipes](recipes)                            |
 
 ## Documentation layers
 
 - **Start**: install, initialize, and inspect the first artifacts.
 - **Context**: maintain project knowledge that humans can review and agents can reuse.
-- **Agent workflows**: use Agentplane with coding agents and CI.
+- **Agent workflows**: hand approved work to any coding agent and review the evidence.
 - **Review and evidence**: inspect traces, Agent Change Records, and task observations.
 - **Reference**: command, workflow file, trace, evidence, and schema details.
 - **Help**: troubleshooting and recovery.

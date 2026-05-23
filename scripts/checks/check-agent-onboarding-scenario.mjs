@@ -13,6 +13,7 @@ const files = {
   agents: path.join(ROOT, "docs", "user", "agents.mdx"),
   lifecycle: path.join(ROOT, "docs", "user", "task-lifecycle.mdx"),
   workflow: path.join(ROOT, "docs", "user", "workflow.mdx"),
+  workflowGuides: path.join(ROOT, "docs", "workflow-guides", "index.mdx"),
   branching: path.join(ROOT, "docs", "user", "branching-and-pr-artifacts.mdx"),
   recovery: path.join(ROOT, "docs", "help", "legacy-upgrade-recovery.mdx"),
   troubleshooting: path.join(ROOT, "docs", "help", "troubleshooting.mdx"),
@@ -145,6 +146,33 @@ const main = defineScript({
     ]) {
       assertIncludes(fileContents.sidebar, label, "sidebar");
     }
+
+    for (const retiredToolPage of [
+      '"workflow-guides/claude-code"',
+      '"workflow-guides/codex"',
+      '"workflow-guides/cursor"',
+      '"workflow-guides/aider"',
+    ]) {
+      if (fileContents.sidebar.includes(retiredToolPage)) {
+        throw new Error(`sidebar must not expose retired tool-specific page: ${retiredToolPage}`);
+      }
+    }
+
+    assertIncludes(
+      fileContents.docsIndex,
+      "Hand work to any coding agent",
+      "docs index agent-agnostic workflow path",
+    );
+    assertIncludes(
+      fileContents.workflowGuides,
+      "Agentplane is agent-agnostic and LLM-agnostic",
+      "unified workflow guide",
+    );
+    assertIncludes(
+      fileContents.workflowGuides,
+      "The agent writes code, uses the CLI, follows `AGENTS.md`, and records verification.",
+      "unified workflow guide",
+    );
 
     for (const navLabel of ['label: "Docs"', 'label: "Examples"', 'label: "Quickstart"']) {
       assertIncludes(fileContents.docusaurusConfig, navLabel, "navbar");
