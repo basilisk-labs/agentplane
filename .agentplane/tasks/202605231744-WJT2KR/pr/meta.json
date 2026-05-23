@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T19:28:32Z",
   "base": "main",
   "branch": "task/202605231744-WJT2KR/pr-open-amend-artifacts",
   "created_at": "2026-05-23T17:50:29.699Z",
   "diffstat_sha256": "sha256:002ec70330df2c58df12b136c9ed06573b5da07338e8ee33c04162d0a592b491",
   "last_verified_at": "2026-05-23T18:04:27.218Z",
   "last_verified_diffstat_sha256": "sha256:002ec70330df2c58df12b136c9ed06573b5da07338e8ee33c04162d0a592b491",
+  "merge_commit": "07e68ae27dc7ba170f2c5e411c812dd79f76fb67",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T19:28:32Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605231744-WJT2KR",
-  "updated_at": "2026-05-23T17:50:29.699Z",
+  "updated_at": "2026-05-23T19:28:32Z",
   "verify": {
     "status": "pass"
   }
