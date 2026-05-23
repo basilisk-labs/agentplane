@@ -12,6 +12,8 @@ import { cmdContextReindex, readContextProjection } from "./reindex.js";
 import { cmdContextSearch } from "./search.js";
 import { cmdContextShow } from "./show.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
+import { createTaskNewParsed } from "../../context/ingest-task.js";
+import type { ManifestEntry } from "../../context/ingest.js";
 import {
   cmdContextWikiExplain,
   cmdContextWikiIndex,
@@ -126,9 +128,49 @@ describe("context release readiness guards", () => {
     expect(wikiAgents).toContain("canonical entities, glossary aliases, relation candidates");
     expect(wikiAgents).toContain("Glossary output: create or update `context/wiki/glossary.md`");
     expect(wikiAgents).toContain("choose wiki structure from source content");
-    expect(wikiAgents).toContain("[[canonical-page|Display Label]]");
+    expect(wikiAgents).toContain("display alias or heading anchor");
+    expect(wikiAgents).not.toContain("[[canonical-page");
     expect(wikiAgents).toContain("numeric notes like `[1]`");
     expect(wikiAgents).toContain("Record EVALUATOR review");
+    await cmdContextWikiLint({
+      cwd: root,
+      parsed: { path: "context/wiki" },
+    });
+  });
+
+  it("uses source-specific context task titles for sequential explicit-source ingestion", () => {
+    const now = new Date().toISOString();
+    const firstSource: ManifestEntry = {
+      path: "context/raw/research/first.md",
+      sha256: "sha256:first",
+      size_bytes: 12,
+      mtime: now,
+      content_type: "text/markdown",
+      status: "new",
+    };
+    const secondSource: ManifestEntry = {
+      path: "context/raw/research/second.md",
+      sha256: "sha256:second",
+      size_bytes: 13,
+      mtime: now,
+      content_type: "text/markdown",
+      status: "new",
+    };
+
+    const first = createTaskNewParsed(
+      { sources: [firstSource.path], mode: "sources", dryRun: false, indexOnly: false },
+      [firstSource],
+      "maximum-assimilation",
+    );
+    const second = createTaskNewParsed(
+      { sources: [secondSource.path], mode: "sources", dryRun: false, indexOnly: false },
+      [secondSource],
+      "maximum-assimilation",
+    );
+
+    expect(first.title).toBe("context assimilation (explicit sources: first.md)");
+    expect(second.title).toBe("context assimilation (explicit sources: second.md)");
+    expect(first.title).not.toBe(second.title);
   });
 
   it("creates starter wiki structure on first context ingest with selected sources", async () => {
