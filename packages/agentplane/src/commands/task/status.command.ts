@@ -88,6 +88,32 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
           value: String(decision.approval.effectiveMutationApprovalRequired),
         },
       );
+      if (decision.batchOwnership.role !== "none") {
+        entries.push(
+          { label: "batch_role", value: decision.batchOwnership.role },
+          { label: "batch_primary", value: decision.batchOwnership.primaryTaskId },
+          { label: "batch_branch", value: decision.batchOwnership.branch ?? "missing" },
+          {
+            label: "batch_included",
+            value: decision.batchOwnership.includedTaskIds.join(", ") || "none",
+          },
+          {
+            label: "batch_states",
+            value: decision.batchOwnership.taskStates
+              .map(
+                (state) =>
+                  `${state.id}:${state.status}:verification=${state.verification ?? "pending"}`,
+              )
+              .join(", "),
+          },
+          {
+            label: "batch_next",
+            value:
+              decision.batchOwnership.nextOwnerAction.command ??
+              decision.batchOwnership.nextOwnerAction.summary,
+          },
+        );
+      }
       for (const blocker of decision.blockers) {
         entries.push({ label: "blocker", value: `${blocker.code}: ${blocker.summary}` });
       }
