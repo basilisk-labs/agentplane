@@ -1,10 +1,11 @@
 ---
 id: "202605230946-SHFX9H"
 title: "Use shared isRecord guard in batch metadata code"
-status: "DOING"
+result_summary: "Merged via PR #4091."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented shared guard reuse. Evidence: bun run guards:check passed; bun test packages/agentplane/src/commands/pr/internal/sync-batch-ownership.test.ts packages/agentplane/src/commands/release/release-next-action-script.test.ts passed (5 tests, 49 expects); bun run lint:core passed."
   attempts: 0
-commit: null
+commit:
+  hash: "5e29a18f918d70a26fae3aa3e30d7fafa7464bf5"
+  message: "Merge pull request #4091 from basilisk-labs/task/202605230946-SHFX9H/shared-isrecord-guard"
 comments:
   -
     author: "CODER"
     body: "Start: fix release-blocking guards:check by reusing shared isRecord guard in branch_pr batch metadata code."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4091 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented shared guard reuse. Evidence: bun run guards:check passed; bun test packages/agentplane/src/commands/pr/internal/sync-batch-ownership.test.ts packages/agentplane/src/commands/release/release-next-action-script.test.ts passed (5 tests, 49 expects); bun run lint:core passed."
+  -
+    type: "status"
+    at: "2026-05-23T09:54:11.867Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4091 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T09:48:58.565Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T09:54:11.873Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace local isRecord helpers introduced in branch_pr batch metadata paths with the shared guard so release guards:check passes."
 sections:
   Summary: |-
