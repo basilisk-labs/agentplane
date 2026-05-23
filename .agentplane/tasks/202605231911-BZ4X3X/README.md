@@ -1,10 +1,11 @@
 ---
 id: "202605231911-BZ4X3X"
 title: "Polish homepage GitHub label and radius"
-status: "DOING"
+result_summary: "Merged via PR #4112."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +34,16 @@ quality_review:
     - ".agentplane/tasks/202605231911-BZ4X3X/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231911-BZ4X3X-github-label-radius/.agentplane/tasks/202605231911-BZ4X3X/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "23d7caf7d6e51545988642716544ffe4a18f924a"
+  message: "Merge pull request #4112 from basilisk-labs/task/202605231911-BZ4X3X/github-label-radius"
 comments:
   -
     author: "CODER"
     body: "Start: Renaming the GitHub star label to Github and adding a very small radius to homepage blocks and buttons."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4112 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -58,9 +64,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluation accepted: built output contains Github navbar copy, screenshots render without Star label, and homepage radius changes are visually restrained."
+  -
+    type: "status"
+    at: "2026-05-23T19:34:43.186Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4112 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T19:22:46.975Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T19:34:43.194Z"
+doc_updated_by: "INTEGRATOR"
 description: "Rename the public GitHub star label from Star to Github and give homepage blocks/buttons a very small border radius instead of fully square corners."
 sections:
   Summary: |-
