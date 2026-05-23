@@ -13,7 +13,7 @@ Created: 2026-05-23T18:12:14.991Z
 ## Verification
 
 - State: ok
-- Note: Focused CLI regression tests, typecheck, lint, format, and live task active/brief checks passed.
+- Note: EVALUATOR quality gate passed: focused route-decision/task active/task brief tests passed, typecheck passed, hotspot and knip gates passed, hosted PR checks are green.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,13 +30,14 @@ Created: 2026-05-23T18:12:14.991Z
 
 ```text
  .../src/cli/run-cli.core.route-decision.test.ts    | 18 ++++++++--
- .../src/commands/shared/route-decision.ts          | 26 ++++++++++++--
+ .../src/commands/shared/route-decision.ts          |  5 +--
  .../src/commands/shared/task-backend.test.ts       | 29 +++++++++++++++
  .../agentplane/src/commands/shared/task-backend.ts | 20 ++++++++---
+ .../src/commands/shared/work-start-command.ts      | 27 ++++++++++++++
  .../agentplane/src/commands/task/active.command.ts |  1 +
  .../agentplane/src/commands/task/brief.command.ts  | 41 ++++++++++++++++++++--
  packages/agentplane/src/commands/task/list.ts      |  5 ++-
- 7 files changed, 127 insertions(+), 13 deletions(-)
+ 8 files changed, 133 insertions(+), 13 deletions(-)
 ```
 
 </details>

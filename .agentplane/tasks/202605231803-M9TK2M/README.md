@@ -4,7 +4,7 @@ title: "Fix agent context cognitive-load regressions"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -28,10 +28,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-23T18:33:07.368Z"
-  updated_by: "CODER"
-  note: "Focused CLI regression tests, typecheck, lint, format, and live task active/brief checks passed."
+  updated_at: "2026-05-23T19:28:04.610Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed: focused route-decision/task active/task brief tests passed, typecheck passed, hotspot and knip gates passed, hosted PR checks are green."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-23T19:28:04.610Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed: focused route-decision/task active/task brief tests passed, typecheck passed, hotspot and knip gates passed, hosted PR checks are green."
+  evaluated_sha: "6c3241799a3b97f8ec99796105c290d3ccc07952"
+  blueprint_digest: "dfd1919ccf47036866e124bb695395240c5a6f44bb51658ae3dd329569c3656c"
+  evidence_refs:
+    - ".agentplane/tasks/202605231803-M9TK2M/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231803-M9TK2M-fix-agent-context-load/.agentplane/tasks/202605231803-M9TK2M/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -51,8 +62,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused CLI regression tests, typecheck, lint, format, and live task active/brief checks passed."
+  -
+    type: "verify"
+    at: "2026-05-23T19:28:04.610Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed: focused route-decision/task active/task brief tests passed, typecheck passed, hotspot and knip gates passed, hosted PR checks are green."
 doc_version: 3
-doc_updated_at: "2026-05-23T18:33:07.401Z"
+doc_updated_at: "2026-05-23T19:28:05.453Z"
 doc_updated_by: "CODER"
 description: "Fix active work selection and task brief guidance so agents can reliably choose active work, see confidence/verification quality, and execute generated branch_pr next commands without manual context stitching."
 sections:
@@ -94,6 +111,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605231803-M9TK2M
 
+    ### 2026-05-23T19:28:04.610Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed: focused route-decision/task active/task brief tests passed, typecheck passed, hotspot and knip gates passed, hosted PR checks are green.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T18:33:07.401Z, excerpt_hash=sha256:7fd41c828c1e9b1e699ca19565c93d7fa1bf730556c31d76628294bddd13c066
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231803-M9TK2M-fix-agent-context-load/.agentplane/tasks/202605231803-M9TK2M/blueprint/resolved-snapshot.json
+    - old_digest: dfd1919ccf47036866e124bb695395240c5a6f44bb51658ae3dd329569c3656c
+    - current_digest: dfd1919ccf47036866e124bb695395240c5a6f44bb51658ae3dd329569c3656c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605231803-M9TK2M
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -102,6 +138,10 @@ sections:
     - Observation: task active --status DOING returns the active task; task brief reports fallback Verify Steps quality and compact source confidence; route-decision emits generated work start slug commands.
       Impact: Agents receive concrete next commands and source-quality signals instead of stale-empty active lists, hidden fallback Verify Steps, or literal slug placeholders.
       Resolution: Added projection empty canonical fallback, Verify Steps quality/source confidence, and generated safe worktree slugs with regression coverage.
+
+    - Observation: PR #4108 checks passed including verify-contract, verify-cli-critical, verify-static, verify-unit, verify-workflow, verify-coverage, test-windows, docs, CodeQL, and PR verification.
+      Impact: The change reduces agent context ambiguity without leaving failing hosted gates.
+      Resolution: Approved for branch_pr integration.
 id_source: "generated"
 ---
 ## Summary
@@ -152,6 +192,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605231803-M9TK2M
 
+### 2026-05-23T19:28:04.610Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed: focused route-decision/task active/task brief tests passed, typecheck passed, hotspot and knip gates passed, hosted PR checks are green.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T18:33:07.401Z, excerpt_hash=sha256:7fd41c828c1e9b1e699ca19565c93d7fa1bf730556c31d76628294bddd13c066
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231803-M9TK2M-fix-agent-context-load/.agentplane/tasks/202605231803-M9TK2M/blueprint/resolved-snapshot.json
+- old_digest: dfd1919ccf47036866e124bb695395240c5a6f44bb51658ae3dd329569c3656c
+- current_digest: dfd1919ccf47036866e124bb695395240c5a6f44bb51658ae3dd329569c3656c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605231803-M9TK2M
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -164,3 +223,7 @@ BlueprintSnapshotRef:
 - Observation: task active --status DOING returns the active task; task brief reports fallback Verify Steps quality and compact source confidence; route-decision emits generated work start slug commands.
   Impact: Agents receive concrete next commands and source-quality signals instead of stale-empty active lists, hidden fallback Verify Steps, or literal slug placeholders.
   Resolution: Added projection empty canonical fallback, Verify Steps quality/source confidence, and generated safe worktree slugs with regression coverage.
+
+- Observation: PR #4108 checks passed including verify-contract, verify-cli-critical, verify-static, verify-unit, verify-workflow, verify-coverage, test-windows, docs, CodeQL, and PR verification.
+  Impact: The change reduces agent context ambiguity without leaving failing hosted gates.
+  Resolution: Approved for branch_pr integration.
