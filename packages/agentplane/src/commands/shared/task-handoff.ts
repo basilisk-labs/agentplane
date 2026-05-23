@@ -11,6 +11,7 @@ import { validateTaskHandoff } from "@agentplaneorg/core/schemas";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
+import { isRecord } from "../../shared/guards.js";
 import type { CommandContext } from "./task-backend.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 
@@ -26,10 +27,6 @@ export type TaskHandoffPaths = {
 function trimOrNull(value: string | null | undefined): string | null {
   const trimmed = value?.trim() ?? "";
   return trimmed.length > 0 ? trimmed : null;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function readBranchPrBatchExtension(task: {
