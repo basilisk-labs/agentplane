@@ -1,10 +1,11 @@
 ---
 id: "202605231749-X9B9NE"
 title: "Tune homepage for Product Hunt readiness"
-status: "DOING"
+result_summary: "Merged via PR #4107."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +34,16 @@ quality_review:
     - ".agentplane/tasks/202605231749-X9B9NE/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231749-X9B9NE-ph-homepage-readiness/.agentplane/tasks/202605231749-X9B9NE/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "c88eb53a32f2e5f5187dd0efc741a0571a49fe6e"
+  message: "Merge pull request #4107 from basilisk-labs/task/202605231749-X9B9NE/ph-homepage-readiness"
 comments:
   -
     author: "CODER"
     body: "Start: Updating homepage Product Hunt readiness messaging and structure in the dedicated branch_pr worktree, scoped to site content and styling only."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4107 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -58,9 +64,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluation passed for approved site-only scope. Confirmed requested headline, agent-agnostic wording, quickstart-first CTA, before/after evidence story, generated llms-full freshness, docs site build, design-language check, changed-file formatting, policy routing, doctor, and desktop/mobile screenshots. Product Hunt launch kit assets intentionally not added."
+  -
+    type: "status"
+    at: "2026-05-23T18:38:42.040Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4107 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T18:33:33.049Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T18:38:42.046Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the homepage messaging and structure for Product Hunt readiness: use audit-trails positioning, make the primary CTA more launch-oriented, add a concrete before/after evidence story, keep language agent-agnostic, and avoid Product Hunt launch kit assets for now."
 sections:
   Summary: |-

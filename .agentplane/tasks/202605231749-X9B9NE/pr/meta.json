@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T18:37:53Z",
   "base": "main",
   "branch": "task/202605231749-X9B9NE/ph-homepage-readiness",
   "created_at": "2026-05-23T17:52:23.901Z",
   "diffstat_sha256": "sha256:59785945401b9fbbe2f83d9f01602a01869693b874bec91aecaefbc27d2618ed",
   "last_verified_at": "2026-05-23T18:33:33.019Z",
   "last_verified_diffstat_sha256": "sha256:59785945401b9fbbe2f83d9f01602a01869693b874bec91aecaefbc27d2618ed",
+  "merge_commit": "c88eb53a32f2e5f5187dd0efc741a0571a49fe6e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T18:37:53Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605231749-X9B9NE",
-  "updated_at": "2026-05-23T17:52:23.901Z",
+  "updated_at": "2026-05-23T18:37:53Z",
   "verify": {
     "status": "pass"
   }
