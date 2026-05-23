@@ -8,6 +8,7 @@ import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { fileExists } from "../../../cli/fs-utils.js";
 import { workflowModeMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
+import { isRecord } from "../../../shared/guards.js";
 import { emitTraceEvent } from "../../../shared/trace-events.js";
 import type { TaskData } from "../../../backends/task-backend.js";
 import { INCIDENTS_POLICY_PATH } from "../../../runtime/incidents/index.js";
@@ -97,10 +98,6 @@ async function buildPrSyncCommonState(opts: {
     artifactRefresh,
     renderUpdatedAt,
   };
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function normalizeBranchPrBatchIncludedTaskIds(task: TaskData, primaryTaskId: string): string[] {

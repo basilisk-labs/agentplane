@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605230946-SHFX9H/shared-isrecord-guard",
+  "created_at": "2026-05-23T09:47:16.544Z",
+  "diffstat_sha256": "sha256:f621de444b41128f51d4e6feb665cdedd2dae3bb93bc92e05ea7c61a8226d403",
+  "last_verified_at": "2026-05-23T09:48:58.551Z",
+  "last_verified_diffstat_sha256": "sha256:f621de444b41128f51d4e6feb665cdedd2dae3bb93bc92e05ea7c61a8226d403",
+  "schema_version": 1,
+  "task_id": "202605230946-SHFX9H",
+  "updated_at": "2026-05-23T09:47:16.544Z",
+  "verify": {
+    "status": "pass"
+  }
+}
