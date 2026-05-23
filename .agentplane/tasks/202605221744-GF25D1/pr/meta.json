@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605221744-GF25D1/agent-task-brief",
+  "created_at": "2026-05-23T01:10:07.020Z",
+  "diffstat_sha256": "sha256:b39dc0b10f17b035ccd90ca008a9a2e0c05be25b58693db779e350f9021122b2",
+  "last_verified_at": "2026-05-23T01:17:26.781Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pr_number": 4060,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4060",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605221744-GF25D1",
+  "updated_at": "2026-05-23T01:17:53.644Z",
+  "verify": {
+    "status": "pass"
+  }
+}

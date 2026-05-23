@@ -28,6 +28,7 @@ import { taskMigrateDocSpec } from "../../../commands/task/migrate-doc.command.j
 import { taskMigrateSpec } from "../../../commands/task/migrate.command.js";
 import { taskNewSpec } from "../../../commands/task/new.spec.js";
 import { taskBeginSpec } from "../../../commands/task/begin.command.js";
+import { taskBriefSpec } from "../../../commands/task/brief.command.js";
 import { taskCompleteSpec } from "../../../commands/task/complete.command.js";
 import { taskNextSpec } from "../../../commands/task/next.spec.js";
 import {
@@ -81,6 +82,7 @@ import {
   loadTaskNextActionSpec,
   loadTaskNewSpec,
   loadTaskBeginSpec,
+  loadTaskBriefSpec,
   loadTaskCompleteSpec,
   loadTaskDeriveSpec,
   loadTaskEvidenceCheckSpec,
@@ -158,6 +160,7 @@ export const TASK_COMMANDS = [
     invocation: requireCanonicalCommandInvocation(["task", "new"]),
   }),
   declareCommand(taskBeginSpec, { load: loadTaskBeginSpec }),
+  declareCommand(taskBriefSpec, { load: loadTaskBriefSpec }),
   declareCommand(taskCompleteSpec, { load: loadTaskCompleteSpec }),
   declareCommand(taskDeriveSpec, {
     load: loadTaskDeriveSpec,
