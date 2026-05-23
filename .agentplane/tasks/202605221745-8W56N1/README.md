@@ -1,10 +1,11 @@
 ---
 id: "202605221745-8W56N1"
 title: "Add source confidence labels to agent route output"
-status: "DOING"
+result_summary: "Merged via PR #4066."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -43,11 +44,16 @@ quality_review:
     - ".agentplane/tasks/202605221745-8W56N1/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221745-8W56N1-source-confidence-labels/.agentplane/tasks/202605221745-8W56N1/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "259d84c792736e7d4ad7f8c90b61f53277766358"
+  message: "Merge pull request #4066 from basilisk-labs/task/202605221745-8W56N1/source-confidence-labels"
 comments:
   -
     author: "CODER"
     body: "Start: implement source confidence labels for agent route output with local/default and explicit remote evidence coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4066 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -68,9 +74,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator pass: JSON route outputs expose source_confidence for route, next_action, blockers, and remote; default status/next-action commands are local-only; explicit --remote path is covered by tests and smoke."
+  -
+    type: "status"
+    at: "2026-05-23T03:19:46.872Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4066 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T03:02:26.107Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T03:19:46.881Z"
+doc_updated_by: "INTEGRATOR"
 description: "Label route, PR, close-tail, task, and verification fields by source and freshness so agents can tell local, cached, stale, and remote-checked context apart before mutating state."
 sections:
   Summary: |-
