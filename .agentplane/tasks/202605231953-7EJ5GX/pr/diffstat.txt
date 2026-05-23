@@ -1,0 +1,7 @@
+ .agentplane/policy/workflow.branch_pr.md                      |  2 ++
+ docs/user/agent-bootstrap.generated.mdx                       |  7 ++++---
+ packages/agentplane/assets/AGENTS.md                          |  4 ++--
+ .../agentplane/assets/codex-plugin/skills/agentplane/SKILL.md | 11 +++++++----
+ packages/agentplane/assets/policy/workflow.branch_pr.md       |  2 ++
+ packages/agentplane/src/cli/bootstrap-guide.ts                |  7 ++++---
+ 6 files changed, 21 insertions(+), 12 deletions(-)

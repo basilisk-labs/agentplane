@@ -20,7 +20,7 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 
 - Repository type: user project initialized with `agentplane`.
 - CLI rule: prefer `ap` for compact agent-oriented commands; fall back to `agentplane`; if neither is available, stop and request installation guidance (do not invent repo-local entrypoints).
-- Startup shortcut: run `## COMMANDS -> Preflight`, then use `ap quickstart`; activate `ap role ORCHESTRATOR` for planning and `ap role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation. The guarded route is determined by `workflow.mode` in `.agentplane/WORKFLOW.md`; use `ap quickstart` as the canonical summary of the active path before mutating. In `branch_pr`, start from `ap work start ... --worktree`; in `direct`, stay in the current checkout and use the task lifecycle route.
+- Startup shortcut: run `## COMMANDS -> Preflight`, then use `ap quickstart`; activate `ap role ORCHESTRATOR` for planning and `ap role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation. The guarded route is determined by `workflow.mode` in `.agentplane/WORKFLOW.md`; use `ap task brief <task-id>` and the emitted next command before manually assembling route commands. In `branch_pr`, start from the emitted `work start` route command or `ap work start ... --worktree`; in `direct`, stay in the current checkout and use the task lifecycle route.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.source_of_truth.sources.of.truth" slot="source_of_truth" mutability="replaceable" -->
@@ -116,7 +116,7 @@ node .agentplane/policy/check-routing.mjs
 ## SHARED PROMPT CONTRACT
 
 - Outcome-first, concise, evidence-first: state goal, success criteria, constraints, stop rules, and output; use procedure only for command contracts, state machines, or irreversible gates; ask one narrow question only when missing information changes scope, task graph, security, or irreversible action.
-- Retrieval/progress/cache: preamble before multi-step or tool-heavy work; load only matched policy, task README, Verify Steps, and relevant files; use incidents only for analogous scope/tags; final output names actions, checks, blockers/drift, and next approval; keep stable gateway/policy/role before dynamic context and never cache mutable task state.
+- Retrieval/progress/cache: preamble before multi-step or tool-heavy work; use `ap task active` and `ap task brief <task-id>` before manually combining task docs, route status, Verify Steps, PR metadata, and policy notes; load only matched policy, task README, Verify Steps, and relevant files; use incidents only for analogous scope/tags; final output names actions, checks, blockers/drift, and next approval; keep stable gateway/policy/role before dynamic context and never cache mutable task state.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.user.instructions" slot="body" mutability="append_only" -->

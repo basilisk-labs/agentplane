@@ -18,7 +18,7 @@ git status --short --untracked-files=no
 git rev-parse --abbrev-ref HEAD
 ```
 
-After preflight, use `agentplane task active` to choose ready work and `agentplane task brief <task-id>` to load the task context surface. Then follow the configured workflow mode. In repositories configured for `branch_pr`, start with `agentplane help work start`, keep local PR artifacts current with `agentplane pr ...`, confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`, and let base-checkout `integrate` drive the task GitHub PR merge; use the direct-mode route below only when `workflow_mode=direct` is intentional.
+After preflight, use `agentplane task active` to choose ready work and `agentplane task brief <task-id>` to load the task context surface. Prefer the concrete next command emitted by `task brief` or `agentplane task next-action <task-id> --explain` before manually assembling route commands. Then follow the configured workflow mode. In repositories configured for `branch_pr`, start with the emitted route command or `agentplane help work start` as the low-level contract, keep local PR artifacts current with `agentplane pr ...`, confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`, and let base-checkout `integrate` drive the task GitHub PR merge; use the direct-mode route below only when `workflow_mode=direct` is intentional.
 
 ## 1. Preflight
 
@@ -43,8 +43,9 @@ Load the task-specific context surface before manually combining task docs, rout
 - `agentplane task brief <task-id>`
 
 - `task active` is the backlog selector for agents; it does not mutate task state.
-- `task brief` is local-first by default and includes route, Verify Steps, policy modules, blueprint evidence, and source confidence labels.
+- `task brief` is local-first by default and includes route, next action, concrete route command, Verify Steps, policy modules, blueprint evidence, source confidence labels, and Verify Steps quality.
 - Use `task brief <task-id> --remote` only when hosted PR/check/review state is needed for the decision.
+- If source confidence is weak or Verify Steps quality is not ready, resolve that context gap before mutation instead of reconstructing missing context manually.
 
 ## 3. Direct happy path
 
@@ -95,6 +96,6 @@ Keep exceptional paths out of the normal route: use these only for recovery, fra
 
 ## Non-default paths
 
-- `branch_pr`: in repositories configured this way, use `agentplane task brief <task-id>` first, start a task branch/worktree, maintain PR artifacts, confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`, and finalize through the task GitHub PR merge plus Task Hosted Close.
+- `branch_pr`: in repositories configured this way, use `agentplane task brief <task-id>` first, prefer its emitted next command or `agentplane task next-action <task-id> --explain`, start a task branch/worktree, maintain PR artifacts, confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`, and finalize through the task GitHub PR merge plus Task Hosted Close.
 - `direct`: use `task new/plan approve/start-ready -> task verify-show -> verify -> finish` only when `workflow_mode=direct` is intentional.
 - Use manual close flags only when a specific policy or recovery situation requires them.
