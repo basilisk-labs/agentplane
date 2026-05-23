@@ -1,10 +1,11 @@
 ---
 id: "202605231953-7EJ5GX"
 title: "Sync agent prompt guidance with compact context commands"
-status: "DOING"
+result_summary: "Merged via PR #4116."
+status: "DONE"
 priority: "med"
 owner: "UPDATER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605231953-7EJ5GX/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231953-7EJ5GX-prompt-context-commands/.agentplane/tasks/202605231953-7EJ5GX/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "345c36ed6b32b7e275b2b89c04e9f7832fe9a07b"
+  message: "Merge pull request #4116 from basilisk-labs/task/202605231953-7EJ5GX/prompt-context-commands"
 comments:
   -
     author: "UPDATER"
     body: "Start: updating prompt/bootstrap surfaces to reduce manual context reconstruction and prefer compact CLI context commands."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4116 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Hosted checks for PR #4116 are green: Analyze actions/javascript-typescript, CodeQL, docs, plan, test-windows, verify-cli-critical, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow, and PR verification passed. Local targeted checks already recorded by UPDATER."
+  -
+    type: "status"
+    at: "2026-05-23T20:19:35.178Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4116 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T20:08:41.917Z"
-doc_updated_by: "UPDATER"
+doc_updated_at: "2026-05-23T20:19:35.186Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update AgentPlane prompt/bootstrap surfaces so agents use task active, task brief, route next-action, and source-confidence guidance before manual branch_pr command assembly."
 sections:
   Summary: |-

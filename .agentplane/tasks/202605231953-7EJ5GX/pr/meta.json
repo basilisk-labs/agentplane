@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T20:18:52Z",
   "base": "main",
   "branch": "task/202605231953-7EJ5GX/prompt-context-commands",
   "created_at": "2026-05-23T19:55:26.804Z",
   "diffstat_sha256": "sha256:c383e6a3340ea411c44f9c59118ca5fae5e78eed2246d488ff053668fde38d9b",
   "last_verified_at": "2026-05-23T20:08:40.876Z",
   "last_verified_diffstat_sha256": "sha256:c383e6a3340ea411c44f9c59118ca5fae5e78eed2246d488ff053668fde38d9b",
+  "merge_commit": "345c36ed6b32b7e275b2b89c04e9f7832fe9a07b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T20:18:52Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605231953-7EJ5GX",
-  "updated_at": "2026-05-23T19:55:26.804Z",
+  "updated_at": "2026-05-23T20:18:52Z",
   "verify": {
     "status": "pass"
   }
