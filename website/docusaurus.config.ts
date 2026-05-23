@@ -115,22 +115,22 @@ const config = {
       { property: "og:site_name", content: "Agentplane" },
       {
         property: "og:title",
-        content: "Make AI-authored code reviewable in Git",
+        content: "Audit trails for AI-written code changes",
       },
       {
         property: "og:description",
         content:
-          "Local-first CLI evidence for coding-agent intent, plans, verification, traces, commits, and Agent Change Records.",
+          "Repo-local evidence for task intent, approved plans, checks, traces, commits, and Agent Change Records.",
       },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "Make AI-authored code reviewable in Git",
+        content: "Audit trails for AI-written code changes",
       },
       {
         name: "twitter:description",
         content:
-          "Local-first CLI evidence for coding-agent intent, plans, verification, traces, commits, and Agent Change Records.",
+          "Repo-local evidence for task intent, approved plans, checks, traces, commits, and Agent Change Records.",
       },
       { name: "twitter:site", content: "@agentplaneorg" },
     ],

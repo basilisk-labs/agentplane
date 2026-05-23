@@ -34,17 +34,17 @@ export const harnessUrl = siteRoutes.harness;
 
 export const homepageContent = {
   seo: {
-    title: "Agentplane | Make AI-authored code reviewable in Git",
+    title: "Agentplane | Audit trails for AI-written code changes",
     description:
-      "Agentplane is an agent-agnostic harness that wraps coding agents with task intent, guardrails, verification evidence, commits, traces, and Agent Change Records inside your repository.",
+      "Agentplane adds repo-local audit trails to AI-written code changes: task intent, approved plans, verification evidence, commits, traces, and Agent Change Records.",
   },
   hero: {
-    eyebrow: "Agent-agnostic harness for coding agents",
-    title: "Make AI-authored code reviewable in Git.",
+    eyebrow: "Agent-agnostic evidence layer for code review",
+    title: "Audit trails for AI-written code changes.",
     subtitle:
-      "The agent writes code and uses the CLI. The human sets tasks, guardrails, and review boundaries. Agentplane keeps the evidence durable across models and tools.",
-    trustLine: "Agent-agnostic. LLM-agnostic. Local-first. MIT licensed.",
-    commands: [installCommand, "agentplane init", "agent reads AGENTS.md", "human reviews ACR"],
+      "When an agent changes code, reviewers need more than a diff. Agentplane keeps the task, approved plan, checks, traces, and Agent Change Record inside the repo.",
+    trustLine: "Agent-agnostic. Local-first. No account required. MIT licensed.",
+    commands: [installCommand, "agentplane init", "agentplane demo", "human reviews evidence"],
     output: [
       "wrote policy gateway",
       "approved task plan",
@@ -62,10 +62,30 @@ export const homepageContent = {
     "local-first CLI",
   ],
   problem: {
-    title: "A diff is not the whole story.",
-    text: "A diff shows what changed. It does not show why the agent changed it, what plan was approved, what checks ran, or whether the result is ready for review.",
+    title: "A diff is not enough to merge agent work.",
+    text: "A diff shows what changed. It does not show why the agent changed it, what scope was approved, what checks ran, or whether the result is ready for review.",
     evidence:
-      "Agentplane turns AI-authored work into repo-local evidence: task intent, plan, verification, traces, commits, and Agent Change Records.",
+      "Agentplane turns AI-written code changes into repo-local evidence: task intent, approved plan, verification, traces, commits, and Agent Change Records.",
+  },
+  reviewFlow: {
+    title: "From uncertain diff to reviewable change.",
+    text: "Give reviewers a durable trail before asking them to trust an agent-authored pull request.",
+    before: {
+      title: "Before Agentplane",
+      points: [
+        "The agent changed files, but the approved scope is buried in chat.",
+        "Checks ran somewhere, but the result is not tied to the task.",
+        "The reviewer sees a diff and has to infer intent.",
+      ],
+    },
+    after: {
+      title: "After Agentplane",
+      points: [
+        "The task README records intent, plan, owner, findings, and rollback.",
+        "The ACR links changed files to verification evidence.",
+        "The PR carries a review packet instead of a loose agent summary.",
+      ],
+    },
   },
   whatIs: {
     title: "Agentplane is not another agent framework.",
@@ -82,8 +102,8 @@ export const homepageContent = {
     ],
   },
   records: {
-    title: "Agentplane writes evidence your repo can keep.",
-    text: "No account. No hosted dependency. Start in a repository and inspect the artifacts before deciding what to automate.",
+    title: "Try the review trail in a repo you control.",
+    text: "No account. No hosted dependency. Start locally, generate the evidence shape, then decide what to automate.",
     tree: [
       "AGENTS.md",
       ".agentplane/WORKFLOW.md",
@@ -125,22 +145,29 @@ export const homepageContent = {
     ["Run a TDD workflow recipe", "recipe YAML"],
   ],
   worksWith: {
-    title: "Use your existing coding agent.",
-    text: "Agentplane does not replace Claude Code, Codex, Cursor, Aider, or your Git workflow. It gives any repository-capable coding agent the same harness boundary and evidence trail.",
-    tools: ["Claude Code", "Codex", "Cursor", "Aider", "GitHub Actions", "OpenTelemetry"],
+    title: "Agent-agnostic by design.",
+    text: "Agentplane does not replace your model, coding agent, editor, or Git workflow. It gives any repository-capable agent the same harness boundary and evidence trail.",
+    tools: [
+      "Agent-agnostic",
+      "LLM-agnostic",
+      "CLI-first",
+      "Git-native",
+      "Local-first",
+      "OpenTelemetry-friendly",
+    ],
   },
   whoShouldUse: {
     title: "Who should open the repo?",
     items: [
-      "using coding agents in real repositories",
-      "reviewing AI-authored pull requests and missing intent, plan, and check evidence",
+      "using agentic coding tools in real repositories",
+      "reviewing AI-written pull requests and missing intent, plan, and check evidence",
       "maintaining an OSS project where agent changes need audit trails",
       "building platform workflows around reproducible AI-agent work",
       "tired of agent demos that disappear after the chat session",
     ],
   },
   closing: {
-    title: "Help make AI-authored code reviewable in Git.",
-    text: "Open the repository, inspect the CLI, then run the local loop in a repo you control.",
+    title: "Make the next AI-written change reviewable.",
+    text: "Run the quickstart, inspect the generated evidence, then decide where Agentplane belongs in your agent workflow.",
   },
 } as const;

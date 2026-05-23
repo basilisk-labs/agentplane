@@ -15,7 +15,7 @@ reviewable in Git.
 Open a GitHub Discussion with:
 
 - Repository or project link.
-- Agent used: Claude Code, Codex, Cursor, Aider, or another tool.
+- Agent used: agent-agnostic, local, editor, hosted, or custom runner.
 - Workflow mode: `direct` or `branch_pr`.
 - Evidence required before merge.
 - Example task README, ACR, or PR link if public.
@@ -33,7 +33,7 @@ Share a task that produced:
 
 ### Agent PR policy
 
-Share a contributor policy that requires agent-authored PRs to include:
+Share a contributor policy that requires AI-written PRs to include:
 
 - task intent
 - approved or waived plan
@@ -45,12 +45,11 @@ Share a contributor policy that requires agent-authored PRs to include:
 
 Share the exact flow your repo uses with a coding agent:
 
-- Claude Code
-- Codex
-- Cursor
-- Aider
-- GitHub Actions
-- branch_pr
+- agent type
+- human approval boundary
+- CI gate
+- ACR gate
+- `direct` or `branch_pr`
 
 ## Trust boundary
 

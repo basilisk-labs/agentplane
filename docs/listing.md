@@ -19,20 +19,20 @@ intent, approved plan, verification, finish state, and Agent Change Record.
 
 ## Long
 
-Agentplane is not another coding agent or hosted agent runtime. It wraps Claude Code, Codex, Cursor,
-Aider, and similar tools with a repo-local evidence trail so AI-authored work can be reviewed,
-validated, merged, and reverted through Git.
+Agentplane is not another coding agent or hosted agent runtime. It is an agent-agnostic,
+repo-local evidence trail so AI-written code changes can be reviewed, validated, merged, and
+reverted through Git.
 
 ## Category
 
-Repo-local evidence layer for AI-authored software changes.
+Repo-local evidence layer for AI-written software changes.
 
 ## Do position as
 
 - Git-native infrastructure for traceable AI work.
 - Local-first workflow control for coding agents.
 - Agent Change Record producer and validator.
-- Review trail for AI-authored pull requests.
+- Review trail for AI-written pull requests.
 
 ## Do not position as
 

@@ -5,9 +5,8 @@ description: "Use Agentplane as an agent-agnostic harness for coding agents, edi
 
 # Use with coding agents
 
-Agentplane is agent-agnostic and LLM-agnostic. Claude Code, Codex, Cursor, Aider, Windsurf, a
-custom runner, or a future agent can all use the same repository harness when they can read files,
-run commands, edit code, and respect `AGENTS.md`.
+Agentplane is agent-agnostic and LLM-agnostic. Any repository-capable coding agent can use the same
+repository harness when it can read files, run commands, edit code, and respect `AGENTS.md`.
 
 The split is simple:
 
@@ -37,7 +36,7 @@ risk changes.
 
 ## If your agent runs in a terminal
 
-This covers Codex-style terminal agents, Claude Code, Aider, and custom local wrappers.
+This covers terminal agents and custom local wrappers.
 
 - Start the agent from the repository root.
 - Keep the task boundary in Agentplane, not in terminal scrollback.
@@ -48,7 +47,7 @@ Use the terminal agent's normal invocation. Agentplane does not require a provid
 
 ## If your agent runs in an editor
 
-This covers Cursor, Windsurf, and similar editor agents.
+This covers editor agents that can work inside an initialized repository.
 
 - Open the repository after Agentplane is initialized.
 - Put the approved task and scope in the agent prompt.
@@ -85,7 +84,7 @@ branch protection and required checks in GitHub.
 
 ## Review checklist
 
-Before merging agent-authored work, confirm:
+Before merging AI-written work, confirm:
 
 - The task exists under `.agentplane/tasks/<task-id>/`.
 - The task scope matches the diff.
@@ -96,8 +95,8 @@ Before merging agent-authored work, confirm:
 
 ## Compatibility pages
 
-Older pages for Claude Code, Codex, Cursor, and Aider now point here. The operating contract is the
-same across tools: the agent writes code and uses the CLI; the human manages the harness boundary.
+Older tool-specific pages now point here. The operating contract is the same across agents: the
+agent writes code and uses the CLI; the human manages the harness boundary.
 
 For command details, use the [CLI reference](../reference/cli). For pull-request evidence, use
 [Agent Change Records](../reference/acr).

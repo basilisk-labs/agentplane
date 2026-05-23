@@ -3,6 +3,11 @@
   color: rgb(var(--fg));
 }
 
+.page,
+.page * {
+  box-sizing: border-box;
+}
+
 .hero,
 .section {
   margin-inline: auto;
@@ -24,6 +29,7 @@
   display: grid;
   gap: 1.25rem;
   max-width: 720px;
+  min-width: 0;
 }
 
 .kicker,
@@ -50,6 +56,11 @@
   font-size: clamp(3.4rem, 7.2vw, 6.8rem);
   line-height: 0.92;
   max-width: 11ch;
+  overflow-wrap: break-word;
+}
+
+.hero h1 span {
+  display: block;
 }
 
 .section h2 {
@@ -160,6 +171,7 @@ button.buttonSecondary {
   display: grid;
   gap: 0.82rem;
   min-height: 520px;
+  min-width: 0;
   padding: clamp(1rem, 2.4vw, 1.6rem);
   position: relative;
 }
@@ -409,7 +421,8 @@ button.buttonSecondary {
 .surfaceGrid,
 .harnessGrid,
 .exampleGrid,
-.badgeRow {
+.badgeRow,
+.reviewColumns {
   display: grid;
   gap: 1px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -417,13 +430,48 @@ button.buttonSecondary {
 
 .surfaceGrid article,
 .harnessGrid div,
-.exampleGrid a {
+.exampleGrid a,
+.reviewColumns div {
   background: rgb(255 255 255);
   display: grid;
   gap: 0.4rem;
   min-height: 9rem;
   padding: 1rem;
   text-decoration: none;
+}
+
+.reviewColumns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.reviewColumns div {
+  align-content: start;
+  gap: 0.85rem;
+  min-height: 0;
+}
+
+.reviewColumns h3 {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.reviewColumns ul {
+  display: grid;
+  gap: 0.65rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.reviewColumns li {
+  border-top: 1px solid rgb(var(--border));
+  color: rgb(var(--fg));
+  font-size: 0.94rem;
+  line-height: 1.45;
+  padding-top: 0.65rem;
 }
 
 .surfaceGrid p,
@@ -488,6 +536,7 @@ button.buttonSecondary {
 
   .hero {
     min-height: auto;
+    min-width: 0;
   }
 
   .artifactPanel {
@@ -498,6 +547,7 @@ button.buttonSecondary {
   .harnessGrid,
   .exampleGrid,
   .badgeRow,
+  .reviewColumns,
   .artifactGrid {
     grid-template-columns: 1fr;
   }
@@ -520,7 +570,9 @@ button.buttonSecondary {
   }
 
   .hero h1 {
-    font-size: clamp(3rem, 17vw, 4.6rem);
+    font-size: 2.4rem;
+    line-height: 1.04;
+    max-width: 100%;
   }
 
   .ctaGroup,
@@ -548,5 +600,11 @@ button.buttonSecondary {
   .buttonSecondary,
   .buttonTertiary {
     width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero h1 {
+    font-size: 2.2rem;
   }
 }

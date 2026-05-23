@@ -88,21 +88,21 @@ to keep it is the Git repository that already owns review, revert, audit, and me
 
 ## Source: docs/compare.mdx
 
-# Agentplane is not another coding agent
+# Agentplane is the agent-agnostic evidence layer
 
-Claude Code, Codex, Cursor, Aider, and similar tools generate or edit code. Agentplane records the
-evidence that makes their work reviewable: task scope, approved plan, role ownership, verification,
-branch handoff, closure, and Agent Change Record.
+Use any repository-capable coding agent. Agentplane records the evidence that makes its work
+reviewable: task scope, approved plan, role ownership, verification, branch handoff, closure, and
+Agent Change Record.
 
 ## Comparison matrix
 
-| Surface                              | Best at                            | Missing by itself              | Agentplane adds                    |
-| ------------------------------------ | ---------------------------------- | ------------------------------ | ---------------------------------- |
-| Claude Code / Codex / Cursor / Aider | Generating and editing code        | Durable task evidence          | Lifecycle records and ACR          |
-| `AGENTS.md` / `CLAUDE.md`            | Instructions and policy            | State, approvals, verification | Commands, gates, artifacts         |
-| Git                                  | Diffs and history                  | Intent, plan, verification     | Evidence around the diff           |
-| CI                                   | Automated checks                   | Task context and closure state | Verification evidence and ACR gate |
-| Hosted agent dashboards              | Central status or remote execution | Repo-local source of truth     | Durable Git-owned evidence         |
+| Surface                 | Best at                            | Missing by itself              | Agentplane adds                    |
+| ----------------------- | ---------------------------------- | ------------------------------ | ---------------------------------- |
+| Agent-agnostic codegen  | Generating and editing code        | Durable task evidence          | Lifecycle records and ACR          |
+| `AGENTS.md` / rules     | Instructions and policy            | State, approvals, verification | Commands, gates, artifacts         |
+| Git                     | Diffs and history                  | Intent, plan, verification     | Evidence around the diff           |
+| CI                      | Automated checks                   | Task context and closure state | Verification evidence and ACR gate |
+| Hosted agent dashboards | Central status or remote execution | Repo-local source of truth     | Durable Git-owned evidence         |
 
 ## Coding agents
 
@@ -159,7 +159,7 @@ Use Agentplane when:
 
 - your coding agent changes real repositories;
 - reviewers need task intent, plan, verification, and closure evidence;
-- AI-authored pull requests need a repeatable review contract;
+- AI-written code changes need a repeatable review contract;
 - you want durable artifacts in Git instead of transient chat history.
 
 Do not use Agentplane when:
@@ -169,10 +169,10 @@ Do not use Agentplane when:
 - you want an agent framework to choose models and tools;
 - you do not use Git-based review.
 
-## Works with, not against
+## Agent-agnostic by design
 
-Claude Code, Codex, Cursor, and Aider generate or edit code. Git stores the diff. CI runs checks.
-Agentplane records the evidence around the work.
+Agentplane does not depend on a specific model, editor, hosted runtime, or agent product. Git stores
+the diff. CI runs checks. Agentplane records the evidence around the work.
 
 ## Summary
 
