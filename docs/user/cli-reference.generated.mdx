@@ -13,6 +13,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [role](#role)
 - Task
   - [ready](#ready)
+  - [task active](#task-active)
   - [task begin](#task-begin)
   - [task brief](#task-brief)
   - [task comment](#task-comment)
@@ -335,6 +336,46 @@ agentplane ready 202602030608-F1Q8AB
 ```
 
 - Print readiness details.
+
+### task active
+
+Select active agent work with next actions, blockers, dependency readiness, and freshness.
+
+Usage:
+
+```text
+agentplane task active [options]
+```
+
+Options:
+
+- `--status <status>`: Repeatable. Filter by active status. (repeatable)
+- `--owner <owner>`: Repeatable. Filter by owner id. (repeatable)
+- `--tag <tag>`: Repeatable. Filter by tag. (repeatable)
+- `--strict-read`: Fail if task scan skips malformed/unreadable task files. (default=false)
+- `--limit <n>`: Max rows to print.
+- `--quiet`: Suppress summary output. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane task active
+```
+
+- Select the next active agent work item.
+
+```sh
+agentplane task active --owner CODER --limit 3
+```
+
+- Limit active work by owner.
+
+```sh
+agentplane task active --json
+```
+
+- Emit machine-readable active work state.
 
 ### task begin
 
