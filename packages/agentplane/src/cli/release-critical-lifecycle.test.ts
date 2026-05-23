@@ -135,13 +135,17 @@ describe("release-critical direct lifecycle", () => {
       ]);
       expect(verify.code).toBe(0);
       const evaluatorVerify = await runCliWithOutput(root, [
-        "verify",
+        "evaluator",
+        "run",
         taskId,
-        "--ok",
-        "--by",
-        "EVALUATOR",
-        "--note",
+        "--verdict",
+        "pass",
+        "--summary",
         "EVALUATOR quality gate passed for release-critical lifecycle.",
+        "--finding",
+        "Release-critical lifecycle reached verification with committed implementation evidence.",
+        "--evidence",
+        "lifecycle.txt",
       ]);
       expect(evaluatorVerify.code).toBe(0);
 

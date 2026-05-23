@@ -16,7 +16,6 @@ import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import {
-  evaluatorRunSpec,
   evaluatorSpec,
   type EvaluatorListParsed,
   type EvaluatorRunParsed,
@@ -104,6 +103,15 @@ function safePathSegment(value: string): string {
     .replaceAll(/[^a-z0-9._-]+/g, "-")
     .replaceAll(/^-+|-+$/g, "")
     .slice(0, 80);
+}
+
+function pathsOutsideTaskArtifacts(paths: string[], workflowDir: string, taskId: string): string[] {
+  const normalizedWorkflowDir = workflowDir.replaceAll("\\", "/").replaceAll(/\/+$/g, "");
+  const taskPrefix = `${normalizedWorkflowDir}/${taskId}/`;
+  return paths.filter((changedPath) => {
+    const normalizedPath = changedPath.replaceAll("\\", "/");
+    return !normalizedPath.startsWith(taskPrefix);
+  });
 }
 
 function renderEvaluatorPrompt(opts: {
@@ -267,15 +275,25 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
   if (p.record) {
     const staged = await command.git.statusStagedPaths();
     const unstaged = await command.git.statusUnstagedTrackedPaths();
-    if (staged.length > 0 || unstaged.length > 0) {
+    const stagedBlocking = pathsOutsideTaskArtifacts(
+      staged,
+      command.config.paths.workflow_dir,
+      p.taskId,
+    );
+    const unstagedBlocking = pathsOutsideTaskArtifacts(
+      unstaged,
+      command.config.paths.workflow_dir,
+      p.taskId,
+    );
+    if (stagedBlocking.length > 0 || unstagedBlocking.length > 0) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
         message: [
-          "Recording EVALUATOR quality_review requires a clean tracked working tree.",
+          "Recording EVALUATOR quality_review requires no dirty tracked paths outside the current task artifact subtree.",
           `task=${p.taskId}`,
-          `staged=${staged.length}`,
-          `unstaged=${unstaged.length}`,
+          `staged_blocking=${stagedBlocking.length}`,
+          `unstaged_blocking=${unstagedBlocking.length}`,
           "Commit or revert tracked changes first, then rerun evaluator run.",
           "Use --no-record only for artifact-generation smoke checks.",
         ].join("\n"),
