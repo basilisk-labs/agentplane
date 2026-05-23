@@ -652,7 +652,14 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
     );
 
     const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const includedTaskId = "202604091600-INCL01";
     const staleMeta = {
+      batch: {
+        schema_version: 1,
+        primary_task_id: taskId,
+        included_task_ids: [includedTaskId],
+        closure_policy: "all_or_fail",
+      },
       base: baseBranch,
       branch,
       created_at: "2026-04-09T16:00:00.000Z",
@@ -721,6 +728,9 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
     expect(log).toContain(
       "title=🧩 348SVA task-close: Hosted close PR fallback [202604091600-348SVA]",
     );
+    expect(log).toContain(`Closes task batch \`${taskId}\`, \`${includedTaskId}\``);
+    expect(log).toContain("## Included Tasks");
+    expect(log).toContain(`- \`${includedTaskId}\``);
     expect(log).toContain("## Source");
     expect(log).toContain('"POST"');
   }, 240_000);
