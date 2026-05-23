@@ -25,6 +25,13 @@ type RouteRepairStep = {
   mutates: boolean;
 };
 
+type RouteSourceConfidence = {
+  source: string;
+  freshness: string;
+  confidence: string;
+  note?: string;
+};
+
 type RouteAmbiguity = {
   code: string;
   summary: string;
@@ -64,6 +71,7 @@ type TaskRouteDecision = {
   ambiguities: RouteAmbiguity[];
   nextAction: RouteNextAction;
   repairPlan: RouteRepairStep[];
+  sourceConfidence: Record<string, RouteSourceConfidence>;
 };
 
 function isCliUsageOrIo(err: unknown): boolean {
@@ -290,7 +298,7 @@ function deriveApprovalContract(ctx: CommandContext): TaskRouteDecision["approva
 }
 
 function deriveAmbiguities(opts: {
-  decision: Omit<TaskRouteDecision, "ambiguities" | "repairPlan">;
+  decision: Omit<TaskRouteDecision, "ambiguities" | "repairPlan" | "sourceConfidence">;
 }): RouteAmbiguity[] {
   const ambiguities: RouteAmbiguity[] = [];
   const blockerCodes = new Set(opts.decision.blockers.map((blocker) => blocker.code));
@@ -327,7 +335,9 @@ function deriveAmbiguities(opts: {
   return ambiguities;
 }
 
-function deriveRepairPlan(decision: Omit<TaskRouteDecision, "repairPlan">): RouteRepairStep[] {
+function deriveRepairPlan(
+  decision: Omit<TaskRouteDecision, "repairPlan" | "sourceConfidence">,
+): RouteRepairStep[] {
   const steps: RouteRepairStep[] = [];
   const id = decision.task.id;
   for (const blocker of decision.blockers) {
@@ -420,6 +430,70 @@ function deriveRepairPlan(decision: Omit<TaskRouteDecision, "repairPlan">): Rout
   return steps;
 }
 
+function hasRemoteProviderEvidence(prFlow: PrFlowStatusReport | null): boolean {
+  if (!prFlow) return false;
+  return (
+    prFlow.pr.source === "lookup" ||
+    "provider" in prFlow.closeTail ||
+    prFlow.hostedChecks.checked ||
+    prFlow.reviewThreads.checked
+  );
+}
+
+function buildRouteSourceConfidence(opts: {
+  remoteEnabled: boolean;
+  remoteResolved: boolean;
+}): TaskRouteDecision["sourceConfidence"] {
+  const routeFreshness = opts.remoteResolved ? "remote_live" : "computed_local";
+  const routeConfidence = opts.remoteResolved ? "medium" : opts.remoteEnabled ? "medium" : "high";
+  const routeNote = opts.remoteResolved
+    ? "route includes provider-derived PR/check state"
+    : opts.remoteEnabled
+      ? "remote lookup was requested but no provider state was available"
+      : "route excludes hosted PR/check/review lookups";
+  const remoteFreshness = opts.remoteResolved ? "remote_live" : "remote_skipped";
+  const remoteConfidence = opts.remoteResolved ? "medium" : opts.remoteEnabled ? "low" : "skipped";
+  const remoteNote = opts.remoteResolved
+    ? "remote provider state fetched"
+    : opts.remoteEnabled
+      ? "remote lookup was requested but route resolution fell back to local data"
+      : "remote lookup skipped by default";
+  return {
+    task: {
+      source: "task_backend",
+      freshness: "live_local",
+      confidence: "high",
+    },
+    workflow: {
+      source: "local_git",
+      freshness: "live_local",
+      confidence: "high",
+    },
+    route: {
+      source: "local_git",
+      freshness: routeFreshness,
+      confidence: routeConfidence,
+      note: routeNote,
+    },
+    next_action: {
+      source: "local_git",
+      freshness: routeFreshness,
+      confidence: routeConfidence,
+    },
+    blockers: {
+      source: "local_git",
+      freshness: routeFreshness,
+      confidence: routeConfidence,
+    },
+    remote: {
+      source: "remote_provider",
+      freshness: remoteFreshness,
+      confidence: remoteConfidence,
+      note: remoteNote,
+    },
+  };
+}
+
 export async function buildTaskRouteDecision(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -443,7 +517,8 @@ export async function buildTaskRouteDecision(opts: {
     task_id: opts.taskId,
   });
   let prFlow: PrFlowStatusReport | null = null;
-  if (ctx.config.workflow_mode === "branch_pr" && opts.includeRemote !== false) {
+  const remoteEnabled = ctx.config.workflow_mode === "branch_pr" && opts.includeRemote !== false;
+  if (remoteEnabled) {
     try {
       prFlow = await resolvePrFlowStatus({
         ctx,
@@ -486,5 +561,12 @@ export async function buildTaskRouteDecision(opts: {
     nextAction,
   };
   const withAmbiguities = { ...partial, ambiguities: deriveAmbiguities({ decision: partial }) };
-  return { ...withAmbiguities, repairPlan: deriveRepairPlan(withAmbiguities) };
+  return {
+    ...withAmbiguities,
+    repairPlan: deriveRepairPlan(withAmbiguities),
+    sourceConfidence: buildRouteSourceConfidence({
+      remoteEnabled,
+      remoteResolved: hasRemoteProviderEvidence(prFlow),
+    }),
+  };
 }

@@ -181,6 +181,52 @@ describe("runCli route decision commands", () => {
 
       await expect(readFile(marker, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
 
+      const statusJsonIo = captureStdIO();
+      try {
+        const code = await runCli(["task", "status", taskId, "--route", "--json", "--root", root]);
+        expect(code).toBe(0);
+        const parsed = JSON.parse(statusJsonIo.stdout) as {
+          source_confidence: Record<
+            string,
+            { source: string; freshness: string; confidence: string; note?: string }
+          >;
+        };
+        expect(parsed.source_confidence.route).toMatchObject({
+          freshness: "computed_local",
+          confidence: "high",
+        });
+        expect(parsed.source_confidence.remote).toMatchObject({
+          freshness: "remote_skipped",
+          confidence: "skipped",
+        });
+      } finally {
+        statusJsonIo.restore();
+      }
+
+      const nextJsonIo = captureStdIO();
+      try {
+        const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+        expect(code).toBe(0);
+        const parsed = JSON.parse(nextJsonIo.stdout) as {
+          source_confidence: Record<
+            string,
+            { source: string; freshness: string; confidence: string; note?: string }
+          >;
+        };
+        expect(parsed.source_confidence.next_action).toMatchObject({
+          freshness: "computed_local",
+          confidence: "high",
+        });
+        expect(parsed.source_confidence.remote).toMatchObject({
+          freshness: "remote_skipped",
+          confidence: "skipped",
+        });
+      } finally {
+        nextJsonIo.restore();
+      }
+
+      await expect(readFile(marker, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+
       const jsonIo = captureStdIO();
       try {
         const code = await runCli(["task", "brief", taskId, "--json", "--root", root]);
@@ -260,6 +306,135 @@ describe("runCli route decision commands", () => {
         expect(parsed.source_confidence.remote.note).toContain("fell back to local data");
       } finally {
         remoteIo.restore();
+      }
+
+      const remoteStatusIo = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "status",
+          taskId,
+          "--route",
+          "--json",
+          "--remote",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        const parsed = JSON.parse(remoteStatusIo.stdout) as {
+          source_confidence: Record<
+            string,
+            { source: string; freshness: string; confidence: string; note?: string }
+          >;
+        };
+        expect(parsed.source_confidence.route).toMatchObject({
+          freshness: "computed_local",
+          confidence: "medium",
+        });
+        expect(parsed.source_confidence.remote).toMatchObject({
+          freshness: "remote_skipped",
+          confidence: "low",
+        });
+      } finally {
+        remoteStatusIo.restore();
+      }
+    } finally {
+      process.env.PATH = previousPath;
+    }
+  });
+
+  it("marks close-tail provider lookup as remote evidence", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+    });
+
+    const taskId = await createBranchPrTask(root);
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          branch: `task/${taskId}/route-confidence`,
+          base: "main",
+          created_at: "2026-05-23T00:00:00.000Z",
+          updated_at: "2026-05-23T00:00:00.000Z",
+          status: "MERGED",
+          pr_url: "https://github.com/example/repo/pull/123",
+          merge_commit: "abc123def456",
+          head_sha: "def456abc123",
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const fakeBin = path.join(root, "fake-bin");
+    await mkdir(fakeBin, { recursive: true });
+    const fakeGh = path.join(fakeBin, "gh");
+    await writeFile(fakeGh, "#!/bin/sh\nprintf '[]\\n'\n", "utf8");
+    await chmod(fakeGh, 0o755);
+
+    const previousPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${previousPath ?? ""}`;
+    try {
+      const statusIo = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "status",
+          taskId,
+          "--route",
+          "--json",
+          "--remote",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        const parsed = JSON.parse(statusIo.stdout) as {
+          prFlow: { closeTail: { state: string; provider?: string } };
+          source_confidence: Record<
+            string,
+            { source: string; freshness: string; confidence: string; note?: string }
+          >;
+        };
+        expect(parsed.prFlow.closeTail).toMatchObject({
+          state: "not_found",
+          provider: "github",
+        });
+        expect(parsed.source_confidence.route).toMatchObject({
+          freshness: "remote_live",
+          confidence: "medium",
+        });
+        expect(parsed.source_confidence.remote).toMatchObject({
+          freshness: "remote_live",
+          confidence: "medium",
+        });
+      } finally {
+        statusIo.restore();
+      }
+
+      const briefIo = captureStdIO();
+      try {
+        const code = await runCli(["task", "brief", taskId, "--json", "--remote", "--root", root]);
+        expect(code).toBe(0);
+        const parsed = JSON.parse(briefIo.stdout) as {
+          source_confidence: Record<string, { freshness: string; confidence: string }>;
+        };
+        expect(parsed.source_confidence.remote).toMatchObject({
+          freshness: "remote_live",
+          confidence: "medium",
+        });
+      } finally {
+        briefIo.restore();
       }
     } finally {
       process.env.PATH = previousPath;
@@ -532,7 +707,15 @@ describe("runCli route decision commands", () => {
 
     const nextIo = captureStdIO();
     try {
-      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      const code = await runCli([
+        "task",
+        "next-action",
+        taskId,
+        "--json",
+        "--remote",
+        "--root",
+        root,
+      ]);
       expect(code).toBe(0);
       const parsed = JSON.parse(nextIo.stdout) as {
         next_action: { code: string; command: string };

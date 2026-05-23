@@ -1,10 +1,10 @@
 ---
 id: "202605221745-8W56N1"
 title: "Add source confidence labels to agent route output"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,17 +27,50 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-23T03:02:26.078Z"
+  updated_by: "EVALUATOR"
+  note: "Evaluator pass: JSON route outputs expose source_confidence for route, next_action, blockers, and remote; default status/next-action commands are local-only; explicit --remote path is covered by tests and smoke."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-23T03:02:26.078Z"
+  updated_by: "EVALUATOR"
+  note: "Evaluator pass: JSON route outputs expose source_confidence for route, next_action, blockers, and remote; default status/next-action commands are local-only; explicit --remote path is covered by tests and smoke."
+  evaluated_sha: "ecdd8be371c870e65b27326a14b94a0810ba9744"
+  blueprint_digest: "bdc62efdf3f8fad4fc1dfbd130775a4006f534725fdabce7a128a7b54d4181c4"
+  evidence_refs:
+    - ".agentplane/tasks/202605221745-8W56N1/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221745-8W56N1-source-confidence-labels/.agentplane/tasks/202605221745-8W56N1/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: implement source confidence labels for agent route output with local/default and explicit remote evidence coverage."
+events:
+  -
+    type: "status"
+    at: "2026-05-23T02:56:35.957Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: implement source confidence labels for agent route output with local/default and explicit remote evidence coverage."
+  -
+    type: "verify"
+    at: "2026-05-23T03:02:13.364Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented route source confidence labels for task status --route --json and task next-action --json; remote lookup is skipped by default and requires --remote; text output remains compact."
+  -
+    type: "verify"
+    at: "2026-05-23T03:02:26.078Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Evaluator pass: JSON route outputs expose source_confidence for route, next_action, blockers, and remote; default status/next-action commands are local-only; explicit --remote path is covered by tests and smoke."
 doc_version: 3
-doc_updated_at: "2026-05-22T17:45:11.478Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-23T03:02:26.107Z"
+doc_updated_by: "CODER"
 description: "Label route, PR, close-tail, task, and verification fields by source and freshness so agents can tell local, cached, stale, and remote-checked context apart before mutating state."
 sections:
   Summary: |-
@@ -58,11 +91,56 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-23T03:02:13.364Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented route source confidence labels for task status --route --json and task next-action --json; remote lookup is skipped by default and requires --remote; text output remains compact.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T02:56:35.957Z, excerpt_hash=sha256:34112a79d377c3daeb4c006810f840b65acefb56e8a85bde31ba9c1ea9a7616c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221745-8W56N1-source-confidence-labels/.agentplane/tasks/202605221745-8W56N1/blueprint/resolved-snapshot.json
+    - old_digest: bdc62efdf3f8fad4fc1dfbd130775a4006f534725fdabce7a128a7b54d4181c4
+    - current_digest: bdc62efdf3f8fad4fc1dfbd130775a4006f534725fdabce7a128a7b54d4181c4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605221745-8W56N1
+
+    ### 2026-05-23T03:02:26.078Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Evaluator pass: JSON route outputs expose source_confidence for route, next_action, blockers, and remote; default status/next-action commands are local-only; explicit --remote path is covered by tests and smoke.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T03:02:13.390Z, excerpt_hash=sha256:34112a79d377c3daeb4c006810f840b65acefb56e8a85bde31ba9c1ea9a7616c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221745-8W56N1-source-confidence-labels/.agentplane/tasks/202605221745-8W56N1/blueprint/resolved-snapshot.json
+    - old_digest: bdc62efdf3f8fad4fc1dfbd130775a4006f534725fdabce7a128a7b54d4181c4
+    - current_digest: bdc62efdf3f8fad4fc1dfbd130775a4006f534725fdabce7a128a7b54d4181c4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605221745-8W56N1
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Local smoke: status/next-action JSON report route computed_local high confidence and remote_skipped skipped; --remote downgrades route to medium and remote to low when provider state is unavailable.
+      Impact: Agents can distinguish local/computed route data from explicit remote/provider state without triggering default remote calls.
+      Resolution: Use --remote only when hosted PR/check/review truth is required.
+
+    - Observation: Route-decision suite passed 8 tests, typecheck passed, CLI docs check passed, lint/format passed, bootstrap passed, knip and task-scope checks passed.
+      Impact: Route output now carries source/freshness/confidence labels without increasing text output noise.
+      Resolution: Proceed to PR publication and hosted checks.
 id_source: "generated"
 ---
 ## Summary
@@ -93,6 +171,44 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-23T03:02:13.364Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented route source confidence labels for task status --route --json and task next-action --json; remote lookup is skipped by default and requires --remote; text output remains compact.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T02:56:35.957Z, excerpt_hash=sha256:34112a79d377c3daeb4c006810f840b65acefb56e8a85bde31ba9c1ea9a7616c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221745-8W56N1-source-confidence-labels/.agentplane/tasks/202605221745-8W56N1/blueprint/resolved-snapshot.json
+- old_digest: bdc62efdf3f8fad4fc1dfbd130775a4006f534725fdabce7a128a7b54d4181c4
+- current_digest: bdc62efdf3f8fad4fc1dfbd130775a4006f534725fdabce7a128a7b54d4181c4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605221745-8W56N1
+
+### 2026-05-23T03:02:26.078Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Evaluator pass: JSON route outputs expose source_confidence for route, next_action, blockers, and remote; default status/next-action commands are local-only; explicit --remote path is covered by tests and smoke.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T03:02:13.390Z, excerpt_hash=sha256:34112a79d377c3daeb4c006810f840b65acefb56e8a85bde31ba9c1ea9a7616c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221745-8W56N1-source-confidence-labels/.agentplane/tasks/202605221745-8W56N1/blueprint/resolved-snapshot.json
+- old_digest: bdc62efdf3f8fad4fc1dfbd130775a4006f534725fdabce7a128a7b54d4181c4
+- current_digest: bdc62efdf3f8fad4fc1dfbd130775a4006f534725fdabce7a128a7b54d4181c4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605221745-8W56N1
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -101,3 +217,11 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Local smoke: status/next-action JSON report route computed_local high confidence and remote_skipped skipped; --remote downgrades route to medium and remote to low when provider state is unavailable.
+  Impact: Agents can distinguish local/computed route data from explicit remote/provider state without triggering default remote calls.
+  Resolution: Use --remote only when hosted PR/check/review truth is required.
+
+- Observation: Route-decision suite passed 8 tests, typecheck passed, CLI docs check passed, lint/format passed, bootstrap passed, knip and task-scope checks passed.
+  Impact: Route output now carries source/freshness/confidence labels without increasing text output noise.
+  Resolution: Proceed to PR publication and hosted checks.

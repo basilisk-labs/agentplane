@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605221745-8W56N1/source-confidence-labels",
+  "created_at": "2026-05-23T02:56:36.034Z",
+  "diffstat_sha256": "sha256:19dfb396ecc17e419c7876f88708cc4a20e7a9dc4d5891b5ae8c3f96e191f698",
+  "last_verified_at": "2026-05-23T03:02:26.078Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pr_number": 4066,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4066",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605221745-8W56N1",
+  "updated_at": "2026-05-23T03:03:23.863Z",
+  "verify": {
+    "status": "pass"
+  }
+}

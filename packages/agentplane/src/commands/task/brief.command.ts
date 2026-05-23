@@ -233,7 +233,10 @@ function hasRemoteProviderEvidence(
   const prFlow = route.prFlow;
   if (!prFlow) return false;
   return (
-    prFlow.pr.source === "lookup" || prFlow.hostedChecks.checked || prFlow.reviewThreads.checked
+    prFlow.pr.source === "lookup" ||
+    "provider" in prFlow.closeTail ||
+    prFlow.hostedChecks.checked ||
+    prFlow.reviewThreads.checked
   );
 }
 
