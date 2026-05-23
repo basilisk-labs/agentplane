@@ -1,10 +1,11 @@
 ---
 id: "202605221744-VW5E95"
 title: "Define machine-readable agent work context contract"
-status: "DOING"
+result_summary: "Merged via PR #4062."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -43,11 +44,16 @@ quality_review:
     - ".agentplane/tasks/202605221744-VW5E95/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221744-VW5E95-agent-work-context-contract/.agentplane/tasks/202605221744-VW5E95/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "3bc7b11dbbffc7c507fcbf0c5b62fc40fe8309bd"
+  message: "Merge pull request #4062 from basilisk-labs/task/202605221744-VW5E95/agent-work-context-contract"
 comments:
   -
     author: "CODER"
     body: "Start: implement stable machine-readable agent work context JSON contract, keeping existing task status and verify-show behavior compatible."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4062 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -74,9 +80,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Addressed PR review confidence edge cases."
+  -
+    type: "status"
+    at: "2026-05-23T02:12:46.070Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4062 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T02:05:47.708Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T02:12:46.078Z"
+doc_updated_by: "INTEGRATOR"
 description: "Define and test a stable JSON contract that combines task route, next action, verification contract, blueprint evidence, policy modules, source confidence, and stop rules for agent consumers."
 sections:
   Summary: |-
