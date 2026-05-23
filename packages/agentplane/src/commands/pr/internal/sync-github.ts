@@ -176,7 +176,7 @@ export function formatGithubPrLink(
 }
 
 export function shouldPersistObservedGithubPrIdentity(observed: ObservedGithubPr | null): boolean {
-  return observed !== null;
+  return observed?.status === "MERGED";
 }
 
 export function formatUnpublishedRemoteHeadReason(branch: string): string {

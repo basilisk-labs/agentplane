@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   runSquashMerge: vi.fn(),
   runVerifyCommands: vi.fn(),
   shouldRecommendPostIntegrateBootstrap: vi.fn(),
+  tryLookupExistingGithubPrByBranch: vi.fn(),
   writeTaskHandoff: vi.fn(),
 }));
 
@@ -67,6 +68,9 @@ vi.mock("../../shared/task-handoff.js", () => ({
   resolveTaskHandoffPaths: mocks.resolveTaskHandoffPaths,
   writeTaskHandoff: mocks.writeTaskHandoff,
 }));
+vi.mock("../internal/sync-github.js", () => ({
+  tryLookupExistingGithubPrByBranch: mocks.tryLookupExistingGithubPrByBranch,
+}));
 
 describe("pr/integrate/cmd", () => {
   let emitter: {
@@ -95,6 +99,7 @@ describe("pr/integrate/cmd", () => {
     };
     mocks.createCliEmitter.mockReturnValue(emitter);
     mocks.execFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
+    mocks.tryLookupExistingGithubPrByBranch.mockResolvedValue(null);
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: { config: {}, git: {}, taskBackend: {}, resolvedProject: { gitRoot: "/repo" } },
       resolved: { gitRoot: "/repo" },
@@ -662,5 +667,89 @@ describe("pr/integrate/cmd", () => {
     expect(mocks.writeTaskHandoff).toHaveBeenCalled();
     expect(mocks.runSquashMerge).not.toHaveBeenCalled();
     expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
+  });
+
+  it("resolves the protected-base GitHub PR target from live branch state", async () => {
+    mocks.tryLookupExistingGithubPrByBranch.mockResolvedValue({
+      prNumber: 339,
+      prUrl: "https://github.com/example/repo/pull/339",
+      status: "OPEN",
+      mergedAt: null,
+      mergeCommit: null,
+      base: "main",
+      headSha: "head-sha",
+    });
+    mocks.prepareIntegrate.mockResolvedValue({
+      ctx: {
+        config: { paths: { workflow_dir: ".agentplane/tasks" } },
+        git: {},
+        taskBackend: {},
+        resolvedProject: { gitRoot: "/repo" },
+      },
+      resolved: { gitRoot: "/repo" },
+      loadedConfig: {
+        workflow_mode: "branch_pr",
+        paths: {
+          worktrees_dir: ".agentplane/worktrees",
+          workflow_dir: ".agentplane/tasks",
+        },
+        commit: { generic_tokens: [] },
+      },
+      task: { id: "T-1", title: "Task", tags: [], verify: [], status: "DOING" },
+      prDir: "/repo/.agentplane/tasks/T-1/pr",
+      metaPath: "/repo/.agentplane/tasks/T-1/pr/meta.json",
+      diffstatPath: "/repo/.agentplane/tasks/T-1/pr/diffstat.txt",
+      verifyLogPath: "/repo/.agentplane/tasks/T-1/pr/verify.log",
+      metaSource: {
+        base: "main",
+        branch: "task/T-1",
+        head_sha: "head-sha",
+      },
+      branch: "task/T-1",
+      base: "main",
+      verifyLogText: "",
+      branchHeadSha: "head-sha",
+      changedPaths: [],
+      verifyCommands: [],
+      alreadyVerifiedSha: null,
+      shouldRunVerify: false,
+      protectedBaseRequiresPrMerge: true,
+    });
+    const { cmdIntegrate } = await import("./cmd.js");
+
+    const caught = await cmdIntegrate({
+      cwd: "/repo",
+      taskId: "T-1",
+      mergeStrategy: "squash",
+      runVerify: false,
+      dryRun: false,
+      quiet: false,
+    }).catch((err: unknown) => err);
+
+    expect(caught).toMatchObject({ code: "E_HANDOFF" });
+    expect(mocks.tryLookupExistingGithubPrByBranch).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      branch: "task/T-1",
+      baseBranch: "main",
+    });
+    expect(mocks.execFileAsync).toHaveBeenCalledWith(
+      "gh",
+      [
+        "pr",
+        "merge",
+        "--auto",
+        "--merge",
+        "--delete-branch",
+        "https://github.com/example/repo/pull/339",
+      ],
+      expect.objectContaining({ cwd: "/repo" }),
+    );
+    const handoffCall = mocks.buildTaskHandoffArtifact.mock.calls[0]?.[0] as
+      | { route?: Record<string, unknown> }
+      | undefined;
+    expect(handoffCall?.route).toMatchObject({
+      pr_number: 339,
+      pr_url: "https://github.com/example/repo/pull/339",
+    });
   });
 });

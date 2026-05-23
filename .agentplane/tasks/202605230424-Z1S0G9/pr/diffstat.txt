@@ -1,0 +1,6 @@
+ .../run-cli.core.pr-flow.pr-open.network.test.ts   | 12 ++++++------
+ ...re.pr-flow.pr-validation.open-hydration.test.ts | 22 +++++++++++-----------
+ ...n-cli.core.pr-flow.pr-validation.update.test.ts | 10 +++++-----
+ packages/agentplane/src/commands/pr/check.ts       | 11 ++++++++++-
+ .../src/commands/pr/internal/sync-github.ts        |  2 +-
+ 5 files changed, 33 insertions(+), 24 deletions(-)
