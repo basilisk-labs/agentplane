@@ -447,6 +447,12 @@ const TASK_TEST_FILES = [
   "packages/agentplane/src/commands/task/plan.unit.test.ts",
 ];
 
+const HOSTED_CLOSE_PR_TEST_FILES = [
+  "packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts",
+  "packages/agentplane/src/commands/task/hosted-close-pr.command.test.ts",
+];
+
 const DOCTOR_TEST_FILES = ["packages/agentplane/src/commands/doctor.fast.test.ts"];
 
 const HOOKS_TEST_FILES = [
@@ -574,6 +580,7 @@ export const LOCAL_CI_TARGET_TEST_FILES = {
   context: CONTEXT_TEST_FILES,
   doctor: DOCTOR_TEST_FILES,
   guard: GUARD_TEST_FILES,
+  "hosted-close-pr": HOSTED_CLOSE_PR_TEST_FILES,
   hooks: HOOKS_TEST_FILES,
   pr: PR_TEST_FILES,
   "pr-flow-status": PR_FLOW_STATUS_TEST_FILES,

@@ -8,6 +8,7 @@ const {
   context: CONTEXT_TEST_FILES,
   doctor: DOCTOR_TEST_FILES,
   guard: GUARD_TEST_FILES,
+  "hosted-close-pr": HOSTED_CLOSE_PR_TEST_FILES,
   hooks: HOOKS_TEST_FILES,
   pr: PR_TEST_FILES,
   "pr-flow-status": PR_FLOW_STATUS_TEST_FILES,
@@ -31,6 +32,11 @@ const DOCS_ONLY_PATTERNS = [
 const NEUTRAL_TASK_ARTIFACT_PATTERNS = [/^\.agentplane\/tasks\//];
 
 const TASK_BUCKET_PATTERNS = [/^packages\/agentplane\/src\/commands\/task\//];
+
+const HOSTED_CLOSE_PR_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/commands\/task\/hosted-close-pr(?:\.|\/|$)/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.task-hosted-close-pr\.test\.ts$/,
+];
 
 const DOCTOR_BUCKET_PATTERNS = [/^packages\/agentplane\/src\/commands\/doctor(?:\/|\.|$)/];
 
@@ -168,6 +174,13 @@ const CLI_DOCS_RELEVANT_PATTERNS = [
 ];
 
 const TARGET_BUCKET_DEFINITIONS = [
+  {
+    bucket: "hosted-close-pr",
+    reason: "hosted_close_pr_paths_only",
+    patterns: HOSTED_CLOSE_PR_BUCKET_PATTERNS,
+    testFiles: HOSTED_CLOSE_PR_TEST_FILES,
+    vitestPool: "forks",
+  },
   {
     bucket: "task",
     reason: "task_command_paths_only",
@@ -338,6 +351,18 @@ export function selectFastCiPlan(changedFiles) {
 
   if (everyPathMatches(effectiveFiles, DOCS_ONLY_PATTERNS)) {
     return { kind: "docs-only", reason: "docs_policy_website_only", files };
+  }
+
+  if (everyPathMatches(effectiveFiles, HOSTED_CLOSE_PR_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "hosted-close-pr",
+      reason: "hosted_close_pr_paths_only",
+      files,
+      lintTargets: effectiveFiles,
+      testFiles: HOSTED_CLOSE_PR_TEST_FILES,
+      vitestPool: "forks",
+    };
   }
 
   if (everyPathMatches(effectiveFiles, TASK_BUCKET_PATTERNS)) {
