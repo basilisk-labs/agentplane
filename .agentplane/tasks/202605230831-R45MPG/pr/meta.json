@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605230831-R45MPG/batch-ownership-cleanup",
+  "created_at": "2026-05-23T08:31:34.047Z",
+  "diffstat_sha256": "sha256:4413357713b4ae5cf68bb8d9424c54c0e124aead8ed0d2768ddd9c0304aad822",
+  "last_verified_at": "2026-05-23T08:46:21.002Z",
+  "last_verified_diffstat_sha256": "sha256:4413357713b4ae5cf68bb8d9424c54c0e124aead8ed0d2768ddd9c0304aad822",
+  "schema_version": 1,
+  "task_id": "202605230831-R45MPG",
+  "updated_at": "2026-05-23T08:31:34.047Z",
+  "verify": {
+    "status": "pass"
+  }
+}
