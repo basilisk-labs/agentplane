@@ -1,10 +1,13 @@
 ---
 id: "202605221745-8BHZSX"
 title: "Route quickstart and role guidance to agent context surfaces"
-status: "TODO"
+result_summary: "Closed as duplicate of 202605230332-RYW28Y."
+risk_level: "low"
+breaking: false
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -33,11 +36,27 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: |-
+      Verified: 202605221745-8BHZSX is a bookkeeping duplicate of 202605230332-RYW28Y (Route agent context guidance through task brief); no code/config changes are expected in this task and closure is recorded as no-op.
+
+      Reason: Covered by RYW28Y, which updated the installed quickstart, role guidance, generated bootstrap docs, and onboarding checks through task active/task brief.
+events:
+  -
+    type: "status"
+    at: "2026-05-23T03:43:25.161Z"
+    author: "ORCHESTRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: |-
+      Verified: 202605221745-8BHZSX is a bookkeeping duplicate of 202605230332-RYW28Y (Route agent context guidance through task brief); no code/config changes are expected in this task and closure is recorded as no-op.
+
+      Reason: Covered by RYW28Y, which updated the installed quickstart, role guidance, generated bootstrap docs, and onboarding checks through task active/task brief.
 doc_version: 3
-doc_updated_at: "2026-05-22T17:45:45.967Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-23T03:43:25.161Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Update installed quickstart, role supplements, and generated docs guidance to direct agents toward active work and task brief surfaces instead of manual command stitching."
 sections:
   Summary: |-
