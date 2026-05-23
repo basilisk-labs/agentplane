@@ -200,7 +200,7 @@ function ReviewFlow(): ReactNode {
   const { reviewFlow } = homepageContent;
 
   return (
-    <section className={`${styles.section} ${styles.reviewFlow}`}>
+    <section className={styles.section}>
       <div className={styles.sectionIntro}>
         <h2>{reviewFlow.title}</h2>
         <p>{reviewFlow.text}</p>
