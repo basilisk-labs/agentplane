@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T09:05:22Z",
   "base": "main",
   "branch": "task/202605230831-WXWH7T/publish-evidence-token-hardening",
   "created_at": "2026-05-23T08:37:51.572Z",
   "diffstat_sha256": "sha256:6acbd42144fc85f99d0a5b137f5608b25658d7bf37c2b6e6e5b81ce451feb218",
   "last_verified_at": "2026-05-23T08:52:42.427Z",
   "last_verified_diffstat_sha256": "sha256:6acbd42144fc85f99d0a5b137f5608b25658d7bf37c2b6e6e5b81ce451feb218",
+  "merge_commit": "62ced9447c3d1519aa52694536eb1f5749176975",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T09:05:22Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605230831-WXWH7T",
-  "updated_at": "2026-05-23T08:37:51.572Z",
+  "updated_at": "2026-05-23T09:05:22Z",
   "verify": {
     "status": "pass"
   }

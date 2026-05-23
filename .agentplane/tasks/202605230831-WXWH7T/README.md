@@ -1,10 +1,11 @@
 ---
 id: "202605230831-WXWH7T"
 title: "Harden publish evidence workflow token permissions"
-status: "DOING"
+result_summary: "Merged via PR #4084."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605230831-WXWH7T/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605230831-WXWH7T-publish-evidence-token-hardening/.agentplane/tasks/202605230831-WXWH7T/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "62ced9447c3d1519aa52694536eb1f5749176975"
+  message: "Merge pull request #4084 from basilisk-labs/task/202605230831-WXWH7T/publish-evidence-token-hardening"
 comments:
   -
     author: "CODER"
     body: "Start: harden publish workflow token permissions and post-publish release evidence handling so successful publication is not reported as failed by follow-up automation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4084 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed. Evidence: PR #4084 hosted checks are green, including actionlint, PR verification, release-ready manifest, docs, CodeQL, and verify-routed. Local contract test passed: bun test packages/agentplane/src/commands/release/publish-workflow-contract.test.ts (9 pass)."
+  -
+    type: "status"
+    at: "2026-05-23T09:06:04.713Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4084 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T08:52:42.442Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T09:06:04.719Z"
+doc_updated_by: "INTEGRATOR"
 description: "Allow publish workflow to dispatch evidence CI and keep post-publish evidence automation from making a completed publish look failed."
 sections:
   Summary: |-
