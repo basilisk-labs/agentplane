@@ -1,10 +1,11 @@
 ---
 id: "202605221726-WY8F98"
 title: "Batch close-tail evidence for related tasks"
-status: "DOING"
+result_summary: "Merged via PR #4056."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221726-WY8F98-batch-close-tail-evidence/.agentplane/tasks/202605221726-WY8F98/blueprint/resolved-snapshot.json"
   findings:
     - "Diff review: hosted-close-pr plan now carries includedTaskIds from pr/meta batch metadata and renders them in the GitHub PR body. Existing hosted-close batch closure test still passes, and hosted-close-pr fallback test asserts the included task appears in the PR body."
-commit: null
+commit:
+  hash: "4331936123b6abec744c8ebb76420adb7b30a2ee"
+  message: "Merge pull request #4056 from basilisk-labs/task/202605221726-WY8F98/batch-close-tail-evidence"
 comments:
   -
     author: "CODER"
     body: "Start: implementing batch hosted close-tail evidence so one close PR can close related included tasks without duplicate sibling close PRs."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4056 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,9 +70,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator pass: implementation is limited to close-tail PR evidence for batch metadata and tests cover hosted-close plus hosted-close-pr behavior."
+  -
+    type: "status"
+    at: "2026-05-23T00:46:18.517Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4056 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T00:35:43.469Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T00:46:18.525Z"
+doc_updated_by: "INTEGRATOR"
 description: "Allow one hosted close-tail PR to close a verified related task batch while preserving per-task verification and finish evidence."
 sections:
   Summary: |-
