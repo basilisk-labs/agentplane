@@ -28,62 +28,6 @@ async function write(root: string, rel: string, text: string): Promise<void> {
   await writeFile(target, text, "utf8");
 }
 
-async function writeDerivedRows(root: string): Promise<void> {
-  await write(
-    root,
-    ".agentplane/context/derived/facts/facts.jsonl",
-    `${JSON.stringify({
-      id: "fact.payment-api",
-      summary: "Payment API is a sourced concept.",
-      source_refs: ["context/raw/specs/payment-api.md#L1-L10"],
-      confidence: 0.9,
-      status: "accepted",
-    })}\n`,
-  );
-  await write(
-    root,
-    ".agentplane/context/derived/graph/entities.jsonl",
-    `${JSON.stringify({
-      id: "entity.payment-api",
-      kind: "concept",
-      label: "Payment API",
-      source_refs: ["context/raw/specs/payment-api.md#L1-L10"],
-      confidence: 0.9,
-      status: "accepted",
-    })}\n${JSON.stringify({
-      id: "entity.payment-api-doc",
-      kind: "source",
-      label: "Payment API source",
-      source_refs: ["context/raw/specs/payment-api.md#L1-L10"],
-      confidence: 0.9,
-      status: "accepted",
-    })}\n`,
-  );
-  await write(
-    root,
-    ".agentplane/context/derived/graph/edges.jsonl",
-    `${JSON.stringify({
-      id: "edge.payment-api.mentions.source",
-      from: "entity.payment-api-doc",
-      to: "entity.payment-api",
-      relation: "mentions",
-      source_refs: ["context/raw/specs/payment-api.md#L1-L10"],
-      confidence: 0.9,
-      status: "accepted",
-    })}\n`,
-  );
-  await write(
-    root,
-    ".agentplane/context/derived/graph/provenance_edges.jsonl",
-    `${JSON.stringify({
-      id: "prov.fact.payment-api.1",
-      source: "context/raw/specs/payment-api.md#L1-L10",
-      target: "fact.payment-api",
-      artifact: ".agentplane/context/derived/facts/facts.jsonl",
-    })}\n`,
-  );
-}
-
 describe("maximum-assimilation task verification", () => {
   it("rejects glossary files without navigable canonical entries", async () => {
     const root = await tempRoot();
@@ -169,7 +113,87 @@ agentplane_context:
       }),
     ).rejects.toThrow(/requires non-empty derived facts/u);
 
-    await writeDerivedRows(root);
+    await write(
+      root,
+      ".agentplane/context/derived/facts/facts.jsonl",
+      `${JSON.stringify({
+        id: "fact.payment-api",
+        summary: "Payment API is a sourced concept.",
+        source_refs: ["context/raw/specs/payment-api.md#L1-L10"],
+        confidence: 0.9,
+        status: "accepted",
+      })}\n`,
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/graph/entities.jsonl",
+      `${JSON.stringify({
+        id: "entity.payment-api",
+        kind: "concept",
+        label: "Payment API",
+        source_refs: ["context/raw/specs/payment-api.md#L1-L10"],
+        confidence: 0.9,
+        status: "accepted",
+      })}\n${JSON.stringify({
+        id: "entity.payment-api-doc",
+        kind: "source",
+        label: "Payment API source",
+        source_refs: ["context/raw/specs/payment-api.md#L1-L10"],
+        confidence: 0.9,
+        status: "accepted",
+      })}\n`,
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/graph/edges.jsonl",
+      `${JSON.stringify({
+        id: "edge.payment-api.mentions.source",
+        from: "entity.payment-api-doc",
+        to: "entity.payment-api",
+        relation: "mentions",
+        source_refs: ["context/raw/specs/payment-api.md#L1-L10"],
+        confidence: 0.9,
+        status: "accepted",
+      })}\n`,
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/graph/provenance_edges.jsonl",
+      `${JSON.stringify({
+        id: "prov.fact.payment-api.1",
+        source: "context/raw/specs/payment-api.md#L1-L10",
+        target: "fact.payment-api",
+        artifact: ".agentplane/context/derived/facts/facts.jsonl",
+      })}\n`,
+    );
+
+    await expect(
+      cmdContextVerifyTask({
+        ctx,
+        cwd: root,
+        parsed: { taskId: task.id },
+      }),
+    ).rejects.toThrow(/requires non-empty source coverage rows/u);
+
+    await write(
+      root,
+      ".agentplane/context/derived/reports/coverage.jsonl",
+      `${JSON.stringify({
+        id: "coverage.payment-api",
+        summary: "Payment API source was structurally extracted.",
+        source_path: "context/raw/specs/payment-api.md",
+        coverage_status: "covered",
+        reason: "Reusable fact, entity, edge, and provenance rows were extracted.",
+        covered_item_ids: [
+          "fact.payment-api",
+          "entity.payment-api",
+          "edge.payment-api.mentions.source",
+        ],
+        source_refs: ["context/raw/specs/payment-api.md#L1-L10"],
+        confidence: 0.9,
+        status: "accepted",
+      })}\n`,
+    );
 
     await expect(
       cmdContextVerifyTask({

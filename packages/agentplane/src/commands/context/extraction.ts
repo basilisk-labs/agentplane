@@ -20,6 +20,7 @@ export async function cmdContextExtractionApply(opts: {
   process.stdout.write(
     [
       `context extraction apply${opts.parsed.dryRun ? " (dry-run)" : ""}: facts=${result.facts} entities=${result.entities} edges=${result.edges} provenance=${result.provenance}`,
+      `coverage=${result.coverage}`,
       result.changed_paths.length > 0 ? `changed=${result.changed_paths.join(",")}` : "",
     ]
       .filter(Boolean)

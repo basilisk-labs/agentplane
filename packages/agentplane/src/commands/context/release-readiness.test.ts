@@ -242,6 +242,25 @@ describe("context release readiness guards", () => {
                 relation: "produces",
               },
             },
+            {
+              id: "coverage.research-source",
+              kind: "coverage",
+              summary: "The source was covered by formal extraction rows before wiki synthesis.",
+              source_refs: [{ path: "context/raw/research/source.md", lines: "1-6" }],
+              confidence: 0.9,
+              status: "accepted",
+              coverage: {
+                source_path: "context/raw/research/source.md",
+                status: "covered",
+                reason: "Entities, fact, and relation rows cover the selected source.",
+                covered_item_ids: [
+                  "entity.maximum-assimilation",
+                  "entity.derived-graph",
+                  "fact.maximum-assimilation.entity-first",
+                  "edge.maximum-assimilation.produces.derived-graph",
+                ],
+              },
+            },
           ],
         },
         null,
@@ -271,11 +290,17 @@ describe("context release readiness guards", () => {
       path.join(root, ".agentplane/context/derived/graph/provenance_edges.jsonl"),
       "utf8",
     );
+    const coverage = await readFile(
+      path.join(root, ".agentplane/context/derived/reports/coverage.jsonl"),
+      "utf8",
+    );
 
     expect(facts).toContain("fact.maximum-assimilation.entity-first");
     expect(entities).toContain("entity.maximum-assimilation");
     expect(edges).toContain("edge.maximum-assimilation.produces.derived-graph");
     expect(provenance).toContain("context/raw/research/source.md#lines=1-6");
+    expect(coverage).toContain("coverage.research-source");
+    expect(coverage).toContain("context/raw/research/source.md");
   });
 
   it("creates starter wiki structure on first context ingest with selected sources", async () => {
@@ -980,6 +1005,8 @@ describe("context release readiness guards", () => {
       "numeric notes like `[1]`",
       "Evaluation pass:",
       "self-contained wiki/fact/graph content plus line-addressed provenance",
+      "`context_extraction` SGR JSON result with `graph_entity`, `fact`, `graph_edge`, and maximum-assimilation `coverage` items",
+      "coverage rows are non-empty before wiki synthesis",
     ]) {
       expect(maximumPrompt).toContain(expected);
     }
