@@ -14,6 +14,8 @@ const COMMAND_INVOCATIONS = new Map<string, string>([
   ["quickstart", "agentplane quickstart"],
   ["role", "agentplane role <ROLE>"],
   ["task list", "agentplane task list"],
+  ["task active", "agentplane task active"],
+  ["task brief", "agentplane task brief <task-id>"],
   ["task begin", 'agentplane task begin "..." --tag <tag> --verify "<check>"'],
   ["task complete", 'agentplane task complete <task-id> --result "..." --commit <git-rev>'],
   [

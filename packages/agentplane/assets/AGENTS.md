@@ -60,6 +60,7 @@ Conflict rule:
 ap config show
 ap quickstart
 ap task list
+ap task active
 git status --short --untracked-files=no
 git rev-parse --abbrev-ref HEAD
 ```
@@ -154,8 +155,6 @@ Routing constraints:
 - MUST NOT use wildcard policy paths.
 - MUST keep loaded policy set minimal (target: 2-4 files per task).
 - If routing is ambiguous, ask one clarifying question before loading extra modules.
-
----
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.hard_constraint.must.must.not" slot="hard_constraint" mutability="append_only" -->

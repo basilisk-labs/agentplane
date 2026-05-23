@@ -79,6 +79,9 @@ describe("command-guide", () => {
     expect(text).toContain("acr.json");
     expect(text).toContain("## Go deeper");
     expect(text).toContain("activate ORCHESTRATOR for planning and the task owner role");
+    expect(text).toContain("agentplane task active");
+    expect(text).toContain("agentplane task brief <task-id>");
+    expect(text).toContain("source confidence");
     expect(text).toContain("agentplane task start-ready");
     expect(text).toContain("agentplane pr check <task-id>");
     expect(text).toContain("GitHub CLI");
@@ -96,8 +99,12 @@ describe("command-guide", () => {
     const text = renderBootstrapDoc();
     expect(text).toContain('title: "Agent bootstrap"');
     expect(text).toContain("## 1. Preflight");
+    expect(text).toContain("## 2. Agent context");
     expect(text).toContain("## Copy-paste start block");
-    expect(text).toContain("## 3. Verification and incident reuse");
+    expect(text).toContain("## 4. Verification and incident reuse");
+    expect(text).toContain("agentplane task active");
+    expect(text).toContain("agentplane task brief <task-id>");
+    expect(text).toContain("source confidence labels");
     expect(text).toContain("Use `agentplane role ORCHESTRATOR` during planning");
     expect(text).toContain("agentplane incidents advise <task-id>");
     expect(text).toContain("agentplane incidents collect <task-id> --check");
