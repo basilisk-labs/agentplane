@@ -1,10 +1,11 @@
 ---
 id: "202605221744-XBKXEW"
 title: "Add active work selector for agents"
-status: "DOING"
+result_summary: "Merged via PR #4064."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -43,11 +44,16 @@ quality_review:
     - ".agentplane/tasks/202605221744-XBKXEW/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221744-XBKXEW-active-work-selector/.agentplane/tasks/202605221744-XBKXEW/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "bd3edbaa1c83788a9a58210d08db4351b74be086"
+  message: "Merge pull request #4064 from basilisk-labs/task/202605221744-XBKXEW/active-work-selector"
 comments:
   -
     author: "CODER"
     body: "Start: implement active work selector for agents with ordering, filters, and focused performance evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4064 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -68,9 +74,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator pass: active selector output includes ranked active TODO/DOING backlog only, dependency readiness, next actions, blocker counts, owner/priority, and live_local freshness; focused and full query-listing tests, typecheck, lint, format, docs check, knip baseline, task-scope check, bootstrap, smoke, and benchmark evidence passed."
+  -
+    type: "status"
+    at: "2026-05-23T02:54:58.809Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4064 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T02:25:28.117Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T02:54:58.817Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add an agent-oriented active work selector that ranks TODO, DOING, BLOCKED, and anomaly tasks by actionable next step, ownership, dependency readiness, and route blockers instead of forcing agents to scan the full backlog."
 sections:
   Summary: |-
