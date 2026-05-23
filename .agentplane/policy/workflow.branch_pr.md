@@ -58,6 +58,8 @@ Default branch names are `task/<task-id>/<slug>` for implementation branches and
 through `branch.task_prefix` and `branch.task_close_prefix`; task id, slug, and sha positions remain
 fixed.
 
+Before manually filling `<slug>` or `<branch>`, use `agentplane task brief <task-id>` or `agentplane task next-action <task-id> --explain` and prefer the emitted concrete command.
+
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.branch_pr.hard_constraint.constraints" slot="hard_constraint" mutability="append_only" -->
 

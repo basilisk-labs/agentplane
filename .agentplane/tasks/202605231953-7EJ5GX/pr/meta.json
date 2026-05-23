@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605231953-7EJ5GX/prompt-context-commands",
+  "created_at": "2026-05-23T19:55:26.804Z",
+  "diffstat_sha256": "sha256:c383e6a3340ea411c44f9c59118ca5fae5e78eed2246d488ff053668fde38d9b",
+  "last_verified_at": "2026-05-23T20:08:40.876Z",
+  "last_verified_diffstat_sha256": "sha256:c383e6a3340ea411c44f9c59118ca5fae5e78eed2246d488ff053668fde38d9b",
+  "schema_version": 1,
+  "task_id": "202605231953-7EJ5GX",
+  "updated_at": "2026-05-23T19:55:26.804Z",
+  "verify": {
+    "status": "pass"
+  }
+}
