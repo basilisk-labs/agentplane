@@ -1,10 +1,11 @@
 ---
 id: "202605230943-5TKAAB"
 title: "Release AgentPlane v0.6.8"
-status: "BLOCKED"
+result_summary: "Merged via PR #4093."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,7 +25,9 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "da065aae65278348dc3e137e897e3b7f126f0865"
+  message: "Merge pull request #4093 from basilisk-labs/task/202605230943-5TKAAB/release-v0-6-8"
 comments:
   -
     author: "INTEGRATOR"
@@ -32,6 +35,9 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Blocked: release readiness gate requires the release task to leave DOING while candidate and publish checks run from the dedicated release branch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4093 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: release readiness gate requires the release task to leave DOING while candidate and publish checks run from the dedicated release branch."
+  -
+    type: "status"
+    at: "2026-05-23T10:48:32.227Z"
+    author: "INTEGRATOR"
+    from: "BLOCKED"
+    to: "DONE"
+    note: "Verified: PR #4093 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T09:45:05.148Z"
+doc_updated_at: "2026-05-23T10:48:32.232Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare and publish the next patch release from current main after validating repository state, release notes, candidate PR, hosted publish, and npm/GitHub release evidence."
 sections:
