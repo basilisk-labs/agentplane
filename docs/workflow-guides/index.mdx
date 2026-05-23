@@ -1,36 +1,103 @@
 ---
-title: "Use with agents"
-description: "Use Agentplane with coding agents, editor agents, GitHub Actions, and branch_pr review."
+title: "Use with coding agents"
+description: "Use Agentplane as an agent-agnostic harness for coding agents, editor agents, PR review, and hosted checks."
 ---
 
-Workflow guides are copy-paste operating patterns for coding agents and review flows around
-Agentplane.
+# Use with coding agents
 
-They are not installable recipes. They do not have recipe manifests, versions, signatures, or cache
-state. Use them when you want a coding agent or hosted check system to operate inside the
-Agentplane lifecycle.
+Agentplane is agent-agnostic and LLM-agnostic. Claude Code, Codex, Cursor, Aider, Windsurf, a
+custom runner, or a future agent can all use the same repository harness when they can read files,
+run commands, edit code, and respect `AGENTS.md`.
 
-Agentplane is agent-agnostic: it works through repository files, Git, and the universal
-`AGENTS.md` / `CLAUDE.md` policy gateway instead of depending on one model, IDE, or hosted agent
-platform.
+The split is simple:
 
-## Agent guides
+| Actor      | Responsibility                                                                      |
+| ---------- | ----------------------------------------------------------------------------------- |
+| Human      | Set the task, approve guardrails, observe progress, and review evidence.            |
+| Agent      | The agent writes code, uses the CLI, follows `AGENTS.md`, and records verification. |
+| Agentplane | Preserve task state, context, verification, PR artifacts, ACR, and trace.           |
 
-1. [Agentplane + Claude Code](claude-code)
-2. [Agentplane + Codex](codex)
-3. [Agentplane + Cursor](cursor)
-4. [Agentplane + Aider](aider)
+## The default handoff
 
-## Review and CI guides
+Use this pattern for terminal agents, editor agents, and hosted coding agents:
 
-1. [Agentplane + GitHub Actions](github-actions)
-2. [Agentplane + branch_pr workflow](branch-pr)
+1. Install and initialize Agentplane once.
+2. Give the agent a specific task and scope.
+3. Tell the agent to follow the repo policy gateway.
+4. Review the task README, diff, verification evidence, and ACR before merge.
 
-## When to use a workflow guide
+The human does not need to drive every lifecycle command manually. The agent should use the CLI as
+part of the harness.
 
-- You already know which coding tool or review flow will perform the work.
-- You need task, plan, verification, and finish records in the repository.
-- You want the agent to run the lifecycle instead of manually driving every CLI command.
-- You do not need to install an Agentplane recipe package.
+```text
+Use Agentplane as the harness. Read AGENTS.md, create or continue the task, keep edits inside the
+approved scope, run the verification contract, record the result, and stop for review when scope or
+risk changes.
+```
 
-For installable prompt/runtime extensions, use [Recipes](../recipes).
+## If your agent runs in a terminal
+
+This covers Codex-style terminal agents, Claude Code, Aider, and custom local wrappers.
+
+- Start the agent from the repository root.
+- Keep the task boundary in Agentplane, not in terminal scrollback.
+- Ask the agent to run focused checks and record verification.
+- Review Git diff plus `.agentplane/tasks/<task-id>/`.
+
+Use the terminal agent's normal invocation. Agentplane does not require a provider-specific command.
+
+## If your agent runs in an editor
+
+This covers Cursor, Windsurf, and similar editor agents.
+
+- Open the repository after Agentplane is initialized.
+- Put the approved task and scope in the agent prompt.
+- Keep long-lived project rules in `AGENTS.md` or `CLAUDE.md`, not only in editor chat.
+- Ask the agent to record verification before asking for review.
+
+Editor private context is not durable evidence. The reviewable state is the Git diff and Agentplane
+artifacts.
+
+## If you use `branch_pr`
+
+Use `branch_pr` when implementation should stay isolated until review and hosted checks pass.
+
+- The task branch or worktree owns implementation commits.
+- PR artifacts live under `.agentplane/tasks/<task-id>/pr/`.
+- Integration happens after verification and hosted checks are stable.
+- The final review should point to the implementation commit, verification note, and PR result.
+
+`branch_pr` adds process overhead. Use it when isolation, review, or branch protection matter.
+
+## If GitHub Actions is the hosted gate
+
+GitHub Actions should remain the CI authority. Agentplane gives CI a repo-local explanation of the
+agent work:
+
+- approved task scope;
+- verification evidence;
+- PR artifacts;
+- Agent Change Record;
+- final finish state.
+
+For reusable team workflows, add an ACR check around your repository's task-id convention. Keep
+branch protection and required checks in GitHub.
+
+## Review checklist
+
+Before merging agent-authored work, confirm:
+
+- The task exists under `.agentplane/tasks/<task-id>/`.
+- The task scope matches the diff.
+- Verification evidence names the checks that passed.
+- Unexpected scope changes are called out and re-approved.
+- ACR exists when the review flow requires it.
+- The implementation commit or PR is linked from task evidence.
+
+## Compatibility pages
+
+Older pages for Claude Code, Codex, Cursor, and Aider now point here. The operating contract is the
+same across tools: the agent writes code and uses the CLI; the human manages the harness boundary.
+
+For command details, use the [CLI reference](../reference/cli). For pull-request evidence, use
+[Agent Change Records](../reference/acr).

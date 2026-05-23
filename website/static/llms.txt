@@ -5,7 +5,7 @@ docs: https://agentplane.org/docs
 examples: https://agentplane.org/examples
 repo: https://github.com/basilisk-labs/agentplane
 
-summary: Agentplane is a CLI-first operational workflow and observability layer for AI agents. It helps developers run local agent workflows, record traces, manage local context, apply reusable recipes, export artifacts, and make agent work reproducible and inspectable.
+summary: Agentplane is an agent-agnostic harness for governed coding-agent work. It helps developers set tasks and guardrails while coding agents use the CLI, record traces, manage local context, apply reusable recipes, export artifacts, and make work reproducible and inspectable.
 not: model provider, prompt playground, low-code chatbot builder, replacement for every agent framework, black-box runtime that hides operational state.
 local-first: The default quickstart runs locally, writes repo-local artifacts, and does not require account creation.
 cli: agentplane
@@ -20,4 +20,3 @@ canonical-links:
 - Local context: https://agentplane.org/docs/user/local-context
 - Agent Change Records: https://agentplane.org/docs/reference/acr
 - Examples: https://agentplane.org/examples
-

@@ -70,7 +70,7 @@ evidence in Git. Manual CLI operation after initialization is an advanced path f
 maintainers, recovery, and debugging.
 
 1. **Start**: repository entry, setup, agent handoff, prerequisites, bootstrap.
-2. **Use with agents**: copy-paste flows for coding agents, CI, and review modes around Agentplane.
+2. **Use with agents**: one agent-agnostic harness guide for coding agents, CI, and review modes around Agentplane.
 3. **Agent workflow model**: workflow modes, lifecycle, branch/PR artifacts, configuration.
 4. **Review agent work**: ACR, task records, verification evidence, advanced command inspection.
 5. **Local context**: source-backed reusable context for agents, discovery, indexing.
@@ -89,13 +89,13 @@ Implementation and harness-development docs live behind the direct-link develope
 | Topic                                 | Primary docs page(s)                                                                                                    | Code source of truth                                                                                   |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | Agent bootstrap path                  | `docs/start/quickstart.mdx`, `docs/user/agents.mdx`                                                                     | `packages/agentplane/src/cli/command-guide.ts`                                                         |
-| Agent usage model                     | `docs/start/quickstart.mdx`, `docs/workflow-guides/*`                                                                   | `AGENTS.md`, `.agentplane/WORKFLOW.md`, `packages/agentplane/assets/agents/*.json`                     |
+| Agent usage model                     | `docs/start/quickstart.mdx`, `docs/workflow-guides/index.mdx`                                                           | `AGENTS.md`, `.agentplane/WORKFLOW.md`, `packages/agentplane/assets/agents/*.json`                     |
 | Init flow and repository bootstrap    | `docs/user/setup.mdx`                                                                                                   | `packages/agentplane/src/cli/run-cli/commands/init/*`                                                  |
 | Config keys and defaults              | `docs/user/configuration.mdx`                                                                                           | `schemas/config.schema.json`, `packages/core/src/config/config.ts`                                     |
 | Task lifecycle and status transitions | `docs/user/task-lifecycle.mdx`, `docs/user/workflow.mdx`                                                                | `packages/agentplane/src/commands/task/*`                                                              |
 | Advanced command usage guide          | `docs/user/commands.mdx`                                                                                                | `packages/agentplane/src/commands/**/*.spec.ts`                                                        |
 | Local context                         | `docs/user/local-context.mdx`, `docs/developer/local-context.mdx`                                                       | `packages/agentplane/src/commands/context/**`, `packages/agentplane/src/commands/acr/**`               |
-| Use-with-agents guides                | `docs/workflow-guides/*`                                                                                                | `docs/user/workflow.mdx`, `.agentplane/WORKFLOW.md`, `packages/agentplane/src/commands/**`             |
+| Use-with-agents guides                | `docs/workflow-guides/index.mdx`, `docs/workflow-guides/branch-pr.mdx`, `docs/workflow-guides/github-actions.mdx`       | `docs/user/workflow.mdx`, `.agentplane/WORKFLOW.md`, `packages/agentplane/src/commands/**`             |
 | Recipes                               | `docs/recipes/*`                                                                                                        | `packages/agentplane/src/commands/recipes/**`, `packages/recipes/src/**`                               |
 | Upgrade and mixed-state recovery      | `docs/user/setup.mdx`, `docs/help/troubleshooting-by-symptom.mdx`                                                       | `packages/agentplane/src/commands/upgrade*`, `packages/agentplane/src/commands/doctor.run.ts`          |
 | Full CLI reference (generated)        | `docs/user/cli-reference.generated.mdx`                                                                                 | `agentplane docs cli --out docs/user/cli-reference.generated.mdx`                                      |

@@ -1,22 +1,25 @@
 ---
 title: "What is Agentplane?"
-description: "Agentplane is a CLI-first operational workflow and observability layer for AI agents."
+description: "Agentplane is an agent-agnostic harness for governed coding-agent work."
 ---
 
 ## What is Agentplane?
 
-Agentplane is the CLI-first operational workflow and observability layer for AI agents, built for
-reproducible runs, inspectable traces, local context, recipes, artifacts, and Git-native evidence.
+Agentplane is an agent-agnostic harness for governed coding-agent work, built for reproducible
+runs, inspectable traces, local context, recipes, artifacts, and Git-native evidence.
 
 It does not replace the model or agent framework. It gives agent work an operating surface:
 workflows, context boundaries, tool-call records, verification checks, run artifacts, traces, and
 Agent Change Records.
 
-Humans install and initialize Agentplane. Coding agents operate the lifecycle. Reviewers inspect the
-evidence in Git.
+The operating split is deliberate:
 
-Use your existing agent to edit code. Use Agentplane to make the agent's work reviewable after the
-chat window, terminal session, or IDE context is gone.
+- The agent writes code, uses the CLI, follows `AGENTS.md`, and records verification.
+- The human sets tasks, adjusts guardrails, approves risky boundaries, and reviews evidence.
+- Agentplane keeps that work durable as repo-local state instead of private chat or IDE context.
+
+Use your existing coding agent to edit code. Use Agentplane to make the agent's work reviewable
+after the chat window, terminal session, or IDE context is gone.
 
 ```text
 task -> plan -> approve -> implement -> verify -> finish
@@ -28,11 +31,14 @@ The default path is:
 install -> init -> context init -> hand off to an agent -> review task evidence
 ```
 
-Manual CLI usage beyond setup and recovery is an advanced operator path.
+Manual CLI usage beyond setup, recovery, and review is an advanced operator path. User guides should
+teach the harness boundary first; the command reference holds the exhaustive flags.
 
 ## Agent-agnostic model
 
-Agentplane does not depend on one coding agent, model, IDE, or hosted platform.
+Agentplane does not depend on one coding agent, model, IDE, or hosted platform. It aims for an
+agent-agnostic and LLM-agnostic result: the same task boundary, policy gateway, verification
+evidence, and Git review trail should work across tools.
 
 It works at the repository boundary:
 
@@ -69,16 +75,15 @@ policy gateway can operate inside Agentplane.
 ## First artifact before first abstraction
 
 The fastest way to understand Agentplane is to install it, initialize the repository, then hand the
-repository to a coding agent:
+approved task to a coding agent.
 
 ```bash
 npm i -g agentplane
 agentplane init
-agentplane run ./agentplane.yaml
-agentplane trace open
 ```
 
-The visible payoff is a repo-owned task trail:
+The visible payoff is a repo-owned task trail. The agent can create and update it through the CLI;
+the human reviews it in Git:
 
 ```text
 .agentplane/tasks/<task-id>/README.md

@@ -1,5 +1,5 @@
 ---
-title: "Agentplane + GitHub Actions"
+title: "GitHub Actions gate"
 description: "Use GitHub Actions as the hosted check surface while Agentplane keeps local workflow state reviewable."
 ---
 
@@ -7,7 +7,7 @@ Use this when repository checks run in GitHub Actions and agent-generated work s
 task state and CI evidence are both legible.
 
 Agentplane does not replace GitHub branch protection. It gives branch protection a repo-local
-evidence artifact to check.
+evidence artifact to inspect.
 
 ## When to use
 
@@ -15,63 +15,36 @@ evidence artifact to check.
 - You want Agentplane task records to explain why an agent change is ready for review.
 - You use pull requests or branch protection.
 
-## Copy-paste flow
+## Handoff prompt
 
-```bash
-npm i -g agentplane
-agentplane init
-agentplane config set workflow_mode branch_pr
+Give this to the coding agent:
 
-agentplane task new --title "Tighten onboarding docs" --description "Update onboarding docs and wait for CI." --priority med --owner CODER --tag docs
-agentplane task plan set <task-id> --text "Update docs, run local docs checks, open PR, wait for required GitHub Actions." --updated-by CODER
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-agentplane work start <task-id> --agent CODER --slug onboarding-docs --worktree
+```text
+Use Agentplane as the task harness and GitHub Actions as the hosted gate. Keep PR artifacts current,
+wait for the required checks, record the local and hosted verification result, and stop before merge
+if checks are red or scope changed.
 ```
 
-From the task worktree:
+Integrate only after the required hosted checks are green and the task evidence matches the diff.
 
-```bash
-agentplane task start-ready <task-id> --author CODER --body "Start: onboarding docs update with GitHub Actions as the hosted check gate."
-# edit files and run local checks
-agentplane pr open <task-id> --branch task/<task-id>/onboarding-docs --author CODER
-agentplane pr update <task-id>
-# wait for GitHub Actions through your normal repository process
-agentplane verify <task-id> --ok --by CODER --note "Local checks passed and hosted GitHub Actions are green."
-```
+## ACR gate shape
 
-Integrate only after the required hosted checks are green.
-
-## ACR gate example
-
-Use a concrete task id when the PR is task-bound:
+For task-bound pull requests, CI can validate the Agent Change Record with a concrete task id:
 
 ```yaml
-name: Agentplane ACR
-
-on:
-  pull_request:
-
-jobs:
-  acr:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm i -g agentplane
-      - run: agentplane acr check <task-id> --mode ci
+- run: npm i -g agentplane
+- run: agentplane acr check <task-id> --mode ci
 ```
 
-For reusable team workflows, wrap the task id discovery in your repository's PR convention or a
-future first-class Agentplane action.
+For reusable team workflows, wrap task-id discovery in your repository's PR convention or a future
+first-class Agentplane action.
 
 ## Expected repo artifacts
 
-- task README with PR metadata
-- `.agentplane/tasks/<task-id>/pr/` local PR artifacts
-- verification note referencing local checks and hosted CI result
-- final merge/finish metadata
+- task README with PR metadata;
+- `.agentplane/tasks/<task-id>/pr/` local PR artifacts;
+- verification note referencing local checks and hosted CI result;
+- final merge/finish metadata.
 
 ## Limitations
 

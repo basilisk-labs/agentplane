@@ -1544,57 +1544,57 @@
       "route": "/docs/workflow-guides/aider",
       "output": "static/img/social/docs/workflow-guides/aider.png",
       "section": "Workflow Guides",
-      "title": "Agentplane + Aider",
+      "title": "Aider workflow moved",
       "breadcrumb": "docs / workflow-guides / aider",
-      "svgSha256": "3302095d6356d2628d3b01cbd5d6b39ee8394f7c4d11afc86608c3f8e7a8bbc4"
+      "svgSha256": "497ba53be5613bb8564d0affa3d506b0e6a8a94ed1a8d85cb1c9e1427ea35813"
     },
     {
       "route": "/docs/workflow-guides/branch-pr",
       "output": "static/img/social/docs/workflow-guides/branch-pr.png",
       "section": "Workflow Guides",
-      "title": "Agentplane + branch_pr workflow",
+      "title": "branch_pr workflow",
       "breadcrumb": "docs / workflow-guides / branch-pr",
-      "svgSha256": "e7a93e6a5b0d8962abe9d2570724182b41301ec3a19ad42cc1e9c4219ab29c9d"
+      "svgSha256": "79c53a39a6effd7b097c772dec079ceb865cbe75b2d92dbf04911f6f5f3849cb"
     },
     {
       "route": "/docs/workflow-guides/claude-code",
       "output": "static/img/social/docs/workflow-guides/claude-code.png",
       "section": "Workflow Guides",
-      "title": "Use Agentplane with Claude Code",
+      "title": "Claude Code workflow moved",
       "breadcrumb": "docs / workflow-guides / claude-code",
-      "svgSha256": "97f7830b9371fbdaeef4f8284fdc740c9347f779ab242ed7d8c1c08276f73e21"
+      "svgSha256": "246ac4106dc7541587c2c438728b43acff72c73d321c5f5f5008032144623736"
     },
     {
       "route": "/docs/workflow-guides/codex",
       "output": "static/img/social/docs/workflow-guides/codex.png",
       "section": "Workflow Guides",
-      "title": "Use Agentplane with Codex",
+      "title": "Codex workflow moved",
       "breadcrumb": "docs / workflow-guides / codex",
-      "svgSha256": "dca6a7ae4273844a5038bb9129e5dec0a19f77168a0ac755e3f410502a52f8e8"
+      "svgSha256": "032f8410ce4c3d319c13ed47b78d38d371626aea25578cdf41e40cfa9f6140f1"
     },
     {
       "route": "/docs/workflow-guides/cursor",
       "output": "static/img/social/docs/workflow-guides/cursor.png",
       "section": "Workflow Guides",
-      "title": "Agentplane + Cursor",
+      "title": "Cursor workflow moved",
       "breadcrumb": "docs / workflow-guides / cursor",
-      "svgSha256": "c6aa558961007cdf08ae3ab68e8086989ec4740a415c212323ec86fc6aecc731"
+      "svgSha256": "1057404d9b4ef46d222b6430171cb99fe08ec5ebe39956eec7ee8cd581acbccf"
     },
     {
       "route": "/docs/workflow-guides/github-actions",
       "output": "static/img/social/docs/workflow-guides/github-actions.png",
       "section": "Workflow Guides",
-      "title": "Agentplane + GitHub Actions",
+      "title": "GitHub Actions gate",
       "breadcrumb": "docs / workflow-guides / github-actions",
-      "svgSha256": "e19657f0f3d0e6691742c05e17d5cc4662e38ab8cc4efbb12c0b156f7577e83f"
+      "svgSha256": "bbe8b7c72e8a700da747def0a4416cbfa8241fe0f3ced59f2e41c5890b5666a0"
     },
     {
       "route": "/docs/workflow-guides",
       "output": "static/img/social/docs/workflow-guides.png",
       "section": "Workflow Guides",
-      "title": "Use with agents",
+      "title": "Use with coding agents",
       "breadcrumb": "docs / workflow-guides",
-      "svgSha256": "fa0f31309f7e89f825ad19696890e00dedbba29581efc37415cb3f18780b9a96"
+      "svgSha256": "75ff766cbb0e209f24e5f1206eafbfeaed3a6dd6ffd5428009601a7efc9e387e"
     }
   ]
 }
