@@ -1,10 +1,11 @@
 ---
 id: "202605231841-BW2HVW"
 title: "Fix homepage review flow class"
-status: "DOING"
+result_summary: "Merged via PR #4110."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +34,16 @@ quality_review:
     - ".agentplane/tasks/202605231841-BW2HVW/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231841-BW2HVW-homepage-review-flow-class/.agentplane/tasks/202605231841-BW2HVW/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "20787640e069abf50dae7a0b35dbbf90b2783610"
+  message: "Merge pull request #4110 from basilisk-labs/task/202605231841-BW2HVW/homepage-review-flow-class"
 comments:
   -
     author: "CODER"
     body: "Start: removing undefined homepage CSS module class and verifying site output."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4110 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -58,9 +64,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluation passed: diff is limited to replacing the undefined CSS module reference with the existing section class; build output no longer contains class=undefined for the homepage."
+  -
+    type: "status"
+    at: "2026-05-23T19:01:52.144Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4110 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T18:52:46.359Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T19:01:52.152Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove the undefined CSS module class from the homepage review-flow section introduced by the launch messaging update."
 sections:
   Summary: |-
