@@ -1,10 +1,11 @@
 ---
 id: "202605230049-AFT9YW"
 title: "Narrow hosted close PR local CI route"
-status: "DOING"
+result_summary: "Merged via PR #4058."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605230049-AFT9YW-hosted-close-pr-ci-route/.agentplane/tasks/202605230049-AFT9YW/blueprint/resolved-snapshot.json"
   findings:
     - "Reviewed changed files and verification evidence. The selector regression asserts bucket=hosted-close-pr, reason=hosted_close_pr_paths_only, forks pool, neutral task artifacts stripped from lint targets, and the exact focused test file list. run-local-ci smoke confirmed the route in executable form."
-commit: null
+commit:
+  hash: "a1b5b819ffecffb68651a5fa808492bdae61dbba"
+  message: "Merge pull request #4058 from basilisk-labs/task/202605230049-AFT9YW/hosted-close-pr-ci-route"
 comments:
   -
     author: "CODER"
     body: "Start: narrowing hosted-close-pr local CI routing to focused hosted-close tests before generic task or CLI fallbacks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4058 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -66,9 +72,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Addressed PR review: hosted-close-pr bucket now matches only hosted-close-pr files, while non-PR hosted-close command paths remain on the generic task route. Re-ran selector tests, route smoke, lint, and format."
+  -
+    type: "status"
+    at: "2026-05-23T01:08:45.446Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4058 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T01:02:16.850Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T01:08:45.453Z"
+doc_updated_by: "INTEGRATOR"
 description: "task hosted-close-pr source/test changes currently select full-fast pre-push even when the touched files map to the hosted close PR helper. Add a targeted local CI bucket for hosted-close-pr paths so agents run the hosted-close/hosted-close-pr focused suite instead of the full fast sweep."
 sections:
   Summary: |-
