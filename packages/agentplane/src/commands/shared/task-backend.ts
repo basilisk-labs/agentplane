@@ -283,7 +283,7 @@ export async function listTaskSummariesMemo(
   };
   const canonicalSummaries = async (): Promise<TaskSummary[]> => {
     const tasks = await ctx.taskBackend.listTasks();
-    return filterByProjectionStatus(tasks.map((task) => toTaskSummary(task)));
+    return tasks.map((task) => toTaskSummary(task));
   };
   if (
     opts.projectionStatus &&
@@ -299,7 +299,7 @@ export async function listTaskSummariesMemo(
     }
     const projected = await ctx.taskBackend.listProjectionTasks({ status: opts.projectionStatus });
     if (projected.length > 0 || opts.fallbackToCanonicalOnEmpty !== true) return projected;
-    return await canonicalSummaries();
+    return filterByProjectionStatus(await canonicalSummaries());
   }
   ctx.memo.taskProjection ??= (async () => {
     if (ctx.taskBackend.capabilities?.projection_read_mode === "native") {

@@ -411,6 +411,47 @@ describe(
       expect(summaries[0]?.status).toBe("TODO");
     });
 
+    it("does not memoize a status-filtered canonical fallback projection", async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await writeLocalBackendConfig(root);
+
+      const created = await createTask({
+        cwd: root,
+        rootOverride: root,
+        title: "Projection memo fallback",
+        description: "Ensure shared command contexts do not cache narrowed fallback projections",
+        owner: "TESTER",
+        priority: "med",
+        tags: ["testing"],
+        dependsOn: [],
+        verify: [],
+      });
+
+      const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+      const activeTask = await ctx.taskBackend.getTask(created.id);
+      expect(activeTask).toBeTruthy();
+      const doneTask = {
+        ...activeTask!,
+        id: "202603010500-DONE00",
+        title: "Done memo fallback",
+        status: "DONE",
+      };
+      ctx.taskBackend.capabilities = {
+        ...ctx.taskBackend.capabilities,
+        projection_read_mode: "fallback",
+      };
+      ctx.taskBackend.listTasks = () => Promise.resolve([activeTask!, doneTask]);
+
+      const activeOnly = await listTaskSummariesMemo(ctx, { projectionStatus: ["TODO"] });
+      const all = await listTaskSummariesMemo(ctx);
+
+      expect(activeOnly.map((task) => task.id)).toEqual([created.id]);
+      expect(all.map((task) => task.id).toSorted()).toEqual(
+        [created.id, "202603010500-DONE00"].toSorted(),
+      );
+    });
+
     it("fails fast when a backend advertises native projection reads without implementing them", async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
