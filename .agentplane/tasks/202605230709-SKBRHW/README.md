@@ -1,10 +1,11 @@
 ---
 id: "202605230709-SKBRHW"
 title: "Refresh docs social image assets for release check"
-status: "DOING"
+result_summary: "Merged via PR #4079."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -34,11 +35,16 @@ quality_review:
     - ".agentplane/tasks/202605230709-SKBRHW/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605230709-SKBRHW-refresh-social-images/.agentplane/tasks/202605230709-SKBRHW/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "0110815efa50a839d2a8f8670e7e49ac6d2c5bd6"
+  message: "Merge pull request #4079 from basilisk-labs/task/202605230709-SKBRHW/refresh-social-images"
 comments:
   -
     author: "DOCS"
     body: "Start: Refresh checked-in docs social image assets so release publish validation can pass on the current v0.6.7 release branch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4079 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed after review fix: --check preserves semantic freshness through the generated manifest and avoids OS-dependent PNG byte comparison."
+  -
+    type: "status"
+    at: "2026-05-23T07:24:17.928Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4079 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T07:20:43.139Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-23T07:24:17.938Z"
+doc_updated_by: "INTEGRATOR"
 description: "Regenerate checked-in docs social images so publish-time release:check passes on main before npm publication."
 sections:
   Summary: |-
