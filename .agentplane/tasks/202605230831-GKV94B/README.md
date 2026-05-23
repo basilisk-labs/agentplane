@@ -1,10 +1,11 @@
 ---
 id: "202605230831-GKV94B"
 title: "Add release next-action diagnostic"
-status: "DOING"
+result_summary: "Merged via PR #4088."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented release next-action diagnostic expansion. Evidence: bun test packages/agentplane/src/commands/release/release-next-action-script.test.ts (2 pass, 14 expects); bun run lint:core passed."
   attempts: 0
-commit: null
+commit:
+  hash: "7ef0f57c97bcb5d4d8467a263a1dd2af5488e39c"
+  message: "Merge pull request #4088 from basilisk-labs/task/202605230831-GKV94B/release-next-action-diagnostic"
 comments:
   -
     author: "CODER"
     body: "Start: extend release next-action diagnostics with release SHA, release-ready source, publish status, registry/tag/release truth, and focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4088 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented release next-action diagnostic expansion. Evidence: bun test packages/agentplane/src/commands/release/release-next-action-script.test.ts (2 pass, 14 expects); bun run lint:core passed."
+  -
+    type: "status"
+    at: "2026-05-23T09:40:45.503Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4088 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T09:24:57.487Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T09:40:45.509Z"
+doc_updated_by: "INTEGRATOR"
 description: "Provide one compact command that reports release SHA, release-ready artifact, publish status, npm/tag/release truth, and the next manual action."
 sections:
   Summary: |-
