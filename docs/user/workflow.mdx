@@ -49,8 +49,10 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 ```
 
 `direct` remains supported, but in this repository it is an explicit alternative rather than the default guarded path.
-`agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass
-`--merge-strategy squash` only when compacting history is intentional.
+Local `agentplane integrate` defaults to `merge` so task branch commits stay in base history. On
+protected bases, the GitHub PR finalization path prefers rebase merge so task commits remain visible
+without an extra GitHub merge commit. Pass `--merge-strategy squash` only when compacting history is
+intentional.
 Lifecycle/status commits are task-state checkpoints. They are not implementation commits, and
 `finish --commit-from-comment` is unsupported in `branch_pr` because finish runs on the base
 checkout.

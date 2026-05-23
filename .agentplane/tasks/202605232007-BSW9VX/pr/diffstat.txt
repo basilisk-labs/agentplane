@@ -1,0 +1,15 @@
+ .github/workflows/task-hosted-close.yml            |  4 +-
+ docs/user/branching-and-pr-artifacts.mdx           |  6 +-
+ docs/user/commands.mdx                             |  2 +-
+ docs/user/task-lifecycle.mdx                       |  6 +-
+ docs/user/workflow.mdx                             |  6 +-
+ packages/agentplane/src/cli/command-guide.test.ts  |  2 +-
+ packages/agentplane/src/cli/command-guide.ts       |  2 +-
+ .../cli/prepare-hosted-task-closure-script.test.ts | 25 ++++++
+ .../src/commands/guard/impl/close-message.test.ts  | 31 ++++++++
+ .../src/commands/guard/impl/close-message.ts       | 19 ++++-
+ .../src/commands/pr/integrate/cmd.test.ts          |  7 +-
+ .../pr/integrate/internal/github-pr-merge.ts       | 91 +++++++++++++++++++---
+ .../task/hosted-close-workflow-contract.test.ts    |  5 +-
+ scripts/workflow/prepare-hosted-task-closure.mjs   | 12 ++-
+ 14 files changed, 188 insertions(+), 30 deletions(-)

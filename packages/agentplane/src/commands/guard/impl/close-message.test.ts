@@ -381,6 +381,37 @@ describe("renderMergeMessage", () => {
     );
   });
 
+  it("renders command-style verification notes without duplicated pass wording", () => {
+    const rendered = renderMergeMessage({
+      scope: "tests",
+      prTitle: "Avoid extra branch_pr artifact commit on PR open",
+      verification: [
+        "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts -t 'pr open'; Result: pass; Evidence: 1 test file passed. Scope: branch_pr pr open artifact refresh.",
+      ],
+    });
+
+    expect(rendered).toContain(
+      "- Bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts -t 'pr open' passed.",
+    );
+    expect(rendered).not.toContain("pass passed");
+    expect(rendered).not.toContain("passed passed");
+    expect(rendered).not.toContain("- Result: pass passed.");
+  });
+
+  it("keeps all command-style verification entries", () => {
+    const rendered = renderMergeMessage({
+      scope: "tests",
+      prTitle: "Avoid extra branch_pr artifact commit on PR open",
+      verification: [
+        "Command: bunx vitest run pr-flow.test.ts; Result: pass; Evidence: tests passed. Scope: pr flow. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: routing.",
+      ],
+    });
+
+    expect(rendered).toContain("- Bunx vitest run pr-flow.test.ts passed.");
+    expect(rendered).toContain("- Node .agentplane/policy/check-routing.mjs passed.");
+    expect(rendered).not.toContain("Evidence:");
+  });
+
   it("caps many key files", () => {
     const files = Array.from({ length: 20 }, (_, index) => `src/file-${index + 1}.ts`);
     expect(

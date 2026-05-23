@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605232007-BSW9VX/linear-merge-messages",
+  "created_at": "2026-05-23T20:09:30.180Z",
+  "diffstat_sha256": "sha256:f28a2e104dd34096f3f7b1ae0a4a3e9000a3d3c6b5014a360b7ffbfcb8f63956",
+  "last_verified_at": "2026-05-23T21:12:05.910Z",
+  "last_verified_diffstat_sha256": "sha256:f8603d9a782ec315a2ebddee511f6d9cad322a518c567ed312c34e7d3ea0080a",
+  "schema_version": 1,
+  "task_id": "202605232007-BSW9VX",
+  "updated_at": "2026-05-23T20:09:30.180Z",
+  "verify": {
+    "status": "pass"
+  }
+}
