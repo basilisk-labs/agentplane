@@ -16,6 +16,7 @@ export type TaskBlueprintLifecycleSummary = {
   workflow_git?: string;
   route?: string[];
   selection_reasons?: string[];
+  policy_modules?: string[];
   required_evidence?: string[];
   stop_reasons?: string[];
   explain_command: string;
@@ -49,6 +50,7 @@ function lifecycleSummaryFromExplain(
       : {}),
     route: output.route.map((node) => node.kind),
     selection_reasons: [...output.selectionReasons],
+    policy_modules: [...output.plan.policyModules],
     required_evidence: output.requiredEvidence.map((item) => item.id),
     stop_reasons: output.stopReasons.map((reason) => reason.id),
     explain_command: `agentplane blueprint explain ${taskId}`,

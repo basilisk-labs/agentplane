@@ -382,6 +382,11 @@ Options:
 - `--json`: Emit JSON. (default=false)
 - `--remote`: Include hosted PR/check/review state using configured remote tools. (default=false)
 
+Notes:
+
+- JSON output follows the versioned \`agentplane.agent_work_context\` contract.
+- \`source_confidence\` marks whether each field is local, cached, computed, remote-derived, or skipped.
+
 Examples:
 
 ```sh

@@ -1,0 +1,6 @@
+ docs/user/cli-reference.generated.mdx              |   5 +
+ .../src/cli/run-cli.core.route-decision.test.ts    |  34 ++++++
+ .../commands/task/agent-work-context-contract.ts   |  40 +++++++
+ .../src/commands/task/blueprint-summary.ts         |   2 +
+ .../agentplane/src/commands/task/brief.command.ts  | 131 ++++++++++++++++++++-
+ 5 files changed, 211 insertions(+), 1 deletion(-)
