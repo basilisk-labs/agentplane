@@ -1,10 +1,11 @@
 ---
 id: "202605230831-AFG753"
 title: "Strict release task registry hidden artifact scan"
-status: "DOING"
+result_summary: "Merged via PR #4085."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Commands: bun test packages/agentplane/src/commands/release/task-state-script.test.ts; bun run lint:core. Result: pass. Evidence: task-state script test 1 pass; lint clean. Scope: release task registry hidden README artifact detection."
   attempts: 0
-commit: null
+commit:
+  hash: "eb63a925f1e80f609d71bea87d13cb9b3d8f861a"
+  message: "Merge pull request #4085 from basilisk-labs/task/202605230831-AFG753/strict-release-task-registry"
 comments:
   -
     author: "CODER"
     body: "Start: harden release task registry readiness so task directories missing README artifacts fail release checks instead of being silently skipped."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4085 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Commands: bun test packages/agentplane/src/commands/release/task-state-script.test.ts; bun run lint:core. Result: pass. Evidence: task-state script test 1 pass; lint clean. Scope: release task registry hidden README artifact detection."
+  -
+    type: "status"
+    at: "2026-05-23T09:25:02.655Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4085 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T08:58:07.159Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T09:25:02.660Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make release readiness fail when task directories exist without README artifacts so hidden active tasks cannot bypass task list."
 sections:
   Summary: |-
