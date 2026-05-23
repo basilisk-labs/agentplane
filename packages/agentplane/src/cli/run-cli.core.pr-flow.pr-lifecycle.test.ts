@@ -701,6 +701,199 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     expect(statusOut.trim()).toBe("");
   });
 
+  it("pr open amends refreshed artifacts into an existing implementation commit", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open amends artifacts",
+        "--description",
+        "Opening PR artifacts after an implementation commit should preserve a one-commit task branch.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const branch = `task/${taskId}/open-amend-artifacts`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    const suffix = extractTaskSuffix(taskId);
+
+    await writeFile(path.join(root, "change.txt"), "change\n", "utf8");
+    await execFileAsync("git", ["add", "change.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `🧩 ${suffix} workflow: change`], {
+      cwd: root,
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--sync-only",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const { stdout: subjectOut } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+      cwd: root,
+    });
+    expect(subjectOut.trim()).toBe(`🧩 ${suffix} workflow: change`);
+
+    const { stdout: commitCountOut } = await execFileAsync(
+      "git",
+      ["rev-list", "--count", "main..HEAD"],
+      { cwd: root },
+    );
+    expect(commitCountOut.trim()).toBe("1");
+
+    const { stdout: showOut } = await execFileAsync(
+      "git",
+      ["show", "--name-only", "--pretty=format:", "HEAD"],
+      { cwd: root },
+    );
+    const changedFiles = showOut
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    expect(changedFiles).toContain("change.txt");
+    expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/README.md`);
+    expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/pr/meta.json`);
+
+    const { stdout: statusOut } = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=all", "--", `.agentplane/tasks/${taskId}`],
+      { cwd: root },
+    );
+    expect(statusOut.trim()).toBe("");
+  });
+
+  it("pr open does not amend an inherited upstream commit when base is stale", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "-b", "upstream-main"], { cwd: root });
+    await writeFile(path.join(root, "upstream.txt"), "upstream\n", "utf8");
+    await execFileAsync("git", ["add", "upstream.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "upstream"], { cwd: root });
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open preserves inherited upstream commit",
+        "--description",
+        "Opening PR artifacts must not amend an inherited upstream commit when local base is stale.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const branch = `task/${taskId}/open-stale-base`;
+    await execFileAsync("git", ["checkout", "-b", branch, "upstream-main"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--sync-only",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const { stdout: subjectsOut } = await execFileAsync("git", ["log", "-2", "--pretty=%s"], {
+      cwd: root,
+    });
+    const subjects = subjectsOut
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    expect(subjects[0]).toBe(
+      `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`,
+    );
+    expect(subjects[1]).toBe("upstream");
+
+    const { stdout: commitCountOut } = await execFileAsync(
+      "git",
+      ["rev-list", "--count", "main..HEAD"],
+      { cwd: root },
+    );
+    expect(commitCountOut.trim()).toBe("2");
+
+    const { stdout: upstreamShowOut } = await execFileAsync(
+      "git",
+      ["show", "--name-only", "--pretty=format:", "HEAD^"],
+      { cwd: root },
+    );
+    expect(upstreamShowOut.split("\n").map((line) => line.trim())).toContain("upstream.txt");
+  });
+
   it("pr update auto-commits the task README and refreshed PR artifacts on the task branch", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

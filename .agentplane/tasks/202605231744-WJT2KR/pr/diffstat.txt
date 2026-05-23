@@ -1,0 +1,5 @@
+ .../cli/run-cli.core.pr-flow.pr-lifecycle.test.ts  | 97 ++++++++++++++++++++++
+ .../src/commands/pr/internal/auto-commit.ts        | 44 +++++++++-
+ packages/agentplane/src/commands/pr/open.ts        |  2 +
+ packages/agentplane/src/commands/pr/update.ts      |  1 +
+ 4 files changed, 142 insertions(+), 2 deletions(-)
