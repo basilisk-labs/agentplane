@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605230831-AFG753/strict-release-task-registry",
+  "created_at": "2026-05-23T08:54:53.944Z",
+  "diffstat_sha256": "sha256:53afbb3cda8036ea6f71e23ea3df127460a505a39170cb365127f1d758ca1eb5",
+  "last_verified_at": "2026-05-23T08:58:07.143Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605230831-AFG753",
+  "updated_at": "2026-05-23T08:54:53.944Z",
+  "verify": {
+    "status": "pass"
+  }
+}
