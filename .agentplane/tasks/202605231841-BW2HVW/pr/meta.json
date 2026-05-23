@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605231841-BW2HVW/homepage-review-flow-class",
+  "created_at": "2026-05-23T18:44:25.252Z",
+  "diffstat_sha256": "sha256:a5492367e1100191db7dcf8555c6fc5f575c304c7dc63a26e1cf27e3a73c6354",
+  "last_verified_at": "2026-05-23T18:52:46.196Z",
+  "last_verified_diffstat_sha256": "sha256:a5492367e1100191db7dcf8555c6fc5f575c304c7dc63a26e1cf27e3a73c6354",
+  "schema_version": 1,
+  "task_id": "202605231841-BW2HVW",
+  "updated_at": "2026-05-23T18:44:25.252Z",
+  "verify": {
+    "status": "pass"
+  }
+}
