@@ -1,10 +1,11 @@
 ---
 id: "202605231607-GG23PT"
 title: "Optimize GitHub CI routing and docs deploy efficiency"
-status: "DOING"
+result_summary: "Merged via PR #4101."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +34,16 @@ quality_review:
     - ".agentplane/tasks/202605231607-GG23PT/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231607-GG23PT-ci-routing-docs-deploy/.agentplane/tasks/202605231607-GG23PT/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "1e1f7f5479c395e35bede87723ea04851a3fb8e5"
+  message: "Merge pull request #4101 from basilisk-labs/task/202605231607-GG23PT/ci-routing-docs-deploy"
 comments:
   -
     author: "CODER"
     body: "Start: implementing approved CI/CD optimization by tightening GitHub workflow routing, docs dependency caching, and deploy artifact handoff without changing release publication semantics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4101 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,9 +70,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed. Evidence: PR #4101 is open, non-draft, mergeable; code head b0a6e12 had hosted Core CI PR verification, Docs CI, Workflows Lint, Dependency Review, and CodeQL green; final artifact-only head 848011711 has CodeQL green via gh pr checks. Remaining BEHIND status is base freshness, not implementation/test failure."
+  -
+    type: "status"
+    at: "2026-05-23T17:58:22.283Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4101 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T17:41:27.311Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T17:58:22.291Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reduce CI/CD latency and duplicated work by tightening GitHub Actions routing, dependency caching, and docs deploy handoff while preserving the PR verification merge gate."
 sections:
   Summary: |-
