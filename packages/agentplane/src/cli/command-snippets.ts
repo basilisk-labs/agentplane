@@ -21,6 +21,8 @@ export const COMMAND_SNIPPETS = {
     quickstart: invoke(["quickstart"]),
     demo: invoke(["demo"]),
     role: invoke(["role"]),
+    taskActive: invoke(["task", "active"]),
+    taskBrief: invoke(["task", "brief"]),
   },
   sync: {
     pullConfigured: "agentplane sync --direction pull",

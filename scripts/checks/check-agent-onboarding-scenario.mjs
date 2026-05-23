@@ -60,15 +60,17 @@ const onboardingScenarios = [
   {
     name: "direct lifecycle",
     checks: [
-      ["bootstrap", "## 2. Direct happy path"],
+      ["bootstrap", "## 2. Agent context"],
+      ["bootstrap", "agentplane task brief <task-id>"],
+      ["bootstrap", "## 3. Direct happy path"],
       [
         "bootstrap",
         "Treat `task verify-show` as the verification contract right before `verify` and `finish`.",
       ],
-      ["bootstrap", "## 3. Verification and incident reuse"],
+      ["bootstrap", "## 4. Verification and incident reuse"],
       ["bootstrap", "agentplane incidents advise <task-id>"],
       ["bootstrap", "agentplane incidents collect <task-id> --check"],
-      ["bootstrap", "## 4. Fallbacks and recovery"],
+      ["bootstrap", "## 5. Fallbacks and recovery"],
       ["lifecycle", "## Minimal direct lifecycle"],
       ["lifecycle", "**Preferred close flow (single command)**"],
       ["workflow", "## Default direct path"],
