@@ -1,10 +1,11 @@
 ---
 id: "202605232007-BSW9VX"
 title: "Use linear PR merges and clean hosted-close messages"
-status: "DOING"
+result_summary: "Merged via PR #4118."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Command: TMPDIR=\"/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605232007-BSW9VX-linear-merge-messages/.agentplane/tmp/test-tmp\" bunx vitest run packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/cli/command-guide.test.ts; Result: pass; Evidence: 5 test files passed, 42 tests passed after Codex review fixes. Scope: rebase-preferred merge with merge fallback, multi-command verification parsing, hosted-close title/workflow contracts. Command: bunx eslint packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/guard/impl/close-message.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts; Result: pass; Evidence: eslint exited 0 with no output. Scope: touched TypeScript files. Command: git diff --check; Result: pass; Evidence: no whitespace errors. Scope: full diff. Command: gh pr checks 4118 --watch --interval 15; Result: pass before review-fix re-push; Evidence: hosted CI on rebased head 405fb8260 was green before addressing review comments. Scope: GitHub hosted gate."
   attempts: 0
-commit: null
+commit:
+  hash: "157561b05c90acd38c0a58c4c03f1cb75f0c6060"
+  message: "🧩 BSW9VX workflow: prefer linear branch_pr merges"
 comments:
   -
     author: "CODER"
     body: "Start: implement linear branch_pr GitHub merge defaults and clean hosted-close title and verification message rendering."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4118 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: TMPDIR=\"/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605232007-BSW9VX-linear-merge-messages/.agentplane/tmp/test-tmp\" bunx vitest run packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/cli/command-guide.test.ts; Result: pass; Evidence: 5 test files passed, 42 tests passed after Codex review fixes. Scope: rebase-preferred merge with merge fallback, multi-command verification parsing, hosted-close title/workflow contracts. Command: bunx eslint packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/guard/impl/close-message.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts; Result: pass; Evidence: eslint exited 0 with no output. Scope: touched TypeScript files. Command: git diff --check; Result: pass; Evidence: no whitespace errors. Scope: full diff. Command: gh pr checks 4118 --watch --interval 15; Result: pass before review-fix re-push; Evidence: hosted CI on rebased head 405fb8260 was green before addressing review comments. Scope: GitHub hosted gate."
+  -
+    type: "status"
+    at: "2026-05-23T21:23:01.355Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4118 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T21:12:05.947Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T21:23:01.361Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reduce branch_pr history noise while preserving source PR history by using linear/rebase merges where supported and improving hosted close PR/commit message clarity."
 sections:
   Summary: |-
