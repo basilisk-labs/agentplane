@@ -1,0 +1,6 @@
+ docs/user/cli-reference.generated.mdx              |  41 +++
+ .../cli/run-cli.core.tasks.query-listing.test.ts   |  94 ++++++
+ .../src/cli/run-cli/command-catalog/task.ts        |   3 +
+ .../src/cli/run-cli/command-loaders/task.ts        |   4 +
+ .../agentplane/src/commands/task/active.command.ts | 336 +++++++++++++++++++++
+ 5 files changed, 478 insertions(+)

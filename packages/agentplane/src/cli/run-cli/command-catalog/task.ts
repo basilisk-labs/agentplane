@@ -1,4 +1,5 @@
 import { taskAddSpec } from "../../../commands/task/add.command.js";
+import { taskActiveSpec } from "../../../commands/task/active.command.js";
 import { taskCloseDuplicateSpec } from "../../../commands/task/close-duplicate.command.js";
 import { taskCloseNoopSpec } from "../../../commands/task/close-noop.command.js";
 import { taskCommentSpec } from "../../../commands/task/comment.command.js";
@@ -74,6 +75,7 @@ import {
   fromTaskHandoffShowSpec,
   loadTaskHostedCloseSpec,
   loadTaskHostedClosePrSpec,
+  loadTaskActiveSpec,
   loadTaskListSpec,
   loadTaskNextSpec,
   loadTaskSearchSpec,
@@ -143,6 +145,7 @@ export const TASK_COMMANDS = [
     surface: "advanced",
     helpGroup: "Advanced",
   }),
+  declareCommand(taskActiveSpec, { load: loadTaskActiveSpec }),
   declareCommand(taskListSpec, {
     load: loadTaskListSpec,
     invocation: requireCanonicalCommandInvocation(["task", "list"]),
