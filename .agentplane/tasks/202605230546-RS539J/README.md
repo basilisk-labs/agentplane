@@ -1,10 +1,11 @@
 ---
 id: "202605230546-RS539J"
 title: "Release v0.6.7"
-status: "DOING"
+result_summary: "Merged via PR #4077."
+status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -34,11 +35,16 @@ quality_review:
     - ".agentplane/tasks/202605230546-RS539J/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605230546-RS539J-release-v0-6-7/.agentplane/tasks/202605230546-RS539J/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "a39e8150f59b3a065adbc04f5f69e8beba18f7a8"
+  message: "Merge pull request #4077 from basilisk-labs/task/202605230546-RS539J/release-v0-6-7"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: prepare v0.6.7 release candidate from clean backlog state after SN168C fix."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4077 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -53,8 +59,15 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed: local release candidate gate completed release:prepublish:fast, release:prepublish:heavy, 65/65 release-ci-base chunks, workflow/significant coverage suites, release-critical suite; hosted PR #4077 checks passed on release commit after format correction."
+  -
+    type: "status"
+    at: "2026-05-23T06:54:19.710Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4077 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T06:48:27.064Z"
+doc_updated_at: "2026-05-23T06:54:19.716Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare and publish the next patch release after the backlog is closed. Target version v0.6.7, include all merged changes since v0.6.6, run release gates, publish through branch_pr release candidate flow, and verify npm/GitHub release evidence."
 sections:
