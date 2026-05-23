@@ -28,6 +28,7 @@ import {
   validateSnapshotContents,
 } from "./internal/pr-artifact-snapshot.js";
 import { computePrDiffstat } from "./internal/sync-branch.js";
+import { tryLookupExistingGithubPrByBranch } from "./internal/sync-github.js";
 
 export async function cmdPrCheck(opts: {
   ctx?: CommandContext;
@@ -230,10 +231,18 @@ export async function cmdPrCheck(opts: {
       });
     }
 
-    const prNumber =
+    let prNumber =
       typeof selectedSnapshot.meta?.pr_number === "number" && selectedSnapshot.meta.pr_number > 0
         ? selectedSnapshot.meta.pr_number
         : null;
+    if (prNumber === null && branchForFreshness) {
+      const observedPr = await tryLookupExistingGithubPrByBranch({
+        gitRoot: resolved.gitRoot,
+        branch: branchForFreshness,
+        baseBranch: selectedSnapshot.meta?.base ?? null,
+      });
+      prNumber = observedPr?.prNumber ?? null;
+    }
     const reviewThreads = await checkGithubUnresolvedReviewThreads({
       gitRoot: resolved.gitRoot,
       prNumber,

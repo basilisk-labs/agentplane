@@ -135,7 +135,7 @@ describe(
       }
     });
 
-    it("pr open hydrates an existing GitHub PR by branch into pr metadata", async () => {
+    it("pr open reports an existing GitHub PR by branch without tracking open identity", async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
@@ -217,9 +217,9 @@ describe(
         status?: string;
         head_sha?: string;
       };
-      expect(meta.pr_number).toBe(321);
-      expect(meta.pr_url).toBe("https://github.com/example/repo/pull/321");
-      expect(meta.status).toBe("OPEN");
+      expect(meta.pr_number).toBeUndefined();
+      expect(meta.pr_url).toBeUndefined();
+      expect(meta.status).toBeUndefined();
       expect(meta.head_sha).toBeUndefined();
 
       const rawLog = await readFile(logPath, "utf8");
@@ -446,9 +446,9 @@ describe(
         status?: string;
         head_sha?: string;
       };
-      expect(meta.pr_number).toBe(777);
-      expect(meta.pr_url).toBe("https://github.com/example/repo/pull/777");
-      expect(meta.status).toBe("OPEN");
+      expect(meta.pr_number).toBeUndefined();
+      expect(meta.pr_url).toBeUndefined();
+      expect(meta.status).toBeUndefined();
       expect(meta.head_sha).toBeUndefined();
 
       const { stdout: statusOut } = await execFileAsync(
@@ -456,10 +456,10 @@ describe(
         ["status", "--short", "--untracked-files=no"],
         { cwd: root },
       );
-      expect(statusOut.trim()).toBe(`M .agentplane/tasks/${taskId}/pr/meta.json`);
+      expect(statusOut.trim()).toBe("");
     });
 
-    it("pr open refreshes review/body when a second run links an existing remote PR head", async () => {
+    it("pr open keeps review/body stable when a second run only observes an existing remote PR", async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
@@ -550,8 +550,8 @@ describe(
 
       const reviewAfter = await readFile(path.join(prDir, "review.md"), "utf8");
       const githubBodyAfter = await readFile(path.join(prDir, "github-body.md"), "utf8");
-      expect(reviewAfter).not.toBe(reviewBefore);
-      expect(githubBodyAfter).not.toBe(githubBodyBefore);
+      expect(reviewAfter).toBe(reviewBefore);
+      expect(githubBodyAfter).toBe(githubBodyBefore);
       expect(reviewAfter).toContain("Head: computed live by");
       expect(githubBodyAfter).toContain("Head: computed live by");
     });

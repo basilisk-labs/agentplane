@@ -148,7 +148,7 @@ describe("runCli PR validation and hydration flow (pr update scenarios)", () => 
     expect(rawLog).toContain(`head=example%3Atask%2F${taskId}%2Fexisting-pr-update`);
   });
 
-  it("pr update hydrates an existing open GitHub PR identity", async () => {
+  it("pr update observes an existing open GitHub PR without tracking open identity", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -164,7 +164,7 @@ describe("runCli PR validation and hydration flow (pr update scenarios)", () => 
         "--title",
         "PR update hydrates open PR",
         "--description",
-        "PR update should persist an existing OPEN remote PR identity for the branch",
+        "PR update should keep OPEN remote PR identity in live provider state, not tracked metadata",
         "--priority",
         "med",
         "--owner",
@@ -227,9 +227,9 @@ describe("runCli PR validation and hydration flow (pr update scenarios)", () => 
       merge_commit?: string;
       artifact_state?: string;
     };
-    expect(meta.pr_number).toBe(321);
-    expect(meta.pr_url).toBe("https://github.com/example/repo/pull/321");
-    expect(meta.status).toBe("OPEN");
+    expect(meta.pr_number).toBeUndefined();
+    expect(meta.pr_url).toBeUndefined();
+    expect(meta.status).toBeUndefined();
     expect(meta.head_sha).toBeUndefined();
     expect(meta.merged_at).toBeUndefined();
     expect(meta.merge_commit).toBeUndefined();

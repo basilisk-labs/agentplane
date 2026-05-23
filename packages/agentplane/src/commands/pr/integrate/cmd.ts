@@ -33,6 +33,7 @@ import { maybeRunPostIntegrateBootstrap } from "./internal/post-integrate-bootst
 import { prepareIntegrate } from "./internal/prepare.js";
 import { resolveWorktreeForIntegrate } from "./internal/worktree.js";
 import { runVerifyCommands } from "./verify.js";
+import { tryLookupExistingGithubPrByBranch } from "../internal/sync-github.js";
 
 async function recordProtectedBaseIntegrateHandoff(opts: {
   ctx: CommandContext;
@@ -171,11 +172,21 @@ export async function cmdIntegrate(opts: {
     }
 
     if (protectedBaseRequiresPrMerge) {
-      const prNumber =
+      const recordedPrNumber =
         typeof metaSource.pr_number === "number" && metaSource.pr_number > 0
           ? metaSource.pr_number
           : null;
-      const prUrl = typeof metaSource.pr_url === "string" ? metaSource.pr_url : null;
+      const observedPr =
+        recordedPrNumber === null
+          ? await tryLookupExistingGithubPrByBranch({
+              gitRoot: resolved.gitRoot,
+              branch,
+              baseBranch: base,
+            })
+          : null;
+      const prNumber = recordedPrNumber ?? observedPr?.prNumber ?? null;
+      const prUrl =
+        typeof metaSource.pr_url === "string" ? metaSource.pr_url : (observedPr?.prUrl ?? null);
       const prUrlTarget = prUrl?.trim() ?? "";
       const prTarget =
         prUrlTarget.length > 0 ? prUrlTarget : prNumber === null ? "" : String(prNumber);
