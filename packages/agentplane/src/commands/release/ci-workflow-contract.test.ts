@@ -19,7 +19,10 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("AGENTPLANE_CI_REF:");
     expect(workflow).toContain("AGENTPLANE_RELEASE_RECOVERY_SHA:");
     expect(workflow).toContain("ref: ${{ env.AGENTPLANE_CI_REF }}");
-    expect(workflow).toContain("needs.changes.outputs.core == 'true' &&");
+    expect(workflow).toContain("core: ${{ steps.plan.outputs.core }}");
+    expect(workflow).toContain('echo "core=true"');
+    expect(workflow).toContain("node scripts/checks/plan-github-ci.mjs");
+    expect(workflow).toContain("needs.plan.outputs.core == 'true' &&");
     expect(workflow).toContain(
       "!(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '')",
     );
@@ -33,7 +36,6 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("release-ready:");
     expect(workflow).toContain("name: Release-ready manifest");
     expect(workflow).toContain("needs:");
-    expect(workflow).toContain("- changes");
     expect(workflow).toContain("- plan");
     expect(workflow).toContain("- verify-routed");
     expect(workflow).toContain("- verify-contract");
@@ -61,7 +63,7 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("startsWith(github.head_ref, 'release/')");
     expect(workflow).toContain("github.event_name == 'push' &&");
     expect(workflow).toContain("github.ref == 'refs/heads/main'");
-    expect(workflow).toContain("needs.changes.outputs.core == 'true' &&");
+    expect(workflow).toContain("needs.plan.outputs.core == 'true' &&");
     expect(workflow).toContain("needs.verify-routed.result == 'success'");
     expect(workflow).toContain("needs.verify-contract.result == 'success' &&");
     expect(workflow).toContain("needs.verify-static.result == 'success' &&");
@@ -70,7 +72,7 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("needs.verify-workflow.result == 'success' &&");
     expect(workflow).toContain("needs.verify-coverage.result == 'success' &&");
     expect(workflow).toContain("needs.test-windows.result == 'success'");
-    expect(workflow).toContain("needs.changes.outputs.core != 'true'");
+    expect(workflow).toContain("needs.plan.outputs.core != 'true'");
     expect(workflow).toContain("node scripts/manifest.mjs release-ready");
     expect(workflow).toContain("[ -f scripts/check-release-incidents.mjs ]");
     expect(workflow).toContain("node scripts/check-release-incidents.mjs");
@@ -90,9 +92,23 @@ describe("Core CI workflow contract", () => {
     const ciWorkflow = await readFile(CI_WORKFLOW_PATH, "utf8");
     const prepublishWorkflow = await readFile(PREPUBLISH_WORKFLOW_PATH, "utf8");
     const filters = await readFile(PATH_FILTERS_PATH, "utf8");
+    const planner = await readFile(
+      path.resolve(process.cwd(), "scripts/checks/plan-github-ci.mjs"),
+      "utf8",
+    );
 
-    expect(ciWorkflow).toContain("filters: .github/path-filters.yml");
-    expect(ciWorkflow).toContain("predicate-quantifier: some");
+    expect(ciWorkflow).toContain("node scripts/checks/plan-github-ci.mjs");
+    expect(ciWorkflow).toContain("needs.plan.outputs.core == 'true'");
+    expect(ciWorkflow).toContain("needs.plan.outputs.core != 'true'");
+    expect(ciWorkflow).not.toContain("needs.changes.outputs.core");
+    expect(ciWorkflow).not.toContain("dorny/paths-filter");
+    expect(planner).toContain("CORE_INCLUDE_PATTERNS");
+    expect(planner).toContain("CORE_EXCLUDE_PATTERNS");
+    expect(planner).toContain('appendOutput("core", coreRelevant ? "true" : "false")');
+    expect(planner).toContain(String.raw`/^\.agentplane\//u`);
+    expect(planner).toContain(String.raw`/^\.agentplane\/tasks\//u`);
+    expect(planner).toContain(String.raw`/^\.github\/workflows\//u`);
+    expect(planner).toContain(String.raw`/^\.github\/path-filters\.yml$/u`);
     expect(prepublishWorkflow).toContain("filters: .github/path-filters.yml");
     expect(prepublishWorkflow).toContain("predicate-quantifier: every");
     expect(filters).toContain(".agentplane/**");
@@ -105,7 +121,7 @@ describe("Core CI workflow contract", () => {
     const workflow = await readFile(CI_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain(
-      "(\n              needs.changes.outputs.core == 'true' &&\n              (\n                needs.verify-routed.result == 'success' ||\n                (\n                  needs.verify-contract.result == 'success' &&\n                  needs.verify-static.result == 'success' &&\n                  needs.verify-unit.result == 'success' &&\n                  needs.verify-cli-critical.result == 'success' &&\n                  needs.verify-workflow.result == 'success' &&\n                  needs.verify-coverage.result == 'success' &&\n                  needs.test-windows.result == 'success'\n                )\n              )\n            ) ||\n            needs.changes.outputs.core != 'true'",
+      "(\n              needs.plan.outputs.core == 'true' &&\n              (\n                needs.verify-routed.result == 'success' ||\n                (\n                  needs.verify-contract.result == 'success' &&\n                  needs.verify-static.result == 'success' &&\n                  needs.verify-unit.result == 'success' &&\n                  needs.verify-cli-critical.result == 'success' &&\n                  needs.verify-workflow.result == 'success' &&\n                  needs.verify-coverage.result == 'success' &&\n                  needs.test-windows.result == 'success'\n                )\n              )\n            ) ||\n            needs.plan.outputs.core != 'true'",
     );
   });
 });

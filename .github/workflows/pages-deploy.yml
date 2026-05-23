@@ -1,13 +1,6 @@
 name: Pages Deploy
 
 on:
-  workflow_run:
-    workflows:
-      - Docs CI
-    types:
-      - completed
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
@@ -21,7 +14,6 @@ concurrency:
 
 jobs:
   build:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     env:
       GTM_CONTAINER_ID: GTM-P4FNLHQF
@@ -31,11 +23,7 @@ jobs:
         id: ref
         shell: bash
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "ref=${{ github.ref }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
-          fi
+          echo "ref=${{ github.ref }}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v6
         with:
           ref: ${{ steps.ref.outputs.ref }}
@@ -45,6 +33,15 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
+      - name: Cache Bun artifacts
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/bun
+          key: ${{ runner.os }}-docs-bun-${{ hashFiles('bun.lock', 'website/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-docs-bun-
       - name: Install root dependencies
         run: bun install --frozen-lockfile --ignore-scripts
       - name: Install website dependencies
