@@ -30,7 +30,14 @@ export type ContextExtractionItemKind =
   | "fact"
   | "graph_entity"
   | "graph_edge"
+  | "coverage"
   | "capability_note";
+
+export type ContextExtractionCoverageStatus =
+  | "covered"
+  | "omitted_boilerplate"
+  | "redacted"
+  | "unresolved";
 
 export type ContextExtractionGraphEntity = {
   id: string;
@@ -48,6 +55,13 @@ export type ContextExtractionGraphEdge = {
   status?: string;
 };
 
+export type ContextExtractionCoverage = {
+  source_path: string;
+  status: ContextExtractionCoverageStatus;
+  reason: string;
+  covered_item_ids?: string[];
+};
+
 export type ContextExtractionItem = {
   id: string;
   kind: ContextExtractionItemKind;
@@ -58,6 +72,7 @@ export type ContextExtractionItem = {
   target_path?: string;
   entity?: ContextExtractionGraphEntity;
   edge?: ContextExtractionGraphEdge;
+  coverage?: ContextExtractionCoverage;
   stale_markers?: string[];
   conflict_markers?: string[];
 };
@@ -257,6 +272,21 @@ function validateGraphEdge(raw: unknown, field: string): ContextExtractionGraphE
   };
 }
 
+function validateCoverage(raw: unknown, field: string): ContextExtractionCoverage {
+  const coverage = requireRecord(raw, field);
+  return {
+    source_path: requireString(coverage.source_path, `${field}.source_path`),
+    status: requireEnum(coverage.status, `${field}.status`, [
+      "covered",
+      "omitted_boilerplate",
+      "redacted",
+      "unresolved",
+    ]),
+    reason: requireString(coverage.reason, `${field}.reason`),
+    covered_item_ids: optionalStringArray(coverage.covered_item_ids, `${field}.covered_item_ids`),
+  };
+}
+
 export function validateContextExtractionSgrResult(
   raw: unknown,
   field = "context extraction SGR result",
@@ -303,6 +333,7 @@ export function validateContextExtractionSgrResult(
             "fact",
             "graph_entity",
             "graph_edge",
+            "coverage",
             "capability_note",
           ]),
           summary: requireString(item.summary, `${itemField}.summary`),
@@ -321,6 +352,10 @@ export function validateContextExtractionSgrResult(
           edge:
             item.kind === "graph_edge"
               ? validateGraphEdge(item.edge, `${itemField}.edge`)
+              : undefined,
+          coverage:
+            item.kind === "coverage"
+              ? validateCoverage(item.coverage, `${itemField}.coverage`)
               : undefined,
           stale_markers: staleMarkers,
           conflict_markers: conflictMarkers,

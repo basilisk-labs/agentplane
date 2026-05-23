@@ -15,6 +15,7 @@ type ApplyResult = {
   entities: number;
   edges: number;
   provenance: number;
+  coverage: number;
   changed_paths: string[];
 };
 
@@ -102,10 +103,12 @@ export async function applyContextExtractionResult(opts: {
     opts.root,
     ".agentplane/context/derived/graph/provenance_edges.jsonl",
   );
+  const coveragePath = path.join(opts.root, ".agentplane/context/derived/reports/coverage.jsonl");
   const facts = await readJsonlById(factsPath);
   const entities = await readJsonlById(entitiesPath);
   const edges = await readJsonlById(edgesPath);
   const provenance = await readJsonlById(provenancePath);
+  const coverage = await readJsonlById(coveragePath);
 
   for (const item of result.extracted_items) {
     if (item.kind === "fact") {
@@ -149,6 +152,17 @@ export async function applyContextExtractionResult(opts: {
         provenance.set(rowId(row), row);
       }
     }
+    if (item.kind === "coverage" && item.coverage) {
+      coverage.set(item.id, {
+        ...baseRow(item, taskId),
+        source_path: item.coverage.source_path,
+        coverage_status: item.coverage.status,
+        reason: item.coverage.reason,
+        ...(item.coverage.covered_item_ids?.length
+          ? { covered_item_ids: item.coverage.covered_item_ids }
+          : {}),
+      });
+    }
   }
 
   const changed = new Set<string>();
@@ -160,12 +174,15 @@ export async function applyContextExtractionResult(opts: {
     changed.add(toPosix(path.relative(opts.root, edgesPath)));
   if (await writeJsonlById(provenancePath, provenance, dryRun))
     changed.add(toPosix(path.relative(opts.root, provenancePath)));
+  if (await writeJsonlById(coveragePath, coverage, dryRun))
+    changed.add(toPosix(path.relative(opts.root, coveragePath)));
 
   return {
     facts: [...facts.values()].length,
     entities: [...entities.values()].length,
     edges: [...edges.values()].length,
     provenance: [...provenance.values()].length,
+    coverage: [...coverage.values()].length,
     changed_paths: [...changed].toSorted(),
   };
 }
