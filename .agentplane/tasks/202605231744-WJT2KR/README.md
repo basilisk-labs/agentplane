@@ -1,10 +1,11 @@
 ---
 id: "202605231744-WJT2KR"
 title: "Avoid extra branch_pr artifact commit on PR open"
-status: "DOING"
+result_summary: "Merged via PR #4106."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts -t 'pr open'; Result: pass; Evidence: 1 test file passed, 2 tests passed including pr-open amend regression. Scope: branch_pr pr open artifact refresh. Command: bun run lint:core -- packages/agentplane/src/commands/pr/internal/auto-commit.ts packages/agentplane/src/commands/pr/open.ts packages/agentplane/src/commands/pr/update.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts; Result: pass; Evidence: eslint exited 0. Scope: touched TypeScript files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy gateway routing. Command: agentplane doctor; Result: pass with unrelated warnings for task 202605230451-N5F0HY. Scope: repo health after implementation."
   attempts: 0
-commit: null
+commit:
+  hash: "07e68ae27dc7ba170f2c5e411c812dd79f76fb67"
+  message: "Merge pull request #4106 from basilisk-labs/task/202605231744-WJT2KR/pr-open-amend-artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: implement the branch_pr PR-open artifact refresh regression so existing implementation commits receive refreshed task artifacts by amend instead of a second artifact-only commit."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4106 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts -t 'pr open'; Result: pass; Evidence: 1 test file passed, 2 tests passed including pr-open amend regression. Scope: branch_pr pr open artifact refresh. Command: bun run lint:core -- packages/agentplane/src/commands/pr/internal/auto-commit.ts packages/agentplane/src/commands/pr/open.ts packages/agentplane/src/commands/pr/update.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts; Result: pass; Evidence: eslint exited 0. Scope: touched TypeScript files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy gateway routing. Command: agentplane doctor; Result: pass with unrelated warnings for task 202605230451-N5F0HY. Scope: repo health after implementation."
+  -
+    type: "status"
+    at: "2026-05-23T19:29:16.058Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4106 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T18:04:27.674Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T19:29:16.064Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix branch_pr pr open so task artifacts are amended into an existing implementation commit instead of creating a second artifact-only commit when the task branch already has code changes."
 sections:
   Summary: |-
