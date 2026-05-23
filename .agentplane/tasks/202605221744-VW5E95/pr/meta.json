@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T02:12:08Z",
   "base": "main",
   "branch": "task/202605221744-VW5E95/agent-work-context-contract",
   "created_at": "2026-05-23T01:35:51.164Z",
   "diffstat_sha256": "sha256:843ec1129d4ee36cc7d36efccdc5813d09074f5b95721c86c1546d8205ce99d8",
   "last_verified_at": "2026-05-23T02:05:47.680Z",
   "last_verified_diffstat_sha256": "sha256:843ec1129d4ee36cc7d36efccdc5813d09074f5b95721c86c1546d8205ce99d8",
+  "merge_commit": "3bc7b11dbbffc7c507fcbf0c5b62fc40fe8309bd",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T02:12:08Z",
   "pr_number": 4062,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4062",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605221744-VW5E95",
-  "updated_at": "2026-05-23T01:41:58.785Z",
+  "updated_at": "2026-05-23T02:12:08Z",
   "verify": {
     "status": "pass"
   }
