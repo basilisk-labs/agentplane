@@ -87,7 +87,9 @@ describe("runCli route decision commands", () => {
         next_action: { code: string; command: string };
       };
       expect(parsed.next_action.code).toBe("start_or_recover_worktree");
-      expect(parsed.next_action.command).toContain(`agentplane work start ${taskId}`);
+      expect(parsed.next_action.command).toBe(
+        `agentplane work start ${taskId} --agent CODER --slug route-decision-task --worktree`,
+      );
     } finally {
       nextIo.restore();
     }
@@ -108,7 +110,9 @@ describe("runCli route decision commands", () => {
       expect(code).toBe(0);
       expect(repairIo.stdout).toContain("flow repair");
       expect(repairIo.stdout).toContain("would_run:");
-      expect(repairIo.stdout).toContain(`agentplane work start ${taskId}`);
+      expect(repairIo.stdout).toContain(
+        `agentplane work start ${taskId} --agent CODER --slug route-decision-task --worktree`,
+      );
     } finally {
       repairIo.restore();
     }
@@ -171,7 +175,9 @@ describe("runCli route decision commands", () => {
         expect(code).toBe(0);
         expect(textIo.stdout).toContain(`task brief: ${taskId}`);
         expect(textIo.stdout).toContain("next_code:");
+        expect(textIo.stdout).toContain("confidence:");
         expect(textIo.stdout).toContain("verify_steps:");
+        expect(textIo.stdout).toContain("verify_steps_quality: fallback");
         expect(textIo.stdout).toContain("blueprint_id:");
         expect(textIo.stdout).toContain("policy_modules:");
         expect(textIo.stdout).toContain("snapshot_safe_command:");
@@ -237,7 +243,7 @@ describe("runCli route decision commands", () => {
           task: { id: string };
           route: { workflow_mode: string; next_action_code: string };
           next_action: { code: string; command: string };
-          verify_steps: { text: string; filled: boolean };
+          verify_steps: { text: string; filled: boolean; quality: string };
           blueprint: { blueprint_id?: string; required_evidence?: string[] };
           policy_modules: string[];
           evidence_required: string[];
@@ -258,6 +264,7 @@ describe("runCli route decision commands", () => {
         expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
         expect(parsed.verify_steps.text).toContain("PLANNER fallback scaffold");
         expect(parsed.verify_steps.filled).toBe(true);
+        expect(parsed.verify_steps.quality).toBe("fallback");
         expect(parsed.blueprint.blueprint_id).toBe("code.branch_pr");
         expect(parsed.blueprint.required_evidence).toContain("code_pr.paths");
         expect(parsed.policy_modules).toEqual(
@@ -279,6 +286,11 @@ describe("runCli route decision commands", () => {
           source: "remote_provider",
           freshness: "remote_skipped",
           confidence: "skipped",
+        });
+        expect(parsed.source_confidence.verify_steps).toMatchObject({
+          source: "task_doc",
+          freshness: "live_local",
+          confidence: "medium",
         });
       } finally {
         jsonIo.restore();

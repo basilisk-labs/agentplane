@@ -382,6 +382,35 @@ describe(
       expect(summaries[0]).not.toHaveProperty("events");
     });
 
+    it("can fall back to canonical tasks when a filtered native projection is empty", async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await writeLocalBackendConfig(root);
+
+      const created = await createTask({
+        cwd: root,
+        rootOverride: root,
+        title: "Projection empty fallback",
+        description: "Ensure active commands can recover from an empty filtered projection",
+        owner: "TESTER",
+        priority: "med",
+        tags: ["testing"],
+        dependsOn: [],
+        verify: [],
+      });
+
+      const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+      ctx.taskBackend.listProjectionTasks = () => Promise.resolve([]);
+      const summaries = await listTaskSummariesMemo(ctx, {
+        projectionStatus: ["TODO"],
+        fallbackToCanonicalOnEmpty: true,
+      });
+
+      expect(summaries).toHaveLength(1);
+      expect(summaries[0]?.id).toBe(created.id);
+      expect(summaries[0]?.status).toBe("TODO");
+    });
+
     it("fails fast when a backend advertises native projection reads without implementing them", async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);

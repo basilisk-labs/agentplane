@@ -92,6 +92,28 @@ function taskSummary(task: TaskData): TaskRouteDecision["task"] {
   };
 }
 
+function taskWorkSlug(task: Pick<TaskData, "id" | "title">): string {
+  const fromTitle = task.title
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-+|-+$/g, "")
+    .replaceAll(/-{2,}/g, "-")
+    .slice(0, 48)
+    .replaceAll(/-+$/g, "");
+  if (fromTitle) return fromTitle;
+  const suffix =
+    task.id
+      .split("-")
+      .pop()
+      ?.toLowerCase()
+      .replaceAll(/[^a-z0-9]+/g, "-") ?? "";
+  return suffix || "work";
+}
+
+function workStartCommand(task: Pick<TaskData, "id" | "owner" | "title">): string {
+  return `agentplane work start ${task.id} --agent ${task.owner} --slug ${taskWorkSlug(task)} --worktree`;
+}
+
 function addBlocker(blockers: RouteBlocker[], code: string, summary: string): void {
   if (blockers.some((blocker) => blocker.code === code)) return;
   blockers.push({ code, summary });
@@ -234,7 +256,7 @@ function deriveNextAction(opts: {
   if (opts.blockers.some((blocker) => blocker.code === "missing_pr_branch")) {
     return {
       code: "start_or_recover_worktree",
-      command: `agentplane work start ${id} --agent ${opts.task.owner} --slug <slug> --worktree`,
+      command: workStartCommand(opts.task),
       summary: "create or recover the dedicated branch_pr worktree before opening a PR",
       requiresApproval: false,
     };
@@ -354,7 +376,7 @@ function deriveRepairPlan(
     if (blocker.code === "missing_pr_branch") {
       steps.push({
         code: "create_worktree",
-        command: `agentplane work start ${id} --agent ${decision.task.owner} --slug <slug> --worktree`,
+        command: workStartCommand(decision.task),
         summary: "create the missing branch_pr worktree",
         mutates: true,
       });

@@ -10,7 +10,7 @@ import {
   type AgentWorkContextSourceConfidence,
 } from "./agent-work-context-contract.js";
 import { resolveTaskBlueprintLifecycleSummary } from "./blueprint-summary.js";
-import { extractDocSection, isVerifyStepsFilled } from "./shared.js";
+import { extractDocSection, isVerifyStepsFilled, VERIFY_STEPS_PLACEHOLDER } from "./shared.js";
 
 export type TaskBriefParsed = {
   taskId: string;
@@ -81,6 +81,7 @@ type TaskBrief = {
   blockers: { code: string; summary: string }[];
   verify_steps: {
     filled: boolean;
+    quality: "missing" | "fallback" | "specific";
     text: string;
   };
   blueprint: Awaited<ReturnType<typeof resolveTaskBlueprintLifecycleSummary>>;
@@ -153,6 +154,7 @@ function buildSourceConfidence(opts: {
   remoteEnabled: boolean;
   remoteResolved: boolean;
   snapshotState: string;
+  verifyStepsQuality: TaskBrief["verify_steps"]["quality"];
 }): TaskBrief["source_confidence"] {
   const routeFreshness = opts.remoteResolved ? "remote_live" : "computed_local";
   const routeConfidence = opts.remoteResolved ? "medium" : opts.remoteEnabled ? "medium" : "high";
@@ -177,6 +179,18 @@ function buildSourceConfidence(opts: {
       : opts.snapshotState === "missing"
         ? "resolved snapshot artifact is missing"
         : `resolved snapshot artifact is ${opts.snapshotState}`;
+  const verifyStepsConfidence =
+    opts.verifyStepsQuality === "specific"
+      ? "high"
+      : opts.verifyStepsQuality === "fallback"
+        ? "medium"
+        : "low";
+  const verifyStepsNote =
+    opts.verifyStepsQuality === "specific"
+      ? undefined
+      : opts.verifyStepsQuality === "fallback"
+        ? "Verify Steps are a PLANNER fallback scaffold; replace with task-specific checks when scope is known"
+        : "Verify Steps are missing or still placeholder-only";
   return {
     contract: {
       source: "static",
@@ -218,7 +232,8 @@ function buildSourceConfidence(opts: {
     verify_steps: {
       source: "task_doc",
       freshness: "live_local",
-      confidence: "high",
+      confidence: verifyStepsConfidence,
+      ...(verifyStepsNote ? { note: verifyStepsNote } : {}),
     },
     blueprint: {
       source: "blueprint_resolver",
@@ -256,6 +271,23 @@ function buildSourceConfidence(opts: {
   };
 }
 
+function verifyStepsQuality(verifySteps: string): TaskBrief["verify_steps"]["quality"] {
+  if (!isVerifyStepsFilled(verifySteps)) return "missing";
+  if (verifySteps.includes(VERIFY_STEPS_PLACEHOLDER)) return "missing";
+  if (/PLANNER fallback scaffold/i.test(verifySteps)) return "fallback";
+  return "specific";
+}
+
+function formatSourceConfidence(sourceConfidence: TaskBrief["source_confidence"]): string {
+  const keys = ["route", "next_action", "verify_steps", "snapshot", "remote"] as const;
+  return keys
+    .map((key) => {
+      const value = sourceConfidence[key];
+      return `${key}=${value?.confidence ?? "unknown"}/${value?.freshness ?? "unknown"}`;
+    })
+    .join(", ");
+}
+
 function hasRemoteProviderEvidence(
   route: Awaited<ReturnType<typeof buildTaskRouteDecision>>,
 ): boolean {
@@ -281,6 +313,7 @@ async function buildTaskBrief(opts: {
       ? task.doc
       : ((await opts.commandCtx.taskBackend.getTaskDoc?.(opts.parsed.taskId)) ?? "");
   const verifySteps = (extractDocSection(doc, "Verify Steps") ?? "").trim();
+  const verifyQuality = verifyStepsQuality(verifySteps);
   const route = await buildTaskRouteDecision({
     ctx: opts.commandCtx,
     cwd: opts.cwd,
@@ -351,6 +384,7 @@ async function buildTaskBrief(opts: {
     blockers: route.blockers.map((blocker) => ({ ...blocker })),
     verify_steps: {
       filled: isVerifyStepsFilled(verifySteps),
+      quality: verifyQuality,
       text: verifySteps,
     },
     blueprint,
@@ -376,6 +410,7 @@ async function buildTaskBrief(opts: {
       remoteEnabled: opts.parsed.remote,
       remoteResolved: hasRemoteProviderEvidence(route),
       snapshotState: snapshot.state,
+      verifyStepsQuality: verifyQuality,
     }),
   };
 }
@@ -408,6 +443,7 @@ export function makeRunTaskBriefHandler(getCtx: (cmd: string) => Promise<Command
         { label: "next", value: brief.next_action.command ?? brief.next_action.summary },
         { label: "requires_approval", value: String(brief.next_action.requires_approval) },
         { label: "remote", value: brief.remote.note },
+        { label: "confidence", value: formatSourceConfidence(brief.source_confidence) },
       ],
       { header: infoMessage(`task brief: ${parsed.taskId}`) },
     );
@@ -440,6 +476,7 @@ export function makeRunTaskBriefHandler(getCtx: (cmd: string) => Promise<Command
     for (const blocker of brief.blockers) {
       output.line(`blocker: ${blocker.code}: ${blocker.summary}`);
     }
+    output.line(`verify_steps_quality: ${brief.verify_steps.quality}`);
     output.line("verify_steps:");
     for (const line of splitNonEmptyLines(brief.verify_steps.text)) {
       output.line(`  ${line}`);

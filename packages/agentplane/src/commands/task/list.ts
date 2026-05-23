@@ -76,7 +76,10 @@ export async function cmdTaskListWithFilters(opts: {
     const projectionStatus = resolveProjectionStatusesForList(opts.filters);
     const tasks = await annotateBranchPrTaskListState({
       ctx,
-      tasks: await listTaskSummariesMemo(ctx, { projectionStatus }),
+      tasks: await listTaskSummariesMemo(ctx, {
+        projectionStatus,
+        fallbackToCanonicalOnEmpty: projectionStatus !== undefined,
+      }),
     });
     await warnIfLocalTaskStateBehindUpstream(ctx);
     handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
