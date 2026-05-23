@@ -29,7 +29,7 @@ function HomeJsonLd(): ReactNode {
     mainEntity: [
       [
         "What is Agentplane?",
-        "Agentplane is an agent-agnostic harness for governed coding-agent work. It keeps task intent, guardrails, verification evidence, traces, and Agent Change Records inspectable in Git.",
+        "Agentplane is an agent-agnostic evidence layer for AI-written code changes. It keeps task intent, approved plans, verification evidence, traces, and Agent Change Records inspectable in Git.",
       ],
       [
         "Does Agentplane replace AI agent frameworks?",
@@ -41,7 +41,7 @@ function HomeJsonLd(): ReactNode {
       ],
       [
         "What does Agentplane record?",
-        "Agentplane records workflows, runs, traces, recipes, exports, verification evidence, and Agent Change Records.",
+        "Agentplane records task intent, approved plans, workflow runs, traces, verification evidence, review packets, and Agent Change Records.",
       ],
       [
         "What are Agentplane traces?",
@@ -91,7 +91,7 @@ function Hero(): ReactNode {
   ];
   const artifactRows = [
     ["Task README", "intent, plan, findings"],
-    ["PR packet", "title, body, diffstat"],
+    ["PR packet", "scope, checks, diffstat"],
     ["Trace export", "steps, tools, checks"],
   ];
 
@@ -106,17 +106,21 @@ function Hero(): ReactNode {
     <section className={styles.hero}>
       <div className={styles.heroCopy}>
         <p className={styles.kicker}>{hero.eyebrow}</p>
-        <h1>{hero.title}</h1>
+        <h1 aria-label={hero.title}>
+          <span>Audit trails for</span>
+          <span>AI-written code</span>
+          <span>changes.</span>
+        </h1>
         <p className={styles.lede}>{hero.subtitle}</p>
         <p className={styles.trust}>{hero.trustLine}</p>
         <div className={styles.ctaGroup}>
-          <a
+          <Link
             className={styles.buttonPrimary}
-            href={githubUrl}
-            onClick={() => trackHomeEvent("github_click", { location: "hero" })}
+            to={quickstartUrl}
+            onClick={() => trackHomeEvent("quickstart_click", { location: "hero_primary" })}
           >
-            Open GitHub
-          </a>
+            Try the 90-second quickstart
+          </Link>
           <button
             className={styles.buttonSecondary}
             type="button"
@@ -125,13 +129,13 @@ function Hero(): ReactNode {
           >
             {copied ? "Copied" : installCommand}
           </button>
-          <Link
+          <a
             className={styles.buttonTertiary}
-            to={quickstartUrl}
-            onClick={() => trackHomeEvent("quickstart_click", { location: "hero" })}
+            href={githubUrl}
+            onClick={() => trackHomeEvent("github_click", { location: "hero" })}
           >
-            Run the 90-second quickstart
-          </Link>
+            Open GitHub
+          </a>
         </div>
       </div>
       <div className={styles.artifactPanel} aria-label="Agentplane Git evidence artifacts">
@@ -140,9 +144,9 @@ function Hero(): ReactNode {
           <strong>ready for review</strong>
         </div>
         <div className={styles.evidenceSummary}>
-          <span>human approved</span>
-          <strong>agent changed code under harness</strong>
-          <p>Task intent, branch state, verification, and review packet stay in the repo.</p>
+          <span>review ready</span>
+          <strong>AI-written change with evidence</strong>
+          <p>Task intent, branch state, verification, and review packet stay in Git.</p>
         </div>
         <div className={styles.evidenceLedger}>
           {evidenceRows.map(([label, value, detail]) => (
@@ -192,6 +196,38 @@ function Problem(): ReactNode {
   );
 }
 
+function ReviewFlow(): ReactNode {
+  const { reviewFlow } = homepageContent;
+
+  return (
+    <section className={`${styles.section} ${styles.reviewFlow}`}>
+      <div className={styles.sectionIntro}>
+        <h2>{reviewFlow.title}</h2>
+        <p>{reviewFlow.text}</p>
+      </div>
+      <div className={styles.reviewColumns}>
+        {[reviewFlow.before, reviewFlow.after].map((column) => (
+          <div key={column.title}>
+            <h3>{column.title}</h3>
+            <ul>
+              {column.points.map((point) => (
+                <li key={point}>{point}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <Link
+        className={styles.inlineCta}
+        to={acrUrl}
+        onClick={() => trackHomeEvent("view_acr_guide", { location: "review_flow" })}
+      >
+        See what an Agent Change Record contains
+      </Link>
+    </section>
+  );
+}
+
 function WhatIs(): ReactNode {
   const { whatIs } = homepageContent;
   return (
@@ -227,7 +263,8 @@ function Records(): ReactNode {
               "npm i -g agentplane",
               "agentplane init",
               "agentplane quickstart",
-              "agentplane trace open",
+              "agentplane demo",
+              "agentplane acr validate <task-id> --mode local",
             ].join("\n")}
             eventName="copy_run_command"
           />
@@ -373,6 +410,7 @@ export default function Home(): ReactNode {
         <Hero />
         <ProofStrip />
         <Problem />
+        <ReviewFlow />
         <Records />
         <WorksWith />
         <WhatIs />
@@ -383,12 +421,12 @@ export default function Home(): ReactNode {
           <h2>{closing.title}</h2>
           <p>{closing.text}</p>
           <div className={styles.ctaGroup}>
-            <a className={styles.buttonPrimary} href={githubUrl}>
-              Open GitHub
-            </a>
-            <Link className={styles.buttonSecondary} to={quickstartUrl}>
+            <Link className={styles.buttonPrimary} to={quickstartUrl}>
               Run quickstart
             </Link>
+            <a className={styles.buttonSecondary} href={githubUrl}>
+              Open GitHub
+            </a>
             <Link className={styles.buttonSecondary} to={acrUrl}>
               See an example ACR
             </Link>

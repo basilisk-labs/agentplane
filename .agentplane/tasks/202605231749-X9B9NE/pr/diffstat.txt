@@ -1,0 +1,10 @@
+ docs/compare.mdx                     | 30 ++++++-------
+ docs/listing.md                      | 10 ++---
+ docs/showcase.mdx                    | 15 +++----
+ docs/workflow-guides/index.mdx       | 15 +++----
+ website/docusaurus.config.ts         |  8 ++--
+ website/src/data/homepage-content.ts | 65 +++++++++++++++++++---------
+ website/src/pages/_home.module.css   | 64 ++++++++++++++++++++++++++--
+ website/src/pages/index.tsx          | 82 ++++++++++++++++++++++++++----------
+ website/static/llms-full.txt         | 30 ++++++-------
+ 9 files changed, 220 insertions(+), 99 deletions(-)
