@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605231607-GG23PT/ci-routing-docs-deploy",
+  "created_at": "2026-05-23T16:09:28.648Z",
+  "diffstat_sha256": "sha256:5f08a619036bf0ee7a6dc059489f213aef5acffae3cc0cd77348f042a16cf462",
+  "last_verified_at": "2026-05-23T16:19:33.566Z",
+  "last_verified_diffstat_sha256": "sha256:5f08a619036bf0ee7a6dc059489f213aef5acffae3cc0cd77348f042a16cf462",
+  "schema_version": 1,
+  "task_id": "202605231607-GG23PT",
+  "updated_at": "2026-05-23T16:09:28.648Z",
+  "verify": {
+    "status": "pass"
+  }
+}
