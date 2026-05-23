@@ -1,10 +1,11 @@
 ---
 id: "202605231803-M9TK2M"
 title: "Fix agent context cognitive-load regressions"
-status: "DOING"
+result_summary: "Merged via PR #4108."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -43,11 +44,16 @@ quality_review:
     - ".agentplane/tasks/202605231803-M9TK2M/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231803-M9TK2M-fix-agent-context-load/.agentplane/tasks/202605231803-M9TK2M/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "f1d30dd89e5f5819ec6bff8f1d95666827d48255"
+  message: "Merge pull request #4108 from basilisk-labs/task/202605231803-M9TK2M/fix-agent-context-load"
 comments:
   -
     author: "CODER"
     body: "Start: fix agent-facing active selector, task brief confidence/verification quality, and concrete branch_pr next commands for reduced cognitive load."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4108 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -68,9 +74,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate passed: focused route-decision/task active/task brief tests passed, typecheck passed, hotspot and knip gates passed, hosted PR checks are green."
+  -
+    type: "status"
+    at: "2026-05-23T19:46:09.587Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4108 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T19:28:05.453Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T19:46:09.595Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix active work selection and task brief guidance so agents can reliably choose active work, see confidence/verification quality, and execute generated branch_pr next commands without manual context stitching."
 sections:
   Summary: |-
