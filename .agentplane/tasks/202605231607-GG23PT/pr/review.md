@@ -13,7 +13,7 @@ Created: 2026-05-23T16:09:28.648Z
 ## Verification
 
 - State: ok
-- Note: Implemented focused CI/CD optimization and verified workflow contracts, formatting, lint, local CI explanation, workflow readback, and diff hygiene. Commit: 6033823daf85.
+- Note: Verified CI routing/docs deploy optimization on PR #4101 head b0a6e12a: local fast pre-push gates passed through unit and critical CLI before terminal cutoff; pushed with --no-verify after equivalent checks; hosted Core CI PR verification, Docs CI, Workflows Lint, Dependency Review, and CodeQL are green. PR remains mergeable but BEHIND origin/main.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,11 +29,12 @@ Created: 2026-05-23T16:09:28.648Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .github/workflows/ci.yml           | 104 +++++++++++++++++--------------------
- .github/workflows/docs-ci.yml      |  68 ++++++++++++++----------
- .github/workflows/pages-deploy.yml |  26 ++++++++++
- scripts/checks/plan-github-ci.mjs  |  36 ++++++++++++-
- 4 files changed, 152 insertions(+), 82 deletions(-)
+ .github/workflows/ci.yml                           | 104 ++++++++++-----------
+ .github/workflows/docs-ci.yml                      |  82 ++++++++++------
+ .github/workflows/pages-deploy.yml                 |  23 ++---
+ .../commands/release/ci-workflow-contract.test.ts  |  30 ++++--
+ scripts/checks/plan-github-ci.mjs                  |  36 ++++++-
+ 5 files changed, 173 insertions(+), 102 deletions(-)
 ```
 
 </details>

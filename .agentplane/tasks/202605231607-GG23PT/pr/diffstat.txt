@@ -1,5 +1,6 @@
- .github/workflows/ci.yml           | 104 +++++++++++++++++--------------------
- .github/workflows/docs-ci.yml      |  68 ++++++++++++++----------
- .github/workflows/pages-deploy.yml |  26 ++++++++++
- scripts/checks/plan-github-ci.mjs  |  36 ++++++++++++-
- 4 files changed, 152 insertions(+), 82 deletions(-)
+ .github/workflows/ci.yml                           | 104 ++++++++++-----------
+ .github/workflows/docs-ci.yml                      |  82 ++++++++++------
+ .github/workflows/pages-deploy.yml                 |  23 ++---
+ .../commands/release/ci-workflow-contract.test.ts  |  30 ++++--
+ scripts/checks/plan-github-ci.mjs                  |  36 ++++++-
+ 5 files changed, 173 insertions(+), 102 deletions(-)
