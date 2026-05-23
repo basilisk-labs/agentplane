@@ -156,9 +156,10 @@ export const evaluatorRunSpec: CommandSpec<EvaluatorRunParsed> = {
   },
   parse: (raw) => ({
     taskId: String(raw.args.taskId ?? "").trim(),
-    evaluator: String(raw.opts.evaluator ?? "recovery-context").trim(),
+    evaluator:
+      typeof raw.opts.evaluator === "string" ? raw.opts.evaluator.trim() : "recovery-context",
     verdict: String(raw.opts.verdict) as EvaluatorRunVerdict,
-    summary: String(raw.opts.summary ?? "").trim(),
+    summary: typeof raw.opts.summary === "string" ? raw.opts.summary.trim() : "",
     findings: toStringList(raw.opts.finding),
     evidenceRefs: toStringList(raw.opts.evidence),
     missingTests: toStringList(raw.opts["missing-test"]),

@@ -20,6 +20,7 @@ import { loadCommandContext, loadTaskFromContext } from "./shared/task-backend.j
 import { verifySpec } from "./verify.spec.js";
 import { cmdVerifyParsed } from "./task/verify-record.js";
 import { writeTaskBlueprintResolvedSnapshot } from "./blueprint/snapshot-artifact.js";
+import { runEvaluatorRun } from "./evaluator/evaluator.command.js";
 
 const execFileAsync = promisify(execFile);
 const VERIFY_REWORK_FULL_GATE_TIMEOUT_MS = 60_000;
@@ -256,16 +257,25 @@ describe("commands/workflow", () => {
         note: "Ok to finish",
         quiet: true,
       });
-      await cmdVerifyParsed({
-        ctx,
-        cwd: root,
-        rootOverride: undefined,
-        taskId,
-        state: "ok",
-        by: "EVALUATOR",
-        note: "Quality gate passed",
-        quiet: true,
-      });
+      await runEvaluatorRun(
+        {
+          cwd: root,
+          rootOverride: undefined,
+        },
+        {
+          taskId,
+          evaluator: "recovery-context",
+          verdict: "pass",
+          summary: "Quality gate passed",
+          findings: ["Verify rework fixture has committed implementation evidence."],
+          evidenceRefs: ["done.txt"],
+          missingTests: [],
+          hiddenAssumptions: [],
+          residualRisks: [],
+          json: false,
+          record: true,
+        },
+      );
 
       const codeFinish = await cmdFinish({
         cwd: root,

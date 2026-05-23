@@ -377,10 +377,11 @@ separate review pass, and records a structured quality review report for task cl
 `agentplane init` seeds `.agentplane/evaluators/recovery-context.md`, a preview evaluator for
 recovery-context and invariant review. `agentplane evaluator run` writes task-local evaluator
 artifacts under `.agentplane/tasks/<task-id>/quality/<run>/`: the prompt, `quality-report.json`, and
-the evaluator opinion markdown. Recorded quality reviews require a clean tracked working tree so the
-recorded `evaluated_sha` matches committed code; use `--no-record` only for artifact-generation
-smoke checks. Pass reviews must include concrete findings and evidence, so `finish` and `integrate`
-no longer accept a bare `ap verify --by EVALUATOR` pass-note as sufficient quality evidence.
+the evaluator opinion markdown. Recorded quality reviews reject dirty tracked paths outside the
+current task artifact subtree so the recorded `evaluated_sha` matches committed implementation code;
+use `--no-record` only for artifact-generation smoke checks. Pass reviews must include concrete
+findings and evidence, so `finish` and `integrate` no longer accept a bare
+`ap verify --by EVALUATOR` pass-note as sufficient quality evidence.
 
 ## Blueprint catalogs
 
