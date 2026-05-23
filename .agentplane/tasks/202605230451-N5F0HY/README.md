@@ -20,10 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-23T07:32:53.316Z"
-  updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate passed: PR #4081 restores the missing README for the superseded release task so the hidden DOING task becomes visible and closable."
-  attempts: 0
+  updated_at: "2026-05-23T07:47:31.230Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.7."
 quality_review:
   state: "pass"
   updated_at: "2026-05-23T07:32:53.316Z"
@@ -73,8 +72,8 @@ events:
     to: "DONE"
     note: "Verified: superseded duplicate release task closed after canonical v0.6.7 release work moved to 202605230546-RS539J and publish-gate follow-up 202605230709-SKBRHW."
 doc_version: 3
-doc_updated_at: "2026-05-23T07:32:53.338Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-23T07:47:31.230Z"
+doc_updated_by: "DEUS"
 description: "Prepare and publish the next patch release after closing the backlog. Target version v0.6.7, include task-level changes since v0.6.6, run release gates, publish through branch_pr release candidate flow, and verify npm/GitHub release evidence."
 sections:
   Summary: |-
@@ -94,44 +93,19 @@ sections:
     3. Confirm the old task no longer appears as hidden `missing_or_unreadable_readme` state after close.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    ### 2026-05-23T07:29:18.078Z — VERIFY — ok
-
-    By: INTEGRATOR
-
-    Note: Superseded duplicate release task; canonical v0.6.7 release work moved to 202605230546-RS539J.
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T04:53:20.748Z, excerpt_hash=sha256:9d559e1fb8547c3bb29a70a07948bbbc1c5cce6727f9a86ea410eea776edbb5a
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: missing
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605230451-N5F0HY/blueprint/resolved-snapshot.json
-    - old_digest: none
-    - current_digest: 5296cc05f5ea77afaa3e006874e78d1d6dbdbaf09e0b86def5d71db5341fb562
-    - route_changed: unknown
-    - safe_command: agentplane blueprint snapshot 202605230451-N5F0HY
-
-    ### 2026-05-23T07:32:53.316Z — VERIFY — ok
-
-    By: EVALUATOR
-
-    Note: EVALUATOR quality gate passed: PR #4081 restores the missing README for the superseded release task so the hidden DOING task becomes visible and closable.
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T07:29:18.093Z, excerpt_hash=sha256:9d559e1fb8547c3bb29a70a07948bbbc1c5cce6727f9a86ea410eea776edbb5a
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: missing
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605230451-N5F0HY/blueprint/resolved-snapshot.json
-    - old_digest: none
-    - current_digest: 5296cc05f5ea77afaa3e006874e78d1d6dbdbaf09e0b86def5d71db5341fb562
-    - route_changed: unknown
-    - safe_command: agentplane blueprint snapshot 202605230451-N5F0HY
-
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.7.
+    - Details:
+      - release_sha: 5937638eb63301ff4f249104e4d130ee19d378d3
+      - version: 0.6.7
+      - tag: v0.6.7
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.7
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26327236568
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the close-repair PR.
@@ -174,44 +148,19 @@ This abandoned release task was superseded before PR publication. The canonical 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-### 2026-05-23T07:29:18.078Z — VERIFY — ok
-
-By: INTEGRATOR
-
-Note: Superseded duplicate release task; canonical v0.6.7 release work moved to 202605230546-RS539J.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T04:53:20.748Z, excerpt_hash=sha256:9d559e1fb8547c3bb29a70a07948bbbc1c5cce6727f9a86ea410eea776edbb5a
-
-Details:
-
-BlueprintSnapshotRef:
-- state: missing
-- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605230451-N5F0HY/blueprint/resolved-snapshot.json
-- old_digest: none
-- current_digest: 5296cc05f5ea77afaa3e006874e78d1d6dbdbaf09e0b86def5d71db5341fb562
-- route_changed: unknown
-- safe_command: agentplane blueprint snapshot 202605230451-N5F0HY
-
-### 2026-05-23T07:32:53.316Z — VERIFY — ok
-
-By: EVALUATOR
-
-Note: EVALUATOR quality gate passed: PR #4081 restores the missing README for the superseded release task so the hidden DOING task becomes visible and closable.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T07:29:18.093Z, excerpt_hash=sha256:9d559e1fb8547c3bb29a70a07948bbbc1c5cce6727f9a86ea410eea776edbb5a
-
-Details:
-
-BlueprintSnapshotRef:
-- state: missing
-- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605230451-N5F0HY/blueprint/resolved-snapshot.json
-- old_digest: none
-- current_digest: 5296cc05f5ea77afaa3e006874e78d1d6dbdbaf09e0b86def5d71db5341fb562
-- route_changed: unknown
-- safe_command: agentplane blueprint snapshot 202605230451-N5F0HY
-
+- State: ok
+- Note: Hosted publish confirmed for v0.6.7.
+- Details:
+  - release_sha: 5937638eb63301ff4f249104e4d130ee19d378d3
+  - version: 0.6.7
+  - tag: v0.6.7
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.7
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26327236568
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
