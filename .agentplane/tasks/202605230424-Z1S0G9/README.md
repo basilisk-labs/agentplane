@@ -1,10 +1,11 @@
 ---
 id: "202605230424-Z1S0G9"
 title: "Make PR artifacts head-independent"
-status: "DOING"
+result_summary: "Merged via PR #4073."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: addressed protected-base integrate review by resolving OPEN PR identity live from branch state. Focused PR-flow/integrate tests passed (27 tests); typecheck, lint, format, hotspots, knip, and task-scope checks passed."
   attempts: 0
-commit: null
+commit:
+  hash: "fc69c5ad1acc5749aa037d97d526b8740d5a0de8"
+  message: "Merge pull request #4073 from basilisk-labs/task/202605230424-Z1S0G9/head-independent-pr-artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: Implement head-independent branch_pr artifact freshness so one-commit PRs do not become stale from tracked PR artifact head churn."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4073 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: addressed protected-base integrate review by resolving OPEN PR identity live from branch state. Focused PR-flow/integrate tests passed (27 tests); typecheck, lint, format, hotspots, knip, and task-scope checks passed."
+  -
+    type: "status"
+    at: "2026-05-23T04:49:08.626Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4073 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T04:44:36.725Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T04:49:08.631Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace self-referential PR artifact freshness with a stable tree or runtime-state contract so branch_pr tasks can keep a one-commit implementation PR without stale head churn after artifact refresh, amend, or hosted close."
 sections:
   Summary: |-

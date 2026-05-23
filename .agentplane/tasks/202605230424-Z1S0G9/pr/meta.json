@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T04:48:26Z",
   "base": "main",
   "branch": "task/202605230424-Z1S0G9/head-independent-pr-artifacts",
   "created_at": "2026-05-23T04:25:05.110Z",
   "diffstat_sha256": "sha256:7403e8518a55efe16c86486566802aa70fdea0b2f5f6e654f556b216efa354ac",
   "last_verified_at": "2026-05-23T04:44:36.698Z",
   "last_verified_diffstat_sha256": "sha256:7403e8518a55efe16c86486566802aa70fdea0b2f5f6e654f556b216efa354ac",
+  "merge_commit": "fc69c5ad1acc5749aa037d97d526b8740d5a0de8",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T04:48:26Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605230424-Z1S0G9",
-  "updated_at": "2026-05-23T04:25:05.110Z",
+  "updated_at": "2026-05-23T04:48:26Z",
   "verify": {
     "status": "pass"
   }
