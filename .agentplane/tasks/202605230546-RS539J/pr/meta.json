@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T06:53:40Z",
   "base": "main",
   "branch": "task/202605230546-RS539J/release-v0-6-7",
   "created_at": "2026-05-23T05:47:25.857Z",
   "diffstat_sha256": "sha256:439f4c2063ca2351098e451b1a5aa2147f77886eb9e4a3475401bb45688cb27d",
   "last_verified_at": "2026-05-23T06:48:27.043Z",
   "last_verified_diffstat_sha256": "sha256:439f4c2063ca2351098e451b1a5aa2147f77886eb9e4a3475401bb45688cb27d",
+  "merge_commit": "a39e8150f59b3a065adbc04f5f69e8beba18f7a8",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T06:53:40Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605230546-RS539J",
-  "updated_at": "2026-05-23T05:47:25.857Z",
+  "updated_at": "2026-05-23T06:53:40Z",
   "verify": {
     "status": "pass"
   }
