@@ -1,10 +1,11 @@
 ---
 id: "202605221744-GF25D1"
 title: "Add agent task brief command"
-status: "DOING"
+result_summary: "Merged via PR #4060."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -44,11 +45,16 @@ quality_review:
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605221744-GF25D1-agent-task-brief/.agentplane/tasks/202605221744-GF25D1/blueprint/resolved-snapshot.json"
   findings:
     - "Reviewed implementation and test evidence. The default task brief path passes includeRemote=false into route decision; existing route decision callers keep the previous remote-aware default. The regression test seeds PR metadata plus a fake gh binary and confirms default task brief does not invoke gh. JSON output includes task, workflow, next_action, blockers, verify_steps, blueprint, snapshot, stop_rules, and remote.enabled=false."
-commit: null
+commit:
+  hash: "7c5c6157422927947c0a1aa94ca891402b73baca"
+  message: "Merge pull request #4060 from basilisk-labs/task/202605221744-GF25D1/agent-task-brief"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the local-first task brief command with text and JSON output, reusing route, next-action, verify, and blueprint evidence surfaces."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4060 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -69,9 +75,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator check: task brief satisfies approved local-first agent context scope. Evidence covers text and JSON output, no default gh lookup regression, generated CLI docs, typecheck, lint, format, and runtime bootstrap."
+  -
+    type: "status"
+    at: "2026-05-23T01:32:49.295Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4060 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T01:17:26.808Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-23T01:32:49.303Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a compact task brief surface that merges route decision, checkout role, next action, blockers, Verify Steps, blueprint evidence, and stop rules into one agent-ready view."
 sections:
   Summary: |-
