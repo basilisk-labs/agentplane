@@ -71,15 +71,15 @@ export type PrFlowStatusReport = {
   nextAction: string;
 };
 
-export type HostedChecksStatus =
+type HostedChecksStatus =
   | { checked: true; total: number; pending: number; failing: number; passing: number }
   | { checked: false; reason: string };
 
-export type ReviewThreadsStatus =
+type ReviewThreadsStatus =
   | { checked: true; unresolved: number }
   | { checked: false; reason: string };
 
-export type QueueStatus =
+type QueueStatus =
   | { present: false }
   | {
       present: true;
@@ -88,7 +88,7 @@ export type QueueStatus =
       updatedAt: string | null;
     };
 
-export type HandoffStatus =
+type HandoffStatus =
   | { present: false }
   | {
       present: true;
