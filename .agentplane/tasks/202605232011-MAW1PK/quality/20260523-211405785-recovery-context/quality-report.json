@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "task_id": "202605232011-MAW1PK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-23T21:14:05.785Z",
+  "verdict": "pass",
+  "summary": "EVALUATOR review: committed implementation and CI follow-up add an executable review path, block bare pass notes, and cover lifecycle fixtures.",
+  "evaluated_sha": "9445a7babd8931e75688a75fd2f2841484553564",
+  "blueprint_digest": "2a5ea3d6ff30a612b8851bd7232b29e5c478a66f618a719a2778aa58152bcc78",
+  "findings": [
+    "The evaluator run command produces prompt, quality-report, and opinion artifacts; recorded reviews reject dirty tracked implementation paths outside the current task subtree, so evaluated_sha points at committed code.",
+    "The finish/integrate gate requires quality-report.json evidence and non-empty findings, which prevents a formal one-line EVALUATOR approval from satisfying closure.",
+    "CI follow-up updated lifecycle fixtures to exercise evaluator run instead of verify --by EVALUATOR; local lint:core and targeted failing unit suites now pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605232011-MAW1PK/README.md",
+    "packages/agentplane/src/commands/evaluator/evaluator.command.ts",
+    "packages/agentplane/src/commands/task/quality-review-gate.ts",
+    "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+    "packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts",
+    "packages/agentplane/src/commands/workflow.test.ts",
+    "packages/agentplane/src/commands/workflow.verify-hooks.test.ts",
+    "packages/agentplane/src/cli/release-critical-lifecycle.test.ts",
+    "docs/user/commands.mdx",
+    "docs/user/cli-reference.generated.mdx",
+    "commit: 9445a7babd8931e75688a75fd2f2841484553564",
+    "check: bun run lint:core",
+    "check: bun test packages/agentplane/src/cli/release-critical-lifecycle.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts",
+    "check: bun run format:changed",
+    "check: bun run typecheck",
+    "check: bun run docs:cli:check",
+    "check: node .agentplane/policy/check-routing.mjs"
+  ],
+  "missing_tests": [
+    "No full branch_pr integrate/finish end-to-end test executes evaluator run and then closes the task; current coverage includes parser, gate, direct lifecycle, and workflow fixtures."
+  ],
+  "hidden_assumptions": [
+    "A human or future model runner still supplies the review findings; this command makes the review artifact executable and gated but does not autonomously invoke an LLM."
+  ],
+  "residual_risks": [
+    "Hosted Windows check previously failed before test execution in cache/setup; the Linux unit/static failures were fixed locally and need fresh hosted confirmation after push."
+  ]
+}
