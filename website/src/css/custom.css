@@ -1125,9 +1125,13 @@ nav[aria-label="Breadcrumbs"] {
 .navbar-sidebar,
 .menu,
 .menu__link,
-.navbar__link,
-.button {
+.navbar__link {
   border-radius: 0;
+  box-shadow: none;
+}
+
+.button {
+  border-radius: 4px;
   box-shadow: none;
 }
 

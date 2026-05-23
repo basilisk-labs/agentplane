@@ -1,4 +1,6 @@
 .page {
+  --home-radius: 4px;
+
   background: rgb(var(--bg));
   color: rgb(var(--fg));
 }
@@ -107,6 +109,7 @@
   justify-content: center;
   min-height: 2.45rem;
   padding: 0 1rem;
+  border-radius: var(--home-radius);
   text-decoration: none;
   text-transform: uppercase;
 }
@@ -160,6 +163,7 @@ button.buttonSecondary {
 .proofStrip,
 .badgeRow span {
   border: 1px solid rgb(var(--border));
+  border-radius: var(--home-radius);
 }
 
 .artifactPanel {
@@ -172,6 +176,7 @@ button.buttonSecondary {
   gap: 0.82rem;
   min-height: 520px;
   min-width: 0;
+  overflow: hidden;
   padding: clamp(1rem, 2.4vw, 1.6rem);
   position: relative;
 }
@@ -194,6 +199,7 @@ button.buttonSecondary {
   background: rgb(var(--accent) / 0.14);
   border: 1px solid rgb(var(--accent) / 0.36);
   color: rgb(var(--accent));
+  border-radius: var(--home-radius);
   font-size: 0.7rem;
   font-weight: 760;
   padding: 0.36rem 0.5rem;
@@ -272,6 +278,7 @@ button.buttonSecondary {
 .fileTree {
   margin: 0;
   overflow-x: auto;
+  border-radius: var(--home-radius);
 }
 
 .artifactPanel code,
@@ -294,6 +301,7 @@ button.buttonSecondary {
 
 .artifactGrid {
   border-bottom: 1px solid rgb(var(--border));
+  border-radius: var(--home-radius);
   border-top: 1px solid rgb(var(--border));
   display: grid;
   gap: 0;
@@ -345,6 +353,7 @@ button.buttonSecondary {
 .proofStrip {
   align-items: center;
   background: rgb(255 255 255);
+  border-radius: var(--home-radius);
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;
@@ -433,6 +442,7 @@ button.buttonSecondary {
 .exampleGrid a,
 .reviewColumns div {
   background: rgb(255 255 255);
+  border-radius: var(--home-radius);
   display: grid;
   gap: 0.4rem;
   min-height: 9rem;
@@ -517,6 +527,7 @@ button.buttonSecondary {
 
 .exampleGrid code {
   background: rgb(var(--neutral));
+  border-radius: var(--home-radius);
   color: rgb(var(--fg));
   font-family: var(--ifm-font-family-monospace);
   margin-top: auto;

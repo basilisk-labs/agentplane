@@ -1,0 +1,6 @@
+ website/src/components/GitHubStarsButton.module.css |  1 +
+ website/src/components/GitHubStarsButton.tsx        |  4 ++--
+ website/src/css/custom.css                          |  8 ++++++--
+ website/src/pages/_home.module.css                  | 11 +++++++++++
+ website/src/theme/Root.tsx                          |  8 ++++----
+ 5 files changed, 24 insertions(+), 8 deletions(-)
