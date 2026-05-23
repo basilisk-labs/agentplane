@@ -1,71 +1,12 @@
 ---
-title: "Use Agentplane with Codex"
-description: "Use Codex-style terminal work inside a repo-local Agentplane evidence lifecycle."
+title: "Codex workflow moved"
+description: "Codex-style terminal work uses the same Agentplane harness contract as other coding agents."
 ---
 
-Use this when a Codex-style coding agent works from your terminal and you need the result to be
-auditable through Git-visible artifacts.
+# Codex workflow moved
 
-This guide works for any terminal-based coding agent. Codex is the common example; the evidence
-model is provider-neutral.
+This tool-specific page is kept only for old links.
 
-## What this guide gives you
-
-A terminal workflow where the agent edits files and Agentplane records the task evidence around the
-work.
-
-## When to use
-
-- You run a local coding agent from the terminal.
-- You want an explicit task boundary before the agent mutates files.
-- You need verification evidence attached to the work.
-
-## Copy-paste flow
-
-```bash
-npm i -g agentplane
-agentplane init
-
-agentplane task new --title "Fix failing parser test" --description "Repair the parser regression and verify the focused test." --priority med --owner CODER --tag code
-agentplane task plan set <task-id> --text "Reproduce the parser failure, patch the smallest code path, run the focused test." --updated-by CODER
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-agentplane task start-ready <task-id> --author CODER --body "Start: parser regression fix with Codex-style terminal workflow and focused verification."
-```
-
-Run your Codex-style agent in the same checkout and keep its edits inside the approved scope.
-
-```bash
-agentplane task verify-show <task-id>
-# run the listed test command
-agentplane verify <task-id> --ok --by CODER --note "Focused parser verification passed."
-agentplane finish <task-id> --author CODER --body "Verified: focused parser verification passed and no unintended tracked changes remain." --result "Parser regression fixed" --commit <git-rev>
-```
-
-## Expected repo artifacts
-
-- task state under `.agentplane/tasks/<task-id>/`
-- approved plan and start comment
-- verification evidence
-- finish metadata linked to the Git revision
-- `.agentplane/tasks/<task-id>/acr.json`
-
-## Reviewer checklist
-
-Before merging, verify:
-
-- The task exists under `.agentplane/tasks/<task-id>/`.
-- The plan was approved or explicitly waived.
-- Verification evidence exists.
-- `agentplane acr check <task-id> --mode ci` passes where CI gating is required.
-- The finish record links to the work commit.
-
-## Common mistakes
-
-- Treating terminal scrollback as durable evidence.
-- Running checks but not recording them with `agentplane verify`.
-- Using a Codex-specific assumption when a provider-neutral task record would be enough.
-
-## Limitations
-
-Agentplane does not assume a specific Codex product, hosted runner, or model provider. It wraps the
-local workflow around whatever agent edited the repository.
+Use the unified [coding agent workflow guide](./) instead. Agentplane's contract is
+agent-agnostic and LLM-agnostic: the agent writes code and uses the CLI; the human sets the task,
+guardrails, and review boundary through the harness.

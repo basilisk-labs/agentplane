@@ -27,6 +27,11 @@ const requiredDocsTargets = [
     title: "Agent guide to project context",
   },
   {
+    route: "/docs/workflow-guides/",
+    label: "Use with coding agents",
+    title: "Use with coding agents",
+  },
+  {
     route: "/docs/reference/acr/",
     label: "Agent Change Records",
     title: "Agent Change Records",

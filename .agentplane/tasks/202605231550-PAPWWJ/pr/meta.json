@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T16:40:31Z",
+  "base": "main",
+  "branch": "task/202605231550-PAPWWJ/docs-usability-agent-guides",
+  "created_at": "2026-05-23T15:50:33.747Z",
+  "diffstat_sha256": "sha256:4eea3518202337bd0be8393ec14ce91ec065e95cb54590b44c97b9fd823fd1fd",
+  "last_verified_at": "2026-05-23T16:36:32.042Z",
+  "last_verified_diffstat_sha256": "sha256:4eea3518202337bd0be8393ec14ce91ec065e95cb54590b44c97b9fd823fd1fd",
+  "merge_commit": "9cd6a73d762254299b3e398aa79568b38061503f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T16:40:31Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605231550-PAPWWJ",
+  "updated_at": "2026-05-23T16:40:31Z",
+  "verify": {
+    "status": "pass"
+  }
+}

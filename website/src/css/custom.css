@@ -44,8 +44,9 @@
   --ifm-navbar-shadow: none;
   --ifm-footer-background-color: rgb(var(--bg));
   --ifm-footer-color: rgb(var(--muted));
-  --ifm-link-color: rgb(var(--fg));
-  --ifm-link-hover-color: rgb(var(--accent));
+  --ifm-link-color: rgb(var(--accent));
+  --ifm-link-hover-color: rgb(217 79 29);
+  --ifm-link-decoration: underline;
   --ifm-toc-border-color: rgb(var(--border));
   --ifm-hr-border-color: rgb(var(--border));
   --ifm-blockquote-border-left-color: rgb(var(--border));
@@ -81,9 +82,25 @@ body {
 }
 
 a {
+  color: var(--ifm-link-color);
+  text-decoration-line: underline;
+  text-decoration-color: rgb(var(--accent) / 0.48);
   text-decoration-thickness: 1px;
-  text-underline-offset: 0.14em;
-  transition: color 180ms ease;
+  text-underline-offset: 0.16em;
+  transition:
+    color 180ms ease,
+    text-decoration-color 180ms ease;
+}
+
+a:hover {
+  color: var(--ifm-link-hover-color);
+  text-decoration-color: rgb(var(--accent) / 0.86);
+}
+
+a:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid rgb(var(--accent) / 0.72);
+  outline-offset: 2px;
 }
 
 .navbar {
@@ -160,7 +177,9 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 .navbar__brand {
   background: transparent;
   border: 0;
+  color: rgb(var(--fg));
   padding: 0;
+  text-decoration: none;
 }
 
 .navbar__logo {
@@ -186,6 +205,7 @@ html.nav-scrolled .navbar.navbar--fixed-top {
   white-space: nowrap;
   position: relative;
   text-transform: uppercase;
+  text-decoration: none;
   transition:
     border-color 180ms ease,
     background-color 180ms ease,
@@ -360,6 +380,19 @@ html.nav-scrolled .navbar__inner {
   font-size: 12px;
 }
 
+.footer__link-item {
+  color: rgb(var(--accent));
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--accent) / 0.48);
+  text-underline-offset: 0.16em;
+}
+
+.footer__link-item:hover,
+.footer__link-item:focus-visible {
+  color: rgb(217 79 29);
+  text-decoration-color: rgb(var(--accent) / 0.86);
+}
+
 @media (max-width: 996px) {
   .navbar__items--right {
     display: flex !important;
@@ -491,6 +524,32 @@ html.nav-scrolled .navbar__inner {
   font-weight: 500;
 }
 
+.theme-doc-markdown.markdown a:not(.hash-link):not(.button) {
+  color: rgb(var(--accent));
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-color: rgb(var(--accent) / 0.52);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+.theme-doc-markdown.markdown a:not(.hash-link):not(.button):visited {
+  color: rgb(var(--memory));
+  text-decoration-color: rgb(var(--memory) / 0.42);
+}
+
+.theme-doc-markdown.markdown a:not(.hash-link):not(.button):hover,
+.theme-doc-markdown.markdown a:not(.hash-link):not(.button):focus-visible {
+  color: rgb(217 79 29);
+  text-decoration-color: rgb(var(--accent) / 0.9);
+  text-decoration-thickness: 1.5px;
+}
+
+.theme-doc-markdown.markdown table a:not(.hash-link):not(.button),
+.theme-doc-markdown.markdown li a:not(.hash-link):not(.button) {
+  font-weight: 560;
+}
+
 .theme-doc-markdown.markdown h2::after,
 .theme-doc-markdown.markdown h3::after {
   content: none;
@@ -567,8 +626,10 @@ nav[aria-label="Breadcrumbs"] .breadcrumbs__item svg {
 }
 
 .menu__list .menu__link {
+  color: rgb(var(--fg));
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.78rem;
+  text-decoration: none;
   transition:
     color 160ms ease,
     transform 160ms ease;
@@ -588,6 +649,9 @@ nav[aria-label="Breadcrumbs"] .breadcrumbs__item svg {
 .theme-last-updated {
   color: rgb(var(--faint));
   font-size: 0.8rem;
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--faint) / 0.45);
+  text-underline-offset: 0.16em;
 }
 
 nav[aria-label="Breadcrumbs"] {

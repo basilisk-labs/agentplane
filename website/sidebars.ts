@@ -81,10 +81,7 @@ const sidebars: SidebarsConfig = {
       label: "Workflow guides",
       items: [
         "workflow-guides/index",
-        "workflow-guides/claude-code",
-        "workflow-guides/codex",
-        "workflow-guides/cursor",
-        "workflow-guides/aider",
+        "workflow-guides/branch-pr",
         "workflow-guides/github-actions",
       ],
     },

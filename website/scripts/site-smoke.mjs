@@ -7,6 +7,8 @@ const routes = [
   "/docs/context/",
   "/docs/context/modes/",
   "/docs/context/agent-guide/",
+  "/docs/workflow-guides/",
+  "/docs/workflow-guides/codex/",
   "/docs/user/overview/",
   "/docs/user/setup/",
   "/docs/reference/acr/",
@@ -22,6 +24,11 @@ const redirectRoutes = new Map([
 ]);
 
 const requiredNav = ["Docs", "Quickstart", "npm i -g agentplane"];
+const requiredDocsText = new Map([
+  ["/docs/", "Hand work to any coding agent"],
+  ["/docs/workflow-guides/", "Agentplane is agent-agnostic and LLM-agnostic"],
+  ["/docs/workflow-guides/codex/", "This tool-specific page is kept only for old links."],
+]);
 const forbiddenPublicText = [
   "Website information architecture",
   "Website success metrics",
@@ -73,6 +80,11 @@ async function check(route) {
     if (!html.includes(label)) {
       throw new Error(`${url} missing nav label: ${label}`);
     }
+  }
+
+  const requiredText = requiredDocsText.get(route);
+  if (requiredText && !html.includes(requiredText)) {
+    throw new Error(`${url} missing required docs text: ${requiredText}`);
   }
 
   for (const text of forbiddenPublicText) {

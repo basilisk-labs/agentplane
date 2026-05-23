@@ -1,10 +1,16 @@
 ---
-title: "Agentplane + branch_pr workflow"
+title: "branch_pr workflow"
 description: "Use Agentplane branch_pr mode for per-task branches, PR artifacts, verification, and integration boundaries."
 ---
 
-Use this when the implementation branch should stay separate from the base checkout until review and
-verification are complete.
+Use this when implementation should stay separate from the base checkout until review and hosted
+checks are complete.
+
+`branch_pr` is still the same harness split:
+
+- The human chooses the task, review boundary, and integration policy.
+- The agent creates the task branch or worktree, writes code, runs checks, and records evidence.
+- Agentplane keeps PR artifacts, verification state, and finish evidence tied to the task.
 
 ## When to use
 
@@ -12,56 +18,48 @@ verification are complete.
 - Integration should happen only after review or hosted checks.
 - You want PR metadata and verification artifacts per task.
 
-## Copy-paste flow
+## Handoff prompt
 
-```bash
-npm i -g agentplane
-agentplane init
-agentplane config set workflow_mode branch_pr
+Give this to the coding agent instead of manually driving every command:
 
-agentplane task new --title "Improve CLI help copy" --description "Update CLI help copy and verify docs generation." --priority med --owner CODER --tag code
-agentplane task plan set <task-id> --text "Edit CLI help copy, regenerate docs if needed, run focused checks." --updated-by CODER
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-agentplane work start <task-id> --agent CODER --slug cli-help-copy --worktree
+```text
+Use Agentplane branch_pr mode. Start or resume the task in a dedicated worktree, keep the
+implementation commit on the task branch, publish PR artifacts, record verification, and stop for
+review before integration.
 ```
 
-In the task worktree:
-
-```bash
-agentplane task start-ready <task-id> --author CODER --body "Start: branch_pr CLI help copy update with focused verification."
-# edit files
-git add <changed-files>
-git commit -m "Update CLI help copy"
-agentplane task verify-show <task-id>
-agentplane pr open <task-id> --branch task/<task-id>/cli-help-copy --author CODER
-agentplane pr update <task-id>
-agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
-bun run workflow:wait-remote-checks
-```
-
-Back on base checkout:
-
-```bash
-agentplane pr check <task-id>
-agentplane integrate <task-id> --branch task/<task-id>/cli-help-copy --run-verify
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: branch integrated after review and verification." --result "CLI help copy updated" --commit <implementation-git-rev> --close-commit
-agentplane cleanup merged --finalize
-```
-
-The `--commit` value is the already-created implementation commit from the task branch. Do not use
-`finish --commit-from-comment` in `branch_pr`: finish runs from the base checkout, while
-implementation commits belong to the task worktree.
+The implementation commit belongs to the task branch. The final close step records that commit from
+the base checkout after integration.
 
 ## Expected repo artifacts
 
-- task branch in the dedicated worktree
-- `.agentplane/tasks/<task-id>/pr/` PR title/body/diffstat artifacts
-- task README verification evidence
-- base-branch finish record after integration
-- merged branch/worktree cleanup via `agentplane cleanup merged --finalize`
+- task branch or dedicated worktree;
+- `.agentplane/tasks/<task-id>/pr/` PR title/body/diffstat artifacts;
+- task README verification evidence;
+- base-branch finish record after integration;
+- merged branch/worktree cleanup after hosted close.
 
 Lifecycle/status commits, when a command supports them, are task-state checkpoints. They are not a
-substitute for the implementation commit that `finish --commit <git-rev>` records after integration.
+substitute for the implementation commit that finish records after integration.
+
+## Operator reference
+
+Use the [CLI reference](../reference/cli) for exact flags. The critical route commands are
+`work start`, `pr open`, `verify`, `integrate`, `finish`, and `cleanup merged`.
+
+For agents and maintainers checking lifecycle parity, the ordered route is:
+
+```bash
+agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
+agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
+git commit -m "Implement <task>"
+agentplane task verify-show <task-id>
+agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
+agentplane verify <task-id> --ok --by <ROLE> --note "Verified: ..."
+bun run workflow:wait-remote-checks -- <pr-number>
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "Merged" --commit <git-rev> --close-commit
+```
 
 ## Limitations
 

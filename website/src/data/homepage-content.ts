@@ -36,15 +36,15 @@ export const homepageContent = {
   seo: {
     title: "Agentplane | Make AI-authored code reviewable in Git",
     description:
-      "Agentplane wraps coding agents with task intent, approved plans, verification evidence, commits, traces, and Agent Change Records inside your repository.",
+      "Agentplane is an agent-agnostic harness that wraps coding agents with task intent, guardrails, verification evidence, commits, traces, and Agent Change Records inside your repository.",
   },
   hero: {
-    eyebrow: "Local-first evidence layer for coding agents",
+    eyebrow: "Agent-agnostic harness for coding agents",
     title: "Make AI-authored code reviewable in Git.",
     subtitle:
-      "Agentplane wraps Claude Code, Codex, Cursor, Aider, and other coding agents with task intent, approved plans, verification evidence, commits, traces, and Agent Change Records inside your repository.",
-    trustLine: "Local-first. CLI-first. OpenTelemetry-friendly. MIT licensed.",
-    commands: [installCommand, "agentplane init", "agentplane quickstart", "agentplane trace open"],
+      "The agent writes code and uses the CLI. The human sets tasks, guardrails, and review boundaries. Agentplane keeps the evidence durable across models and tools.",
+    trustLine: "Agent-agnostic. LLM-agnostic. Local-first. MIT licensed.",
+    commands: [installCommand, "agentplane init", "agent reads AGENTS.md", "human reviews ACR"],
     output: [
       "wrote policy gateway",
       "approved task plan",
@@ -126,13 +126,13 @@ export const homepageContent = {
   ],
   worksWith: {
     title: "Use your existing coding agent.",
-    text: "Agentplane does not replace Claude Code, Codex, Cursor, Aider, or your Git workflow. It gives their work an evidence layer inside the repository.",
+    text: "Agentplane does not replace Claude Code, Codex, Cursor, Aider, or your Git workflow. It gives any repository-capable coding agent the same harness boundary and evidence trail.",
     tools: ["Claude Code", "Codex", "Cursor", "Aider", "GitHub Actions", "OpenTelemetry"],
   },
   whoShouldUse: {
     title: "Who should open the repo?",
     items: [
-      "using Claude Code, Codex, Cursor, or Aider in real repositories",
+      "using coding agents in real repositories",
       "reviewing AI-authored pull requests and missing intent, plan, and check evidence",
       "maintaining an OSS project where agent changes need audit trails",
       "building platform workflows around reproducible AI-agent work",

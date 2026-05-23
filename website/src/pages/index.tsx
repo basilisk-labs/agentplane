@@ -29,7 +29,7 @@ function HomeJsonLd(): ReactNode {
     mainEntity: [
       [
         "What is Agentplane?",
-        "Agentplane is a CLI-first operational workflow and observability layer for AI agents. It helps developers run local workflows, record traces, manage context, apply recipes, and keep agent work inspectable.",
+        "Agentplane is an agent-agnostic harness for governed coding-agent work. It keeps task intent, guardrails, verification evidence, traces, and Agent Change Records inspectable in Git.",
       ],
       [
         "Does Agentplane replace AI agent frameworks?",
@@ -83,6 +83,17 @@ function HomeJsonLd(): ReactNode {
 function Hero(): ReactNode {
   const { hero } = homepageContent;
   const [copied, setCopied] = useState(false);
+  const evidenceRows = [
+    ["task", "20260523-AB12CD", "approved scope + owner"],
+    ["branch", "task/.../repo-evidence-hero", "isolated worktree"],
+    ["checks", "docs:site:check", "required before review"],
+    ["record", "acr.json", "machine-readable handoff"],
+  ];
+  const artifactRows = [
+    ["Task README", "intent, plan, findings"],
+    ["PR packet", "title, body, diffstat"],
+    ["Trace export", "steps, tools, checks"],
+  ];
 
   async function copyInstall(): Promise<void> {
     await navigator.clipboard.writeText(installCommand);
@@ -124,31 +135,31 @@ function Hero(): ReactNode {
         </div>
       </div>
       <div className={styles.artifactPanel} aria-label="Agentplane Git evidence artifacts">
-        <div className={styles.terminalTop}>
+        <div className={styles.evidenceHeader}>
           <span>repo evidence</span>
-          <span>ready_for_review</span>
+          <strong>ready for review</strong>
         </div>
-        <div className={styles.artifactGrid}>
-          {[
-            ["task.md", ["intent", "scope", "agent"]],
-            ["approved_plan.md", ["plan", "constraints", "verification"]],
-            ["acr.json", ["checks", "files_changed", "status: ready_for_review"]],
-          ].map(([title, rows]) => (
-            <article key={title as string}>
-              <strong>{title}</strong>
-              {(rows as string[]).map((row) => (
-                <code key={row}>{row}</code>
-              ))}
-            </article>
+        <div className={styles.evidenceSummary}>
+          <span>human approved</span>
+          <strong>agent changed code under harness</strong>
+          <p>Task intent, branch state, verification, and review packet stay in the repo.</p>
+        </div>
+        <div className={styles.evidenceLedger}>
+          {evidenceRows.map(([label, value, detail]) => (
+            <div key={label}>
+              <span>{label}</span>
+              <strong>{value}</strong>
+              <em>{detail}</em>
+            </div>
           ))}
         </div>
-        <div className={styles.traceLine}>
-          <span>task</span>
-          <span>plan</span>
-          <span>approve</span>
-          <span>implement</span>
-          <span>verify</span>
-          <span>ACR</span>
+        <div className={styles.artifactGrid}>
+          {artifactRows.map(([title, detail]) => (
+            <article key={title}>
+              <strong>{title}</strong>
+              <code>{detail}</code>
+            </article>
+          ))}
         </div>
         <pre>
           <code>{hero.commands.map((line) => `$ ${line}`).join("\n")}</code>
