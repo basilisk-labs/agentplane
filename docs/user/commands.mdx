@@ -367,15 +367,20 @@ the repository.
 ```bash
 agentplane evaluator list
 agentplane evaluator show recovery-context
+agentplane evaluator run <task-id> --verdict pass --summary "Reviewed diff and checks." --finding "No unresolved quality findings." --evidence .agentplane/tasks/<task-id>/README.md
 ```
 
 Evaluators are repository-local prompt modules under `.agentplane/evaluators`. The current public
-surface is catalog inspection: list the available evaluator prompts and print the exact prompt
-module an agent can use for a separate review pass.
+surface lists available evaluator prompts, prints the exact prompt module an agent can use for a
+separate review pass, and records a structured quality review report for task closure gates.
 
 `agentplane init` seeds `.agentplane/evaluators/recovery-context.md`, a preview evaluator for
-recovery-context and invariant review. Executing evaluators from the CLI is intentionally deferred
-to the 0.8 evaluation roadmap.
+recovery-context and invariant review. `agentplane evaluator run` writes task-local evaluator
+artifacts under `.agentplane/tasks/<task-id>/quality/<run>/`: the prompt, `quality-report.json`, and
+the evaluator opinion markdown. Recorded quality reviews require a clean tracked working tree so the
+recorded `evaluated_sha` matches committed code; use `--no-record` only for artifact-generation
+smoke checks. Pass reviews must include concrete findings and evidence, so `finish` and `integrate`
+no longer accept a bare `ap verify --by EVALUATOR` pass-note as sufficient quality evidence.
 
 ## Blueprint catalogs
 

@@ -147,6 +147,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [context wiki new](#context-wiki-new)
 - Evaluators
   - [evaluator list](#evaluator-list)
+  - [evaluator run](#evaluator-run)
   - [evaluator show](#evaluator-show)
 - Evidence
   - [evidence bundle](#evidence-bundle)
@@ -3633,6 +3634,37 @@ agentplane evaluator list --builtin false
 ```
 
 - Show project-local evaluators only.
+
+### evaluator run
+
+Create and record a structured EVALUATOR quality review report.
+
+Usage:
+
+```text
+agentplane evaluator run <task-id> [options]
+```
+
+Options:
+
+- `--evaluator <id>`: Evaluator prompt module id to use. (default=recovery-context)
+- `--verdict <pass|rework|blocked|human_review>`: Quality verdict to record. (choices=pass|rework|blocked|human_review)
+- `--summary <text>`: Concise evaluator judgement summary.
+- `--finding <text>`: Structured review finding. May be repeated. (repeatable)
+- `--evidence <path-or-note>`: Evidence reference checked by the evaluator. May be repeated. (repeatable)
+- `--missing-test <text>`: Missing test or check. May be repeated. (repeatable)
+- `--hidden-assumption <text>`: Hidden assumption found during review. May be repeated. (repeatable)
+- `--residual-risk <text>`: Residual risk after review. May be repeated. (repeatable)
+- `--no-record`: Write evaluator artifacts without updating task quality_review. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane evaluator run 202605232011-MAW1PK --verdict pass --summary "Reviewed diff and checks." --finding "No unresolved findings after diff and verification review." --evidence .agentplane/tasks/202605232011-MAW1PK/README.md
+```
+
+- Record a structured EVALUATOR quality review.
 
 ### evaluator show
 

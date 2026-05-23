@@ -10,8 +10,8 @@ export function assertEvaluatorQualityReviewPassed(opts: {
 }): void {
   const review = opts.task.quality_review;
   const fix =
-    `agentplane verify ${opts.task.id} --ok --by EVALUATOR --note ` +
-    `"EVALUATOR quality gate passed with cited evidence."`;
+    `agentplane evaluator run ${opts.task.id} --verdict pass --summary "..." ` +
+    `--finding "..." --evidence <path-or-check>`;
 
   if (!review) {
     throw new CliError({
@@ -63,6 +63,32 @@ export function assertEvaluatorQualityReviewPassed(opts: {
         `task=${opts.task.id}`,
         `quality_review.blueprint_digest=${review.blueprint_digest}`,
         `expected_blueprint_digest=${opts.expectedBlueprintDigest}`,
+        `Fix: ${fix}`,
+      ].join("\n"),
+    });
+  }
+
+  if (!review.evidence_refs.some((ref) => ref.endsWith("/quality-report.json"))) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: [
+        `${opts.command} requires a structured EVALUATOR quality report.`,
+        `task=${opts.task.id}`,
+        "quality_review.evidence_refs=missing quality-report.json",
+        `Fix: ${fix}`,
+      ].join("\n"),
+    });
+  }
+
+  if (review.findings.length === 0) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: [
+        `${opts.command} requires non-empty EVALUATOR findings for pass reviews.`,
+        `task=${opts.task.id}`,
+        "quality_review.findings=empty",
         `Fix: ${fix}`,
       ].join("\n"),
     });

@@ -123,6 +123,7 @@ import {
 } from "../../../commands/context/context.learn.spec.js";
 import {
   evaluatorListSpec,
+  evaluatorRunSpec,
   evaluatorShowSpec,
   evaluatorSpec,
 } from "../../../commands/evaluator/evaluator.command.js";
@@ -221,6 +222,7 @@ export const PROJECT_COMMANDS = [
   fromCommandsEvaluatorCommand(evaluatorSpec, "runEvaluatorGroup", { needs: "none" }),
   fromCommandsEvaluatorCommand(evaluatorListSpec, "runEvaluatorList", { needs: "none" }),
   fromCommandsEvaluatorCommand(evaluatorShowSpec, "runEvaluatorShow", { needs: "none" }),
+  fromCommandsEvaluatorCommand(evaluatorRunSpec, "runEvaluatorRun"),
   fromCommandsBlueprintsCommand(blueprintsSpec, "runBlueprints", { needs: "none" }),
   fromCommandsBlueprintsCommand(blueprintsCatalogSpec, "runBlueprintsCatalog", { needs: "none" }),
   fromCommandsBlueprintsCommand(blueprintsCatalogRefreshSpec, "runBlueprintsCatalogRefresh", {

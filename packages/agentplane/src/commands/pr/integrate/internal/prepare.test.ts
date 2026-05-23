@@ -108,8 +108,11 @@ function qualityReview(evaluatedSha = "deadbeef") {
     note: "Quality gate passed",
     evaluated_sha: evaluatedSha,
     blueprint_digest: null,
-    evidence_refs: [".agentplane/tasks/T-1/README.md"],
-    findings: [],
+    evidence_refs: [
+      ".agentplane/tasks/T-1/README.md",
+      ".agentplane/tasks/T-1/quality/run/quality-report.json",
+    ],
+    findings: ["Reviewed scope, diff, verification evidence, and residual risk."],
   };
 }
 

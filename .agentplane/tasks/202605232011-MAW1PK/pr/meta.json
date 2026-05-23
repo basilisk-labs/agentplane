@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605232011-MAW1PK/evaluator-quality-review",
+  "created_at": "2026-05-23T20:12:53.032Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-05-23T20:48:30.212Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605232011-MAW1PK",
+  "updated_at": "2026-05-23T20:12:53.032Z",
+  "verify": {
+    "status": "pass"
+  }
+}
