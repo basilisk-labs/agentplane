@@ -69,6 +69,10 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
       cmd: "agentplane task next-action <task-id>",
       why: "Print the single safest next command for the task route.",
     },
+    {
+      cmd: "agentplane task brief <task-id>",
+      why: "Print an agent-ready local task brief with route, Verify Steps, and blueprint evidence.",
+    },
   ],
   parse: (raw) => parseGroupCommand(raw),
 };

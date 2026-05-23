@@ -423,6 +423,7 @@ function deriveRepairPlan(decision: Omit<TaskRouteDecision, "repairPlan">): Rout
 export async function buildTaskRouteDecision(opts: {
   ctx?: CommandContext;
   cwd: string;
+  includeRemote?: boolean;
   rootOverride?: string | null;
   taskId: string;
 }): Promise<TaskRouteDecision> {
@@ -442,7 +443,7 @@ export async function buildTaskRouteDecision(opts: {
     task_id: opts.taskId,
   });
   let prFlow: PrFlowStatusReport | null = null;
-  if (ctx.config.workflow_mode === "branch_pr") {
+  if (ctx.config.workflow_mode === "branch_pr" && opts.includeRemote !== false) {
     try {
       prFlow = await resolvePrFlowStatus({
         ctx,

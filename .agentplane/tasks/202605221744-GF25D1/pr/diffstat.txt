@@ -1,0 +1,8 @@
+ docs/user/cli-reference.generated.mdx              |  36 ++++
+ .../src/cli/run-cli.core.route-decision.test.ts    |  96 ++++++++-
+ .../src/cli/run-cli/command-catalog/task.ts        |   3 +
+ .../src/cli/run-cli/command-loaders/task.ts        |   4 +
+ .../src/commands/shared/route-decision.ts          |   3 +-
+ .../agentplane/src/commands/task/brief.command.ts  | 224 +++++++++++++++++++++
+ .../agentplane/src/commands/task/task.command.ts   |   4 +
+ 7 files changed, 368 insertions(+), 2 deletions(-)

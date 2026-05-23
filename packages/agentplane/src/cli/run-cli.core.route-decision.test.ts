@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -110,6 +110,100 @@ describe("runCli route decision commands", () => {
       expect(repairIo.stdout).toContain(`agentplane work start ${taskId}`);
     } finally {
       repairIo.restore();
+    }
+  });
+
+  it("prints a local-first task brief with JSON output and no default gh lookup", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise task brief command.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      JSON.stringify(
+        {
+          task_id: taskId,
+          branch: `task/${taskId}/agent-task-brief`,
+          base: "main",
+          status: "OPEN",
+          pr_number: 123,
+          pr_url: "https://github.com/example/repo/pull/123",
+          head_sha: "abc123",
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const fakeBin = path.join(root, "fake-bin");
+    const marker = path.join(root, "gh-called");
+    await mkdir(fakeBin, { recursive: true });
+    const fakeGh = path.join(fakeBin, "gh");
+    await writeFile(fakeGh, `#!/bin/sh\ntouch "${marker}"\nexit 2\n`, "utf8");
+    await chmod(fakeGh, 0o755);
+    const previousPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${previousPath ?? ""}`;
+    try {
+      const textIo = captureStdIO();
+      try {
+        const code = await runCli(["task", "brief", taskId, "--root", root]);
+        expect(code).toBe(0);
+        expect(textIo.stdout).toContain(`task brief: ${taskId}`);
+        expect(textIo.stdout).toContain("next_code:");
+        expect(textIo.stdout).toContain("verify_steps:");
+        expect(textIo.stdout).toContain("blueprint_id:");
+        expect(textIo.stdout).toContain("snapshot_safe_command:");
+        expect(textIo.stdout).toContain("remote lookup skipped");
+      } finally {
+        textIo.restore();
+      }
+
+      await expect(readFile(marker, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+
+      const jsonIo = captureStdIO();
+      try {
+        const code = await runCli(["task", "brief", taskId, "--json", "--root", root]);
+        expect(code).toBe(0);
+        const parsed = JSON.parse(jsonIo.stdout) as {
+          task: { id: string };
+          next_action: { code: string; command: string };
+          verify_steps: { text: string; filled: boolean };
+          blueprint: { blueprint_id?: string; required_evidence?: string[] };
+          remote: { enabled: boolean };
+        };
+        expect(parsed.task.id).toBe(taskId);
+        expect(parsed.next_action.code).toBe("verify_or_update_pr");
+        expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
+        expect(parsed.verify_steps.text).toContain("PLANNER fallback scaffold");
+        expect(parsed.verify_steps.filled).toBe(true);
+        expect(parsed.blueprint.blueprint_id).toBe("code.branch_pr");
+        expect(parsed.blueprint.required_evidence).toContain("code_pr.paths");
+        expect(parsed.remote.enabled).toBe(false);
+      } finally {
+        jsonIo.restore();
+      }
+    } finally {
+      process.env.PATH = previousPath;
     }
   });
 

@@ -14,6 +14,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Task
   - [ready](#ready)
   - [task begin](#task-begin)
+  - [task brief](#task-brief)
   - [task comment](#task-comment)
   - [task complete](#task-complete)
   - [task doc set](#task-doc-set)
@@ -365,6 +366,41 @@ agentplane task begin "Fix parser edge case" --tag code --verify "bun run test:f
 ```
 
 - Create the task, seed a minimal plan, approve it, then start or print the branch_pr worktree route.
+
+### task brief
+
+Print an agent-ready task brief without remote lookups by default.
+
+Usage:
+
+```text
+agentplane task brief <task-id> [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+- `--remote`: Include hosted PR/check/review state using configured remote tools. (default=false)
+
+Examples:
+
+```sh
+agentplane task brief 202602030608-F1Q8AB
+```
+
+- Get local route, Verify Steps, blueprint, blockers, and next command in one view.
+
+```sh
+agentplane task brief 202602030608-F1Q8AB --json
+```
+
+- Emit a machine-readable agent work context.
+
+```sh
+agentplane task brief 202602030608-F1Q8AB --remote
+```
+
+- Include hosted PR truth when remote access is explicitly intended.
 
 ### task comment
 
