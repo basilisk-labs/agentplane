@@ -211,6 +211,8 @@ export async function cmdPrOpen(opts: {
         ctx: commandCtx,
         taskId: opts.taskId,
         branch: initialSync.meta.branch,
+        baseBranch: initialSync.meta.base ?? null,
+        strategy: "auto",
       });
     }
 

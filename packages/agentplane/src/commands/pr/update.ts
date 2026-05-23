@@ -126,6 +126,7 @@ export async function cmdPrUpdate(opts: {
         ctx: commandCtx,
         taskId: opts.taskId,
         branch: meta.branch,
+        baseBranch: meta.base ?? null,
         strategy: "amend",
       });
     }
