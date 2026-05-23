@@ -1,0 +1,5 @@
+ .../src/cli/run-cli.core.task-hosted-close-pr.test.ts    | 10 ++++++++++
+ .../src/commands/task/hosted-close-pr.execute.ts         | 16 ++++++++++++++--
+ .../src/commands/task/hosted-close-pr.precheck.ts        |  3 ++-
+ .../src/commands/task/hosted-close-pr.types.ts           |  1 +
+ 4 files changed, 27 insertions(+), 3 deletions(-)

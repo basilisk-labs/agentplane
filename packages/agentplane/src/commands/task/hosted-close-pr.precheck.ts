@@ -18,7 +18,7 @@ import {
 import { runGhApiJson } from "../pr/internal/gh-api.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { parsePrMeta } from "../shared/pr-meta.js";
+import { parsePrMeta, resolvePrBatchIncludedTaskIds } from "../shared/pr-meta.js";
 import {
   loadTaskFromContext,
   resolveTaskBranchFromContext,
@@ -340,6 +340,7 @@ export async function precheckHostedClosePr(
     kind: "ready",
     plan: {
       taskId: opts.taskId,
+      includedTaskIds: meta ? resolvePrBatchIncludedTaskIds(meta) : [],
       taskTitle: task.title,
       gitRoot,
       workflowDir: opts.ctx.config.paths.workflow_dir,

@@ -30,14 +30,24 @@ function buildHostedClosePrTitle(opts: { taskId: string; taskTitle: string }): s
 
 function buildHostedClosePrBody(opts: {
   taskId: string;
+  includedTaskIds: string[];
   prNumber: number | null;
   sourceBranch: string;
   mergeSha: string;
 }): string {
+  const taskIds = [opts.taskId, ...opts.includedTaskIds];
+  const taskLine =
+    taskIds.length === 1
+      ? `Closes task \`${opts.taskId}\``
+      : `Closes task batch ${taskIds.map((taskId) => `\`${taskId}\``).join(", ")}`;
   const prLine =
     typeof opts.prNumber === "number" && opts.prNumber > 0
-      ? `Closes task \`${opts.taskId}\` after merged task PR #${opts.prNumber}.`
-      : `Closes task \`${opts.taskId}\` after a merged task PR.`;
+      ? `${taskLine} after merged task PR #${opts.prNumber}.`
+      : `${taskLine} after a merged task PR.`;
+  const includedLines =
+    opts.includedTaskIds.length > 0
+      ? ["", "## Included Tasks", "", ...opts.includedTaskIds.map((taskId) => `- \`${taskId}\``)]
+      : [];
   return [
     prLine,
     "",
@@ -49,6 +59,7 @@ function buildHostedClosePrBody(opts: {
       : "- Source PR: not recorded",
     `- Source branch: \`${opts.sourceBranch}\``,
     `- Merge SHA: \`${opts.mergeSha}\``,
+    ...includedLines,
     "",
     "## Scope",
     "",
@@ -195,6 +206,7 @@ export async function executeHostedClosePrPlan(
     "-f",
     `body=${buildHostedClosePrBody({
       taskId: plan.taskId,
+      includedTaskIds: plan.includedTaskIds,
       prNumber: plan.sourcePrNumber,
       sourceBranch: plan.sourceBranch,
       mergeSha: plan.mergeCommit,
