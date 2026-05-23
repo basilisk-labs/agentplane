@@ -4,6 +4,11 @@ import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
+import {
+  agentWorkContextContract,
+  type AgentWorkContextContract,
+  type AgentWorkContextSourceConfidence,
+} from "./agent-work-context-contract.js";
 import { resolveTaskBlueprintLifecycleSummary } from "./blueprint-summary.js";
 import { extractDocSection, isVerifyStepsFilled } from "./shared.js";
 
@@ -13,7 +18,21 @@ export type TaskBriefParsed = {
   remote: boolean;
 };
 
+type TaskBriefRoute = {
+  workflow_mode: string;
+  checkout_role: string;
+  branch: string | null;
+  base_branch: string | null;
+  head_sha: string | null;
+  pr_branch: string | null;
+  next_action_code: string;
+  blockers: { code: string; summary: string }[];
+  ambiguities: { code: string; summary: string; resolution: string }[];
+  repair_plan: { code: string; command: string | null; summary: string; mutates: boolean }[];
+};
+
 type TaskBrief = {
+  contract: AgentWorkContextContract;
   task: {
     id: string;
     title: string;
@@ -29,6 +48,7 @@ type TaskBrief = {
     base_branch: string | null;
     pr_branch: string | null;
   };
+  route: TaskBriefRoute;
   next_action: {
     code: string;
     summary: string;
@@ -41,6 +61,8 @@ type TaskBrief = {
     text: string;
   };
   blueprint: Awaited<ReturnType<typeof resolveTaskBlueprintLifecycleSummary>>;
+  policy_modules: string[];
+  evidence_required: string[];
   snapshot: {
     state: string;
     path: string;
@@ -54,6 +76,7 @@ type TaskBrief = {
     enabled: boolean;
     note: string;
   };
+  source_confidence: Record<string, AgentWorkContextSourceConfidence>;
 };
 
 export const taskBriefSpec: CommandSpec<TaskBriefParsed> = {
@@ -84,6 +107,10 @@ export const taskBriefSpec: CommandSpec<TaskBriefParsed> = {
       why: "Include hosted PR truth when remote access is explicitly intended.",
     },
   ],
+  notes: [
+    "JSON output follows the versioned `agentplane.agent_work_context` contract.",
+    "`source_confidence` marks whether each field is local, cached, computed, remote-derived, or skipped.",
+  ],
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     json: raw.opts.json === true,
@@ -96,6 +123,118 @@ function splitNonEmptyLines(text: string): string[] {
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
+}
+
+function buildSourceConfidence(opts: {
+  blueprintError?: string;
+  remoteEnabled: boolean;
+  remoteResolved: boolean;
+  snapshotState: string;
+}): TaskBrief["source_confidence"] {
+  const routeFreshness = opts.remoteResolved ? "remote_live" : "computed_local";
+  const routeConfidence = opts.remoteResolved ? "medium" : opts.remoteEnabled ? "medium" : "high";
+  const routeNote = opts.remoteResolved
+    ? "route includes provider-derived PR/check state"
+    : opts.remoteEnabled
+      ? "remote lookup was requested but no provider state was available"
+      : "route excludes hosted PR/check/review lookups";
+  const remoteFreshness = opts.remoteResolved ? "remote_live" : "remote_skipped";
+  const remoteConfidence = opts.remoteResolved ? "medium" : opts.remoteEnabled ? "low" : "skipped";
+  const remoteNote = opts.remoteResolved
+    ? "remote provider state fetched"
+    : opts.remoteEnabled
+      ? "remote lookup was requested but route resolution fell back to local data"
+      : "remote lookup skipped by default";
+  const snapshotConfidence =
+    opts.snapshotState === "current" ? "high" : opts.snapshotState === "invalid" ? "low" : "medium";
+  const snapshotFreshness = opts.snapshotState === "missing" ? "computed_local" : "cached_artifact";
+  const snapshotNote =
+    opts.snapshotState === "current"
+      ? undefined
+      : opts.snapshotState === "missing"
+        ? "resolved snapshot artifact is missing"
+        : `resolved snapshot artifact is ${opts.snapshotState}`;
+  return {
+    contract: {
+      source: "static",
+      freshness: "static",
+      confidence: "high",
+    },
+    task: {
+      source: "task_backend",
+      freshness: "live_local",
+      confidence: "high",
+    },
+    workflow: {
+      source: "local_git",
+      freshness: "live_local",
+      confidence: "high",
+    },
+    route: {
+      source: "local_git",
+      freshness: routeFreshness,
+      confidence: routeConfidence,
+      note: routeNote,
+    },
+    next_action: {
+      source: "local_git",
+      freshness: routeFreshness,
+      confidence: routeConfidence,
+    },
+    blockers: {
+      source: "local_git",
+      freshness: routeFreshness,
+      confidence: routeConfidence,
+    },
+    verify_steps: {
+      source: "task_doc",
+      freshness: "live_local",
+      confidence: "high",
+    },
+    blueprint: {
+      source: "blueprint_resolver",
+      freshness: "computed_local",
+      confidence: opts.blueprintError ? "low" : "high",
+      ...(opts.blueprintError ? { note: opts.blueprintError } : {}),
+    },
+    policy_modules: {
+      source: "blueprint_resolver",
+      freshness: "computed_local",
+      confidence: opts.blueprintError ? "low" : "high",
+    },
+    evidence_required: {
+      source: "blueprint_resolver",
+      freshness: "computed_local",
+      confidence: opts.blueprintError ? "low" : "high",
+    },
+    snapshot: {
+      source: "snapshot_digest",
+      freshness: snapshotFreshness,
+      confidence: snapshotConfidence,
+      ...(snapshotNote ? { note: snapshotNote } : {}),
+    },
+    stop_rules: {
+      source: "blueprint_resolver",
+      freshness: "computed_local",
+      confidence: opts.blueprintError ? "low" : "high",
+    },
+    remote: {
+      source: "remote_provider",
+      freshness: remoteFreshness,
+      confidence: remoteConfidence,
+      note: remoteNote,
+    },
+  };
+}
+
+function hasRemoteProviderEvidence(
+  route: Awaited<ReturnType<typeof buildTaskRouteDecision>>,
+): boolean {
+  const prFlow = route.prFlow;
+  if (!prFlow) return false;
+  return (
+    prFlow.pr.source === "lookup" || prFlow.hostedChecks.checked || prFlow.reviewThreads.checked
+  );
 }
 
 async function buildTaskBrief(opts: {
@@ -125,6 +264,7 @@ async function buildTaskBrief(opts: {
   const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: opts.commandCtx, task });
 
   return {
+    contract: agentWorkContextContract(),
     task: {
       id: task.id,
       title: task.title,
@@ -140,6 +280,18 @@ async function buildTaskBrief(opts: {
       base_branch: route.workspace.baseBranch,
       pr_branch: route.workspace.prBranch,
     },
+    route: {
+      workflow_mode: route.workflowMode,
+      checkout_role: route.workspace.checkoutRole,
+      branch: route.workspace.branch,
+      base_branch: route.workspace.baseBranch,
+      head_sha: route.workspace.headSha,
+      pr_branch: route.workspace.prBranch,
+      next_action_code: route.nextAction.code,
+      blockers: route.blockers.map((blocker) => ({ ...blocker })),
+      ambiguities: route.ambiguities.map((ambiguity) => ({ ...ambiguity })),
+      repair_plan: route.repairPlan.map((step) => ({ ...step })),
+    },
     next_action: {
       code: route.nextAction.code,
       summary: route.nextAction.summary,
@@ -152,6 +304,8 @@ async function buildTaskBrief(opts: {
       text: verifySteps,
     },
     blueprint,
+    policy_modules: blueprint.policy_modules ?? [],
+    evidence_required: blueprint.required_evidence ?? [],
     snapshot: {
       state: snapshot.state,
       path: snapshot.path,
@@ -167,6 +321,12 @@ async function buildTaskBrief(opts: {
         ? "remote lookup explicitly enabled"
         : "remote lookup skipped; pass --remote for hosted PR/check/review truth",
     },
+    source_confidence: buildSourceConfidence({
+      blueprintError: blueprint.error,
+      remoteEnabled: opts.parsed.remote,
+      remoteResolved: hasRemoteProviderEvidence(route),
+      snapshotState: snapshot.state,
+    }),
   };
 }
 
@@ -212,8 +372,12 @@ export function makeRunTaskBriefHandler(getCtx: (cmd: string) => Promise<Command
       { label: "blueprint_id", value: brief.blueprint.blueprint_id ?? "unresolved" },
       { label: "blueprint_route", value: brief.blueprint.route?.join(" -> ") ?? "none" },
       {
+        label: "policy_modules",
+        value: brief.policy_modules.join(", ") || "none",
+      },
+      {
         label: "required_evidence",
-        value: brief.blueprint.required_evidence?.join(", ") ?? "none",
+        value: brief.evidence_required.join(", ") || "none",
       },
       { label: "snapshot_state", value: brief.snapshot.state },
       { label: "snapshot_safe_command", value: brief.snapshot.safe_command },

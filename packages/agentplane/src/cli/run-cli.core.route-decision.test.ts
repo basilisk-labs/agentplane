@@ -172,6 +172,7 @@ describe("runCli route decision commands", () => {
         expect(textIo.stdout).toContain("next_code:");
         expect(textIo.stdout).toContain("verify_steps:");
         expect(textIo.stdout).toContain("blueprint_id:");
+        expect(textIo.stdout).toContain("policy_modules:");
         expect(textIo.stdout).toContain("snapshot_safe_command:");
         expect(textIo.stdout).toContain("remote lookup skipped");
       } finally {
@@ -185,22 +186,80 @@ describe("runCli route decision commands", () => {
         const code = await runCli(["task", "brief", taskId, "--json", "--root", root]);
         expect(code).toBe(0);
         const parsed = JSON.parse(jsonIo.stdout) as {
+          contract: { kind: string; version: number };
           task: { id: string };
+          route: { workflow_mode: string; next_action_code: string };
           next_action: { code: string; command: string };
           verify_steps: { text: string; filled: boolean };
           blueprint: { blueprint_id?: string; required_evidence?: string[] };
+          policy_modules: string[];
+          evidence_required: string[];
           remote: { enabled: boolean };
+          source_confidence: Record<
+            string,
+            { source: string; freshness: string; confidence: string; note?: string }
+          >;
         };
+        expect(parsed.contract).toEqual({
+          kind: "agentplane.agent_work_context",
+          version: 1,
+        });
         expect(parsed.task.id).toBe(taskId);
+        expect(parsed.route.workflow_mode).toBe("branch_pr");
+        expect(parsed.route.next_action_code).toBe("verify_or_update_pr");
         expect(parsed.next_action.code).toBe("verify_or_update_pr");
         expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
         expect(parsed.verify_steps.text).toContain("PLANNER fallback scaffold");
         expect(parsed.verify_steps.filled).toBe(true);
         expect(parsed.blueprint.blueprint_id).toBe("code.branch_pr");
         expect(parsed.blueprint.required_evidence).toContain("code_pr.paths");
+        expect(parsed.policy_modules).toEqual(
+          expect.arrayContaining([
+            ".agentplane/policy/dod.code.md",
+            ".agentplane/policy/dod.core.md",
+            ".agentplane/policy/security.must.md",
+            ".agentplane/policy/workflow.branch_pr.md",
+          ]),
+        );
+        expect(parsed.evidence_required).toContain("code_pr.paths");
         expect(parsed.remote.enabled).toBe(false);
+        expect(parsed.source_confidence.route).toMatchObject({
+          source: "local_git",
+          freshness: "computed_local",
+          confidence: "high",
+        });
+        expect(parsed.source_confidence.remote).toMatchObject({
+          source: "remote_provider",
+          freshness: "remote_skipped",
+          confidence: "skipped",
+        });
       } finally {
         jsonIo.restore();
+      }
+
+      const remoteIo = captureStdIO();
+      try {
+        const code = await runCli(["task", "brief", taskId, "--json", "--remote", "--root", root]);
+        expect(code).toBe(0);
+        const parsed = JSON.parse(remoteIo.stdout) as {
+          source_confidence: Record<
+            string,
+            { source: string; freshness: string; confidence: string; note?: string }
+          >;
+        };
+        expect(parsed.source_confidence.route).toMatchObject({
+          freshness: "computed_local",
+          confidence: "medium",
+        });
+        expect(parsed.source_confidence.route.note).toContain("remote lookup was requested");
+        expect(parsed.source_confidence.remote).toMatchObject({
+          source: "remote_provider",
+          freshness: "remote_skipped",
+          confidence: "low",
+        });
+        expect(parsed.source_confidence.remote.note).toContain("fell back to local data");
+      } finally {
+        remoteIo.restore();
       }
     } finally {
       process.env.PATH = previousPath;
