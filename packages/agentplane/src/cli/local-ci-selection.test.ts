@@ -27,6 +27,7 @@ type FastCiPlan =
         | "release"
         | "upgrade"
         | "guard"
+        | "hosted-close-pr"
         | "pr-flow-status"
         | "mixed";
       buckets?: string[];
@@ -157,6 +158,41 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
     );
+  });
+
+  it("routes isolated hosted close PR helper paths to the hosted-close-pr bucket", () => {
+    const plan = selectFastCiPlan([
+      ".agentplane/tasks/202605221726-WY8F98/README.md",
+      ".agentplane/tasks/202605221726-WY8F98/pr/meta.json",
+      "packages/agentplane/src/commands/task/hosted-close-pr.execute.ts",
+      "packages/agentplane/src/commands/task/hosted-close-pr.precheck.ts",
+      "packages/agentplane/src/commands/task/hosted-close-pr.types.ts",
+      "packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("hosted-close-pr");
+    expect(plan.reason).toBe("hosted_close_pr_paths_only");
+    expect(plan.lintTargets).toEqual([
+      "packages/agentplane/src/commands/task/hosted-close-pr.execute.ts",
+      "packages/agentplane/src/commands/task/hosted-close-pr.precheck.ts",
+      "packages/agentplane/src/commands/task/hosted-close-pr.types.ts",
+      "packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts",
+    ]);
+    expect(plan.testFiles).toEqual([
+      "packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts",
+      "packages/agentplane/src/commands/task/hosted-close-pr.command.test.ts",
+    ]);
+    expect(plan.vitestPool).toBe("forks");
+  });
+
+  it("keeps non-PR hosted close command paths out of the hosted-close-pr bucket", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/commands/task/hosted-close.command.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("task");
+    expect(plan.reason).toBe("task_command_paths_only");
   });
 
   it("routes isolated doctor paths to the doctor bucket", () => {
