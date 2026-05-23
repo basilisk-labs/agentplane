@@ -1,6 +1,10 @@
 import path from "node:path";
 
-import { buildTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core/commit";
+import {
+  buildTaskArtifactRefreshCommitSubject,
+  extractTaskSuffix,
+  parseTaskSubjectTemplate,
+} from "@agentplaneorg/core/commit";
 
 import { appendDcoSignoff } from "../../guard/impl/dco.js";
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "../../guard/impl/env.js";
@@ -8,6 +12,8 @@ import { toGitPath, gitEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitCurrentBranch } from "../../shared/git-ops.js";
 import type { CommandContext } from "../../shared/task-backend.js";
+
+type TaskPrArtifactCommitStrategy = "auto" | "commit" | "amend";
 
 function taskPrDirPrefix(workflowDir: string, taskId: string): string {
   return `${toGitPath(path.join(workflowDir, taskId, "pr"))}/`;
@@ -36,11 +42,48 @@ async function readCachedPaths(gitRoot: string): Promise<string[]> {
     .filter((line) => line.length > 0);
 }
 
+async function readHeadSubject(gitRoot: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    const subject = stdout.trim();
+    return subject.length > 0 ? subject : null;
+  } catch {
+    return null;
+  }
+}
+
+async function headCommitIsTaskOwned(opts: { gitRoot: string; taskId: string }): Promise<boolean> {
+  const subject = await readHeadSubject(opts.gitRoot);
+  if (!subject) return false;
+
+  const parsed = parseTaskSubjectTemplate(subject);
+  if (!parsed) return false;
+
+  return parsed.suffix.toLowerCase() === extractTaskSuffix(opts.taskId).toLowerCase();
+}
+
+async function resolveTaskPrArtifactCommitStrategy(opts: {
+  gitRoot: string;
+  taskId: string;
+  strategy?: TaskPrArtifactCommitStrategy;
+  baseBranch?: string | null;
+}): Promise<"commit" | "amend"> {
+  if (opts.strategy === "commit" || opts.strategy === "amend") return opts.strategy;
+
+  return (await headCommitIsTaskOwned({ gitRoot: opts.gitRoot, taskId: opts.taskId }))
+    ? "amend"
+    : "commit";
+}
+
 export async function maybeAutoCommitTaskPrArtifacts(opts: {
   ctx: CommandContext;
   taskId: string;
   branch: string;
-  strategy?: "commit" | "amend";
+  baseBranch?: string | null;
+  strategy?: TaskPrArtifactCommitStrategy;
 }): Promise<boolean> {
   if (opts.ctx.config.workflow_mode !== "branch_pr") return false;
 
@@ -73,6 +116,12 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
   }
 
   await opts.ctx.git.stage(taskPacketPaths);
+  const strategy = await resolveTaskPrArtifactCommitStrategy({
+    gitRoot: opts.ctx.resolvedProject.gitRoot,
+    taskId: opts.taskId,
+    strategy: opts.strategy,
+    baseBranch: opts.baseBranch,
+  });
   const env = buildGitCommitEnv({
     taskId: opts.taskId,
     allowTasks: true,
@@ -83,7 +132,7 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
     allowCI: false,
     gitIdentity: await resolveCanonicalGitIdentity(),
   });
-  await (opts.strategy === "amend"
+  await (strategy === "amend"
     ? opts.ctx.git.commitAmendNoEdit({ env })
     : opts.ctx.git.commit({
         message: buildTaskArtifactRefreshCommitSubject({ taskId: opts.taskId }),
