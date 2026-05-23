@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-23T00:45:34Z",
   "base": "main",
   "branch": "task/202605221726-WY8F98/batch-close-tail-evidence",
   "created_at": "2026-05-23T00:31:44.898Z",
   "diffstat_sha256": "sha256:fba52bdcefbdd839e94b72f26890273c55391985a3bea25f88ddaa67153a4e51",
   "last_verified_at": "2026-05-23T00:35:43.441Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "4331936123b6abec744c8ebb76420adb7b30a2ee",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-23T00:45:34Z",
   "pr_number": 4056,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4056",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605221726-WY8F98",
-  "updated_at": "2026-05-23T00:36:15.220Z",
+  "updated_at": "2026-05-23T00:45:34Z",
   "verify": {
     "status": "pass"
   }
