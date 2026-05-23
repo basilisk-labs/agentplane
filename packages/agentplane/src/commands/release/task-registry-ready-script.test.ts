@@ -10,7 +10,9 @@ const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/release/check-task-registry-ready.mjs");
 const temps: string[] = [];
 
-async function makeRepo(tasks: { id: string; status: string; title?: string }[]) {
+async function makeRepo(
+  tasks: { id: string; status: string; title?: string; mergedPr?: boolean }[],
+) {
   const root = await mkdtemp(path.join(tmpdir(), "agentplane-task-registry-ready-"));
   temps.push(root);
   for (const task of tasks) {
@@ -31,6 +33,25 @@ async function makeRepo(tasks: { id: string; status: string; title?: string }[])
       ].join("\n"),
       "utf8",
     );
+    if (task.mergedPr) {
+      const prDir = path.join(dir, "pr");
+      await mkdir(prDir, { recursive: true });
+      await writeFile(
+        path.join(prDir, "meta.json"),
+        `${JSON.stringify(
+          {
+            schema_version: 1,
+            task_id: task.id,
+            status: "MERGED",
+            pr_number: 4050,
+            merge_commit: "abcdef1234567890abcdef1234567890abcdef12",
+          },
+          null,
+          2,
+        )}\n`,
+        "utf8",
+      );
+    }
   }
   await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
   await writeFile(
@@ -77,6 +98,29 @@ describe("check-task-registry-ready script", () => {
     expect(result.stderr).toContain(
       "finish, close, or explicitly move it out of the release scope",
     );
+  });
+
+  it("fails with explicit remediation when a branch_pr task is merged pending close", async () => {
+    const root = await makeRepo([{ id: "202605190001-ABC123", status: "DOING", mergedPr: true }]);
+
+    const result = await execFileAsync("node", [SCRIPT_PATH], { cwd: root }).then(
+      () => ({ ok: true as const, stderr: "" }),
+      (error: unknown) => {
+        const stderr =
+          typeof error === "object" &&
+          error !== null &&
+          "stderr" in error &&
+          typeof (error as { stderr?: unknown }).stderr === "string"
+            ? (error as { stderr: string }).stderr
+            : "";
+        return { ok: false as const, stderr };
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("MERGED_PENDING_CLOSE task blocks release readiness");
+    expect(result.stderr).toContain("wait for hosted close to record DONE");
+    expect(result.stderr).not.toContain("DOING task blocks release readiness");
   });
 
   it("allows the current version release task only when explicitly requested", async () => {

@@ -72,6 +72,30 @@ function readObservationLines(filePath) {
   return { observations, errors };
 }
 
+function readMergedPendingCloseState(tasksRoot, taskId) {
+  const prMetaPath = path.join(tasksRoot, taskId, "pr", "meta.json");
+  if (!existsSync(prMetaPath)) return null;
+  try {
+    const meta = readJson(prMetaPath);
+    if (!meta || typeof meta !== "object") return null;
+    if (
+      String(meta.status ?? "")
+        .trim()
+        .toUpperCase() !== "MERGED"
+    )
+      return null;
+    const mergeCommit = String(meta.merge_commit ?? "").trim();
+    if (!mergeCommit) return null;
+    const prNumber = Number(meta.pr_number ?? 0);
+    return {
+      mergeCommit,
+      prNumber: Number.isFinite(prNumber) && prNumber > 0 ? prNumber : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 function isReleaseBlockingObservation(value) {
   if (!value || typeof value !== "object") return false;
   if (value.status !== "open") return false;
@@ -127,6 +151,8 @@ export function checkTaskState(repoRoot, opts = {}) {
     const status = String(frontMatter.status ?? "").trim();
     const title = String(frontMatter.title ?? "").trim();
     const tags = new Set(readFrontMatterList(readmeText, "tags"));
+    const mergedPendingClose =
+      status === "DONE" ? null : readMergedPendingCloseState(tasksRoot, taskId);
 
     if (!status) {
       failures.push(`${relReadmePath}: missing status`);
@@ -142,7 +168,11 @@ export function checkTaskState(repoRoot, opts = {}) {
     const doingAllowedForRelease =
       opts.releaseReady === true &&
       (ignoredReleaseTaskIds.has(taskId) || activeReleaseTaskDoingAllowed);
-    if (opts.releaseReady === true && status === "DOING" && !doingAllowedForRelease) {
+    if (opts.releaseReady === true && mergedPendingClose) {
+      failures.push(
+        `${relReadmePath}: MERGED_PENDING_CLOSE task blocks release readiness; wait for hosted close to record DONE before candidate/publish. PR${mergedPendingClose.prNumber ? ` #${mergedPendingClose.prNumber}` : ""} merged at ${mergedPendingClose.mergeCommit.slice(0, 12)}.`,
+      );
+    } else if (opts.releaseReady === true && status === "DOING" && !doingAllowedForRelease) {
       failures.push(
         `${relReadmePath}: DOING task blocks release readiness; finish, close, or explicitly move it out of the release scope before candidate/publish.`,
       );
@@ -171,7 +201,7 @@ export function checkTaskState(repoRoot, opts = {}) {
       }
     }
 
-    if (currentPatch !== null && ACTIVE_STATUSES.has(status)) {
+    if (currentPatch !== null && ACTIVE_STATUSES.has(status) && !mergedPendingClose) {
       const staleMatches = [...title.matchAll(/\bv0\.3\.(\d+)\b/gu)]
         .map((match) => Number.parseInt(match[1] ?? "", 10))
         .filter((patch) => Number.isSafeInteger(patch))
