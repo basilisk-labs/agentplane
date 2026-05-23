@@ -26,6 +26,19 @@ describe("SGR reliability contracts", () => {
       source_refs: [sourceRef],
       extracted_items: [
         {
+          id: "entity.release-workflow",
+          kind: "graph_entity",
+          summary: "Release workflow is a reusable project concept.",
+          source_refs: [sourceRef],
+          confidence: 0.9,
+          status: "proposed",
+          entity: {
+            id: "entity.release-workflow",
+            kind: "concept",
+            label: "Release workflow",
+          },
+        },
+        {
           id: "fact.release-gate",
           kind: "fact",
           summary: "Release tasks require evidence-backed publish gates.",
@@ -39,7 +52,7 @@ describe("SGR reliability contracts", () => {
     });
 
     expect(result.extracted_items[0]).toMatchObject({
-      id: "fact.release-gate",
+      id: "entity.release-workflow",
       confidence: 0.9,
     });
   });
