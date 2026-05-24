@@ -1,10 +1,11 @@
 ---
 id: "202605201447-DGSB7B"
 title: "Enforce maximum assimilation wiki gates"
-status: "DOING"
+result_summary: "Merged via PR #4135."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605201447-DGSB7B/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201447-DGSB7B-max-assimilation-gates/.agentplane/tasks/202605201447-DGSB7B/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "a9cc5a7622fca620a5e546ba7fde8fb4f6729c3b"
+  message: "Merge pull request #4135 from basilisk-labs/task/202605201447-DGSB7B/max-assimilation-gates"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing deterministic maximum-assimilation context verification gates in the dedicated task worktree, with focused tests for glossary, topology, coverage, Obsidian links, entity-first evidence, and evaluator review."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4135 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -66,9 +72,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rebased onto current origin/main, resolved maximum-assimilation gate conflicts by combining checks, and reran focused context tests, typecheck, build, doctor, and routing checks successfully."
+  -
+    type: "status"
+    at: "2026-05-24T11:31:22.721Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4135 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-24T11:08:27.219Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-24T11:31:22.729Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add deterministic verification gates for context.maximum_assimilation so source-shaped topology, glossary, Obsidian wikilinks, coverage, and entity-first evidence are not only prompt guidance."
 sections:
   Summary: |-
