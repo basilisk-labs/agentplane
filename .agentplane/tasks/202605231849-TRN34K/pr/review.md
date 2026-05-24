@@ -13,7 +13,7 @@ Created: 2026-05-23T18:51:31.263Z
 ## Verification
 
 - State: ok
-- Note: Implemented maximum-assimilation coverage SGR/writer/verify gate and verified CURATOR prompt contract creates the LLM-facing task before deterministic extraction apply.
+- Note: Quality gate passed: maximum assimilation now requires formal SGR extraction, deterministic writer materialization, non-empty facts/entities/edges/provenance/coverage, and per-source coverage before wiki synthesis.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -34,19 +34,19 @@ Created: 2026-05-23T18:51:31.263Z
  .../src/cli/run-cli/command-catalog/project.ts     |   4 +
  .../src/commands/context/context.command.ts        |  14 ++
  .../src/commands/context/context.spec.ts           |  32 ++++
- .../agentplane/src/commands/context/extraction.ts  |  29 ++++
+ .../agentplane/src/commands/context/extraction.ts  |  30 ++++
  packages/agentplane/src/commands/context/init.ts   |   5 +-
- .../src/commands/context/release-readiness.test.ts | 149 +++++++++++++++++-
- .../verify-task.maximum-assimilation.unit.test.ts  |  66 ++++++++
- .../agentplane/src/context/extraction-writer.ts    | 171 +++++++++++++++++++++
- .../src/context/harvest-tasks-extraction.ts        |  14 ++
- packages/agentplane/src/context/ingest-task.ts     |  25 ++-
+ .../src/commands/context/release-readiness.test.ts | 176 ++++++++++++++++++-
+ .../verify-task.maximum-assimilation.unit.test.ts  |  90 ++++++++++
+ .../agentplane/src/context/extraction-writer.ts    | 188 +++++++++++++++++++++
+ .../src/context/harvest-tasks-extraction.ts        |  28 +++
+ packages/agentplane/src/context/ingest-task.ts     |  31 +++-
  packages/agentplane/src/context/sgr-extraction.ts  |   2 +
- packages/agentplane/src/context/verify-task.ts     |  36 ++---
- .../agentplane/src/runtime/sgr/contracts.test.ts   |  15 +-
- packages/agentplane/src/runtime/sgr/contracts.ts   |  56 ++++++-
+ packages/agentplane/src/context/verify-task.ts     |  93 ++++++++--
+ .../agentplane/src/runtime/sgr/contracts.test.ts   |  59 ++++++-
+ packages/agentplane/src/runtime/sgr/contracts.ts   |  91 +++++++++-
  packages/agentplane/src/runtime/sgr/index.ts       |   2 +
- 17 files changed, 602 insertions(+), 26 deletions(-)
+ 17 files changed, 824 insertions(+), 29 deletions(-)
 ```
 
 </details>
