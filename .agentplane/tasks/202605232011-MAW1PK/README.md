@@ -1,10 +1,11 @@
 ---
 id: "202605232011-MAW1PK"
 title: "Implement executable evaluator quality review"
-status: "DOING"
+result_summary: "Merged via PR #4120."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -52,11 +53,16 @@ quality_review:
     - "runEvaluatorRun no longer records raw HEAD when HEAD is only a task artifact commit; it walks back over .agentplane/tasks/<task-id>/ commits to the implementation commit."
     - "Regression coverage creates an implementation commit, then a task-artifact-only commit, runs evaluator, and asserts quality-report.json evaluated_sha equals the implementation SHA."
     - "Focused evaluator run and quality gate tests pass after the fix; framework bootstrap refreshed the task worktree runtime."
-commit: null
+commit:
+  hash: "f2e47faee5caf0545f2895c4273aca6ffbe95ff2"
+  message: "🚧 MAW1PK task: refresh evaluator sha review"
 comments:
   -
     author: "CODER"
     body: "Start: implementing executable evaluator review reporting and stricter quality-review enforcement in the dedicated branch_pr worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4120 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented executable evaluator run command, stricter quality-review gate, docs, and focused tests. Checks passed: format:changed, focused bun tests, typecheck, docs:cli:check, policy routing, framework bootstrap/help."
+  -
+    type: "status"
+    at: "2026-05-24T08:24:29.196Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4120 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-23T20:49:41.928Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-24T08:24:29.202Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement executable evaluator quality review"
 sections:
   Summary: |-
