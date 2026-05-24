@@ -419,7 +419,7 @@ export const BUILTIN_BLUEPRINTS = [
       "agentplane context search <query> --format json",
       "agentplane acr generate <task-id> --write",
       "agentplane acr check <task-id>",
-      "agentplane verify <task-id> --ok|--rework --by EVALUATOR",
+      "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
     ],
     policyModules: [
       ".agentplane/policy/security.must.md",

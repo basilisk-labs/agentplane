@@ -233,7 +233,7 @@ function buildContextAssimilationPromptModule(workspaceMode?: ContextWorkspaceMo
       "- Run `agentplane context doctor`.",
       ...(maximumAssimilation
         ? [
-            '- Run or record `agentplane verify <task-id> --ok|--rework --by EVALUATOR --note "..."` after CURATOR verification.',
+            '- Run `agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review --summary "..." --finding "..." --evidence <path-or-check>` after CURATOR verification.',
           ]
         : []),
       "- Run a smoke `agentplane context search` query using exact source terminology.",
