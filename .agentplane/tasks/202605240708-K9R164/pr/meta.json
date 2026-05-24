@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-24T09:27:49Z",
   "base": "main",
   "branch": "task/202605240708-K9R164/fix-recent-branch-pr-issue-candidates",
   "created_at": "2026-05-24T07:11:46.100Z",
   "diffstat_sha256": "sha256:0ca2a6670623e718338ca07606fa712f872f44ab1ffe5dc7c454903bd1914ba1",
   "last_verified_at": "2026-05-24T07:28:52.294Z",
   "last_verified_diffstat_sha256": "sha256:980bdee7f98cf25f9a33ef0635e56887e9f82442dcdff2564fb406a17a4f0302",
+  "merge_commit": "24efc3e3513f2dfc1f33f6e2d9a68f74d4097865",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-24T09:27:49Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605240708-K9R164",
-  "updated_at": "2026-05-24T07:11:46.100Z",
+  "updated_at": "2026-05-24T09:27:49Z",
   "verify": {
     "status": "pass"
   }

@@ -1,10 +1,11 @@
 ---
 id: "202605240708-K9R164"
 title: "Fix recent branch_pr issue candidates"
-status: "DOING"
+result_summary: "Merged via PR #4127."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -44,11 +45,16 @@ quality_review:
     - "node .agentplane/policy/check-routing.mjs: passed"
   findings:
     - "Pass: final diff is scoped to K9R164 artifacts, branch_pr issue fixes, and the testkit helper required by the structured quality-review gate."
-commit: null
+commit:
+  hash: "24efc3e3513f2dfc1f33f6e2d9a68f74d4097865"
+  message: "✨ K9R164 workflow: fix branch_pr issue candidates"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing issue-backed fixes for unsafe pr-open artifact amend, handoff-only task scan warnings, and GitHub API fallback empty pullRequestId behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4127 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -81,9 +87,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Verified: Quality gate rerun after moving regression tests out of oversized files. Command: bun run hotspots:check; Result: pass; Evidence: oversized test baseline OK with 11 entries and 12568 total lines. Command: git diff --stat HEAD; Result: pass; Evidence: runtime changes unchanged; regression tests now live in non-oversized target files. Scope: CI failure recovery for PR #4127."
+  -
+    type: "status"
+    at: "2026-05-24T09:28:30.321Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4127 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-24T07:28:52.309Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-24T09:28:30.331Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix three issue-backed regressions found from recent commit history: unsafe pr-open artifact amend, handoff-only task scan warnings, and GitHub API merge fallback with empty pullRequestId."
 sections:
   Summary: |-
