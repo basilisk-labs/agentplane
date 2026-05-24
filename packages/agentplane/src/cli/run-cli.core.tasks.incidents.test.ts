@@ -167,6 +167,30 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
       }
     }
 
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "evaluator",
+          "run",
+          taskId,
+          "--verdict",
+          "pass",
+          "--summary",
+          "Structured external incident promotion has verification evidence.",
+          "--finding",
+          "The release recovery finding is external, structured, and ready for promotion.",
+          "--evidence",
+          "targeted release workflow checks",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,
