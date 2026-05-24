@@ -1,0 +1,13 @@
+ .agentplane/WORKFLOW.md                            |   3 +-
+ .agentplane/workflows/last-known-good.md           |   3 +-
+ docs/reference/generated-reference.mdx             |   6 +-
+ docs/releases/v0.6.9.md                            | 126 +++++++++++++++++++++
+ packages/agentplane/package.json                   |   6 +-
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/spec/examples/acr.json                    |  22 +++-
+ packages/testkit/package.json                      |   2 +-
+ website/static/img/social/docs/releases/v0.6.9.png | Bin 0 -> 42033 bytes
+ website/static/img/social/manifest.json            |   8 ++
+ 12 files changed, 164 insertions(+), 18 deletions(-)
