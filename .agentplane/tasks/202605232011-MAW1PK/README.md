@@ -4,7 +4,7 @@ title: "Implement executable evaluator quality review"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -29,29 +29,29 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-24T07:50:20.795Z"
+  updated_at: "2026-05-24T08:10:52.033Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR review: final pre-merge review after refreshing the branch_pr blueprint snapshot; route unchanged and prompt surfaces remain aligned."
-  evaluated_sha: "f82234a0afa9bf6a67b44b7c30ae989f2ad8ba8b"
+  note: "EVALUATOR review: reviewed the unresolved PR comment fix; evaluator run now records the last non-task-artifact commit as evaluated_sha."
+  evaluated_sha: "a7b15770f256b4a3259fa7776f17237b9a2d7325"
   blueprint_digest: "4bd1a0ab295307905c1f5ceafa36fb1c6bb7fb22e6cf505bb55244db31b28114"
   evidence_refs:
     - ".agentplane/tasks/202605232011-MAW1PK/README.md"
-    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-075020795-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-075020795-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-075020795-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-081052033-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-081052033-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-081052033-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605232011-MAW1PK/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/assets/agents/EVALUATOR.json"
-    - ".agentplane/agents/EVALUATOR.json"
-    - "commit: f82234a0a"
-    - "hosted: PR #4120 checks success on f82234a0a"
-    - "check: bun test packages/agentplane/src/agents/agents-template.test.ts"
-    - "check: node scripts/generate/sync-agent-templates.mjs check && node scripts/checks/check-agent-onboarding-scenario.mjs"
-    - "check: bun test packages/agentplane/src/workflow-lifecycle/contract.test.ts packages/agentplane/src/blueprints/validate.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
-    - "check: node .agentplane/policy/check-routing.mjs"
+    - "packages/agentplane/src/commands/evaluator/evaluator.command.ts"
+    - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+    - "commit: a7b15770f"
+    - "review-thread: https://github.com/basilisk-labs/agentplane/pull/4120#discussion_r3293480324"
+    - "check: bun test packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
+    - "check: bunx eslint packages/agentplane/src/commands/evaluator/evaluator.command.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+    - "check: bun run format:changed"
+    - "check: bun run framework:dev:bootstrap"
   findings:
-    - "Blueprint snapshot digest was refreshed before integration; route stayed code.branch_pr with the same quality gate position."
-    - "EVALUATOR prompt surfaces require ap evaluator run as the primary structured quality review path, while legacy verify is explicitly insufficient for finish/integrate gates."
-    - "Hosted PR checks on the pushed branch were green before this artifact-only refresh; local prompt/template checks and targeted unit tests passed after the ap prompt fix."
+    - "runEvaluatorRun no longer records raw HEAD when HEAD is only a task artifact commit; it walks back over .agentplane/tasks/<task-id>/ commits to the implementation commit."
+    - "Regression coverage creates an implementation commit, then a task-artifact-only commit, runs evaluator, and asserts quality-report.json evaluated_sha equals the implementation SHA."
+    - "Focused evaluator run and quality gate tests pass after the fix; framework bootstrap refreshed the task worktree runtime."
 commit: null
 comments:
   -

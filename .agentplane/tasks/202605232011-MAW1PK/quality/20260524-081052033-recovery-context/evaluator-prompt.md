@@ -6,7 +6,7 @@ Write the final structured review to the report path as JSON matching the reques
 
 - task_id: 202605232011-MAW1PK
 - task_readme: .agentplane/tasks/202605232011-MAW1PK/README.md
-- report_path: .agentplane/tasks/202605232011-MAW1PK/quality/20260524-075020795-recovery-context/quality-report.json
+- report_path: .agentplane/tasks/202605232011-MAW1PK/quality/20260524-081052033-recovery-context/quality-report.json
 
 Required report fields:
 - verdict: pass | rework | blocked | human_review
