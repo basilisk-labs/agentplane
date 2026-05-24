@@ -10,6 +10,7 @@ import path from "node:path";
 import { readdir } from "node:fs/promises";
 import { parse as parseYaml } from "yaml";
 import { validateMaximumAssimilationCoverage } from "./coverage-validation.js";
+import { validateMaximumAssimilationArtifacts } from "./maximum-assimilation-artifacts-validation.js";
 
 type ContextExtension = {
   assimilation?: {
@@ -137,6 +138,13 @@ function isRawMutationAllowed(context: ContextExtension): boolean {
 function isProfileSwitchContextTask(context: ContextExtension): boolean {
   return (
     context.task_type === "context_profile_switch" || context.task_type === "context_configuration"
+  );
+}
+
+function isMaximumAssimilationTask(task: VerificationInput, context: ContextExtension): boolean {
+  return (
+    task.blueprint_request === "context.maximum_assimilation" ||
+    context.mode === "maximum_assimilation"
   );
 }
 
@@ -417,6 +425,17 @@ async function validateContextArtifacts(opts: {
   await validateGraph(opts.root, errors);
   await validateMaximumAssimilationCoverage(opts.root, opts.context, errors);
   await validateMaximumAssimilationDerivedConsistency(opts.root, opts.context, errors);
+  if (
+    isMaximumAssimilationTask(opts.task, opts.context) &&
+    !isProfileSwitchContextTask(opts.context)
+  ) {
+    errors.push(
+      ...(await validateMaximumAssimilationArtifacts({
+        root: opts.root,
+        changedPaths: opts.changedPaths,
+      })),
+    );
+  }
   await validateAcrContextExtension(opts.root, opts.task, opts.context, errors);
   return errors;
 }
@@ -508,9 +527,7 @@ export async function cmdContextVerifyTask(opts: {
       }
       if (
         requiredSourceRoots.length > 0 &&
-        !requiredSourceRoots.some((prefix) =>
-          hasPathPrefix(changed, prefix.replace("${taskId}", normalizedTaskId)),
-        )
+        !isTaskPathMatch(changed, requiredSourceRoots, normalizedTaskId)
       ) {
         denied.push(`${changed}: path outside required context outputs`);
       }

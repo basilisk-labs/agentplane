@@ -1,0 +1,3 @@
+ .../verify-task.maximum-assimilation.test.ts       | 268 +++++++++++++++++++++
+ packages/agentplane/src/context/verify-task.ts     | 145 ++++++++++-
+ 2 files changed, 410 insertions(+), 3 deletions(-)

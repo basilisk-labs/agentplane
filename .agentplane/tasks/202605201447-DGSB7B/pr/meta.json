@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605201447-DGSB7B/max-assimilation-gates",
+  "created_at": "2026-05-20T14:48:16.305Z",
+  "diffstat_sha256": "sha256:0711ccae5cd89e05e35c137951c463c7ecec72e5df922481df31dac7f508806b",
+  "last_verified_at": "2026-05-24T11:08:27.201Z",
+  "last_verified_diffstat_sha256": "sha256:0711ccae5cd89e05e35c137951c463c7ecec72e5df922481df31dac7f508806b",
+  "pr_number": 3974,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3974",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605201447-DGSB7B",
+  "updated_at": "2026-05-20T15:09:17.405Z",
+  "verify": {
+    "status": "pass"
+  }
+}
