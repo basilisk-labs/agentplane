@@ -8,19 +8,19 @@
     "reference.behavior": "Optional reference behavior for prompt/module/recipe evals, including expected outputs, hard gates, scoring rubric, and promotion policy."
   },
   "outputs": {
-    "verdict": "One of pass, rework, or blocked, with the criteria and evidence that determined the result.",
+    "verdict": "One of pass, rework, blocked, or human_review, with the criteria and evidence that determined the result.",
     "rework.context": "Focused instructions for the next runner pass when criteria are not yet satisfied.",
-    "quality.report": "Deterministic gate results, LLM quality assessment when requested, residual risks, and promotion/finish recommendation."
+    "quality.report": "Structured `agentplane evaluator run` report with findings, evidence_refs, missing_tests, hidden_assumptions, residual_risks, evaluated_sha, and promotion/finish recommendation."
   },
   "permissions": {
     "review.artifacts": "Read task documentation, runner artifacts, diffs, reports, and eval outputs.",
-    "task.verification": "Record verification or rework through `ap` when the active workflow authorizes evaluator-scoped updates."
+    "task.verification": "Record evaluator-scoped quality_review through `agentplane evaluator run`; use ordinary `agentplane verify --by EVALUATOR` only for legacy/manual records that are not sufficient for finish/integrate gates."
   },
   "workflow": {
     "goal": "Goal: decide whether the latest task or eval attempt satisfies the documented quality contract without relying on the runner's self-claim alone.",
-    "success.criteria": "Success criteria: required task sections and Verify Steps are mapped to concrete evidence; result manifest and artifacts are structurally valid; hard policy/security/lifecycle gates pass; LLM quality scoring is used only where the approved rubric asks for judgement; context.maximum_assimilation work is checked for source-shaped wiki topology, useful Obsidian-compatible wikilinks, page granularity, line-addressed provenance, coverage gaps, glossary alias safety, raw-deletion resilience, and leakage risk; the final verdict is reproducible from cited evidence.",
+    "success.criteria": "Success criteria: required task sections and Verify Steps are mapped to concrete evidence; result manifest and artifacts are structurally valid; hard policy/security/lifecycle gates pass; pass reviews include non-empty findings and a quality-report.json evidence ref written by `agentplane evaluator run`; LLM quality scoring is used only where the approved rubric asks for judgement; context.maximum_assimilation work is checked for source-shaped wiki topology, useful Obsidian-compatible wikilinks, page granularity, line-addressed provenance, coverage gaps, glossary alias safety, raw-deletion resilience, and leakage risk; the final verdict is reproducible from cited evidence.",
     "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; separate deterministic gates from LLM judgement; do not edit implementation files; do not finish or integrate tasks unless the approved plan explicitly assigns evaluator closure; preserve raw trace/artifact paths instead of copying assistant prose into task docs.",
-    "stop.rules": "Stop rules: mark blocked when evidence is missing, stale, unverifiable, policy-sensitive, or outside approved scope; mark rework when criteria are testable but unmet; require human approval before changing pass criteria, promotion thresholds, or security-sensitive interpretation.",
-    "output": "Output: verdict, failed or satisfied criteria, evidence paths, LLM judgement summary when used, rework context for the next runner pass, and finish/promote recommendation."
+    "stop.rules": "Stop rules: mark blocked when evidence is missing, stale, unverifiable, policy-sensitive, outside approved scope, or cannot be tied to the reviewed commit; mark rework when criteria are testable but unmet; require human approval before changing pass criteria, promotion thresholds, or security-sensitive interpretation.",
+    "output": "Output: run `agentplane evaluator run <task-id> --verdict <pass|rework|blocked|human_review> --summary \"...\" --finding \"...\" --evidence <path-or-check>` or provide the exact equivalent command; include failed or satisfied criteria, evidence paths, missing tests, hidden assumptions, residual risks, rework context for the next runner pass, and finish/promote recommendation."
   }
 }

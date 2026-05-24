@@ -60,7 +60,9 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
         kind: "quality_gate",
         evidence: ["quality_report"],
         protected: true,
-        allowedCommands: ["agentplane verify <task-id> --ok|--rework --by EVALUATOR"],
+        allowedCommands: [
+          "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
+        ],
       },
       { kind: "finish", evidence: ["commit"], protected: true },
     ],
@@ -109,7 +111,7 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
       },
       {
         id: "quality_gate",
-        command: "agentplane verify",
+        command: "agentplane evaluator run",
         role: "EVALUATOR",
         cwd: "current_checkout",
         sideEffects: ["task_state"],
@@ -135,7 +137,7 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
       "task start-ready",
       "task verify-show",
       "verify",
-      "verify --by EVALUATOR",
+      "evaluator run",
       "finish",
     ],
     quickstartCommandOrder: [
@@ -182,7 +184,9 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
         kind: "quality_gate",
         evidence: ["quality_report"],
         protected: true,
-        allowedCommands: ["agentplane verify <task-id> --ok|--rework --by EVALUATOR"],
+        allowedCommands: [
+          "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
+        ],
       },
       { kind: "hosted_checks", evidence: ["check_result", "external_link"] },
       {
@@ -245,7 +249,7 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
       },
       {
         id: "quality_gate",
-        command: "agentplane verify",
+        command: "agentplane evaluator run",
         role: "EVALUATOR",
         cwd: "task_worktree",
         sideEffects: ["task_state"],
@@ -279,7 +283,7 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
       "task verify-show",
       "pr open",
       "verify",
-      "verify --by EVALUATOR",
+      "evaluator run",
       "integrate",
       "finish",
     ],

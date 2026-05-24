@@ -85,7 +85,7 @@ git commit -m "Implement <task>"
 ap task verify-show <task-id>
 ap pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 ap verify <task-id> --ok|--rework --by <ROLE> --note "..."
-ap verify <task-id> --ok|--rework --by EVALUATOR --note "..." # verify --by EVALUATOR
+ap evaluator run <task-id> --verdict pass|rework|blocked|human_review --summary "..." --finding "..." --evidence <path-or-check>
 ap integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 ap finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
@@ -95,6 +95,7 @@ ap finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --
 ```bash
 ap vshow <task-id>
 ap verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
+ap evaluator run <task-id> --verdict pass|rework|blocked|human_review --summary "..." --finding "..." --evidence <path-or-check> [--missing-test "..." --hidden-assumption "..." --residual-risk "..."]
 ap incidents advise <task-id>
 ap incidents collect <task-id> --check
 ap doctor

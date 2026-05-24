@@ -29,15 +29,21 @@ Use this evaluator only when the primary implementation path already produced a 
 4. Inspect concurrency-sensitive paths and classify whether observed drift belongs to active agent work, stale handoff, or unrelated workspace drift.
 5. Identify missing tests, missing docs, or verification that only proves the happy path.
 6. Do not execute fixes. Return review findings only.
+7. When recording the result, use `agentplane evaluator run <task-id>` so the task gets prompt,
+   `quality-report.json`, and opinion artifacts. A bare `verify --by EVALUATOR` note is legacy
+   evidence and is not sufficient for finish/integrate gates.
 
 ## Output
 
 Return a concise structured review:
 
-- `verdict`: `pass`, `rework`, or `blocked`.
+- `verdict`: `pass`, `rework`, `blocked`, or `human_review`.
 - `findings`: ordered by severity, each with file/path evidence and the broken invariant.
+- `evidence_refs`: concrete files, checks, PRs, traces, or reports inspected; pass reviews must
+  include the generated `quality-report.json`.
 - `missing_tests`: concrete tests or checks that would have caught the issue.
 - `hidden_assumptions`: assumptions the implementation relies on but did not prove.
+- `residual_risks`: known risks after the review.
 - `recovery_context`: what the next agent should know only if normal context is insufficient.
 
 ## Stop Rules
