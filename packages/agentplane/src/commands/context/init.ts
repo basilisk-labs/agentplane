@@ -250,7 +250,7 @@ async function bootstrapEmptyProjectForContextInit(root: string): Promise<Comman
       message:
         "context init can bootstrap AgentPlane only in a standalone empty directory. " +
         `Target ${root} is inside parent Git repository ${parentGitRoot}. ` +
-        "Run agentplane init explicitly from the intended project root.",
+        "Run agentplane init explicitly from the intended nested project root, then run agentplane context init.",
     });
   }
 
@@ -492,8 +492,7 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
 - Ensure each wiki page has Obsidian properties \`aliases\`, \`tags\`, and \`cssclasses\` in YAML
   frontmatter in addition to the \`agentplane_context\` manifest.
 - Use Obsidian-compatible wikilinks whose target case exactly matches a canonical page path, title,
-  or alias; prefer \`[[canonical-page|Display Label]]\` or
-  \`[[canonical-page#Stable Heading|Display Label]]\` when display wording differs.
+  or alias; add a display alias or heading anchor only when display wording differs.
 - Cite raw sources in prose with numeric notes like \`[1]\`; keep Markdown raw-data links in a
   trailing \`## Sources\` section rather than scattering long source URLs through prose.
 - Record extraction coverage: covered source spans, intentionally omitted boilerplate, redacted

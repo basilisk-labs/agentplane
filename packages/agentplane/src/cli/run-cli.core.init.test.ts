@@ -521,6 +521,8 @@ describe("runCli", () => {
       const code = await runCli(["context", "init", "--root", nested]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("standalone empty directory");
+      expect(io.stderr).toContain("agentplane init");
+      expect(io.stderr).toContain("agentplane context init");
       expect(io.stderr).toContain(await realpath(parent));
     } finally {
       io.restore();

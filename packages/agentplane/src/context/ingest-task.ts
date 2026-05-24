@@ -28,6 +28,23 @@ export function selectedSourceRows(
   return sourceRows;
 }
 
+function basenameForTitle(sourcePath: string): string {
+  const parts = sourcePath.split(/[\\/]+/u).filter(Boolean);
+  return parts.at(-1) ?? sourcePath;
+}
+
+function buildTitleSourceHint(rows: ManifestEntry[]): string {
+  if (rows.length === 0) {
+    return "";
+  }
+  const names = rows.map((row) => basenameForTitle(row.path));
+  if (names.length === 1) {
+    return `: ${names[0]}`;
+  }
+  const first = names.slice(0, 2).join(", ");
+  return names.length === 2 ? `: ${first}` : `: ${first} +${names.length - 2}`;
+}
+
 function buildIngestMetadata(
   opts: Omit<ContextIngestParsed, "runTask">,
   sourceRows: ManifestEntry[],
@@ -47,7 +64,7 @@ function buildIngestMetadata(
   const blueprintId: NonNullable<TaskNewParsed["blueprintRequest"]> = maximumAssimilation
     ? "context.maximum_assimilation"
     : "context.assimilation";
-  const title = `context assimilation (${modeLabel})`;
+  const title = `context assimilation (${modeLabel}${buildTitleSourceHint(modeSource)})`;
   const promptRef = CONTEXT_ASSIMILATION_PROMPT_ADDRESS;
   const description = [
     `Source context assimilation for ${modeLabel}.`,
@@ -161,7 +178,12 @@ function buildContextAssimilationPromptModule(workspaceMode?: ContextWorkspaceMo
       "- `context/wiki/**` pages with frontmatter manifests.",
       "- `.agentplane/context/derived/facts/**` or claim/fact rows with source_refs and status.",
       "- `.agentplane/context/derived/graph/**` entities, edges, and provenance edges.",
-      "- `.agentplane/context/derived/reports/**` when useful for conflict, stale, or open-question summaries.",
+      "- `.agentplane/context/derived/reports/**`, including `coverage.jsonl` in maximum-assimilation mode.",
+      "",
+      "Supported derived writer:",
+      "- First produce a valid `context_extraction` SGR JSON result with `graph_entity`, `fact`, `graph_edge`, and maximum-assimilation `coverage` items.",
+      "- Apply it with `agentplane context extraction apply <sgr-json> --task-id <task-id>` before narrative wiki synthesis so the formal layer exists before articles.",
+      "- Do not hand-edit derived JSONL rows when the supported writer can materialize and validate the formal layer.",
       "",
       "Recommended CLI helpers:",
       "- Use `agentplane context reindex --include-raw` after raw/wiki/fact/graph changes and before validation.",
@@ -189,14 +211,15 @@ function buildContextAssimilationPromptModule(workspaceMode?: ContextWorkspaceMo
             "Maximum-assimilation workflow:",
             "- Intake: classify each selected source span as significant content, boilerplate, redacted, duplicate, or unresolved.",
             "- Source identity: preserve each source's `sha256:`, path, content type, line count, ingest time, and availability state. Cite extracted content with line refs such as `context/raw/<user-path>/note.md#lines=12-24`.",
-            "- Extraction pass: identify canonical entities, source-local aliases, relations, decisions, requirements, risks, workflows, definitions, conflicts, and open questions before article writing.",
+            "- Extraction pass: identify canonical entities, source-local aliases, relations, decisions, requirements, risks, workflows, definitions, conflicts, open questions, and per-source coverage before article writing.",
+            "- Writer pass: save the extraction result as `context_extraction` SGR JSON and run `agentplane context extraction apply <sgr-json> --task-id <task-id>` so facts, graph entities, graph edges, provenance, and coverage rows are non-empty before wiki synthesis.",
             "- Topology pass: choose the wiki structure from source evidence, then record the topology decision and rationale before creating page families. Do not mechanically create `concepts/`, `entities/`, `decisions/`, `modules/`, `contradictions/`, or `reports/` just because they are familiar defaults.",
             "- The topology decision must classify source shape (book/corpus, codebase, task history, product docs, research notes, ops logs, or another named shape), name canonical page families, justify page-vs-heading granularity, provide source-backed evidence for every new family, map source-local terms to canonical labels or aliases, and keep ambiguous identities as open questions.",
             "- Glossary pass: create or update `context/wiki/glossary.md` as the root canonical glossary and navigation index over wiki pages and graph entities; normalize prose to canonical terms where confidence is high.",
             "- Synthesis pass: create granular wiki pages and stable headings from the extracted graph/glossary layer. The wiki should preserve all significant source meaning even without raw files.",
             "- Obsidian pass: use YAML frontmatter plus Obsidian properties (`aliases`, `tags`, `cssclasses`) and case-stable wikilinks such as `[[canonical-page|Canonical Page]]` or `[[canonical-page#Stable Heading|Canonical Page]]` for semantic internal links. Use normal Markdown links for source refs and external/file links so AgentPlane source hygiene stays intact.",
             "- Source-note pass: cite source-backed prose with numeric notes like `[1]`, then collect raw-data links in a trailing `## Sources` section so the page stays readable while provenance remains dereferenceable.",
-            "- Coverage pass: write or update a coverage report naming covered spans, omitted boilerplate, redacted sensitive spans, conflicts, unresolved identities, and any approval-required gaps.",
+            "- Coverage pass: include `coverage` SGR items for every selected source path. Mark each source as `covered`, `omitted_boilerplate`, `redacted`, or `unresolved`; include a reason and covered item ids when status is `covered`.",
             "- Evaluation pass: request or record an EVALUATOR quality review that checks source-shaped topology, page granularity, useful wikilinks/backlink potential, line-addressed provenance, glossary alias safety, coverage gaps, raw-deletion resilience, and private leakage.",
             "- Critical check: do not flatten contradictions, do not silently invent canonical terms, do not copy secrets or non-publishable source spans into public wiki/task/ACR surfaces, and do not claim full semantic coverage without self-contained wiki/fact/graph content plus line-addressed provenance.",
           ]

@@ -162,6 +162,38 @@ describe("pre-push task binding audit", () => {
     expect(String(result.failure?.stderr ?? "")).toContain("src/app.ts");
   });
 
+  it("skips undefined optional scripts in the repository pre-push helper", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeDefaultConfig(root);
+    await commitAll(root, "chore: base");
+    const baseSha = head(root);
+
+    const result = runPrePush(root, baseSha, head(root));
+
+    expect(result.failure).toBeNull();
+    expect(result.stdout).toContain("Running pre-push checks in standard mode.");
+    expect(result.stdout).toContain("Skipping format:check: package.json script is not defined.");
+    expect(result.stdout).toContain("Skipping ci:local:fast: package.json script is not defined.");
+  });
+
+  it("blocks malformed package.json before optional script skips", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, "package.json"), "{not-json", "utf8");
+    await commitAll(root, "chore: base");
+    const baseSha = head(root);
+
+    const result = runPrePush(root, baseSha, head(root));
+
+    expect(result.failure).not.toBeNull();
+    expect(String(result.failure?.stderr ?? "")).toContain(
+      "pre-push blocked: package.json could not be parsed.",
+    );
+    expect(result.stdout).not.toContain("Skipping format:check");
+  });
+
   it("accepts managed initial install commits", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
@@ -356,6 +388,38 @@ describe("pre-push task binding audit", () => {
           "Emergency-Hotfix: true",
           "Backfill-Task: 202601010101-ABCDEF",
           "Backfill-Evidence: incident ticket and rollback note recorded",
+        ].join("\n"),
+      ],
+      { cwd: root },
+    );
+    const result = runPrePush(root, baseSha, head(root));
+
+    expect(result.failure).toBeNull();
+    expect(result.stdout).toContain("Running pre-push checks in standard mode.");
+  });
+
+  it("accepts deploy-fix commits with evidence without requiring a task id", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeDefaultConfig(root);
+    await writeFastHookPackage(root);
+    await commitAll(root, "chore: base");
+    const baseSha = head(root);
+
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
+    await execFileAsync(
+      "git",
+      [
+        "commit",
+        "-m",
+        [
+          "🚑 deploy-fix: refresh production cache marker",
+          "",
+          "Deploy-Fix: true",
+          "Deploy-Fix-Evidence: live cache-buster probe recorded",
         ].join("\n"),
       ],
       { cwd: root },

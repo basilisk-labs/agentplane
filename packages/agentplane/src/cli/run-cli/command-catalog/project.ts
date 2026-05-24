@@ -93,6 +93,7 @@ import {
   contextCapabilitySpec,
   contextCapabilityValidateSpec,
   contextDoctorSpec,
+  contextExtractionApplySpec,
   contextGraphNeighborsSpec,
   contextGraphExportSpec,
   contextGraphShowSpec,
@@ -292,6 +293,9 @@ export const PROJECT_COMMANDS = [
     surface: "advanced",
   }),
   fromCommandsContextCommand(contextGraphExportSpec, "runContextGraphExport", {
+    surface: "advanced",
+  }),
+  fromCommandsContextCommand(contextExtractionApplySpec, "runContextExtractionApply", {
     surface: "advanced",
   }),
   fromCommandsContextCommand(contextCapabilitySpec, "runContextCapabilityGroup", {

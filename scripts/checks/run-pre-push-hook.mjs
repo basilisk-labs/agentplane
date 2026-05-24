@@ -71,6 +71,38 @@ function runWithEnv(command, args, env) {
   });
 }
 
+function readPackageScripts() {
+  if (!existsSync("package.json")) return {};
+  try {
+    const parsed = JSON.parse(readFileSync("package.json", "utf8"));
+    if (!parsed.scripts || typeof parsed.scripts !== "object" || Array.isArray(parsed.scripts)) {
+      return {};
+    }
+    return Object.fromEntries(
+      Object.entries(parsed.scripts).filter(([, value]) => typeof value === "string"),
+    );
+  } catch (error) {
+    fail("pre-push blocked: package.json could not be parsed.", [
+      error instanceof Error ? error.message : String(error),
+      "Fix package.json before relying on optional project-script detection.",
+    ]);
+  }
+}
+
+function runOptionalProjectScript(scripts, name, env, heading = "") {
+  if (!Object.hasOwn(scripts, name)) {
+    process.stdout.write(`Skipping ${name}: package.json script is not defined.\n`);
+    return { exitCode: 0, skipped: true };
+  }
+  if (heading) process.stdout.write(heading);
+  try {
+    runWithEnv("bun", ["run", name], env);
+    return { exitCode: 0, skipped: false };
+  } catch {
+    return { exitCode: 1, skipped: false };
+  }
+}
+
 function read(command, args) {
   return execFileSync(command, args, { encoding: "utf8" });
 }
@@ -261,6 +293,16 @@ function hasEmergencyBackfillEvidence(body) {
   return evidence.length >= 12;
 }
 
+function hasDeployFixEvidence(body) {
+  const subject = commitSubject(body);
+  if (!/^🚑\s+deploy-fix:\s+\S+/u.test(subject) && !/^deploy-fix:\s+\S+/u.test(subject)) {
+    return false;
+  }
+  if (!/^Deploy-Fix:\s*true\s*$/im.test(body)) return false;
+  const evidence = /^Deploy-Fix-Evidence:\s*(.+)$/im.exec(body)?.[1]?.trim() ?? "";
+  return evidence.length >= 12;
+}
+
 function commitSubject(body) {
   return (
     body
@@ -356,6 +398,7 @@ function enforceTaskBoundOutgoingCommits(range) {
     if (hasManagedInstallEvidence(body, mutating)) continue;
     if (hasManagedContextBootstrapEvidence(body, mutating)) continue;
     if (hasEmergencyBackfillEvidence(body)) continue;
+    if (hasDeployFixEvidence(body)) continue;
 
     failures.push(
       [
@@ -373,6 +416,7 @@ function enforceTaskBoundOutgoingCommits(range) {
       "  1) Reword the commit subject to include a valid task suffix/id from .agentplane/tasks.",
       "  2) Or commit from task/<task-id>/<slug> / AGENTPLANE_TASK_ID through AgentPlane.",
       "  3) For emergency hotfixes, add trailers: Emergency-Hotfix: true, Backfill-Task: <task-id>, Backfill-Evidence: <evidence>.",
+      "  4) For tiny deploy-only fixes, use subject `🚑 deploy-fix: ...` plus trailers: Deploy-Fix: true, Deploy-Fix-Evidence: <evidence>.",
     ],
   );
 }
@@ -403,6 +447,7 @@ function main() {
       newBranchFallbackRef: resolveDefaultBaseRef(),
     }),
   );
+  const scripts = readPackageScripts();
   const diffRange = selectBranchDiffRange(updates, {
     newBranchFallbackRef: resolveDefaultBaseRef(),
   });
@@ -419,10 +464,21 @@ function main() {
   }
   if (!isReleasePush && isReleaseEvidenceOnlyPush(updates, changedFiles)) {
     process.stdout.write("Running lightweight checks for release evidence-only task closure.\n");
-    runWithEnv("bun", ["run", "format:check"], sanitizeCiEnv(process.env));
-    failIfTrackedChanges(
-      "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
+    const formatResult = runOptionalProjectScript(
+      scripts,
+      "format:check",
+      sanitizeCiEnv(process.env),
     );
+    if (!formatResult.skipped) {
+      failIfTrackedChanges(
+        "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
+      );
+    }
+    if (formatResult.exitCode !== 0) {
+      fail(
+        "pre-push blocked: formatting check failed. Run `bun run format`, review the diff, commit it, and push again.",
+      );
+    }
     writeReusableProof(key);
     return;
   }
@@ -431,10 +487,13 @@ function main() {
       ? sanitizeCiEnv({ ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") })
       : sanitizeCiEnv(process.env);
 
-  process.stdout.write("\n== Format (check) ==\n");
-  try {
-    runWithEnv("bun", ["run", "format:check"], sanitizeCiEnv(process.env));
-  } catch {
+  const formatResult = runOptionalProjectScript(
+    scripts,
+    "format:check",
+    sanitizeCiEnv(process.env),
+    "\n== Format (check) ==\n",
+  );
+  if (formatResult.exitCode !== 0) {
     failIfTrackedChanges(
       "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
     );
@@ -442,20 +501,19 @@ function main() {
       "pre-push blocked: formatting check failed. Run `bun run format`, review the diff, commit it, and push again.",
     );
   }
-  failIfTrackedChanges(
-    "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
-  );
-
-  let ciFailed = false;
-  try {
-    runWithEnv("bun", ["run", ciScript], ciEnv);
-  } catch {
-    ciFailed = true;
+  if (!formatResult.skipped) {
+    failIfTrackedChanges(
+      "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
+    );
   }
-  failIfTrackedChanges(
-    `pre-push blocked: ${ciScript} changed tracked files. Commit or revert those changes and push again.`,
-  );
-  if (ciFailed) {
+
+  const ciResult = runOptionalProjectScript(scripts, ciScript, ciEnv);
+  if (!ciResult.skipped) {
+    failIfTrackedChanges(
+      `pre-push blocked: ${ciScript} changed tracked files. Commit or revert those changes and push again.`,
+    );
+  }
+  if (ciResult.exitCode !== 0) {
     fail(`pre-push blocked: ${ciScript} failed. Fix the reported checks and push again.`);
   }
 

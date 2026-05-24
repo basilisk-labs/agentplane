@@ -39,8 +39,10 @@ agentplane cleanup merged --finalize
 ```
 
 `direct` remains supported, but here it is an explicit alternative rather than the default guarded route.
-`agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass
-`--merge-strategy squash` only when compacting history is intentional.
+Local `agentplane integrate` defaults to `merge` so task branch commits stay in base history. On
+protected bases, the GitHub PR finalization path prefers rebase merge so task commits remain visible
+without an extra GitHub merge commit. Pass `--merge-strategy squash` only when compacting history is
+intentional.
 
 Default branch names are `task/<task-id>/<slug>` for implementation and
 `task-close/<task-id>/<sha12>` for close-tail evidence. The repository can override the prefixes

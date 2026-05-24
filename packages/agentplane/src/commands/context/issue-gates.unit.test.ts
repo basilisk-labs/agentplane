@@ -310,6 +310,6 @@ describe("context GitHub issue regression gates", () => {
         cwd: root,
         parsed: { taskId: task.id },
       }),
-    ).rejects.toThrow(/derived graph\/fact\/provenance projections are incomplete/u);
+    ).rejects.toThrow(/requires non-empty derived facts, graph entities, graph edges/u);
   });
 });

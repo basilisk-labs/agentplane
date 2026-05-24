@@ -25,7 +25,42 @@ export type SgrReasoningStep = {
 };
 
 export type ContextExtractionItemStatus = "proposed" | "accepted" | "stale" | "conflict";
-export type ContextExtractionItemKind = "wiki_update" | "fact" | "graph_edge" | "capability_note";
+export type ContextExtractionItemKind =
+  | "wiki_update"
+  | "fact"
+  | "graph_entity"
+  | "graph_edge"
+  | "coverage"
+  | "capability_note";
+
+export type ContextExtractionCoverageStatus =
+  | "covered"
+  | "omitted_boilerplate"
+  | "redacted"
+  | "unresolved";
+
+export type ContextExtractionGraphEntity = {
+  id: string;
+  kind: string;
+  label: string;
+  aliases?: string[];
+  status?: string;
+};
+
+export type ContextExtractionGraphEdge = {
+  id?: string;
+  from: string;
+  to: string;
+  relation: string;
+  status?: string;
+};
+
+export type ContextExtractionCoverage = {
+  source_path: string;
+  status: ContextExtractionCoverageStatus;
+  reason: string;
+  covered_item_ids?: string[];
+};
 
 export type ContextExtractionItem = {
   id: string;
@@ -35,6 +70,9 @@ export type ContextExtractionItem = {
   confidence: number;
   status: ContextExtractionItemStatus;
   target_path?: string;
+  entity?: ContextExtractionGraphEntity;
+  edge?: ContextExtractionGraphEdge;
+  coverage?: ContextExtractionCoverage;
   stale_markers?: string[];
   conflict_markers?: string[];
 };
@@ -212,6 +250,43 @@ function validateReasoningStep(raw: unknown, field = "reasoning step"): SgrReaso
   };
 }
 
+function validateGraphEntity(raw: unknown, field: string): ContextExtractionGraphEntity {
+  const entity = requireRecord(raw, field);
+  return {
+    id: requireString(entity.id, `${field}.id`),
+    kind: requireString(entity.kind, `${field}.kind`),
+    label: requireString(entity.label, `${field}.label`),
+    aliases: optionalStringArray(entity.aliases, `${field}.aliases`),
+    status: optionalString(entity.status, `${field}.status`),
+  };
+}
+
+function validateGraphEdge(raw: unknown, field: string): ContextExtractionGraphEdge {
+  const edge = requireRecord(raw, field);
+  return {
+    id: optionalString(edge.id, `${field}.id`),
+    from: requireString(edge.from, `${field}.from`),
+    to: requireString(edge.to, `${field}.to`),
+    relation: requireString(edge.relation, `${field}.relation`),
+    status: optionalString(edge.status, `${field}.status`),
+  };
+}
+
+function validateCoverage(raw: unknown, field: string): ContextExtractionCoverage {
+  const coverage = requireRecord(raw, field);
+  return {
+    source_path: requireString(coverage.source_path, `${field}.source_path`),
+    status: requireEnum(coverage.status, `${field}.status`, [
+      "covered",
+      "omitted_boilerplate",
+      "redacted",
+      "unresolved",
+    ]),
+    reason: requireString(coverage.reason, `${field}.reason`),
+    covered_item_ids: optionalStringArray(coverage.covered_item_ids, `${field}.covered_item_ids`),
+  };
+}
+
 export function validateContextExtractionSgrResult(
   raw: unknown,
   field = "context extraction SGR result",
@@ -256,7 +331,9 @@ export function validateContextExtractionSgrResult(
           kind: requireEnum(item.kind, `${itemField}.kind`, [
             "wiki_update",
             "fact",
+            "graph_entity",
             "graph_edge",
+            "coverage",
             "capability_note",
           ]),
           summary: requireString(item.summary, `${itemField}.summary`),
@@ -268,6 +345,18 @@ export function validateContextExtractionSgrResult(
           confidence: validateConfidence(item.confidence, `${itemField}.confidence`),
           status,
           target_path: optionalString(item.target_path, `${itemField}.target_path`),
+          entity:
+            item.kind === "graph_entity"
+              ? validateGraphEntity(item.entity, `${itemField}.entity`)
+              : undefined,
+          edge:
+            item.kind === "graph_edge"
+              ? validateGraphEdge(item.edge, `${itemField}.edge`)
+              : undefined,
+          coverage:
+            item.kind === "coverage"
+              ? validateCoverage(item.coverage, `${itemField}.coverage`)
+              : undefined,
           stale_markers: staleMarkers,
           conflict_markers: conflictMarkers,
         };

@@ -26,6 +26,19 @@ describe("SGR reliability contracts", () => {
       source_refs: [sourceRef],
       extracted_items: [
         {
+          id: "entity.release-workflow",
+          kind: "graph_entity",
+          summary: "Release workflow is a reusable project concept.",
+          source_refs: [sourceRef],
+          confidence: 0.9,
+          status: "proposed",
+          entity: {
+            id: "entity.release-workflow",
+            kind: "concept",
+            label: "Release workflow",
+          },
+        },
+        {
           id: "fact.release-gate",
           kind: "fact",
           summary: "Release tasks require evidence-backed publish gates.",
@@ -35,13 +48,57 @@ describe("SGR reliability contracts", () => {
           stale_markers: ["release workflow changed"],
           conflict_markers: [],
         },
+        {
+          id: "coverage.release-source",
+          kind: "coverage",
+          summary: "Coverage row records how the source was assimilated.",
+          source_refs: [sourceRef],
+          confidence: 0.9,
+          status: "proposed",
+          coverage: {
+            source_path: sourceRef.path,
+            status: "covered",
+            reason: "The reusable entity and fact were extracted.",
+            covered_item_ids: ["entity.release-workflow", "fact.release-gate"],
+          },
+        },
       ],
     });
 
     expect(result.extracted_items[0]).toMatchObject({
-      id: "fact.release-gate",
+      id: "entity.release-workflow",
       confidence: 0.9,
     });
+    expect(result.extracted_items[2]).toMatchObject({
+      id: "coverage.release-source",
+      coverage: { status: "covered" },
+    });
+  });
+
+  it("rejects context extraction coverage with invalid status", () => {
+    expect(() =>
+      validateContextExtractionSgrResult({
+        schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+        kind: "context_extraction",
+        reasoning: [{ label: "coverage", summary: "Classify source coverage." }],
+        source_refs: [sourceRef],
+        extracted_items: [
+          {
+            id: "coverage.bad",
+            kind: "coverage",
+            summary: "Invalid coverage status.",
+            source_refs: [sourceRef],
+            confidence: 0.7,
+            status: "proposed",
+            coverage: {
+              source_path: sourceRef.path,
+              status: "partial",
+              reason: "Invalid status should be rejected.",
+            },
+          },
+        ],
+      }),
+    ).toThrow("coverage.status");
   });
 
   it("rejects context extraction items without source references", () => {

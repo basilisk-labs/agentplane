@@ -3,11 +3,15 @@
   "branch": "task/202605230451-N5F0HY/followup-close-superseded",
   "created_at": "2026-05-23T07:29:18.130Z",
   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "head_sha": "adb56d4a6a0f1dfe8b905a0147b3b0d4f81ef497",
   "last_verified_at": "2026-05-23T07:32:53.316Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "adb56d4a6a0f1dfe8b905a0147b3b0d4f81ef497",
+  "merged_at": "2026-05-23T20:42:23.861Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605230451-N5F0HY",
-  "updated_at": "2026-05-23T07:29:18.130Z",
+  "updated_at": "2026-05-23T20:42:23.861Z",
   "verify": {
     "status": "pass"
   }

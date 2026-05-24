@@ -46,6 +46,7 @@ export type PolicyContext = {
 
   commit?: {
     subject?: string;
+    body?: string;
     taskIntent?: CommitTaskIntent;
     allowHumanTaskSubject?: boolean;
   };

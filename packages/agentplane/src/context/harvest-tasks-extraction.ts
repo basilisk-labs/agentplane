@@ -36,6 +36,19 @@ const CONTEXT_EXTRACTION_SGR_EXAMPLE: ContextExtractionSgrResult = {
   source_refs: [{ path: ".agentplane/tasks/<source-task-id>/README.md" }],
   extracted_items: [
     {
+      id: "entity.<stable-id>",
+      kind: "graph_entity",
+      summary: "A reusable, source-backed project entity.",
+      source_refs: [{ path: ".agentplane/tasks/<source-task-id>/README.md" }],
+      confidence: 0.8,
+      status: "proposed",
+      entity: {
+        id: "entity.<stable-id>",
+        kind: "concept",
+        label: "Canonical entity label",
+      },
+    },
+    {
       id: "fact.<stable-id>",
       kind: "fact",
       summary: "A reusable, source-backed project fact.",
@@ -44,6 +57,20 @@ const CONTEXT_EXTRACTION_SGR_EXAMPLE: ContextExtractionSgrResult = {
       status: "proposed",
       stale_markers: [],
       conflict_markers: [],
+    },
+    {
+      id: "coverage.<source-task-id>.readme",
+      kind: "coverage",
+      summary: "Coverage decision for the source task README.",
+      source_refs: [{ path: ".agentplane/tasks/<source-task-id>/README.md" }],
+      confidence: 0.8,
+      status: "proposed",
+      coverage: {
+        source_path: ".agentplane/tasks/<source-task-id>/README.md",
+        status: "covered",
+        reason: "Reusable entities and facts were extracted from the task README.",
+        covered_item_ids: ["entity.<stable-id>", "fact.<stable-id>"],
+      },
     },
   ],
 };
@@ -177,6 +204,7 @@ function buildExtractionPromptModule(): PromptModule {
       "Read each source task README first. Read ACR evidence when present. Treat generated raw JSON, search rows, and caches as supporting indexes, not as semantic truth.",
       "",
       "Extract durable knowledge only when it is backed by source_refs. Prefer small, reusable facts over task-summary restatement.",
+      "First return and save a `context_extraction` SGR result with entities, facts, graph edges, and coverage rows, then apply it with `agentplane context extraction apply <sgr-json> --task-id <task-id>` before writing narrative wiki pages.",
       "",
       "Required extraction classes:",
       "- components, commands, policies, and workflow surfaces touched by the tasks;",

@@ -474,47 +474,47 @@
       "types": [
         {
           "name": "BlueprintDefinition",
-          "line": 100,
+          "line": 102,
           "col": 13
         },
         {
           "name": "BlueprintExecutionCheckProblemCode",
-          "line": 422,
+          "line": 424,
           "col": 13
         },
         {
           "name": "BlueprintExecutionEventType",
-          "line": 336,
+          "line": 338,
           "col": 13
         },
         {
           "name": "BlueprintExecutionEvidenceRef",
-          "line": 348,
+          "line": 350,
           "col": 13
         },
         {
           "name": "BlueprintExecutionNodeStatus",
-          "line": 327,
+          "line": 329,
           "col": 13
         },
         {
           "name": "BlueprintExecutionStateEvent",
-          "line": 401,
+          "line": 403,
           "col": 13
         },
         {
           "name": "BlueprintExecutionStateNode",
-          "line": 393,
+          "line": 395,
           "col": 13
         },
         {
           "name": "BlueprintNodeMode",
-          "line": 49,
+          "line": 50,
           "col": 13
         },
         {
           "name": "BlueprintState",
-          "line": 101,
+          "line": 103,
           "col": 13
         },
         {
@@ -524,12 +524,12 @@
         },
         {
           "name": "RecipeExtensionPoint",
-          "line": 154,
+          "line": 156,
           "col": 13
         },
         {
           "name": "SkippedNode",
-          "line": 242,
+          "line": 244,
           "col": 13
         }
       ]
@@ -601,12 +601,12 @@
         },
         {
           "name": "BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS",
-          "line": 28,
+          "line": 34,
           "col": 14
         },
         {
           "name": "BOOTSTRAP_VERIFICATION_COMMANDS",
-          "line": 36,
+          "line": 42,
           "col": 14
         }
       ]
@@ -616,7 +616,7 @@
       "exports": [
         {
           "name": "getCanonicalCommandInvocation",
-          "line": 38,
+          "line": 40,
           "col": 17
         }
       ]
@@ -921,12 +921,12 @@
       "types": [
         {
           "name": "CloseTailStatus",
-          "line": 35,
+          "line": 43,
           "col": 13
         },
         {
           "name": "RemotePrStatus",
-          "line": 22,
+          "line": 30,
           "col": 13
         }
       ]
@@ -956,7 +956,7 @@
       "exports": [
         {
           "name": "isUnknownRevisionError",
-          "line": 25,
+          "line": 30,
           "col": 17
         }
       ]
@@ -966,17 +966,17 @@
       "exports": [
         {
           "name": "renderPrHandoffNotes",
-          "line": 288,
+          "line": 287,
           "col": 17
         },
         {
           "name": "updateAutoSummaryBlock",
-          "line": 266,
+          "line": 265,
           "col": 17
         },
         {
           "name": "updateHandoffNotesBlock",
-          "line": 297,
+          "line": 296,
           "col": 17
         }
       ]
@@ -996,7 +996,7 @@
         },
         {
           "name": "resolvePrDiffBaseRef",
-          "line": 73,
+          "line": 71,
           "col": 23
         }
       ]
@@ -1006,7 +1006,7 @@
       "exports": [
         {
           "name": "formatUnpublishedRemoteHeadReason",
-          "line": 139,
+          "line": 182,
           "col": 17
         }
       ]
@@ -1366,7 +1366,7 @@
       "exports": [
         {
           "name": "applyReleaseMutation",
-          "line": 24,
+          "line": 25,
           "col": 23
         }
       ]
@@ -1391,7 +1391,7 @@
       "exports": [
         {
           "name": "resolveReleasePlanInputs",
-          "line": 24,
+          "line": 27,
           "col": 23
         }
       ]
@@ -1411,7 +1411,7 @@
       "exports": [
         {
           "name": "findLatestPlanDir",
-          "line": 55,
+          "line": 56,
           "col": 23
         },
         {
@@ -1541,17 +1541,17 @@
       "exports": [
         {
           "name": "backendHasLocalCanonicalSource",
-          "line": 136,
+          "line": 137,
           "col": 17
         },
         {
           "name": "backendWritesTaskReadmes",
-          "line": 140,
+          "line": 141,
           "col": 17
         },
         {
           "name": "getTaskBackendCapabilities",
-          "line": 115,
+          "line": 116,
           "col": 17
         }
       ],
@@ -1568,7 +1568,7 @@
       "exports": [
         {
           "name": "readTaskPrBranch",
-          "line": 111,
+          "line": 126,
           "col": 23
         }
       ]
@@ -3182,27 +3182,42 @@
       "types": [
         {
           "name": "BlueprintDecisionEvidenceRequirement",
-          "line": 84,
+          "line": 122,
           "col": 13
         },
         {
           "name": "BlueprintDecisionStopRule",
-          "line": 90,
+          "line": 128,
           "col": 13
         },
         {
           "name": "BlueprintRejectedRoute",
-          "line": 73,
+          "line": 111,
           "col": 13
         },
         {
           "name": "BlueprintSelectedRoute",
-          "line": 78,
+          "line": 116,
           "col": 13
         },
         {
-          "name": "ContextExtractionItem",
-          "line": 30,
+          "name": "ContextExtractionCoverage",
+          "line": 58,
+          "col": 13
+        },
+        {
+          "name": "ContextExtractionCoverageStatus",
+          "line": 36,
+          "col": 13
+        },
+        {
+          "name": "ContextExtractionGraphEdge",
+          "line": 50,
+          "col": 13
+        },
+        {
+          "name": "ContextExtractionGraphEntity",
+          "line": 42,
           "col": 13
         },
         {
@@ -3217,17 +3232,17 @@
         },
         {
           "name": "EvaluatorFinding",
-          "line": 54,
+          "line": 92,
           "col": 13
         },
         {
           "name": "EvaluatorFindingSeverity",
-          "line": 52,
+          "line": 90,
           "col": 13
         },
         {
           "name": "EvaluatorVerdict",
-          "line": 51,
+          "line": 89,
           "col": 13
         },
         {
@@ -3238,11 +3253,6 @@
         {
           "name": "SgrReasoningStep",
           "line": 21,
-          "col": 13
-        },
-        {
-          "name": "SgrSourceRef",
-          "line": 13,
           "col": 13
         }
       ]
@@ -3600,7 +3610,7 @@
       "exports": [
         {
           "name": "formatSchemaErrors",
-          "line": 44,
+          "line": 42,
           "col": 17
         }
       ]
@@ -3610,27 +3620,27 @@
       "exports": [
         {
           "name": "ACR_SCHEMA",
-          "line": 28,
+          "line": 65,
           "col": 14
         },
         {
           "name": "TASK_HANDOFF_SCHEMA",
-          "line": 55,
+          "line": 92,
           "col": 14
         },
         {
           "name": "TASK_PR_META_SCHEMA",
-          "line": 50,
+          "line": 87,
           "col": 14
         },
         {
           "name": "TASK_README_FRONTMATTER_SCHEMA",
-          "line": 35,
+          "line": 72,
           "col": 14
         },
         {
           "name": "TASKS_EXPORT_SCHEMA",
-          "line": 45,
+          "line": 82,
           "col": 14
         }
       ]
@@ -3654,9 +3664,9 @@
   "counts": {
     "files": 1,
     "exports": 207,
-    "types": 356,
+    "types": 358,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 564
+    "total": 566
   }
 }

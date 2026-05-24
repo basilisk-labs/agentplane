@@ -30,6 +30,7 @@ import {
   cmdContextGraphValidate,
   cmdContextGraphExport,
 } from "./graph.js";
+import { cmdContextExtractionApply } from "./extraction.js";
 import {
   cmdContextCapabilityValidate,
   cmdContextCapabilitySearch,
@@ -41,6 +42,7 @@ import {
   contextCapabilitySearchSpec,
   contextCapabilityValidateSpec,
   contextDoctorSpec,
+  contextExtractionApplySpec,
   contextGraphExportSpec,
   contextGraphNeighborsSpec,
   contextGraphShowSpec,
@@ -422,6 +424,17 @@ export async function runContextGraphExport(
   return await cmdContextGraphExport({ cwd: _ctx.cwd, rootOverride: _ctx.rootOverride, parsed: p });
 }
 
+export async function runContextExtractionApply(
+  _ctx: CommandCtx,
+  p: { file: string; taskId: string; dryRun: boolean },
+): Promise<number> {
+  return await cmdContextExtractionApply({
+    cwd: _ctx.cwd,
+    rootOverride: _ctx.rootOverride,
+    parsed: p,
+  });
+}
+
 export async function runContextCapabilityValidate(
   _ctx: CommandCtx,
   p: { path: string },
@@ -460,6 +473,7 @@ export {
   contextCapabilitySearchSpec,
   contextCapabilityValidateSpec,
   contextDoctorSpec,
+  contextExtractionApplySpec,
   contextGraphExportSpec,
   contextGraphNeighborsSpec,
   contextGraphShowSpec,

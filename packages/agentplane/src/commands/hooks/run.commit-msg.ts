@@ -83,6 +83,7 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
     git: { stagedPaths: await new GitContext({ gitRoot: resolved.gitRoot }).statusStagedPaths() },
     commit: {
       subject,
+      body: raw,
       taskIntent,
       allowHumanTaskSubject: envFlag("AGENTPLANE_ALLOW_HUMAN_TASK_SUBJECT"),
     },

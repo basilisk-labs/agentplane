@@ -9,6 +9,7 @@ import { fileExists, isRecord, parseJsonlLines, readText, toPosix } from "./cont
 import path from "node:path";
 import { readdir } from "node:fs/promises";
 import { parse as parseYaml } from "yaml";
+import { validateMaximumAssimilationCoverage } from "./coverage-validation.js";
 
 type ContextExtension = {
   assimilation?: {
@@ -55,6 +56,7 @@ const DEFAULT_ALLOWED = [
   ".agentplane/context/derived/graph/provenance_edges.jsonl",
   ".agentplane/context/derived/capabilities/capabilities.jsonl",
   ".agentplane/context/derived/reports/assimilation-events.jsonl",
+  ".agentplane/context/derived/reports/coverage.jsonl",
   ".agentplane/tasks/${taskId}/README.md",
   ".agentplane/tasks/${taskId}/acr.json",
 ];
@@ -262,6 +264,24 @@ async function validateMaximumAssimilationDerivedConsistency(
   errors: string[],
 ): Promise<void> {
   if (context.mode !== "maximum_assimilation") return;
+  if (isProfileSwitchContextTask(context)) return;
+  const graphRoot = path.join(root, ".agentplane/context/derived/graph");
+  const entities = await loadJsonlRows(path.join(graphRoot, "entities.jsonl"));
+  const edges = await loadJsonlRows(path.join(graphRoot, "edges.jsonl"));
+  const provenance = await loadJsonlRows(path.join(graphRoot, "provenance_edges.jsonl"));
+  const facts = await loadJsonlRows(
+    path.join(root, ".agentplane/context/derived/facts/facts.jsonl"),
+  );
+  if (
+    entities.length === 0 ||
+    edges.length === 0 ||
+    provenance.length === 0 ||
+    facts.length === 0
+  ) {
+    errors.push(
+      "maximum-assimilation requires non-empty derived facts, graph entities, graph edges, and provenance before verification",
+    );
+  }
   const wikiRoot = path.join(root, "context/wiki");
   const wikiPages: string[] = [];
   async function walk(current: string): Promise<void> {
@@ -287,24 +307,6 @@ async function validateMaximumAssimilationDerivedConsistency(
     if (hasNonEmptyGraphRefs(await readText(page))) pagesWithGraphRefs += 1;
   }
   if (pagesWithGraphRefs === 0) return;
-
-  const graphRoot = path.join(root, ".agentplane/context/derived/graph");
-  const entities = await loadJsonlRows(path.join(graphRoot, "entities.jsonl"));
-  const edges = await loadJsonlRows(path.join(graphRoot, "edges.jsonl"));
-  const provenance = await loadJsonlRows(path.join(graphRoot, "provenance_edges.jsonl"));
-  const facts = await loadJsonlRows(
-    path.join(root, ".agentplane/context/derived/facts/facts.jsonl"),
-  );
-  if (
-    entities.length === 0 ||
-    edges.length === 0 ||
-    provenance.length === 0 ||
-    facts.length === 0
-  ) {
-    errors.push(
-      `maximum-assimilation wiki declares graph_refs in ${pagesWithGraphRefs} page(s), but derived graph/fact/provenance projections are incomplete`,
-    );
-  }
 }
 
 async function validateCapabilityArtifact(filePath: string, errors: string[]): Promise<void> {
@@ -393,6 +395,7 @@ async function validateContextArtifacts(opts: {
     pathsToCheck.add(".agentplane/context/derived/graph/entities.jsonl");
     pathsToCheck.add(".agentplane/context/derived/graph/edges.jsonl");
     pathsToCheck.add(".agentplane/context/derived/graph/provenance_edges.jsonl");
+    pathsToCheck.add(".agentplane/context/derived/reports/coverage.jsonl");
   }
 
   for (const rel of pathsToCheck) {
@@ -412,6 +415,7 @@ async function validateContextArtifacts(opts: {
     await validateMaximumAssimilationGlossary(opts.root, errors);
   }
   await validateGraph(opts.root, errors);
+  await validateMaximumAssimilationCoverage(opts.root, opts.context, errors);
   await validateMaximumAssimilationDerivedConsistency(opts.root, opts.context, errors);
   await validateAcrContextExtension(opts.root, opts.task, opts.context, errors);
   return errors;

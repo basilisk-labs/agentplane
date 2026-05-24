@@ -1,0 +1,326 @@
+---
+id: "202605231849-TRN34K"
+title: "Fix maximum assimilation process rough edges"
+result_summary: "Merged via PR #4122."
+status: "DONE"
+priority: "med"
+owner: "CODER"
+revision: 9
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "code"
+  - "context"
+verify: []
+plan_approval:
+  state: "approved"
+  updated_at: "2026-05-23T18:50:01.521Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "ok"
+  updated_at: "2026-05-24T06:44:37.838Z"
+  updated_by: "EVALUATOR"
+  note: "Quality gate passed: maximum assimilation now requires formal SGR extraction, deterministic writer materialization, non-empty facts/entities/edges/provenance/coverage, and per-source coverage before wiki synthesis."
+  attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-24T06:44:37.838Z"
+  updated_by: "EVALUATOR"
+  note: "Quality gate passed: maximum assimilation now requires formal SGR extraction, deterministic writer materialization, non-empty facts/entities/edges/provenance/coverage, and per-source coverage before wiki synthesis."
+  evaluated_sha: "97c5e8be4fc3d6bd57c9d3fdfd0207719cf56f87"
+  blueprint_digest: "a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880"
+  evidence_refs:
+    - ".agentplane/tasks/202605231849-TRN34K/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231849-TRN34K-max-assimilation-process-fixes/.agentplane/tasks/202605231849-TRN34K/blueprint/resolved-snapshot.json"
+  findings: []
+commit:
+  hash: "b81af494b43b4e0189b6c8847236da73e680fd87"
+  message: "🚧 TRN34K task: Resolve extraction root path review"
+comments:
+  -
+    author: "CODER"
+    body: "Start: Fixing context maximum-assimilation process rough edges around generated wiki lint, nested bootstrap guidance, and sequential ingest duplicate warnings in the dedicated task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4122 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+events:
+  -
+    type: "status"
+    at: "2026-05-23T18:51:30.786Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Fixing context maximum-assimilation process rough edges around generated wiki lint, nested bootstrap guidance, and sequential ingest duplicate warnings in the dedicated task worktree."
+  -
+    type: "verify"
+    at: "2026-05-23T19:12:11.978Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented maximum-assimilation process fixes and verified with focused context/init tests, full context release-readiness test, full init CLI test with extended timeout, eslint on touched files, policy routing, and ap doctor. ap doctor has unrelated existing branch_pr reconciliation warnings for 202605230451-N5F0HY."
+  -
+    type: "verify"
+    at: "2026-05-23T20:44:06.025Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented supported context_extraction writer for derived facts/entities/edges/provenance, added maximum-assimilation hard gate for non-empty derived outputs, refreshed prompts to require writer pass before wiki synthesis, normalized stale branch_pr metadata for 202605230451-N5F0HY, and verified with focused SGR/context tests, full context release-readiness with extended timeout, eslint on touched files, docs:cli:check, policy routing, ap doctor, and an end-to-end nested maximum-assimilation smoke with two sequential sources."
+  -
+    type: "verify"
+    at: "2026-05-23T21:16:06.660Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented maximum-assimilation coverage SGR/writer/verify gate and verified CURATOR prompt contract creates the LLM-facing task before deterministic extraction apply."
+  -
+    type: "verify"
+    at: "2026-05-24T06:44:37.838Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Quality gate passed: maximum assimilation now requires formal SGR extraction, deterministic writer materialization, non-empty facts/entities/edges/provenance/coverage, and per-source coverage before wiki synthesis."
+  -
+    type: "status"
+    at: "2026-05-24T07:43:26.516Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4122 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+doc_version: 3
+doc_updated_at: "2026-05-24T07:43:26.526Z"
+doc_updated_by: "INTEGRATOR"
+description: "Fix context wiki init lint noise, clarify nested context bootstrap behavior, and reduce duplicate-task warning noise for sequential context ingestion workflows."
+sections:
+  Summary: |-
+    Fix maximum assimilation process rough edges
+
+    Fix context wiki init lint noise, clarify nested context bootstrap behavior, and reduce duplicate-task warning noise for sequential context ingestion workflows.
+  Scope: |-
+    - In scope: Fix context wiki init lint noise, clarify nested context bootstrap behavior, and reduce duplicate-task warning noise for sequential context ingestion workflows.
+    - Out of scope: unrelated refactors not required for "Fix maximum assimilation process rough edges".
+  Plan: |-
+    1. Inspect context init/wiki scaffold lint behavior, nested context init/bootstrap path, and duplicate context learn/ingest handling.
+    2. Fix generated context/wiki/AGENTS.md so full wiki lint is clean after maximum-assimilation init.
+    3. Improve context init error guidance for empty directories inside a parent Git repository so it points to explicit agentplane init + context init.
+    4. Suppress or reword duplicate open-task noise for sequential context ingestion of different source files while preserving real duplicate protection.
+    5. Add focused CLI tests for all three rough edges and update docs/help where behavior changes.
+    6. Run targeted context CLI tests, docs checks if generated docs change, policy routing, and doctor.
+  Verify Steps: |-
+    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
+
+    1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+    2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-23T19:12:11.978Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented maximum-assimilation process fixes and verified with focused context/init tests, full context release-readiness test, full init CLI test with extended timeout, eslint on touched files, policy routing, and ap doctor. ap doctor has unrelated existing branch_pr reconciliation warnings for 202605230451-N5F0HY.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T18:51:30.786Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231849-TRN34K-max-assimilation-process-fixes/.agentplane/tasks/202605231849-TRN34K/blueprint/resolved-snapshot.json
+    - old_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+    - current_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605231849-TRN34K
+
+    ### 2026-05-23T20:44:06.025Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented supported context_extraction writer for derived facts/entities/edges/provenance, added maximum-assimilation hard gate for non-empty derived outputs, refreshed prompts to require writer pass before wiki synthesis, normalized stale branch_pr metadata for 202605230451-N5F0HY, and verified with focused SGR/context tests, full context release-readiness with extended timeout, eslint on touched files, docs:cli:check, policy routing, ap doctor, and an end-to-end nested maximum-assimilation smoke with two sequential sources.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T19:12:12.023Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231849-TRN34K-max-assimilation-process-fixes/.agentplane/tasks/202605231849-TRN34K/blueprint/resolved-snapshot.json
+    - old_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+    - current_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605231849-TRN34K
+
+    ### 2026-05-23T21:16:06.660Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented maximum-assimilation coverage SGR/writer/verify gate and verified CURATOR prompt contract creates the LLM-facing task before deterministic extraction apply.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T20:44:06.347Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231849-TRN34K-max-assimilation-process-fixes/.agentplane/tasks/202605231849-TRN34K/blueprint/resolved-snapshot.json
+    - old_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+    - current_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605231849-TRN34K
+
+    ### 2026-05-24T06:44:37.838Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Quality gate passed: maximum assimilation now requires formal SGR extraction, deterministic writer materialization, non-empty facts/entities/edges/provenance/coverage, and per-source coverage before wiki synthesis.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T21:16:06.702Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231849-TRN34K-max-assimilation-process-fixes/.agentplane/tasks/202605231849-TRN34K/blueprint/resolved-snapshot.json
+    - old_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+    - current_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605231849-TRN34K
+
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: |-
+    - Observation: Focused tests, release readiness tests, eslint, build, docs CLI check, policy routing, ap doctor, and fresh maximum-assimilation smoke passed.
+      Impact: Maximum assimilation now fails verification unless facts, entities, edges, provenance, and per-source coverage rows exist before wiki synthesis.
+      Resolution: Coverage rows are generated by context extraction apply from SGR coverage items; prompt modules require structured extraction before narrative wiki pages.
+
+    - Observation: Reviewed committed diff and verification evidence: focused tests, release-readiness suite, eslint, build, docs CLI check, policy routing, ap doctor, and fresh maximum-assimilation smoke passed.
+      Impact: The previous empty-derived-output failure mode is blocked by verify-task and covered by unit/release/smoke tests.
+      Resolution: Proceed to branch_pr integration with task branch task/202605231849-TRN34K/max-assimilation-process-fixes.
+id_source: "generated"
+---
+## Summary
+
+Fix maximum assimilation process rough edges
+
+Fix context wiki init lint noise, clarify nested context bootstrap behavior, and reduce duplicate-task warning noise for sequential context ingestion workflows.
+
+## Scope
+
+- In scope: Fix context wiki init lint noise, clarify nested context bootstrap behavior, and reduce duplicate-task warning noise for sequential context ingestion workflows.
+- Out of scope: unrelated refactors not required for "Fix maximum assimilation process rough edges".
+
+## Plan
+
+1. Inspect context init/wiki scaffold lint behavior, nested context init/bootstrap path, and duplicate context learn/ingest handling.
+2. Fix generated context/wiki/AGENTS.md so full wiki lint is clean after maximum-assimilation init.
+3. Improve context init error guidance for empty directories inside a parent Git repository so it points to explicit agentplane init + context init.
+4. Suppress or reword duplicate open-task noise for sequential context ingestion of different source files while preserving real duplicate protection.
+5. Add focused CLI tests for all three rough edges and update docs/help where behavior changes.
+6. Run targeted context CLI tests, docs checks if generated docs change, policy routing, and doctor.
+
+## Verify Steps
+
+PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
+
+1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-23T19:12:11.978Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented maximum-assimilation process fixes and verified with focused context/init tests, full context release-readiness test, full init CLI test with extended timeout, eslint on touched files, policy routing, and ap doctor. ap doctor has unrelated existing branch_pr reconciliation warnings for 202605230451-N5F0HY.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T18:51:30.786Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231849-TRN34K-max-assimilation-process-fixes/.agentplane/tasks/202605231849-TRN34K/blueprint/resolved-snapshot.json
+- old_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+- current_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605231849-TRN34K
+
+### 2026-05-23T20:44:06.025Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented supported context_extraction writer for derived facts/entities/edges/provenance, added maximum-assimilation hard gate for non-empty derived outputs, refreshed prompts to require writer pass before wiki synthesis, normalized stale branch_pr metadata for 202605230451-N5F0HY, and verified with focused SGR/context tests, full context release-readiness with extended timeout, eslint on touched files, docs:cli:check, policy routing, ap doctor, and an end-to-end nested maximum-assimilation smoke with two sequential sources.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T19:12:12.023Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231849-TRN34K-max-assimilation-process-fixes/.agentplane/tasks/202605231849-TRN34K/blueprint/resolved-snapshot.json
+- old_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+- current_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605231849-TRN34K
+
+### 2026-05-23T21:16:06.660Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented maximum-assimilation coverage SGR/writer/verify gate and verified CURATOR prompt contract creates the LLM-facing task before deterministic extraction apply.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T20:44:06.347Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231849-TRN34K-max-assimilation-process-fixes/.agentplane/tasks/202605231849-TRN34K/blueprint/resolved-snapshot.json
+- old_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+- current_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605231849-TRN34K
+
+### 2026-05-24T06:44:37.838Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Quality gate passed: maximum assimilation now requires formal SGR extraction, deterministic writer materialization, non-empty facts/entities/edges/provenance/coverage, and per-source coverage before wiki synthesis.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-23T21:16:06.702Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231849-TRN34K-max-assimilation-process-fixes/.agentplane/tasks/202605231849-TRN34K/blueprint/resolved-snapshot.json
+- old_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+- current_digest: a1ba14b003e75ecf9222c7e7387dfc49cb329f07d15da4894778203cc77d3880
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605231849-TRN34K
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
+
+- Observation: Focused tests, release readiness tests, eslint, build, docs CLI check, policy routing, ap doctor, and fresh maximum-assimilation smoke passed.
+  Impact: Maximum assimilation now fails verification unless facts, entities, edges, provenance, and per-source coverage rows exist before wiki synthesis.
+  Resolution: Coverage rows are generated by context extraction apply from SGR coverage items; prompt modules require structured extraction before narrative wiki pages.
+
+- Observation: Reviewed committed diff and verification evidence: focused tests, release-readiness suite, eslint, build, docs CLI check, policy routing, ap doctor, and fresh maximum-assimilation smoke passed.
+  Impact: The previous empty-derived-output failure mode is blocked by verify-task and covered by unit/release/smoke tests.
+  Resolution: Proceed to branch_pr integration with task branch task/202605231849-TRN34K/max-assimilation-process-fixes.
