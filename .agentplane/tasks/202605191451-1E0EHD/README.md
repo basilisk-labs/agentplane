@@ -4,7 +4,7 @@ title: "Add daily cloud pull before task start"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -19,22 +19,22 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-24T11:38:21.736Z"
+  updated_at: "2026-05-24T11:40:50.447Z"
   updated_by: "EVALUATOR"
-  note: "Rebased on current main; targeted backend tests, CLI finish/evaluator regression tests, typecheck, policy routing, and doctor passed."
+  note: "Final refresh after integrate quality SHA fix; targeted backend tests, CLI finish/evaluator tests, typecheck, policy routing, and doctor passed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-24T11:38:48.806Z"
+  updated_at: "2026-05-24T11:40:52.093Z"
   updated_by: "EVALUATOR"
-  note: "1E0EHD is rebased on current main and verification passed after refreshing blueprint evidence."
-  evaluated_sha: "fcc768b269079e063d61567307c4969636e72f02"
+  note: "1E0EHD is rebased on current main and final verification passed after evaluator/integrate quality SHA fixes."
+  evaluated_sha: "8a57abdcde8db9b0c966133c67492e6b68de23be"
   blueprint_digest: "f4e1fa6582b448b9d083b41cdfca0b713111fb9153e11c67e7c06a73bd19a6bb"
   evidence_refs:
     - ".agentplane/tasks/202605191451-1E0EHD/README.md"
-    - ".agentplane/tasks/202605191451-1E0EHD/quality/20260524-113848806-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605191451-1E0EHD/quality/20260524-113848806-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605191451-1E0EHD/quality/20260524-113848806-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605191451-1E0EHD/quality/20260524-114052093-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605191451-1E0EHD/quality/20260524-114052093-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605191451-1E0EHD/quality/20260524-114052093-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605191451-1E0EHD/blueprint/resolved-snapshot.json"
     - "npm test -- --run packages/agentplane/src/backends/task-backend/cloud-backend-state.test.ts packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/backends/task-backend.cloud-start-refresh.test.ts"
     - "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts packages/agentplane/src/cli/run-cli.core.tasks.incidents.test.ts"
@@ -42,7 +42,7 @@ quality_review:
     - "node .agentplane/policy/check-routing.mjs"
     - "ap doctor"
   findings:
-    - "Daily cloud start pull backend tests, CLI finish/evaluator regression tests, typecheck, policy routing, and doctor passed against the refreshed branch."
+    - "Backend cloud refresh tests, CLI lifecycle/evaluator regression tests, typecheck, policy routing, and doctor passed on the final branch head."
 commit: null
 comments:
   -
@@ -163,8 +163,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Rebased on current main; targeted backend tests, CLI finish/evaluator regression tests, typecheck, policy routing, and doctor passed."
+  -
+    type: "verify"
+    at: "2026-05-24T11:40:50.447Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Final refresh after integrate quality SHA fix; targeted backend tests, CLI finish/evaluator tests, typecheck, policy routing, and doctor passed."
 doc_version: 3
-doc_updated_at: "2026-05-24T11:38:21.756Z"
+doc_updated_at: "2026-05-24T11:40:50.467Z"
 doc_updated_by: "CODER"
 description: "Before task start-ready on the cloud backend, pull the cloud projection once per local day so GitHub issue intake tasks are visible before local work begins."
 sections:
@@ -374,6 +380,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605191451-1E0EHD
 
+    ### 2026-05-24T11:40:50.447Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Final refresh after integrate quality SHA fix; targeted backend tests, CLI finish/evaluator tests, typecheck, policy routing, and doctor passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T11:38:21.756Z, excerpt_hash=sha256:782bb64e41c9ea0083027075ce7090c9c589b2154a3b0b14e5e4521fb904951b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191451-1E0EHD-daily-cloud-start-pull/.agentplane/tasks/202605191451-1E0EHD/blueprint/resolved-snapshot.json
+    - old_digest: f4e1fa6582b448b9d083b41cdfca0b713111fb9153e11c67e7c06a73bd19a6bb
+    - current_digest: f4e1fa6582b448b9d083b41cdfca0b713111fb9153e11c67e7c06a73bd19a6bb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191451-1E0EHD
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -382,6 +407,10 @@ sections:
     - Observation: 1E0EHD backend diff required evaluator quality-gate fixture repair and implementation-commit SHA handling for multi-task finish.
       Impact: Remote branch can be republished for branch_pr finalization without stale lifecycle test failures.
       Resolution: Added structured evaluator pass fixtures and made evaluator SHA resolution ignore workflow artifact-only commits.
+
+    - Observation: Quality review SHA resolution now ignores workflow artifact-only commits in both evaluator run and integrate prepare.
+      Impact: branch_pr integrate can validate EVALUATOR reviews against the implementation commit instead of service artifact commits.
+      Resolution: Added integrate-side expected SHA parity with evaluator-side SHA resolution and refreshed verification evidence.
 id_source: "generated"
 ---
 ## Summary
@@ -599,6 +628,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605191451-1E0EHD
 
+### 2026-05-24T11:40:50.447Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Final refresh after integrate quality SHA fix; targeted backend tests, CLI finish/evaluator tests, typecheck, policy routing, and doctor passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T11:38:21.756Z, excerpt_hash=sha256:782bb64e41c9ea0083027075ce7090c9c589b2154a3b0b14e5e4521fb904951b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191451-1E0EHD-daily-cloud-start-pull/.agentplane/tasks/202605191451-1E0EHD/blueprint/resolved-snapshot.json
+- old_digest: f4e1fa6582b448b9d083b41cdfca0b713111fb9153e11c67e7c06a73bd19a6bb
+- current_digest: f4e1fa6582b448b9d083b41cdfca0b713111fb9153e11c67e7c06a73bd19a6bb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191451-1E0EHD
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -611,3 +659,7 @@ BlueprintSnapshotRef:
 - Observation: 1E0EHD backend diff required evaluator quality-gate fixture repair and implementation-commit SHA handling for multi-task finish.
   Impact: Remote branch can be republished for branch_pr finalization without stale lifecycle test failures.
   Resolution: Added structured evaluator pass fixtures and made evaluator SHA resolution ignore workflow artifact-only commits.
+
+- Observation: Quality review SHA resolution now ignores workflow artifact-only commits in both evaluator run and integrate prepare.
+  Impact: branch_pr integrate can validate EVALUATOR reviews against the implementation commit instead of service artifact commits.
+  Resolution: Added integrate-side expected SHA parity with evaluator-side SHA resolution and refreshed verification evidence.

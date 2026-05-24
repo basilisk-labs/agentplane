@@ -1,9 +1,9 @@
 # EVALUATOR opinion: pass
 
-1E0EHD is rebased on current main and verification passed after refreshing blueprint evidence.
+1E0EHD is rebased on current main and final verification passed after evaluator/integrate quality SHA fixes.
 
 ## Findings
-- Daily cloud start pull backend tests, CLI finish/evaluator regression tests, typecheck, policy routing, and doctor passed against the refreshed branch.
+- Backend cloud refresh tests, CLI lifecycle/evaluator regression tests, typecheck, policy routing, and doctor passed on the final branch head.
 
 ## Evidence
 - .agentplane/tasks/202605191451-1E0EHD/README.md

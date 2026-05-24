@@ -3,13 +3,13 @@
   "task_id": "202605191451-1E0EHD",
   "evaluator_id": "recovery-context",
   "evaluator_profile": "EVALUATOR",
-  "generated_at": "2026-05-24T11:38:48.806Z",
+  "generated_at": "2026-05-24T11:40:52.093Z",
   "verdict": "pass",
-  "summary": "1E0EHD is rebased on current main and verification passed after refreshing blueprint evidence.",
-  "evaluated_sha": "fcc768b269079e063d61567307c4969636e72f02",
+  "summary": "1E0EHD is rebased on current main and final verification passed after evaluator/integrate quality SHA fixes.",
+  "evaluated_sha": "8a57abdcde8db9b0c966133c67492e6b68de23be",
   "blueprint_digest": "f4e1fa6582b448b9d083b41cdfca0b713111fb9153e11c67e7c06a73bd19a6bb",
   "findings": [
-    "Daily cloud start pull backend tests, CLI finish/evaluator regression tests, typecheck, policy routing, and doctor passed against the refreshed branch."
+    "Backend cloud refresh tests, CLI lifecycle/evaluator regression tests, typecheck, policy routing, and doctor passed on the final branch head."
   ],
   "evidence_refs": [
     ".agentplane/tasks/202605191451-1E0EHD/README.md",

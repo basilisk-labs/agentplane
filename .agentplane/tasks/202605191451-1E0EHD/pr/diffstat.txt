@@ -11,5 +11,6 @@
  ...un-cli.core.lifecycle.finish-validation.test.ts |  35 ++++-
  .../src/cli/run-cli.core.tasks.incidents.test.ts   |  24 ++++
  .../src/commands/evaluator/evaluator.command.ts    |  10 +-
+ .../src/commands/pr/integrate/internal/prepare.ts  |  10 +-
  .../agentplane/src/commands/task/start-ready.ts    |   1 +
- 14 files changed, 397 insertions(+), 18 deletions(-)
+ 15 files changed, 406 insertions(+), 19 deletions(-)

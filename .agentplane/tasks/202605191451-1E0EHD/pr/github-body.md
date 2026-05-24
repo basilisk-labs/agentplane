@@ -19,8 +19,8 @@ Before task start-ready on the cloud backend, pull the cloud projection once per
 - Note:
 
 ```text
-Rebased on current main; targeted backend tests, CLI finish/evaluator regression tests, typecheck,
-policy routing, and doctor passed.
+Final refresh after integrate quality SHA fix; targeted backend tests, CLI finish/evaluator tests,
+typecheck, policy routing, and doctor passed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -45,8 +45,9 @@ policy routing, and doctor passed.
  ...un-cli.core.lifecycle.finish-validation.test.ts |  35 ++++-
  .../src/cli/run-cli.core.tasks.incidents.test.ts   |  24 ++++
  .../src/commands/evaluator/evaluator.command.ts    |  10 +-
+ .../src/commands/pr/integrate/internal/prepare.ts  |  10 +-
  .../agentplane/src/commands/task/start-ready.ts    |   1 +
- 14 files changed, 397 insertions(+), 18 deletions(-)
+ 15 files changed, 406 insertions(+), 19 deletions(-)
 ```
 
 </details>
