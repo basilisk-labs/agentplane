@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605241224-TPWJQZ/prepare-v0-6-9-patch-release",
+  "created_at": "2026-05-24T12:26:01.681Z",
+  "diffstat_sha256": "sha256:2291495034de3966af8e63e289cd1449815c6101e9f77498baea1d482c8b0778",
+  "last_verified_at": "2026-05-24T12:38:28.864Z",
+  "last_verified_diffstat_sha256": "sha256:9e83de71f8f41167ee9f7010e3614158ee80080ee98fe37b44b5c2991c924657",
+  "schema_version": 1,
+  "task_id": "202605241224-TPWJQZ",
+  "updated_at": "2026-05-24T12:26:01.681Z",
+  "verify": {
+    "status": "pass"
+  }
+}

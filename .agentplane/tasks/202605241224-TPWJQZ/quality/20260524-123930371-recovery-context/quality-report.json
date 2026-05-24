@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202605241224-TPWJQZ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-24T12:39:30.371Z",
+  "verdict": "pass",
+  "summary": "v0.6.9 release candidate is ready for PR integration after local release gates passed.",
+  "evaluated_sha": "f268ac0165e63dc13781c260c42b04a2b2002c0a",
+  "blueprint_digest": "986713dcaf024d1df9d9c2e432630cc50bebb5ef933d892a58ddf8041c377792",
+  "findings": [
+    "Release candidate commit 73e00973261364135cc4ed7e477fc1ad58930519 prepared the v0.6.9 package and notes changes without creating a local tag; support artifact commit f268ac016 added the generated release social image and last-known-good version drift. Registry availability, release:prepublish:fast, policy routing, and doctor passed on the task branch."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605241224-TPWJQZ/README.md",
+    ".agentplane/.release/apply/2026-05-24T12-33-51-030Z.json",
+    "docs/releases/v0.6.9.md",
+    "website/static/img/social/docs/releases/v0.6.9.png"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted Core CI, protected-base merge, explicit Publish release dispatch, npm readback, remote tag readback, and GitHub Release readback remain required before declaring the release published."
+  ]
+}
