@@ -13,7 +13,7 @@ Created: 2026-05-24T06:58:58.479Z
 ## Verification
 
 - State: ok
-- Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 3 files passed, 38 tests passed. Scope: deploy-fix, commit-msg, and pre-push hook behavior. Command: bun run hotspots:check; Result: pass; Evidence: runtime hotspot threshold and oversized-test baseline OK after splitting deploy-fix tests. Scope: size guard. Command: bunx prettier --check changed hook/policy/test files; Result: pass; Evidence: Prettier accepted changed files. Scope: changed files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: gateway routing. Command: ap doctor; Result: pass; Evidence: doctor OK with pre-existing branch_pr reconciliation warnings unrelated to this task. Scope: runtime/workflow health.
+- Note: Command: review-thread fix for PR #4126 discussion_r3294046432; Result: pass; Evidence: MJS and installed TypeScript pre-push paths now return empty scripts only when package.json is absent, and fail when existing package.json cannot be parsed. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane bundle built successfully after the HookFailure return fix. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 2 files passed, 19 tests passed. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold and oversized-test baseline OK. Command: bunx prettier --check changed review-fix files; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,14 +29,14 @@ Created: 2026-05-24T06:58:58.479Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.hooks.hook-run.test.ts    | 58 ++++++++++++++
+ .../src/cli/run-cli.core.hooks.deploy-fix.test.ts  | 72 +++++++++++++++++
  ...un-cli.core.hooks.pre-push-task-binding.test.ts | 47 +++++++++++
  .../src/commands/hooks/run.commit-msg.ts           |  1 +
- .../agentplane/src/commands/hooks/run.pre-push.ts  | 12 +++
+ .../agentplane/src/commands/hooks/run.pre-push.ts  | 64 +++++++--------
  packages/agentplane/src/policy/model.ts            |  1 +
  .../src/policy/rules/task-bound-mutation.ts        | 16 +++-
  scripts/checks/run-pre-push-hook.mjs               | 92 +++++++++++++++++-----
- 7 files changed, 207 insertions(+), 20 deletions(-)
+ 7 files changed, 238 insertions(+), 55 deletions(-)
 ```
 
 </details>

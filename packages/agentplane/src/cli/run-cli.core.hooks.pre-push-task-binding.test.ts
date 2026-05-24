@@ -177,6 +177,23 @@ describe("pre-push task binding audit", () => {
     expect(result.stdout).toContain("Skipping ci:local:fast: package.json script is not defined.");
   });
 
+  it("blocks malformed package.json before optional script skips", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, "package.json"), "{not-json", "utf8");
+    await commitAll(root, "chore: base");
+    const baseSha = head(root);
+
+    const result = runPrePush(root, baseSha, head(root));
+
+    expect(result.failure).not.toBeNull();
+    expect(String(result.failure?.stderr ?? "")).toContain(
+      "pre-push blocked: package.json could not be parsed.",
+    );
+    expect(result.stdout).not.toContain("Skipping format:check");
+  });
+
   it("accepts managed initial install commits", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);

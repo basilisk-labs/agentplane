@@ -72,6 +72,7 @@ function runWithEnv(command, args, env) {
 }
 
 function readPackageScripts() {
+  if (!existsSync("package.json")) return {};
   try {
     const parsed = JSON.parse(readFileSync("package.json", "utf8"));
     if (!parsed.scripts || typeof parsed.scripts !== "object" || Array.isArray(parsed.scripts)) {
@@ -80,8 +81,11 @@ function readPackageScripts() {
     return Object.fromEntries(
       Object.entries(parsed.scripts).filter(([, value]) => typeof value === "string"),
     );
-  } catch {
-    return {};
+  } catch (error) {
+    fail("pre-push blocked: package.json could not be parsed.", [
+      error instanceof Error ? error.message : String(error),
+      "Fix package.json before relying on optional project-script detection.",
+    ]);
   }
 }
 

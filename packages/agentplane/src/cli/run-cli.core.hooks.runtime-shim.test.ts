@@ -149,6 +149,24 @@ describe("runCli hooks runtime shim", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () =>
     });
   });
 
+  it("hooks run pre-push fails malformed package.json before optional script skips", async () => {
+    await withInstalledAgentplaneRuntime(async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await writeFile(path.join(root, "package.json"), "{not-json", "utf8");
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["hooks", "run", "pre-push", "--root", root]);
+        expect(code).toBe(1);
+        expect(io.stderr).toContain("pre-push blocked: package.json could not be parsed.");
+        expect(io.stdout).not.toContain("Skipping format:check");
+      } finally {
+        io.restore();
+      }
+    });
+  });
+
   it("hooks run pre-push skips framework release scripts in clean initialized repositories", async () => {
     await withInstalledAgentplaneRuntime(async () => {
       const root = await mkGitRepoRoot();
