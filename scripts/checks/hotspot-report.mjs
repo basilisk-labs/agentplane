@@ -13,7 +13,7 @@ const DEFAULT_ALLOWED_OVERSIZED_TESTS = [
   "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts",
 ];
 const INCLUDED_EXTENSIONS = new Set([".ts", ".tsx"]);
-const EXCLUDED_SUFFIXES = [".d.ts", ".test.ts", ".test.tsx"];
+const EXCLUDED_SUFFIXES = [".d.ts", ".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx"];
 const EXCLUDED_DIR_NAMES = new Set(["__fixtures__", "__snapshots__", "fixtures"]);
 const TEST_FILE_RE = /\.(?:test|spec)\.(?:ts|tsx)$/;
 
