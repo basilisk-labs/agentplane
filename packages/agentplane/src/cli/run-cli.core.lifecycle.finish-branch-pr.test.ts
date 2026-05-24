@@ -32,6 +32,24 @@ afterEach(() => {
   restoreStdIO = null;
 });
 
+async function recordEvaluatorPass(root: string, taskId: string): Promise<void> {
+  await runCliSilent([
+    "evaluator",
+    "run",
+    taskId,
+    "--verdict",
+    "pass",
+    "--summary",
+    "Structured finish fixture has verification evidence.",
+    "--finding",
+    "The finish fixture passed its targeted branch_pr lifecycle checks.",
+    "--evidence",
+    "branch_pr finish fixture",
+    "--root",
+    root,
+  ]);
+}
+
 describe("runCli", () => {
   const BLOCK_FINISH_TIMEOUT_MS = 60_000;
   const BLOCK_FINISH_LONG_TIMEOUT_MS = 180_000;
@@ -88,6 +106,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await recordEvaluatorPass(root, taskId);
     await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
     const io = captureStdIO();
@@ -200,6 +219,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await recordEvaluatorPass(root, taskId);
       await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const io = captureStdIO();
@@ -324,6 +344,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await recordEvaluatorPass(root, taskId);
       await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const io = captureStdIO();
@@ -417,6 +438,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await recordEvaluatorPass(root, taskId);
       await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const io = captureStdIO();

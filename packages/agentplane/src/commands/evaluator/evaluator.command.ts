@@ -124,6 +124,7 @@ async function resolveEvaluatedSha(opts: {
 
   const normalizedWorkflowDir = opts.workflowDir.replaceAll("\\", "/").replaceAll(/\/+$/g, "");
   const taskArtifactPrefix = `${normalizedWorkflowDir}/${opts.taskId}/`;
+  const workflowArtifactPrefix = `${normalizedWorkflowDir}/`;
   let current = head;
 
   for (let depth = 0; depth < 20; depth += 1) {
@@ -135,7 +136,14 @@ async function resolveEvaluatedSha(opts: {
     }
 
     const changed = await gitDiffNames(opts.gitRoot, parent, current);
-    if (changed.length === 0 || changed.some((name) => !name.startsWith(taskArtifactPrefix))) {
+    if (changed.length === 0) {
+      return current;
+    }
+    const touchesOnlyCurrentTask = changed.every((name) => name.startsWith(taskArtifactPrefix));
+    const touchesOnlyWorkflowArtifacts = changed.every((name) =>
+      name.startsWith(workflowArtifactPrefix),
+    );
+    if (!touchesOnlyCurrentTask && !touchesOnlyWorkflowArtifacts) {
       return current;
     }
     current = parent;

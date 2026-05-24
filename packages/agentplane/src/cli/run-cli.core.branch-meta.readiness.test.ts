@@ -50,6 +50,24 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
+async function recordEvaluatorPass(root: string, taskId: string): Promise<void> {
+  await runCliSilent([
+    "evaluator",
+    "run",
+    taskId,
+    "--verdict",
+    "pass",
+    "--summary",
+    "Structured readiness fixture has verification evidence.",
+    "--finding",
+    "The dependency fixture is ready to finish for readiness details coverage.",
+    "--evidence",
+    "readiness details fixture",
+    "--root",
+    root,
+  ]);
+}
+
 describe("runCli", () => {
   const READY_DETAILS_TIMEOUT_MS = 120_000;
 
@@ -148,6 +166,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await recordEvaluatorPass(root, depId);
     await runCliSilent(["blueprint", "snapshot", depId, "--root", root]);
     const finishIo = captureStdIO();
     try {
