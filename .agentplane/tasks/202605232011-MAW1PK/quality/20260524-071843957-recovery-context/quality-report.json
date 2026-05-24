@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "task_id": "202605232011-MAW1PK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-24T07:18:43.957Z",
+  "verdict": "pass",
+  "summary": "EVALUATOR review: agent prompts now use compact ap evaluator run and preserve legacy verify only as an insufficient manual path.",
+  "evaluated_sha": "38fc891b19a9bd9822f8698c0f70428994887ab2",
+  "blueprint_digest": "4bd1a0ab295307905c1f5ceafa36fb1c6bb7fb22e6cf505bb55244db31b28114",
+  "findings": [
+    "Packaged and repo-local EVALUATOR agent prompts now instruct agents to run ap evaluator run with structured findings, evidence, missing tests, hidden assumptions, and residual risks.",
+    "The CI failure in agents-template was addressed by replacing primary agentplane evaluator run prompt commands with ap evaluator run in both EVALUATOR prompt sources.",
+    "agents-template, agent template sync, agent onboarding scenario, targeted evaluator/blueprint tests, and policy routing passed after the prompt fix."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605232011-MAW1PK/README.md",
+    "packages/agentplane/assets/agents/EVALUATOR.json",
+    ".agentplane/agents/EVALUATOR.json",
+    "packages/agentplane/src/agents/agents-template.test.ts",
+    "commit: 38fc891b1",
+    "check: bun test packages/agentplane/src/agents/agents-template.test.ts",
+    "check: node scripts/generate/sync-agent-templates.mjs check && node scripts/checks/check-agent-onboarding-scenario.mjs",
+    "check: bun test packages/agentplane/src/workflow-lifecycle/contract.test.ts packages/agentplane/src/blueprints/validate.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts",
+    "check: node .agentplane/policy/check-routing.mjs"
+  ],
+  "missing_tests": [
+    "No single snapshot test asserts every prompt/gateway/evaluator surface excludes bare verify --by EVALUATOR as the primary quality-gate command; current coverage combines agents-template, rg inspection, and lifecycle contract tests."
+  ],
+  "hidden_assumptions": [
+    "Legacy verify wording is acceptable only when explicitly described as not sufficient for finish/integrate gates."
+  ],
+  "residual_risks": [
+    "Hosted verify-unit must rerun on the pushed HEAD to confirm the CI failure is cleared."
+  ]
+}
