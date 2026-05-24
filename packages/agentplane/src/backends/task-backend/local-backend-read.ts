@@ -123,6 +123,17 @@ function readFreshCachedProjection(opts: {
   return sortedCachedProjection(opts.cachedIndex, opts.statuses);
 }
 
+async function isHandoffOnlyTaskDir(root: string, dirName: string): Promise<boolean> {
+  try {
+    const entries = await readdir(path.join(root, dirName), { withFileTypes: true });
+    return (
+      entries.length === 1 && entries[0]?.isDirectory() === true && entries[0].name === "handoff"
+    );
+  } catch {
+    return false;
+  }
+}
+
 export async function listLocalTasks(
   context: LocalBackendContext,
   mode: "full" | "projection",
@@ -164,10 +175,10 @@ export async function listLocalTasks(
           size: stats.size,
         });
       } else {
-        hasMissingReadmes = true;
+        if (!(await isHandoffOnlyTaskDir(context.root, dirName))) hasMissingReadmes = true;
       }
     } catch {
-      hasMissingReadmes = true;
+      if (!(await isHandoffOnlyTaskDir(context.root, dirName))) hasMissingReadmes = true;
     }
   }
   const readmeStatsByDir = new Map(readmeStats.map((entry) => [entry.dirName, entry]));
@@ -214,6 +225,7 @@ export async function listLocalTasks(
     const readmePath = path.join(context.root, dirName, "README.md");
     const stats = readmeStatsByDir.get(dirName);
     if (!stats) {
+      if (await isHandoffOnlyTaskDir(context.root, dirName)) return null;
       warnings.push(`skip:${dirName}: missing_or_unreadable_readme`);
       return null;
     }

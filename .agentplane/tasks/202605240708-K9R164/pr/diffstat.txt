@@ -1,0 +1,7 @@
+ .../src/backends/task-backend.local.test.ts        |  31 +++++++
+ .../backends/task-backend/local-backend-read.ts    |  16 +++-
+ .../cli/run-cli.core.pr-flow.pr-lifecycle.test.ts  | 101 +++++++++++++++++++++
+ .../src/commands/pr/integrate/cmd.test.ts          |  84 +++++++++++++++++
+ .../pr/integrate/internal/github-pr-merge.ts       |  49 +++++-----
+ .../src/commands/pr/internal/auto-commit.ts        |  48 +++++++++-
+ 6 files changed, 301 insertions(+), 28 deletions(-)
