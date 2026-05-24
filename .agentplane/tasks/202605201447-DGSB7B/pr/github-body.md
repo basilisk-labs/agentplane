@@ -19,10 +19,8 @@ Add deterministic verification gates for context.maximum_assimilation so source-
 - Note:
 
 ```text
-Quality review: max-mode verification now fails closed on missing root glossary, missing
-source-shaped topology artifact, missing coverage artifact, missing graph entity/relation rows with
-line refs, and missing semantic Obsidian wikilinks on changed content wiki pages. Focused regression
-tests cover the positive path and glossary failure path.
+Rebased onto current origin/main, resolved maximum-assimilation gate conflicts by combining checks,
+and reran focused context tests, typecheck, build, doctor, and routing checks successfully.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -31,12 +29,12 @@ tests cover the positive path and glossary failure path.
 
 - Updated: 2026-05-20T15:09:17.405Z
 - Branch: task/202605201447-DGSB7B/max-assimilation-gates
-- Head: 68326fd654b9
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../verify-task.maximum-assimilation.test.ts       | 238 +++++++++++++++++++++
- packages/agentplane/src/context/verify-task.ts     | 147 ++++++++++++-
- 2 files changed, 382 insertions(+), 3 deletions(-)
+ .../verify-task.maximum-assimilation.test.ts       | 268 +++++++++++++++++++++
+ packages/agentplane/src/context/verify-task.ts     | 145 ++++++++++-
+ 2 files changed, 410 insertions(+), 3 deletions(-)
 ```
 
 </details>

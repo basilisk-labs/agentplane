@@ -4,7 +4,7 @@ title: "Enforce maximum assimilation wiki gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-20T14:55:32.993Z"
-  updated_by: "EVALUATOR"
-  note: "Quality review: max-mode verification now fails closed on missing root glossary, missing source-shaped topology artifact, missing coverage artifact, missing graph entity/relation rows with line refs, and missing semantic Obsidian wikilinks on changed content wiki pages. Focused regression tests cover the positive path and glossary failure path."
+  updated_at: "2026-05-24T11:08:27.201Z"
+  updated_by: "CODER"
+  note: "Rebased onto current origin/main, resolved maximum-assimilation gate conflicts by combining checks, and reran focused context tests, typecheck, build, doctor, and routing checks successfully."
   attempts: 0
 quality_review:
   state: "pass"
@@ -60,8 +60,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality review: max-mode verification now fails closed on missing root glossary, missing source-shaped topology artifact, missing coverage artifact, missing graph entity/relation rows with line refs, and missing semantic Obsidian wikilinks on changed content wiki pages. Focused regression tests cover the positive path and glossary failure path."
+  -
+    type: "verify"
+    at: "2026-05-24T11:08:27.201Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rebased onto current origin/main, resolved maximum-assimilation gate conflicts by combining checks, and reran focused context tests, typecheck, build, doctor, and routing checks successfully."
 doc_version: 3
-doc_updated_at: "2026-05-20T14:55:33.046Z"
+doc_updated_at: "2026-05-24T11:08:27.219Z"
 doc_updated_by: "CODER"
 description: "Add deterministic verification gates for context.maximum_assimilation so source-shaped topology, glossary, Obsidian wikilinks, coverage, and entity-first evidence are not only prompt guidance."
 sections:
@@ -116,6 +122,25 @@ sections:
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201447-DGSB7B-max-assimilation-gates/.agentplane/tasks/202605201447-DGSB7B/blueprint/resolved-snapshot.json
     - old_digest: 07eda18f8c975363c9ece4fbd8bd072a288a589a894de33c1f9b7e1ed10e2753
     - current_digest: 07eda18f8c975363c9ece4fbd8bd072a288a589a894de33c1f9b7e1ed10e2753
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605201447-DGSB7B
+
+    ### 2026-05-24T11:08:27.201Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Rebased onto current origin/main, resolved maximum-assimilation gate conflicts by combining checks, and reran focused context tests, typecheck, build, doctor, and routing checks successfully.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T14:55:33.046Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201447-DGSB7B-max-assimilation-gates/.agentplane/tasks/202605201447-DGSB7B/blueprint/resolved-snapshot.json
+    - old_digest: 07eda18f8c975363c9ece4fbd8bd072a288a589a894de33c1f9b7e1ed10e2753
+    - current_digest: 97f33a799d2fa71560616863df120b9ae2077d1fd3c86363dd7448a4bd9227dc
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605201447-DGSB7B
 
@@ -187,6 +212,25 @@ BlueprintSnapshotRef:
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201447-DGSB7B-max-assimilation-gates/.agentplane/tasks/202605201447-DGSB7B/blueprint/resolved-snapshot.json
 - old_digest: 07eda18f8c975363c9ece4fbd8bd072a288a589a894de33c1f9b7e1ed10e2753
 - current_digest: 07eda18f8c975363c9ece4fbd8bd072a288a589a894de33c1f9b7e1ed10e2753
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605201447-DGSB7B
+
+### 2026-05-24T11:08:27.201Z — VERIFY — ok
+
+By: CODER
+
+Note: Rebased onto current origin/main, resolved maximum-assimilation gate conflicts by combining checks, and reran focused context tests, typecheck, build, doctor, and routing checks successfully.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-20T14:55:33.046Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605201447-DGSB7B-max-assimilation-gates/.agentplane/tasks/202605201447-DGSB7B/blueprint/resolved-snapshot.json
+- old_digest: 07eda18f8c975363c9ece4fbd8bd072a288a589a894de33c1f9b7e1ed10e2753
+- current_digest: 97f33a799d2fa71560616863df120b9ae2077d1fd3c86363dd7448a4bd9227dc
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605201447-DGSB7B
 
