@@ -4,7 +4,7 @@ title: "Harden direct-mode hook publication recovery"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -19,16 +19,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-24T07:19:40.525Z"
+  updated_at: "2026-05-24T07:37:56.577Z"
   updated_by: "EVALUATOR"
-  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 3 files passed, 38 tests passed. Scope: deploy-fix, commit-msg, and pre-push hook behavior. Command: bun run hotspots:check; Result: pass; Evidence: runtime hotspot threshold and oversized-test baseline OK after splitting deploy-fix tests. Scope: size guard. Command: bunx prettier --check changed hook/policy/test files; Result: pass; Evidence: Prettier accepted changed files. Scope: changed files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: gateway routing. Command: ap doctor; Result: pass; Evidence: doctor OK with pre-existing branch_pr reconciliation warnings unrelated to this task. Scope: runtime/workflow health."
+  note: "Command: review-thread fix for PR #4126 discussion_r3294046432; Result: pass; Evidence: MJS and installed TypeScript pre-push paths now return empty scripts only when package.json is absent, and fail when existing package.json cannot be parsed. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane bundle built successfully after the HookFailure return fix. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 2 files passed, 19 tests passed. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold and oversized-test baseline OK. Command: bunx prettier --check changed review-fix files; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-24T07:19:40.525Z"
+  updated_at: "2026-05-24T07:37:56.577Z"
   updated_by: "EVALUATOR"
-  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 3 files passed, 38 tests passed. Scope: deploy-fix, commit-msg, and pre-push hook behavior. Command: bun run hotspots:check; Result: pass; Evidence: runtime hotspot threshold and oversized-test baseline OK after splitting deploy-fix tests. Scope: size guard. Command: bunx prettier --check changed hook/policy/test files; Result: pass; Evidence: Prettier accepted changed files. Scope: changed files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: gateway routing. Command: ap doctor; Result: pass; Evidence: doctor OK with pre-existing branch_pr reconciliation warnings unrelated to this task. Scope: runtime/workflow health."
-  evaluated_sha: "26466adfd148ed89aa67569637f55bb2ebc3a318"
+  note: "Command: review-thread fix for PR #4126 discussion_r3294046432; Result: pass; Evidence: MJS and installed TypeScript pre-push paths now return empty scripts only when package.json is absent, and fail when existing package.json cannot be parsed. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane bundle built successfully after the HookFailure return fix. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 2 files passed, 19 tests passed. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold and oversized-test baseline OK. Command: bunx prettier --check changed review-fix files; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass."
+  evaluated_sha: "6e9a596ce64857cb18ac5f3bb0544608a2f967f5"
   blueprint_digest: "b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f"
   evidence_refs:
     - ".agentplane/tasks/202605240656-1AMYBB/README.md"
@@ -65,8 +65,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 3 files passed, 38 tests passed. Scope: deploy-fix, commit-msg, and pre-push hook behavior. Command: bun run hotspots:check; Result: pass; Evidence: runtime hotspot threshold and oversized-test baseline OK after splitting deploy-fix tests. Scope: size guard. Command: bunx prettier --check changed hook/policy/test files; Result: pass; Evidence: Prettier accepted changed files. Scope: changed files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: gateway routing. Command: ap doctor; Result: pass; Evidence: doctor OK with pre-existing branch_pr reconciliation warnings unrelated to this task. Scope: runtime/workflow health."
+  -
+    type: "verify"
+    at: "2026-05-24T07:37:56.577Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Command: review-thread fix for PR #4126 discussion_r3294046432; Result: pass; Evidence: MJS and installed TypeScript pre-push paths now return empty scripts only when package.json is absent, and fail when existing package.json cannot be parsed. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane bundle built successfully after the HookFailure return fix. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 2 files passed, 19 tests passed. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold and oversized-test baseline OK. Command: bunx prettier --check changed review-fix files; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass."
 doc_version: 3
-doc_updated_at: "2026-05-24T07:19:40.550Z"
+doc_updated_at: "2026-05-24T07:37:56.595Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issue #4119 by decomposing direct-mode hook publication friction into runtime/script diagnostics and a taskless deploy-fix recovery path that does not require --no-verify."
 sections:
@@ -144,6 +150,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605240656-1AMYBB
 
+    ### 2026-05-24T07:37:56.577Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Command: review-thread fix for PR #4126 discussion_r3294046432; Result: pass; Evidence: MJS and installed TypeScript pre-push paths now return empty scripts only when package.json is absent, and fail when existing package.json cannot be parsed. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane bundle built successfully after the HookFailure return fix. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 2 files passed, 19 tests passed. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold and oversized-test baseline OK. Command: bunx prettier --check changed review-fix files; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T07:19:40.550Z, excerpt_hash=sha256:62958fce32671de695a28c23411f9a0a39e9191ac3f1720a3a4bbc7b84186b77
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240656-1AMYBB-harden-direct-mode-hook-publication-recovery/.agentplane/tasks/202605240656-1AMYBB/blueprint/resolved-snapshot.json
+    - old_digest: b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f
+    - current_digest: b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605240656-1AMYBB
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -164,6 +189,10 @@ sections:
     - Observation: Final review includes the hotspot correction that moved deploy-fix commit-msg coverage into a separate focused test file.
       Impact: The PR now satisfies both behavior coverage and repository size gates.
       Resolution: Proceed with PR #4126 hosted checks and integration when stable green.
+
+    - Observation: Addressed the unresolved GitHub review by making malformed package.json a hard pre-push error instead of an optional-script skip.
+      Impact: Clean projects without package.json still skip optional project scripts, but broken package metadata can no longer bypass formatting/CI gates.
+      Resolution: Push the review fix and resolve the GitHub review thread after remote checks.
 id_source: "generated"
 ---
 ## Summary
@@ -250,6 +279,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605240656-1AMYBB
 
+### 2026-05-24T07:37:56.577Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Command: review-thread fix for PR #4126 discussion_r3294046432; Result: pass; Evidence: MJS and installed TypeScript pre-push paths now return empty scripts only when package.json is absent, and fail when existing package.json cannot be parsed. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane bundle built successfully after the HookFailure return fix. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 2 files passed, 19 tests passed. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold and oversized-test baseline OK. Command: bunx prettier --check changed review-fix files; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T07:19:40.550Z, excerpt_hash=sha256:62958fce32671de695a28c23411f9a0a39e9191ac3f1720a3a4bbc7b84186b77
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240656-1AMYBB-harden-direct-mode-hook-publication-recovery/.agentplane/tasks/202605240656-1AMYBB/blueprint/resolved-snapshot.json
+- old_digest: b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f
+- current_digest: b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605240656-1AMYBB
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -274,3 +322,7 @@ BlueprintSnapshotRef:
 - Observation: Final review includes the hotspot correction that moved deploy-fix commit-msg coverage into a separate focused test file.
   Impact: The PR now satisfies both behavior coverage and repository size gates.
   Resolution: Proceed with PR #4126 hosted checks and integration when stable green.
+
+- Observation: Addressed the unresolved GitHub review by making malformed package.json a hard pre-push error instead of an optional-script skip.
+  Impact: Clean projects without package.json still skip optional project scripts, but broken package metadata can no longer bypass formatting/CI gates.
+  Resolution: Push the review fix and resolve the GitHub review thread after remote checks.

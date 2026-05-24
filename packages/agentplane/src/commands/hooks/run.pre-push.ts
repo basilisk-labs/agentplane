@@ -123,10 +123,10 @@ function readGitText(gitRoot: string, args: readonly string[]): string {
 }
 
 function readPackageScripts(gitRoot: string): PackageScripts {
+  const packagePath = path.join(gitRoot, "package.json");
+  if (!fs.existsSync(packagePath)) return {};
   try {
-    const parsed = JSON.parse(fs.readFileSync(path.join(gitRoot, "package.json"), "utf8")) as {
-      scripts?: unknown;
-    };
+    const parsed = JSON.parse(fs.readFileSync(packagePath, "utf8")) as { scripts?: unknown };
     if (!parsed.scripts || typeof parsed.scripts !== "object" || Array.isArray(parsed.scripts)) {
       return {};
     }
@@ -135,8 +135,11 @@ function readPackageScripts(gitRoot: string): PackageScripts {
       if (typeof value === "string") scripts[name] = value;
     }
     return scripts;
-  } catch {
-    return {};
+  } catch (error) {
+    throw new HookFailure("pre-push blocked: package.json could not be parsed.", [
+      error instanceof Error ? error.message : String(error),
+      "Fix package.json before relying on optional project-script detection.",
+    ]);
   }
 }
 

@@ -1,8 +1,8 @@
- .../src/cli/run-cli.core.hooks.hook-run.test.ts    | 58 ++++++++++++++
+ .../src/cli/run-cli.core.hooks.deploy-fix.test.ts  | 72 +++++++++++++++++
  ...un-cli.core.hooks.pre-push-task-binding.test.ts | 47 +++++++++++
  .../src/commands/hooks/run.commit-msg.ts           |  1 +
- .../agentplane/src/commands/hooks/run.pre-push.ts  | 12 +++
+ .../agentplane/src/commands/hooks/run.pre-push.ts  | 64 +++++++--------
  packages/agentplane/src/policy/model.ts            |  1 +
  .../src/policy/rules/task-bound-mutation.ts        | 16 +++-
  scripts/checks/run-pre-push-hook.mjs               | 92 +++++++++++++++++-----
- 7 files changed, 207 insertions(+), 20 deletions(-)
+ 7 files changed, 238 insertions(+), 55 deletions(-)
