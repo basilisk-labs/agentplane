@@ -166,6 +166,31 @@ agentplane_context:
         artifact: ".agentplane/context/derived/facts/facts.jsonl",
       })}\n`,
     );
+    await write(
+      root,
+      "context/wiki/reports/topology.md",
+      [
+        "# Topology",
+        "",
+        "- source_shape: context/raw/specs/payment-api.md",
+        "- canonical_families: Payment API",
+        "- page_vs_heading granularity: concept page with glossary heading",
+        "- source_refs: context/raw/specs/payment-api.md#L1-L10",
+        "",
+      ].join("\n"),
+    );
+    await write(
+      root,
+      "context/wiki/reports/coverage.md",
+      [
+        "# Coverage",
+        "",
+        "- covered: Payment API source was assimilated into graph rows.",
+        "- omitted: none; redacted: none; duplicate: none; unresolved: none.",
+        "- source_refs: context/raw/specs/payment-api.md#L1-L10",
+        "",
+      ].join("\n"),
+    );
 
     await expect(
       cmdContextVerifyTask({

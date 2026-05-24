@@ -33,14 +33,33 @@ function makeTask(overrides: Partial<TaskData> & { id: string }): TaskData {
 describe("CloudBackend task-start refresh", () => {
   let tempDir = "";
   let restoreStdIO: (() => void) | null = null;
+  let savedCloudEnv: Partial<NodeJS.ProcessEnv> = {};
 
   beforeEach(async () => {
     restoreStdIO = silenceStdIO();
     tempDir = await mkTempDir();
     await mkdir(path.join(tempDir, ".git"), { recursive: true });
+    savedCloudEnv = {
+      AGENTPLANE_CLOUD_ENDPOINT: process.env.AGENTPLANE_CLOUD_ENDPOINT,
+      AGENTPLANE_CLOUD_PROJECT_ID: process.env.AGENTPLANE_CLOUD_PROJECT_ID,
+      AGENTPLANE_CLOUD_TOKEN: process.env.AGENTPLANE_CLOUD_TOKEN,
+    };
+    delete process.env.AGENTPLANE_CLOUD_ENDPOINT;
+    delete process.env.AGENTPLANE_CLOUD_PROJECT_ID;
+    delete process.env.AGENTPLANE_CLOUD_TOKEN;
   });
 
   afterEach(async () => {
+    for (const key of [
+      "AGENTPLANE_CLOUD_ENDPOINT",
+      "AGENTPLANE_CLOUD_PROJECT_ID",
+      "AGENTPLANE_CLOUD_TOKEN",
+    ] as const) {
+      const value = savedCloudEnv[key];
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+    savedCloudEnv = {};
     restoreStdIO?.();
     restoreStdIO = null;
     if (tempDir) await rm(tempDir, { recursive: true, force: true });
