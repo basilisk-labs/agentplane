@@ -18,17 +18,11 @@ Fix GitHub issue #4119 by decomposing direct-mode hook publication friction into
 - State: ok
 - Note:
 
-```bash
-ap task verify-show 202605240656-1AMYBB; Result: pass; Evidence: task-specific Verify Steps are \
-  present and blueprint snapshot is current. Scope: task verification contract. Command: bunx vitest \
-  run packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts \
-  packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 \
-  --testTimeout 60000; Result: pass; Evidence: 2 files passed, 38 tests passed. Scope: \
-  commit-msg/pre-push hook behavior. Command: bunx prettier --check changed hook/policy/test files; \
-  Result: pass; Evidence: All matched files use Prettier code style. Scope: changed files. Command: \
-  node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: \
-  gateway policy routing. Command: ap doctor; Result: pass; Evidence: doctor OK with warnings=2 for \
-  pre-existing branch_pr reconciliation on 202605230451-N5F0HY. Scope: repo runtime/workflow health.
+```text
+Command: independent review of diff and recorded checks; Result: pass; Evidence: task adds
+constrained deploy-fix evidence route, optional-script skip parity in repository pre-push helper,
+and focused hook tests covering acceptance and rejection paths. Scope: quality review for PR #4126
+before hosted checks complete.
 ```
 - Canonical workflow state lives in the task README.
 

@@ -4,7 +4,7 @@ title: "Harden direct-mode hook publication recovery"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-24T07:13:34.194Z"
-  updated_by: "CODER"
-  note: "Command: ap task verify-show 202605240656-1AMYBB; Result: pass; Evidence: task-specific Verify Steps are present and blueprint snapshot is current. Scope: task verification contract. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 2 files passed, 38 tests passed. Scope: commit-msg/pre-push hook behavior. Command: bunx prettier --check changed hook/policy/test files; Result: pass; Evidence: All matched files use Prettier code style. Scope: changed files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: gateway policy routing. Command: ap doctor; Result: pass; Evidence: doctor OK with warnings=2 for pre-existing branch_pr reconciliation on 202605230451-N5F0HY. Scope: repo runtime/workflow health."
+  updated_at: "2026-05-24T07:15:27.134Z"
+  updated_by: "EVALUATOR"
+  note: "Command: independent review of diff and recorded checks; Result: pass; Evidence: task adds constrained deploy-fix evidence route, optional-script skip parity in repository pre-push helper, and focused hook tests covering acceptance and rejection paths. Scope: quality review for PR #4126 before hosted checks complete."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-24T07:15:27.134Z"
+  updated_by: "EVALUATOR"
+  note: "Command: independent review of diff and recorded checks; Result: pass; Evidence: task adds constrained deploy-fix evidence route, optional-script skip parity in repository pre-push helper, and focused hook tests covering acceptance and rejection paths. Scope: quality review for PR #4126 before hosted checks complete."
+  evaluated_sha: "e6bdd4d4bb248e4e638a888ad353e255f3e2ebfb"
+  blueprint_digest: "b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f"
+  evidence_refs:
+    - ".agentplane/tasks/202605240656-1AMYBB/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240656-1AMYBB-harden-direct-mode-hook-publication-recovery/.agentplane/tasks/202605240656-1AMYBB/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -42,8 +53,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: ap task verify-show 202605240656-1AMYBB; Result: pass; Evidence: task-specific Verify Steps are present and blueprint snapshot is current. Scope: task verification contract. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 2 files passed, 38 tests passed. Scope: commit-msg/pre-push hook behavior. Command: bunx prettier --check changed hook/policy/test files; Result: pass; Evidence: All matched files use Prettier code style. Scope: changed files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: gateway policy routing. Command: ap doctor; Result: pass; Evidence: doctor OK with warnings=2 for pre-existing branch_pr reconciliation on 202605230451-N5F0HY. Scope: repo runtime/workflow health."
+  -
+    type: "verify"
+    at: "2026-05-24T07:15:27.134Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Command: independent review of diff and recorded checks; Result: pass; Evidence: task adds constrained deploy-fix evidence route, optional-script skip parity in repository pre-push helper, and focused hook tests covering acceptance and rejection paths. Scope: quality review for PR #4126 before hosted checks complete."
 doc_version: 3
-doc_updated_at: "2026-05-24T07:13:34.217Z"
+doc_updated_at: "2026-05-24T07:15:27.168Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issue #4119 by decomposing direct-mode hook publication friction into runtime/script diagnostics and a taskless deploy-fix recovery path that does not require --no-verify."
 sections:
@@ -82,6 +99,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605240656-1AMYBB
 
+    ### 2026-05-24T07:15:27.134Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Command: independent review of diff and recorded checks; Result: pass; Evidence: task adds constrained deploy-fix evidence route, optional-script skip parity in repository pre-push helper, and focused hook tests covering acceptance and rejection paths. Scope: quality review for PR #4126 before hosted checks complete.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T07:13:34.217Z, excerpt_hash=sha256:1dbed407d69e7ca62fd84ce4d976ed5882aaa241cacdabdab5aa1b85b4180fc2
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240656-1AMYBB-harden-direct-mode-hook-publication-recovery/.agentplane/tasks/202605240656-1AMYBB/blueprint/resolved-snapshot.json
+    - old_digest: b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f
+    - current_digest: b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605240656-1AMYBB
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -94,6 +130,10 @@ sections:
     - Observation: Implemented optional-script skip parity in the repository pre-push helper and added constrained deploy-fix evidence handling across commit-msg and pre-push audits.
       Impact: Direct-mode deploy-only fixes can be published through explicit evidence trailers instead of --no-verify, while normal mutating commits remain task-bound.
       Resolution: Focused hook tests cover deploy-fix acceptance/rejection and missing optional script skips.
+
+    - Observation: No scope drift found beyond GitHub issue #4119 hook recovery surfaces.
+      Impact: The bypass is explicit-evidence based and does not disable normal task-bound mutation enforcement.
+      Resolution: Proceed to hosted checks and integration once GitHub reports stable green.
 id_source: "generated"
 ---
 ## Summary
@@ -141,6 +181,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605240656-1AMYBB
 
+### 2026-05-24T07:15:27.134Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Command: independent review of diff and recorded checks; Result: pass; Evidence: task adds constrained deploy-fix evidence route, optional-script skip parity in repository pre-push helper, and focused hook tests covering acceptance and rejection paths. Scope: quality review for PR #4126 before hosted checks complete.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T07:13:34.217Z, excerpt_hash=sha256:1dbed407d69e7ca62fd84ce4d976ed5882aaa241cacdabdab5aa1b85b4180fc2
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240656-1AMYBB-harden-direct-mode-hook-publication-recovery/.agentplane/tasks/202605240656-1AMYBB/blueprint/resolved-snapshot.json
+- old_digest: b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f
+- current_digest: b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605240656-1AMYBB
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -157,3 +216,7 @@ BlueprintSnapshotRef:
 - Observation: Implemented optional-script skip parity in the repository pre-push helper and added constrained deploy-fix evidence handling across commit-msg and pre-push audits.
   Impact: Direct-mode deploy-only fixes can be published through explicit evidence trailers instead of --no-verify, while normal mutating commits remain task-bound.
   Resolution: Focused hook tests cover deploy-fix acceptance/rejection and missing optional script skips.
+
+- Observation: No scope drift found beyond GitHub issue #4119 hook recovery surfaces.
+  Impact: The bypass is explicit-evidence based and does not disable normal task-bound mutation enforcement.
+  Resolution: Proceed to hosted checks and integration once GitHub reports stable green.
