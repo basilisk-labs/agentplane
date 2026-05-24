@@ -1,10 +1,11 @@
 ---
 id: "202605241224-TPWJQZ"
 title: "Release AgentPlane v0.6.9"
-status: "DOING"
+result_summary: "Merged via PR #4139."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "website/static/img/social/docs/releases/v0.6.9.png"
   findings:
     - "Release candidate commit 73e00973261364135cc4ed7e477fc1ad58930519 prepared the v0.6.9 package and notes changes without creating a local tag; support artifact commit f268ac016 added the generated release social image and last-known-good version drift. Registry availability, release:prepublish:fast, policy routing, and doctor passed on the task branch."
-commit: null
+commit:
+  hash: "c64a147ee51ff07019a834b314face264cabb948"
+  message: "🧩 TPWJQZ release: format v0.6.9 acr example"
 comments:
   -
     author: "CODER"
     body: "Start: prepare the v0.6.9 patch release candidate in the dedicated branch_pr worktree, using the approved release plan, branch_pr candidate route, release gates, GitHub PR merge, and hosted publish evidence checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4139 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release candidate checks passed for v0.6.9: registry availability, fast release prepublish gate, policy routing, and doctor all passed on the task branch."
+  -
+    type: "status"
+    at: "2026-05-24T13:07:32.444Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4139 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-24T12:38:28.930Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-24T13:07:32.450Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare and publish the next patch release candidate through the branch_pr release workflow, then verify hosted publication evidence."
 sections:
   Summary: |-
