@@ -13,7 +13,7 @@ Created: 2026-05-24T06:58:58.479Z
 ## Verification
 
 - State: ok
-- Note: Command: independent review of diff and recorded checks; Result: pass; Evidence: task adds constrained deploy-fix evidence route, optional-script skip parity in repository pre-push helper, and focused hook tests covering acceptance and rejection paths. Scope: quality review for PR #4126 before hosted checks complete.
+- Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 3 files passed, 38 tests passed. Scope: deploy-fix, commit-msg, and pre-push hook behavior. Command: bun run hotspots:check; Result: pass; Evidence: runtime hotspot threshold and oversized-test baseline OK after splitting deploy-fix tests. Scope: size guard. Command: bunx prettier --check changed hook/policy/test files; Result: pass; Evidence: Prettier accepted changed files. Scope: changed files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: gateway routing. Command: ap doctor; Result: pass; Evidence: doctor OK with pre-existing branch_pr reconciliation warnings unrelated to this task. Scope: runtime/workflow health.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

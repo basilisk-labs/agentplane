@@ -11,9 +11,8 @@ import {
 } from "../../shared/runtime-env.js";
 import type { HooksRunOptions } from "./run.js";
 
-function resolveBundledPrePushHookScriptPath(): string {
-  return resolveAgentplaneRepoScriptPath("run-pre-push-hook.mjs");
-}
+const resolveBundledPrePushHookScriptPath = (): string =>
+  resolveAgentplaneRepoScriptPath("run-pre-push-hook.mjs");
 
 type PrePushUpdate = {
   localRef: string;
@@ -56,13 +55,9 @@ function parsePrePushStdin(rawStdin: string): PrePushUpdate[] {
     });
 }
 
-function isAllZeroSha(value: string): boolean {
-  return /^[0]+$/.test(value);
-}
+const isAllZeroSha = (value: string): boolean => /^[0]+$/.test(value);
 
-function isBranchRef(ref: string): boolean {
-  return ref.startsWith("refs/heads/");
-}
+const isBranchRef = (ref: string): boolean => ref.startsWith("refs/heads/");
 
 function runHookCommand(gitRoot: string, command: string, args: readonly string[]): number {
   const result = runProcessSync({
@@ -145,9 +140,8 @@ function readPackageScripts(gitRoot: string): PackageScripts {
   }
 }
 
-function hasProjectScript(scripts: PackageScripts, name: string): boolean {
-  return Object.hasOwn(scripts, name);
-}
+const hasProjectScript = (scripts: PackageScripts, name: string): boolean =>
+  Object.hasOwn(scripts, name);
 
 function runOptionalProjectScript(
   gitRoot: string,
@@ -166,17 +160,15 @@ function runOptionalProjectScript(
   return { exitCode, skipped: false };
 }
 
-function trackedChangesShort(gitRoot: string): string {
-  return readGitText(gitRoot, ["status", "--short", "--untracked-files=no"]);
-}
+const trackedChangesShort = (gitRoot: string): string =>
+  readGitText(gitRoot, ["status", "--short", "--untracked-files=no"]);
 
-function readLocalGitConfigBool(gitRoot: string, name: string): string {
-  return readGitText(gitRoot, ["config", "--local", "--get", "--bool", name]);
-}
+const readLocalGitConfigBool = (gitRoot: string, name: string): string =>
+  readGitText(gitRoot, ["config", "--local", "--get", "--bool", name]);
 
-function fail(message: string, details: string[] = []): never {
+const fail = (message: string, details: string[] = []): never => {
   throw new HookFailure(message, details);
-}
+};
 
 function failIfTrackedChanges(gitRoot: string, message: string): void {
   const changes = trackedChangesShort(gitRoot);
@@ -377,13 +369,11 @@ function enforceTaskBoundOutgoingCommits(
   );
 }
 
-function gitRefExists(gitRoot: string, ref: string): boolean {
-  return readGitText(gitRoot, ["rev-parse", "--verify", "--quiet", ref]).length > 0;
-}
+const gitRefExists = (gitRoot: string, ref: string): boolean =>
+  readGitText(gitRoot, ["rev-parse", "--verify", "--quiet", ref]).length > 0;
 
-function hasReleaseTagPush(updates: readonly PrePushUpdate[]): boolean {
-  return updates.some((update) => update.remoteRef.startsWith("refs/tags/"));
-}
+const hasReleaseTagPush = (updates: readonly PrePushUpdate[]): boolean =>
+  updates.some((update) => update.remoteRef.startsWith("refs/tags/"));
 
 function isDeleteOnlyPush(updates: readonly PrePushUpdate[]): boolean {
   return (
@@ -437,14 +427,6 @@ function readChangedFilesForRange(
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
-}
-
-function fileExistsSync(filePath: string): boolean {
-  try {
-    return fs.statSync(filePath).isFile();
-  } catch {
-    return false;
-  }
 }
 
 function isTruthyHookEnv(name: string): boolean {
@@ -514,7 +496,7 @@ function runInternalPrePushHook(gitRoot: string, stdin: string): number {
 
     if (isReleasePush) {
       const releaseNotesScript = path.join(gitRoot, "scripts", "check-release-notes.mjs");
-      if (fileExistsSync(releaseNotesScript)) {
+      if (fs.existsSync(releaseNotesScript)) {
         const notesExitCode = runHookCommand(gitRoot, resolvePreferredNodeExecutable(process.env), [
           "scripts/check-release-notes.mjs",
         ]);

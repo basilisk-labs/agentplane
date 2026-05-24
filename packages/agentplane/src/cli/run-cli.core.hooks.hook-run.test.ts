@@ -344,64 +344,6 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     }
   });
 
-  it("hooks run commit-msg accepts deploy-fix evidence without task binding", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await mkdir(path.join(root, "src"), { recursive: true });
-    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
-    const messagePath = path.join(root, "COMMIT_EDITMSG");
-    await writeFile(
-      messagePath,
-      [
-        "🚑 deploy-fix: refresh production cache marker",
-        "",
-        "Deploy-Fix: true",
-        "Deploy-Fix-Evidence: live cache-buster probe recorded",
-        "",
-      ].join("\n"),
-      "utf8",
-    );
-    const prev = process.env.AGENTPLANE_TASK_ID;
-    delete process.env.AGENTPLANE_TASK_ID;
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
-      else process.env.AGENTPLANE_TASK_ID = prev;
-    }
-  });
-
-  it("hooks run commit-msg rejects deploy-fix subjects without evidence", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await mkdir(path.join(root, "src"), { recursive: true });
-    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
-    const messagePath = path.join(root, "COMMIT_EDITMSG");
-    await writeFile(messagePath, "🚑 deploy-fix: refresh production cache marker\n", "utf8");
-    const prev = process.env.AGENTPLANE_TASK_ID;
-    delete process.env.AGENTPLANE_TASK_ID;
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
-      expect(code).toBe(5);
-      expect(io.stderr).toContain("Mutating staged paths require an active AgentPlane task");
-      expect(io.stderr).toContain("Deploy-Fix-Evidence");
-    } finally {
-      io.restore();
-      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
-      else process.env.AGENTPLANE_TASK_ID = prev;
-    }
-  });
-
   it("hooks run commit-msg binds mutating staged paths from a valid task suffix", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

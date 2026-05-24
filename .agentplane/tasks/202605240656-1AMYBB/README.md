@@ -4,7 +4,7 @@ title: "Harden direct-mode hook publication recovery"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -19,16 +19,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-24T07:15:27.134Z"
+  updated_at: "2026-05-24T07:19:40.525Z"
   updated_by: "EVALUATOR"
-  note: "Command: independent review of diff and recorded checks; Result: pass; Evidence: task adds constrained deploy-fix evidence route, optional-script skip parity in repository pre-push helper, and focused hook tests covering acceptance and rejection paths. Scope: quality review for PR #4126 before hosted checks complete."
+  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 3 files passed, 38 tests passed. Scope: deploy-fix, commit-msg, and pre-push hook behavior. Command: bun run hotspots:check; Result: pass; Evidence: runtime hotspot threshold and oversized-test baseline OK after splitting deploy-fix tests. Scope: size guard. Command: bunx prettier --check changed hook/policy/test files; Result: pass; Evidence: Prettier accepted changed files. Scope: changed files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: gateway routing. Command: ap doctor; Result: pass; Evidence: doctor OK with pre-existing branch_pr reconciliation warnings unrelated to this task. Scope: runtime/workflow health."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-24T07:15:27.134Z"
+  updated_at: "2026-05-24T07:19:40.525Z"
   updated_by: "EVALUATOR"
-  note: "Command: independent review of diff and recorded checks; Result: pass; Evidence: task adds constrained deploy-fix evidence route, optional-script skip parity in repository pre-push helper, and focused hook tests covering acceptance and rejection paths. Scope: quality review for PR #4126 before hosted checks complete."
-  evaluated_sha: "e6bdd4d4bb248e4e638a888ad353e255f3e2ebfb"
+  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 3 files passed, 38 tests passed. Scope: deploy-fix, commit-msg, and pre-push hook behavior. Command: bun run hotspots:check; Result: pass; Evidence: runtime hotspot threshold and oversized-test baseline OK after splitting deploy-fix tests. Scope: size guard. Command: bunx prettier --check changed hook/policy/test files; Result: pass; Evidence: Prettier accepted changed files. Scope: changed files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: gateway routing. Command: ap doctor; Result: pass; Evidence: doctor OK with pre-existing branch_pr reconciliation warnings unrelated to this task. Scope: runtime/workflow health."
+  evaluated_sha: "26466adfd148ed89aa67569637f55bb2ebc3a318"
   blueprint_digest: "b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f"
   evidence_refs:
     - ".agentplane/tasks/202605240656-1AMYBB/README.md"
@@ -59,8 +59,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Command: independent review of diff and recorded checks; Result: pass; Evidence: task adds constrained deploy-fix evidence route, optional-script skip parity in repository pre-push helper, and focused hook tests covering acceptance and rejection paths. Scope: quality review for PR #4126 before hosted checks complete."
+  -
+    type: "verify"
+    at: "2026-05-24T07:19:40.525Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 3 files passed, 38 tests passed. Scope: deploy-fix, commit-msg, and pre-push hook behavior. Command: bun run hotspots:check; Result: pass; Evidence: runtime hotspot threshold and oversized-test baseline OK after splitting deploy-fix tests. Scope: size guard. Command: bunx prettier --check changed hook/policy/test files; Result: pass; Evidence: Prettier accepted changed files. Scope: changed files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: gateway routing. Command: ap doctor; Result: pass; Evidence: doctor OK with pre-existing branch_pr reconciliation warnings unrelated to this task. Scope: runtime/workflow health."
 doc_version: 3
-doc_updated_at: "2026-05-24T07:15:27.168Z"
+doc_updated_at: "2026-05-24T07:19:40.550Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issue #4119 by decomposing direct-mode hook publication friction into runtime/script diagnostics and a taskless deploy-fix recovery path that does not require --no-verify."
 sections:
@@ -74,10 +80,11 @@ sections:
   Plan: "Fix GitHub issue #4119 as one hooks task with four subscopes: (1) keep installed clean-project pre-push fallback script checks capability-based instead of hard-failing on missing optional scripts, (2) align the repository pre-push helper with that behavior where applicable, (3) add a first-class direct-mode deploy-fix evidence bypass for tiny post-deploy publication fixes without requiring --no-verify or an active task, while keeping explicit trailers and diagnostics, and (4) cover task binding, optional script skip, and deploy-fix behavior with focused tests. Verify with task verify-show, focused hook tests, policy routing, and doctor."
   Verify Steps: |-
     1. Inspect changed hook and policy paths. Expected: direct-mode hook recovery covers optional script skip, deploy-fix commit-msg bypass, and pre-push outgoing commit audit without widening unrelated task-bound rules.
-    2. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000`. Expected: focused hook commit-msg/pre-push suite passes.
+    2. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000`. Expected: focused hook commit-msg/pre-push suite passes.
     3. Run `bunx prettier --check packages/agentplane/src/policy/model.ts packages/agentplane/src/policy/rules/task-bound-mutation.ts packages/agentplane/src/commands/hooks/run.commit-msg.ts packages/agentplane/src/commands/hooks/run.pre-push.ts scripts/checks/run-pre-push-hook.mjs packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts`. Expected: changed files use Prettier style.
     4. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing OK.
-    5. Run `ap doctor`. Expected: doctor OK; unrelated pre-existing warnings, if any, are recorded in Findings.
+    5. Run `bun run hotspots:check`. Expected: hotspot thresholds and oversized-test baseline pass.
+    6. Run `ap doctor`. Expected: doctor OK; unrelated pre-existing warnings, if any, are recorded in Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-24T07:13:34.194Z — VERIFY — ok
@@ -118,6 +125,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605240656-1AMYBB
 
+    ### 2026-05-24T07:19:40.525Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 3 files passed, 38 tests passed. Scope: deploy-fix, commit-msg, and pre-push hook behavior. Command: bun run hotspots:check; Result: pass; Evidence: runtime hotspot threshold and oversized-test baseline OK after splitting deploy-fix tests. Scope: size guard. Command: bunx prettier --check changed hook/policy/test files; Result: pass; Evidence: Prettier accepted changed files. Scope: changed files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: gateway routing. Command: ap doctor; Result: pass; Evidence: doctor OK with pre-existing branch_pr reconciliation warnings unrelated to this task. Scope: runtime/workflow health.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T07:15:27.168Z, excerpt_hash=sha256:62958fce32671de695a28c23411f9a0a39e9191ac3f1720a3a4bbc7b84186b77
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240656-1AMYBB-harden-direct-mode-hook-publication-recovery/.agentplane/tasks/202605240656-1AMYBB/blueprint/resolved-snapshot.json
+    - old_digest: b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f
+    - current_digest: b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605240656-1AMYBB
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -134,6 +160,10 @@ sections:
     - Observation: No scope drift found beyond GitHub issue #4119 hook recovery surfaces.
       Impact: The bypass is explicit-evidence based and does not disable normal task-bound mutation enforcement.
       Resolution: Proceed to hosted checks and integration once GitHub reports stable green.
+
+    - Observation: Final review includes the hotspot correction that moved deploy-fix commit-msg coverage into a separate focused test file.
+      Impact: The PR now satisfies both behavior coverage and repository size gates.
+      Resolution: Proceed with PR #4126 hosted checks and integration when stable green.
 id_source: "generated"
 ---
 ## Summary
@@ -154,10 +184,11 @@ Fix GitHub issue #4119 as one hooks task with four subscopes: (1) keep installed
 ## Verify Steps
 
 1. Inspect changed hook and policy paths. Expected: direct-mode hook recovery covers optional script skip, deploy-fix commit-msg bypass, and pre-push outgoing commit audit without widening unrelated task-bound rules.
-2. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000`. Expected: focused hook commit-msg/pre-push suite passes.
+2. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000`. Expected: focused hook commit-msg/pre-push suite passes.
 3. Run `bunx prettier --check packages/agentplane/src/policy/model.ts packages/agentplane/src/policy/rules/task-bound-mutation.ts packages/agentplane/src/commands/hooks/run.commit-msg.ts packages/agentplane/src/commands/hooks/run.pre-push.ts scripts/checks/run-pre-push-hook.mjs packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts`. Expected: changed files use Prettier style.
 4. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing OK.
-5. Run `ap doctor`. Expected: doctor OK; unrelated pre-existing warnings, if any, are recorded in Findings.
+5. Run `bun run hotspots:check`. Expected: hotspot thresholds and oversized-test baseline pass.
+6. Run `ap doctor`. Expected: doctor OK; unrelated pre-existing warnings, if any, are recorded in Findings.
 
 ## Verification
 
@@ -200,6 +231,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605240656-1AMYBB
 
+### 2026-05-24T07:19:40.525Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 3 files passed, 38 tests passed. Scope: deploy-fix, commit-msg, and pre-push hook behavior. Command: bun run hotspots:check; Result: pass; Evidence: runtime hotspot threshold and oversized-test baseline OK after splitting deploy-fix tests. Scope: size guard. Command: bunx prettier --check changed hook/policy/test files; Result: pass; Evidence: Prettier accepted changed files. Scope: changed files. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: gateway routing. Command: ap doctor; Result: pass; Evidence: doctor OK with pre-existing branch_pr reconciliation warnings unrelated to this task. Scope: runtime/workflow health.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T07:15:27.168Z, excerpt_hash=sha256:62958fce32671de695a28c23411f9a0a39e9191ac3f1720a3a4bbc7b84186b77
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240656-1AMYBB-harden-direct-mode-hook-publication-recovery/.agentplane/tasks/202605240656-1AMYBB/blueprint/resolved-snapshot.json
+- old_digest: b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f
+- current_digest: b94ccc0208f562da4f824498cc3ab72784931a02110aab41c47be73a98201c0f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605240656-1AMYBB
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -220,3 +270,7 @@ BlueprintSnapshotRef:
 - Observation: No scope drift found beyond GitHub issue #4119 hook recovery surfaces.
   Impact: The bypass is explicit-evidence based and does not disable normal task-bound mutation enforcement.
   Resolution: Proceed to hosted checks and integration once GitHub reports stable green.
+
+- Observation: Final review includes the hotspot correction that moved deploy-fix commit-msg coverage into a separate focused test file.
+  Impact: The PR now satisfies both behavior coverage and repository size gates.
+  Resolution: Proceed with PR #4126 hosted checks and integration when stable green.
