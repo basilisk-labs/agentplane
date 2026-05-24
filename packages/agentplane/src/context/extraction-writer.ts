@@ -113,7 +113,11 @@ export async function applyContextExtractionResult(opts: {
   for (const item of result.extracted_items) {
     if (item.kind === "fact") {
       facts.set(item.id, baseRow(item, taskId));
-      for (const row of provenanceRows(item, toPosix(path.relative(opts.root, factsPath)), taskId)) {
+      for (const row of provenanceRows(
+        item,
+        toPosix(path.relative(opts.root, factsPath)),
+        taskId,
+      )) {
         provenance.set(rowId(row), row);
       }
     }
