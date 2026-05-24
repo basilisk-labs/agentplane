@@ -9,7 +9,7 @@ export async function cmdContextExtractionApply(opts: {
   parsed: { file: string; taskId: string; dryRun: boolean };
 }): Promise<number> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
-  const filePath = path.resolve(opts.cwd, opts.parsed.file);
+  const filePath = path.resolve(root, opts.parsed.file);
   const raw = JSON.parse(await readFile(filePath, "utf8")) as unknown;
   const result = await applyContextExtractionResult({
     root,

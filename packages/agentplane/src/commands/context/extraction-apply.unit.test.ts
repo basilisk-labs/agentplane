@@ -30,6 +30,7 @@ async function write(root: string, rel: string, text: string): Promise<void> {
 describe("context extraction apply", () => {
   it("materializes facts, graph rows, provenance, and coverage from context_extraction SGR", async () => {
     const root = await tempRoot();
+    const otherCwd = await tempRoot();
     await write(
       root,
       "context/extraction.json",
@@ -108,7 +109,8 @@ describe("context extraction apply", () => {
     );
 
     await cmdContextExtractionApply({
-      cwd: root,
+      cwd: otherCwd,
+      rootOverride: root,
       parsed: { file: "context/extraction.json", taskId: "202605130501-CTXMAX", dryRun: false },
     });
     await cmdContextGraphValidate({ cwd: root, parsed: {} });
