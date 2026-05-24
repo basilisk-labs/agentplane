@@ -243,6 +243,16 @@ function hasEmergencyBackfillEvidence(body: string): boolean {
   return evidence.length >= 12;
 }
 
+function hasDeployFixEvidence(body: string): boolean {
+  const subject = commitSubject(body);
+  if (!/^🚑\s+deploy-fix:\s+\S+/u.test(subject) && !/^deploy-fix:\s+\S+/u.test(subject)) {
+    return false;
+  }
+  if (!/^Deploy-Fix:\s*true\s*$/im.test(body)) return false;
+  const evidence = /^Deploy-Fix-Evidence:\s*(.+)$/im.exec(body)?.[1]?.trim() ?? "";
+  return evidence.length >= 12;
+}
+
 function commitSubject(body: string): string {
   return (
     body
@@ -344,6 +354,7 @@ function enforceTaskBoundOutgoingCommits(
     if (hasManagedInstallEvidence(body, mutating)) continue;
     if (hasManagedContextBootstrapEvidence(body, mutating)) continue;
     if (hasEmergencyBackfillEvidence(body)) continue;
+    if (hasDeployFixEvidence(body)) continue;
 
     failures.push(
       [
@@ -361,6 +372,7 @@ function enforceTaskBoundOutgoingCommits(
       "  1) Reword the commit subject to include a valid task suffix/id from .agentplane/tasks.",
       "  2) Or commit from task/<task-id>/<slug> / AGENTPLANE_TASK_ID through AgentPlane.",
       "  3) For emergency hotfixes, add trailers: Emergency-Hotfix: true, Backfill-Task: <task-id>, Backfill-Evidence: <evidence>.",
+      "  4) For tiny deploy-only fixes, use subject `🚑 deploy-fix: ...` plus trailers: Deploy-Fix: true, Deploy-Fix-Evidence: <evidence>.",
     ],
   );
 }

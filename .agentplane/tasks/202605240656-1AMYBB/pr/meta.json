@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605240656-1AMYBB/harden-direct-mode-hook-publication-recovery",
+  "created_at": "2026-05-24T06:58:58.479Z",
+  "diffstat_sha256": "sha256:3ef58c66fe12bbc913bf62869c1eeca7d023cd84caf11f9ce4a932738118258a",
+  "last_verified_at": "2026-05-24T07:13:34.194Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605240656-1AMYBB",
+  "updated_at": "2026-05-24T06:58:58.479Z",
+  "verify": {
+    "status": "pass"
+  }
+}
