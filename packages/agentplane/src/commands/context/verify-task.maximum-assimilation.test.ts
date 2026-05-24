@@ -122,7 +122,7 @@ async function writeMaximumAssimilationArtifacts(root: string, opts?: { glossary
       {
         id: "entity.payment_workflow",
         label: "Payment Workflow",
-        source_refs: ["context/raw/specs/payment-api.md#lines=4-6"],
+        source_refs: ["context/raw/specs/payment-api.md#L4-L6"],
       },
     ]
       .map((row) => JSON.stringify(row))

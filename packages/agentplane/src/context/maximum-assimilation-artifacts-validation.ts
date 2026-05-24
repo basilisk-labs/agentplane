@@ -31,7 +31,7 @@ async function listFiles(root: string, rel: string): Promise<string[]> {
 }
 
 function hasLineAddressedSourceRef(value: string): boolean {
-  return /#lines?=\d+(?:-\d+)?\b/u.test(value);
+  return /(?:#lines?=\d+(?:-\d+)?\b|#L\d+(?:-L?\d+)?\b)/u.test(value);
 }
 
 function containsObsidianWikiLink(text: string): boolean {
