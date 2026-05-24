@@ -1,6 +1,6 @@
 {
   "name": "@agentplaneorg/core",
-  "version": "0.6.8",
+  "version": "0.6.9",
   "description": "Core libraries for Agentplane repository-native task, policy, and verification workflows.",
   "keywords": [
     "agentplane",
