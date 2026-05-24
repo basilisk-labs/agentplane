@@ -4,7 +4,7 @@ title: "Implement executable evaluator quality review"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -29,36 +29,29 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-24T06:51:24.621Z"
+  updated_at: "2026-05-24T07:18:43.957Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR review: prompt surfaces now direct agents to evaluator run and structured quality reports, not formal verify notes."
-  evaluated_sha: "deb4439ae218ebb1d492879da6d34d5ebf0feea4"
+  note: "EVALUATOR review: agent prompts now use compact ap evaluator run and preserve legacy verify only as an insufficient manual path."
+  evaluated_sha: "38fc891b19a9bd9822f8698c0f70428994887ab2"
   blueprint_digest: "4bd1a0ab295307905c1f5ceafa36fb1c6bb7fb22e6cf505bb55244db31b28114"
   evidence_refs:
     - ".agentplane/tasks/202605232011-MAW1PK/README.md"
-    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-065124621-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-065124621-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-065124621-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-071843957-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-071843957-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-071843957-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605232011-MAW1PK/blueprint/resolved-snapshot.json"
     - "packages/agentplane/assets/agents/EVALUATOR.json"
     - ".agentplane/agents/EVALUATOR.json"
-    - "packages/agentplane/assets/evaluators/recovery-context.md"
-    - ".agentplane/evaluators/recovery-context.md"
-    - "packages/agentplane/src/workflow-lifecycle/contract.ts"
-    - "packages/agentplane/src/blueprints/builtins.ts"
-    - "packages/agentplane/src/context/ingest-task.ts"
-    - "packages/agentplane/assets/AGENTS.md"
-    - "commit: deb4439ae"
-    - "check: bun run agents:check"
-    - "check: node .agentplane/policy/check-routing.mjs"
+    - "packages/agentplane/src/agents/agents-template.test.ts"
+    - "commit: 38fc891b1"
+    - "check: bun test packages/agentplane/src/agents/agents-template.test.ts"
+    - "check: node scripts/generate/sync-agent-templates.mjs check && node scripts/checks/check-agent-onboarding-scenario.mjs"
     - "check: bun test packages/agentplane/src/workflow-lifecycle/contract.test.ts packages/agentplane/src/blueprints/validate.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
-    - "check: bun run format:changed"
-    - "check: bun run typecheck"
-    - "check: bun run framework:dev:bootstrap"
+    - "check: node .agentplane/policy/check-routing.mjs"
   findings:
-    - "EVALUATOR agent profile and recovery-context evaluator prompt now require structured evaluator run output with findings, evidence refs, missing tests, hidden assumptions, residual risks, and quality-report.json evidence."
-    - "Workflow lifecycle contract, gateway command blocks, context ingest prompt, and context maximum-assimilation blueprint now advertise agentplane evaluator run as the quality gate command."
-    - "Targeted lifecycle/blueprint/evaluator tests, agents:check, format:changed, typecheck, policy routing, and framework bootstrap passed after the prompt-surface update."
+    - "Packaged and repo-local EVALUATOR agent prompts now instruct agents to run ap evaluator run with structured findings, evidence, missing tests, hidden assumptions, and residual risks."
+    - "The CI failure in agents-template was addressed by replacing primary agentplane evaluator run prompt commands with ap evaluator run in both EVALUATOR prompt sources."
+    - "agents-template, agent template sync, agent onboarding scenario, targeted evaluator/blueprint tests, and policy routing passed after the prompt fix."
 commit: null
 comments:
   -
