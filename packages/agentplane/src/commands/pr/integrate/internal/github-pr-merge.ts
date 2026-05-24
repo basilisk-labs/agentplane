@@ -298,34 +298,39 @@ async function runGithubApiMerge(opts: {
     directRebaseErr = directErr;
   }
 
-  try {
-    await githubGraphql({
-      token,
-      query:
-        "mutation($pullRequestId:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$pullRequestId,mergeMethod:MERGE}){pullRequest{number}}}",
-      variables: { pullRequestId },
-    });
-    return {
-      status: "auto_merge_enabled",
-      detail: `GitHub PR merge queued through GitHub API auto-merge fallback: ${ownerRepo}#${pr.number}`,
-    };
-  } catch (autoMergeErr) {
+  let autoMergeErr: unknown = "skipped because pullRequestId was not resolved";
+  if (pullRequestId) {
     try {
-      await githubRestJson({
+      await githubGraphql({
         token,
-        method: "PUT",
-        path: `/repos/${encodeURIComponent(pr.owner)}/${encodeURIComponent(pr.repo)}/pulls/${pr.number}/merge`,
-        body: { merge_method: "merge" },
+        query:
+          "mutation($pullRequestId:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$pullRequestId,mergeMethod:MERGE}){pullRequest{number}}}",
+        variables: { pullRequestId },
       });
       return {
-        status: "merged",
-        detail: `GitHub PR merged through GitHub API fallback: ${ownerRepo}#${pr.number}`,
+        status: "auto_merge_enabled",
+        detail: `GitHub PR merge queued through GitHub API auto-merge fallback: ${ownerRepo}#${pr.number}`,
       };
-    } catch (directErr) {
-      throw new Error(
-        `api auto_rebase=${summarizeGithubFailure(autoRebaseErr)}; api direct_rebase=${summarizeGithubFailure(directRebaseErr)}; api auto_merge=${summarizeGithubFailure(autoMergeErr)}; api direct_merge=${summarizeGithubFailure(directErr)}`,
-      );
+    } catch (err) {
+      autoMergeErr = err;
     }
+  }
+
+  try {
+    await githubRestJson({
+      token,
+      method: "PUT",
+      path: `/repos/${encodeURIComponent(pr.owner)}/${encodeURIComponent(pr.repo)}/pulls/${pr.number}/merge`,
+      body: { merge_method: "merge" },
+    });
+    return {
+      status: "merged",
+      detail: `GitHub PR merged through GitHub API fallback: ${ownerRepo}#${pr.number}`,
+    };
+  } catch (directErr) {
+    throw new Error(
+      `api auto_rebase=${summarizeGithubFailure(autoRebaseErr)}; api direct_rebase=${summarizeGithubFailure(directRebaseErr)}; api auto_merge=${summarizeGithubFailure(autoMergeErr)}; api direct_merge=${summarizeGithubFailure(directErr)}`,
+    );
   }
 }
 

@@ -459,6 +459,90 @@ describe("pr/integrate/cmd", () => {
     }
   });
 
+  it("does not attempt API auto-merge fallback without a resolved pullRequestId", async () => {
+    const originalGhToken = process.env.GH_TOKEN;
+    const originalGithubToken = process.env.GITHUB_TOKEN;
+    process.env.GH_TOKEN = "test-token";
+    delete process.env.GITHUB_TOKEN;
+    mocks.execFileAsync.mockRejectedValueOnce(Object.assign(new Error("spawn gh ENOENT"), {}));
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        Response.json({ errors: [{ message: "lookup unavailable" }] }, { status: 200 }),
+      )
+      .mockResolvedValueOnce(Response.json({ message: "rebase unavailable" }, { status: 405 }))
+      .mockResolvedValueOnce(Response.json({ message: "merge unavailable" }, { status: 405 }));
+    vi.stubGlobal("fetch", fetchMock);
+    mocks.prepareIntegrate.mockResolvedValue({
+      ctx: {
+        config: { paths: { workflow_dir: ".agentplane/tasks" } },
+        git: {},
+        taskBackend: {},
+        resolvedProject: { gitRoot: "/repo" },
+      },
+      resolved: { gitRoot: "/repo" },
+      loadedConfig: {
+        workflow_mode: "branch_pr",
+        paths: {
+          worktrees_dir: ".agentplane/worktrees",
+          workflow_dir: ".agentplane/tasks",
+        },
+        commit: { generic_tokens: [] },
+      },
+      task: { id: "T-1", title: "Task", tags: [], verify: [], status: "DOING" },
+      prDir: "/repo/.agentplane/tasks/T-1/pr",
+      metaPath: "/repo/.agentplane/tasks/T-1/pr/meta.json",
+      diffstatPath: "/repo/.agentplane/tasks/T-1/pr/diffstat.txt",
+      verifyLogPath: "/repo/.agentplane/tasks/T-1/pr/verify.log",
+      metaSource: {
+        base: "main",
+        branch: "task/T-1",
+        head_sha: "head-sha",
+        pr_number: 338,
+        pr_url: "https://github.com/example/repo/pull/338",
+      },
+      branch: "task/T-1",
+      base: "main",
+      verifyLogText: "",
+      branchHeadSha: "head-sha",
+      changedPaths: [],
+      verifyCommands: [],
+      alreadyVerifiedSha: null,
+      shouldRunVerify: false,
+      protectedBaseRequiresPrMerge: true,
+    });
+    const { cmdIntegrate } = await import("./cmd.js");
+
+    try {
+      const caught = await cmdIntegrate({
+        cwd: "/repo",
+        taskId: "T-1",
+        mergeStrategy: "squash",
+        runVerify: false,
+        dryRun: false,
+        quiet: false,
+      }).catch((err: unknown) => err);
+
+      expect(caught).toMatchObject({ code: "E_HANDOFF" });
+      expect(fetchMock).toHaveBeenCalledTimes(3);
+      const requestBodies = fetchMock.mock.calls.map((call) =>
+        JSON.stringify((call[1] as { body?: unknown } | undefined)?.body ?? ""),
+      );
+      expect(requestBodies.join("\n")).not.toContain("mergeMethod:MERGE");
+      expect(requestBodies.join("\n")).not.toContain('"pullRequestId":""');
+      expect(String((caught as Error).message)).toContain(
+        "api auto_merge=skipped because pullRequestId was not resolved",
+      );
+      expect(mocks.runSquashMerge).not.toHaveBeenCalled();
+      expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
+    } finally {
+      if (originalGhToken === undefined) delete process.env.GH_TOKEN;
+      else process.env.GH_TOKEN = originalGhToken;
+      if (originalGithubToken === undefined) delete process.env.GITHUB_TOKEN;
+      else process.env.GITHUB_TOKEN = originalGithubToken;
+    }
+  });
+
   it("keeps the queue lane in handoff after an immediate GitHub PR merge", async () => {
     mocks.execFileAsync.mockImplementation((_cmd: string, args: string[]) => {
       if (args.includes("--auto")) return Promise.reject(new Error("auto merge unavailable"));
