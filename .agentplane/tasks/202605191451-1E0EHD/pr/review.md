@@ -13,7 +13,7 @@ Created: 2026-05-19T14:52:45.909Z
 ## Verification
 
 - State: ok
-- Note: Rebased onto current origin/main and reran focused cloud backend tests, typecheck, build, hotspots, doctor, and routing checks successfully.
+- Note: Rebased on current main; targeted backend tests, CLI finish/evaluator regression tests, typecheck, policy routing, and doctor passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -37,8 +37,13 @@ Created: 2026-05-19T14:52:45.909Z
  .../src/backends/task-backend/cloud-backend.ts     |  37 +++--
  .../backends/task-backend/cloud-start-refresh.ts   |  83 +++++++++++
  .../src/backends/task-backend/shared/types.ts      |   1 +
+ .../cli/run-cli.core.branch-meta.readiness.test.ts |  19 +++
+ ...run-cli.core.lifecycle.finish-branch-pr.test.ts |  22 +++
+ ...un-cli.core.lifecycle.finish-validation.test.ts |  35 ++++-
+ .../src/cli/run-cli.core.tasks.incidents.test.ts   |  24 ++++
+ .../src/commands/evaluator/evaluator.command.ts    |  10 +-
  .../agentplane/src/commands/task/start-ready.ts    |   1 +
- 9 files changed, 290 insertions(+), 15 deletions(-)
+ 14 files changed, 397 insertions(+), 18 deletions(-)
 ```
 
 </details>
