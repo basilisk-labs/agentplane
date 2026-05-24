@@ -1,10 +1,11 @@
 ---
 id: "202605240656-1AMYBB"
 title: "Harden direct-mode hook publication recovery"
-status: "DOING"
+result_summary: "Merged via PR #4126."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -34,11 +35,16 @@ quality_review:
     - ".agentplane/tasks/202605240656-1AMYBB/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240656-1AMYBB-harden-direct-mode-hook-publication-recovery/.agentplane/tasks/202605240656-1AMYBB/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "ba77bedadf4876bb8306fa3ec2a2f3dccdcd0d41"
+  message: "🐛 1AMYBB hooks: fail malformed package metadata"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing approved hook recovery hardening in the dedicated branch_pr worktree; scope is limited to direct-mode pre-push optional script handling, deploy-fix evidence bypass diagnostics, and focused hook tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4126 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Command: review-thread fix for PR #4126 discussion_r3294046432; Result: pass; Evidence: MJS and installed TypeScript pre-push paths now return empty scripts only when package.json is absent, and fail when existing package.json cannot be parsed. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane bundle built successfully after the HookFailure return fix. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 2 files passed, 19 tests passed. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold and oversized-test baseline OK. Command: bunx prettier --check changed review-fix files; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass."
+  -
+    type: "status"
+    at: "2026-05-24T07:53:55.797Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4126 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-24T07:37:56.595Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-24T07:53:55.807Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub issue #4119 by decomposing direct-mode hook publication friction into runtime/script diagnostics and a taskless deploy-fix recovery path that does not require --no-verify."
 sections:
   Summary: |-
