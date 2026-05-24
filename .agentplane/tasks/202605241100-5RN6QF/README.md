@@ -1,10 +1,11 @@
 ---
 id: "202605241100-5RN6QF"
 title: "Fix context doctor line refs and all-scope search"
-status: "DOING"
+result_summary: "Merged via PR #4133."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "packages/agentplane/src/commands/context/issue-gates.unit.test.ts"
   findings:
     - "Evidence: targeted Prettier, Vitest issue-gates suite, targeted ESLint, policy routing, and ap doctor passed after the implementation commit."
-commit: null
+commit:
+  hash: "b5e29d46552c78d210cbbe61ebf8cc6bc552f92c"
+  message: "🚧 5RN6QF task: fix context doctor and search"
 comments:
   -
     author: "CODER"
     body: "Start: Fix context doctor line-addressed raw source refs and context search all-scope SQLite adapter behavior, with focused regression tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4133 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fixed context doctor line-addressed raw source refs and context search --scope all SQLite/token matching. Checks passed: Prettier targeted files; Vitest issue-gates unit suite; targeted ESLint; policy routing; ap doctor."
+  -
+    type: "status"
+    at: "2026-05-24T11:20:06.694Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4133 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-24T11:06:23.361Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-24T11:20:06.701Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix defects found by the maximum-assimilation playground: context doctor should accept line-addressed raw source refs when the raw source path is present in the manifest lock, and context search --scope all should use the SQLite projection instead of falling back to an empty local stub when the projection exists."
 sections:
   Summary: |-
