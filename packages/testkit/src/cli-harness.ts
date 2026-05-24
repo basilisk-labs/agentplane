@@ -195,6 +195,7 @@ export async function approveTaskPlan(root: string, taskId: string): Promise<voi
 }
 
 export async function recordVerificationOk(root: string, taskId: string): Promise<void> {
+  const taskReadmePath = `.agentplane/tasks/${taskId}/README.md`;
   await runCliSilent([
     "task",
     "doc",
@@ -216,6 +217,21 @@ export async function recordVerificationOk(root: string, taskId: string): Promis
     "--note",
     "Ok to integrate",
     "--quiet",
+    "--root",
+    root,
+  ]);
+  await runCliSilent([
+    "evaluator",
+    "run",
+    taskId,
+    "--verdict",
+    "pass",
+    "--summary",
+    "Ok to integrate",
+    "--finding",
+    "Task verification evidence is sufficient for the test fixture.",
+    "--evidence",
+    taskReadmePath,
     "--root",
     root,
   ]);

@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   buildTaskArtifactRefreshCommitSubject,
   extractTaskSuffix,
+  isTaskArtifactRefreshCommitSubject,
   parseTaskSubjectTemplate,
 } from "@agentplaneorg/core/commit";
 
@@ -55,25 +56,64 @@ async function readHeadSubject(gitRoot: string): Promise<string | null> {
   }
 }
 
-async function headCommitIsTaskOwned(opts: { gitRoot: string; taskId: string }): Promise<boolean> {
+async function readHeadChangedPaths(gitRoot: string): Promise<string[]> {
+  try {
+    const { stdout } = await execFileAsync(
+      "git",
+      ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"],
+      {
+        cwd: gitRoot,
+        env: gitEnv(),
+      },
+    );
+    return stdout
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+  } catch {
+    return [];
+  }
+}
+
+async function headCommitIsTaskImplementationOwned(opts: {
+  gitRoot: string;
+  taskId: string;
+  workflowDir: string;
+}): Promise<boolean> {
   const subject = await readHeadSubject(opts.gitRoot);
   if (!subject) return false;
 
   const parsed = parseTaskSubjectTemplate(subject);
   if (!parsed) return false;
+  if (isTaskArtifactRefreshCommitSubject({ subject, taskId: opts.taskId })) return false;
 
-  return parsed.suffix.toLowerCase() === extractTaskSuffix(opts.taskId).toLowerCase();
+  if (parsed.suffix.toLowerCase() !== extractTaskSuffix(opts.taskId).toLowerCase()) return false;
+
+  const changedPaths = await readHeadChangedPaths(opts.gitRoot);
+  return changedPaths.some(
+    (relPath) =>
+      !isTaskPacketPath({
+        workflowDir: opts.workflowDir,
+        taskId: opts.taskId,
+        relPath,
+      }),
+  );
 }
 
 async function resolveTaskPrArtifactCommitStrategy(opts: {
   gitRoot: string;
   taskId: string;
+  workflowDir: string;
   strategy?: TaskPrArtifactCommitStrategy;
   baseBranch?: string | null;
 }): Promise<"commit" | "amend"> {
   if (opts.strategy === "commit" || opts.strategy === "amend") return opts.strategy;
 
-  return (await headCommitIsTaskOwned({ gitRoot: opts.gitRoot, taskId: opts.taskId }))
+  return (await headCommitIsTaskImplementationOwned({
+    gitRoot: opts.gitRoot,
+    taskId: opts.taskId,
+    workflowDir: opts.workflowDir,
+  }))
     ? "amend"
     : "commit";
 }
@@ -119,6 +159,7 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
   const strategy = await resolveTaskPrArtifactCommitStrategy({
     gitRoot: opts.ctx.resolvedProject.gitRoot,
     taskId: opts.taskId,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
     strategy: opts.strategy,
     baseBranch: opts.baseBranch,
   });

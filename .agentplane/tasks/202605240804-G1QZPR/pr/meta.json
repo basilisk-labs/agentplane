@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605240804-G1QZPR/fix-publication-edge-cases",
+  "created_at": "2026-05-24T08:06:48.364Z",
+  "diffstat_sha256": "sha256:979c339910fd1b22300a8be219d32eb51bd9eee298068d372c1cdf5b80708832",
+  "last_verified_at": "2026-05-24T09:30:18.180Z",
+  "last_verified_diffstat_sha256": "sha256:979c339910fd1b22300a8be219d32eb51bd9eee298068d372c1cdf5b80708832",
+  "schema_version": 1,
+  "task_id": "202605240804-G1QZPR",
+  "updated_at": "2026-05-24T08:06:48.364Z",
+  "verify": {
+    "status": "pass"
+  }
+}

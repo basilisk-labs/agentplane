@@ -167,6 +167,30 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
       }
     }
 
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "evaluator",
+          "run",
+          taskId,
+          "--verdict",
+          "pass",
+          "--summary",
+          "Verified: targeted release workflow checks passed.",
+          "--finding",
+          "Release recovery advice is captured with structured incident evidence.",
+          "--evidence",
+          `.agentplane/tasks/${taskId}/README.md`,
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,

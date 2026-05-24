@@ -73,6 +73,17 @@ async function readRequiredTask(context: LocalBackendContext, taskId: string): P
   });
 }
 
+async function isHandoffOnlyTaskDir(root: string, dirName: string): Promise<boolean> {
+  const taskDir = path.join(root, dirName);
+  const entries = await readdir(taskDir, { withFileTypes: true }).catch(() => []);
+  const meaningfulEntries = entries.filter((entry) => entry.name !== ".DS_Store");
+  return (
+    meaningfulEntries.length === 1 &&
+    meaningfulEntries[0]?.name === "handoff" &&
+    meaningfulEntries[0].isDirectory()
+  );
+}
+
 function sortedCachedProjection(
   cachedIndex: { byId: Record<string, TaskIndexEntry> },
   statuses?: ReadonlySet<string>,
@@ -148,9 +159,11 @@ export async function listLocalTasks(
   const dirs = entries
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
+    .filter((name) => !name.startsWith("."))
     .toSorted();
 
   const readmeStats: ReadmeStatEntry[] = [];
+  const ignoredHandoffOnlyDirs = new Set<string>();
   let hasMissingReadmes = false;
   for (const dirName of dirs) {
     const readmePath = path.join(context.root, dirName, "README.md");
@@ -164,10 +177,18 @@ export async function listLocalTasks(
           size: stats.size,
         });
       } else {
-        hasMissingReadmes = true;
+        if (await isHandoffOnlyTaskDir(context.root, dirName)) {
+          ignoredHandoffOnlyDirs.add(dirName);
+        } else {
+          hasMissingReadmes = true;
+        }
       }
     } catch {
-      hasMissingReadmes = true;
+      if (await isHandoffOnlyTaskDir(context.root, dirName)) {
+        ignoredHandoffOnlyDirs.add(dirName);
+      } else {
+        hasMissingReadmes = true;
+      }
     }
   }
   const readmeStatsByDir = new Map(readmeStats.map((entry) => [entry.dirName, entry]));
@@ -211,6 +232,7 @@ export async function listLocalTasks(
   };
 
   const results = await mapLimit<string, ListTaskResult | null>(dirs, 32, async (dirName) => {
+    if (ignoredHandoffOnlyDirs.has(dirName)) return null;
     const readmePath = path.join(context.root, dirName, "README.md");
     const stats = readmeStatsByDir.get(dirName);
     if (!stats) {
