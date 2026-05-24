@@ -1,10 +1,11 @@
 ---
 id: "202605191451-1E0EHD"
 title: "Add daily cloud pull before task start"
-status: "DOING"
+result_summary: "Merged via PR #4137."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -44,11 +45,16 @@ quality_review:
     - "ap doctor"
   findings:
     - "The reproduced failing tests now pass, along with prior backend cloud refresh tests, CLI lifecycle/evaluator regression tests, typecheck, policy routing, and doctor evidence."
-commit: null
+commit:
+  hash: "dc83486a8ecabbf765b8d9e11bf1fc54fe303736"
+  message: "Merge pull request #4137 from basilisk-labs/task/202605191451-1E0EHD/daily-cloud-start-pull-v2"
 comments:
   -
     author: "CODER"
     body: "Start: implement daily cloud projection pull before task start-ready with focused backend state tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4137 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -176,9 +182,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Final refresh after fixing the two full-fast pre-push fixture failures; focused failing tests now pass."
+  -
+    type: "status"
+    at: "2026-05-24T11:59:29.985Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4137 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-24T11:47:44.385Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-24T11:59:29.995Z"
+doc_updated_by: "INTEGRATOR"
 description: "Before task start-ready on the cloud backend, pull the cloud projection once per local day so GitHub issue intake tasks are visible before local work begins."
 sections:
   Summary: |-

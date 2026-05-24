@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-24T11:58:53Z",
   "base": "main",
-  "branch": "task/202605191451-1E0EHD/daily-cloud-start-pull",
+  "branch": "task/202605191451-1E0EHD/daily-cloud-start-pull-v2",
   "created_at": "2026-05-19T14:52:45.909Z",
   "diffstat_sha256": "sha256:a0a52718b523879050c3f34bc9d4d386a8dfdbfdc93e3e8776386948fcf5e8b7",
   "last_verified_at": "2026-05-24T11:47:44.366Z",
   "last_verified_diffstat_sha256": "sha256:a0a52718b523879050c3f34bc9d4d386a8dfdbfdc93e3e8776386948fcf5e8b7",
+  "merge_commit": "dc83486a8ecabbf765b8d9e11bf1fc54fe303736",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-24T11:58:53Z",
   "pr_number": 3938,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3938",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605191451-1E0EHD",
-  "updated_at": "2026-05-19T15:22:49.030Z",
+  "updated_at": "2026-05-24T11:58:53Z",
   "verify": {
     "status": "pass"
   }
