@@ -4,7 +4,7 @@ title: "Fix recent branch_pr issue candidates"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -20,21 +20,30 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-24T07:20:42.867Z"
+  updated_at: "2026-05-24T07:28:52.294Z"
   updated_by: "EVALUATOR"
-  note: "Verified: Quality gate reviewed the implementation diff and focused check results. Command: git show --stat 15865576914860a14ed5cb1e3bb59731e2b6cac1; Result: pass; Evidence: scoped diff covers pr artifact auto-commit, local backend scanning, GitHub API merge fallback, and regression tests only. Scope: issue-backed branch_pr fixes."
+  note: "Verified: Quality gate rerun after moving regression tests out of oversized files. Command: bun run hotspots:check; Result: pass; Evidence: oversized test baseline OK with 11 entries and 12568 total lines. Command: git diff --stat HEAD; Result: pass; Evidence: runtime changes unchanged; regression tests now live in non-oversized target files. Scope: CI failure recovery for PR #4127."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-24T07:20:42.867Z"
+  updated_at: "2026-05-24T09:08:47.790Z"
   updated_by: "EVALUATOR"
-  note: "Verified: Quality gate reviewed the implementation diff and focused check results. Command: git show --stat 15865576914860a14ed5cb1e3bb59731e2b6cac1; Result: pass; Evidence: scoped diff covers pr artifact auto-commit, local backend scanning, GitHub API merge fallback, and regression tests only. Scope: issue-backed branch_pr fixes."
-  evaluated_sha: "15865576914860a14ed5cb1e3bb59731e2b6cac1"
-  blueprint_digest: "744602cef69e72cbc8ee1d76a7158ad2082a1c4cb1bb0f671451179be5182ba4"
+  note: "Revalidated final scoped branch after restoring unrelated mainline evaluator changes and updating testkit quality-review fixtures."
+  evaluated_sha: "2361d4f81891cafe7c2c9e18fd3d12065e05ef7f"
+  blueprint_digest: "f2d8e77ef5a72f2fe7f3424073cdd91fc5d9bdce8b69c85a26f2c462a323999b"
   evidence_refs:
     - ".agentplane/tasks/202605240708-K9R164/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240708-K9R164-fix-recent-branch-pr-issue-candidates/.agentplane/tasks/202605240708-K9R164/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202605240708-K9R164/quality/20260524-090847790-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605240708-K9R164/quality/20260524-090847790-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605240708-K9R164/quality/20260524-090847790-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605240708-K9R164/blueprint/resolved-snapshot.json"
+    - "bun vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts --project cli-core packages/agentplane/src/backends/task-backend.local-handoff.test.ts --project agentplane packages/agentplane/src/commands/pr/integrate/cmd.test.ts --project agentplane: 3 files, 17 tests passed"
+    - "bun vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts --project cli-core: 4 files, 23 tests passed"
+    - "bunx prettier --check touched files: passed"
+    - "bunx eslint touched files: passed"
+    - "node .agentplane/policy/check-routing.mjs: passed"
+  findings:
+    - "Pass: final diff is scoped to K9R164 artifacts, branch_pr issue fixes, and the testkit helper required by the structured quality-review gate."
 commit: null
 comments:
   -
@@ -60,8 +69,20 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Verified: Quality gate reviewed the implementation diff and focused check results. Command: git show --stat 15865576914860a14ed5cb1e3bb59731e2b6cac1; Result: pass; Evidence: scoped diff covers pr artifact auto-commit, local backend scanning, GitHub API merge fallback, and regression tests only. Scope: issue-backed branch_pr fixes."
+  -
+    type: "verify"
+    at: "2026-05-24T07:28:36.863Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: Command: bun vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts --project cli-core; Result: pass; Evidence: 1 file, 3 tests passed. Command: bun vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts --project cli-core; Result: pass; Evidence: 1 file, 10 tests passed. Command: bun vitest --config vitest.workspace.ts run packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.local-handoff.test.ts --project agentplane; Result: pass; Evidence: 2 files, 32 tests passed. Command: bun vitest --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/cmd.test.ts --project agentplane; Result: pass; Evidence: 1 file, 13 tests passed. Command: bunx prettier --check touched files; Result: pass. Command: bunx eslint touched files; Result: pass. Command: bun run hotspots:check; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass."
+  -
+    type: "verify"
+    at: "2026-05-24T07:28:52.294Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Verified: Quality gate rerun after moving regression tests out of oversized files. Command: bun run hotspots:check; Result: pass; Evidence: oversized test baseline OK with 11 entries and 12568 total lines. Command: git diff --stat HEAD; Result: pass; Evidence: runtime changes unchanged; regression tests now live in non-oversized target files. Scope: CI failure recovery for PR #4127."
 doc_version: 3
-doc_updated_at: "2026-05-24T07:20:42.886Z"
+doc_updated_at: "2026-05-24T07:28:52.309Z"
 doc_updated_by: "CODER"
 description: "Fix three issue-backed regressions found from recent commit history: unsafe pr-open artifact amend, handoff-only task scan warnings, and GitHub API merge fallback with empty pullRequestId."
 sections:
@@ -103,6 +124,44 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T07:19:48.083Z, excerpt_hash=sha256:b6556d3e56d716403eb7ab7fc1cd2a4796b621a998f011ba363636bd9b408c0e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240708-K9R164-fix-recent-branch-pr-issue-candidates/.agentplane/tasks/202605240708-K9R164/blueprint/resolved-snapshot.json
+    - old_digest: 744602cef69e72cbc8ee1d76a7158ad2082a1c4cb1bb0f671451179be5182ba4
+    - current_digest: 744602cef69e72cbc8ee1d76a7158ad2082a1c4cb1bb0f671451179be5182ba4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605240708-K9R164
+
+    ### 2026-05-24T07:28:36.863Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: Command: bun vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts --project cli-core; Result: pass; Evidence: 1 file, 3 tests passed. Command: bun vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts --project cli-core; Result: pass; Evidence: 1 file, 10 tests passed. Command: bun vitest --config vitest.workspace.ts run packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.local-handoff.test.ts --project agentplane; Result: pass; Evidence: 2 files, 32 tests passed. Command: bun vitest --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/cmd.test.ts --project agentplane; Result: pass; Evidence: 1 file, 13 tests passed. Command: bunx prettier --check touched files; Result: pass. Command: bunx eslint touched files; Result: pass. Command: bun run hotspots:check; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T07:20:42.886Z, excerpt_hash=sha256:b6556d3e56d716403eb7ab7fc1cd2a4796b621a998f011ba363636bd9b408c0e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240708-K9R164-fix-recent-branch-pr-issue-candidates/.agentplane/tasks/202605240708-K9R164/blueprint/resolved-snapshot.json
+    - old_digest: 744602cef69e72cbc8ee1d76a7158ad2082a1c4cb1bb0f671451179be5182ba4
+    - current_digest: 744602cef69e72cbc8ee1d76a7158ad2082a1c4cb1bb0f671451179be5182ba4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605240708-K9R164
+
+    ### 2026-05-24T07:28:52.294Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Verified: Quality gate rerun after moving regression tests out of oversized files. Command: bun run hotspots:check; Result: pass; Evidence: oversized test baseline OK with 11 entries and 12568 total lines. Command: git diff --stat HEAD; Result: pass; Evidence: runtime changes unchanged; regression tests now live in non-oversized target files. Scope: CI failure recovery for PR #4127.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T07:28:36.878Z, excerpt_hash=sha256:b6556d3e56d716403eb7ab7fc1cd2a4796b621a998f011ba363636bd9b408c0e
 
     Details:
 
@@ -170,6 +229,44 @@ Note: Verified: Quality gate reviewed the implementation diff and focused check 
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T07:19:48.083Z, excerpt_hash=sha256:b6556d3e56d716403eb7ab7fc1cd2a4796b621a998f011ba363636bd9b408c0e
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240708-K9R164-fix-recent-branch-pr-issue-candidates/.agentplane/tasks/202605240708-K9R164/blueprint/resolved-snapshot.json
+- old_digest: 744602cef69e72cbc8ee1d76a7158ad2082a1c4cb1bb0f671451179be5182ba4
+- current_digest: 744602cef69e72cbc8ee1d76a7158ad2082a1c4cb1bb0f671451179be5182ba4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605240708-K9R164
+
+### 2026-05-24T07:28:36.863Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: Command: bun vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts --project cli-core; Result: pass; Evidence: 1 file, 3 tests passed. Command: bun vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts --project cli-core; Result: pass; Evidence: 1 file, 10 tests passed. Command: bun vitest --config vitest.workspace.ts run packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.local-handoff.test.ts --project agentplane; Result: pass; Evidence: 2 files, 32 tests passed. Command: bun vitest --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/cmd.test.ts --project agentplane; Result: pass; Evidence: 1 file, 13 tests passed. Command: bunx prettier --check touched files; Result: pass. Command: bunx eslint touched files; Result: pass. Command: bun run hotspots:check; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T07:20:42.886Z, excerpt_hash=sha256:b6556d3e56d716403eb7ab7fc1cd2a4796b621a998f011ba363636bd9b408c0e
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240708-K9R164-fix-recent-branch-pr-issue-candidates/.agentplane/tasks/202605240708-K9R164/blueprint/resolved-snapshot.json
+- old_digest: 744602cef69e72cbc8ee1d76a7158ad2082a1c4cb1bb0f671451179be5182ba4
+- current_digest: 744602cef69e72cbc8ee1d76a7158ad2082a1c4cb1bb0f671451179be5182ba4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605240708-K9R164
+
+### 2026-05-24T07:28:52.294Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Verified: Quality gate rerun after moving regression tests out of oversized files. Command: bun run hotspots:check; Result: pass; Evidence: oversized test baseline OK with 11 entries and 12568 total lines. Command: git diff --stat HEAD; Result: pass; Evidence: runtime changes unchanged; regression tests now live in non-oversized target files. Scope: CI failure recovery for PR #4127.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-24T07:28:36.878Z, excerpt_hash=sha256:b6556d3e56d716403eb7ab7fc1cd2a4796b621a998f011ba363636bd9b408c0e
 
 Details:
 

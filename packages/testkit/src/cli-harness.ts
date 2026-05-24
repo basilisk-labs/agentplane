@@ -219,6 +219,21 @@ export async function recordVerificationOk(root: string, taskId: string): Promis
     "--root",
     root,
   ]);
+  await runCliSilent([
+    "evaluator",
+    "run",
+    taskId,
+    "--verdict",
+    "pass",
+    "--summary",
+    "Test harness quality review passed.",
+    "--finding",
+    "Harness fixture reviewed scope, verification state, and integration readiness.",
+    "--evidence",
+    `.agentplane/tasks/${taskId}/README.md`,
+    "--root",
+    root,
+  ]);
 }
 
 export async function writeConfig(
