@@ -32,6 +32,30 @@ afterEach(() => {
   restoreStdIO = null;
 });
 
+async function recordEvaluatorPass(root: string, taskId: string): Promise<void> {
+  const io = captureStdIO();
+  try {
+    const code = await runCli([
+      "evaluator",
+      "run",
+      taskId,
+      "--verdict",
+      "pass",
+      "--summary",
+      "Structured finish fixture has verification evidence.",
+      "--finding",
+      "The finish fixture passed its targeted lifecycle checks.",
+      "--evidence",
+      "finish validation fixture",
+      "--root",
+      root,
+    ]);
+    expect(code, `${io.stdout}\n${io.stderr}`).toBe(0);
+  } finally {
+    io.restore();
+  }
+}
+
 describe("runCli", () => {
   const BLOCK_FINISH_TIMEOUT_MS = 60_000;
   const BLOCK_FINISH_LONG_TIMEOUT_MS = 180_000;
@@ -87,6 +111,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await recordEvaluatorPass(root, taskId);
       await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const hookPath = path.join(root, ".git", "hooks", "pre-commit");
@@ -183,6 +208,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await recordEvaluatorPass(root, taskId);
       await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const io = captureStdIO();
@@ -302,6 +328,7 @@ describe("runCli", () => {
             root,
           ]);
           expect(code).toBe(0);
+          await recordEvaluatorPass(root, taskId);
           await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
         } finally {
           io.restore();
@@ -413,6 +440,7 @@ describe("runCli", () => {
     await writeFile(path.join(root, "finish.txt"), "done\n", "utf8");
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "finish changes"], { cwd: root });
+    const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
 
     await runCliSilent([
       "verify",
@@ -426,7 +454,9 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await recordEvaluatorPass(root, taskA);
     await runCliSilent(["blueprint", "snapshot", taskA, "--root", root]);
+    await commitAll(root, "record task A quality gate");
     await runCliSilent([
       "verify",
       taskB,
@@ -439,6 +469,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await recordEvaluatorPass(root, taskB);
     await runCliSilent(["blueprint", "snapshot", taskB, "--root", root]);
 
     const io = captureStdIO();
@@ -452,11 +483,11 @@ describe("runCli", () => {
         "--body",
         "Verified: finish two tasks with a shared comment to close both records.",
         "--commit",
-        "HEAD",
+        implHash.trim(),
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code, `${io.stdout}\n${io.stderr}`).toBe(0);
     } finally {
       io.restore();
     }

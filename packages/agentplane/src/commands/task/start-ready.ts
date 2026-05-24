@@ -99,6 +99,7 @@ export async function cmdTaskStartReady(opts: {
       author: opts.author,
       body: opts.body,
     });
+    await ctx.taskBackend.refreshProjectionBeforeTaskStart?.();
     const result = await cmdStart({
       ctx,
       cwd: opts.cwd,

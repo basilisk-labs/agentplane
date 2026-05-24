@@ -1,0 +1,17 @@
+ .../task-backend.cloud-start-refresh.test.ts       | 172 +++++++++++++++++++++
+ .../task-backend/cloud-backend-capabilities.ts     |  16 ++
+ .../task-backend/cloud-backend-settings.ts         |   1 +
+ .../task-backend/cloud-backend-state.test.ts       |   5 +
+ .../backends/task-backend/cloud-backend-state.ts   |   8 +-
+ .../src/backends/task-backend/cloud-backend.ts     |  37 +++--
+ .../backends/task-backend/cloud-start-refresh.ts   |  83 ++++++++++
+ .../src/backends/task-backend/shared/types.ts      |   1 +
+ .../cli/run-cli.core.branch-meta.readiness.test.ts |  19 +++
+ ...run-cli.core.lifecycle.finish-branch-pr.test.ts |  22 +++
+ ...un-cli.core.lifecycle.finish-validation.test.ts |  35 ++++-
+ .../src/cli/run-cli.core.tasks.incidents.test.ts   |  24 +++
+ .../verify-task.maximum-assimilation.unit.test.ts  |  25 +++
+ .../src/commands/evaluator/evaluator.command.ts    |  10 +-
+ .../src/commands/pr/integrate/internal/prepare.ts  |  10 +-
+ .../agentplane/src/commands/task/start-ready.ts    |   1 +
+ 16 files changed, 450 insertions(+), 19 deletions(-)

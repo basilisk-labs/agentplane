@@ -75,6 +75,7 @@ async function resolveQualityReviewExpectedSha(
   branchHeadSha: string,
 ): Promise<string> {
   const taskArtifactPrefix = `.agentplane/tasks/${taskId}/`;
+  const workflowArtifactPrefix = ".agentplane/tasks/";
   let current = branchHeadSha;
 
   for (let depth = 0; depth < 20; depth += 1) {
@@ -86,7 +87,14 @@ async function resolveQualityReviewExpectedSha(
     }
 
     const changed = await gitDiffNames(gitRoot, parent, current);
-    if (changed.length === 0 || changed.some((name) => !name.startsWith(taskArtifactPrefix))) {
+    if (changed.length === 0) {
+      return current;
+    }
+    const touchesOnlyCurrentTask = changed.every((name) => name.startsWith(taskArtifactPrefix));
+    const touchesOnlyWorkflowArtifacts = changed.every((name) =>
+      name.startsWith(workflowArtifactPrefix),
+    );
+    if (!touchesOnlyCurrentTask && !touchesOnlyWorkflowArtifacts) {
       return current;
     }
     current = parent;

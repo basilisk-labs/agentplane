@@ -16,6 +16,8 @@ import { buildCloudPullPlan, emitCloudPullDiffSummary, readOpenConflicts } from 
 import { cloudPendingPushReason, pendingCloudPushError } from "./cloud-pending-push.js";
 import type { CloudBackendSettings } from "./cloud-backend-settings.js";
 import { requestCloudPush } from "./cloud-backend-push.js";
+import { cloudBackendCapabilities } from "./cloud-backend-capabilities.js";
+import { refreshCloudProjectionBeforeTaskStart } from "./cloud-start-refresh.js";
 import {
   CLOUD_PULL_REQUEST_TIMEOUT_MS,
   CLOUD_REQUEST_TIMEOUT_MS,
@@ -52,20 +54,7 @@ type CloudSyncStateSnapshot = {
 
 export class CloudBackend implements TaskBackend {
   id = "cloud";
-  capabilities: TaskBackend["capabilities"] = {
-    canonical_source: "remote",
-    projection: "cache",
-    projection_read_mode: "native",
-    reads_from_projection_by_default: true,
-    writes_task_readmes: true,
-    supports_task_revisions: true,
-    supports_revision_guarded_writes: true,
-    may_access_network_on_read: true,
-    may_access_network_on_write: true,
-    supports_projection_refresh: true,
-    supports_push_sync: true,
-    supports_snapshot_export: false,
-  } as const;
+  capabilities: TaskBackend["capabilities"] = cloudBackendCapabilities;
   endpoint: string;
   token: string;
   projectId: string;
@@ -81,6 +70,7 @@ export class CloudBackend implements TaskBackend {
   private readonly autoSyncEnabled: boolean;
   private readonly autoSyncPullOnRead: boolean;
   private readonly autoSyncPullOnWrite: boolean;
+  private readonly autoSyncPullOnStartReady: boolean;
   private readonly autoSyncPushOnWrite: boolean;
   constructor(
     settings: CloudBackendSettings,
@@ -132,6 +122,7 @@ export class CloudBackend implements TaskBackend {
     this.autoSyncEnabled = settings.autosync_enabled ?? this.autoSyncNetworkAllowed;
     this.autoSyncPullOnRead = settings.autosync_pull_on_read ?? true;
     this.autoSyncPullOnWrite = settings.autosync_pull_on_write ?? true;
+    this.autoSyncPullOnStartReady = settings.autosync_pull_on_start_ready ?? true;
     this.autoSyncPushOnWrite = settings.autosync_push_on_write ?? true;
   }
   static async create(opts: {
@@ -227,6 +218,19 @@ export class CloudBackend implements TaskBackend {
       conflict: opts.conflict ?? "prefer-remote",
       quiet: opts.quiet ?? true,
       confirm: opts.allowNetwork,
+    });
+  }
+
+  async refreshProjectionBeforeTaskStart(): Promise<void> {
+    await refreshCloudProjectionBeforeTaskStart({
+      autoSyncEnabled: this.autoSyncEnabled,
+      autoSyncPullOnStartReady: this.autoSyncPullOnStartReady,
+      autoSyncNetworkAllowed: this.autoSyncNetworkAllowed,
+      missingConfigKeys: this.missingConfigKeys.bind(this),
+      projectId: this.projectId,
+      statePath: this.statePath,
+      requestCloudSyncState: this.requestCloudSyncState.bind(this),
+      sync: this.sync.bind(this),
     });
   }
 
@@ -334,6 +338,7 @@ export class CloudBackend implements TaskBackend {
         const state = await this.readState();
         await writeCloudBackendState(this.statePath, {
           last_checked_at: pull.lastCheckedAt,
+          last_start_ready_pull_at: state.last_start_ready_pull_at,
           pending_push: state.pending_push,
         });
       }
@@ -343,8 +348,10 @@ export class CloudBackend implements TaskBackend {
       await this.clearPendingPush();
       return;
     }
+    const existing = await this.readState();
     await writeCloudBackendState(this.statePath, {
       last_checked_at: pull.lastCheckedAt,
+      last_start_ready_pull_at: existing.last_start_ready_pull_at,
       pending_push: null,
     });
   }
@@ -546,6 +553,7 @@ export class CloudBackend implements TaskBackend {
     const state = await this.readState();
     await writeCloudBackendState(this.statePath, {
       last_checked_at: state.last_checked_at,
+      last_start_ready_pull_at: state.last_start_ready_pull_at,
       pending_push: {
         failed_at: new Date().toISOString(),
         reason: cloudPendingPushReason(error),
@@ -558,6 +566,7 @@ export class CloudBackend implements TaskBackend {
     if (!state.pending_push) return;
     await writeCloudBackendState(this.statePath, {
       last_checked_at: state.last_checked_at,
+      last_start_ready_pull_at: state.last_start_ready_pull_at,
       pending_push: null,
     });
   }
