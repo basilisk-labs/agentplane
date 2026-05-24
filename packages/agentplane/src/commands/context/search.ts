@@ -52,15 +52,15 @@ export async function cmdContextSearch(opts: {
   let usedSQLite = false;
   const projection = await readContextProjection(root);
   if (projection) {
+    usedSQLite = true;
     for (const row of projection.rows) {
       if (!pathMatchesScopes(row.path, scopes)) continue;
-      if (row.body.toLowerCase().includes(query)) {
+      if (matchesQuery(row.body, query)) {
         const freshness = await buildFreshness(root, row.path, row.sha256);
         if (freshness.stale) continue;
-        usedSQLite = true;
         results.push({
           path: row.path,
-          score: scoreMatch(row.body, query),
+          score: scoreSearchText(row.body, query),
           snippet: buildSnippet(row.body.split("\n"), 1, Math.min(row.body.split("\n").length, 4)),
           refs: [row.path],
           freshness,
@@ -84,11 +84,11 @@ export async function cmdContextSearch(opts: {
       const lines = text.split(/\r?\n/);
       for (const [index, row] of rows.entries()) {
         const haystack = JSON.stringify(row).toLowerCase();
-        if (!haystack.includes(query)) continue;
+        if (!matchesQuery(haystack, query)) continue;
         const id = String(row.id ?? index + 1);
         results.push({
           path: `${relative}#entity=${id}`,
-          score: scoreMatch(haystack, query),
+          score: scoreSearchText(haystack, query),
           snippet: buildSnippet(lines, index + 1, index + 1),
           refs: Array.isArray((row as { source_refs?: unknown })?.source_refs)
             ? ((row as { source_refs?: unknown }).source_refs as string[])
@@ -105,14 +105,14 @@ export async function cmdContextSearch(opts: {
 
     const lines = text.split(/\r?\n/);
     const matches = lines
-      .map((line, index) => (line.toLowerCase().includes(query) ? index + 1 : 0))
+      .map((line, index) => (matchesQuery(line, query) ? index + 1 : 0))
       .filter(Boolean);
     if (matches.length === 0) continue;
     const start = matches[0] ?? 1;
     const end = Math.min(lines.length, start + 5);
     results.push({
       path: relative,
-      score: scoreMatch(text, query),
+      score: scoreSearchText(text, query),
       snippet: buildSnippet(lines, start, end),
       line: start,
       freshness: { projection_sha256: null, file_sha256: null, stale: false },
@@ -166,6 +166,31 @@ export async function cmdContextSearch(opts: {
     process.stdout.write(`  ${result.snippet.replaceAll("\n", String.raw`\n`)}\n`);
   }
   return 0;
+}
+
+function queryTokens(query: string): string[] {
+  return query
+    .toLowerCase()
+    .split(/\s+/u)
+    .map((token) => token.trim())
+    .filter(Boolean);
+}
+
+function matchesQuery(text: string, query: string): boolean {
+  const haystack = text.toLowerCase();
+  if (haystack.includes(query)) return true;
+  const tokens = queryTokens(query);
+  return tokens.length > 1 && tokens.every((token) => haystack.includes(token));
+}
+
+function scoreSearchText(text: string, query: string): number {
+  const exact = scoreMatch(text, query);
+  if (exact > 0.1 || text.toLowerCase().includes(query)) return exact;
+  const haystack = text.toLowerCase();
+  const tokens = queryTokens(query);
+  if (tokens.length === 0) return 0;
+  const matched = tokens.filter((token) => haystack.includes(token)).length;
+  return Math.min(1, matched / tokens.length);
 }
 
 async function buildFreshness(

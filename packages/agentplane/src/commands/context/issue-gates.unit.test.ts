@@ -146,6 +146,88 @@ describe("context GitHub issue regression gates", () => {
     ).rejects.toThrow(/wiki source missing from manifest lock/u);
   });
 
+  it("accepts line-addressed raw source refs when the manifest lock contains the raw path", async () => {
+    const root = await tempRoot();
+    await cmdContextInit({
+      ctx: { resolvedProject: { gitRoot: root } } as CommandContext,
+      cwd: root,
+      parsed: {
+        profile: "maximum-assimilation",
+        rawGitignore: "none",
+        derivedGitignore: "none",
+        repair: false,
+        force: false,
+      },
+    });
+    await write(root, "context/raw/a.md", "# A\n\nAlpha.\n");
+    await write(
+      root,
+      ".agentplane/context/manifest.lock.json",
+      JSON.stringify({
+        version: 1,
+        generated_at: new Date().toISOString(),
+        sources: [{ path: "context/raw/a.md", sha256: "sha256:test" }],
+      }),
+    );
+    await write(
+      root,
+      "context/wiki/a.md",
+      [
+        "---",
+        'aliases: ["A"]',
+        "agentplane_context:",
+        "  schema_version: 1",
+        "  artifact_type: wiki_page",
+        '  canonical_id: "wiki.a"',
+        '  title: "A"',
+        "  modality: definition",
+        "  epistemic_status: sourced_claim",
+        "  visibility: project",
+        "  source_refs:",
+        '    - "context/raw/a.md#lines=1-3"',
+        "  claims: []",
+        "  graph_refs:",
+        "    entities: []",
+        "    edges: []",
+        "  conflicts: []",
+        "  updated_by: CURATOR",
+        "---",
+        "",
+        "# A",
+        "",
+        "Alpha. [1]",
+        "",
+        "## Sources",
+        "",
+        "1. [context/raw/a.md#lines=1-3](../raw/a.md#lines=1-3)",
+        "",
+      ].join("\n"),
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/facts/facts.jsonl",
+      JSON.stringify({
+        id: "fact.a.alpha",
+        summary: "Alpha is present.",
+        source_refs: ["context/raw/a.md#lines=1-3"],
+        confidence: 0.9,
+        status: "accepted",
+      }) + "\n",
+    );
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: false, includeRaw: true, reset: false },
+    });
+
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    await cmdContextDoctor({
+      cwd: root,
+      parsed: { fix: false, label: "check" },
+    });
+    const output = stderr.mock.calls.map((call) => String(call[0])).join("");
+    expect(output).not.toContain("source missing");
+  });
+
   it("ignores body-only path examples when checking wiki source refs", async () => {
     const root = await tempRoot();
     await cmdContextInit({
@@ -237,6 +319,49 @@ describe("context GitHub issue regression gates", () => {
       results: { ref: string }[];
     };
     expect(payload.results).toEqual([]);
+  });
+
+  it("uses SQLite projection and token matching for all-scope search", async () => {
+    const root = await tempRoot();
+    await cmdContextInit({
+      ctx: { resolvedProject: { gitRoot: root } } as CommandContext,
+      cwd: root,
+      parsed: {
+        profile: "adaptive",
+        rawGitignore: "none",
+        derivedGitignore: "none",
+        repair: false,
+        force: false,
+      },
+    });
+    await write(
+      root,
+      "context/wiki/cache.md",
+      "# Cache\n\nstale-if-error permits fallback for 500, 502, 503, or 504 responses.\n",
+    );
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: false, includeRaw: true, reset: false },
+    });
+
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    await cmdContextSearch({
+      cwd: root,
+      parsed: {
+        query: "stale-if-error 500 502 503 504",
+        scope: "all",
+        format: "json",
+        explain: false,
+      },
+    });
+    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      adapter: string;
+      results: { ref: string }[];
+    };
+    expect(payload.adapter).toBe("sqlite");
+    expect(payload.results.some((result) => result.ref.includes("context/wiki/cache.md"))).toBe(
+      true,
+    );
   });
 
   it("rejects maximum-assimilation graph refs without derived projections", async () => {

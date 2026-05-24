@@ -1,0 +1,4 @@
+ .../src/commands/context/issue-gates.unit.test.ts  | 125 +++++++++++++++++++++
+ packages/agentplane/src/commands/context/search.ts |  39 +++++--
+ packages/agentplane/src/context/doctor.ts          |  18 ++-
+ 3 files changed, 171 insertions(+), 11 deletions(-)

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202605241100-5RN6QF",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-24T11:07:10.696Z",
+  "verdict": "pass",
+  "summary": "Regression fixes are scoped to context doctor source-ref existence and context search matching/adapter selection.",
+  "evaluated_sha": "9f232b08483ae7348ed9b7806740992c65d5a55f",
+  "blueprint_digest": "524878086f4f57a6990faa269bedcf25aa61cebfd40d42c6b2672b2689ab5d3d",
+  "findings": [
+    "Evidence: targeted Prettier, Vitest issue-gates suite, targeted ESLint, policy routing, and ap doctor passed after the implementation commit."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605241100-5RN6QF/README.md",
+    "packages/agentplane/src/context/doctor.ts",
+    "packages/agentplane/src/commands/context/search.ts",
+    "packages/agentplane/src/commands/context/issue-gates.unit.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "No full repository CI or hosted GitHub checks were run because this remained local and unpublished."
+  ]
+}

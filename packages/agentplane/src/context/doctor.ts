@@ -8,7 +8,7 @@ import { parse as parseYaml } from "yaml";
 import { CliError } from "../shared/errors.js";
 import { resolveAgentplaneCacheSqlitePath } from "../shared/cache-paths.js";
 import { isRecord } from "../shared/guards.js";
-import { parseJsonlLines, fileExists, readText, toPosix } from "./context-utils.js";
+import { parseJsonlLines, fileExists, parseSourceRef, readText, toPosix } from "./context-utils.js";
 import { readHarvestReport } from "./harvest-tasks-artifacts.js";
 import { readContextProjection } from "./reindex.js";
 import { checkSqliteProjection } from "./sqlite.js";
@@ -232,7 +232,7 @@ async function checkWikiSourceRefs(
     const rel = toPosix(path.relative(root, file));
     const text = await readText(file);
     for (const sourceRef of extractWikiSourceRefs(text)) {
-      if (sourceRef.startsWith("context/raw/") && !manifestSources.has(sourceRef)) {
+      if (sourceRef.startsWith("context/raw/") && !sourceRefExists(sourceRef, manifestSources)) {
         issues.push(`wiki source missing from manifest lock: ${sourceRef} (${rel})`);
       }
     }
@@ -305,9 +305,13 @@ async function checkSourceRefs(
         if (typeof value !== "string") continue;
         const candidate = value.trim();
         if (!candidate) continue;
+        const sourcePath = parseSourceRef(candidate).path;
+        if (manifestSources.size > 0 && sourceRefExists(candidate, manifestSources)) {
+          continue;
+        }
         if (
-          (manifestSources.size > 0 && manifestSources.has(candidate)) ||
-          (await fileExists(path.join(root, candidate)))
+          (await fileExists(path.join(root, candidate))) ||
+          (await fileExists(path.join(root, sourcePath)))
         ) {
           continue;
         }
@@ -318,6 +322,12 @@ async function checkSourceRefs(
   } catch {
     warnings.push(`artifact unreadable: ${artifactPath}`);
   }
+}
+
+function sourceRefExists(sourceRef: string, manifestSources: Set<string>): boolean {
+  if (manifestSources.has(sourceRef)) return true;
+  const sourcePath = parseSourceRef(sourceRef).path;
+  return sourcePath.length > 0 && manifestSources.has(sourcePath);
 }
 
 async function checkHarvestReports(
