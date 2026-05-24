@@ -148,6 +148,33 @@ async function writeMaximumAssimilationArtifacts(root: string, opts?: { glossary
       source_refs: ["context/raw/specs/payment-api.md#lines=1-6"],
     }) + "\n",
   );
+  await write(
+    root,
+    ".agentplane/context/derived/facts/facts.jsonl",
+    JSON.stringify({
+      id: "fact.payment_api.public_source",
+      summary: "Payment API semantics are covered by the public source.",
+      confidence: 0.9,
+      status: "accepted",
+      source_refs: ["context/raw/specs/payment-api.md#lines=1-6"],
+    }) + "\n",
+  );
+  await write(
+    root,
+    ".agentplane/context/derived/reports/coverage.jsonl",
+    JSON.stringify({
+      id: "coverage.payment_api",
+      source_path: "context/raw/specs/payment-api.md",
+      coverage_status: "covered",
+      reason: "Payment API semantics are represented by wiki, fact, and graph artifacts.",
+      covered_item_ids: [
+        "entity.payment_api",
+        "entity.payment_workflow",
+        "fact.payment_api.public_source",
+      ],
+      source_refs: ["context/raw/specs/payment-api.md#lines=1-6"],
+    }) + "\n",
+  );
 }
 
 function maxAssimilationTask() {
@@ -164,6 +191,7 @@ function maxAssimilationTask() {
         mode: "maximum_assimilation",
         allowed_outputs: [
           "context/wiki/**",
+          ".agentplane/context/derived/facts/**",
           ".agentplane/context/derived/graph/**",
           ".agentplane/context/derived/reports/**",
         ],
@@ -179,9 +207,11 @@ function maxAssimilationTask() {
           "context/wiki/glossary.md",
           "context/wiki/entities/payment-api.md",
           "context/wiki/reports/coverage.md",
+          ".agentplane/context/derived/facts/facts.jsonl",
           ".agentplane/context/derived/graph/entities.jsonl",
           ".agentplane/context/derived/graph/edges.jsonl",
           ".agentplane/context/derived/graph/provenance_edges.jsonl",
+          ".agentplane/context/derived/reports/coverage.jsonl",
         ],
       },
     },
