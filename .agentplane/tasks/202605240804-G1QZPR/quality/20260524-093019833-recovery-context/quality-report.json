@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202605240804-G1QZPR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-24T09:30:19.833Z",
+  "verdict": "pass",
+  "summary": "Branch_pr publication edge cases are fixed and verified after rebase.",
+  "evaluated_sha": "acd0cf53b4fa1932c1b15f520d2fa01fac64128b",
+  "blueprint_digest": "b2da0249c3c7f332ac369e5c145b4342f350a250ea9c3156f32f924ec2841da5",
+  "findings": [
+    "Local routed verification passes on the same mixed backend/pr/pr-integrate test set that failed in hosted CI."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605240804-G1QZPR/README.md",
+    "packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge.ts",
+    "packages/agentplane/src/commands/pr/internal/auto-commit.ts",
+    "packages/agentplane/src/backends/task-backend/local-backend-read.ts",
+    "packages/testkit/src/cli-harness.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
