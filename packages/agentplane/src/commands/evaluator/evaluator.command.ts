@@ -11,7 +11,7 @@ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { CliError, GitError } from "../../shared/errors.js";
 import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
-import { gitRevParse } from "../shared/git-ops.js";
+import { gitDiffNames, gitRevParse } from "@agentplaneorg/core/git";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
@@ -112,6 +112,36 @@ function pathsOutsideTaskArtifacts(paths: string[], workflowDir: string, taskId:
     const normalizedPath = changedPath.replaceAll("\\", "/");
     return !normalizedPath.startsWith(taskPrefix);
   });
+}
+
+async function resolveEvaluatedSha(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  taskId: string;
+}): Promise<string | null> {
+  const head = await gitRevParse(opts.gitRoot, ["HEAD"]).catch(() => null);
+  if (!head) return null;
+
+  const normalizedWorkflowDir = opts.workflowDir.replaceAll("\\", "/").replaceAll(/\/+$/g, "");
+  const taskArtifactPrefix = `${normalizedWorkflowDir}/${opts.taskId}/`;
+  let current = head;
+
+  for (let depth = 0; depth < 20; depth += 1) {
+    let parent: string;
+    try {
+      parent = await gitRevParse(opts.gitRoot, [`${current}^`]);
+    } catch {
+      return current;
+    }
+
+    const changed = await gitDiffNames(opts.gitRoot, parent, current);
+    if (changed.length === 0 || changed.some((name) => !name.startsWith(taskArtifactPrefix))) {
+      return current;
+    }
+    current = parent;
+  }
+
+  return current;
 }
 
 function renderEvaluatorPrompt(opts: {
@@ -317,7 +347,11 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
   );
   await mkdir(reviewDir, { recursive: true });
 
-  const evaluatedSha = await gitRevParse(gitRoot, ["HEAD"]).catch(() => null);
+  const evaluatedSha = await resolveEvaluatedSha({
+    gitRoot,
+    workflowDir: command.config.paths.workflow_dir,
+    taskId: p.taskId,
+  });
   const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: command, task }).catch(() => null);
   const reportPath = path.join(reviewDir, QUALITY_REPORT_FILE);
   const promptPath = path.join(reviewDir, EVALUATOR_PROMPT_FILE);
