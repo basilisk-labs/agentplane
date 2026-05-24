@@ -1,10 +1,11 @@
 ---
 id: "202605231849-TRN34K"
 title: "Fix maximum assimilation process rough edges"
-status: "DOING"
+result_summary: "Merged via PR #4122."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -34,11 +35,16 @@ quality_review:
     - ".agentplane/tasks/202605231849-TRN34K/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231849-TRN34K-max-assimilation-process-fixes/.agentplane/tasks/202605231849-TRN34K/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "b81af494b43b4e0189b6c8847236da73e680fd87"
+  message: "🚧 TRN34K task: Resolve extraction root path review"
 comments:
   -
     author: "CODER"
     body: "Start: Fixing context maximum-assimilation process rough edges around generated wiki lint, nested bootstrap guidance, and sequential ingest duplicate warnings in the dedicated task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4122 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Quality gate passed: maximum assimilation now requires formal SGR extraction, deterministic writer materialization, non-empty facts/entities/edges/provenance/coverage, and per-source coverage before wiki synthesis."
+  -
+    type: "status"
+    at: "2026-05-24T07:43:26.516Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4122 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-24T06:44:37.866Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-24T07:43:26.526Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix context wiki init lint noise, clarify nested context bootstrap behavior, and reduce duplicate-task warning noise for sequential context ingestion workflows."
 sections:
   Summary: |-

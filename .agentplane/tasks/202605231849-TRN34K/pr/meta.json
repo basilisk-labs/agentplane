@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-24T07:42:47Z",
   "base": "main",
   "branch": "task/202605231849-TRN34K/max-assimilation-process-fixes",
   "created_at": "2026-05-23T18:51:31.263Z",
   "diffstat_sha256": "sha256:e19e538b3b7d681c5860bf086d36d41fb8bf8327a690f733fcfb14775b025f5f",
   "last_verified_at": "2026-05-24T06:44:37.838Z",
   "last_verified_diffstat_sha256": "sha256:e19e538b3b7d681c5860bf086d36d41fb8bf8327a690f733fcfb14775b025f5f",
+  "merge_commit": "b81af494b43b4e0189b6c8847236da73e680fd87",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-24T07:42:47Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605231849-TRN34K",
-  "updated_at": "2026-05-23T18:51:31.263Z",
+  "updated_at": "2026-05-24T07:42:47Z",
   "verify": {
     "status": "pass"
   }
