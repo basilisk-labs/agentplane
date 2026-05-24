@@ -4,7 +4,7 @@ title: "Add daily cloud pull before task start"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -19,38 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-19T15:36:20.083Z"
+  updated_at: "2026-05-24T11:08:18.017Z"
   updated_by: "CODER"
-  note: |-
-    Command: npm test -- --run packages/agentplane/src/backends/task-backend/cloud-backend-state.test.ts packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/backends/task-backend.cloud-start-refresh.test.ts
-    Result: pass
-    Evidence: 3 files, 30 tests passed after extracting daily-start tests.
-    Scope: cloud backend state parsing/writing, existing cloud backend behavior, and daily task-start pull behavior.
-
-    Command: npm run typecheck
-    Result: pass
-    Evidence: tsc -b exited 0.
-    Scope: TypeScript project references.
-
-    Command: npm run build
-    Result: pass
-    Evidence: tsc -b plus core, recipes, and agentplane bundles built successfully.
-    Scope: package build outputs.
-
-    Command: bun run hotspots:check
-    Result: pass
-    Evidence: hotspot threshold check passed; oversized test baseline OK.
-    Scope: line-budget regression from the cloud backend split.
-
-    Command: ap doctor
-    Result: pass
-    Evidence: doctor (OK), errors=0 warnings=0.
-    Scope: repo-local runtime/workflow health.
-
-    Command: node .agentplane/policy/check-routing.mjs
-    Result: pass
-    Evidence: policy routing OK.
-    Scope: policy routing contract.
+  note: "Rebased onto current origin/main and reran focused cloud backend tests, typecheck, build, hotspots, doctor, and routing checks successfully."
   attempts: 0
 commit: null
 comments:
@@ -160,8 +131,14 @@ events:
       Result: pass
       Evidence: policy routing OK.
       Scope: policy routing contract.
+  -
+    type: "verify"
+    at: "2026-05-24T11:08:18.017Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rebased onto current origin/main and reran focused cloud backend tests, typecheck, build, hotspots, doctor, and routing checks successfully."
 doc_version: 3
-doc_updated_at: "2026-05-19T15:36:20.728Z"
+doc_updated_at: "2026-05-24T11:08:18.035Z"
 doc_updated_by: "CODER"
 description: "Before task start-ready on the cloud backend, pull the cloud projection once per local day so GitHub issue intake tasks are visible before local work begins."
 sections:
@@ -330,6 +307,25 @@ sections:
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191451-1E0EHD-daily-cloud-start-pull/.agentplane/tasks/202605191451-1E0EHD/blueprint/resolved-snapshot.json
     - old_digest: 3c61eab9093133e1fb2902afe4387bec8983889fe8d0749f1e9ae512226737d3
     - current_digest: 3c61eab9093133e1fb2902afe4387bec8983889fe8d0749f1e9ae512226737d3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605191451-1E0EHD
+
+    ### 2026-05-24T11:08:18.017Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Rebased onto current origin/main and reran focused cloud backend tests, typecheck, build, hotspots, doctor, and routing checks successfully.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:36:20.728Z, excerpt_hash=sha256:782bb64e41c9ea0083027075ce7090c9c589b2154a3b0b14e5e4521fb904951b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191451-1E0EHD-daily-cloud-start-pull/.agentplane/tasks/202605191451-1E0EHD/blueprint/resolved-snapshot.json
+    - old_digest: 3c61eab9093133e1fb2902afe4387bec8983889fe8d0749f1e9ae512226737d3
+    - current_digest: f4e1fa6582b448b9d083b41cdfca0b713111fb9153e11c67e7c06a73bd19a6bb
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605191451-1E0EHD
 
@@ -514,6 +510,25 @@ BlueprintSnapshotRef:
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191451-1E0EHD-daily-cloud-start-pull/.agentplane/tasks/202605191451-1E0EHD/blueprint/resolved-snapshot.json
 - old_digest: 3c61eab9093133e1fb2902afe4387bec8983889fe8d0749f1e9ae512226737d3
 - current_digest: 3c61eab9093133e1fb2902afe4387bec8983889fe8d0749f1e9ae512226737d3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605191451-1E0EHD
+
+### 2026-05-24T11:08:18.017Z — VERIFY — ok
+
+By: CODER
+
+Note: Rebased onto current origin/main and reran focused cloud backend tests, typecheck, build, hotspots, doctor, and routing checks successfully.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-19T15:36:20.728Z, excerpt_hash=sha256:782bb64e41c9ea0083027075ce7090c9c589b2154a3b0b14e5e4521fb904951b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605191451-1E0EHD-daily-cloud-start-pull/.agentplane/tasks/202605191451-1E0EHD/blueprint/resolved-snapshot.json
+- old_digest: 3c61eab9093133e1fb2902afe4387bec8983889fe8d0749f1e9ae512226737d3
+- current_digest: f4e1fa6582b448b9d083b41cdfca0b713111fb9153e11c67e7c06a73bd19a6bb
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605191451-1E0EHD
 
