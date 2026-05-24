@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-24T08:23:41Z",
+  "base": "main",
+  "branch": "task/202605232011-MAW1PK/evaluator-quality-review",
+  "created_at": "2026-05-23T20:12:53.032Z",
+  "diffstat_sha256": "sha256:a0e51d6c0718b8bb009d98186b035ba31e38d9b68fcafabc679feb8fb8c3923a",
+  "last_verified_at": "2026-05-23T20:48:30.212Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "f2e47faee5caf0545f2895c4273aca6ffbe95ff2",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-24T08:23:41Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605232011-MAW1PK",
+  "updated_at": "2026-05-24T08:23:41Z",
+  "verify": {
+    "status": "pass"
+  }
+}

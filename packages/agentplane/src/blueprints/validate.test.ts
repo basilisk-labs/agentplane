@@ -140,7 +140,7 @@ describe("blueprint built-ins", () => {
         "agentplane context reindex --include-raw",
         "agentplane context wiki lint context/wiki",
         "agentplane context graph validate",
-        "agentplane verify <task-id> --ok|--rework --by EVALUATOR",
+        "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
       ]),
     );
     expect(blueprint.requiredEvidence.map((item) => item.id)).toEqual(

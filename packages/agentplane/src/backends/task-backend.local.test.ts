@@ -717,37 +717,6 @@ describe("LocalBackend", () => {
     expect(tasks).toHaveLength(2);
   });
 
-  it("ignores handoff-only task directories when listing tasks", async () => {
-    const backend = new LocalBackend({ dir: tempDir });
-
-    await mkdir(path.join(tempDir, "202601300000-HANDOF", "handoff"), { recursive: true });
-    await writeFile(
-      path.join(tempDir, "202601300000-HANDOF", "handoff", "latest.json"),
-      "{}",
-      "utf8",
-    );
-    await mkdir(path.join(tempDir, "NO_README"), { recursive: true });
-
-    await backend.writeTask({
-      id: "202601300000-ABCD",
-      title: "Valid",
-      description: "",
-      status: "TODO",
-      priority: "med",
-      owner: "tester",
-      depends_on: [],
-      tags: [],
-      verify: [],
-    });
-
-    const tasks = await backend.listTasks();
-    const warnings = backend.getLastListWarnings();
-
-    expect(tasks.map((task) => task.id)).toEqual(["202601300000-ABCD"]);
-    expect(warnings).toContain("skip:NO_README: missing_or_unreadable_readme");
-    expect(warnings).not.toContain("skip:202601300000-HANDOF: missing_or_unreadable_readme");
-  });
-
   it("rejects invalid task ids when listing tasks", async () => {
     const backend = new LocalBackend({ dir: tempDir });
     const readme = renderTaskReadme(

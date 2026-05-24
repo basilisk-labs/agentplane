@@ -1,3 +1,24 @@
+# AgentPlane EVALUATOR quality review
+
+Use the evaluator module below as binding review procedure.
+Do not edit implementation files. Inspect task scope, diff, verification evidence, and residual risk.
+Write the final structured review to the report path as JSON matching the requested report shape.
+
+- task_id: 202605232011-MAW1PK
+- task_readme: .agentplane/tasks/202605232011-MAW1PK/README.md
+- report_path: .agentplane/tasks/202605232011-MAW1PK/quality/20260524-081052033-recovery-context/quality-report.json
+
+Required report fields:
+- verdict: pass | rework | blocked | human_review
+- summary: concise judgement
+- findings: non-empty list for pass/rework/blocked
+- evidence_refs: concrete files, checks, PRs, traces, or reports inspected
+- missing_tests: tests or checks that should exist but do not
+- hidden_assumptions: assumptions the implementation relies on
+- residual_risks: known remaining risks
+
+## Evaluator module
+
 ---
 id: recovery-context
 title: Recovery Context Invariant Review

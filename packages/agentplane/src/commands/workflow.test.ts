@@ -34,6 +34,7 @@ import { taskNewSpec } from "./task/new.command.js";
 import { runTaskNewParsed } from "./task/new.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import { cmdVerifyParsed } from "./task/verify-record.js";
+import { runEvaluatorRun } from "./evaluator/evaluator.command.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -848,16 +849,25 @@ describe("commands/workflow", () => {
       note: "Looks good",
       quiet: true,
     });
-    await cmdVerifyParsed({
-      ctx: verifyCtx,
-      cwd: root,
-      rootOverride: undefined,
-      taskId,
-      state: "ok",
-      by: "EVALUATOR",
-      note: "Quality gate passed",
-      quiet: true,
-    });
+    await runEvaluatorRun(
+      {
+        cwd: root,
+        rootOverride: undefined,
+      },
+      {
+        taskId,
+        evaluator: "recovery-context",
+        verdict: "pass",
+        summary: "Quality gate passed",
+        findings: ["Workflow finish fixture has committed implementation evidence."],
+        evidenceRefs: ["done.txt"],
+        missingTests: [],
+        hiddenAssumptions: [],
+        residualRisks: [],
+        json: false,
+        record: true,
+      },
+    );
     const codeFinish = await cmdFinish({
       cwd: root,
       taskIds: [taskId],
