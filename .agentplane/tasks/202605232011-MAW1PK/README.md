@@ -4,7 +4,7 @@ title: "Implement executable evaluator quality review"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -29,29 +29,29 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-24T07:18:43.957Z"
+  updated_at: "2026-05-24T07:50:20.795Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR review: agent prompts now use compact ap evaluator run and preserve legacy verify only as an insufficient manual path."
-  evaluated_sha: "38fc891b19a9bd9822f8698c0f70428994887ab2"
+  note: "EVALUATOR review: final pre-merge review after refreshing the branch_pr blueprint snapshot; route unchanged and prompt surfaces remain aligned."
+  evaluated_sha: "f82234a0afa9bf6a67b44b7c30ae989f2ad8ba8b"
   blueprint_digest: "4bd1a0ab295307905c1f5ceafa36fb1c6bb7fb22e6cf505bb55244db31b28114"
   evidence_refs:
     - ".agentplane/tasks/202605232011-MAW1PK/README.md"
-    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-071843957-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-071843957-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-071843957-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-075020795-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-075020795-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605232011-MAW1PK/quality/20260524-075020795-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605232011-MAW1PK/blueprint/resolved-snapshot.json"
     - "packages/agentplane/assets/agents/EVALUATOR.json"
     - ".agentplane/agents/EVALUATOR.json"
-    - "packages/agentplane/src/agents/agents-template.test.ts"
-    - "commit: 38fc891b1"
+    - "commit: f82234a0a"
+    - "hosted: PR #4120 checks success on f82234a0a"
     - "check: bun test packages/agentplane/src/agents/agents-template.test.ts"
     - "check: node scripts/generate/sync-agent-templates.mjs check && node scripts/checks/check-agent-onboarding-scenario.mjs"
     - "check: bun test packages/agentplane/src/workflow-lifecycle/contract.test.ts packages/agentplane/src/blueprints/validate.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
     - "check: node .agentplane/policy/check-routing.mjs"
   findings:
-    - "Packaged and repo-local EVALUATOR agent prompts now instruct agents to run ap evaluator run with structured findings, evidence, missing tests, hidden assumptions, and residual risks."
-    - "The CI failure in agents-template was addressed by replacing primary agentplane evaluator run prompt commands with ap evaluator run in both EVALUATOR prompt sources."
-    - "agents-template, agent template sync, agent onboarding scenario, targeted evaluator/blueprint tests, and policy routing passed after the prompt fix."
+    - "Blueprint snapshot digest was refreshed before integration; route stayed code.branch_pr with the same quality gate position."
+    - "EVALUATOR prompt surfaces require ap evaluator run as the primary structured quality review path, while legacy verify is explicitly insufficient for finish/integrate gates."
+    - "Hosted PR checks on the pushed branch were green before this artifact-only refresh; local prompt/template checks and targeted unit tests passed after the ap prompt fix."
 commit: null
 comments:
   -

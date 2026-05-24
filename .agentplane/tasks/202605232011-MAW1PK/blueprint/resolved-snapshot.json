@@ -186,7 +186,7 @@
         "required": true,
         "protected": true,
         "allowedCommands": [
-          "agentplane verify <task-id> --ok|--rework --by EVALUATOR"
+          "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review"
         ],
         "policyModules": [],
         "evidenceKinds": [
@@ -292,11 +292,11 @@
       ".agentplane/policy/workflow.branch_pr.md"
     ],
     "allowedCommands": [
+      "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
       "agentplane integrate <task-id> --branch <branch> --run-verify",
       "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
       "agentplane task verify-show <task-id>",
       "agentplane verify <task-id> --ok|--rework",
-      "agentplane verify <task-id> --ok|--rework --by EVALUATOR",
       "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
       "project focused checks"
     ],
@@ -437,7 +437,7 @@
       "required": true,
       "protected": true,
       "allowedCommands": [
-        "agentplane verify <task-id> --ok|--rework --by EVALUATOR"
+        "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review"
       ],
       "policyModules": [],
       "evidenceKinds": [
@@ -543,11 +543,11 @@
     ".agentplane/policy/workflow.branch_pr.md"
   ],
   "allowedCommands": [
+    "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
     "agentplane integrate <task-id> --branch <branch> --run-verify",
     "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
     "agentplane task verify-show <task-id>",
     "agentplane verify <task-id> --ok|--rework",
-    "agentplane verify <task-id> --ok|--rework --by EVALUATOR",
     "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
     "project focused checks"
   ],
@@ -567,6 +567,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "2a5ea3d6ff30a612b8851bd7232b29e5c478a66f618a719a2778aa58152bcc78"
+    "value": "4bd1a0ab295307905c1f5ceafa36fb1c6bb7fb22e6cf505bb55244db31b28114"
   }
 }
