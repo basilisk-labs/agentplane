@@ -40,11 +40,11 @@ policy routing, and doctor all passed on the task branch.
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
- packages/spec/examples/acr.json                    |  22 +++-
+ packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
  website/static/img/social/docs/releases/v0.6.9.png | Bin 0 -> 42033 bytes
  website/static/img/social/manifest.json            |   8 ++
- 12 files changed, 164 insertions(+), 18 deletions(-)
+ 12 files changed, 150 insertions(+), 14 deletions(-)
 ```
 
 </details>
