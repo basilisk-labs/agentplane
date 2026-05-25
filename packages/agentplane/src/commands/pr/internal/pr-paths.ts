@@ -87,7 +87,8 @@ export async function readPrArtifactFromBranch(opts: {
   const refsToTry = candidateBranchRefs(opts.branch);
   for (const ref of refsToTry) {
     try {
-      return await gitShowFile(opts.resolved.gitRoot, ref, rel);
+      const content = await gitShowFile(opts.resolved.gitRoot, ref, rel);
+      if (typeof content === "string") return content;
     } catch {
       // Try origin/<branch> before giving up; base checkouts often keep only the remote task ref.
     }
