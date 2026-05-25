@@ -4,7 +4,7 @@ title: "Fix active task selector projection fallback"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,23 @@ verification:
   updated_by: "CODER"
   note: "Command: bun run test:project -- agentplane packages/agentplane/src/commands/shared/task-backend.test.ts; Result: pass; Evidence: 1 file, 12 tests passed. Scope: regression for native projection fallback when DONE dependency rows hide active tasks. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; Result: pass; Evidence: 2 files, 26 tests passed. Scope: active/list query behavior. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; Result: pass; Evidence: 1 file, 9 tests passed. Scope: route context commands. Command: bun run typecheck; Result: pass. Scope: repository TypeScript build graph. Command: node .agentplane/policy/check-routing.mjs and ap doctor; Result: pass; Evidence: policy routing OK and doctor OK. Scope: policy/workspace health."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-25T19:56:04.554Z"
+  updated_by: "EVALUATOR"
+  note: "Projection fallback fix is scoped and verified."
+  evaluated_sha: "4c37ee09bfcd1fad435260618801e87dd643e289"
+  blueprint_digest: "51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642"
+  evidence_refs:
+    - ".agentplane/tasks/202605251936-1HC32Z/README.md"
+    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-195604554-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-195604554-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-195604554-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605251936-1HC32Z/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+    - "packages/agentplane/src/commands/shared/task-backend.ts"
+  findings:
+    - "listTaskSummariesMemo now falls back to canonical summaries when a filtered native projection returns only DONE dependency rows for an active-status request, preventing task list/task active from silently hiding active tasks under stale projection state."
 commit: null
 comments:
   -
