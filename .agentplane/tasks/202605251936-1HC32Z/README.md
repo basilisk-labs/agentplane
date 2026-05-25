@@ -1,10 +1,11 @@
 ---
 id: "202605251936-1HC32Z"
 title: "Fix active task selector projection fallback"
-status: "DOING"
+result_summary: "Merged via PR #4147."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
   findings:
     - "No projection fallback scan was added; done-only native projection remains on the fast path."
     - "finish-close-commit tests now use evaluator run quality reports and isolate dirty-tree coverage with other.txt instead of bootstrap-managed .gitignore."
-commit: null
+commit:
+  hash: "c40808da5869a75e91fd3d01b315f1bbe680538a"
+  message: "Merge pull request #4147 from basilisk-labs/task/202605251936-1HC32Z/fix-active-task-selector-projection-fallback"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce and fix active task selector projection fallback so visible TODO tasks are not hidden by stale query projection state."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4147 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -73,9 +79,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: aligned finish close-commit tests with evaluator run quality-report gate; focused cli-core/task-backend tests, typecheck, format:check, policy routing, and doctor passed."
+  -
+    type: "status"
+    at: "2026-05-25T21:16:18.241Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4147 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-25T20:50:04.839Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-25T21:16:18.247Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the task list/task active selector path so active TODO tasks visible to direct task lookup are not silently hidden by stale or incomplete projection state."
 sections:
   Summary: |-
