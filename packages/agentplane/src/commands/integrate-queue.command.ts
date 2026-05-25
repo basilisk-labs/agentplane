@@ -216,7 +216,7 @@ async function normalizeTerminalQueueEntries(opts: {
     const applied: { taskId: string; reason: string }[] = [];
     for (const decision of decisions) {
       const current = queue.entries.find((entry) => entry.task_id === decision.taskId);
-      if (!current || current.status !== decision.fromStatus) continue;
+      if (current?.status !== decision.fromStatus) continue;
       queue = markQueueEntry(queue, decision.taskId, "done", decision.reason);
       applied.push({ taskId: decision.taskId, reason: decision.reason });
     }
