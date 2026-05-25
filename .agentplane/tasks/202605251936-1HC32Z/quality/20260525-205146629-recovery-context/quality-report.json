@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202605251936-1HC32Z",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-25T20:51:46.629Z",
+  "verdict": "pass",
+  "summary": "Reviewed selector UX fix plus finish-close-commit test alignment after hosted verify-routed failure.",
+  "evaluated_sha": "49d8f5cf8e3ae45f01ee6097ea967c82a0766144",
+  "blueprint_digest": "51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642",
+  "findings": [
+    "Active-task UX remains scoped to no-active guidance and does not add canonical-scan fallback to the projection fast path.",
+    "finish-close-commit tests now record structured evaluator quality reports and keep dirty-tree preflight isolated from .gitignore bootstrap churn."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605251936-1HC32Z/README.md",
+    "packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts",
+    "packages/agentplane/src/commands/shared/task-backend.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
