@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605252058-3Q9G73/expand-commit-subject-naming-coverage",
+  "created_at": "2026-05-25T21:01:26.272Z",
+  "diffstat_sha256": "sha256:6bb7f6b2cb85a4dc120c7a51125c75c57dbb4ae33698730679fd29bd25111b5c",
+  "last_verified_at": "2026-05-25T21:06:03.474Z",
+  "last_verified_diffstat_sha256": "sha256:6bb7f6b2cb85a4dc120c7a51125c75c57dbb4ae33698730679fd29bd25111b5c",
+  "schema_version": 1,
+  "task_id": "202605252058-3Q9G73",
+  "updated_at": "2026-05-25T21:01:26.272Z",
+  "verify": {
+    "status": "pass"
+  }
+}
