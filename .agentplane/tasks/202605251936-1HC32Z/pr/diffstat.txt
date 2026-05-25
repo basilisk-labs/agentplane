@@ -1,0 +1,5 @@
+ ...-cli.core.lifecycle.finish-close-commit.test.ts | 53 +++++++++++++++-------
+ .../src/cli/run-cli.core.tasks.active.test.ts      | 34 ++++++++++++++
+ .../src/commands/shared/task-backend.test.ts       | 41 +++++++++++++++++
+ .../agentplane/src/commands/task/active.command.ts |  5 ++
+ 4 files changed, 116 insertions(+), 17 deletions(-)

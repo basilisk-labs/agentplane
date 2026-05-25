@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202605251936-1HC32Z",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-25T19:56:04.554Z",
+  "verdict": "pass",
+  "summary": "Projection fallback fix is scoped and verified.",
+  "evaluated_sha": "4c37ee09bfcd1fad435260618801e87dd643e289",
+  "blueprint_digest": "51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642",
+  "findings": [
+    "listTaskSummariesMemo now falls back to canonical summaries when a filtered native projection returns only DONE dependency rows for an active-status request, preventing task list/task active from silently hiding active tasks under stale projection state."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605251936-1HC32Z/README.md",
+    "packages/agentplane/src/commands/shared/task-backend.test.ts",
+    "packages/agentplane/src/commands/shared/task-backend.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

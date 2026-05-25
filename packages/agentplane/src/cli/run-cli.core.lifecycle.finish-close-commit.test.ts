@@ -33,18 +33,34 @@ afterEach(() => {
 });
 
 async function recordEvaluatorReview(root: string, taskId: string, note: string): Promise<void> {
-  await runCliSilent([
-    "verify",
-    taskId,
-    "--ok",
-    "--by",
-    "EVALUATOR",
-    "--note",
-    note,
-    "--quiet",
-    "--root",
-    root,
-  ]);
+  const io = captureStdIO();
+  try {
+    const code = await runCli([
+      "evaluator",
+      "run",
+      taskId,
+      "--verdict",
+      "pass",
+      "--summary",
+      note,
+      "--finding",
+      "No unresolved findings for this finish close-commit test path.",
+      "--evidence",
+      "file.txt",
+      "--root",
+      root,
+    ]);
+    if (code !== 0) {
+      const { stdout: status } = await promisify(execFile)(
+        "git",
+        ["status", "--short", "--untracked-files=no"],
+        { cwd: root },
+      );
+      throw new Error(`evaluator run failed (code=${code}): ${io.stderr}\nstatus:\n${status}`);
+    }
+  } finally {
+    io.restore();
+  }
 }
 
 describe("runCli", () => {
@@ -401,6 +417,7 @@ describe("runCli", () => {
         ioNew.restore();
       }
 
+      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
       await runCliSilent([
         "verify",
         taskId,
@@ -418,7 +435,6 @@ describe("runCli", () => {
         taskId,
         "EVALUATOR quality gate passed before hook failure smoke.",
       );
-      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const hookPath = path.join(root, ".git", "hooks", "pre-commit");
       const preCommit = ["#!/bin/sh", 'echo "HOOK_CLOSE_COMMIT_BLOCKED" 1>&2', "exit 1", ""].join(
@@ -467,9 +483,9 @@ describe("runCli", () => {
       await configureGitUser(root);
 
       await writeFile(path.join(root, "file.txt"), "content", "utf8");
-      await writeFile(path.join(root, ".gitignore"), "initial\n", "utf8");
+      await writeFile(path.join(root, "other.txt"), "initial\n", "utf8");
       const execFileAsync = promisify(execFile);
-      await execFileAsync("git", ["add", "file.txt", ".gitignore"], { cwd: root });
+      await execFileAsync("git", ["add", "file.txt", "other.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
       const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {
         cwd: root,
@@ -518,7 +534,7 @@ describe("runCli", () => {
         taskId,
         "EVALUATOR quality gate passed before direct dirty preflight.",
       );
-      await writeFile(path.join(root, ".gitignore"), "unrelated\n", "utf8");
+      await writeFile(path.join(root, "other.txt"), "unrelated\n", "utf8");
 
       const io = captureStdIO();
       try {
@@ -537,9 +553,12 @@ describe("runCli", () => {
           "--root",
           root,
         ]);
+        if (code !== 5) {
+          throw new Error(`finish failed with unexpected code=${code}: ${io.stderr}`);
+        }
         expect(code).toBe(5);
         expect(io.stderr).toContain("requires a clean tracked working tree");
-        expect(io.stderr).toContain(".gitignore");
+        expect(io.stderr).toContain("other.txt");
         expect(io.stdout).not.toContain("task marked DONE");
       } finally {
         io.restore();

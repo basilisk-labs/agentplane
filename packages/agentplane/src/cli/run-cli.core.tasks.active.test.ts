@@ -175,4 +175,38 @@ describe("runCli task active", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS }, () => {
       io.restore();
     }
   });
+
+  it("prints a concrete next step when no active work matches", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const doneTaskId = "202603010159-ZZZZZZ";
+    await seedTaskQueryFixture(root, [
+      {
+        id: doneTaskId,
+        title: "Already finished",
+        description: "Historical work only",
+        status: "DONE",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["workflow"],
+        verify: [],
+      },
+    ]);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "active", "--owner", "CODER", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Active: 0 / 0");
+      expect(io.stdout).toContain("agentplane task brief <task-id>");
+      expect(io.stdout).toContain("agentplane task list --all");
+      expect(io.stdout).not.toContain(doneTaskId);
+    } finally {
+      io.restore();
+    }
+  });
 });

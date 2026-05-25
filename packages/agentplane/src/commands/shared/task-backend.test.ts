@@ -411,6 +411,47 @@ describe(
       expect(summaries[0]?.status).toBe("TODO");
     });
 
+    it("keeps done-only native projections on the fast path", async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await writeLocalBackendConfig(root);
+
+      const created = await createTask({
+        cwd: root,
+        rootOverride: root,
+        title: "Projection done-only guard",
+        description: "Ensure dependency DONE rows do not force canonical fallback scans",
+        owner: "TESTER",
+        priority: "med",
+        tags: ["testing"],
+        dependsOn: [],
+        verify: [],
+      });
+
+      const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+      ctx.taskBackend.listProjectionTasks = () =>
+        Promise.resolve([
+          {
+            id: "202603010501-DONE00",
+            title: "Historical done row",
+            status: "DONE",
+            priority: "med",
+            owner: "TESTER",
+            depends_on: [],
+            tags: ["testing"],
+            updated_at: "2026-03-01T05:01:00.000Z",
+          },
+        ]);
+
+      const summaries = await listTaskSummariesMemo(ctx, {
+        projectionStatus: ["TODO", "DONE"],
+        fallbackToCanonicalOnEmpty: true,
+      });
+
+      expect(summaries.map((task) => task.id)).toEqual(["202603010501-DONE00"]);
+      expect(summaries).not.toContainEqual(expect.objectContaining({ id: created.id }));
+    });
+
     it("does not memoize a status-filtered canonical fallback projection", async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
