@@ -415,9 +415,15 @@ async function assertDistUpToDate() {
     });
   }
 
+  const freshnessResults = await Promise.all(
+    checks.map(async (check) => ({
+      check,
+      result: await isPackageBuildFresh(check.root, { watchedPaths: check.watchedPaths }),
+    })),
+  );
+
   const staleReasons = [];
-  for (const check of checks) {
-    const result = await isPackageBuildFresh(check.root, { watchedPaths: check.watchedPaths });
+  for (const { check, result } of freshnessResults) {
     if (!result.ok) {
       const detail =
         Array.isArray(result.changedPaths) && result.changedPaths.length > 0
