@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202605251936-1HC32Z/fix-active-task-selector-projection-fallback",
   "created_at": "2026-05-25T19:41:23.691Z",
-  "diffstat_sha256": "sha256:a4d9cf3502b12eb601bac6f41f03b5da842b6d3491ff7a7d5c3689eccb32442d",
+  "diffstat_sha256": "sha256:82e186c5a6c1396c616c1deff6ec849ec9e3cbf2fe8790d18e5e467775bed377",
   "last_verified_at": "2026-05-25T19:54:30.527Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "schema_version": 1,

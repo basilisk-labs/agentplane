@@ -29,9 +29,9 @@ Created: 2026-05-25T19:41:23.691Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/shared/task-backend.test.ts       | 41 ++++++++++++++++++++++
+ .../src/commands/shared/task-backend.test.ts       | 42 ++++++++++++++++++++++
  .../agentplane/src/commands/shared/task-backend.ts | 19 +++++++++-
- 2 files changed, 59 insertions(+), 1 deletion(-)
+ 2 files changed, 60 insertions(+), 1 deletion(-)
 ```
 
 </details>

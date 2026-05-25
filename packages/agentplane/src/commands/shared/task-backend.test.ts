@@ -420,7 +420,8 @@ describe(
         cwd: root,
         rootOverride: root,
         title: "Projection active fallback",
-        description: "Ensure active selectors recover when dependency projection rows hide active tasks",
+        description:
+          "Ensure active selectors recover when dependency projection rows hide active tasks",
         owner: "TESTER",
         priority: "med",
         tags: ["testing"],
