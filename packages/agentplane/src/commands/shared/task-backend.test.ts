@@ -411,6 +411,47 @@ describe(
       expect(summaries[0]?.status).toBe("TODO");
     });
 
+    it("falls back when a filtered native projection only has dependency DONE rows", async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await writeLocalBackendConfig(root);
+
+      const created = await createTask({
+        cwd: root,
+        rootOverride: root,
+        title: "Projection active fallback",
+        description: "Ensure active selectors recover when dependency projection rows hide active tasks",
+        owner: "TESTER",
+        priority: "med",
+        tags: ["testing"],
+        dependsOn: [],
+        verify: [],
+      });
+
+      const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+      ctx.taskBackend.listProjectionTasks = () =>
+        Promise.resolve([
+          {
+            id: "202603010501-DONE00",
+            title: "Historical done row",
+            status: "DONE",
+            priority: "med",
+            owner: "TESTER",
+            depends_on: [],
+            tags: ["testing"],
+            updated_at: "2026-03-01T05:01:00.000Z",
+          },
+        ]);
+
+      const summaries = await listTaskSummariesMemo(ctx, {
+        projectionStatus: ["TODO", "DONE"],
+        fallbackToCanonicalOnEmpty: true,
+      });
+
+      expect(summaries.map((task) => task.id)).toEqual([created.id]);
+      expect(summaries[0]?.status).toBe("TODO");
+    });
+
     it("does not memoize a status-filtered canonical fallback projection", async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
