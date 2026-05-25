@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605251957-4ABD2H/optimize-cli-startup-fast-paths",
+  "created_at": "2026-05-25T20:00:44.941Z",
+  "diffstat_sha256": "sha256:7a506649accb38c02739fe17a258a21b7afecb163a3a727ab351d493bbe660a7",
+  "last_verified_at": "2026-05-25T20:19:58.852Z",
+  "last_verified_diffstat_sha256": "sha256:7a506649accb38c02739fe17a258a21b7afecb163a3a727ab351d493bbe660a7",
+  "schema_version": 1,
+  "task_id": "202605251957-4ABD2H",
+  "updated_at": "2026-05-25T20:00:44.941Z",
+  "verify": {
+    "status": "pass"
+  }
+}
