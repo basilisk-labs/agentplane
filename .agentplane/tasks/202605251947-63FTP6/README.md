@@ -1,0 +1,180 @@
+---
+id: "202605251947-63FTP6"
+title: "Reduce low-risk duplicate implementation paths"
+result_summary: "Merged via PR #4150."
+status: "DONE"
+priority: "med"
+owner: "CODER"
+revision: 8
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "code"
+  - "refactor"
+verify: []
+plan_approval:
+  state: "approved"
+  updated_at: "2026-05-25T19:47:55.496Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "ok"
+  updated_at: "2026-05-25T20:00:35.269Z"
+  updated_by: "CODER"
+  note: "Local verification passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts. Result: pass, 3 files and 30 tests passed. Command: bun run typecheck. Result: pass. Command: bun run lint:core -- packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs. Result: pass. Command: bun run clone:report. Result: pass; clones 89->86 and duplicatedLines 1403->1311 versus pre-change audit."
+  attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-25T20:02:57.550Z"
+  updated_by: "EVALUATOR"
+  note: "Low-risk duplicate-path refactor preserves CLI behavior while reducing measured clone count."
+  evaluated_sha: "e9c4e5d59ffe3af784e015be3fa250a6cbcc3f62"
+  blueprint_digest: "437df8d0fc9ccbb4a1949d7c6d1efeadc4a6c29e6556a04c20cfefeeae31935f"
+  evidence_refs:
+    - ".agentplane/tasks/202605251947-63FTP6/README.md"
+    - ".agentplane/tasks/202605251947-63FTP6/quality/20260525-200257550-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605251947-63FTP6/quality/20260525-200257550-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605251947-63FTP6/quality/20260525-200257550-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605251947-63FTP6/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
+    - "packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts"
+    - "packages/agentplane/src/commands/release/release-task-evidence-script.test.ts"
+  findings:
+    - "Finding: Confirmed cli/critical/cli-runner.ts is not removable because the critical harness executes it by path; left it intact. Extracted repeated verification finding payload construction and centralized workflow branch-prefix parsing for release/hosted-close scripts. Local checks passed."
+commit:
+  hash: "3fae943b3b3cc3f2dc2f26e741e78af75b09c74a"
+  message: "🧪 63FTP6 task: record quality review"
+comments:
+  -
+    author: "CODER"
+    body: "Start: Implementing the approved first refactoring slice in the dedicated worktree; scope is limited to unused CLI cleanup, verification finding helper extraction, and duplicated workflow branch-prefix parser centralization."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4150 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+events:
+  -
+    type: "status"
+    at: "2026-05-25T19:51:43.802Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Implementing the approved first refactoring slice in the dedicated worktree; scope is limited to unused CLI cleanup, verification finding helper extraction, and duplicated workflow branch-prefix parser centralization."
+  -
+    type: "verify"
+    at: "2026-05-25T20:00:35.269Z"
+    author: "CODER"
+    state: "ok"
+    note: "Local verification passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts. Result: pass, 3 files and 30 tests passed. Command: bun run typecheck. Result: pass. Command: bun run lint:core -- packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs. Result: pass. Command: bun run clone:report. Result: pass; clones 89->86 and duplicatedLines 1403->1311 versus pre-change audit."
+  -
+    type: "status"
+    at: "2026-05-25T20:11:48.565Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4150 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+doc_version: 3
+doc_updated_at: "2026-05-25T20:11:48.572Z"
+doc_updated_by: "INTEGRATOR"
+description: "Implement the first safe refactoring slice from the duplicate/redundancy audit: remove confirmed unused CLI code, extract repeated verification finding construction, and centralize small duplicated script/config parsing helpers without changing public CLI behavior."
+sections:
+  Summary: |-
+    Reduce low-risk duplicate implementation paths
+
+    Implement the first safe refactoring slice from the duplicate/redundancy audit: remove confirmed unused CLI code, extract repeated verification finding construction, and centralize small duplicated script/config parsing helpers without changing public CLI behavior.
+  Scope: |-
+    - In scope: Implement the first safe refactoring slice from the duplicate/redundancy audit: remove confirmed unused CLI code, extract repeated verification finding construction, and centralize small duplicated script/config parsing helpers without changing public CLI behavior.
+    - Out of scope: unrelated refactors not required for "Reduce low-risk duplicate implementation paths".
+  Plan: |-
+    1. Confirm unused CLI critical runner has no dynamic references and remove it if still unused.
+    2. Extract the repeated verification finding payload builder in task verify code without changing command behavior.
+    3. Centralize duplicated workflow branch-prefix parsing used by release/hosted-close scripts into a scripts/lib helper.
+    4. Run focused unit/script checks, then update task verification evidence.
+  Verify Steps: |-
+    1. Run `bun run test:project -- agentplane packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts`. Expected: all targeted tests pass.
+    2. Run `bun run typecheck`. Expected: TypeScript project build succeeds.
+    3. Run `bun run lint:core -- packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs`. Expected: lint succeeds.
+    4. Run `bun run clone:report`. Expected: clone metrics do not regress and duplicate lines decrease for touched scope.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-25T20:00:35.269Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Local verification passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts. Result: pass, 3 files and 30 tests passed. Command: bun run typecheck. Result: pass. Command: bun run lint:core -- packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs. Result: pass. Command: bun run clone:report. Result: pass; clones 89->86 and duplicatedLines 1403->1311 versus pre-change audit.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-25T19:58:03.869Z, excerpt_hash=sha256:6b2ed50014ef770f0d568f717e665294d0fbf7e902b9487e1df491d27192e37f
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605251947-63FTP6-reduce-duplicate-paths/.agentplane/tasks/202605251947-63FTP6/blueprint/resolved-snapshot.json
+    - old_digest: 437df8d0fc9ccbb4a1949d7c6d1efeadc4a6c29e6556a04c20cfefeeae31935f
+    - current_digest: 437df8d0fc9ccbb4a1949d7c6d1efeadc4a6c29e6556a04c20cfefeeae31935f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605251947-63FTP6
+
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+id_source: "generated"
+---
+## Summary
+
+Reduce low-risk duplicate implementation paths
+
+Implement the first safe refactoring slice from the duplicate/redundancy audit: remove confirmed unused CLI code, extract repeated verification finding construction, and centralize small duplicated script/config parsing helpers without changing public CLI behavior.
+
+## Scope
+
+- In scope: Implement the first safe refactoring slice from the duplicate/redundancy audit: remove confirmed unused CLI code, extract repeated verification finding construction, and centralize small duplicated script/config parsing helpers without changing public CLI behavior.
+- Out of scope: unrelated refactors not required for "Reduce low-risk duplicate implementation paths".
+
+## Plan
+
+1. Confirm unused CLI critical runner has no dynamic references and remove it if still unused.
+2. Extract the repeated verification finding payload builder in task verify code without changing command behavior.
+3. Centralize duplicated workflow branch-prefix parsing used by release/hosted-close scripts into a scripts/lib helper.
+4. Run focused unit/script checks, then update task verification evidence.
+
+## Verify Steps
+
+1. Run `bun run test:project -- agentplane packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts`. Expected: all targeted tests pass.
+2. Run `bun run typecheck`. Expected: TypeScript project build succeeds.
+3. Run `bun run lint:core -- packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs`. Expected: lint succeeds.
+4. Run `bun run clone:report`. Expected: clone metrics do not regress and duplicate lines decrease for touched scope.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-25T20:00:35.269Z — VERIFY — ok
+
+By: CODER
+
+Note: Local verification passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts. Result: pass, 3 files and 30 tests passed. Command: bun run typecheck. Result: pass. Command: bun run lint:core -- packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs. Result: pass. Command: bun run clone:report. Result: pass; clones 89->86 and duplicatedLines 1403->1311 versus pre-change audit.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-25T19:58:03.869Z, excerpt_hash=sha256:6b2ed50014ef770f0d568f717e665294d0fbf7e902b9487e1df491d27192e37f
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605251947-63FTP6-reduce-duplicate-paths/.agentplane/tasks/202605251947-63FTP6/blueprint/resolved-snapshot.json
+- old_digest: 437df8d0fc9ccbb4a1949d7c6d1efeadc4a6c29e6556a04c20cfefeeae31935f
+- current_digest: 437df8d0fc9ccbb4a1949d7c6d1efeadc4a6c29e6556a04c20cfefeeae31935f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605251947-63FTP6
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
