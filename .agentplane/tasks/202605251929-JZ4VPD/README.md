@@ -4,7 +4,7 @@ title: "Optimize branch_pr pr check artifact fallback"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -25,22 +25,23 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-25T19:56:38.110Z"
+  updated_at: "2026-05-25T20:01:57.141Z"
   updated_by: "EVALUATOR"
-  note: "pr check route-gap fixed with focused regression coverage for remote-only branch_pr PR artifacts."
-  evaluated_sha: "c5a80662a3fc89e1846e023d8de5662ec7467a03"
+  note: "pr check route-gap fixed with remote-only PR artifact regression split into a focused test file to preserve oversized-test budget."
+  evaluated_sha: "265454d088c42c4b01226f9d377ea210f2b9a52e"
   blueprint_digest: "cc092b3fc4676739bd639bb1db96130b1fb9bbda3d3e0d462299b937ef738d34"
   evidence_refs:
     - ".agentplane/tasks/202605251929-JZ4VPD/README.md"
-    - ".agentplane/tasks/202605251929-JZ4VPD/quality/20260525-195638110-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605251929-JZ4VPD/quality/20260525-195638110-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605251929-JZ4VPD/quality/20260525-195638110-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605251929-JZ4VPD/quality/20260525-200157141-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605251929-JZ4VPD/quality/20260525-200157141-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605251929-JZ4VPD/quality/20260525-200157141-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605251929-JZ4VPD/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-check-remote-artifacts.test.ts"
     - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts"
     - "packages/agentplane/src/commands/pr/check.ts"
     - "packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.ts"
   findings:
-    - "Validated that base-checkout pr check can read PR artifacts from origin/task/<task-id>/... when local base artifacts are absent, while stale local branch fallback and invalid artifacts remain strict."
+    - "Validated base-checkout pr check reads PR artifacts from origin/task/<task-id>/... when local base artifacts are absent; stale local branch fallback and invalid-artifact checks remain strict."
 commit: null
 comments:
   -

@@ -29,11 +29,11 @@ Created: 2026-05-25T19:30:36.177Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../cli/run-cli.core.pr-flow.pr-validation.test.ts | 80 ++++++++++++++++++
+ ....core.pr-flow.pr-check-remote-artifacts.test.ts | 93 +++++++++++++++++++++
  packages/agentplane/src/commands/pr/check.ts       | 27 +++++-
  .../commands/pr/internal/pr-artifact-snapshot.ts   | 95 +++++++++++++++++++---
  .../src/commands/pr/internal/pr-paths.ts           | 18 +++-
- 4 files changed, 200 insertions(+), 20 deletions(-)
+ 4 files changed, 213 insertions(+), 20 deletions(-)
 ```
 
 </details>
