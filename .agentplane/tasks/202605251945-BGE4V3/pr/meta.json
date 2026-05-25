@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-25T21:30:52Z",
   "base": "main",
   "branch": "task/202605251945-BGE4V3/normalize-integration-queue",
   "created_at": "2026-05-25T19:51:34.554Z",
   "diffstat_sha256": "sha256:7cc9a7885acf6f35c33fea431efaa863f6658abacaedde21bf51b461384ebca4",
   "last_verified_at": "2026-05-25T20:09:14.487Z",
   "last_verified_diffstat_sha256": "sha256:7cc9a7885acf6f35c33fea431efaa863f6658abacaedde21bf51b461384ebca4",
+  "merge_commit": "f426655a23dc43ee6266b58596d6385bdd7947a6",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-25T21:30:52Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605251945-BGE4V3",
-  "updated_at": "2026-05-25T19:51:34.554Z",
+  "updated_at": "2026-05-25T21:30:52Z",
   "verify": {
     "status": "pass"
   }

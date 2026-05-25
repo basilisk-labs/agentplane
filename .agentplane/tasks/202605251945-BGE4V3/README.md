@@ -1,10 +1,11 @@
 ---
 id: "202605251945-BGE4V3"
 title: "Normalize stale branch_pr integration queue entries"
-status: "DOING"
+result_summary: "Merged via PR #4149."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -43,11 +44,16 @@ quality_review:
     - "ap doctor"
   findings:
     - "PASS: integrate queue list now normalizes non-claimed DONE task entries to done before rendering, and keeps claimed active lanes out of automatic terminal recovery."
-commit: null
+commit:
+  hash: "f426655a23dc43ee6266b58596d6385bdd7947a6"
+  message: "Merge BGE4V3 branch_pr queue hardening"
 comments:
   -
     author: "CODER"
     body: "Start: implement branch_pr integration queue hygiene in the dedicated worktree, limiting scope to stale terminal queue normalization and focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4149 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -68,9 +74,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review fix: changed integrate queue list normalization to compute backend/GitHub recovery decisions outside the integration queue mutex and hold the mutex only for conditional status writes. Command: bunx prettier --write packages/agentplane/src/commands/integrate-queue.command.ts; Result: pass. Command: bunx vitest run packages/agentplane/src/commands/integrate-queue-recovery.test.ts packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/commands/integrate-queue.spec.test.ts; Result: pass; Evidence: 3 files, 17 tests passed."
+  -
+    type: "status"
+    at: "2026-05-25T21:31:33.918Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4149 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-25T20:09:14.764Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-25T21:31:33.925Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make branch_pr integration queue listing recover terminal stale entries so DONE tasks no longer remain visible as queued work. Scope is limited to queue hygiene logic and focused tests."
 sections:
   Summary: |-
