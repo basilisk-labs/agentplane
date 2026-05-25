@@ -19,16 +19,13 @@ Make branch_pr integration queue listing recover terminal stale entries so DONE 
 - Note:
 
 ```text
+Review fix: changed integrate queue list normalization to compute backend/GitHub recovery decisions
+outside the integration queue mutex and hold the mutex only for conditional status writes. Command:
+bunx prettier --write packages/agentplane/src/commands/integrate-queue.command.ts; Result: pass.
 Command: bunx vitest run packages/agentplane/src/commands/integrate-queue-recovery.test.ts
-packages/agentplane/src/commands/pr/integrate/queue-state.test.ts; Result: pass; Evidence: 2 files,
-15 tests passed. Command: bunx vitest run
-packages/agentplane/src/commands/integrate-queue.spec.test.ts
-packages/agentplane/src/commands/integrate-queue-recovery.test.ts; Result: pass; Evidence: 2 files,
-9 tests passed. Command: ap integrate queue list after rebuild; Result: pass; Evidence: stale DONE
-queue entries normalized, output: No integration queue entries found. Command: node
-.agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: ap doctor;
-Result: pass; Evidence: doctor OK, errors=0 warnings=0. Extra checks: bun run --filter=agentplane
-typecheck and prettier --check passed.
+packages/agentplane/src/commands/pr/integrate/queue-state.test.ts
+packages/agentplane/src/commands/integrate-queue.spec.test.ts; Result: pass; Evidence: 3 files, 17
+tests passed.
 ```
 - Canonical workflow state lives in the task README.
 

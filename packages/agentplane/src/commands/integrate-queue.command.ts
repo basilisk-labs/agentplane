@@ -170,39 +170,58 @@ async function normalizeTerminalQueueEntries(opts: {
   gitRoot: string;
   quiet: boolean;
 }): Promise<void> {
-  const normalized: { taskId: string; reason: string }[] = [];
-  await withIntegrationQueueMutex(opts.gitRoot, async () => {
-    let queue = await readIntegrationQueue(opts.gitRoot);
-    for (const entry of queue.entries) {
-      if (entry.status === "done" || entry.status === "claimed") continue;
+  const snapshot = await readIntegrationQueue(opts.gitRoot);
+  const candidates = snapshot.entries.filter(
+    (entry) => entry.status !== "done" && entry.status !== "claimed",
+  );
+  const decisions: {
+    taskId: string;
+    fromStatus: IntegrationQueueEntry["status"];
+    reason: string;
+  }[] = [];
 
-      const loaded = await loadBackendTask({
-        ctx: opts.ctx,
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride ?? null,
+  for (const entry of candidates) {
+    const loaded = await loadBackendTask({
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: entry.task_id,
+    }).catch(() => null);
+    if (loaded?.task.status === "DONE") {
+      decisions.push({
         taskId: entry.task_id,
-      }).catch(() => null);
-      if (loaded?.task.status === "DONE") {
-        const reason = "task is already DONE; queue entry is terminal stale";
-        queue = markQueueEntry(queue, entry.task_id, "done", reason);
-        normalized.push({ taskId: entry.task_id, reason });
-        continue;
-      }
-
-      if (entry.status !== "handoff") continue;
-      const report = await resolvePrFlowStatus({
-        ctx: opts.ctx,
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride ?? undefined,
-        taskId: entry.task_id,
-      }).catch(() => null);
-      if (!report) continue;
-      const decision = decideIntegrationQueueRecovery({ entry, report });
-      if (decision.action !== "mark" || decision.status !== "done") continue;
-      queue = markQueueEntry(queue, entry.task_id, "done", decision.reason);
-      normalized.push({ taskId: entry.task_id, reason: decision.reason });
+        fromStatus: entry.status,
+        reason: "task is already DONE; queue entry is terminal stale",
+      });
+      continue;
     }
-    if (normalized.length > 0) await writeIntegrationQueue(opts.gitRoot, queue);
+
+    if (entry.status !== "handoff") continue;
+    const report = await resolvePrFlowStatus({
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? undefined,
+      taskId: entry.task_id,
+    }).catch(() => null);
+    if (!report) continue;
+    const decision = decideIntegrationQueueRecovery({ entry, report });
+    if (decision.action !== "mark" || decision.status !== "done") continue;
+    decisions.push({ taskId: entry.task_id, fromStatus: entry.status, reason: decision.reason });
+  }
+
+  if (decisions.length === 0) return;
+
+  const normalized = await withIntegrationQueueMutex(opts.gitRoot, async () => {
+    let queue = await readIntegrationQueue(opts.gitRoot);
+    const applied: { taskId: string; reason: string }[] = [];
+    for (const decision of decisions) {
+      const current = queue.entries.find((entry) => entry.task_id === decision.taskId);
+      if (!current || current.status !== decision.fromStatus) continue;
+      queue = markQueueEntry(queue, decision.taskId, "done", decision.reason);
+      applied.push({ taskId: decision.taskId, reason: decision.reason });
+    }
+    if (applied.length > 0) await writeIntegrationQueue(opts.gitRoot, queue);
+    return applied;
   });
 
   if (!opts.quiet) {
