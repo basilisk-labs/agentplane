@@ -4,7 +4,7 @@ title: "Reduce low-risk duplicate implementation paths"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-25T20:00:35.269Z"
+  updated_by: "CODER"
+  note: "Local verification passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts. Result: pass, 3 files and 30 tests passed. Command: bun run typecheck. Result: pass. Command: bun run lint:core -- packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs. Result: pass. Command: bun run clone:report. Result: pass; clones 89->86 and duplicatedLines 1403->1311 versus pre-change audit."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implementing the approved first refactoring slice in the dedicated worktree; scope is limited to unused CLI cleanup, verification finding helper extraction, and duplicated workflow branch-prefix parser centralization."
+  -
+    type: "verify"
+    at: "2026-05-25T20:00:35.269Z"
+    author: "CODER"
+    state: "ok"
+    note: "Local verification passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts. Result: pass, 3 files and 30 tests passed. Command: bun run typecheck. Result: pass. Command: bun run lint:core -- packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs. Result: pass. Command: bun run clone:report. Result: pass; clones 89->86 and duplicatedLines 1403->1311 versus pre-change audit."
 doc_version: 3
-doc_updated_at: "2026-05-25T19:58:03.869Z"
+doc_updated_at: "2026-05-25T20:00:35.305Z"
 doc_updated_by: "CODER"
 description: "Implement the first safe refactoring slice from the duplicate/redundancy audit: remove confirmed unused CLI code, extract repeated verification finding construction, and centralize small duplicated script/config parsing helpers without changing public CLI behavior."
 sections:
@@ -60,6 +66,25 @@ sections:
     4. Run `bun run clone:report`. Expected: clone metrics do not regress and duplicate lines decrease for touched scope.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-25T20:00:35.269Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Local verification passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts. Result: pass, 3 files and 30 tests passed. Command: bun run typecheck. Result: pass. Command: bun run lint:core -- packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs. Result: pass. Command: bun run clone:report. Result: pass; clones 89->86 and duplicatedLines 1403->1311 versus pre-change audit.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-25T19:58:03.869Z, excerpt_hash=sha256:6b2ed50014ef770f0d568f717e665294d0fbf7e902b9487e1df491d27192e37f
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605251947-63FTP6-reduce-duplicate-paths/.agentplane/tasks/202605251947-63FTP6/blueprint/resolved-snapshot.json
+    - old_digest: 437df8d0fc9ccbb4a1949d7c6d1efeadc4a6c29e6556a04c20cfefeeae31935f
+    - current_digest: 437df8d0fc9ccbb4a1949d7c6d1efeadc4a6c29e6556a04c20cfefeeae31935f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605251947-63FTP6
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -95,6 +120,25 @@ Implement the first safe refactoring slice from the duplicate/redundancy audit: 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-25T20:00:35.269Z — VERIFY — ok
+
+By: CODER
+
+Note: Local verification passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts. Result: pass, 3 files and 30 tests passed. Command: bun run typecheck. Result: pass. Command: bun run lint:core -- packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs. Result: pass. Command: bun run clone:report. Result: pass; clones 89->86 and duplicatedLines 1403->1311 versus pre-change audit.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-25T19:58:03.869Z, excerpt_hash=sha256:6b2ed50014ef770f0d568f717e665294d0fbf7e902b9487e1df491d27192e37f
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605251947-63FTP6-reduce-duplicate-paths/.agentplane/tasks/202605251947-63FTP6/blueprint/resolved-snapshot.json
+- old_digest: 437df8d0fc9ccbb4a1949d7c6d1efeadc4a6c29e6556a04c20cfefeeae31935f
+- current_digest: 437df8d0fc9ccbb4a1949d7c6d1efeadc4a6c29e6556a04c20cfefeeae31935f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605251947-63FTP6
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
