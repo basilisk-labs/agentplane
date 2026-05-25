@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202605250929-N9FJB1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-25T09:42:37.191Z",
+  "verdict": "pass",
+  "summary": "Upgrade planner now renders managed markdown assets before writing installed policy files; regression and upgrade planner tests pass.",
+  "evaluated_sha": "caa43500b61c746fd315b3e0e1fdc62fb287db29",
+  "blueprint_digest": "39605e3ceb9e21858000a94f4a7885acb1aa921d5b3278f8b7fece299303d241",
+  "findings": [
+    "No remaining fragment-marker leak found in covered upgrade path."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605250929-N9FJB1/README.md",
+    "packages/agentplane/src/cli/run-cli.core.upgrade.test.ts",
+    "packages/agentplane/src/commands/upgrade/plan.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Remote release bundle path not separately smoke-tested, but it uses the same planManagedUpgrade rendering path."
+  ]
+}
