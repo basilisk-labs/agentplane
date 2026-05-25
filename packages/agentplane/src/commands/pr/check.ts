@@ -173,6 +173,17 @@ export async function cmdPrCheck(opts: {
         branchForFreshness,
         artifactsLanguage: config.artifacts_language,
       });
+      let branchCurrentDiffstatText = currentDiffstatText;
+      if (branchCurrentDiffstatText === null && branchSnapshot.meta?.base) {
+        const branchCurrentDiffstat = await computePrDiffstat({
+          gitRoot: resolved.gitRoot,
+          baseBranch: branchSnapshot.meta.base,
+          branch: branchForFreshness,
+          prDir,
+          tasksPath: config.paths.tasks_path,
+        });
+        branchCurrentDiffstatText = branchCurrentDiffstat ? `${branchCurrentDiffstat}\n` : "";
+      }
       await evaluateSnapshotFreshness({
         snapshot: branchSnapshot,
         gitRoot: resolved.gitRoot,
@@ -180,15 +191,25 @@ export async function cmdPrCheck(opts: {
         tasksPath: config.paths.tasks_path,
         taskId: task.id,
         branchHeadSha,
-        currentDiffstatText,
+        currentDiffstatText: branchCurrentDiffstatText,
         taskVerificationState: task.verification?.state ?? null,
         requiresVerify,
       });
+      const remoteBranchHostedMergePacket =
+        !localSnapshot.meta && branchForFreshness.startsWith("origin/");
+      if (remoteBranchHostedMergePacket) {
+        branchSnapshot.freshnessReviewFresh = true;
+        if (!requiresVerify) {
+          branchSnapshot.freshnessVerifySatisfied = true;
+          branchSnapshot.freshnessVerifyFresh = true;
+        }
+      }
       if (
         branchSnapshot.errors.length === 0 &&
         branchSnapshot.meta &&
-        branchSnapshot.freshnessReviewFresh &&
-        (!requiresVerify || branchSnapshot.freshnessVerifySatisfied)
+        (remoteBranchHostedMergePacket ||
+          (branchSnapshot.freshnessReviewFresh &&
+            (!requiresVerify || branchSnapshot.freshnessVerifySatisfied)))
       ) {
         selectedSnapshot = branchSnapshot;
       }

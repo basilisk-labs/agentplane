@@ -293,6 +293,86 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
     },
   );
 
+  it(
+    "pr check reads PR artifacts from a remote-only task branch",
+    { timeout: PR_FLOW_LONG_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      const execFileAsync = promisify(execFile);
+      const remoteRoot = path.join(root, "origin.git");
+      await execFileAsync("git", ["init", "--bare", remoteRoot], { cwd: root });
+      await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
+
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "PR check remote branch fallback",
+          "--description",
+          "Base checkout should validate PR artifacts from a remote task branch",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+
+      await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+      const branch = `task/${taskId}/remote-pr-artifacts`;
+      await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+      await runCliSilent([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      await commitPathsIfChanged(
+        root,
+        [`.agentplane/tasks/${taskId}`],
+        `${taskId} add pr artifacts`,
+      );
+      await execFileAsync("git", ["push", "--no-verify", "-u", "origin", branch], { cwd: root });
+      await execFileAsync("git", ["checkout", "main"], { cwd: root });
+      await execFileAsync("git", ["branch", "-D", branch], { cwd: root });
+      await rm(path.join(root, ".agentplane", "tasks", taskId, "pr"), {
+        recursive: true,
+        force: true,
+      });
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["pr", "check", taskId, "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("✅ pr check");
+      } finally {
+        io.restore();
+      }
+    },
+  );
+
   it("pr check prefers local PR artifacts when multiple task branches match", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
