@@ -23,6 +23,13 @@ export function decideIntegrationQueueRecovery(opts: {
       reason: "integration claim is still active; waiting for claim owner or lease expiry",
     };
   }
+  if (report.task.status === "DONE") {
+    return {
+      action: "mark",
+      status: "done",
+      reason: "task is already DONE; queue entry is terminal stale",
+    };
+  }
   if (report.pr.state === "OPEN") {
     return {
       action: "keep",
