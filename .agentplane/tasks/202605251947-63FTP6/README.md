@@ -4,7 +4,7 @@ title: "Reduce low-risk duplicate implementation paths"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,24 @@ verification:
   updated_by: "CODER"
   note: "Local verification passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts. Result: pass, 3 files and 30 tests passed. Command: bun run typecheck. Result: pass. Command: bun run lint:core -- packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs. Result: pass. Command: bun run clone:report. Result: pass; clones 89->86 and duplicatedLines 1403->1311 versus pre-change audit."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-25T20:02:57.550Z"
+  updated_by: "EVALUATOR"
+  note: "Low-risk duplicate-path refactor preserves CLI behavior while reducing measured clone count."
+  evaluated_sha: "e9c4e5d59ffe3af784e015be3fa250a6cbcc3f62"
+  blueprint_digest: "437df8d0fc9ccbb4a1949d7c6d1efeadc4a6c29e6556a04c20cfefeeae31935f"
+  evidence_refs:
+    - ".agentplane/tasks/202605251947-63FTP6/README.md"
+    - ".agentplane/tasks/202605251947-63FTP6/quality/20260525-200257550-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605251947-63FTP6/quality/20260525-200257550-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605251947-63FTP6/quality/20260525-200257550-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605251947-63FTP6/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
+    - "packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts"
+    - "packages/agentplane/src/commands/release/release-task-evidence-script.test.ts"
+  findings:
+    - "Finding: Confirmed cli/critical/cli-runner.ts is not removable because the critical harness executes it by path; left it intact. Extracted repeated verification finding payload construction and centralized workflow branch-prefix parsing for release/hosted-close scripts. Local checks passed."
 commit: null
 comments:
   -
