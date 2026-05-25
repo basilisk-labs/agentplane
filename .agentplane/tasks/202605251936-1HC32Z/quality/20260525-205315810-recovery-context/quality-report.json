@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202605251936-1HC32Z",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-25T20:53:15.810Z",
+  "verdict": "pass",
+  "summary": "Reviewed final selector UX fix and finish-close-commit test alignment at the current implementation commit.",
+  "evaluated_sha": "62e3df91389958d439dd179baf556b5fa2347fc1",
+  "blueprint_digest": "51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642",
+  "findings": [
+    "No projection fallback scan was added; done-only native projection remains on the fast path.",
+    "finish-close-commit tests now use evaluator run quality reports and isolate dirty-tree coverage with other.txt instead of bootstrap-managed .gitignore."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605251936-1HC32Z/README.md",
+    "packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts",
+    "packages/agentplane/src/commands/shared/task-backend.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
