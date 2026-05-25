@@ -13,6 +13,12 @@ import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import type { TaskData } from "../../backends/task-backend/shared/types.js";
 import {
+  BLUEPRINT_REQUEST_VALUES,
+  MUTATION_SCOPE_VALUES,
+  RISK_FLAG_VALUES,
+  TASK_KIND_VALUES,
+} from "../../backends/task-backend/shared/domain-values.js";
+import {
   ensureTaskDependsOnGraphIsAcyclic,
   nowIso,
   requiresVerifyStepsByPrimary,
@@ -45,48 +51,6 @@ export type TaskNewParsed = {
   showBlueprint: boolean;
   allowDuplicate: boolean;
 };
-
-const TASK_KIND_VALUES = new Set([
-  "analysis",
-  "content",
-  "docs",
-  "code",
-  "release",
-  "ops",
-  "context",
-]);
-const MUTATION_SCOPE_VALUES = new Set([
-  "none",
-  "docs",
-  "code",
-  "release",
-  "ops",
-  "context",
-  "unknown",
-]);
-const RISK_FLAG_VALUES = new Set([
-  "network",
-  "credentials",
-  "deploy",
-  "publish",
-  "merge",
-  "security",
-  "external_system",
-]);
-const BLUEPRINT_REQUEST_VALUES = new Set([
-  "analysis.light",
-  "content.light",
-  "docs.change",
-  "code.direct",
-  "code.branch_pr",
-  "performance.benchmark",
-  "quality.regression",
-  "context.assimilation",
-  "context.maximum_assimilation",
-  "post_run.improvement_review",
-  "release.strict",
-  "ops.approval",
-]);
 
 const TASK_NEW_DUPLICATE_THRESHOLD = 0.75;
 const TASK_NEW_DUPLICATE_STOPWORDS = new Set([

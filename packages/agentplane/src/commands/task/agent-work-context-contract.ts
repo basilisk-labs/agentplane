@@ -5,6 +5,7 @@ type AgentWorkContextSourceKind =
   | "static"
   | "task_backend"
   | "local_git"
+  | "pr_artifact"
   | "task_doc"
   | "blueprint_resolver"
   | "snapshot_digest"
