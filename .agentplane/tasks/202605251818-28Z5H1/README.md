@@ -1,10 +1,11 @@
 ---
 id: "202605251818-28Z5H1"
 title: "Reduce redundancy in AgentPlane code"
-status: "DOING"
+result_summary: "Merged via PR #4145."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -47,11 +48,16 @@ quality_review:
     - "https://github.com/basilisk-labs/agentplane/pull/4145"
   findings:
     - "No blocking findings. Residual risk is limited to unchanged existing knip baseline debt and intentionally deferred broader command-catalog/test-fixture decomposition."
-commit: null
+commit:
+  hash: "6c7d851a64a9d5b500b988a61db81fe1a0d00a45"
+  message: "Merge pull request #4145 from basilisk-labs/task/202605251818-28Z5H1/reduce-redundancy-in-agentplane-code"
 comments:
   -
     author: "CODER"
     body: "Start: Implement approved low-risk redundancy reductions in the dedicated branch_pr worktree, preserving public CLI behavior and using the declared architecture, clone, knip, focused test, and typecheck verification contract."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4145 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -74,9 +80,16 @@ events:
       Command: bun run release:homebrew:check && bun run release:scoop:check && bun run release:setup-action:check. Result: pass. Evidence: all render checks reached skipped_missing_credentials gate. Scope: release distribution render helper extraction.
       Command: bun run typecheck. Result: pass. Evidence: tsc -b completed with exit 0. Scope: TypeScript project references.
       Command: bun run format:changed. Result: pass. Evidence: all matched files use Prettier code style. Scope: changed file formatting.
+  -
+    type: "status"
+    at: "2026-05-25T19:33:19.096Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4145 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-25T18:34:50.364Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-25T19:33:19.103Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor low-risk repeated code surfaces identified by the redundancy audit: prompt aliases, duplicated task domain constants, shared route source confidence, and closely related helper duplication where verification remains bounded."
 sections:
   Summary: |-
