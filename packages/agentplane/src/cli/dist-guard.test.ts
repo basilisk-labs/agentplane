@@ -217,6 +217,61 @@ describe("dist-guard", () => {
   );
 
   it(
+    "uses the git quick check for snapshot manifests when runtime paths did not change",
+    { timeout: DIST_GUARD_TIMEOUT_MS },
+    async () => {
+      const { repoRoot, packageRoot } = await setupPackageRepo();
+      const watchedPaths = [
+        "src",
+        "bin/agentplane.js",
+        "bin/runtime-context.js",
+        "bin/stale-dist-policy.js",
+      ];
+      await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
+      await writeFile(path.join(repoRoot, "README.md"), "docs only\n", "utf8");
+      await execFileAsync("git", ["add", "README.md"], { cwd: repoRoot });
+      await execFileAsync("git", ["commit", "-m", "docs: update readme"], { cwd: repoRoot });
+
+      const result = await readBuildFreshness(packageRoot, { watchedPaths });
+
+      expect(result.ok).toBe(true);
+      expect(result.reason).toBe("fresh_after_git_quick_check");
+      expect(result.changedPaths).toEqual([]);
+    },
+  );
+
+  it(
+    "falls back to snapshot validation when the git quick check is inconclusive",
+    { timeout: DIST_GUARD_TIMEOUT_MS },
+    async () => {
+      const { packageRoot } = await setupPackageRepo();
+      const watchedPaths = [
+        "src",
+        "bin/agentplane.js",
+        "bin/runtime-context.js",
+        "bin/stale-dist-policy.js",
+      ];
+      await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
+      const manifestPath = path.join(packageRoot, "dist", ".build-manifest.json");
+      const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as BuildManifestFixture;
+      await writeFile(
+        manifestPath,
+        `${JSON.stringify({ ...manifest, git_head: "not-a-valid-git-ref" }, null, 2)}\n`,
+        "utf8",
+      );
+      const policyPath = path.join(packageRoot, "bin", "stale-dist-policy.js");
+      const current = await readFile(policyPath, "utf8");
+      await writeFile(policyPath, `${current}export const changedAfterBadRef = 1;\n`, "utf8");
+
+      const result = await readBuildFreshness(packageRoot, { watchedPaths });
+
+      expect(result.ok).toBe(false);
+      expect(result.reason).toBe("watched_runtime_snapshot_changed");
+      expect(result.changedPaths).toContain("bin/stale-dist-policy.js");
+    },
+  );
+
+  it(
     "reports snapshot-changed runtime files when current source diverges from the built manifest",
     { timeout: DIST_GUARD_TIMEOUT_MS },
     async () => {

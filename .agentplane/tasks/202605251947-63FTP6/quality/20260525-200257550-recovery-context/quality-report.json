@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202605251947-63FTP6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-25T20:02:57.550Z",
+  "verdict": "pass",
+  "summary": "Low-risk duplicate-path refactor preserves CLI behavior while reducing measured clone count.",
+  "evaluated_sha": "e9c4e5d59ffe3af784e015be3fa250a6cbcc3f62",
+  "blueprint_digest": "437df8d0fc9ccbb4a1949d7c6d1efeadc4a6c29e6556a04c20cfefeeae31935f",
+  "findings": [
+    "Finding: Confirmed cli/critical/cli-runner.ts is not removable because the critical harness executes it by path; left it intact. Extracted repeated verification finding payload construction and centralized workflow branch-prefix parsing for release/hosted-close scripts. Local checks passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605251947-63FTP6/README.md",
+    "packages/agentplane/src/commands/task/verify-record.unit.test.ts",
+    "packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts",
+    "packages/agentplane/src/commands/release/release-task-evidence-script.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted GitHub checks were still in progress when local quality review was recorded."
+  ]
+}

@@ -1,0 +1,4 @@
+ packages/agentplane/bin/agentplane.js          | 10 ++++++++--
+ packages/agentplane/bin/dist-guard.js          | 11 +++++++++++
+ packages/agentplane/src/cli/dist-guard.test.ts | 24 ++++++++++++++++++++++++
+ 3 files changed, 43 insertions(+), 2 deletions(-)

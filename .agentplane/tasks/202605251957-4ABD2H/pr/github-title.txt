@@ -1,0 +1,1 @@
+🚧 4ABD2H task: Optimize CLI startup fast paths [202605251957-4ABD2H]
