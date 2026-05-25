@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-25T10:06:54Z",
   "base": "main",
   "branch": "task/202605250929-N9FJB1/upgrade-fragment-render",
   "created_at": "2026-05-25T09:30:16.719Z",
   "diffstat_sha256": "sha256:3a653d7c96461dce507865774dd74e353fca90f7f76d065a1c48a6c6b85a902e",
   "last_verified_at": "2026-05-25T09:41:52.329Z",
   "last_verified_diffstat_sha256": "sha256:3a653d7c96461dce507865774dd74e353fca90f7f76d065a1c48a6c6b85a902e",
+  "merge_commit": "d462daf89f2edaa2b8ca2786c3cfdfce8cb30f2b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-25T10:06:54Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605250929-N9FJB1",
-  "updated_at": "2026-05-25T09:30:16.719Z",
+  "updated_at": "2026-05-25T10:06:54Z",
   "verify": {
     "status": "pass"
   }

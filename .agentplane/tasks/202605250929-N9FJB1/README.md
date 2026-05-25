@@ -1,10 +1,11 @@
 ---
 id: "202605250929-N9FJB1"
 title: "Fix upgrade markdown fragment leak"
-status: "DOING"
+result_summary: "Merged via PR #4141."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "packages/agentplane/src/commands/upgrade/plan.ts"
   findings:
     - "No remaining fragment-marker leak found in covered upgrade path."
-commit: null
+commit:
+  hash: "d462daf89f2edaa2b8ca2786c3cfdfce8cb30f2b"
+  message: "Merge pull request #4141 from basilisk-labs/task/202605250929-N9FJB1/upgrade-fragment-render"
 comments:
   -
     author: "CODER"
     body: "Start: Implement upgrade markdown rendering regression fix for managed policy files, preserving existing branch_pr task scope and targeted verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4141 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/run-cli.core.upgrade.test.ts -t 'upgrade renders managed markdown assets before writing installed policy files'. Result: pass. Evidence: 1 pass, 0 fail; regression confirms installed dod.code.md has no ap:fragment markers. Scope: targeted upgrade markdown rendering regression. Command: bun test packages/agentplane/src/cli/run-cli.core.upgrade.test.ts. Result: pass. Evidence: 14 pass, 0 fail, 113 expect calls. Scope: existing upgrade CLI behavior. Command: bun test packages/agentplane/src/commands/upgrade.merge.test.ts. Result: pass. Evidence: 9 pass, 0 fail, 42 expect calls. Scope: upgrade planner merge semantics. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: policy routing constraints. Command: ap agents. Result: pass after framework bootstrap. Evidence: listed installed agent profiles. Scope: upgrade policy minimum verification."
+  -
+    type: "status"
+    at: "2026-05-25T10:07:33.847Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4141 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-25T09:41:52.347Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-25T10:07:33.854Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent agentplane upgrade from writing raw ap:fragment markers into installed managed markdown policy files in user repositories."
 sections:
   Summary: |-
