@@ -222,6 +222,32 @@ function parseHumanTaskSubjectTemplate(subject: string): {
   return splitScopeSummary(trimmed);
 }
 
+function parseConventionalSubjectTemplate(subject: string): {
+  scope: string;
+  summary: string;
+} | null {
+  return parseHumanTaskSubjectTemplate(subject);
+}
+
+function parseGitTransportSubject(subject: string): { summary: string } | null {
+  const trimmed = subject.trim();
+  if (
+    /^Merge pull request #\d+ from \S+$/u.test(trimmed) ||
+    /^Merge branch '\S+' into \S+$/u.test(trimmed) ||
+    /^Merge remote-tracking branch '\S+'$/u.test(trimmed) ||
+    /^Revert ".+"$/u.test(trimmed)
+  ) {
+    return { summary: trimmed };
+  }
+  return null;
+}
+
+function parseDependencyBotSubject(subject: string): { summary: string } | null {
+  const trimmed = subject.trim();
+  if (/^Bump .+$/u.test(trimmed)) return { summary: trimmed };
+  return null;
+}
+
 export function validateCommitSubject(opts: {
   subject: string;
   taskId?: string;
@@ -276,10 +302,15 @@ export function validateCommitSubject(opts: {
       }
     }
   } else {
-    // Non-task commits: `<emoji> <scope>: <summary>`.
+    // Non-task commits:
+    // - `<emoji> <scope>: <summary>` for explicit agent-authored changes.
+    // - `<scope>: <summary>` for hosted semantic commits, squash/rebase commits, and bots.
     // We also support the explicit legacy form: `<emoji> DEV <scope>: <summary>`.
     const nonTask = parseNonTaskSubjectTemplate(subject);
-    if (!nonTask) {
+    const conventional = parseConventionalSubjectTemplate(subject);
+    const gitTransport = parseGitTransportSubject(subject);
+    const dependencyBot = parseDependencyBotSubject(subject);
+    if (!nonTask && !conventional && !gitTransport && !dependencyBot) {
       const taskLike = parseTaskSubjectTemplate(subject);
       if (taskLike?.suffix?.toLowerCase() === NON_TASK_SUFFIX.toLowerCase()) {
         // Explicit non-task form is allowed.
@@ -289,16 +320,19 @@ export function validateCommitSubject(opts: {
             "task-like commit subject found, but task context is missing (AGENTPLANE_TASK_ID is unset)",
             "Fix:",
             "  1) Use the non-task format: <emoji> <scope>: <summary>",
-            "  2) Or run the commit via agentplane so task context is set",
+            "  2) Use the hosted semantic format: <scope>: <summary>",
+            "  3) Or run the commit via agentplane so task context is set",
             "Examples:",
             "  ✨ ci: enforce full tests before push",
+            "  tests: optimize branch_pr pr check artifact fallback",
             "  🚧 ABCDEF task: implement upgrade allowlist (via agentplane)",
           );
           return { ok: false, errors };
         }
         errors.push(
-          "non-task commit subject must match: <emoji> <scope>: <summary>",
+          "non-task commit subject must match: <emoji> <scope>: <summary> or <scope>: <summary>",
           "example: ✨ ci: enforce full tests before push",
+          "example: tests: optimize branch_pr pr check artifact fallback",
           `example (legacy explicit): ✨ ${NON_TASK_SUFFIX} ci: enforce full tests before push`,
         );
         return { ok: false, errors };
@@ -309,6 +343,8 @@ export function validateCommitSubject(opts: {
   const parsedForSummary =
     parseHumanTaskSubjectTemplate(subject) ??
     parseNonTaskSubjectTemplate(subject) ??
+    parseGitTransportSubject(subject) ??
+    parseDependencyBotSubject(subject) ??
     (() => {
       const t = parseTaskSubjectTemplate(subject);
       return t ? { summary: t.summary } : null;

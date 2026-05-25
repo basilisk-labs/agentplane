@@ -260,6 +260,58 @@ describe("commit-policy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts hosted semantic subjects without emoji or task suffix", () => {
+    for (const subject of [
+      "tests: optimize branch_pr pr check artifact fallback",
+      "code: reduce low-risk duplicate implementation paths",
+      "release: release AgentPlane v0.6.9",
+      "context: add daily cloud pull before task start",
+    ]) {
+      const result = validateCommitSubject({
+        subject,
+        genericTokens: ["update", "tasks", "wip"],
+      });
+      expect(result.errors).toEqual([]);
+      expect(result.ok).toBe(true);
+    }
+  });
+
+  it("keeps task-context commits on the strict task template by default", () => {
+    const result = validateCommitSubject({
+      subject: "code: reduce low-risk duplicate implementation paths",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks", "wip"],
+    });
+    expect(result.ok).toBe(false);
+    expect(result.errors.join("\n")).toContain(
+      "commit subject must match: <emoji> <suffix> <scope>: <summary>",
+    );
+  });
+
+  it("accepts GitHub and Git transport commit subjects", () => {
+    for (const subject of [
+      "Merge pull request #4148 from basilisk-labs/task/202605251929-JZ4VPD/optimize-branch-pr-pr-check-artifact-fallback",
+      "Merge branch 'main' into task/202605251929-JZ4VPD/optimize-branch-pr-pr-check-artifact-fallback",
+      "Merge remote-tracking branch 'origin/main'",
+      'Revert "tests: optimize branch_pr pr check artifact fallback"',
+    ]) {
+      const result = validateCommitSubject({
+        subject,
+        genericTokens: ["update", "tasks", "wip"],
+      });
+      expect(result.errors).toEqual([]);
+      expect(result.ok).toBe(true);
+    }
+  });
+
+  it("accepts dependency bot bump subjects", () => {
+    const result = validateCommitSubject({
+      subject: "Bump the root-dependencies group with 9 updates",
+      genericTokens: ["update", "tasks", "wip"],
+    });
+    expect(result.ok).toBe(true);
+  });
+
   it("accepts non-task subjects with hierarchical scopes", () => {
     const result = validateCommitSubject({
       subject: "✨ cli/run-cli: simplify global flag parsing",
