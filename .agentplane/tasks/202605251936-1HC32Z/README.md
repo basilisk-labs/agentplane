@@ -4,7 +4,7 @@ title: "Fix active task selector projection fallback"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -25,23 +25,23 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-25T20:51:46.629Z"
+  updated_at: "2026-05-25T20:53:15.810Z"
   updated_by: "EVALUATOR"
-  note: "Reviewed selector UX fix plus finish-close-commit test alignment after hosted verify-routed failure."
-  evaluated_sha: "49d8f5cf8e3ae45f01ee6097ea967c82a0766144"
+  note: "Reviewed final selector UX fix and finish-close-commit test alignment at the current implementation commit."
+  evaluated_sha: "62e3df91389958d439dd179baf556b5fa2347fc1"
   blueprint_digest: "51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642"
   evidence_refs:
     - ".agentplane/tasks/202605251936-1HC32Z/README.md"
-    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-205146629-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-205146629-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-205146629-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-205315810-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-205315810-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-205315810-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605251936-1HC32Z/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts"
     - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts"
     - "packages/agentplane/src/commands/shared/task-backend.test.ts"
   findings:
-    - "Active-task UX remains scoped to no-active guidance and does not add canonical-scan fallback to the projection fast path."
-    - "finish-close-commit tests now record structured evaluator quality reports and keep dirty-tree preflight isolated from .gitignore bootstrap churn."
+    - "No projection fallback scan was added; done-only native projection remains on the fast path."
+    - "finish-close-commit tests now use evaluator run quality reports and isolate dirty-tree coverage with other.txt instead of bootstrap-managed .gitignore."
 commit: null
 comments:
   -
