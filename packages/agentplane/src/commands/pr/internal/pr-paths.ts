@@ -84,9 +84,19 @@ export async function readPrArtifactFromBranch(opts: {
     }
   }
   const rel = toGitPath(path.relative(opts.resolved.gitRoot, filePath));
-  try {
-    return await gitShowFile(opts.resolved.gitRoot, opts.branch, rel);
-  } catch {
-    return null;
+  const refsToTry = candidateBranchRefs(opts.branch);
+  for (const ref of refsToTry) {
+    try {
+      return await gitShowFile(opts.resolved.gitRoot, ref, rel);
+    } catch {
+      // Try origin/<branch> before giving up; base checkouts often keep only the remote task ref.
+    }
   }
+  return null;
+}
+
+function candidateBranchRefs(branch: string): string[] {
+  const trimmed = branch.trim();
+  if (!trimmed || trimmed.startsWith("origin/")) return trimmed ? [trimmed] : [];
+  return [trimmed, `origin/${trimmed}`];
 }

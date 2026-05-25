@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-25T20:56:15Z",
+  "base": "main",
+  "branch": "task/202605251957-4ABD2H/optimize-cli-startup-fast-paths",
+  "created_at": "2026-05-25T20:00:44.941Z",
+  "diffstat_sha256": "sha256:7a506649accb38c02739fe17a258a21b7afecb163a3a727ab351d493bbe660a7",
+  "last_verified_at": "2026-05-25T20:19:58.852Z",
+  "last_verified_diffstat_sha256": "sha256:7a506649accb38c02739fe17a258a21b7afecb163a3a727ab351d493bbe660a7",
+  "merge_commit": "bade1ada05c8f6ffe17a12d2c4ed6ebec81f02bf",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-25T20:56:15Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605251957-4ABD2H",
+  "updated_at": "2026-05-25T20:56:15Z",
+  "verify": {
+    "status": "pass"
+  }
+}

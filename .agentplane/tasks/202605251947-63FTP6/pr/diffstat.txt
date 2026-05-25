@@ -1,0 +1,5 @@
+ .../agentplane/src/commands/task/verify-record.ts  | 102 +++++++++------------
+ scripts/lib/workflow-config.mjs                    |  64 +++++++++++++
+ scripts/release/release-task-evidence.mjs          |  55 +----------
+ scripts/workflow/prepare-hosted-task-closure.mjs   |  59 +-----------
+ 4 files changed, 112 insertions(+), 168 deletions(-)
