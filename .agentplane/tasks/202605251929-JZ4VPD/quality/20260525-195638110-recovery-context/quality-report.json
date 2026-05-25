@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202605251929-JZ4VPD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-25T19:56:38.110Z",
+  "verdict": "pass",
+  "summary": "pr check route-gap fixed with focused regression coverage for remote-only branch_pr PR artifacts.",
+  "evaluated_sha": "c5a80662a3fc89e1846e023d8de5662ec7467a03",
+  "blueprint_digest": "cc092b3fc4676739bd639bb1db96130b1fb9bbda3d3e0d462299b937ef738d34",
+  "findings": [
+    "Validated that base-checkout pr check can read PR artifacts from origin/task/<task-id>/... when local base artifacts are absent, while stale local branch fallback and invalid artifacts remain strict."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605251929-JZ4VPD/README.md",
+    "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts",
+    "packages/agentplane/src/commands/pr/check.ts",
+    "packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.ts"
+  ],
+  "missing_tests": [
+    "No live GitHub stable-green merge was executed for this task; verification uses local remote-tracking branch simulation plus GitHub PR state readback."
+  ],
+  "hidden_assumptions": [
+    "Remote-tracking task branch artifacts are acceptable pre-merge evidence only for the hosted merge lane; local stale task branches remain validation failures."
+  ],
+  "residual_risks": [
+    "Full whole-repo lint:core was terminated after hanging on ESLint processes; targeted ESLint and typecheck passed."
+  ]
+}

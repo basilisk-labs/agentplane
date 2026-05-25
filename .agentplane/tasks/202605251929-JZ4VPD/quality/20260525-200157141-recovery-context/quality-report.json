@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202605251929-JZ4VPD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-25T20:01:57.141Z",
+  "verdict": "pass",
+  "summary": "pr check route-gap fixed with remote-only PR artifact regression split into a focused test file to preserve oversized-test budget.",
+  "evaluated_sha": "265454d088c42c4b01226f9d377ea210f2b9a52e",
+  "blueprint_digest": "cc092b3fc4676739bd639bb1db96130b1fb9bbda3d3e0d462299b937ef738d34",
+  "findings": [
+    "Validated base-checkout pr check reads PR artifacts from origin/task/<task-id>/... when local base artifacts are absent; stale local branch fallback and invalid-artifact checks remain strict."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605251929-JZ4VPD/README.md",
+    "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-check-remote-artifacts.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts",
+    "packages/agentplane/src/commands/pr/check.ts",
+    "packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.ts"
+  ],
+  "missing_tests": [
+    "No live GitHub merge was executed for this task; hosted truth was limited to PR creation/state readback."
+  ],
+  "hidden_assumptions": [
+    "Remote-tracking task branch artifacts are acceptable pre-merge evidence only for the hosted merge lane; local stale task branches remain validation failures."
+  ],
+  "residual_risks": [
+    "Full pre-push initially failed on oversized-test growth; the regression was moved to a focused file and hotspots:check passed."
+  ]
+}

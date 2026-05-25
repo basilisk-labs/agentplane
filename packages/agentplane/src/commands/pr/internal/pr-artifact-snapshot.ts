@@ -23,9 +23,11 @@ import {
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import {
   findWorktreeForBranch,
+  gitEnv,
   gitListTaskBranches,
   parseTaskIdFromBranch,
 } from "@agentplaneorg/core/git";
+import { execFileAsync } from "@agentplaneorg/core/process";
 
 export function isUnknownRevisionError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
@@ -38,19 +40,75 @@ export async function resolveArtifactBranch(opts: {
   taskId: string;
 }): Promise<string | null> {
   const prefix = opts.ctx.config.branch.task_prefix;
-  const branches = await gitListTaskBranches(opts.resolved.gitRoot, prefix);
-  const matches = branches.filter(
-    (branch) => parseTaskIdFromBranch(prefix, branch) === opts.taskId,
-  );
-  if (matches.length === 1) return matches[0] ?? null;
-  if (matches.length > 1) {
+  const branches = await listTaskBranchCandidates(opts.resolved.gitRoot, prefix);
+  const matches = branches.filter((branch) => parseCandidateTaskId(prefix, branch) === opts.taskId);
+  const uniqueMatches = uniqueTaskBranchMatches(matches);
+  if (uniqueMatches.length === 1) return uniqueMatches[0]?.branch ?? null;
+  if (uniqueMatches.length > 1) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
-      message: `Multiple task branches match ${opts.taskId}: ${matches.join(", ")}`,
+      message: `Multiple task branches match ${opts.taskId}: ${uniqueMatches.map((match) => match.branch).join(", ")}`,
     });
   }
   return null;
+}
+
+function stripOriginPrefix(branch: string): string {
+  return branch.startsWith("origin/") ? branch.slice("origin/".length) : branch;
+}
+
+function parseCandidateTaskId(prefix: string, branch: string): string | null {
+  return parseTaskIdFromBranch(prefix, stripOriginPrefix(branch));
+}
+
+async function listRemoteTaskBranches(cwd: string, prefix: string): Promise<string[]> {
+  const normalized = normalizeBranchPrefix(prefix);
+  if (!normalized) return [];
+  const { stdout } = await execFileAsync(
+    "git",
+    [
+      "for-each-ref",
+      "--format=%(refname:short)",
+      `refs/remotes/origin/${normalized}`,
+      `refs/remotes/origin/${normalized}/`,
+    ],
+    {
+      cwd,
+      env: gitEnv(),
+    },
+  );
+  return String(stdout)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .filter((line) => !line.endsWith("/HEAD"));
+}
+
+function normalizeBranchPrefix(prefix: string): string {
+  let start = 0;
+  let end = prefix.length;
+  while (start < end && prefix[start] === "/") start += 1;
+  while (end > start && prefix[end - 1] === "/") end -= 1;
+  return prefix.slice(start, end);
+}
+
+async function listTaskBranchCandidates(cwd: string, prefix: string): Promise<string[]> {
+  const localBranches = await gitListTaskBranches(cwd, prefix);
+  const remoteBranches = await listRemoteTaskBranches(cwd, prefix);
+  return [...localBranches, ...remoteBranches];
+}
+
+function uniqueTaskBranchMatches(branches: string[]): { branch: string; key: string }[] {
+  const matches: { branch: string; key: string }[] = [];
+  const seen = new Set<string>();
+  for (const branch of branches) {
+    const key = stripOriginPrefix(branch);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    matches.push({ branch, key });
+  }
+  return matches;
 }
 
 export type PrArtifactTexts = {
@@ -227,12 +285,21 @@ export async function resolveBranchHeadSha(opts: {
   branchForFreshness: string | null;
 }): Promise<string | null> {
   if (!opts.branchForFreshness) return null;
-  try {
-    return await gitRevParse(opts.gitRoot, [opts.branchForFreshness]);
-  } catch (err) {
-    if (!isUnknownRevisionError(err)) throw err;
-    return null;
+  const refsToTry = candidateBranchRefs(opts.branchForFreshness);
+  for (const ref of refsToTry) {
+    try {
+      return await gitRevParse(opts.gitRoot, [ref]);
+    } catch (err) {
+      if (!isUnknownRevisionError(err)) throw err;
+    }
   }
+  return null;
+}
+
+function candidateBranchRefs(branch: string): string[] {
+  const trimmed = branch.trim();
+  if (!trimmed || trimmed.startsWith("origin/")) return trimmed ? [trimmed] : [];
+  return [trimmed, `origin/${trimmed}`];
 }
 
 export async function buildBranchSnapshot(opts: {
@@ -249,7 +316,9 @@ export async function buildBranchSnapshot(opts: {
   branchForFreshness: string;
   artifactsLanguage: AgentplaneConfig["artifacts_language"];
 }): Promise<PrArtifactSnapshot> {
-  const worktreePath = await findWorktreeForBranch(opts.resolved.gitRoot, opts.branchForFreshness);
+  const worktreePath = opts.branchForFreshness.startsWith("origin/")
+    ? null
+    : await findWorktreeForBranch(opts.resolved.gitRoot, opts.branchForFreshness);
   const texts: PrArtifactTexts = {
     metaText: await readPrArtifactFromBranch({
       resolved: opts.resolved,
