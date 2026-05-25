@@ -32,7 +32,13 @@ async function readJsonIfExists(p) {
 
 function resolveGitHead(cwd) {
   try {
-    return execFileSync("git", ["rev-parse", "HEAD"], { cwd, encoding: "utf8" }).trim() || null;
+    return (
+      execFileSync("git", ["rev-parse", "HEAD"], {
+        cwd,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      }).trim() || null
+    );
   } catch {
     return null;
   }
@@ -41,13 +47,37 @@ function resolveGitHead(cwd) {
 function listGitPaths(cwd, args, options = {}) {
   const trimLines = options.trimLines ?? true;
   try {
-    const out = execFileSync("git", args, { cwd, encoding: "utf8" });
+    const out = execFileSync("git", args, {
+      cwd,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
     return out
       .split(/\r?\n/u)
       .map((line) => (trimLines ? line.trim() : line))
       .filter(Boolean);
   } catch {
     return [];
+  }
+}
+
+function tryListGitPaths(cwd, args, options = {}) {
+  const trimLines = options.trimLines ?? true;
+  try {
+    const out = execFileSync("git", args, {
+      cwd,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+    return {
+      ok: true,
+      paths: out
+        .split(/\r?\n/u)
+        .map((line) => (trimLines ? line.trim() : line))
+        .filter(Boolean),
+    };
+  } catch {
+    return { ok: false, paths: [] };
   }
 }
 
@@ -71,6 +101,25 @@ function workingTreeChangedPaths(cwd, watchedPaths) {
   );
 }
 
+function tryWorkingTreeChangedPaths(cwd, watchedPaths) {
+  const result = tryListGitPaths(
+    cwd,
+    ["status", "--porcelain", "--untracked-files=all", "--", ...watchedPaths],
+    { trimLines: false },
+  );
+  return {
+    ok: result.ok,
+    paths: uniqueSorted(
+      result.paths
+        .map((line) => {
+          const normalized = String(line ?? "");
+          return normalized.length > 3 ? normalized.slice(3).trim() : "";
+        })
+        .filter((filePath) => Boolean(filePath) && isRuntimeRelevantWatchedFile(filePath)),
+    ),
+  };
+}
+
 function committedChangedPathsSince(cwd, fromGitHead, watchedPaths) {
   if (!fromGitHead) return [];
   return uniqueSorted(
@@ -82,6 +131,21 @@ function committedChangedPathsSince(cwd, fromGitHead, watchedPaths) {
       ...watchedPaths,
     ]).filter((filePath) => isRuntimeRelevantWatchedFile(filePath)),
   );
+}
+
+function tryCommittedChangedPathsSince(cwd, fromGitHead, watchedPaths) {
+  if (!fromGitHead) return { ok: false, paths: [] };
+  const result = tryListGitPaths(cwd, [
+    "diff",
+    "--name-only",
+    `${fromGitHead}..HEAD`,
+    "--",
+    ...watchedPaths,
+  ]);
+  return {
+    ok: result.ok,
+    paths: uniqueSorted(result.paths.filter((filePath) => isRuntimeRelevantWatchedFile(filePath))),
+  };
 }
 
 async function fileMtimeMs(p) {
@@ -144,11 +208,20 @@ export async function isPackageBuildFresh(packageRoot, options = {}) {
   const currentHead = resolveGitHead(packageRoot);
   const manifestSnapshot = parseManifestSnapshot(manifest);
   if (manifestSnapshot) {
+    const committedQuickCheck = tryCommittedChangedPathsSince(
+      packageRoot,
+      manifest.git_head,
+      manifestSnapshot.watchedPaths,
+    );
+    const workingTreeQuickCheck = tryWorkingTreeChangedPaths(
+      packageRoot,
+      manifestSnapshot.watchedPaths,
+    );
     const changedPaths = uniqueSorted([
-      ...committedChangedPathsSince(packageRoot, manifest.git_head, manifestSnapshot.watchedPaths),
-      ...workingTreeChangedPaths(packageRoot, manifestSnapshot.watchedPaths),
+      ...committedQuickCheck.paths,
+      ...workingTreeQuickCheck.paths,
     ]);
-    if (changedPaths.length === 0) {
+    if (committedQuickCheck.ok && workingTreeQuickCheck.ok && changedPaths.length === 0) {
       if (manifest.git_head && currentHead && manifest.git_head !== currentHead) {
         return { ok: true, reason: "fresh_after_git_quick_check", changedPaths: [] };
       }
