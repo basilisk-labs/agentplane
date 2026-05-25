@@ -11,6 +11,10 @@ import {
 import { workStartCommand } from "./work-start-command.js";
 
 import { loadBackendTask, loadCommandContext, type CommandContext } from "./task-backend.js";
+import {
+  buildRouteSourceConfidenceBase,
+  type SourceConfidence as RouteSourceConfidence,
+} from "./source-confidence.js";
 
 type RouteBlocker = {
   code: string;
@@ -24,13 +28,6 @@ type RouteRepairStep = {
   command: string | null;
   summary: string;
   mutates: boolean;
-};
-
-type RouteSourceConfidence = {
-  source: string;
-  freshness: string;
-  confidence: string;
-  note?: string;
 };
 
 type RouteAmbiguity = {
@@ -455,60 +452,10 @@ function buildRouteSourceConfidence(opts: {
   remoteEnabled: boolean;
   remoteResolved: boolean;
 }): TaskRouteDecision["sourceConfidence"] {
-  const routeFreshness = opts.remoteResolved ? "remote_live" : "computed_local";
-  const routeConfidence = opts.remoteResolved ? "medium" : opts.remoteEnabled ? "medium" : "high";
-  const routeNote = opts.remoteResolved
-    ? "route includes provider-derived PR/check state"
-    : opts.remoteEnabled
-      ? "remote lookup was requested but no provider state was available"
-      : "route excludes hosted PR/check/review lookups";
-  const remoteFreshness = opts.remoteResolved ? "remote_live" : "remote_skipped";
-  const remoteConfidence = opts.remoteResolved ? "medium" : opts.remoteEnabled ? "low" : "skipped";
-  const remoteNote = opts.remoteResolved
-    ? "remote provider state fetched"
-    : opts.remoteEnabled
-      ? "remote lookup was requested but route resolution fell back to local data"
-      : "remote lookup skipped by default";
-  return {
-    task: {
-      source: "task_backend",
-      freshness: "live_local",
-      confidence: "high",
-    },
-    workflow: {
-      source: "local_git",
-      freshness: "live_local",
-      confidence: "high",
-    },
-    route: {
-      source: "local_git",
-      freshness: routeFreshness,
-      confidence: routeConfidence,
-      note: routeNote,
-    },
-    next_action: {
-      source: "local_git",
-      freshness: routeFreshness,
-      confidence: routeConfidence,
-    },
-    blockers: {
-      source: "local_git",
-      freshness: routeFreshness,
-      confidence: routeConfidence,
-    },
-    batch_ownership: {
-      source: "pr_artifact",
-      freshness: "live_local",
-      confidence: "medium",
-      note: "derived from local branch_pr PR metadata",
-    },
-    remote: {
-      source: "remote_provider",
-      freshness: remoteFreshness,
-      confidence: remoteConfidence,
-      note: remoteNote,
-    },
-  };
+  return buildRouteSourceConfidenceBase({
+    ...opts,
+    batchOwnershipSource: "pr_artifact",
+  });
 }
 
 export async function buildTaskRouteDecision(opts: {

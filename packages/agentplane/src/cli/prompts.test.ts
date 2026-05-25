@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { captureStdIO } from "@agentplane/testkit";
-import { promptChoice, promptInput, promptYesNo } from "./prompts.js";
+import { confirmPrompt, selectPrompt, textPrompt } from "./prompts.js";
 
 const mocks = vi.hoisted(() => {
   const state = { nextAnswer: "" };
@@ -99,64 +99,64 @@ describe("cli/prompts", () => {
     }
   });
 
-  it("promptChoice returns default on empty input", async () => {
+  it("selectPrompt returns default on empty input", async () => {
     mocks.state.nextAnswer = "   ";
 
-    await expect(promptChoice("Pick", ["a", "b"], "a")).resolves.toBe("a");
+    await expect(selectPrompt("Pick", ["a", "b"], "a")).resolves.toBe("a");
     expect(mocks.createInterfaceMock).toHaveBeenCalledOnce();
     expect(mocks.closeMock).toHaveBeenCalledOnce();
   });
 
-  it("promptChoice returns selected value when valid", async () => {
+  it("selectPrompt returns selected value when valid", async () => {
     mocks.state.nextAnswer = "b";
 
-    await expect(promptChoice("Pick", ["a", "b"], "a")).resolves.toBe("b");
+    await expect(selectPrompt("Pick", ["a", "b"], "a")).resolves.toBe("b");
   });
 
-  it("promptChoice warns and returns default on invalid choice", async () => {
+  it("selectPrompt warns and returns default on invalid choice", async () => {
     mocks.state.nextAnswer = "nope";
     const io = captureStdIO();
 
-    await expect(promptChoice("Pick", ["a", "b"], "a")).resolves.toBe("a");
+    await expect(selectPrompt("Pick", ["a", "b"], "a")).resolves.toBe("a");
     io.restore();
 
     expect(io.stdout).toContain("Invalid choice; using default a");
   });
 
-  it("promptYesNo uses default when input is empty", async () => {
+  it("confirmPrompt uses default when input is empty", async () => {
     mocks.state.nextAnswer = "";
 
-    await expect(promptYesNo("Continue", true)).resolves.toBe(true);
-    await expect(promptYesNo("Continue", false)).resolves.toBe(false);
+    await expect(confirmPrompt("Continue", true)).resolves.toBe(true);
+    await expect(confirmPrompt("Continue", false)).resolves.toBe(false);
   });
 
-  it("promptYesNo parses affirmative and negative inputs", async () => {
+  it("confirmPrompt parses affirmative and negative inputs", async () => {
     mocks.state.nextAnswer = "yes";
-    await expect(promptYesNo("Continue", false)).resolves.toBe(true);
+    await expect(confirmPrompt("Continue", false)).resolves.toBe(true);
 
     mocks.state.nextAnswer = "no";
-    await expect(promptYesNo("Continue", true)).resolves.toBe(false);
+    await expect(confirmPrompt("Continue", true)).resolves.toBe(false);
   });
 
-  it("promptYesNo falls back to default for invalid input", async () => {
+  it("confirmPrompt falls back to default for invalid input", async () => {
     mocks.state.nextAnswer = "definitely";
-    await expect(promptYesNo("Continue", true)).resolves.toBe(true);
+    await expect(confirmPrompt("Continue", true)).resolves.toBe(true);
 
     mocks.state.nextAnswer = "definitely";
-    await expect(promptYesNo("Continue", false)).resolves.toBe(false);
+    await expect(confirmPrompt("Continue", false)).resolves.toBe(false);
   });
 
-  it("promptInput trims input", async () => {
+  it("textPrompt trims input", async () => {
     mocks.state.nextAnswer = "  hello ";
 
-    await expect(promptInput("Name: ")).resolves.toBe("hello");
+    await expect(textPrompt("Name: ")).resolves.toBe("hello");
   });
 
   it("uses clack select in TTY mode", async () => {
     setTty(true);
     mocks.selectMock.mockResolvedValue("b");
 
-    await expect(promptChoice("Pick", ["a", "b"], "a")).resolves.toBe("b");
+    await expect(selectPrompt("Pick", ["a", "b"], "a")).resolves.toBe("b");
     expect(mocks.selectMock).toHaveBeenCalledWith({
       message: "Pick",
       options: [
@@ -172,7 +172,7 @@ describe("cli/prompts", () => {
     setTty(true);
     mocks.confirmMock.mockResolvedValue(false);
 
-    await expect(promptYesNo("Continue", true)).resolves.toBe(false);
+    await expect(confirmPrompt("Continue", true)).resolves.toBe(false);
     expect(mocks.confirmMock).toHaveBeenCalledWith({
       message: "Continue",
       initialValue: true,
@@ -184,7 +184,7 @@ describe("cli/prompts", () => {
     setTty(true);
     mocks.textMock.mockResolvedValue("  hello ");
 
-    await expect(promptInput("Name")).resolves.toBe("hello");
+    await expect(textPrompt("Name")).resolves.toBe("hello");
     expect(mocks.textMock).toHaveBeenCalledWith({ message: "Name" });
     expect(mocks.createInterfaceMock).not.toHaveBeenCalled();
   });
@@ -194,7 +194,7 @@ describe("cli/prompts", () => {
     process.env.AGENTPLANE_PROMPTS = "plain";
     mocks.state.nextAnswer = "b";
 
-    await expect(promptChoice("Pick", ["a", "b"], "a")).resolves.toBe("b");
+    await expect(selectPrompt("Pick", ["a", "b"], "a")).resolves.toBe("b");
     expect(mocks.selectMock).not.toHaveBeenCalled();
     expect(mocks.createInterfaceMock).toHaveBeenCalledOnce();
   });
@@ -205,9 +205,9 @@ describe("cli/prompts", () => {
     mocks.confirmMock.mockResolvedValue(mocks.cancelSymbol);
     mocks.textMock.mockResolvedValue(mocks.cancelSymbol);
 
-    await expect(promptChoice("Pick", ["a", "b"], "a")).resolves.toBe("a");
-    await expect(promptYesNo("Continue", true)).resolves.toBe(true);
-    await expect(promptInput("Name")).resolves.toBe("");
+    await expect(selectPrompt("Pick", ["a", "b"], "a")).resolves.toBe("a");
+    await expect(confirmPrompt("Continue", true)).resolves.toBe(true);
+    await expect(textPrompt("Name")).resolves.toBe("");
     expect(mocks.cancelMock).toHaveBeenCalledTimes(3);
   });
 });
