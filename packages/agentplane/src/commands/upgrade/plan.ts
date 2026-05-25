@@ -4,6 +4,8 @@ import path from "node:path";
 import { fileExists, getPathKind } from "../../cli/fs-utils.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
+import { renderMarkdownPromptTemplate } from "../../agents/agents-template.js";
+import { renderPolicyGatewayTemplateText } from "../../shared/policy-gateway.js";
 
 import {
   INCIDENTS_POLICY_PATH,
@@ -46,6 +48,21 @@ async function resolvePolicyGatewayRel(gitRoot: string): Promise<"AGENTS.md" | "
   if (await fileExists(path.join(gitRoot, "AGENTS.md"))) return "AGENTS.md";
   if (await fileExists(path.join(gitRoot, "CLAUDE.md"))) return "CLAUDE.md";
   return "AGENTS.md";
+}
+
+function renderIncomingMarkdownAsset(opts: {
+  rel: string;
+  sourceRel: string;
+  data: Buffer;
+}): Buffer {
+  let source = opts.data.toString("utf8");
+  if (opts.rel === "AGENTS.md" || opts.rel === "CLAUDE.md") {
+    source = renderPolicyGatewayTemplateText(source, opts.rel);
+  }
+  const rendered = renderMarkdownPromptTemplate(source, {
+    source_ref: `upgrade:${opts.sourceRel}`,
+  });
+  return Buffer.from(rendered.contents, "utf8");
 }
 
 export async function planManagedUpgrade(opts: {
@@ -125,6 +142,13 @@ export async function planManagedUpgrade(opts: {
     if (!incomingData) {
       if (entry.required) missingRequired.push(rel);
       continue;
+    }
+    if (entry.type === "markdown") {
+      incomingData = renderIncomingMarkdownAsset({
+        rel,
+        sourceRel: sourceCandidates[0] ?? sourceRelRaw,
+        data: incomingData,
+      });
     }
 
     let existingBuf: Buffer | null = null;

@@ -110,6 +110,48 @@ describe("runCli", () => {
     expect(subject).toContain("upgrade: apply framework");
   });
 
+  it("upgrade renders managed markdown assets before writing installed policy files", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "policy", "dod.code.md"), "legacy policy\n");
+
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "policy/dod.code.md": [
+        '<!-- ap:fragment id="policy.dod.code.body.dod.code" slot="body" mutability="replaceable" -->',
+        "",
+        "# DoD: code",
+        "",
+        "Rendered policy body.",
+        "<!-- /ap:fragment -->",
+      ].join("\n"),
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "upgrade",
+        "--bundle",
+        bundlePath,
+        "--checksum",
+        checksumPath,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const policyText = await readFile(
+      path.join(root, ".agentplane", "policy", "dod.code.md"),
+      "utf8",
+    );
+    expect(policyText).toContain("Rendered policy body.");
+    expect(policyText).not.toContain("ap:fragment");
+  });
+
   it(
     "upgrade includes runtime .gitignore cache lines in the upgrade commit",
     { timeout: WORKFLOW_RUNTIME_ARTIFACTS_TIMEOUT_MS },
