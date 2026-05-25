@@ -1,10 +1,11 @@
 ---
 id: "202605251929-JZ4VPD"
 title: "Optimize branch_pr pr check artifact fallback"
-status: "DOING"
+result_summary: "Merged via PR #4148."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.ts"
   findings:
     - "Addressed review concern: remote-only branch snapshots are no longer marked fresh unconditionally; the regression now builds a fresh remote packet and existing stale-local validation remains strict."
-commit: null
+commit:
+  hash: "23c0510544b0b427e01674ef30a2366941b87b81"
+  message: "Merge pull request #4148 from basilisk-labs/task/202605251929-JZ4VPD/optimize-branch-pr-pr-check-artifact-fallback"
 comments:
   -
     author: "CODER"
     body: "Start: Inspect and optimize branch_pr pr check handling for base-checkout missing PR artifacts while preserving strict failures for genuinely absent task PR metadata."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4148 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: pr check now reads branch_pr PR artifacts from a remote-only task branch when the base checkout lacks the local PR packet, while existing stale-local and invalid-artifact checks remain strict. Checks: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --runInBand; bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs; targeted eslint/prettier on changed files. Full lint:core was attempted but terminated after hanging on whole-repo ESLint processes."
+  -
+    type: "status"
+    at: "2026-05-25T20:31:53.128Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4148 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-25T19:55:06.472Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-25T20:31:53.136Z"
+doc_updated_by: "INTEGRATOR"
 description: "Verify and optimize branch_pr pr check behavior when base checkout lacks branch-local task PR artifacts that exist on the task branch and are expected to land after GitHub PR merge."
 sections:
   Summary: |-
