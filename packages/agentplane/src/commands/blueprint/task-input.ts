@@ -9,51 +9,16 @@ import type {
   TaskKind,
   WorkflowMode,
 } from "../../blueprints/model.js";
+import {
+  BLUEPRINT_REQUEST_VALUES,
+  MUTATION_SCOPE_VALUES,
+  RISK_FLAG_VALUES,
+  TASK_KIND_VALUES,
+} from "../../backends/task-backend/shared/domain-values.js";
 
 const CODE_TAGS = ["code", "backend", "frontend", "cli"] as const;
 const DOCS_TAGS = ["docs", "documentation", "roadmap"] as const;
 const OPS_TAGS = ["ops", "deploy", "config"] as const;
-const TASK_KIND_VALUES = new Set([
-  "analysis",
-  "content",
-  "docs",
-  "code",
-  "release",
-  "ops",
-  "context",
-]);
-const MUTATION_SCOPE_VALUES = new Set([
-  "none",
-  "docs",
-  "code",
-  "release",
-  "ops",
-  "context",
-  "unknown",
-]);
-const RISK_FLAG_VALUES = new Set([
-  "network",
-  "credentials",
-  "deploy",
-  "publish",
-  "merge",
-  "security",
-  "external_system",
-]);
-const BLUEPRINT_REQUEST_VALUES = new Set([
-  "analysis.light",
-  "content.light",
-  "docs.change",
-  "code.direct",
-  "code.branch_pr",
-  "performance.benchmark",
-  "quality.regression",
-  "context.assimilation",
-  "context.maximum_assimilation",
-  "post_run.improvement_review",
-  "release.strict",
-  "ops.approval",
-]);
 
 function hasAny(tags: Set<string>, candidates: readonly string[]): boolean {
   return candidates.some((candidate) => tags.has(candidate));

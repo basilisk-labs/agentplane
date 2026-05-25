@@ -92,7 +92,3 @@ export async function textPrompt(prompt: string): Promise<string> {
   rl.close();
   return answer.trim();
 }
-
-export const promptChoice = selectPrompt;
-export const promptYesNo = confirmPrompt;
-export const promptInput = textPrompt;

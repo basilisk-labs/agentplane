@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202605251818-28Z5H1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-25T18:43:19.070Z",
+  "verdict": "pass",
+  "summary": "Low-risk redundancy refactor completed in branch_pr worktree. Local verification passed, clone metrics improved, knip baseline stayed unchanged, and PR #4145 hosted checks are stable-green on head 65cd7a0eb.",
+  "evaluated_sha": "5d1d48cf601e7ffce686af439159562a8ea8d977",
+  "blueprint_digest": "9fd821cb546f4b86fe783224e49ba7bec93f2ab63b182badd824738f2f3803da",
+  "findings": [
+    "No blocking findings. Residual risk is limited to unchanged existing knip baseline debt and intentionally deferred broader command-catalog/test-fixture decomposition."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605251818-28Z5H1/README.md",
+    "https://github.com/basilisk-labs/agentplane/pull/4145"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -1,9 +1,14 @@
-import { execFileSync } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
+import {
+  findPlatformAsset,
+  readJson,
+  requireString,
+  runDistributionGenerator,
+} from "../lib/release-distribution-render.mjs";
 import { defineScript, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
 
 const DEFAULT_MANIFEST_PATH = ".agentplane/.release/publish/distribution/release-distribution.json";
@@ -39,29 +44,6 @@ function parseArgs(argv, repoRoot) {
   };
 }
 
-async function readJson(filePath) {
-  return JSON.parse(await readFile(filePath, "utf8"));
-}
-
-function requireString(value, label) {
-  const text = typeof value === "string" ? value.trim() : "";
-  if (!text) throw new Error(`Missing ${label}`);
-  return text;
-}
-
-function findPlatformAsset(manifest, platform, arch) {
-  const asset = (manifest.bunAssets ?? manifest.platformAssets ?? []).find(
-    (entry) =>
-      entry?.kind === "bun_executable" && entry?.platform === platform && entry?.arch === arch,
-  );
-  if (!asset) throw new Error(`Missing Bun platform asset: ${platform}-${arch}`);
-  return {
-    url: requireString(asset.url, `${platform}-${arch} Bun URL`),
-    sha256: requireString(asset.sha256, `${platform}-${arch} Bun sha256`),
-    name: requireString(asset.name, `${platform}-${arch} Bun asset name`),
-  };
-}
-
 function renderScoopManifest(manifest) {
   const version = requireString(manifest.version, "release version");
   const win32X64 = findPlatformAsset(manifest, "win32", "x64");
@@ -89,19 +71,6 @@ function renderScoopManifest(manifest) {
     },
     bin: [[String.raw`bin\agentplane.exe`, "agentplane"]],
   };
-}
-
-function runDistributionGenerator(repoRoot, outDir) {
-  execFileSync(
-    "node",
-    ["scripts/generate-release-distribution.mjs", "--out", outDir, "--standalone-check-mode"],
-    {
-      cwd: repoRoot,
-      stdio: "ignore",
-      env: process.env,
-    },
-  );
-  return path.join(outDir, "release-distribution.json");
 }
 
 async function renderScoop(repoRoot, args) {

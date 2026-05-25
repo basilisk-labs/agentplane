@@ -2,6 +2,7 @@ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import { buildRouteSourceConfidenceBase } from "../shared/source-confidence.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
 import {
@@ -156,20 +157,11 @@ function buildSourceConfidence(opts: {
   snapshotState: string;
   verifyStepsQuality: TaskBrief["verify_steps"]["quality"];
 }): TaskBrief["source_confidence"] {
-  const routeFreshness = opts.remoteResolved ? "remote_live" : "computed_local";
-  const routeConfidence = opts.remoteResolved ? "medium" : opts.remoteEnabled ? "medium" : "high";
-  const routeNote = opts.remoteResolved
-    ? "route includes provider-derived PR/check state"
-    : opts.remoteEnabled
-      ? "remote lookup was requested but no provider state was available"
-      : "route excludes hosted PR/check/review lookups";
-  const remoteFreshness = opts.remoteResolved ? "remote_live" : "remote_skipped";
-  const remoteConfidence = opts.remoteResolved ? "medium" : opts.remoteEnabled ? "low" : "skipped";
-  const remoteNote = opts.remoteResolved
-    ? "remote provider state fetched"
-    : opts.remoteEnabled
-      ? "remote lookup was requested but route resolution fell back to local data"
-      : "remote lookup skipped by default";
+  const routeSourceConfidence = buildRouteSourceConfidenceBase({
+    batchOwnershipSource: "local_git",
+    remoteEnabled: opts.remoteEnabled,
+    remoteResolved: opts.remoteResolved,
+  });
   const snapshotConfidence =
     opts.snapshotState === "current" ? "high" : opts.snapshotState === "invalid" ? "low" : "medium";
   const snapshotFreshness = opts.snapshotState === "missing" ? "computed_local" : "cached_artifact";
@@ -197,38 +189,7 @@ function buildSourceConfidence(opts: {
       freshness: "static",
       confidence: "high",
     },
-    task: {
-      source: "task_backend",
-      freshness: "live_local",
-      confidence: "high",
-    },
-    workflow: {
-      source: "local_git",
-      freshness: "live_local",
-      confidence: "high",
-    },
-    route: {
-      source: "local_git",
-      freshness: routeFreshness,
-      confidence: routeConfidence,
-      note: routeNote,
-    },
-    next_action: {
-      source: "local_git",
-      freshness: routeFreshness,
-      confidence: routeConfidence,
-    },
-    blockers: {
-      source: "local_git",
-      freshness: routeFreshness,
-      confidence: routeConfidence,
-    },
-    batch_ownership: {
-      source: "local_git",
-      freshness: "live_local",
-      confidence: "medium",
-      note: "derived from local branch_pr PR metadata",
-    },
+    ...routeSourceConfidence,
     verify_steps: {
       source: "task_doc",
       freshness: "live_local",
@@ -263,10 +224,7 @@ function buildSourceConfidence(opts: {
       confidence: opts.blueprintError ? "low" : "high",
     },
     remote: {
-      source: "remote_provider",
-      freshness: remoteFreshness,
-      confidence: remoteConfidence,
-      note: remoteNote,
+      ...routeSourceConfidence.remote,
     },
   };
 }

@@ -4,40 +4,12 @@ import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
+import {
+  BLUEPRINT_REQUEST_VALUES,
+  MUTATION_SCOPE_VALUES,
+  TASK_KIND_VALUES,
+} from "../../backends/task-backend/shared/domain-values.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
-
-const TASK_KIND_VALUES = new Set([
-  "analysis",
-  "content",
-  "docs",
-  "code",
-  "release",
-  "ops",
-  "context",
-]);
-const MUTATION_SCOPE_VALUES = new Set([
-  "none",
-  "docs",
-  "code",
-  "release",
-  "ops",
-  "context",
-  "unknown",
-]);
-const BLUEPRINT_REQUEST_VALUES = new Set([
-  "analysis.light",
-  "content.light",
-  "docs.change",
-  "code.direct",
-  "code.branch_pr",
-  "performance.benchmark",
-  "quality.regression",
-  "context.assimilation",
-  "context.maximum_assimilation",
-  "post_run.improvement_review",
-  "release.strict",
-  "ops.approval",
-]);
 
 function stringValue<T extends string>(value: unknown, allowed: Set<string>): T | undefined {
   return typeof value === "string" && allowed.has(value) ? (value as T) : undefined;
