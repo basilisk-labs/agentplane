@@ -1,10 +1,11 @@
 ---
 id: "202605251957-4ABD2H"
 title: "Optimize CLI startup fast paths"
-status: "DOING"
+result_summary: "Merged via PR #4152."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented runtime freshness optimization and ran focused checks. typecheck, focused dist-guard/repo-local-handoff tests, targeted eslint, framework bootstrap, and policy routing passed. bench:cli:time:check still fails on this local machine but shows the changed path avoids dirty runtime snapshot hashing only after commit/bootstrap; residual startup cost remains in dist import/project command execution and is recorded as follow-up risk."
   attempts: 0
-commit: null
+commit:
+  hash: "bade1ada05c8f6ffe17a12d2c4ed6ebec81f02bf"
+  message: "Merge pull request #4152 from basilisk-labs/task/202605251957-4ABD2H/optimize-cli-startup-fast-paths"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved CLI startup fast-path optimization in the dedicated branch_pr worktree, scoped to dispatch/loading behavior and benchmark-backed verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4152 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented runtime freshness optimization and ran focused checks. typecheck, focused dist-guard/repo-local-handoff tests, targeted eslint, framework bootstrap, and policy routing passed. bench:cli:time:check still fails on this local machine but shows the changed path avoids dirty runtime snapshot hashing only after commit/bootstrap; residual startup cost remains in dist import/project command execution and is recorded as follow-up risk."
+  -
+    type: "status"
+    at: "2026-05-25T20:56:51.324Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4152 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-25T20:19:58.958Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-25T20:56:51.329Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reduce AgentPlane CLI startup overhead for fast commands such as version/help/quickstart by avoiding unnecessary project, config, and runtime registry loading where command dispatch metadata says it is not required."
 sections:
   Summary: |-
