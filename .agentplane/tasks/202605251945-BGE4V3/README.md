@@ -4,7 +4,7 @@ title: "Normalize stale branch_pr integration queue entries"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,26 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/commands/integrate-queue-recovery.test.ts packages/agentplane/src/commands/pr/integrate/queue-state.test.ts; Result: pass; Evidence: 2 files, 15 tests passed. Command: bunx vitest run packages/agentplane/src/commands/integrate-queue.spec.test.ts packages/agentplane/src/commands/integrate-queue-recovery.test.ts; Result: pass; Evidence: 2 files, 9 tests passed. Command: ap integrate queue list after rebuild; Result: pass; Evidence: stale DONE queue entries normalized, output: No integration queue entries found. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: ap doctor; Result: pass; Evidence: doctor OK, errors=0 warnings=0. Extra checks: bun run --filter=agentplane typecheck and prettier --check passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-25T19:57:37.902Z"
+  updated_by: "EVALUATOR"
+  note: "Queue hygiene change is scoped to terminal stale integration queue entries and keeps claimed lanes protected."
+  evaluated_sha: "af745d9e203b9eb289c6a6c3298e3436ba08f982"
+  blueprint_digest: "f2497afc7acd18280ff4d74040ed27c3edc57db1b309c276a4fb43c853be6105"
+  evidence_refs:
+    - ".agentplane/tasks/202605251945-BGE4V3/README.md"
+    - ".agentplane/tasks/202605251945-BGE4V3/quality/20260525-195737902-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605251945-BGE4V3/quality/20260525-195737902-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605251945-BGE4V3/quality/20260525-195737902-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605251945-BGE4V3/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/integrate-queue.command.ts"
+    - "packages/agentplane/src/commands/integrate-queue-recovery.ts"
+    - "packages/agentplane/src/commands/integrate-queue-recovery.test.ts"
+    - "bunx vitest run packages/agentplane/src/commands/integrate-queue-recovery.test.ts packages/agentplane/src/commands/pr/integrate/queue-state.test.ts"
+    - "ap doctor"
+  findings:
+    - "PASS: integrate queue list now normalizes non-claimed DONE task entries to done before rendering, and keeps claimed active lanes out of automatic terminal recovery."
 commit: null
 comments:
   -
