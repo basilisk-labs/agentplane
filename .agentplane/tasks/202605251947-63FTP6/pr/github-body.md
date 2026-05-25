@@ -15,8 +15,20 @@ Implement the first safe refactoring slice from the duplicate/redundancy audit: 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Local verification passed. Command: bun run test:project -- agentplane
+packages/agentplane/src/commands/task/verify-record.unit.test.ts
+packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts
+packages/agentplane/src/commands/release/release-task-evidence-script.test.ts. Result: pass, 3 files
+and 30 tests passed. Command: bun run typecheck. Result: pass. Command: bun run lint:core --
+packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs
+scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs. Result:
+pass. Command: bun run clone:report. Result: pass; clones 89->86 and duplicatedLines 1403->1311
+versus pre-change audit.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
