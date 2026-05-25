@@ -19,14 +19,8 @@ Fix the task list/task active selector path so active TODO tasks visible to dire
 - Note:
 
 ```text
-Follow-up after review: preserved native projection fast path for done-only rows and added no-active
-selector guidance instead of a canonical fallback scan. Command: bun run test:project -- cli-core
-packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts
-packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; Result: pass; Evidence: 2
-files, 27 tests passed. Command: bun run test:project -- agentplane
-packages/agentplane/src/commands/shared/task-backend.test.ts; Result: pass; Evidence: 1 file, 12
-tests passed. Command: bun run typecheck, bun run format:check, node
-.agentplane/policy/check-routing.mjs, ap doctor; Result: pass.
+Verified: aligned finish close-commit tests with evaluator run quality-report gate; focused
+cli-core/task-backend tests, typecheck, format:check, policy routing, and doctor passed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -38,10 +32,11 @@ tests passed. Command: bun run typecheck, bun run format:check, node
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.tasks.active.test.ts      | 34 ++++++++++++++++++
- .../src/commands/shared/task-backend.test.ts       | 41 ++++++++++++++++++++++
- .../agentplane/src/commands/task/active.command.ts |  5 +++
- 3 files changed, 80 insertions(+)
+ ...-cli.core.lifecycle.finish-close-commit.test.ts | 53 +++++++++++++++-------
+ .../src/cli/run-cli.core.tasks.active.test.ts      | 34 ++++++++++++++
+ .../src/commands/shared/task-backend.test.ts       | 41 +++++++++++++++++
+ .../agentplane/src/commands/task/active.command.ts |  5 ++
+ 4 files changed, 116 insertions(+), 17 deletions(-)
 ```
 
 </details>

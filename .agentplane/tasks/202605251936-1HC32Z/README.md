@@ -4,7 +4,7 @@ title: "Fix active task selector projection fallback"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -19,27 +19,29 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-25T20:12:25.817Z"
+  updated_at: "2026-05-25T20:50:04.734Z"
   updated_by: "CODER"
-  note: "Follow-up after review: preserved native projection fast path for done-only rows and added no-active selector guidance instead of a canonical fallback scan. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; Result: pass; Evidence: 2 files, 27 tests passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/shared/task-backend.test.ts; Result: pass; Evidence: 1 file, 12 tests passed. Command: bun run typecheck, bun run format:check, node .agentplane/policy/check-routing.mjs, ap doctor; Result: pass."
+  note: "Verified: aligned finish close-commit tests with evaluator run quality-report gate; focused cli-core/task-backend tests, typecheck, format:check, policy routing, and doctor passed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-25T19:56:04.554Z"
+  updated_at: "2026-05-25T20:51:46.629Z"
   updated_by: "EVALUATOR"
-  note: "Projection fallback fix is scoped and verified."
-  evaluated_sha: "4c37ee09bfcd1fad435260618801e87dd643e289"
+  note: "Reviewed selector UX fix plus finish-close-commit test alignment after hosted verify-routed failure."
+  evaluated_sha: "49d8f5cf8e3ae45f01ee6097ea967c82a0766144"
   blueprint_digest: "51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642"
   evidence_refs:
     - ".agentplane/tasks/202605251936-1HC32Z/README.md"
-    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-195604554-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-195604554-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-195604554-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-205146629-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-205146629-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605251936-1HC32Z/quality/20260525-205146629-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605251936-1HC32Z/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts"
     - "packages/agentplane/src/commands/shared/task-backend.test.ts"
-    - "packages/agentplane/src/commands/shared/task-backend.ts"
   findings:
-    - "listTaskSummariesMemo now falls back to canonical summaries when a filtered native projection returns only DONE dependency rows for an active-status request, preventing task list/task active from silently hiding active tasks under stale projection state."
+    - "Active-task UX remains scoped to no-active guidance and does not add canonical-scan fallback to the projection fast path."
+    - "finish-close-commit tests now record structured evaluator quality reports and keep dirty-tree preflight isolated from .gitignore bootstrap churn."
 commit: null
 comments:
   -
@@ -65,8 +67,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Follow-up after review: preserved native projection fast path for done-only rows and added no-active selector guidance instead of a canonical fallback scan. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; Result: pass; Evidence: 2 files, 27 tests passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/shared/task-backend.test.ts; Result: pass; Evidence: 1 file, 12 tests passed. Command: bun run typecheck, bun run format:check, node .agentplane/policy/check-routing.mjs, ap doctor; Result: pass."
+  -
+    type: "verify"
+    at: "2026-05-25T20:50:04.734Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: aligned finish close-commit tests with evaluator run quality-report gate; focused cli-core/task-backend tests, typecheck, format:check, policy routing, and doctor passed."
 doc_version: 3
-doc_updated_at: "2026-05-25T20:12:25.887Z"
+doc_updated_at: "2026-05-25T20:50:04.839Z"
 doc_updated_by: "CODER"
 description: "Fix the task list/task active selector path so active TODO tasks visible to direct task lookup are not silently hidden by stale or incomplete projection state."
 sections:
@@ -118,6 +126,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-25T19:54:30.548Z, excerpt_hash=sha256:6ce1fcafea08f8fd4d18aa0367e67bd68ffdc8e570884218544b224c999542ad
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605251936-1HC32Z-fix-active-task-selector-projection-fallback/.agentplane/tasks/202605251936-1HC32Z/blueprint/resolved-snapshot.json
+    - old_digest: 51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642
+    - current_digest: 51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605251936-1HC32Z
+
+    ### 2026-05-25T20:50:04.734Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: aligned finish close-commit tests with evaluator run quality-report gate; focused cli-core/task-backend tests, typecheck, format:check, policy routing, and doctor passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-25T20:12:25.887Z, excerpt_hash=sha256:6ce1fcafea08f8fd4d18aa0367e67bd68ffdc8e570884218544b224c999542ad
 
     Details:
 
@@ -193,6 +220,25 @@ Note: Follow-up after review: preserved native projection fast path for done-onl
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-25T19:54:30.548Z, excerpt_hash=sha256:6ce1fcafea08f8fd4d18aa0367e67bd68ffdc8e570884218544b224c999542ad
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605251936-1HC32Z-fix-active-task-selector-projection-fallback/.agentplane/tasks/202605251936-1HC32Z/blueprint/resolved-snapshot.json
+- old_digest: 51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642
+- current_digest: 51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605251936-1HC32Z
+
+### 2026-05-25T20:50:04.734Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: aligned finish close-commit tests with evaluator run quality-report gate; focused cli-core/task-backend tests, typecheck, format:check, policy routing, and doctor passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-25T20:12:25.887Z, excerpt_hash=sha256:6ce1fcafea08f8fd4d18aa0367e67bd68ffdc8e570884218544b224c999542ad
 
 Details:
 
