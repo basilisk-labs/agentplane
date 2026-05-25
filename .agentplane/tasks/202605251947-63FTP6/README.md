@@ -1,10 +1,11 @@
 ---
 id: "202605251947-63FTP6"
 title: "Reduce low-risk duplicate implementation paths"
-status: "DOING"
+result_summary: "Merged via PR #4150."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "packages/agentplane/src/commands/release/release-task-evidence-script.test.ts"
   findings:
     - "Finding: Confirmed cli/critical/cli-runner.ts is not removable because the critical harness executes it by path; left it intact. Extracted repeated verification finding payload construction and centralized workflow branch-prefix parsing for release/hosted-close scripts. Local checks passed."
-commit: null
+commit:
+  hash: "3fae943b3b3cc3f2dc2f26e741e78af75b09c74a"
+  message: "🧪 63FTP6 task: record quality review"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the approved first refactoring slice in the dedicated worktree; scope is limited to unused CLI cleanup, verification finding helper extraction, and duplicated workflow branch-prefix parser centralization."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4150 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local verification passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts. Result: pass, 3 files and 30 tests passed. Command: bun run typecheck. Result: pass. Command: bun run lint:core -- packages/agentplane/src/commands/task/verify-record.ts scripts/lib/workflow-config.mjs scripts/workflow/prepare-hosted-task-closure.mjs scripts/release/release-task-evidence.mjs. Result: pass. Command: bun run clone:report. Result: pass; clones 89->86 and duplicatedLines 1403->1311 versus pre-change audit."
+  -
+    type: "status"
+    at: "2026-05-25T20:11:48.565Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4150 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-25T20:00:35.305Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-25T20:11:48.572Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement the first safe refactoring slice from the duplicate/redundancy audit: remove confirmed unused CLI code, extract repeated verification finding construction, and centralize small duplicated script/config parsing helpers without changing public CLI behavior."
 sections:
   Summary: |-
