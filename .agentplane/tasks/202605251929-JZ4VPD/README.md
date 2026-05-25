@@ -4,7 +4,7 @@ title: "Optimize branch_pr pr check artifact fallback"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -25,23 +25,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-25T20:01:57.141Z"
+  updated_at: "2026-05-25T20:06:52.914Z"
   updated_by: "EVALUATOR"
-  note: "pr check route-gap fixed with remote-only PR artifact regression split into a focused test file to preserve oversized-test budget."
-  evaluated_sha: "265454d088c42c4b01226f9d377ea210f2b9a52e"
+  note: "pr check remote fallback now preserves freshness checks while reading PR artifacts from remote-tracking task branches."
+  evaluated_sha: "6c617ff834308317ae91cf5f2e18ff6b7c3d3548"
   blueprint_digest: "cc092b3fc4676739bd639bb1db96130b1fb9bbda3d3e0d462299b937ef738d34"
   evidence_refs:
     - ".agentplane/tasks/202605251929-JZ4VPD/README.md"
-    - ".agentplane/tasks/202605251929-JZ4VPD/quality/20260525-200157141-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605251929-JZ4VPD/quality/20260525-200157141-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605251929-JZ4VPD/quality/20260525-200157141-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605251929-JZ4VPD/quality/20260525-200652914-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605251929-JZ4VPD/quality/20260525-200652914-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605251929-JZ4VPD/quality/20260525-200652914-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605251929-JZ4VPD/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-check-remote-artifacts.test.ts"
-    - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts"
     - "packages/agentplane/src/commands/pr/check.ts"
     - "packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.ts"
   findings:
-    - "Validated base-checkout pr check reads PR artifacts from origin/task/<task-id>/... when local base artifacts are absent; stale local branch fallback and invalid-artifact checks remain strict."
+    - "Addressed review concern: remote-only branch snapshots are no longer marked fresh unconditionally; the regression now builds a fresh remote packet and existing stale-local validation remains strict."
 commit: null
 comments:
   -

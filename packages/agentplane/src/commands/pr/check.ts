@@ -195,21 +195,11 @@ export async function cmdPrCheck(opts: {
         taskVerificationState: task.verification?.state ?? null,
         requiresVerify,
       });
-      const remoteBranchHostedMergePacket =
-        !localSnapshot.meta && branchForFreshness.startsWith("origin/");
-      if (remoteBranchHostedMergePacket) {
-        branchSnapshot.freshnessReviewFresh = true;
-        if (!requiresVerify) {
-          branchSnapshot.freshnessVerifySatisfied = true;
-          branchSnapshot.freshnessVerifyFresh = true;
-        }
-      }
       if (
         branchSnapshot.errors.length === 0 &&
         branchSnapshot.meta &&
-        (remoteBranchHostedMergePacket ||
-          (branchSnapshot.freshnessReviewFresh &&
-            (!requiresVerify || branchSnapshot.freshnessVerifySatisfied)))
+        branchSnapshot.freshnessReviewFresh &&
+        (!requiresVerify || branchSnapshot.freshnessVerifySatisfied)
       ) {
         selectedSnapshot = branchSnapshot;
       }

@@ -12,10 +12,12 @@ import {
   mkGitRepoRootWithBranch,
   path,
   promisify,
+  readFile,
   rm,
   runCli,
   runCliSilent,
   writeConfig,
+  writeFile,
 } from "@agentplane/testkit/cli-core-pr-flow";
 
 describe("runCli PR check remote artifact fallback", { timeout: PR_FLOW_LONG_TIMEOUT_MS }, () => {
@@ -73,6 +75,18 @@ describe("runCli PR check remote artifact fallback", { timeout: PR_FLOW_LONG_TIM
       root,
     ]);
     await commitPathsIfChanged(root, [`.agentplane/tasks/${taskId}`], `${taskId} add pr artifacts`);
+    const { stdout: artifactHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
+    meta.head_sha = artifactHead.trim();
+    await writeFile(metaPath, `${JSON.stringify(meta, null, 2)}\n`, "utf8");
+    await commitPathsIfChanged(
+      root,
+      [`.agentplane/tasks/${taskId}`],
+      `${taskId} mark pr artifacts fresh`,
+    );
     await execFileAsync("git", ["push", "--no-verify", "-u", "origin", branch], { cwd: root });
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await execFileAsync("git", ["branch", "-D", branch], { cwd: root });
