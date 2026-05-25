@@ -144,6 +144,17 @@ export async function isPackageBuildFresh(packageRoot, options = {}) {
   const currentHead = resolveGitHead(packageRoot);
   const manifestSnapshot = parseManifestSnapshot(manifest);
   if (manifestSnapshot) {
+    const changedPaths = uniqueSorted([
+      ...committedChangedPathsSince(packageRoot, manifest.git_head, manifestSnapshot.watchedPaths),
+      ...workingTreeChangedPaths(packageRoot, manifestSnapshot.watchedPaths),
+    ]);
+    if (changedPaths.length === 0) {
+      if (manifest.git_head && currentHead && manifest.git_head !== currentHead) {
+        return { ok: true, reason: "fresh_after_git_quick_check", changedPaths: [] };
+      }
+      return { ok: true, reason: "fresh", changedPaths: [] };
+    }
+
     const currentSnapshot = await collectWatchedRuntimeSnapshot(
       packageRoot,
       manifestSnapshot.watchedPaths,

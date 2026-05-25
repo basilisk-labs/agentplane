@@ -217,6 +217,30 @@ describe("dist-guard", () => {
   );
 
   it(
+    "uses the git quick check for snapshot manifests when runtime paths did not change",
+    { timeout: DIST_GUARD_TIMEOUT_MS },
+    async () => {
+      const { repoRoot, packageRoot } = await setupPackageRepo();
+      const watchedPaths = [
+        "src",
+        "bin/agentplane.js",
+        "bin/runtime-context.js",
+        "bin/stale-dist-policy.js",
+      ];
+      await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
+      await writeFile(path.join(repoRoot, "README.md"), "docs only\n", "utf8");
+      await execFileAsync("git", ["add", "README.md"], { cwd: repoRoot });
+      await execFileAsync("git", ["commit", "-m", "docs: update readme"], { cwd: repoRoot });
+
+      const result = await readBuildFreshness(packageRoot, { watchedPaths });
+
+      expect(result.ok).toBe(true);
+      expect(result.reason).toBe("fresh_after_git_quick_check");
+      expect(result.changedPaths).toEqual([]);
+    },
+  );
+
+  it(
     "reports snapshot-changed runtime files when current source diverges from the built manifest",
     { timeout: DIST_GUARD_TIMEOUT_MS },
     async () => {
