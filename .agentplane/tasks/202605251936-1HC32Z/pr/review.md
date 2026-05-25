@@ -13,7 +13,7 @@ Created: 2026-05-25T19:41:23.691Z
 ## Verification
 
 - State: ok
-- Note: Command: bun run test:project -- agentplane packages/agentplane/src/commands/shared/task-backend.test.ts; Result: pass; Evidence: 1 file, 12 tests passed. Scope: regression for native projection fallback when DONE dependency rows hide active tasks. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; Result: pass; Evidence: 2 files, 26 tests passed. Scope: active/list query behavior. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; Result: pass; Evidence: 1 file, 9 tests passed. Scope: route context commands. Command: bun run typecheck; Result: pass. Scope: repository TypeScript build graph. Command: node .agentplane/policy/check-routing.mjs and ap doctor; Result: pass; Evidence: policy routing OK and doctor OK. Scope: policy/workspace health.
+- Note: Follow-up after review: preserved native projection fast path for done-only rows and added no-active selector guidance instead of a canonical fallback scan. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; Result: pass; Evidence: 2 files, 27 tests passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/shared/task-backend.test.ts; Result: pass; Evidence: 1 file, 12 tests passed. Command: bun run typecheck, bun run format:check, node .agentplane/policy/check-routing.mjs, ap doctor; Result: pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,10 @@ Created: 2026-05-25T19:41:23.691Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/shared/task-backend.test.ts       | 42 ++++++++++++++++++++++
- .../agentplane/src/commands/shared/task-backend.ts | 19 +++++++++-
- 2 files changed, 60 insertions(+), 1 deletion(-)
+ .../src/cli/run-cli.core.tasks.active.test.ts      | 34 ++++++++++++++++++
+ .../src/commands/shared/task-backend.test.ts       | 41 ++++++++++++++++++++++
+ .../agentplane/src/commands/task/active.command.ts |  5 +++
+ 3 files changed, 80 insertions(+)
 ```
 
 </details>

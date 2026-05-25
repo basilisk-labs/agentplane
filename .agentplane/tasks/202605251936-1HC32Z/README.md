@@ -4,7 +4,7 @@ title: "Fix active task selector projection fallback"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-25T19:54:30.527Z"
+  updated_at: "2026-05-25T20:12:25.817Z"
   updated_by: "CODER"
-  note: "Command: bun run test:project -- agentplane packages/agentplane/src/commands/shared/task-backend.test.ts; Result: pass; Evidence: 1 file, 12 tests passed. Scope: regression for native projection fallback when DONE dependency rows hide active tasks. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; Result: pass; Evidence: 2 files, 26 tests passed. Scope: active/list query behavior. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; Result: pass; Evidence: 1 file, 9 tests passed. Scope: route context commands. Command: bun run typecheck; Result: pass. Scope: repository TypeScript build graph. Command: node .agentplane/policy/check-routing.mjs and ap doctor; Result: pass; Evidence: policy routing OK and doctor OK. Scope: policy/workspace health."
+  note: "Follow-up after review: preserved native projection fast path for done-only rows and added no-active selector guidance instead of a canonical fallback scan. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; Result: pass; Evidence: 2 files, 27 tests passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/shared/task-backend.test.ts; Result: pass; Evidence: 1 file, 12 tests passed. Command: bun run typecheck, bun run format:check, node .agentplane/policy/check-routing.mjs, ap doctor; Result: pass."
   attempts: 0
 quality_review:
   state: "pass"
@@ -59,8 +59,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run test:project -- agentplane packages/agentplane/src/commands/shared/task-backend.test.ts; Result: pass; Evidence: 1 file, 12 tests passed. Scope: regression for native projection fallback when DONE dependency rows hide active tasks. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; Result: pass; Evidence: 2 files, 26 tests passed. Scope: active/list query behavior. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; Result: pass; Evidence: 1 file, 9 tests passed. Scope: route context commands. Command: bun run typecheck; Result: pass. Scope: repository TypeScript build graph. Command: node .agentplane/policy/check-routing.mjs and ap doctor; Result: pass; Evidence: policy routing OK and doctor OK. Scope: policy/workspace health."
+  -
+    type: "verify"
+    at: "2026-05-25T20:12:25.817Z"
+    author: "CODER"
+    state: "ok"
+    note: "Follow-up after review: preserved native projection fast path for done-only rows and added no-active selector guidance instead of a canonical fallback scan. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; Result: pass; Evidence: 2 files, 27 tests passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/shared/task-backend.test.ts; Result: pass; Evidence: 1 file, 12 tests passed. Command: bun run typecheck, bun run format:check, node .agentplane/policy/check-routing.mjs, ap doctor; Result: pass."
 doc_version: 3
-doc_updated_at: "2026-05-25T19:54:30.548Z"
+doc_updated_at: "2026-05-25T20:12:25.887Z"
 doc_updated_by: "CODER"
 description: "Fix the task list/task active selector path so active TODO tasks visible to direct task lookup are not silently hidden by stale or incomplete projection state."
 sections:
@@ -93,6 +99,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-25T19:41:21.196Z, excerpt_hash=sha256:6ce1fcafea08f8fd4d18aa0367e67bd68ffdc8e570884218544b224c999542ad
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605251936-1HC32Z-fix-active-task-selector-projection-fallback/.agentplane/tasks/202605251936-1HC32Z/blueprint/resolved-snapshot.json
+    - old_digest: 51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642
+    - current_digest: 51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605251936-1HC32Z
+
+    ### 2026-05-25T20:12:25.817Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Follow-up after review: preserved native projection fast path for done-only rows and added no-active selector guidance instead of a canonical fallback scan. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; Result: pass; Evidence: 2 files, 27 tests passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/shared/task-backend.test.ts; Result: pass; Evidence: 1 file, 12 tests passed. Command: bun run typecheck, bun run format:check, node .agentplane/policy/check-routing.mjs, ap doctor; Result: pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-25T19:54:30.548Z, excerpt_hash=sha256:6ce1fcafea08f8fd4d18aa0367e67bd68ffdc8e570884218544b224c999542ad
 
     Details:
 
@@ -149,6 +174,25 @@ Note: Command: bun run test:project -- agentplane packages/agentplane/src/comman
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-25T19:41:21.196Z, excerpt_hash=sha256:6ce1fcafea08f8fd4d18aa0367e67bd68ffdc8e570884218544b224c999542ad
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605251936-1HC32Z-fix-active-task-selector-projection-fallback/.agentplane/tasks/202605251936-1HC32Z/blueprint/resolved-snapshot.json
+- old_digest: 51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642
+- current_digest: 51d243d2d94f4ee3c26392cbd5aa2086bc314c822b80d0f204dd5106de2ce642
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605251936-1HC32Z
+
+### 2026-05-25T20:12:25.817Z — VERIFY — ok
+
+By: CODER
+
+Note: Follow-up after review: preserved native projection fast path for done-only rows and added no-active selector guidance instead of a canonical fallback scan. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; Result: pass; Evidence: 2 files, 27 tests passed. Command: bun run test:project -- agentplane packages/agentplane/src/commands/shared/task-backend.test.ts; Result: pass; Evidence: 1 file, 12 tests passed. Command: bun run typecheck, bun run format:check, node .agentplane/policy/check-routing.mjs, ap doctor; Result: pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-25T19:54:30.548Z, excerpt_hash=sha256:6ce1fcafea08f8fd4d18aa0367e67bd68ffdc8e570884218544b224c999542ad
 
 Details:
 

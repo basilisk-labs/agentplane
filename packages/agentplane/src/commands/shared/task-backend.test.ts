@@ -411,7 +411,7 @@ describe(
       expect(summaries[0]?.status).toBe("TODO");
     });
 
-    it("falls back when a filtered native projection only has dependency DONE rows", async () => {
+    it("keeps done-only native projections on the fast path", async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
       await writeLocalBackendConfig(root);
@@ -419,9 +419,8 @@ describe(
       const created = await createTask({
         cwd: root,
         rootOverride: root,
-        title: "Projection active fallback",
-        description:
-          "Ensure active selectors recover when dependency projection rows hide active tasks",
+        title: "Projection done-only guard",
+        description: "Ensure dependency DONE rows do not force canonical fallback scans",
         owner: "TESTER",
         priority: "med",
         tags: ["testing"],
@@ -449,8 +448,8 @@ describe(
         fallbackToCanonicalOnEmpty: true,
       });
 
-      expect(summaries.map((task) => task.id)).toEqual([created.id]);
-      expect(summaries[0]?.status).toBe("TODO");
+      expect(summaries.map((task) => task.id)).toEqual(["202603010501-DONE00"]);
+      expect(summaries).not.toContainEqual(expect.objectContaining({ id: created.id }));
     });
 
     it("does not memoize a status-filtered canonical fallback projection", async () => {

@@ -281,18 +281,6 @@ export async function listTaskSummariesMemo(
     const statuses = new Set(opts.projectionStatus.map((status) => status.trim().toUpperCase()));
     return summaries.filter((summary) => statuses.has(String(summary.status).trim().toUpperCase()));
   };
-  const projectedHasRequestedActiveStatus = (summaries: TaskSummary[]): boolean => {
-    if (!opts.projectionStatus || opts.projectionStatus.length === 0) return true;
-    const activeStatuses = new Set(
-      opts.projectionStatus
-        .map((status) => status.trim().toUpperCase())
-        .filter((status) => status !== "" && status !== "DONE"),
-    );
-    if (activeStatuses.size === 0) return true;
-    return summaries.some((summary) =>
-      activeStatuses.has(String(summary.status).trim().toUpperCase()),
-    );
-  };
   const canonicalSummaries = async (): Promise<TaskSummary[]> => {
     const tasks = await ctx.taskBackend.listTasks();
     return tasks.map((task) => toTaskSummary(task));
@@ -310,12 +298,7 @@ export async function listTaskSummariesMemo(
       });
     }
     const projected = await ctx.taskBackend.listProjectionTasks({ status: opts.projectionStatus });
-    if (
-      (projected.length > 0 && projectedHasRequestedActiveStatus(projected)) ||
-      opts.fallbackToCanonicalOnEmpty !== true
-    ) {
-      return projected;
-    }
+    if (projected.length > 0 || opts.fallbackToCanonicalOnEmpty !== true) return projected;
     return filterByProjectionStatus(await canonicalSummaries());
   }
   ctx.memo.taskProjection ??= (async () => {
