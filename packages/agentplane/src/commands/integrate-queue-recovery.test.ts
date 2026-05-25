@@ -74,6 +74,21 @@ describe("integration queue recovery decisions", () => {
     ).toMatchObject({ action: "keep" });
   });
 
+  it("marks non-claimed DONE task entries as terminal stale", () => {
+    expect(
+      decideIntegrationQueueRecovery({
+        entry: queueEntry("queued"),
+        report: report({
+          task: { id: "T-1", status: "DONE", verification: "ok" },
+        }),
+      }),
+    ).toMatchObject({
+      action: "mark",
+      status: "done",
+      reason: "task is already DONE; queue entry is terminal stale",
+    });
+  });
+
   it("marks stale handoff lanes done only after close-tail evidence is recorded", () => {
     expect(
       decideIntegrationQueueRecovery({

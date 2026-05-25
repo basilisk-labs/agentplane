@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202605251945-BGE4V3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-25T19:57:37.902Z",
+  "verdict": "pass",
+  "summary": "Queue hygiene change is scoped to terminal stale integration queue entries and keeps claimed lanes protected.",
+  "evaluated_sha": "af745d9e203b9eb289c6a6c3298e3436ba08f982",
+  "blueprint_digest": "f2497afc7acd18280ff4d74040ed27c3edc57db1b309c276a4fb43c853be6105",
+  "findings": [
+    "PASS: integrate queue list now normalizes non-claimed DONE task entries to done before rendering, and keeps claimed active lanes out of automatic terminal recovery."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605251945-BGE4V3/README.md",
+    "packages/agentplane/src/commands/integrate-queue.command.ts",
+    "packages/agentplane/src/commands/integrate-queue-recovery.ts",
+    "packages/agentplane/src/commands/integrate-queue-recovery.test.ts",
+    "bunx vitest run packages/agentplane/src/commands/integrate-queue-recovery.test.ts packages/agentplane/src/commands/pr/integrate/queue-state.test.ts",
+    "ap doctor"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
