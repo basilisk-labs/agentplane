@@ -72,6 +72,7 @@ Reuse historical incident advice only through targeted lookup, and validate prom
 
 - `agentplane task verify-show <task-id>`
 - `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]`
+- `agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review --summary "..." --finding "..." --evidence <path-or-check> [--missing-test "..." --hidden-assumption "..." --residual-risk "..."]`
 - `agentplane incidents advise <task-id>`
 - `agentplane incidents collect <task-id> --check`
 - `agentplane doctor`
