@@ -27,7 +27,30 @@ Resolve local stale tag preflight drift, prepare the next patch release candidat
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/WORKFLOW.md                            |   3 +-
+ .agentplane/workflows/last-known-good.md           |   3 +-
+ docs/reference/generated-reference.mdx             |   6 +-
+ docs/releases/v0.6.10.md                           |  92 +++++++++
+ docs/user/agent-bootstrap.generated.mdx            |   1 +
+ packages/agentplane/package.json                   |   6 +-
+ .../run-cli.core.help-snap.test.ts.snap            |   3 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |   1 +
+ packages/agentplane/src/cli/cli-smoke.test.ts      |  18 +-
+ packages/agentplane/src/cli/command-invocations.ts |   4 +
+ packages/agentplane/src/cli/command-snippets.ts    |   1 +
+ .../src/cli/run-cli.core.hooks.hook-run.test.ts    |   2 +-
+ ...un-cli.core.hooks.pre-push-task-binding.test.ts |   4 +-
+ ...-cli.core.lifecycle.finish-close-commit.test.ts | 188 ++++++++++---------
+ .../src/cli/run-cli.core.route-decision.test.ts    | 205 +++++++++++----------
+ .../src/cli/run-cli.core.task-guided.test.ts       |  24 ++-
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/spec/examples/acr.json                    |   4 +-
+ packages/testkit/package.json                      |   2 +-
+ .../static/img/social/docs/releases/v0.6.10.png    | Bin 0 -> 42299 bytes
+ website/static/img/social/manifest.json            |   8 +
+ 23 files changed, 373 insertions(+), 208 deletions(-)
 ```
 
 </details>
