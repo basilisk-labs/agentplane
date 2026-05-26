@@ -5,7 +5,7 @@
   "created_at": "2026-05-03T12:00:00.000Z",
   "producer": {
     "name": "agentplane",
-    "version": "0.6.9"
+    "version": "0.6.10"
   },
   "repository": {
     "vcs": "git",
@@ -31,7 +31,7 @@
     "toolchain": [
       {
         "name": "agentplane",
-        "version": "0.6.9"
+        "version": "0.6.10"
       }
     ]
   },
@@ -49,8 +49,13 @@
   },
   "permissions": {
     "filesystem": {
-      "allowed_paths": ["packages/**"],
-      "protected_paths": [".github/**", "secrets/**"]
+      "allowed_paths": [
+        "packages/**"
+      ],
+      "protected_paths": [
+        ".github/**",
+        "secrets/**"
+      ]
     },
     "network": {
       "mode": "disabled"
@@ -86,12 +91,17 @@
       {
         "path": "packages/core/src/tasks/task-artifact-schema.acr.ts",
         "status": "added",
-        "risk_categories": ["schema", "evidence"]
+        "risk_categories": [
+          "schema",
+          "evidence"
+        ]
       }
     ],
     "risk": {
       "level": "medium",
-      "categories": ["schema"],
+      "categories": [
+        "schema"
+      ],
       "protected_paths_touched": false
     }
   },
