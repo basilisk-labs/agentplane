@@ -120,6 +120,28 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
       ioBegin.restore();
     }
     const { stdout: commit } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const evidencePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const ioEvaluator = captureStdIO();
+    try {
+      const code = await runCli([
+        "evaluator",
+        "run",
+        taskId,
+        "--verdict",
+        "pass",
+        "--summary",
+        "Reviewed guided shortcut completion test.",
+        "--finding",
+        "No unresolved findings before task complete.",
+        "--evidence",
+        evidencePath,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      ioEvaluator.restore();
+    }
 
     const ioComplete = captureStdIO();
     try {
@@ -131,8 +153,6 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
         "Shortcut finished",
         "--commit",
         commit.trim(),
-        "--by",
-        "EVALUATOR",
         "--json",
         "--root",
         root,
