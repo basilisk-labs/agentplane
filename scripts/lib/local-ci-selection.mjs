@@ -71,6 +71,7 @@ const HOOKS_BUCKET_PATTERNS = [
   /^scripts\/lib\/pre-push-scope\.mjs$/,
   /^scripts\/lib\/test-route-registry\.mjs$/,
   /^lefthook\.yml$/,
+  /^packages\/agentplane\/src\/commands\/hooks(?:\/|\.|$)/,
   /^packages\/agentplane\/src\/cli\/local-ci-selection\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.hooks(?:\..+)?\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/pre-commit-staged-files\.test\.ts$/,

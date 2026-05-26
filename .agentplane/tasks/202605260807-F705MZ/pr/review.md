@@ -29,7 +29,10 @@ Created: 2026-05-26T08:08:08.069Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ packages/agentplane/src/cli/local-ci-selection.test.ts | 13 +++++++++++++
+ scripts/lib/local-ci-selection.mjs                     |  1 +
+ scripts/lib/test-route-registry.mjs                    |  1 +
+ 3 files changed, 15 insertions(+)
 ```
 
 </details>
