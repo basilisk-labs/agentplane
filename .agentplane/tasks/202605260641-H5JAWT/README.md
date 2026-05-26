@@ -1,10 +1,11 @@
 ---
 id: "202605260641-H5JAWT"
 title: "Block unstaged generated task artifacts in pre-commit"
-status: "DOING"
+result_summary: "Merged via PR #4159."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -46,11 +47,16 @@ quality_review:
   findings:
     - "The guard blocks generated active task artifacts when they are changed but absent from the index, and reports exact files plus the agentplane commit --allow-tasks remediation."
     - "Local checks now include format:check, lint:core, and the precommit test suite after the hosted CI failures were addressed."
-commit: null
+commit:
+  hash: "4d14cdd15dd1e94479ffe57743506de1c38e7823"
+  message: "🚧 H5JAWT task: Block unstaged generated task artifacts in pre-commit [202605260641-H5JAWT] (#4159)"
 comments:
   -
     author: "CODER"
     body: "Start: Implement pre-commit protection so generated active task artifacts cannot be left untracked or unstaged during task commits."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4159 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -65,9 +71,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run test:precommit. Result: pass, 17 files and 145 tests passed. Scope: pre-commit hook/runtime regression suite, including generated task artifact guard and commit wrapper allow-tasks behavior. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Scope: AgentPlane routing policy."
+  -
+    type: "status"
+    at: "2026-05-26T07:41:36.958Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4159 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-26T06:48:10.960Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-26T07:41:36.963Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a pre-commit guard that prevents commits when generated active task artifacts such as blueprint snapshots or evaluator quality reports remain untracked or unstaged."
 sections:
   Summary: |-
