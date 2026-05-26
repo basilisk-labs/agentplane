@@ -1,10 +1,11 @@
 ---
 id: "202605260907-2F52BD"
 title: "Prepare v0.6.10 patch release"
-status: "DOING"
+result_summary: "Merged via PR #4163."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -55,11 +56,16 @@ quality_review:
     - ".agentplane/tasks/202605260907-2F52BD/pr/meta.json"
   findings:
     - "No unresolved local findings after tag conflict resolution, candidate preparation, full release-ci-base, coverage suites, and release-critical smoke."
-commit: null
+commit:
+  hash: "cf6c036188c7234a32700a0e272f4d359ce065d5"
+  message: "✅ 2F52BD release: record candidate verification"
 comments:
   -
     author: "CODER"
     body: "Start: Preparing v0.6.10 patch release from a dedicated branch_pr worktree after approved plan; first step is resolving local-only stale v0.3.8 tag drift, then preparing the release candidate and hosted publish path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4163 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -74,9 +80,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release candidate v0.6.10 prepared on branch_pr route. Local release candidate gate passed: release:prepublish:fast, release:ci-check, release-ci-base 67/67, workflow coverage, significant coverage, and release-critical 4/4. PR #4163 opened for head fbaa7d73; GitHub checks are in progress."
+  -
+    type: "status"
+    at: "2026-05-26T14:51:52.099Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4163 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-26T14:45:27.447Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-26T14:51:52.105Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve local stale tag preflight drift, prepare the next patch release candidate for v0.6.10, publish it through the branch_pr release route, and record release evidence."
 sections:
   Summary: |-
