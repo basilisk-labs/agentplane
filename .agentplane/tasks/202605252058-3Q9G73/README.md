@@ -1,10 +1,11 @@
 ---
 id: "202605252058-3Q9G73"
 title: "Expand commit subject naming coverage"
-status: "DOING"
+result_summary: "Merged via PR #4155."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "packages/core/src/commit/commit-policy.test.ts"
   findings:
     - "The parser now accepts Merge branch '<src>' and Merge branch '<src>' of <url> in non-task context, with regression fixtures alongside the existing PR/into/remote-tracking/revert transport cases."
-commit: null
+commit:
+  hash: "1d9f70886c8befd593b0b70bc3da7516e8a12b60"
+  message: "🧪 3Q9G73 task: record merge subject review fix"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the approved commit subject naming coverage expansion in the task worktree, preserving strict task-bound traceability while allowing documented hosted semantic, merge transport, and dependency bot subject classes with focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4155 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified review feedback fix for default Git merge subject variants. Commands passed: bun test packages/core/src/commit/commit-policy.test.ts (29 pass, 66 assertions), bun run format:changed, bun run typecheck."
+  -
+    type: "status"
+    at: "2026-05-26T05:58:04.287Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4155 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-26T05:53:18.980Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-26T05:58:04.293Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend commit subject policy to classify task commits, semantic hosted commits, merge transport commits, and known bot dependency commits so recent branch_pr history fits a documented naming convention without weakening task-bound traceability."
 sections:
   Summary: |-
