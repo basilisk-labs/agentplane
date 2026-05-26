@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202605260641-H5JAWT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-26T06:48:51.605Z",
+  "verdict": "pass",
+  "summary": "Pre-commit now blocks unstaged generated active task artifacts while preserving the agentplane commit --allow-tasks path.",
+  "evaluated_sha": "217cee043ccf1ada34247200da4d290f4c7b934b",
+  "blueprint_digest": "b114644e8a655cea0db073d39a69e41b909b75e4829f35abf503028b2f025148",
+  "findings": [
+    "Generated blueprint and evaluator artifacts are detected from git changed paths and rejected when absent from the index.",
+    "Focused hook and commit-wrapper tests cover raw pre-commit blocking, staged artifact acceptance, and allow-tasks auto-staging."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605260641-H5JAWT/README.md",
+    "packages/agentplane/src/commands/hooks/run.pre-commit.ts",
+    "packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts",
+    "bun run test:precommit",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
