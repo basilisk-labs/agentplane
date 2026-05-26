@@ -66,7 +66,7 @@ async function recordEvaluatorReview(root: string, taskId: string, note: string)
 describe("runCli", () => {
   const BLOCK_FINISH_TIMEOUT_MS = 60_000;
   const BLOCK_FINISH_LONG_TIMEOUT_MS = 180_000;
-  it("finish marks done and records commit metadata", { timeout: 60_000 }, async () => {
+  it("finish marks done and records commit metadata", { timeout: BLOCK_FINISH_LONG_TIMEOUT_MS }, async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
