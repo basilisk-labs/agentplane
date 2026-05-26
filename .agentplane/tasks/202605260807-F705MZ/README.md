@@ -1,10 +1,11 @@
 ---
 id: "202605260807-F705MZ"
 title: "Route hook runtime changes to targeted local CI"
-status: "DOING"
+result_summary: "Merged via PR #4161."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Hook runtime local CI routing now resolves to targeted hooks route; targeted selector, lint, format, and hooks suites pass."
   attempts: 0
-commit: null
+commit:
+  hash: "f6dcab25721416a81823e64f9f0115e209e231c2"
+  message: "🚧 F705MZ task: Route hook runtime changes to targeted local CI [202605260807-F705MZ] (#4161)"
 comments:
   -
     author: "CODER"
     body: "Start: update local CI hook bucket routing and selector coverage so hook runtime changes avoid full-fast release suites."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4161 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Hook runtime local CI routing now resolves to targeted hooks route; targeted selector, lint, format, and hooks suites pass."
+  -
+    type: "status"
+    at: "2026-05-26T08:19:28.865Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4161 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-26T08:12:52.155Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-26T08:19:28.870Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make local CI classify packages/agentplane/src/commands/hooks changes as hooks bucket so pre-push does not fall back to full-fast release suites for hook-only work."
 sections:
   Summary: |-

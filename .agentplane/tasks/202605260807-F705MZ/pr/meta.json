@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-26T08:18:42Z",
   "base": "main",
   "branch": "task/202605260807-F705MZ/hook-runtime-ci-routing",
   "created_at": "2026-05-26T08:08:08.069Z",
   "diffstat_sha256": "sha256:ad86a9a136b651904cd8d448f9c3f7373a881f6cd71f66aa165d29c65afaf9d2",
   "last_verified_at": "2026-05-26T08:12:52.094Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "f6dcab25721416a81823e64f9f0115e209e231c2",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-26T08:18:42Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605260807-F705MZ",
-  "updated_at": "2026-05-26T08:08:08.069Z",
+  "updated_at": "2026-05-26T08:18:42Z",
   "verify": {
     "status": "pass"
   }
