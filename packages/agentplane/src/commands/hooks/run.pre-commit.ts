@@ -57,17 +57,14 @@ function inferSingleTaskIdFromPaths(paths: string[], workflowDir: string): strin
 }
 
 function assertGeneratedTaskArtifactsStaged(opts: {
-  changed: string[];
-  staged: string[];
+  unstaged: string[];
   workflowDir: string;
   taskId: string;
 }): void {
   if (!opts.taskId) return;
-  const staged = new Set(opts.staged.map((filePath) => normalizeGitPath(filePath)));
-  const missing = opts.changed
+  const missing = opts.unstaged
     .map((filePath) => normalizeGitPath(filePath))
     .filter((filePath) => isGeneratedTaskArtifact(filePath, opts.workflowDir, opts.taskId))
-    .filter((filePath) => !staged.has(filePath))
     .toSorted((a, b) => a.localeCompare(b));
   if (missing.length === 0) return;
 
@@ -109,7 +106,10 @@ export async function runPreCommitHook(opts: HooksRunOptions): Promise<number> {
       })
     : null;
   const currentBranch = await currentBranchOrUndefined(resolved.gitRoot);
-  const changed = await git.statusChangedPaths();
+  const [unstagedTracked, untracked] = await Promise.all([
+    git.statusUnstagedTrackedPaths(),
+    git.statusUntrackedPaths(),
+  ]);
   const taskId =
     (process.env.AGENTPLANE_TASK_ID ?? "").trim() ||
     inferTaskIdFromBranch(
@@ -117,10 +117,9 @@ export async function runPreCommitHook(opts: HooksRunOptions): Promise<number> {
       loaded.config.branch.task_prefix,
       loaded.config.branch.task_close_prefix,
     ) ||
-    inferSingleTaskIdFromPaths([...staged, ...changed], loaded.config.paths.workflow_dir);
+    inferSingleTaskIdFromPaths(staged, loaded.config.paths.workflow_dir);
   assertGeneratedTaskArtifactsStaged({
-    changed,
-    staged,
+    unstaged: [...unstagedTracked, ...untracked],
     workflowDir: loaded.config.paths.workflow_dir,
     taskId,
   });

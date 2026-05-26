@@ -127,6 +127,67 @@ describe("runCli hooks pre-commit guards", () => {
     }
   });
 
+  it("hooks run pre-commit blocks partially staged generated active task artifacts", async () => {
+    const taskId = "202601010101-ABCDEF";
+    const root = await mkGitRepoRootWithBranch(`task/${taskId}/hook-scope`);
+    await writeDefaultConfig(root);
+    await mkdir(`${root}/src`, { recursive: true });
+    await mkdir(`${root}/.agentplane/tasks/${taskId}/quality/run`, { recursive: true });
+    const reportPath = `.agentplane/tasks/${taskId}/quality/run/quality-report.json`;
+    await writeFile(`${root}/src/app.ts`, "export const value = 1;\n", "utf8");
+    await writeFile(`${root}/${reportPath}`, '{"status":"staged"}\n', "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "src/app.ts", reportPath], { cwd: root });
+    await writeFile(`${root}/${reportPath}`, '{"status":"unstaged"}\n', "utf8");
+
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Generated task artifacts are not staged.");
+      expect(io.stderr).toContain(reportPath);
+    } finally {
+      io.restore();
+      restoreEnv("AGENTPLANE_TASK_ID", prev);
+    }
+  });
+
+  it("hooks run pre-commit does not infer active task context from unstaged task artifacts", async () => {
+    const taskId = "202601010101-ABCDEF";
+    const root = await mkGitRepoRootWithBranch("main");
+    await writeDefaultConfig(root);
+    await mkdir(`${root}/src`, { recursive: true });
+    await mkdir(`${root}/.agentplane/tasks/${taskId}/quality/run`, { recursive: true });
+    await writeFile(`${root}/src/app.ts`, "export const value = 1;\n", "utf8");
+    await writeFile(
+      `${root}/.agentplane/tasks/${taskId}/quality/run/quality-report.json`,
+      "{}\n",
+      "utf8",
+    );
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
+
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    const prevAllowTasks = process.env.AGENTPLANE_ALLOW_TASKS;
+    delete process.env.AGENTPLANE_TASK_ID;
+    process.env.AGENTPLANE_ALLOW_TASKS = "1";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Mutating staged paths require an active AgentPlane task");
+      expect(io.stderr).not.toContain("Generated task artifacts are not staged.");
+    } finally {
+      io.restore();
+      restoreEnv("AGENTPLANE_TASK_ID", prev);
+      restoreEnv("AGENTPLANE_ALLOW_TASKS", prevAllowTasks);
+    }
+  });
+
   it("hooks run pre-commit allows generated active task artifacts when they are staged", async () => {
     const taskId = "202601010101-ABCDEF";
     const root = await mkGitRepoRootWithBranch(`task/${taskId}/hook-scope`);

@@ -29,9 +29,9 @@ Created: 2026-05-26T06:41:51.179Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 78 +++++++++++++++++++
- .../src/commands/hooks/run.pre-commit.ts           | 90 +++++++++++++++++++++-
- 2 files changed, 166 insertions(+), 2 deletions(-)
+ .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 139 +++++++++++++++++++++
+ .../src/commands/hooks/run.pre-commit.ts           |  89 ++++++++++++-
+ 2 files changed, 226 insertions(+), 2 deletions(-)
 ```
 
 </details>
