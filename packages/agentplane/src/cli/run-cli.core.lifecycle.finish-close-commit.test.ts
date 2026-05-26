@@ -66,107 +66,113 @@ async function recordEvaluatorReview(root: string, taskId: string, note: string)
 describe("runCli", () => {
   const BLOCK_FINISH_TIMEOUT_MS = 60_000;
   const BLOCK_FINISH_LONG_TIMEOUT_MS = 180_000;
-  it("finish marks done and records commit metadata", { timeout: BLOCK_FINISH_LONG_TIMEOUT_MS }, async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
+  it(
+    "finish marks done and records commit metadata",
+    { timeout: BLOCK_FINISH_LONG_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
 
-    await writeFile(path.join(root, "file.txt"), "content", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
-    const { stdout: commitHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+      await writeFile(path.join(root, "file.txt"), "content", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
+      const { stdout: commitHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Finish task",
-        "--description",
-        "Finish command updates commit metadata",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--verify",
-        "bun run ci",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-
-    await runCliSilent([
-      "verify",
-      taskId,
-      "--ok",
-      "--by",
-      "EVALUATOR",
-      "--note",
-      "Ok to finish",
-      "--quiet",
-      "--root",
-      root,
-    ]);
-    await recordEvaluatorReview(root, taskId, "EVALUATOR quality gate passed for finish smoke.");
-    await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
-
-    await runCliSilent([
-      "verify",
-      taskId,
-      "--ok",
-      "--by",
-      "EVALUATOR",
-      "--note",
-      "Ok to finish after current snapshot",
-      "--quiet",
-      "--root",
-      root,
-    ]);
-    await recordEvaluatorReview(
-      root,
-      taskId,
-      "EVALUATOR quality gate passed for close commit path.",
-    );
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "finish",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Verified: direct workflow finish updates task docs with commit metadata present.",
-        "--result",
-        "lifecycle: finish task",
-        "--commit",
-        commitHash.trim(),
-        "--force",
-        "--root",
-        root,
-      ]);
-      if (code !== 0) {
-        throw new Error(`finish failed (code=${code}): ${io.stderr}`);
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Finish task",
+          "--description",
+          "Finish command updates commit metadata",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--verify",
+          "bun run ci",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
       }
-      expect(code).toBe(0);
-      expect(io.stdout).toMatch(/\nfinished\n/);
-    } finally {
-      io.restore();
-    }
 
-    const task = await readTask({ cwd: root, rootOverride: root, taskId });
-    expect(task.frontmatter.status).toBe("DONE");
-    expect(task.frontmatter.commit?.hash).toBeTruthy();
-  });
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "EVALUATOR",
+        "--note",
+        "Ok to finish",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      await recordEvaluatorReview(root, taskId, "EVALUATOR quality gate passed for finish smoke.");
+      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
+
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "EVALUATOR",
+        "--note",
+        "Ok to finish after current snapshot",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      await recordEvaluatorReview(
+        root,
+        taskId,
+        "EVALUATOR quality gate passed for close commit path.",
+      );
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "finish",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Verified: direct workflow finish updates task docs with commit metadata present.",
+          "--result",
+          "lifecycle: finish task",
+          "--commit",
+          commitHash.trim(),
+          "--force",
+          "--root",
+          root,
+        ]);
+        if (code !== 0) {
+          throw new Error(`finish failed (code=${code}): ${io.stderr}`);
+        }
+        expect(code).toBe(0);
+        expect(io.stdout).toMatch(/\nfinished\n/);
+      } finally {
+        io.restore();
+      }
+
+      const task = await readTask({ cwd: root, rootOverride: root, taskId });
+      expect(task.frontmatter.status).toBe("DONE");
+      expect(task.frontmatter.commit?.hash).toBeTruthy();
+    },
+  );
 
   it(
     "finish --close-commit creates deterministic close commit in the same command",
