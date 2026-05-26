@@ -35,10 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-26T14:45:27.428Z"
-  updated_by: "CODER"
-  note: "Release candidate v0.6.10 prepared on branch_pr route. Local release candidate gate passed: release:prepublish:fast, release:ci-check, release-ci-base 67/67, workflow coverage, significant coverage, and release-critical 4/4. PR #4163 opened for head fbaa7d73; GitHub checks are in progress."
-  attempts: 0
+  updated_at: "2026-05-26T15:08:27.148Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.10."
 quality_review:
   state: "pass"
   updated_at: "2026-05-26T14:45:34.025Z"
@@ -88,8 +87,8 @@ events:
     to: "DONE"
     note: "Verified: PR #4163 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-26T14:51:52.105Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-26T15:08:27.148Z"
+doc_updated_by: "DEUS"
 description: "Resolve local stale tag preflight drift, prepare the next patch release candidate for v0.6.10, publish it through the branch_pr release route, and record release evidence."
 sections:
   Summary: |-
@@ -111,25 +110,19 @@ sections:
     8. Record verification and finish evidence. Expected: ap verify and ap finish capture command evidence, release result, residual risks, and close-tail state.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    ### 2026-05-26T14:45:27.428Z — VERIFY — ok
-
-    By: CODER
-
-    Note: Release candidate v0.6.10 prepared on branch_pr route. Local release candidate gate passed: release:prepublish:fast, release:ci-check, release-ci-base 67/67, workflow coverage, significant coverage, and release-critical 4/4. PR #4163 opened for head fbaa7d73; GitHub checks are in progress.
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-26T09:09:46.705Z, excerpt_hash=sha256:771356f4eaffb67491b5b2a0f9796f53f324a3924ad95f01c66469f694b9123d
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605260907-2F52BD-prepare-v0-6-10-patch-release/.agentplane/tasks/202605260907-2F52BD/blueprint/resolved-snapshot.json
-    - old_digest: 5d5bc22511b5a1d429be1f25eb1a763374103eabf2d31766877163c815494fa9
-    - current_digest: 5d5bc22511b5a1d429be1f25eb1a763374103eabf2d31766877163c815494fa9
-    - route_changed: no
-    - safe_command: agentplane blueprint snapshot 202605260907-2F52BD
-
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.10.
+    - Details:
+      - release_sha: e50e620a0716c40cfa3710a3af33161a760cf7a9
+      - version: 0.6.10
+      - tag: v0.6.10
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.10
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26456582555
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -166,25 +159,19 @@ Release plan: version=v0.6.10, tag=v0.6.10, route=branch_pr release candidate. S
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-### 2026-05-26T14:45:27.428Z — VERIFY — ok
-
-By: CODER
-
-Note: Release candidate v0.6.10 prepared on branch_pr route. Local release candidate gate passed: release:prepublish:fast, release:ci-check, release-ci-base 67/67, workflow coverage, significant coverage, and release-critical 4/4. PR #4163 opened for head fbaa7d73; GitHub checks are in progress.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-26T09:09:46.705Z, excerpt_hash=sha256:771356f4eaffb67491b5b2a0f9796f53f324a3924ad95f01c66469f694b9123d
-
-Details:
-
-BlueprintSnapshotRef:
-- state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605260907-2F52BD-prepare-v0-6-10-patch-release/.agentplane/tasks/202605260907-2F52BD/blueprint/resolved-snapshot.json
-- old_digest: 5d5bc22511b5a1d429be1f25eb1a763374103eabf2d31766877163c815494fa9
-- current_digest: 5d5bc22511b5a1d429be1f25eb1a763374103eabf2d31766877163c815494fa9
-- route_changed: no
-- safe_command: agentplane blueprint snapshot 202605260907-2F52BD
-
+- State: ok
+- Note: Hosted publish confirmed for v0.6.10.
+- Details:
+  - release_sha: e50e620a0716c40cfa3710a3af33161a760cf7a9
+  - version: 0.6.10
+  - tag: v0.6.10
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.10
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26456582555
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
