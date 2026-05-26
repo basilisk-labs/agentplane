@@ -4,7 +4,7 @@ title: "Block unstaged generated task artifacts in pre-commit"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,26 @@ verification:
   updated_by: "CODER"
   note: "Command: bun run test:precommit. Result: pass, 17 files and 145 tests passed. Scope: pre-commit hook/runtime regression suite, including generated task artifact guard and commit wrapper allow-tasks behavior. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Scope: AgentPlane routing policy."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-26T06:48:51.605Z"
+  updated_by: "EVALUATOR"
+  note: "Pre-commit now blocks unstaged generated active task artifacts while preserving the agentplane commit --allow-tasks path."
+  evaluated_sha: "217cee043ccf1ada34247200da4d290f4c7b934b"
+  blueprint_digest: "b114644e8a655cea0db073d39a69e41b909b75e4829f35abf503028b2f025148"
+  evidence_refs:
+    - ".agentplane/tasks/202605260641-H5JAWT/README.md"
+    - ".agentplane/tasks/202605260641-H5JAWT/quality/20260526-064851605-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605260641-H5JAWT/quality/20260526-064851605-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605260641-H5JAWT/quality/20260526-064851605-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605260641-H5JAWT/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/hooks/run.pre-commit.ts"
+    - "packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts"
+    - "bun run test:precommit"
+    - "node .agentplane/policy/check-routing.mjs"
+  findings:
+    - "Generated blueprint and evaluator artifacts are detected from git changed paths and rejected when absent from the index."
+    - "Focused hook and commit-wrapper tests cover raw pre-commit blocking, staged artifact acceptance, and allow-tasks auto-staging."
 commit: null
 comments:
   -
