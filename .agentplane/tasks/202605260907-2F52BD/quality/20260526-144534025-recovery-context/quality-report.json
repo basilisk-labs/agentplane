@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202605260907-2F52BD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-26T14:45:34.025Z",
+  "verdict": "pass",
+  "summary": "Release candidate v0.6.10 passed local release gates and is ready for GitHub CI/integration.",
+  "evaluated_sha": "fbaa7d73e7f657f3d6322847e082f2054064b83d",
+  "blueprint_digest": "5d5bc22511b5a1d429be1f25eb1a763374103eabf2d31766877163c815494fa9",
+  "findings": [
+    "No unresolved local findings after tag conflict resolution, candidate preparation, full release-ci-base, coverage suites, and release-critical smoke."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605260907-2F52BD/README.md",
+    ".agentplane/.release/apply/2026-05-26T14-35-06-343Z.json",
+    ".agentplane/tasks/202605260907-2F52BD/pr/meta.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
