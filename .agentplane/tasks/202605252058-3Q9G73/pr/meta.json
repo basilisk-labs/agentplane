@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-26T05:57:25Z",
   "base": "main",
   "branch": "task/202605252058-3Q9G73/expand-commit-subject-naming-coverage",
   "created_at": "2026-05-25T21:01:26.272Z",
   "diffstat_sha256": "sha256:d66fd2a8d2ae5fce7cd51db2843cae0759667df687ab64b7930fad3b169d0fa5",
   "last_verified_at": "2026-05-26T05:53:18.964Z",
   "last_verified_diffstat_sha256": "sha256:d66fd2a8d2ae5fce7cd51db2843cae0759667df687ab64b7930fad3b169d0fa5",
+  "merge_commit": "1d9f70886c8befd593b0b70bc3da7516e8a12b60",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-26T05:57:25Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605252058-3Q9G73",
-  "updated_at": "2026-05-25T21:01:26.272Z",
+  "updated_at": "2026-05-26T05:57:25Z",
   "verify": {
     "status": "pass"
   }
