@@ -34,9 +34,9 @@ bun run test:precommit. Result: pass, 17 files and 145 tests passed. Scope: pre-
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 82 ++++++++++++++++++++
- .../src/commands/hooks/run.pre-commit.ts           | 87 +++++++++++++++++++++-
- 2 files changed, 167 insertions(+), 2 deletions(-)
+ .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 78 +++++++++++++++++++
+ .../src/commands/hooks/run.pre-commit.ts           | 90 +++++++++++++++++++++-
+ 2 files changed, 166 insertions(+), 2 deletions(-)
 ```
 
 </details>

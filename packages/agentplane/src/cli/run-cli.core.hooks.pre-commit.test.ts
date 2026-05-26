@@ -118,12 +118,8 @@ describe("runCli hooks pre-commit guards", () => {
       const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
       expect(code).toBe(5);
       expect(io.stderr).toContain("Generated task artifacts are not staged.");
-      expect(io.stderr).toContain(
-        `.agentplane/tasks/${taskId}/quality/run/quality-report.json`,
-      );
-      expect(io.stderr).toContain(
-        `.agentplane/tasks/${taskId}/quality/run/evaluator-opinion.md`,
-      );
+      expect(io.stderr).toContain(`.agentplane/tasks/${taskId}/quality/run/quality-report.json`);
+      expect(io.stderr).toContain(`.agentplane/tasks/${taskId}/quality/run/evaluator-opinion.md`);
       expect(io.stderr).toContain("agentplane commit <task-id>");
     } finally {
       io.restore();

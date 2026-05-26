@@ -14,7 +14,10 @@ import {
 } from "./task-context.js";
 
 function normalizeGitPath(value: string): string {
-  return value.replaceAll("\\", "/").replaceAll(/\/+/g, "/").replaceAll(/^\/+|\/+$/g, "");
+  return value
+    .replaceAll("\\", "/")
+    .replaceAll(/\/+/g, "/")
+    .replaceAll(/^\/+|\/+$/g, "");
 }
 
 function taskPathPrefix(workflowDir: string, taskId: string): string {
@@ -60,9 +63,9 @@ function assertGeneratedTaskArtifactsStaged(opts: {
   taskId: string;
 }): void {
   if (!opts.taskId) return;
-  const staged = new Set(opts.staged.map(normalizeGitPath));
+  const staged = new Set(opts.staged.map((filePath) => normalizeGitPath(filePath)));
   const missing = opts.changed
-    .map(normalizeGitPath)
+    .map((filePath) => normalizeGitPath(filePath))
     .filter((filePath) => isGeneratedTaskArtifact(filePath, opts.workflowDir, opts.taskId))
     .filter((filePath) => !staged.has(filePath))
     .toSorted((a, b) => a.localeCompare(b));
@@ -74,7 +77,7 @@ function assertGeneratedTaskArtifactsStaged(opts: {
     message: [
       "Generated task artifacts are not staged.",
       `task=${opts.taskId}`,
-      "Stage these files or use `agentplane commit <task-id> -m \"...\" --allow-tasks`:",
+      'Stage these files or use `agentplane commit <task-id> -m "..." --allow-tasks`:',
       ...missing.map((filePath) => `- ${filePath}`),
     ].join("\n"),
     context: {
