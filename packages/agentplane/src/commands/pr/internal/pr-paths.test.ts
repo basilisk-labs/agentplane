@@ -141,7 +141,9 @@ describe("pr/internal/pr-paths", () => {
     expect(fromGit).toBe("git-content");
 
     mocks.fileExists.mockResolvedValueOnce(false);
-    mocks.gitShowFile.mockRejectedValueOnce(new Error("missing"));
+    mocks.gitShowFile
+      .mockRejectedValueOnce(new Error("missing local branch"))
+      .mockRejectedValueOnce(new Error("missing remote branch"));
     const missing = await readPrArtifact({
       resolved: { gitRoot: "/repo" },
       prDir: "/repo/.agentplane/tasks/T-3/pr",
