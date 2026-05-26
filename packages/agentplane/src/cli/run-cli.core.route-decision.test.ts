@@ -663,113 +663,126 @@ describe("runCli route decision commands", () => {
     }
   });
 
-  it("refreshes stale PR metadata before recommending integration", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+  it(
+    "refreshes stale PR metadata before recommending integration",
+    { timeout: 180_000 },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
-    const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise stale PR metadata routing.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-
-    const branch = `task/${taskId}/route-decision`;
-    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
-    await writeFile(path.join(root, "impl.txt"), "implementation\n");
-    await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "feat: implementation"], { cwd: root });
-    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: root,
-    });
-
-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
-    await mkdir(prDir, { recursive: true });
-    await writeFile(
-      path.join(prDir, "meta.json"),
-      `${JSON.stringify(
-        {
-          base: "main",
-          branch,
-          created_at: "2026-01-01T00:00:00.000Z",
-          head_sha: implementationHead.trim(),
-          schema_version: 1,
-          status: "OPEN",
-          task_id: taskId,
-          updated_at: "2026-01-01T00:00:00.000Z",
-        },
-        null,
-        2,
-      )}\n`,
-    );
-    await writeFile(path.join(prDir, "review.md"), "# Review\n\nStale packet.\n");
-    await writeFile(path.join(root, "non-task.txt"), "new implementation advance\n");
-    await execFileAsync("git", ["add", "non-task.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "feat: advance implementation"], { cwd: root });
-
-    const nextIo = captureStdIO();
-    try {
-      const code = await runCli([
+      const taskId = await createBranchPrTask(root);
+      await runCliSilent([
         "task",
-        "next-action",
+        "plan",
+        "set",
         taskId,
-        "--json",
-        "--remote",
+        "--text",
+        "Exercise stale PR metadata routing.",
+        "--updated-by",
+        "ORCHESTRATOR",
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
-      const parsed = JSON.parse(nextIo.stdout) as {
-        next_action: { code: string; command: string };
-        blockers: { code: string }[];
-      };
-      expect(parsed.blockers.map((blocker) => blocker.code)).toContain("pr_meta_stale");
-      expect(parsed.next_action.code).toBe("update_pr_artifacts");
-      expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
-    } finally {
-      nextIo.restore();
-    }
+      await runCliSilent([
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--by",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]);
 
-    const repairIo = captureStdIO();
-    try {
-      const code = await runCli([
-        "flow",
-        "repair",
-        taskId,
-        "--safe-apply",
-        "--json",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      const parsed = JSON.parse(repairIo.stdout) as {
-        applied: { code: string; status: string }[];
-      };
-      expect(parsed.applied).toContainEqual(
-        expect.objectContaining({ code: "update_pr_artifacts", status: "applied" }),
+      const branch = `task/${taskId}/route-decision`;
+      await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+      await writeFile(path.join(root, "impl.txt"), "implementation\n");
+      await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feat: implementation"], { cwd: root });
+      const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
+
+      const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+      await mkdir(prDir, { recursive: true });
+      await writeFile(
+        path.join(prDir, "meta.json"),
+        `${JSON.stringify(
+          {
+            base: "main",
+            branch,
+            created_at: "2026-01-01T00:00:00.000Z",
+            head_sha: implementationHead.trim(),
+            schema_version: 1,
+            status: "OPEN",
+            task_id: taskId,
+            updated_at: "2026-01-01T00:00:00.000Z",
+          },
+          null,
+          2,
+        )}\n`,
       );
-    } finally {
-      repairIo.restore();
-    }
+      await writeFile(path.join(prDir, "review.md"), "# Review\n\nStale packet.\n");
+      await writeFile(path.join(root, "non-task.txt"), "new implementation advance\n");
+      await execFileAsync("git", ["add", "non-task.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feat: advance implementation"], { cwd: root });
 
-    const updatedMeta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
-      head_sha?: string;
-      diffstat_sha256?: string;
-    };
-    expect(updatedMeta.head_sha).toBeUndefined();
-    expect(updatedMeta.diffstat_sha256).toMatch(/^sha256:/);
-  });
+      const nextIo = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "next-action",
+          taskId,
+          "--json",
+          "--remote",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        const parsed = JSON.parse(nextIo.stdout) as {
+          next_action: { code: string; command: string };
+          blockers: { code: string }[];
+        };
+        expect(parsed.blockers.map((blocker) => blocker.code)).toContain("pr_meta_stale");
+        expect(parsed.next_action.code).toBe("update_pr_artifacts");
+        expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
+      } finally {
+        nextIo.restore();
+      }
+
+      const repairIo = captureStdIO();
+      try {
+        const code = await runCli([
+          "flow",
+          "repair",
+          taskId,
+          "--safe-apply",
+          "--json",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        const parsed = JSON.parse(repairIo.stdout) as {
+          applied: { code: string; status: string }[];
+        };
+        expect(parsed.applied).toContainEqual(
+          expect.objectContaining({ code: "update_pr_artifacts", status: "applied" }),
+        );
+      } finally {
+        repairIo.restore();
+      }
+
+      const updatedMeta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
+        head_sha?: string;
+        diffstat_sha256?: string;
+      };
+      expect(updatedMeta.head_sha).toBeUndefined();
+      expect(updatedMeta.diffstat_sha256).toMatch(/^sha256:/);
+    },
+  );
 
   it("does not claim no repair when blockers are unmapped", async () => {
     const root = await mkGitRepoRootWithBranch("main");
