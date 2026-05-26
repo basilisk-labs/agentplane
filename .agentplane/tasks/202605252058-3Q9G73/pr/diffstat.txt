@@ -1,4 +1,4 @@
  .../src/commands/pr/internal/pr-paths.test.ts      |  4 +-
- packages/core/src/commit/commit-policy.test.ts     | 52 ++++++++++++++++++++++
- packages/core/src/commit/commit-policy.ts          | 44 ++++++++++++++++--
- 3 files changed, 95 insertions(+), 5 deletions(-)
+ packages/core/src/commit/commit-policy.test.ts     | 54 ++++++++++++++++++++++
+ packages/core/src/commit/commit-policy.ts          | 46 ++++++++++++++++--
+ 3 files changed, 99 insertions(+), 5 deletions(-)

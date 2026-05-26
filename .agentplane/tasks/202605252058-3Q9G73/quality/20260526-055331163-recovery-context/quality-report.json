@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202605252058-3Q9G73",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-26T05:53:31.163Z",
+  "verdict": "pass",
+  "summary": "Review feedback addressed; default Git merge subjects are covered.",
+  "evaluated_sha": "e559cc5738db74231982e71d170f8a6c36818e6f",
+  "blueprint_digest": "b4634442440327264f085314b817fd3c1ba3c8d6d5b06724c8dfae9152f569b3",
+  "findings": [
+    "The parser now accepts Merge branch '<src>' and Merge branch '<src>' of <url> in non-task context, with regression fixtures alongside the existing PR/into/remote-tracking/revert transport cases."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605252058-3Q9G73/README.md",
+    "packages/core/src/commit/commit-policy.test.ts"
+  ],
+  "missing_tests": [
+    "No gap found for the review-reported variants."
+  ],
+  "hidden_assumptions": [
+    "These transport subjects remain non-task context only; task-context commits still use strict suffix-bearing subjects."
+  ],
+  "residual_risks": [
+    "Additional rare SCM-generated subjects may still need explicit fixtures later, but the common Git defaults called out in review are covered."
+  ]
+}
