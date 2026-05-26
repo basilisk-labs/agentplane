@@ -13,7 +13,7 @@ Created: 2026-05-25T21:01:26.272Z
 ## Verification
 
 - State: ok
-- Note: Verified commit subject naming coverage expansion. Commands passed: bun test packages/core/src/commit/commit-policy.test.ts (29 pass), node .agentplane/policy/check-routing.mjs (policy routing OK), bun run typecheck (tsc -b passed), bun run format:changed (Prettier passed). Diff remained limited to commit policy, focused tests, and task README.
+- Note: Verified follow-up CI blocker fix. Commands passed: bun test packages/agentplane/src/commands/pr/internal/pr-paths.test.ts (3 pass), bun test packages/core/src/commit/commit-policy.test.ts (29 pass), bun run format:changed (Prettier passed), bun run typecheck (tsc -b passed), bun run test:fast (336 files passed; 2009 passed, 2 skipped), node .agentplane/policy/check-routing.mjs (policy routing OK).
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,10 @@ Created: 2026-05-25T21:01:26.272Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- packages/core/src/commit/commit-policy.test.ts | 52 ++++++++++++++++++++++++++
- packages/core/src/commit/commit-policy.ts      | 44 ++++++++++++++++++++--
- 2 files changed, 92 insertions(+), 4 deletions(-)
+ .../src/commands/pr/internal/pr-paths.test.ts      |  4 +-
+ packages/core/src/commit/commit-policy.test.ts     | 52 ++++++++++++++++++++++
+ packages/core/src/commit/commit-policy.ts          | 44 ++++++++++++++++--
+ 3 files changed, 95 insertions(+), 5 deletions(-)
 ```
 
 </details>
