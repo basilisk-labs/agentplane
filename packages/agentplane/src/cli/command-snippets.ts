@@ -20,6 +20,7 @@ export const COMMAND_SNIPPETS = {
     finishTask: invoke(["finish"]),
     quickstart: invoke(["quickstart"]),
     demo: invoke(["demo"]),
+    evaluatorRun: invoke(["evaluator", "run"]),
     role: invoke(["role"]),
     taskActive: invoke(["task", "active"]),
     taskBrief: invoke(["task", "brief"]),

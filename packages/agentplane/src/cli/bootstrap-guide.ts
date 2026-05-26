@@ -42,6 +42,7 @@ export const BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS = [
 export const BOOTSTRAP_VERIFICATION_COMMANDS = [
   COMMAND_SNIPPETS.core.taskVerifyShow,
   COMMAND_SNIPPETS.core.verifyTask,
+  COMMAND_SNIPPETS.core.evaluatorRun,
   COMMAND_SNIPPETS.core.incidentsAdvise,
   `${COMMAND_SNIPPETS.core.incidentsCollect} --check`,
   "agentplane doctor",
