@@ -10,7 +10,7 @@ import {
 import { createCliEmitter, emptyStateMessage } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
 import { sleep } from "../backends/task-backend/shared/concurrency.js";
-import type { CommandContext } from "./shared/task-backend.js";
+import { loadBackendTask, type CommandContext } from "./shared/task-backend.js";
 import { gitRevParse } from "./shared/git-ops.js";
 import { cmdIntegrate } from "./pr/integrate/cmd.js";
 import { resolvePrFlowStatus } from "./pr/flow-status.js";
@@ -163,6 +163,76 @@ async function recoverStaleActiveLane(opts: {
   return true;
 }
 
+async function normalizeTerminalQueueEntries(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string | null;
+  gitRoot: string;
+  quiet: boolean;
+}): Promise<void> {
+  const snapshot = await readIntegrationQueue(opts.gitRoot);
+  const candidates = snapshot.entries.filter(
+    (entry) => entry.status !== "done" && entry.status !== "claimed",
+  );
+  const decisions: {
+    taskId: string;
+    fromStatus: IntegrationQueueEntry["status"];
+    reason: string;
+  }[] = [];
+
+  for (const entry of candidates) {
+    const loaded = await loadBackendTask({
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: entry.task_id,
+    }).catch(() => null);
+    if (loaded?.task.status === "DONE") {
+      decisions.push({
+        taskId: entry.task_id,
+        fromStatus: entry.status,
+        reason: "task is already DONE; queue entry is terminal stale",
+      });
+      continue;
+    }
+
+    if (entry.status !== "handoff") continue;
+    const report = await resolvePrFlowStatus({
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? undefined,
+      taskId: entry.task_id,
+    }).catch(() => null);
+    if (!report) continue;
+    const decision = decideIntegrationQueueRecovery({ entry, report });
+    if (decision.action !== "mark" || decision.status !== "done") continue;
+    decisions.push({ taskId: entry.task_id, fromStatus: entry.status, reason: decision.reason });
+  }
+
+  if (decisions.length === 0) return;
+
+  const normalized = await withIntegrationQueueMutex(opts.gitRoot, async () => {
+    let queue = await readIntegrationQueue(opts.gitRoot);
+    const applied: { taskId: string; reason: string }[] = [];
+    for (const decision of decisions) {
+      const current = queue.entries.find((entry) => entry.task_id === decision.taskId);
+      if (current?.status !== decision.fromStatus) continue;
+      queue = markQueueEntry(queue, decision.taskId, "done", decision.reason);
+      applied.push({ taskId: decision.taskId, reason: decision.reason });
+    }
+    if (applied.length > 0) await writeIntegrationQueue(opts.gitRoot, queue);
+    return applied;
+  });
+
+  if (!opts.quiet) {
+    for (const item of normalized) {
+      createCliEmitter().line(
+        `integration queue normalized: task=${item.taskId} status=done reason=${item.reason}`,
+      );
+    }
+  }
+}
+
 export function makeRunIntegrateQueueHandler(
   _getCtx: (cmd: string) => Promise<CommandContext>,
 ): CommandHandler<GroupCommandParsed> {
@@ -211,9 +281,17 @@ export function makeRunIntegrateQueueEnqueueHandler(
 }
 
 export function makeRunIntegrateQueueListHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
-  return async (_ctx: CommandCtx, p: IntegrateQueueListParsed): Promise<number> => {
+  return async (ctx: CommandCtx, p: IntegrateQueueListParsed): Promise<number> => {
     const commandCtx = await getCtx("integrate queue list");
-    const queue = await readIntegrationQueue(commandCtx.resolvedProject.gitRoot);
+    const gitRoot = commandCtx.resolvedProject.gitRoot;
+    await normalizeTerminalQueueEntries({
+      ctx: commandCtx,
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
+      gitRoot,
+      quiet: p.json,
+    });
+    const queue = await readIntegrationQueue(gitRoot);
     const output = createCliEmitter();
     if (p.json) {
       output.json(queue);

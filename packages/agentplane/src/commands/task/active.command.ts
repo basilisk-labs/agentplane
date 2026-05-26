@@ -335,6 +335,11 @@ export function makeRunTaskActiveHandler(getCtx: (cmd: string) => Promise<Comman
     }
     if (!parsed.filters.quiet) {
       output.line(`Active: ${result.items.length} / ${result.filteredCount}`);
+      if (result.items.length === 0) {
+        output.line(
+          "No active tasks matched. If you already have a task id, run `agentplane task brief <task-id>`; otherwise use `agentplane task list --all` to inspect historical tasks.",
+        );
+      }
     }
     return 0;
   };
