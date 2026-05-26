@@ -147,11 +147,27 @@ describe("agentplane CLI smoke", () => {
         taskId,
         "--ok",
         "--by",
-        "EVALUATOR",
+        "CODER",
         "--note",
         "Smoke verification: local checks only; core lifecycle commands succeeded.",
       ]);
       expect(verify.code).toBe(0);
+
+      const evaluator = await runCliWithOutput(root, [
+        "evaluator",
+        "run",
+        taskId,
+        "--verdict",
+        "pass",
+        "--summary",
+        "Reviewed CLI smoke lifecycle.",
+        "--finding",
+        "No unresolved findings before finish.",
+        "--evidence",
+        path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      ]);
+      expect(evaluator.code, `${evaluator.stdout}\n${evaluator.stderr}`).toBe(0);
+
       await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: record smoke verification"], {
         cwd: root,
