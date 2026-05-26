@@ -4,7 +4,7 @@ title: "Block unstaged generated task artifacts in pre-commit"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,24 +26,26 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-26T06:48:51.605Z"
+  updated_at: "2026-05-26T06:56:24.130Z"
   updated_by: "EVALUATOR"
-  note: "Pre-commit now blocks unstaged generated active task artifacts while preserving the agentplane commit --allow-tasks path."
-  evaluated_sha: "217cee043ccf1ada34247200da4d290f4c7b934b"
+  note: "Final review after formatting and lint fixes: pre-commit generated-artifact guard is covered and local verification is green."
+  evaluated_sha: "8c80eadcb5a5c115c26f1386dd9dffca2b50e805"
   blueprint_digest: "b114644e8a655cea0db073d39a69e41b909b75e4829f35abf503028b2f025148"
   evidence_refs:
     - ".agentplane/tasks/202605260641-H5JAWT/README.md"
-    - ".agentplane/tasks/202605260641-H5JAWT/quality/20260526-064851605-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605260641-H5JAWT/quality/20260526-064851605-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605260641-H5JAWT/quality/20260526-064851605-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605260641-H5JAWT/quality/20260526-065624130-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605260641-H5JAWT/quality/20260526-065624130-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605260641-H5JAWT/quality/20260526-065624130-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605260641-H5JAWT/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/hooks/run.pre-commit.ts"
     - "packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts"
+    - "bun run format:check"
+    - "bun run lint:core"
     - "bun run test:precommit"
     - "node .agentplane/policy/check-routing.mjs"
   findings:
-    - "Generated blueprint and evaluator artifacts are detected from git changed paths and rejected when absent from the index."
-    - "Focused hook and commit-wrapper tests cover raw pre-commit blocking, staged artifact acceptance, and allow-tasks auto-staging."
+    - "The guard blocks generated active task artifacts when they are changed but absent from the index, and reports exact files plus the agentplane commit --allow-tasks remediation."
+    - "Local checks now include format:check, lint:core, and the precommit test suite after the hosted CI failures were addressed."
 commit: null
 comments:
   -

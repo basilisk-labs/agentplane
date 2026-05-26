@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202605260641-H5JAWT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-26T06:56:24.130Z",
+  "verdict": "pass",
+  "summary": "Final review after formatting and lint fixes: pre-commit generated-artifact guard is covered and local verification is green.",
+  "evaluated_sha": "8c80eadcb5a5c115c26f1386dd9dffca2b50e805",
+  "blueprint_digest": "b114644e8a655cea0db073d39a69e41b909b75e4829f35abf503028b2f025148",
+  "findings": [
+    "The guard blocks generated active task artifacts when they are changed but absent from the index, and reports exact files plus the agentplane commit --allow-tasks remediation.",
+    "Local checks now include format:check, lint:core, and the precommit test suite after the hosted CI failures were addressed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605260641-H5JAWT/README.md",
+    "packages/agentplane/src/commands/hooks/run.pre-commit.ts",
+    "packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts",
+    "bun run format:check",
+    "bun run lint:core",
+    "bun run test:precommit",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
