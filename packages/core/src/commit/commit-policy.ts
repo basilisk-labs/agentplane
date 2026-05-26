@@ -233,6 +233,8 @@ function parseGitTransportSubject(subject: string): { summary: string } | null {
   const trimmed = subject.trim();
   if (
     /^Merge pull request #\d+ from \S+$/u.test(trimmed) ||
+    /^Merge branch '\S+'$/u.test(trimmed) ||
+    /^Merge branch '\S+' of \S+$/u.test(trimmed) ||
     /^Merge branch '\S+' into \S+$/u.test(trimmed) ||
     /^Merge remote-tracking branch '\S+'$/u.test(trimmed) ||
     /^Revert ".+"$/u.test(trimmed)

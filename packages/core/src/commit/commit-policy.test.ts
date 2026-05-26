@@ -291,6 +291,8 @@ describe("commit-policy", () => {
   it("accepts GitHub and Git transport commit subjects", () => {
     for (const subject of [
       "Merge pull request #4148 from basilisk-labs/task/202605251929-JZ4VPD/optimize-branch-pr-pr-check-artifact-fallback",
+      "Merge branch 'main'",
+      "Merge branch 'main' of github.com:basilisk-labs/agentplane",
       "Merge branch 'main' into task/202605251929-JZ4VPD/optimize-branch-pr-pr-check-artifact-fallback",
       "Merge remote-tracking branch 'origin/main'",
       'Revert "tests: optimize branch_pr pr check artifact fallback"',
