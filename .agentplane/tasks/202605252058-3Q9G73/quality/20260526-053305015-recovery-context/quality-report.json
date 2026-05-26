@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202605252058-3Q9G73",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-26T05:33:05.015Z",
+  "verdict": "pass",
+  "summary": "Commit subject policy expansion and CI blocker fix are focused and verified.",
+  "evaluated_sha": "f54445348f9432b2d19a5d9ff0471ff5bc2c06e1",
+  "blueprint_digest": "b4634442440327264f085314b817fd3c1ba3c8d6d5b06724c8dfae9152f569b3",
+  "findings": [
+    "Reviewed final diff after hosted verify-unit failure. The additional pr-paths test change only aligns the mock with existing two-ref fallback behavior; commit subject policy still preserves strict task-context traceability."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605252058-3Q9G73/README.md",
+    "packages/core/src/commit/commit-policy.test.ts",
+    "packages/agentplane/src/commands/pr/internal/pr-paths.test.ts"
+  ],
+  "missing_tests": [
+    "No gap found after running targeted tests and full test:fast locally."
+  ],
+  "hidden_assumptions": [
+    "Hosted verify-unit failure was a stale test expectation, not a runtime regression."
+  ],
+  "residual_risks": [
+    "Non-task conventional subjects are broader than before, but only when no task context is present and generic summaries remain rejected."
+  ]
+}
