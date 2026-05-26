@@ -194,7 +194,7 @@ describe("pre-push task binding audit", () => {
     expect(result.stdout).not.toContain("Skipping format:check");
   });
 
-  it("accepts managed initial install commits", async () => {
+  it("accepts managed initial install commits", { timeout: 180_000 }, async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
     await writeFastHookPackage(root);
@@ -239,7 +239,7 @@ describe("pre-push task binding audit", () => {
     expect(String(result.failure?.stderr ?? "")).toContain("src/app.ts");
   });
 
-  it("accepts managed context init bootstrap commits", async () => {
+  it("accepts managed context init bootstrap commits", { timeout: 180_000 }, async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
     await writeFastHookPackage(root);

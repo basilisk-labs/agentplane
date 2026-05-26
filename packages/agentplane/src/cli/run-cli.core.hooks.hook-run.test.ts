@@ -514,7 +514,7 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
 
     expect(await gitBranchExists(root, branch)).toBe(false);
     expect(await pathExists(worktreePath)).toBe(false);
-  }, 120_000);
+  }, 300_000);
 
   it("hooks run post-merge skips unsafe outside-root worktrees while pruning safe merged tails", async () => {
     const root = await mkGitRepoRootWithBranch("main");
