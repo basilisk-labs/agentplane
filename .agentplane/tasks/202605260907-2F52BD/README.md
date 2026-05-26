@@ -4,7 +4,7 @@ title: "Prepare v0.6.10 patch release"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +33,28 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-26T14:45:27.428Z"
+  updated_by: "CODER"
+  note: "Release candidate v0.6.10 prepared on branch_pr route. Local release candidate gate passed: release:prepublish:fast, release:ci-check, release-ci-base 67/67, workflow coverage, significant coverage, and release-critical 4/4. PR #4163 opened for head fbaa7d73; GitHub checks are in progress."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-26T14:45:34.025Z"
+  updated_by: "EVALUATOR"
+  note: "Release candidate v0.6.10 passed local release gates and is ready for GitHub CI/integration."
+  evaluated_sha: "fbaa7d73e7f657f3d6322847e082f2054064b83d"
+  blueprint_digest: "5d5bc22511b5a1d429be1f25eb1a763374103eabf2d31766877163c815494fa9"
+  evidence_refs:
+    - ".agentplane/tasks/202605260907-2F52BD/README.md"
+    - ".agentplane/tasks/202605260907-2F52BD/quality/20260526-144534025-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605260907-2F52BD/quality/20260526-144534025-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605260907-2F52BD/quality/20260526-144534025-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605260907-2F52BD/blueprint/resolved-snapshot.json"
+    - ".agentplane/.release/apply/2026-05-26T14-35-06-343Z.json"
+    - ".agentplane/tasks/202605260907-2F52BD/pr/meta.json"
+  findings:
+    - "No unresolved local findings after tag conflict resolution, candidate preparation, full release-ci-base, coverage suites, and release-critical smoke."
 commit: null
 comments:
   -
@@ -51,8 +68,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Preparing v0.6.10 patch release from a dedicated branch_pr worktree after approved plan; first step is resolving local-only stale v0.3.8 tag drift, then preparing the release candidate and hosted publish path."
+  -
+    type: "verify"
+    at: "2026-05-26T14:45:27.428Z"
+    author: "CODER"
+    state: "ok"
+    note: "Release candidate v0.6.10 prepared on branch_pr route. Local release candidate gate passed: release:prepublish:fast, release:ci-check, release-ci-base 67/67, workflow coverage, significant coverage, and release-critical 4/4. PR #4163 opened for head fbaa7d73; GitHub checks are in progress."
 doc_version: 3
-doc_updated_at: "2026-05-26T09:09:46.705Z"
+doc_updated_at: "2026-05-26T14:45:27.447Z"
 doc_updated_by: "CODER"
 description: "Resolve local stale tag preflight drift, prepare the next patch release candidate for v0.6.10, publish it through the branch_pr release route, and record release evidence."
 sections:
@@ -75,6 +98,25 @@ sections:
     8. Record verification and finish evidence. Expected: ap verify and ap finish capture command evidence, release result, residual risks, and close-tail state.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-26T14:45:27.428Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Release candidate v0.6.10 prepared on branch_pr route. Local release candidate gate passed: release:prepublish:fast, release:ci-check, release-ci-base 67/67, workflow coverage, significant coverage, and release-critical 4/4. PR #4163 opened for head fbaa7d73; GitHub checks are in progress.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-26T09:09:46.705Z, excerpt_hash=sha256:771356f4eaffb67491b5b2a0f9796f53f324a3924ad95f01c66469f694b9123d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605260907-2F52BD-prepare-v0-6-10-patch-release/.agentplane/tasks/202605260907-2F52BD/blueprint/resolved-snapshot.json
+    - old_digest: 5d5bc22511b5a1d429be1f25eb1a763374103eabf2d31766877163c815494fa9
+    - current_digest: 5d5bc22511b5a1d429be1f25eb1a763374103eabf2d31766877163c815494fa9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605260907-2F52BD
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -111,6 +153,25 @@ Release plan: version=v0.6.10, tag=v0.6.10, route=branch_pr release candidate. S
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-26T14:45:27.428Z — VERIFY — ok
+
+By: CODER
+
+Note: Release candidate v0.6.10 prepared on branch_pr route. Local release candidate gate passed: release:prepublish:fast, release:ci-check, release-ci-base 67/67, workflow coverage, significant coverage, and release-critical 4/4. PR #4163 opened for head fbaa7d73; GitHub checks are in progress.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-26T09:09:46.705Z, excerpt_hash=sha256:771356f4eaffb67491b5b2a0f9796f53f324a3924ad95f01c66469f694b9123d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605260907-2F52BD-prepare-v0-6-10-patch-release/.agentplane/tasks/202605260907-2F52BD/blueprint/resolved-snapshot.json
+- old_digest: 5d5bc22511b5a1d429be1f25eb1a763374103eabf2d31766877163c815494fa9
+- current_digest: 5d5bc22511b5a1d429be1f25eb1a763374103eabf2d31766877163c815494fa9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605260907-2F52BD
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

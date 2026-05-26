@@ -15,8 +15,15 @@ Resolve local stale tag preflight drift, prepare the next patch release candidat
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Release candidate v0.6.10 prepared on branch_pr route. Local release candidate gate passed:
+release:prepublish:fast, release:ci-check, release-ci-base 67/67, workflow coverage, significant
+coverage, and release-critical 4/4. PR #4163 opened for head fbaa7d73; GitHub checks are in
+progress.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
