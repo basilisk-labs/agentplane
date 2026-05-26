@@ -170,8 +170,9 @@ Commands:
     context wiki lint  Validate wiki page frontmatter and source-link hygiene.
     context wiki new  Create a wiki page with Agentplane context frontmatter.
   Evaluators:
-    evaluator  List and inspect evaluator prompt modules.
+    evaluator  List, inspect, and run evaluator quality reviews.
     evaluator list  List evaluator prompt modules from .agentplane/evaluators.
+    evaluator run  Create and record a structured EVALUATOR quality review report.
     evaluator show  Print an evaluator prompt module.
   Evidence:
     evidence  Create and verify deterministic task evidence bundle manifests.
