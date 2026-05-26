@@ -1,0 +1,3 @@
+ .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 82 ++++++++++++++++++++
+ .../src/commands/hooks/run.pre-commit.ts           | 87 +++++++++++++++++++++-
+ 2 files changed, 167 insertions(+), 2 deletions(-)
