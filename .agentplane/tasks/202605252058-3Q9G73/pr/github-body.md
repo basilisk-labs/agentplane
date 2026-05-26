@@ -19,11 +19,9 @@ Extend commit subject policy to classify task commits, semantic hosted commits, 
 - Note:
 
 ```text
-Verified follow-up CI blocker fix. Commands passed: bun test
-packages/agentplane/src/commands/pr/internal/pr-paths.test.ts (3 pass), bun test
-packages/core/src/commit/commit-policy.test.ts (29 pass), bun run format:changed (Prettier passed),
-bun run typecheck (tsc -b passed), bun run test:fast (336 files passed; 2009 passed, 2 skipped),
-node .agentplane/policy/check-routing.mjs (policy routing OK).
+Verified review feedback fix for default Git merge subject variants. Commands passed: bun test
+packages/core/src/commit/commit-policy.test.ts (29 pass, 66 assertions), bun run format:changed, bun
+run typecheck.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -36,9 +34,9 @@ node .agentplane/policy/check-routing.mjs (policy routing OK).
 
 ```text
  .../src/commands/pr/internal/pr-paths.test.ts      |  4 +-
- packages/core/src/commit/commit-policy.test.ts     | 52 ++++++++++++++++++++++
- packages/core/src/commit/commit-policy.ts          | 44 ++++++++++++++++--
- 3 files changed, 95 insertions(+), 5 deletions(-)
+ packages/core/src/commit/commit-policy.test.ts     | 54 ++++++++++++++++++++++
+ packages/core/src/commit/commit-policy.ts          | 46 ++++++++++++++++--
+ 3 files changed, 99 insertions(+), 5 deletions(-)
 ```
 
 </details>

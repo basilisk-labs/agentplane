@@ -4,7 +4,7 @@ title: "Expand commit subject naming coverage"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -20,27 +20,26 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-26T05:32:55.578Z"
+  updated_at: "2026-05-26T05:53:18.964Z"
   updated_by: "CODER"
-  note: "Verified follow-up CI blocker fix. Commands passed: bun test packages/agentplane/src/commands/pr/internal/pr-paths.test.ts (3 pass), bun test packages/core/src/commit/commit-policy.test.ts (29 pass), bun run format:changed (Prettier passed), bun run typecheck (tsc -b passed), bun run test:fast (336 files passed; 2009 passed, 2 skipped), node .agentplane/policy/check-routing.mjs (policy routing OK)."
+  note: "Verified review feedback fix for default Git merge subject variants. Commands passed: bun test packages/core/src/commit/commit-policy.test.ts (29 pass, 66 assertions), bun run format:changed, bun run typecheck."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-26T05:33:05.015Z"
+  updated_at: "2026-05-26T05:53:31.163Z"
   updated_by: "EVALUATOR"
-  note: "Commit subject policy expansion and CI blocker fix are focused and verified."
-  evaluated_sha: "f54445348f9432b2d19a5d9ff0471ff5bc2c06e1"
+  note: "Review feedback addressed; default Git merge subjects are covered."
+  evaluated_sha: "e559cc5738db74231982e71d170f8a6c36818e6f"
   blueprint_digest: "b4634442440327264f085314b817fd3c1ba3c8d6d5b06724c8dfae9152f569b3"
   evidence_refs:
     - ".agentplane/tasks/202605252058-3Q9G73/README.md"
-    - ".agentplane/tasks/202605252058-3Q9G73/quality/20260526-053305015-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605252058-3Q9G73/quality/20260526-053305015-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605252058-3Q9G73/quality/20260526-053305015-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605252058-3Q9G73/quality/20260526-055331163-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605252058-3Q9G73/quality/20260526-055331163-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605252058-3Q9G73/quality/20260526-055331163-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605252058-3Q9G73/blueprint/resolved-snapshot.json"
     - "packages/core/src/commit/commit-policy.test.ts"
-    - "packages/agentplane/src/commands/pr/internal/pr-paths.test.ts"
   findings:
-    - "Reviewed final diff after hosted verify-unit failure. The additional pr-paths test change only aligns the mock with existing two-ref fallback behavior; commit subject policy still preserves strict task-context traceability."
+    - "The parser now accepts Merge branch '<src>' and Merge branch '<src>' of <url> in non-task context, with regression fixtures alongside the existing PR/into/remote-tracking/revert transport cases."
 commit: null
 comments:
   -
@@ -66,8 +65,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified follow-up CI blocker fix. Commands passed: bun test packages/agentplane/src/commands/pr/internal/pr-paths.test.ts (3 pass), bun test packages/core/src/commit/commit-policy.test.ts (29 pass), bun run format:changed (Prettier passed), bun run typecheck (tsc -b passed), bun run test:fast (336 files passed; 2009 passed, 2 skipped), node .agentplane/policy/check-routing.mjs (policy routing OK)."
+  -
+    type: "verify"
+    at: "2026-05-26T05:53:18.964Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified review feedback fix for default Git merge subject variants. Commands passed: bun test packages/core/src/commit/commit-policy.test.ts (29 pass, 66 assertions), bun run format:changed, bun run typecheck."
 doc_version: 3
-doc_updated_at: "2026-05-26T05:32:55.594Z"
+doc_updated_at: "2026-05-26T05:53:18.980Z"
 doc_updated_by: "CODER"
 description: "Extend commit subject policy to classify task commits, semantic hosted commits, merge transport commits, and known bot dependency commits so recent branch_pr history fits a documented naming convention without weakening task-bound traceability."
 sections:
@@ -123,6 +128,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605252058-3Q9G73
 
+    ### 2026-05-26T05:53:18.964Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified review feedback fix for default Git merge subject variants. Commands passed: bun test packages/core/src/commit/commit-policy.test.ts (29 pass, 66 assertions), bun run format:changed, bun run typecheck.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-26T05:32:55.594Z, excerpt_hash=sha256:de3e3278cda6d73589cc67452d8559e687c86a48010ee07987ddeb181e1e4c2a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605252058-3Q9G73-expand-commit-subject-naming-coverage/.agentplane/tasks/202605252058-3Q9G73/blueprint/resolved-snapshot.json
+    - old_digest: b4634442440327264f085314b817fd3c1ba3c8d6d5b06724c8dfae9152f569b3
+    - current_digest: b4634442440327264f085314b817fd3c1ba3c8d6d5b06724c8dfae9152f569b3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605252058-3Q9G73
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -135,6 +159,10 @@ sections:
     - Observation: Hosted verify-unit failed because pr-paths.test mocked only one missing git ref while runtime correctly tries task branch and origin/task branch.
       Impact: CI required check could not pass even though runtime behavior was correct.
       Resolution: Updated the test mock to reject both candidate refs before expecting null.
+
+    - Observation: Codex review identified missing non-task transport variants: Merge branch '<src>' and Merge branch '<src>' of <url>.
+      Impact: Default Git merge messages are now covered by the expanded naming convention.
+      Resolution: Added parser patterns and test fixtures for both variants.
 id_source: "generated"
 ---
 ## Summary
@@ -199,6 +227,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605252058-3Q9G73
 
+### 2026-05-26T05:53:18.964Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified review feedback fix for default Git merge subject variants. Commands passed: bun test packages/core/src/commit/commit-policy.test.ts (29 pass, 66 assertions), bun run format:changed, bun run typecheck.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-26T05:32:55.594Z, excerpt_hash=sha256:de3e3278cda6d73589cc67452d8559e687c86a48010ee07987ddeb181e1e4c2a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605252058-3Q9G73-expand-commit-subject-naming-coverage/.agentplane/tasks/202605252058-3Q9G73/blueprint/resolved-snapshot.json
+- old_digest: b4634442440327264f085314b817fd3c1ba3c8d6d5b06724c8dfae9152f569b3
+- current_digest: b4634442440327264f085314b817fd3c1ba3c8d6d5b06724c8dfae9152f569b3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605252058-3Q9G73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -215,3 +262,7 @@ BlueprintSnapshotRef:
 - Observation: Hosted verify-unit failed because pr-paths.test mocked only one missing git ref while runtime correctly tries task branch and origin/task branch.
   Impact: CI required check could not pass even though runtime behavior was correct.
   Resolution: Updated the test mock to reject both candidate refs before expecting null.
+
+- Observation: Codex review identified missing non-task transport variants: Merge branch '<src>' and Merge branch '<src>' of <url>.
+  Impact: Default Git merge messages are now covered by the expanded naming convention.
+  Resolution: Added parser patterns and test fixtures for both variants.
