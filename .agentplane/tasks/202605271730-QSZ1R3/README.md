@@ -1,10 +1,11 @@
 ---
 id: "202605271730-QSZ1R3"
 title: "Harden patch-release workflow ergonomics"
-status: "DOING"
+result_summary: "Merged via PR #4170."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented preflight role/active-task summary, hosted PR check waiting, integration queue doctor, SQLite warning suppression, and lifecycle invariant gate. Verified with typecheck, targeted lint, focused tests, docs freshness checks, lifecycle invariants, policy routing, doctor, preflight smoke, and queue doctor smoke."
   attempts: 0
-commit: null
+commit:
+  hash: "9e60bbdcafd6c8e08232691e13cf60f55e10df28"
+  message: "code: harden patch-release workflow gates"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing approved patch-release hardening in the dedicated branch_pr worktree, covering preflight, hosted checks, integration queue repair, SQLite read-path noise, and lifecycle invariant verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4170 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented preflight role/active-task summary, hosted PR check waiting, integration queue doctor, SQLite warning suppression, and lifecycle invariant gate. Verified with typecheck, targeted lint, focused tests, docs freshness checks, lifecycle invariants, policy routing, doctor, preflight smoke, and queue doctor smoke."
+  -
+    type: "status"
+    at: "2026-05-27T19:38:31.400Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4170 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-27T17:55:42.324Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-27T19:38:31.406Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement patch-release hardening across preflight, hosted PR gates, integration queue repair, SQLite read-path noise, and lifecycle invariants."
 sections:
   Summary: |-
