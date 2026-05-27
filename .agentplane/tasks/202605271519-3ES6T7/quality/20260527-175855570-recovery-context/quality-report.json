@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202605271519-3ES6T7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-27T17:58:55.570Z",
+  "verdict": "pass",
+  "summary": "Codex runner bootstrap now starts codex adapter prompts with /goal and exposes ap task run for task execution; hosted PR verification is green on PR #4168.",
+  "evaluated_sha": "b078fb9a369d90c6ce211e1213b487a6c4526e70",
+  "blueprint_digest": "40d457050951178de7308a290f1096845aa5335c2d63f65bb502cc4eee913041",
+  "findings": [
+    "Implementation preserves non-codex bootstrap behavior and records runner dry-run artifacts."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605271519-3ES6T7/README.md",
+    "https://github.com/basilisk-labs/agentplane/pull/4168"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
