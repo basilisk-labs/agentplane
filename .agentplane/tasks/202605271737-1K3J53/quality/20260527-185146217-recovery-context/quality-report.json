@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202605271737-1K3J53",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-27T18:51:46.217Z",
+  "verdict": "pass",
+  "summary": "Route oracle now reports phase, authoritative checkout, blocker, and next command, with approval/done phases taking precedence over included batch delegation.",
+  "evaluated_sha": "3635ae69ed4cea3ba464cab7bb148851cbac20ea",
+  "blueprint_digest": "b8b091d55f60e3de3d8b767e00da151179c94ed96afebcc650ca245a8c723b61",
+  "findings": [
+    "Addressed PR review thread by moving done and approve_plan handling ahead of included batch delegation; added regression coverage for approved included delegation and unapproved included plan approval."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605271737-1K3J53/README.md",
+    "bun test packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts; bun test --timeout 20000 packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; bun run typecheck; bun run hotspots:check; bun run format:check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Broad local pre-push full-fast remains too long for this machine; protected PR hosted checks remain the merge source of truth."
+  ]
+}
