@@ -65,7 +65,8 @@ describe("runner blueprint guards", () => {
     expect(bootstrap).toContain("- route_phase: worktree_needed");
     expect(bootstrap).toContain("- route_authoritative_checkout: base_checkout");
     expect(bootstrap).toContain("- route_primary_blocker: missing_pr_branch");
-    expect(bootstrap).toContain("Route oracle contract: follow next_command");
+    expect(bootstrap).toContain("Route oracle contract: follow the rendered route_next_command");
+    expect(bootstrap).toContain("route_decision.oracle.nextCommand");
   });
 
   it("rejects bundle policy modules that exceed the resolved blueprint budget", () => {
