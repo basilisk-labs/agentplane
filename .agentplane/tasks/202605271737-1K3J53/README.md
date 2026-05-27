@@ -4,7 +4,7 @@ title: "Strengthen task route oracle"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -25,20 +25,20 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-27T18:30:03.800Z"
+  updated_at: "2026-05-27T18:51:46.217Z"
   updated_by: "EVALUATOR"
-  note: "Route oracle now reports phase, authoritative checkout, blocker, and next command across next-action/status/brief surfaces."
-  evaluated_sha: "0a80638e2d4ff7fc5119782cfecd0a6abb3da3f3"
+  note: "Route oracle now reports phase, authoritative checkout, blocker, and next command, with approval/done phases taking precedence over included batch delegation."
+  evaluated_sha: "3635ae69ed4cea3ba464cab7bb148851cbac20ea"
   blueprint_digest: "b8b091d55f60e3de3d8b767e00da151179c94ed96afebcc650ca245a8c723b61"
   evidence_refs:
     - ".agentplane/tasks/202605271737-1K3J53/README.md"
-    - ".agentplane/tasks/202605271737-1K3J53/quality/20260527-183003800-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605271737-1K3J53/quality/20260527-183003800-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605271737-1K3J53/quality/20260527-183003800-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605271737-1K3J53/quality/20260527-185146217-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605271737-1K3J53/quality/20260527-185146217-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605271737-1K3J53/quality/20260527-185146217-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605271737-1K3J53/blueprint/resolved-snapshot.json"
-    - "PR #4169 checks: PR verification, test-windows, verify-contract, verify-unit, verify-static, verify-workflow, verify-coverage, verify-cli-critical, docs, CodeQL all passed"
+    - "bun test packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts; bun test --timeout 20000 packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; bun run typecheck; bun run hotspots:check; bun run format:check"
   findings:
-    - "Focused route-decision tests, typecheck, routing policy, doctor, hotspots, format check, and hosted PR checks passed; local pre-push full-fast timed out in broad Vitest after required focused gates had passed."
+    - "Addressed PR review thread by moving done and approve_plan handling ahead of included batch delegation; added regression coverage for approved included delegation and unapproved included plan approval."
 commit: null
 comments:
   -
