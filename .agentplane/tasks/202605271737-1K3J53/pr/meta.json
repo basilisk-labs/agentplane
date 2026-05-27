@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-27T18:57:13Z",
   "base": "main",
   "branch": "task/202605271737-1K3J53/strengthen-task-route-oracle",
   "created_at": "2026-05-27T17:39:04.987Z",
   "diffstat_sha256": "sha256:1e93c6c1d58634b7afece6aa68cbc15f6d02c5a4d1c0a89f35b61a3c447cfbd3",
   "last_verified_at": "2026-05-27T17:59:20.793Z",
   "last_verified_diffstat_sha256": "sha256:2e5feeb9ce4af439131b52a5ec9845f292b287cea590d09a52f507dda8932b8e",
+  "merge_commit": "d5e9b1f2f371adbf1a7901a16ca5e8f80ce32296",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-27T18:57:13Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605271737-1K3J53",
-  "updated_at": "2026-05-27T17:39:04.987Z",
+  "updated_at": "2026-05-27T18:57:13Z",
   "verify": {
     "status": "pass"
   }

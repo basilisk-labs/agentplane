@@ -1,10 +1,11 @@
 ---
 id: "202605271737-1K3J53"
 title: "Strengthen task route oracle"
-status: "DOING"
+result_summary: "Merged via PR #4169."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - "bun test packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts; bun test --timeout 20000 packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; bun run typecheck; bun run hotspots:check; bun run format:check"
   findings:
     - "Addressed PR review thread by moving done and approve_plan handling ahead of included batch delegation; added regression coverage for approved included delegation and unapproved included plan approval."
-commit: null
+commit:
+  hash: "d5e9b1f2f371adbf1a7901a16ca5e8f80ce32296"
+  message: "🚧 1K3J53 task: Refresh evaluator review"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved route oracle improvement in the dedicated branch_pr worktree, scoped to CLI route output and focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4169 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,9 +70,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Refactored route oracle into a separate module after hosted hotspot failure."
+  -
+    type: "status"
+    at: "2026-05-27T18:57:53.749Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4169 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-27T17:59:20.841Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-27T18:57:53.755Z"
+doc_updated_by: "INTEGRATOR"
 description: "Enhance the CLI route oracle so one command reports the current phase, authoritative checkout, blocker, and next concrete command for agent execution."
 sections:
   Summary: |-
