@@ -62,6 +62,7 @@ ap quickstart
 ap task list
 ap task active
 git status --short --untracked-files=no
+git status --short
 git rev-parse --abbrev-ref HEAD
 ```
 
@@ -176,8 +177,6 @@ Routing constraints:
 - MUST treat user-authenticated GitHub actions as user-attributed publication and route post-merge fixes through a new task or explicit `post-merge-` branch or `followup` slug token.
 
 Role boundaries: ORCHESTRATOR = preflight + plan + approvals; PLANNER = executable task graph creation/update; INTEGRATOR = base integration/finish in `branch_pr`.
-
----
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.body.core.dod" slot="body" mutability="replaceable" -->
