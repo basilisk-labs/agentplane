@@ -1,10 +1,11 @@
 ---
 id: "202605271837-TFNXV6"
 title: "Improve commit message formatting"
-status: "DOING"
+result_summary: "Merged via PR #4172."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/commands/guard/impl/close-message.test.ts. Result: pass. Evidence: 17 tests passed, including emoji subject and verification wording regressions. Scope: close commit message builder. Command: bun test packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.close.test.ts. Result: pass. Evidence: 5 tests passed. Scope: commit wrapper close integration. Command: bun test packages/core/src/commit/commit-policy.test.ts. Result: pass. Evidence: 29 tests passed. Scope: commit subject policy. Command: bunx eslint touched guard files. Result: pass. Evidence: targeted lint exited 0 after CI lint fix. Scope: touched guard bucket files. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: policy routing. Command: bunx prettier --check touched files. Result: pass. Evidence: all matched files use Prettier code style. Scope: touched files. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: workspace typecheck. Command: bun run ci:local:fast. Result: pass. Evidence: full-fast completed through critical CLI checks. Scope: local fast CI. Command: git diff --check. Result: pass. Evidence: no whitespace errors. Scope: final diff."
   attempts: 0
-commit: null
+commit:
+  hash: "944f38a1c81c8b6d4781e1061dc14791fcc5a41f"
+  message: "Merge pull request #4172 from basilisk-labs/task/202605271837-TFNXV6/commit-message-format"
 comments:
   -
     author: "CODER"
     body: "Start: improving task commit message rendering while preserving emoji prefixes, with focused close-message and commit-policy verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4172 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/commands/guard/impl/close-message.test.ts. Result: pass. Evidence: 17 tests passed, including emoji subject and verification wording regressions. Scope: close commit message builder. Command: bun test packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.close.test.ts. Result: pass. Evidence: 5 tests passed. Scope: commit wrapper close integration. Command: bun test packages/core/src/commit/commit-policy.test.ts. Result: pass. Evidence: 29 tests passed. Scope: commit subject policy. Command: bunx eslint touched guard files. Result: pass. Evidence: targeted lint exited 0 after CI lint fix. Scope: touched guard bucket files. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: policy routing. Command: bunx prettier --check touched files. Result: pass. Evidence: all matched files use Prettier code style. Scope: touched files. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: workspace typecheck. Command: bun run ci:local:fast. Result: pass. Evidence: full-fast completed through critical CLI checks. Scope: local fast CI. Command: git diff --check. Result: pass. Evidence: no whitespace errors. Scope: final diff."
+  -
+    type: "status"
+    at: "2026-05-27T20:02:48.971Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4172 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-27T19:06:35.174Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-27T20:02:48.976Z"
+doc_updated_by: "INTEGRATOR"
 description: "Keep emoji-prefixed task commit subjects while improving subject readability and structured commit bodies for summary, verification, and refs."
 sections:
   Summary: |-
