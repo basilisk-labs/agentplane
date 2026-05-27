@@ -131,6 +131,17 @@ human-assisted workflow. For repositories that opt into the local runner path, `
 <task-id>` prepares AgentPlane runner artifacts and executes the configured adapter; with the default
 Codex adapter the prompt begins with `/goal ...` before the runner bundle contract.
 
+Runner observability commands are part of the same public surface:
+
+```bash
+agentplane task run status <task-id> --json
+agentplane task run inspect <task-id>
+agentplane task run logs <task-id> --stream events --follow
+```
+
+Use them from the parent/orchestrator context to monitor child runners without taking over their
+lifecycle authority.
+
 ## Advanced task projections
 
 Optional projection and maintenance commands are intentionally outside the normal public happy path.

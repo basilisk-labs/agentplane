@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { readFile } from "node:fs/promises";
+import { readFile, rm, writeFile } from "node:fs/promises";
+import { gzipSync } from "node:zlib";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -80,6 +81,7 @@ describe("runCli task run", () => {
         task_id: string;
         mode: string;
         adapter_id: string;
+        run_id: string;
         bootstrap_path: string;
         result_path: string;
       };
@@ -96,6 +98,124 @@ describe("runCli task run", () => {
       expect(bootstrap).toContain("Execute-mode runs must write a valid JSON result manifest");
     } finally {
       io.restore();
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        expect(await runCli(["task", "run", "status", taskId, "--json", "--root", root])).toBe(0);
+        const payload = JSON.parse(io.stdout) as {
+          task_id: string;
+          status: string;
+          pid_alive: boolean | null;
+          paths: { events: string; trace: string; state: string; stderr: string };
+        };
+        expect(payload.task_id).toBe(taskId);
+        expect(payload.status).toBe("prepared");
+        expect(payload.pid_alive).toBe(null);
+        expect(payload.paths.events).toContain(`/runs/`);
+        expect(payload.paths.state).toContain("state.json");
+        await writeFile(`${payload.paths.stderr}.gz`, gzipSync(Buffer.from("compressed stderr\n")));
+        await rm(payload.paths.stderr, { force: true });
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        expect(
+          await runCli([
+            "task",
+            "run",
+            "inspect",
+            taskId,
+            "--events",
+            "1",
+            "--json",
+            "--root",
+            root,
+          ]),
+        ).toBe(0);
+        const payload = JSON.parse(io.stdout) as {
+          recent_events: { type: string }[];
+          prepared_metadata: { prompt_count: number };
+        };
+        expect(payload.recent_events).toHaveLength(1);
+        expect(payload.recent_events[0]?.type).toBe("runner_prepared");
+        expect(payload.prepared_metadata.prompt_count).toBeGreaterThan(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        expect(
+          await runCli([
+            "task",
+            "run",
+            "logs",
+            taskId,
+            "--stream",
+            "events",
+            "--tail",
+            "1",
+            "--root",
+            root,
+          ]),
+        ).toBe(0);
+        expect(io.stdout).toContain("runner_prepared");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        expect(
+          await runCli([
+            "task",
+            "run",
+            "logs",
+            taskId,
+            "--stream",
+            "stderr",
+            "--tail",
+            "1",
+            "--root",
+            root,
+          ]),
+        ).toBe(0);
+        expect(io.stdout).toContain("compressed stderr");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        expect(
+          await runCli([
+            "task",
+            "run",
+            "logs",
+            taskId,
+            "--stream",
+            "events",
+            "--follow",
+            "--root",
+            root,
+          ]),
+        ).toBe(0);
+        expect(io.stderr).toContain("nothing to follow until it is running");
+      } finally {
+        io.restore();
+      }
     }
   });
 });
