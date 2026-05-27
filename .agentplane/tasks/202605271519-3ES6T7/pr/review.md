@@ -13,7 +13,7 @@ Created: 2026-05-27T15:20:20.635Z
 ## Verification
 
 - State: ok
-- Note: Connected public task run command and verified Codex /goal dry-run path.
+- Note: Reverified after static lint fix: lint:core, typecheck, targeted task-run/bootstrap tests, and git diff --check pass locally.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

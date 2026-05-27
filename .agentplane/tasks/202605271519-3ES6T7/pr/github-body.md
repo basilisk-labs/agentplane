@@ -16,7 +16,12 @@ Update the AgentPlane Codex runner bootstrap so Codex exec receives a prompt tha
 ## Verification
 
 - State: ok
-- Note: Connected public task run command and verified Codex /goal dry-run path.
+- Note:
+
+```text
+Reverified after static lint fix: lint:core, typecheck, targeted task-run/bootstrap tests, and git
+diff --check pass locally.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

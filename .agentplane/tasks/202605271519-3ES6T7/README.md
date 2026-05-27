@@ -4,7 +4,7 @@ title: "Start Codex runner prompts with /goal"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-27T15:51:28.617Z"
+  updated_at: "2026-05-27T17:30:01.987Z"
   updated_by: "CODER"
-  note: "Connected public task run command and verified Codex /goal dry-run path."
+  note: "Reverified after static lint fix: lint:core, typecheck, targeted task-run/bootstrap tests, and git diff --check pass locally."
   attempts: 0
 commit: null
 comments:
@@ -49,8 +49,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Connected public task run command and verified Codex /goal dry-run path."
+  -
+    type: "verify"
+    at: "2026-05-27T17:30:01.987Z"
+    author: "CODER"
+    state: "ok"
+    note: "Reverified after static lint fix: lint:core, typecheck, targeted task-run/bootstrap tests, and git diff --check pass locally."
 doc_version: 3
-doc_updated_at: "2026-05-27T15:51:28.638Z"
+doc_updated_at: "2026-05-27T17:30:02.068Z"
 doc_updated_by: "CODER"
 description: "Update the AgentPlane Codex runner bootstrap so Codex exec receives a prompt that starts with the /goal slash command for task and context runner execution, while preserving the existing bundle/result manifest contract."
 sections:
@@ -102,6 +108,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-27T15:50:34.761Z, excerpt_hash=sha256:44ea6618756230ce0f72f7158e7e4777514fa04be76d6bec07f13f7769bb0a9a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605271519-3ES6T7-codex-goal-bootstrap/.agentplane/tasks/202605271519-3ES6T7/blueprint/resolved-snapshot.json
+    - old_digest: 40d457050951178de7308a290f1096845aa5335c2d63f65bb502cc4eee913041
+    - current_digest: 40d457050951178de7308a290f1096845aa5335c2d63f65bb502cc4eee913041
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605271519-3ES6T7
+
+    ### 2026-05-27T17:30:01.987Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Reverified after static lint fix: lint:core, typecheck, targeted task-run/bootstrap tests, and git diff --check pass locally.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-27T15:51:28.638Z, excerpt_hash=sha256:44ea6618756230ce0f72f7158e7e4777514fa04be76d6bec07f13f7769bb0a9a
 
     Details:
 
@@ -184,6 +209,25 @@ Note: Connected public task run command and verified Codex /goal dry-run path.
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-27T15:50:34.761Z, excerpt_hash=sha256:44ea6618756230ce0f72f7158e7e4777514fa04be76d6bec07f13f7769bb0a9a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605271519-3ES6T7-codex-goal-bootstrap/.agentplane/tasks/202605271519-3ES6T7/blueprint/resolved-snapshot.json
+- old_digest: 40d457050951178de7308a290f1096845aa5335c2d63f65bb502cc4eee913041
+- current_digest: 40d457050951178de7308a290f1096845aa5335c2d63f65bb502cc4eee913041
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605271519-3ES6T7
+
+### 2026-05-27T17:30:01.987Z — VERIFY — ok
+
+By: CODER
+
+Note: Reverified after static lint fix: lint:core, typecheck, targeted task-run/bootstrap tests, and git diff --check pass locally.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-27T15:51:28.638Z, excerpt_hash=sha256:44ea6618756230ce0f72f7158e7e4777514fa04be76d6bec07f13f7769bb0a9a
 
 Details:
 

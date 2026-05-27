@@ -70,7 +70,7 @@ function renderPayload(opts: {
     bootstrap_path: opts.bootstrapPath,
     result_path: opts.resultPath,
     ...(opts.status ? { status: opts.status } : {}),
-    ...(opts.exitCode !== undefined ? { exit_code: opts.exitCode } : {}),
+    ...(opts.exitCode === undefined ? {} : { exit_code: opts.exitCode }),
     ...(opts.summary ? { summary: opts.summary } : {}),
   };
 }
