@@ -110,7 +110,9 @@ prompts.
 
 Runner configuration controls the local `agentplane task run <task-id>` execution path. The default
 adapter is `codex`; it runs Codex non-interactively against the prepared AgentPlane bundle and starts
-the prompt with `/goal ...`.
+the prompt with `/goal ...`. Runner state, events, trace, and stderr artifacts are written under
+`.agentplane/tasks/<task-id>/runs/<run-id>/` and can be inspected with `agentplane task run status`,
+`agentplane task run inspect`, and `agentplane task run logs`.
 
 ### runner.custom
 

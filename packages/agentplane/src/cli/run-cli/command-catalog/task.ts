@@ -44,7 +44,12 @@ import { taskPlanSpec } from "../../../commands/task/plan.command.js";
 import { taskRebuildIndexSpec } from "../../../commands/task/rebuild-index.command.js";
 import { taskReclaimSpec } from "../../../commands/task/reclaim.command.js";
 import { taskResumeContextSpec } from "../../../commands/task/resume-context.command.js";
-import { taskRunSpec } from "../../../commands/task/run.command.js";
+import {
+  taskRunInspectSpec,
+  taskRunLogsSpec,
+  taskRunSpec,
+  taskRunStatusSpec,
+} from "../../../commands/task/run.command.js";
 import { taskScaffoldSpec } from "../../../commands/task/scaffold.command.js";
 import { taskScrubSpec } from "../../../commands/task/scrub.command.js";
 import { taskSearchSpec } from "../../../commands/task/search.spec.js";
@@ -86,7 +91,10 @@ import {
   loadTaskNewSpec,
   loadTaskBeginSpec,
   loadTaskBriefSpec,
+  loadTaskRunInspectSpec,
+  loadTaskRunLogsSpec,
   loadTaskRunSpec,
+  loadTaskRunStatusSpec,
   loadTaskCompleteSpec,
   loadTaskDeriveSpec,
   loadTaskEvidenceCheckSpec,
@@ -166,6 +174,9 @@ export const TASK_COMMANDS = [
   }),
   declareCommand(taskBeginSpec, { load: loadTaskBeginSpec }),
   declareCommand(taskBriefSpec, { load: loadTaskBriefSpec }),
+  declareCommand(taskRunStatusSpec, { load: loadTaskRunStatusSpec }),
+  declareCommand(taskRunInspectSpec, { load: loadTaskRunInspectSpec }),
+  declareCommand(taskRunLogsSpec, { load: loadTaskRunLogsSpec }),
   declareCommand(taskRunSpec, { load: loadTaskRunSpec }),
   declareCommand(taskCompleteSpec, { load: loadTaskCompleteSpec }),
   declareCommand(taskDeriveSpec, {

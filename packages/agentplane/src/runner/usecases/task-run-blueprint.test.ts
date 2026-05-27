@@ -25,6 +25,9 @@ describe("runner blueprint guards", () => {
     expect(bootstrap).toContain(
       "- result_path: /repo/.agentplane/tasks/202605271519-3ES6T7/runs/run-123/result.json",
     );
+    expect(bootstrap).toContain("Keep lifecycle authority with the parent AgentPlane workflow");
+    expect(bootstrap).toContain("Assume sibling runners may be executing concurrently");
+    expect(bootstrap).toContain("report possible write conflicts in the result manifest");
   });
 
   it("leaves non-codex task bootstraps on the standard runner heading", () => {

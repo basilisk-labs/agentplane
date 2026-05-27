@@ -216,11 +216,49 @@ export function buildRunnerHintCommands(opts: {
   resume_command: string | null;
   retry_command: string | null;
 } {
-  void opts;
+  const runCommand = `agentplane task run ${opts.task_id}`;
+  const statusCommand = opts.run_id
+    ? `agentplane task run status ${opts.task_id} --run-id ${opts.run_id}`
+    : `agentplane task run status ${opts.task_id}`;
+  const logsCommand = opts.run_id
+    ? `agentplane task run logs ${opts.task_id} --run-id ${opts.run_id} --stream events --follow`
+    : `agentplane task run logs ${opts.task_id} --stream events --follow`;
+  if (!opts.run_id || !opts.status) {
+    return {
+      next_action: "run",
+      next_command: runCommand,
+      resume_command: runCommand,
+      retry_command: null,
+    };
+  }
+  if (opts.status === "running") {
+    return {
+      next_action: "wait",
+      next_command: statusCommand,
+      resume_command: logsCommand,
+      retry_command: null,
+    };
+  }
+  if (opts.status === "failed" || opts.status === "cancelled") {
+    return {
+      next_action: "retry",
+      next_command: runCommand,
+      resume_command: statusCommand,
+      retry_command: runCommand,
+    };
+  }
+  if (opts.status === "prepared") {
+    return {
+      next_action: "resume",
+      next_command: runCommand,
+      resume_command: runCommand,
+      retry_command: runCommand,
+    };
+  }
   return {
     next_action: "none",
-    next_command: null,
-    resume_command: null,
-    retry_command: null,
+    next_command: `agentplane task verify-show ${opts.task_id}`,
+    resume_command: statusCommand,
+    retry_command: runCommand,
   };
 }

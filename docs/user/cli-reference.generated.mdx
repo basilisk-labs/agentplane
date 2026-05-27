@@ -27,6 +27,9 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task plan approve](#task-plan-approve)
   - [task plan set](#task-plan-set)
   - [task run](#task-run)
+  - [task run inspect](#task-run-inspect)
+  - [task run logs](#task-run-logs)
+  - [task run status](#task-run-status)
   - [task search](#task-search)
   - [task show](#task-show)
   - [task start-ready](#task-start-ready)
@@ -803,6 +806,78 @@ agentplane task run 202602030608-F1Q8AB --dry-run --json
 ```
 
 - Inspect the prepared runner invocation and artifact paths without starting the agent.
+
+### task run inspect
+
+Inspect task runner artifacts, state, and recent events.
+
+Usage:
+
+```text
+agentplane task run inspect <task-id> [options]
+```
+
+Options:
+
+- `--run-id <run-id>`: Inspect a specific runner run id.
+- `--json`: Emit JSON. (default=false)
+- `--events <count>`: Number of recent runner events to show. (default=10)
+
+Examples:
+
+```sh
+agentplane task run inspect 202602030608-F1Q8AB
+```
+
+- Inspect artifact paths and recent runner events.
+
+### task run logs
+
+Print task runner events, trace, or stderr logs.
+
+Usage:
+
+```text
+agentplane task run logs <task-id> [options]
+```
+
+Options:
+
+- `--run-id <run-id>`: Inspect a specific runner run id.
+- `--stream <events|trace|stderr>`: Runner log stream to print. (choices=events|trace|stderr, default=trace)
+- `-f, --follow`: Follow log output until the run exits. (default=false)
+- `--tail <lines>`: Number of trailing lines to print before following. (default=80)
+
+Examples:
+
+```sh
+agentplane task run logs 202602030608-F1Q8AB --stream events --follow
+```
+
+- Watch runner lifecycle events while a task run is active.
+
+### task run status
+
+Show the latest or selected task runner run status.
+
+Usage:
+
+```text
+agentplane task run status <task-id> [options]
+```
+
+Options:
+
+- `--run-id <run-id>`: Inspect a specific runner run id.
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane task run status 202602030608-F1Q8AB --json
+```
+
+- Inspect the latest runner state for a task.
 
 ### task search
 
