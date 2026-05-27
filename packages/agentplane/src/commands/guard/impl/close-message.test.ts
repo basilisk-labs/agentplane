@@ -83,7 +83,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     expect(msg.body).not.toContain(".agentplane/tasks/");
   });
 
-  it("uses a clear fallback marker when result_summary is missing", async () => {
+  it("preserves the legacy subject shape when the implementation commit is not task-formatted", async () => {
     const { root, implHash } = await mkRepoWithImplCommit();
     const task: TaskData = {
       id: "202602081506-R18Y1Q",
@@ -100,7 +100,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toBe("🧩 R18Y1Q cli: add close commit mode");
+    expect(msg.subject).toBe("cli: add close commit mode");
     expect(msg.subject).not.toContain("(no result_summary)");
   });
 
@@ -127,8 +127,8 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toBe("🧩 R18Y1Q docs: finish force approval");
-    expect(msg.subject).not.toBe("🧩 R18Y1Q docs: force-finish-check");
+    expect(msg.subject).toBe("docs: finish force approval");
+    expect(msg.subject).not.toBe("docs: force-finish-check");
   });
 
   it("uses spike emoji and does not require verify summary", async () => {
@@ -153,7 +153,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toBe("🧩 R18Y1Q cli: spike close message builder");
+    expect(msg.subject).toBe("cli: spike close message builder");
     expect(msg.body).toContain("Verification:\n- Not required (spike).");
   });
 
@@ -217,7 +217,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
     expect(msg.subject).toBe(
-      "🧩 R18Y1Q cli: this summary is intentionally very long to exceed the close subject...",
+      "cli: this summary is intentionally very long to exceed the close subject...",
     );
     expect(msg.body).toContain("Verification:\n- Ok (see task verification note).");
     expect(msg.body).toContain("Why:\n- Task metadata: breaking; risk=high.");
