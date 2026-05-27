@@ -95,7 +95,8 @@ export function renderTaskRunnerBootstrap(
     "",
     "Use bundle.json as the complete runner input. Do not reconstruct prompts or route decisions from CLI argv.",
     "Follow route_decision in bundle.json unless local state has changed; if it may be stale, run `agentplane task next-action <task-id> --explain` before mutating.",
-    "Route oracle contract: follow next_command, run it from authoritative_checkout, treat primary_blocker as the current stop reason, and use phase instead of manually reconstructing branch/worktree/PR state.",
+    "Route oracle contract: follow the rendered route_next_command, run it from route_authoritative_checkout, treat route_primary_blocker as the current stop reason, and use route_phase instead of manually reconstructing branch/worktree/PR state.",
+    "When reading bundle.json directly, use camelCase JSON paths: route_decision.oracle.nextCommand, route_decision.oracle.authoritativeCheckout, route_decision.oracle.blocker, and route_decision.oracle.phase.",
     ...(stopRules.length > 0
       ? [
           "",
