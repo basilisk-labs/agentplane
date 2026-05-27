@@ -73,6 +73,8 @@ describe("runCli route decision commands", () => {
       const code = await runCli(["task", "status", taskId, "--route", "--root", root]);
       expect(code).toBe(0);
       expect(statusIo.stdout).toContain(`task:                        ${taskId} TODO`);
+      expect(statusIo.stdout).toContain("phase:                       worktree_needed");
+      expect(statusIo.stdout).toContain("authoritative_checkout:      base_checkout");
       expect(statusIo.stdout).toContain("next_code:                   start_or_recover_worktree");
       expect(statusIo.stdout).toContain("blocker:                     missing_pr_branch");
     } finally {
@@ -84,12 +86,24 @@ describe("runCli route decision commands", () => {
       const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
       expect(code).toBe(0);
       const parsed = JSON.parse(nextIo.stdout) as {
+        route_oracle: {
+          phase: string;
+          authoritativeCheckout: string;
+          blocker: { code: string } | null;
+          nextCommand: string;
+        };
         next_action: { code: string; command: string };
       };
+      expect(parsed.route_oracle).toMatchObject({
+        phase: "worktree_needed",
+        authoritativeCheckout: "base_checkout",
+        blocker: { code: "missing_pr_branch" },
+      });
       expect(parsed.next_action.code).toBe("start_or_recover_worktree");
       expect(parsed.next_action.command).toBe(
         `agentplane work start ${taskId} --agent CODER --slug route-decision-task --worktree`,
       );
+      expect(parsed.route_oracle.nextCommand).toBe(parsed.next_action.command);
     } finally {
       nextIo.restore();
     }
@@ -174,6 +188,8 @@ describe("runCli route decision commands", () => {
         const code = await runCli(["task", "brief", taskId, "--root", root]);
         expect(code).toBe(0);
         expect(textIo.stdout).toContain(`task brief: ${taskId}`);
+        expect(textIo.stdout).toContain("phase:");
+        expect(textIo.stdout).toContain("authoritative_checkout:");
         expect(textIo.stdout).toContain("next_code:");
         expect(textIo.stdout).toContain("confidence:");
         expect(textIo.stdout).toContain("verify_steps:");
@@ -241,7 +257,12 @@ describe("runCli route decision commands", () => {
         const parsed = JSON.parse(jsonIo.stdout) as {
           contract: { kind: string; version: number };
           task: { id: string };
-          route: { workflow_mode: string; next_action_code: string };
+          route: {
+            workflow_mode: string;
+            phase: string;
+            authoritative_checkout: string;
+            next_action_code: string;
+          };
           next_action: { code: string; command: string };
           verify_steps: { text: string; filled: boolean; quality: string };
           blueprint: { blueprint_id?: string; required_evidence?: string[] };
@@ -259,6 +280,8 @@ describe("runCli route decision commands", () => {
         });
         expect(parsed.task.id).toBe(taskId);
         expect(parsed.route.workflow_mode).toBe("branch_pr");
+        expect(parsed.route.phase).toBe("verify_or_pr_update");
+        expect(parsed.route.authoritative_checkout).toBe("task_worktree");
         expect(parsed.route.next_action_code).toBe("verify_or_update_pr");
         expect(parsed.next_action.code).toBe("verify_or_update_pr");
         expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
@@ -743,10 +766,16 @@ describe("runCli route decision commands", () => {
         ]);
         expect(code).toBe(0);
         const parsed = JSON.parse(nextIo.stdout) as {
+          route_oracle: { phase: string; authoritativeCheckout: string; blocker: { code: string } };
           next_action: { code: string; command: string };
           blockers: { code: string }[];
         };
         expect(parsed.blockers.map((blocker) => blocker.code)).toContain("pr_meta_stale");
+        expect(parsed.route_oracle).toMatchObject({
+          phase: "pr_artifacts_stale",
+          authoritativeCheckout: "task_worktree",
+          blocker: { code: "pr_meta_stale" },
+        });
         expect(parsed.next_action.code).toBe("update_pr_artifacts");
         expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
       } finally {
