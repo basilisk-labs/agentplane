@@ -4,7 +4,7 @@ title: "Add runner observability foundation"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,31 @@ verification:
   updated_by: "CODER"
   note: "Runner observability foundation implemented and locally verified."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-27T19:15:38.164Z"
+  updated_by: "EVALUATOR"
+  note: "Runner observability foundation satisfies approved scope: new status/inspect/logs commands are implemented, registered, documented, and verified with targeted runner tests plus hosted PR checks."
+  evaluated_sha: "9e6ecb218371161606b93584108ffd827d84b75f"
+  blueprint_digest: "dfa22f3525d2b3fab5460e339ea1e3008930ab86bc4daf42a669514813c8bead"
+  evidence_refs:
+    - ".agentplane/tasks/202605271841-QKDHZY/README.md"
+    - ".agentplane/tasks/202605271841-QKDHZY/quality/20260527-191538164-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605271841-QKDHZY/quality/20260527-191538164-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605271841-QKDHZY/quality/20260527-191538164-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605271841-QKDHZY/blueprint/resolved-snapshot.json"
+    - "bun test packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts"
+    - "bun run typecheck"
+    - "bun run docs:cli:check"
+    - "bun run lint:core"
+    - "bun run format:check"
+    - "git diff --check"
+    - "node .agentplane/policy/check-routing.mjs"
+    - "ap doctor"
+    - "GitHub PR #4174 statusCheckRollup success at 9e6ecb218371161606b93584108ffd827d84b75f"
+  findings:
+    - "CLI surfaces cover current status, structured inspection, event/trace/stderr logs, tailing, and next-action handoff guidance without widening child runner lifecycle authority."
+    - "Bootstrap wording adds coordination and lifecycle-authority constraints for independent Codex runners; tests assert the new prompt contract."
 commit: null
 comments:
   -
