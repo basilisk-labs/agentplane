@@ -4,7 +4,7 @@ title: "Teach agent prompts route oracle fields"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,22 @@ verification:
   updated_by: "CODER"
   note: "Implemented route oracle guidance in agent templates, role/quickstart/bootstrap prompt surfaces, generated agent bootstrap docs, and runner bootstrap. Evidence: focused prompt/runner tests passed (14 pass); agents:check passed; docs:bootstrap:check and docs:cli:check passed; typecheck passed; format:check passed; hotspots:check passed with existing warnings only; policy routing OK; ap doctor OK with informational runtime notices only."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-27T19:51:20.854Z"
+  updated_by: "EVALUATOR"
+  note: "Agent-facing prompts now explicitly treat task next-action --explain as the route oracle and name phase, authoritative_checkout, primary_blocker, and next_command across role notes, agent templates, bootstrap docs, and runner bootstrap."
+  evaluated_sha: "c49b68363a061dc6cce2d8ccadf5417ceb6ff509"
+  blueprint_digest: "60a9768b36ca75d14ae76c56c76ed86d72243cba7d5a86b232f5f1710d161933"
+  evidence_refs:
+    - ".agentplane/tasks/202605271932-22VJM6/README.md"
+    - ".agentplane/tasks/202605271932-22VJM6/quality/20260527-195120854-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605271932-22VJM6/quality/20260527-195120854-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605271932-22VJM6/quality/20260527-195120854-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605271932-22VJM6/blueprint/resolved-snapshot.json"
+    - "Local: bun test packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts; bun run agents:check; bun run docs:bootstrap:check; bun run docs:cli:check; bun run typecheck; bun run format:check; bun run hotspots:check; node .agentplane/policy/check-routing.mjs; ap doctor. Hosted: PR #4176 CodeQL, docs, PR verification, test-windows, verify-cli-critical, verify-contract, verify-unit, verify-workflow, verify-static, verify-coverage passed."
+  findings:
+    - "Focused prompt tests, runner bootstrap tests, agent template sync, docs freshness checks, typecheck, format, hotspot check, policy routing, doctor, and hosted PR checks all passed."
 commit: null
 comments:
   -
