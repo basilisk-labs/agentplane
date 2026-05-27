@@ -19,11 +19,10 @@ Clarify bootstrap and policy preflight so agents distinguish tracked-only cleanl
 - Note:
 
 ```bash
-bun run format:check. Result: pass. Evidence: All matched files use Prettier code style after hosted \
-  verify-contract failure. Scope: full repository formatting contract. Command: node \
-  .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK with AGENTS.md \
-  line budget at 248 wc lines. Scope: policy gateway budget. Command: git diff --check. Result: \
-  pass. Evidence: no whitespace errors. Scope: follow-up formatting fix.
+node scripts/generate/generate-llms-full.mjs --check. Result: pass. Evidence: \
+  website/static/llms-full.txt is fresh after reviewer-requested regeneration. Scope: LLM docs \
+  bundle. Command: bun run docs:site:generate:check. Result: pass. Evidence: generated reference and \
+  llms-full bundle fresh. Scope: docs generated surfaces.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -38,11 +37,11 @@ bun run format:check. Result: pass. Evidence: All matched files use Prettier cod
  docs/user/agent-bootstrap.generated.mdx                            | 5 ++++-
  docs/user/task-lifecycle.mdx                                       | 2 ++
  docs/user/workflow.mdx                                             | 1 +
- packages/agentplane/assets/AGENTS.md                               | 2 +-
+ packages/agentplane/assets/AGENTS.md                               | 3 +--
  packages/agentplane/assets/codex-plugin/skills/agentplane/SKILL.md | 2 +-
  packages/agentplane/src/cli/bootstrap-guide.ts                     | 4 +++-
  packages/agentplane/src/cli/command-guide.test.ts                  | 5 +++++
- 7 files changed, 17 insertions(+), 4 deletions(-)
+ 7 files changed, 17 insertions(+), 5 deletions(-)
 ```
 
 </details>

@@ -4,7 +4,7 @@ title: "Clarify untracked git status preflight"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-27T09:17:52.522Z"
+  updated_at: "2026-05-27T09:42:52.656Z"
   updated_by: "CODER"
-  note: "Command: bun run format:check. Result: pass. Evidence: All matched files use Prettier code style after hosted verify-contract failure. Scope: full repository formatting contract. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK with AGENTS.md line budget at 248 wc lines. Scope: policy gateway budget. Command: git diff --check. Result: pass. Evidence: no whitespace errors. Scope: follow-up formatting fix."
+  note: "Command: node scripts/generate/generate-llms-full.mjs --check. Result: pass. Evidence: website/static/llms-full.txt is fresh after reviewer-requested regeneration. Scope: LLM docs bundle. Command: bun run docs:site:generate:check. Result: pass. Evidence: generated reference and llms-full bundle fresh. Scope: docs generated surfaces."
   attempts: 0
 commit: null
 comments:
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run format:check. Result: pass. Evidence: All matched files use Prettier code style after hosted verify-contract failure. Scope: full repository formatting contract. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK with AGENTS.md line budget at 248 wc lines. Scope: policy gateway budget. Command: git diff --check. Result: pass. Evidence: no whitespace errors. Scope: follow-up formatting fix."
+  -
+    type: "verify"
+    at: "2026-05-27T09:42:52.656Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: node scripts/generate/generate-llms-full.mjs --check. Result: pass. Evidence: website/static/llms-full.txt is fresh after reviewer-requested regeneration. Scope: LLM docs bundle. Command: bun run docs:site:generate:check. Result: pass. Evidence: generated reference and llms-full bundle fresh. Scope: docs generated surfaces."
 doc_version: 3
-doc_updated_at: "2026-05-27T09:17:52.585Z"
+doc_updated_at: "2026-05-27T09:42:52.673Z"
 doc_updated_by: "CODER"
 description: "Clarify bootstrap and policy preflight so agents distinguish tracked-only cleanliness from full working-tree changes including untracked files."
 sections:
@@ -99,6 +105,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-27T08:27:10.028Z, excerpt_hash=sha256:6bbc6e3af6769374dc59031f9180da0f387ce40a698c5f080eeff2dc81939ccc
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605270820-6AM6AH-clarify-untracked-preflight/.agentplane/tasks/202605270820-6AM6AH/blueprint/resolved-snapshot.json
+    - old_digest: 6ea1f362fda19107e2e6cb3747d26a0646d2bd3344c34feae8fed42a89a5ac78
+    - current_digest: 6ea1f362fda19107e2e6cb3747d26a0646d2bd3344c34feae8fed42a89a5ac78
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605270820-6AM6AH
+
+    ### 2026-05-27T09:42:52.656Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Command: node scripts/generate/generate-llms-full.mjs --check. Result: pass. Evidence: website/static/llms-full.txt is fresh after reviewer-requested regeneration. Scope: LLM docs bundle. Command: bun run docs:site:generate:check. Result: pass. Evidence: generated reference and llms-full bundle fresh. Scope: docs generated surfaces.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-27T09:17:52.585Z, excerpt_hash=sha256:6bbc6e3af6769374dc59031f9180da0f387ce40a698c5f080eeff2dc81939ccc
 
     Details:
 
@@ -172,6 +197,25 @@ Note: Command: bun run format:check. Result: pass. Evidence: All matched files u
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-27T08:27:10.028Z, excerpt_hash=sha256:6bbc6e3af6769374dc59031f9180da0f387ce40a698c5f080eeff2dc81939ccc
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605270820-6AM6AH-clarify-untracked-preflight/.agentplane/tasks/202605270820-6AM6AH/blueprint/resolved-snapshot.json
+- old_digest: 6ea1f362fda19107e2e6cb3747d26a0646d2bd3344c34feae8fed42a89a5ac78
+- current_digest: 6ea1f362fda19107e2e6cb3747d26a0646d2bd3344c34feae8fed42a89a5ac78
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605270820-6AM6AH
+
+### 2026-05-27T09:42:52.656Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: node scripts/generate/generate-llms-full.mjs --check. Result: pass. Evidence: website/static/llms-full.txt is fresh after reviewer-requested regeneration. Scope: LLM docs bundle. Command: bun run docs:site:generate:check. Result: pass. Evidence: generated reference and llms-full bundle fresh. Scope: docs generated surfaces.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-27T09:17:52.585Z, excerpt_hash=sha256:6bbc6e3af6769374dc59031f9180da0f387ce40a698c5f080eeff2dc81939ccc
 
 Details:
 

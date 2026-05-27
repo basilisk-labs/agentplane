@@ -557,6 +557,7 @@ agentplane config show
 agentplane quickstart
 agentplane task list
 git status --short --untracked-files=no
+git status --short
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
 cd .agentplane/worktrees/<task-id>-<slug>
 agentplane task start-ready <task-id> --author CODER --body "Start: ..."
@@ -574,8 +575,10 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 ```
 
 `direct` remains supported, but in this repository it is an explicit alternative rather than the default guarded path.
-`agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass
-`--merge-strategy squash` only when compacting history is intentional.
+Local `agentplane integrate` defaults to `merge` so task branch commits stay in base history. On
+protected bases, the GitHub PR finalization path prefers rebase merge so task commits remain visible
+without an extra GitHub merge commit. Pass `--merge-strategy squash` only when compacting history is
+intentional.
 Lifecycle/status commits are task-state checkpoints. They are not implementation commits, and
 `finish --commit-from-comment` is unsupported in `branch_pr` because finish runs on the base
 checkout.
@@ -736,6 +739,7 @@ agentplane config show
 agentplane quickstart
 agentplane task list
 git status --short --untracked-files=no
+git status --short
 agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
 agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
 git add <changed-files>
@@ -751,8 +755,10 @@ agentplane cleanup merged --finalize
 ```
 
 `direct` remains supported, but here it is an explicit alternative rather than the default guarded route.
-`agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass
-`--merge-strategy squash` only when compacting history is intentional.
+Local `agentplane integrate` defaults to `merge` so task branch commits stay in base history. On
+protected bases, the GitHub PR finalization path prefers rebase merge so task commits remain visible
+without an extra GitHub merge commit. Pass `--merge-strategy squash` only when compacting history is
+intentional.
 
 Default branch names are `task/<task-id>/<slug>` for implementation and
 `task-close/<task-id>/<sha12>` for close-tail evidence. The repository can override the prefixes
@@ -791,6 +797,7 @@ agentplane config show
 agentplane quickstart
 agentplane task list
 git status --short --untracked-files=no
+git status --short
 agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
 agentplane task verify-show <task-id>
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
@@ -1236,7 +1243,7 @@ agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
 ```
 
-`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`, including `review.md`, `github-title.txt`, and `github-body.md`. A normal `agentplane pr open` run also publishes the task branch and creates or links the hosted GitHub PR; use `--sync-only` only when you intentionally want local artifacts without remote side effects. The canonical required-check wait step is `bun run workflow:wait-remote-checks`, which polls GitHub PR check state with bounded retries, stable ready polls, and optional `--timeout-ms` conversion to an idle poll budget. `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass `--merge-strategy squash` only when compacting history is intentional.
+`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`, including `review.md`, `github-title.txt`, and `github-body.md`. A normal `agentplane pr open` run also publishes the task branch and creates or links the hosted GitHub PR; use `--sync-only` only when you intentionally want local artifacts without remote side effects. The canonical required-check wait step is `bun run workflow:wait-remote-checks`, which polls GitHub PR check state with bounded retries, stable ready polls, and optional `--timeout-ms` conversion to an idle poll budget. Local `agentplane integrate` defaults to `merge` so task branch commits stay in base history; protected-base GitHub PR finalization prefers rebase merge so the commits remain visible without an extra GitHub merge commit. Pass `--merge-strategy squash` only when compacting history is intentional.
 
 `task/<task-id>/<slug>` is the default task branch shape. Repositories can override `task` through
 `branch.task_prefix`; close-tail branches use `branch.task_close_prefix` and default to
@@ -1361,15 +1368,21 @@ the repository.
 ```bash
 agentplane evaluator list
 agentplane evaluator show recovery-context
+agentplane evaluator run <task-id> --verdict pass --summary "Reviewed diff and checks." --finding "No unresolved quality findings." --evidence .agentplane/tasks/<task-id>/README.md
 ```
 
 Evaluators are repository-local prompt modules under `.agentplane/evaluators`. The current public
-surface is catalog inspection: list the available evaluator prompts and print the exact prompt
-module an agent can use for a separate review pass.
+surface lists available evaluator prompts, prints the exact prompt module an agent can use for a
+separate review pass, and records a structured quality review report for task closure gates.
 
 `agentplane init` seeds `.agentplane/evaluators/recovery-context.md`, a preview evaluator for
-recovery-context and invariant review. Executing evaluators from the CLI is intentionally deferred
-to the 0.8 evaluation roadmap.
+recovery-context and invariant review. `agentplane evaluator run` writes task-local evaluator
+artifacts under `.agentplane/tasks/<task-id>/quality/<run>/`: the prompt, `quality-report.json`, and
+the evaluator opinion markdown. Recorded quality reviews reject dirty tracked paths outside the
+current task artifact subtree so the recorded `evaluated_sha` matches committed implementation code;
+use `--no-record` only for artifact-generation smoke checks. Pass reviews must include concrete
+findings and evidence, so `finish` and `integrate` no longer accept a bare
+`ap verify --by EVALUATOR` pass-note as sufficient quality evidence.
 
 ## Blueprint catalogs
 
