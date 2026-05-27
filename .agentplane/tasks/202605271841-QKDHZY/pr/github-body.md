@@ -16,7 +16,7 @@ Add public runner status/inspect/logs surfaces and coordination/authority prompt
 ## Verification
 
 - State: ok
-- Note: Runner observability foundation implemented and locally verified.
+- Note: Runner observability foundation and review edge cases verified after af9fb0/8bcc follow-up.
 - Canonical workflow state lives in the task README.
 
 <details>

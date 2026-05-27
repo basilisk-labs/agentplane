@@ -13,7 +13,7 @@ Created: 2026-05-27T18:42:53.887Z
 ## Verification
 
 - State: ok
-- Note: Runner observability foundation implemented and locally verified.
+- Note: Runner observability foundation and review edge cases verified after af9fb0/8bcc follow-up.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
