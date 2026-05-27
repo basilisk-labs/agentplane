@@ -1,13 +1,13 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { readFile } from "node:fs/promises";
 import {
   executeTaskRunnerExecution,
   prepareTaskRunnerExecution,
 } from "../../runner/usecases/task-run.js";
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
 import { RunnerRunRepository } from "../../runner/run-repository.js";
+import { readTraceArtifactText } from "../../runner/trace-artifacts.js";
 import { isProcessAlive } from "../../runner/process-supervision/signals.js";
 import { CliError } from "../../shared/errors.js";
 import type { LoadedTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
@@ -306,7 +306,7 @@ async function loadRunnerLogText(
     });
   }
   try {
-    return await readFile(inspection.paths.stderr_path, "utf8");
+    return await readTraceArtifactText(inspection.paths.stderr_path);
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ENOENT") {
@@ -315,7 +315,7 @@ async function loadRunnerLogText(
         code: "E_IO",
         message:
           `Runner artifact not found for ${inspection.task_id}:${inspection.run_id} ` +
-          `(stderr at ${inspection.paths.stderr_path})`,
+          `(stderr at ${inspection.paths.stderr_path} or ${inspection.paths.stderr_path}.gz)`,
       });
     }
     throw err;
@@ -501,7 +501,18 @@ export function makeRunTaskRunLogsHandler(getCtx: (cmd: string) => Promise<Comma
     if (initial) output.lines(initial.split("\n"));
     if (!parsed.follow) return 0;
 
-    while (!isTerminalRunnerStatus(inspection.state.status)) {
+    if (inspection.state.status !== "running") {
+      if (!isTerminalRunnerStatus(inspection.state.status)) {
+        output.warn(
+          `task runner run ${inspection.run_id} is ${inspection.state.status}; nothing to follow until it is running.`,
+          "stderr",
+        );
+        return 0;
+      }
+      return inspection.state.status === "success" ? 0 : 1;
+    }
+
+    while (inspection.state.status === "running") {
       await sleep(1000);
       inspection = await loadTaskRunnerInspection({
         ctx: commandCtx,
