@@ -4,7 +4,7 @@ title: "Start Codex runner prompts with /goal"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,22 @@ verification:
   updated_by: "CODER"
   note: "Reverified after static lint fix: lint:core, typecheck, targeted task-run/bootstrap tests, and git diff --check pass locally."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-27T17:58:55.570Z"
+  updated_by: "EVALUATOR"
+  note: "Codex runner bootstrap now starts codex adapter prompts with /goal and exposes ap task run for task execution; hosted PR verification is green on PR #4168."
+  evaluated_sha: "b078fb9a369d90c6ce211e1213b487a6c4526e70"
+  blueprint_digest: "40d457050951178de7308a290f1096845aa5335c2d63f65bb502cc4eee913041"
+  evidence_refs:
+    - ".agentplane/tasks/202605271519-3ES6T7/README.md"
+    - ".agentplane/tasks/202605271519-3ES6T7/quality/20260527-175855570-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605271519-3ES6T7/quality/20260527-175855570-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605271519-3ES6T7/quality/20260527-175855570-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605271519-3ES6T7/blueprint/resolved-snapshot.json"
+    - "https://github.com/basilisk-labs/agentplane/pull/4168"
+  findings:
+    - "Implementation preserves non-codex bootstrap behavior and records runner dry-run artifacts."
 commit: null
 comments:
   -
