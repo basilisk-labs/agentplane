@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-27T18:04:12Z",
   "base": "main",
   "branch": "task/202605271519-3ES6T7/codex-goal-bootstrap",
   "created_at": "2026-05-27T15:20:20.635Z",
   "diffstat_sha256": "sha256:837fa9ee09e9b77c00d1297f00a9e665e8d5d8661cd6053c792843ea55699041",
   "last_verified_at": "2026-05-27T17:30:01.987Z",
   "last_verified_diffstat_sha256": "sha256:837fa9ee09e9b77c00d1297f00a9e665e8d5d8661cd6053c792843ea55699041",
+  "merge_commit": "7e7acd5dce0756babb3f3b690c6e3fb987badb70",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-27T18:04:12Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605271519-3ES6T7",
-  "updated_at": "2026-05-27T15:20:20.635Z",
+  "updated_at": "2026-05-27T18:04:12Z",
   "verify": {
     "status": "pass"
   }
