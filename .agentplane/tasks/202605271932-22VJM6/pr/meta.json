@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-27T20:08:15Z",
+  "base": "main",
+  "branch": "task/202605271932-22VJM6/teach-agent-prompts-route-oracle-fields",
+  "created_at": "2026-05-27T19:33:13.752Z",
+  "diffstat_sha256": "sha256:9fcb6a2d1dc8c30e21bc612355a23e2b7172da481e6ff9efb3e092a3981b5609",
+  "last_verified_at": "2026-05-27T19:44:23.483Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "82b1250035473abdd39497222749662d5caf6499",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-27T20:08:15Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605271932-22VJM6",
+  "updated_at": "2026-05-27T20:08:15Z",
+  "verify": {
+    "status": "pass"
+  }
+}

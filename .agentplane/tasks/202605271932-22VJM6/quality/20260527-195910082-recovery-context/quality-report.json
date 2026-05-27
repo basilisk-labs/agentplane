@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202605271932-22VJM6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-27T19:59:10.082Z",
+  "verdict": "pass",
+  "summary": "Agent-facing prompts now explicitly teach route oracle fields, and runner bootstrap now distinguishes rendered route_* lines from camelCase bundle JSON paths.",
+  "evaluated_sha": "ef0f2d993ff694ffcdadcceebed6103685d823c4",
+  "blueprint_digest": "60a9768b36ca75d14ae76c56c76ed86d72243cba7d5a86b232f5f1710d161933",
+  "findings": [
+    "Addressed PR review by naming bundle paths route_decision.oracle.nextCommand, route_decision.oracle.authoritativeCheckout, route_decision.oracle.blocker, and route_decision.oracle.phase while keeping rendered route_* summary guidance."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605271932-22VJM6/README.md",
+    "bun test packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts; bun run typecheck; bun run format:check; bun run framework:dev:bootstrap"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Final evaluator metadata push will trigger one more hosted PR run before integration."
+  ]
+}

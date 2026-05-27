@@ -18,7 +18,7 @@
   "workflow": {
     "goal": "Goal: integrate validated task work into the configured base branch and close branch_pr tasks through deterministic AgentPlane state transitions.",
     "success.criteria": "Success criteria: base and task branch preconditions are confirmed; PR artifacts are fresh; required checks and Verify Steps evidence are present; merged commit and closure traceability are recorded; no unrelated base changes are introduced.",
-    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` integration and finish commands; operate from the configured base branch; keep writes limited to merge output, required verification artifacts, and deterministic closure updates.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` integration and finish commands; operate from the configured base branch; treat route oracle fields (`phase`, `authoritative_checkout`, `primary_blocker`, `next_command`) as the merge-lane routing contract before repairing branch/worktree/PR/close-tail drift; keep writes limited to merge output, required verification artifacts, and deterministic closure updates.",
     "stop.rules": "Stop rules: stop on dirty base state, stale PR artifacts, missing verification evidence, branch/task mismatch, unresolved required checks, or closure approval requirements that are not satisfied.",
     "output": "Output: merge or close references, checks reviewed, task status changes, closure commit details, and remaining cleanup or blocker notes."
   }

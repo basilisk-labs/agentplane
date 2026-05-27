@@ -30,6 +30,8 @@ describe("command-guide", () => {
 
   it("documents merge-preserving branch_pr integration by default", () => {
     const text = renderRoleTyped("integrator");
+    expect(text).toContain("Route oracle contract:");
+    expect(text).toContain("run it from `authoritative_checkout`");
     expect(text).toContain(
       "agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000",
     );
@@ -42,6 +44,8 @@ describe("command-guide", () => {
     const text = renderRoleTyped("coder");
     expect(text).toContain("### CODER");
     expect(text).toContain("CLI/runtime notes:");
+    expect(text).toContain("agentplane task next-action <task-id> --explain");
+    expect(text).toContain("primary_blocker");
   });
 
   it("returns null for missing or unknown roles", () => {
@@ -81,6 +85,9 @@ describe("command-guide", () => {
     expect(text).toContain("activate ORCHESTRATOR for planning and the task owner role");
     expect(text).toContain("agentplane task active");
     expect(text).toContain("agentplane task brief <task-id>");
+    expect(text).toContain("agentplane task next-action <task-id> --explain");
+    expect(text).toContain("authoritative_checkout");
+    expect(text).toContain("primary_blocker");
     expect(text).toContain("git status --short --untracked-files=no");
     expect(text).toContain("\ngit status --short\n");
     expect(text).toContain("source confidence");
@@ -106,6 +113,9 @@ describe("command-guide", () => {
     expect(text).toContain("## 4. Verification and incident reuse");
     expect(text).toContain("agentplane task active");
     expect(text).toContain("agentplane task brief <task-id>");
+    expect(text).toContain("task next-action <task-id> --explain");
+    expect(text).toContain("next_command");
+    expect(text).toContain("authoritative_checkout");
     expect(text).toContain("tracked-only cleanliness");
     expect(text).toContain("git status --short --untracked-files=no");
     expect(text).toContain("\n- `git status --short`\n");

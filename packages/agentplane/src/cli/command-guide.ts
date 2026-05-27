@@ -21,7 +21,10 @@ export type RoleProfileGuide = {
   workflow?: readonly string[];
 };
 
-const SHARED_STARTUP_NOTE = `- Shared startup path: \`${COMMAND_SNIPPETS.core.quickstart}\` is the canonical installed bootstrap; use \`${COMMAND_SNIPPETS.core.taskActive}\` to select ready work, \`${COMMAND_SNIPPETS.core.taskBrief}\` to load task context, and \`${COMMAND_SNIPPETS.core.role}\` to activate the current role before role-scoped planning or execution.`;
+const SHARED_STARTUP_NOTE = `- Shared startup path: \`${COMMAND_SNIPPETS.core.quickstart}\` is the canonical installed bootstrap; use \`${COMMAND_SNIPPETS.core.taskActive}\` to select ready work, \`${COMMAND_SNIPPETS.core.taskBrief}\` to load task context, \`agentplane task next-action <task-id> --explain\` as the route oracle, and \`${COMMAND_SNIPPETS.core.role}\` to activate the current role before role-scoped planning or execution.`;
+
+const ROUTE_ORACLE_NOTE =
+  "- Route oracle contract: follow `next_command`, run it from `authoritative_checkout`, treat `primary_blocker` as the current stop reason, and use `phase` instead of manually reconstructing branch/worktree/PR state.";
 
 function renderQuickstartCommandBlock(commands: readonly string[]): string[] {
   return ["```bash", ...commands, "```"];
@@ -32,6 +35,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "ORCHESTRATOR",
     lines: [
       SHARED_STARTUP_NOTE,
+      ROUTE_ORACLE_NOTE,
       "- Owns preflight, plan summaries, approvals, and scope checkpoints.",
       "- Use `agentplane task active` before assigning the next task when multiple TODO/DOING tasks are ready.",
       "- Hand off implementation, verification, and other owner-scoped execution to the task owner role as soon as the owner is known.",
@@ -42,6 +46,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "PLANNER",
     lines: [
       SHARED_STARTUP_NOTE,
+      ROUTE_ORACLE_NOTE,
       '- For a normal first task, prefer `agentplane task begin "..." --tag <tag> --verify "<check>"`; it creates the task, writes a minimal plan, approves it, and either starts direct mode or prints the branch_pr worktree command.',
       '- Create executable tasks with `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`.',
       '- Fill docs with `agentplane task doc set <task-id> --section <name> --text "..."` and set plan text with `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`.',
@@ -53,9 +58,10 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "CODER",
     lines: [
       SHARED_STARTUP_NOTE,
+      ROUTE_ORACLE_NOTE,
       "- direct: stay in the current checkout; branch_pr: start a task branch/worktree first, create implementation commits there, keep local PR artifacts current, and wait for hosted required checks before handing off to INTEGRATOR.",
       "- Start owner-scoped work from `agentplane task brief <task-id>` so Verify Steps, policy modules, blueprint evidence, route state, and source confidence are loaded together.",
-      "- If branch_pr state is ambiguous after interruption, run `agentplane task status <task-id> --route` or `agentplane work resume <task-id>` before choosing a checkout or opening/updating a PR.",
+      "- If branch_pr state is ambiguous after interruption, run `agentplane task next-action <task-id> --explain`, `agentplane task status <task-id> --route`, or `agentplane work resume <task-id>` before choosing a checkout or opening/updating a PR.",
       `- For the common path, use \`${COMMAND_SNIPPETS.core.taskBegin}\` to create/approve/start-or-route and \`${COMMAND_SNIPPETS.core.taskComplete}\` after checks pass.`,
       `- Start deterministically with \`${COMMAND_SNIPPETS.core.startTask}\` after plan approval.`,
       `- Treat \`${COMMAND_SNIPPETS.core.taskVerifyShow}\` as the verification contract, then record \`${COMMAND_SNIPPETS.core.verifyTask}\`.`,
@@ -67,6 +73,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "TESTER",
     lines: [
       SHARED_STARTUP_NOTE,
+      ROUTE_ORACLE_NOTE,
       "- Start only after plan approval and explicit Verify Steps exist.",
       "- Use `agentplane task brief <task-id>` first when verifying unfamiliar work; it includes Verify Steps plus route and evidence context.",
       `- Use \`${COMMAND_SNIPPETS.core.taskVerifyShow}\` before running checks, then record \`${COMMAND_SNIPPETS.core.verifyTask}\`.`,
@@ -78,6 +85,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "DOCS",
     lines: [
       SHARED_STARTUP_NOTE,
+      ROUTE_ORACLE_NOTE,
       '- Keep task docs and user docs aligned with runtime behavior via `agentplane task doc set <task-id> --section <name> --text "..."`; use `task findings add` for append-only incident-ready Findings blocks.',
       "- Use `agentplane task brief <task-id>` before docs edits when task state, route, Verify Steps, and policy modules all matter.",
       "- For implementation tasks, verify generated/help surfaces after changing CLI-facing text.",
@@ -88,6 +96,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "REVIEWER",
     lines: [
       SHARED_STARTUP_NOTE,
+      ROUTE_ORACLE_NOTE,
       "- Review task context with `agentplane task brief <task-id>` before drilling into `agentplane task show <task-id>` and `agentplane pr check <task-id>`.",
       "- Use `agentplane task status <task-id> --route` to review task, PR, and close-tail state as one route decision.",
       "- Focus on regressions, lifecycle drift, and missing verification evidence.",
@@ -97,7 +106,8 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "INTEGRATOR",
     lines: [
       SHARED_STARTUP_NOTE,
-      "- Run `agentplane task brief <task-id>` before integration to confirm task context and source confidence, then `agentplane task next-action <task-id>` or `agentplane flow repair <task-id> --dry-run` before manually repairing branch/worktree/PR/close-tail drift.",
+      ROUTE_ORACLE_NOTE,
+      "- Run `agentplane task brief <task-id>` before integration to confirm task context and source confidence, then `agentplane task next-action <task-id> --explain` or `agentplane flow repair <task-id> --dry-run` before manually repairing branch/worktree/PR/close-tail drift.",
       `- branch_pr: the primary integration route is the task GitHub PR. Require a green hosted PR gate first (${BRANCH_PR_HOSTED_GATE_GUIDANCE}), then run \`agentplane pr check <task-id>\` -> \`agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000\`; on protected bases, integrate drives \`gh pr merge --auto --rebase\` when GitHub CLI is installed/authenticated, falls back to the GitHub API with explicit GH_TOKEN/GITHUB_TOKEN, and holds the queue lane until GitHub merges the PR and Task Hosted Close finishes.`,
       "- branch_pr close tail: after the task PR merges, `Task Hosted Close` pushes the deterministic closure branch and opens the follow-up closure PR when organization policy allows Actions PR creation; otherwise it leaves a manual PR link on the merged task PR. Pull the updated base branch after that closure PR merges instead of creating a local finish-only tail commit.",
       `- direct: the task owner normally closes with \`${COMMAND_SNIPPETS.core.finishTask}\` plus \`--result-file ./result.txt\`.`,
@@ -201,7 +211,7 @@ export function renderQuickstart(): string {
     "",
     `- \`branch_pr\`: base checkout owns plan/approve and the merge lane; the task worktree owns implementation commits and local PR artifacts; the primary finalization route is the task GitHub PR, so INTEGRATOR runs \`pr check\` and \`integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000\` from the base checkout to drive/hold the GitHub PR merge until Task Hosted Close lands the close tail.`,
     "- After preflight, use `agentplane task active` to pick ready work and `agentplane task brief <task-id>` to load task docs, Verify Steps, route state, blueprint evidence, policy modules, and source confidence before owner-scoped execution.",
-    "- `branch_pr`: before manually combining `task show`, `task resume-context`, `pr flow status`, and preflight output, use `agentplane task status <task-id> --route`, `agentplane task next-action <task-id>`, `agentplane work resume <task-id>`, or `agentplane flow repair <task-id> --dry-run` to get a single route decision.",
+    "- `branch_pr`: before manually combining `task show`, `task resume-context`, `pr flow status`, and preflight output, use `agentplane task next-action <task-id> --explain` as the route oracle. Follow `next_command`, run it from `authoritative_checkout`, treat `primary_blocker` as the current stop reason, and use `phase` instead of reconstructing branch/worktree/PR state by hand.",
     "- `branch_pr`: agents that inherit the user's GitHub session must treat `gh pr merge`, GitHub UI merge, and auto-merge enablement as user-attributed publication; use them only after the integration queue/handoff route, stable hosted checks, and merge-lane approval are clear.",
     "- `branch_pr`: post-merge fixes for an already `DONE` task need a new task or an explicit follow-up branch slug (`post-merge-*` or `followup` as a start/end/hyphen-bounded token); generic same-task branches can conflict with hosted close.",
     "- `branch_pr` GitHub transport: install GitHub CLI yourself (`brew install gh` on macOS, `winget install --id GitHub.cli` on Windows, or the Linux package from `https://cli.github.com/manual/installation`), then run `gh auth login`; if `gh` is unavailable, `integrate` can use explicit `GH_TOKEN`/`GITHUB_TOKEN` as a GitHub API fallback.",

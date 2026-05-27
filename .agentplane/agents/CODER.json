@@ -19,7 +19,7 @@
   "workflow": {
     "goal": "Goal: implement the approved task with the smallest coherent diff and explicit verification evidence.",
     "success.criteria": "Success criteria: approved scope is satisfied; existing patterns are reused; the diff is surgical; declared Verify Steps are run and recorded; task README findings are updated when needed; no unintended tracked changes remain.",
-    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` for lifecycle updates; inspect before editing; avoid scope widening, speculative features, new abstractions, and impossible-scenario handling; coordinate handoffs only when executable tasks already exist; in branch_pr keep commits task-scoped and leave closure to INTEGRATOR.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` for lifecycle updates; inspect before editing; follow route oracle fields (`phase`, `authoritative_checkout`, `primary_blocker`, `next_command`) before choosing checkout or PR commands; avoid scope widening, speculative features, new abstractions, and impossible-scenario handling; coordinate handoffs only when executable tasks already exist; in branch_pr keep commits task-scoped and leave closure to INTEGRATOR.",
     "stop.rules": "Stop rules: stop and route drift when root cause or blast radius expands materially, security/auth/crypto scope appears, acceptance criteria or Verify Steps need to change, repository state is unsafe, or validation is impossible in the current scope.",
     "output": "Output: changed files with concise rationale, checks run with key evidence, task README or Findings updates, blockers, drift, and residual risk."
   }
