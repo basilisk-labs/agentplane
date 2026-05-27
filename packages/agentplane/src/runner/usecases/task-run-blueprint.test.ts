@@ -6,6 +6,40 @@ import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
 import { assertRunnerBlueprintPolicyModuleBudget, renderTaskRunnerBootstrap } from "./task-run.js";
 
 describe("runner blueprint guards", () => {
+  it("starts codex task bootstraps with the /goal slash command", () => {
+    const bundle = makeRunnerContextBundle({
+      adapterId: "codex",
+      taskId: "202605271519-3ES6T7",
+      title: "Start Codex runner prompts with /goal",
+    });
+
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+
+    expect(bootstrap.split("\n")[0]).toBe(
+      "/goal Execute AgentPlane task 202605271519-3ES6T7: Start Codex runner prompts with /goal",
+    );
+    expect(bootstrap).toContain("# agentplane runner bootstrap");
+    expect(bootstrap).toContain(
+      "- bundle_path: /repo/.agentplane/tasks/202605271519-3ES6T7/runs/run-123/bundle.json",
+    );
+    expect(bootstrap).toContain(
+      "- result_path: /repo/.agentplane/tasks/202605271519-3ES6T7/runs/run-123/result.json",
+    );
+  });
+
+  it("leaves non-codex task bootstraps on the standard runner heading", () => {
+    const bundle = makeRunnerContextBundle({
+      adapterId: "custom",
+      taskId: "202605271519-3ES6T7",
+      title: "Start Codex runner prompts with /goal",
+    });
+
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+
+    expect(bootstrap.split("\n")[0]).toBe("# agentplane runner bootstrap");
+    expect(bootstrap).not.toContain("/goal");
+  });
+
   it("rejects bundle policy modules that exceed the resolved blueprint budget", () => {
     const bundle = makeRunnerContextBundle();
     bundle.blueprint = {
