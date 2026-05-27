@@ -31,13 +31,25 @@ export function renderPreflightText(report: PreflightReport): string[] {
     `- quickstart loaded: ${probeYesNo(report.quickstart_loaded)}`,
     `- workflow loaded: ${probeYesNo(report.workflow_loaded)}`,
     `- task list loaded: ${probeYesNo(report.task_list_loaded)}`,
+    `- active tasks: ${
+      report.active_tasks.ok
+        ? `${report.active_tasks.count ?? 0}${
+            report.active_tasks.task_ids?.length
+              ? ` (${report.active_tasks.task_ids.join(", ")})`
+              : ""
+          }`
+        : "unknown"
+    }`,
     `- working tree clean (tracked-only): ${probeValueOrUnknown(report.working_tree_clean_tracked)}`,
     `- task artifact drift: ${renderTaskArtifactDrift(report)}`,
     `- message format guard: ${report.message_format_guard.ok ? "ok" : "failed"}`,
     `- current git branch: ${probeValueOrUnknown(report.current_branch)}`,
     `- workflow_mode: ${report.workflow_mode}`,
-    `- harness engeneering health: ${report.harness_health.status}`,
+    `- harness engineering health: ${report.harness_health.status}`,
   ];
+  if (!report.active_tasks.ok && report.active_tasks.error) {
+    lines.splice(8, 0, `  - active tasks note: ${report.active_tasks.error}`);
+  }
   if (report.harness_health.reasons.length > 0) {
     lines.push(`  - reasons: ${report.harness_health.reasons.join(", ")}`);
   }
