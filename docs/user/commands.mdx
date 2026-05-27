@@ -126,8 +126,10 @@ agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
 
-Execution is owned by agents working in the repository through Codex, an IDE, or another
-human-assisted workflow. The runner command family is not part of the current public CLI surface.
+Execution is usually owned by agents working in the repository through Codex, an IDE, or another
+human-assisted workflow. For repositories that opt into the local runner path, `agentplane task run
+<task-id>` prepares AgentPlane runner artifacts and executes the configured adapter; with the default
+Codex adapter the prompt begins with `/goal ...` before the runner bundle contract.
 
 ## Advanced task projections
 

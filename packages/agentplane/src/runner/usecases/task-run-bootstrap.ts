@@ -1,5 +1,30 @@
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
 
+function compactGoalText(value: string): string {
+  return value.replaceAll(/\s+/g, " ").trim();
+}
+
+function truncateGoalText(value: string, maxLength = 320): string {
+  const compact = compactGoalText(value);
+  if (compact.length <= maxLength) return compact;
+  return `${compact.slice(0, maxLength - 3).trimEnd()}...`;
+}
+
+function renderCodexGoalLine(bundle: RunnerContextBundle, targetLabel: string): string | null {
+  if (bundle.execution.adapter_id !== "codex") return null;
+  const taskTitle = compactGoalText(bundle.task?.data.title ?? "");
+  const recipeGoal =
+    typeof bundle.recipe?.scenario?.goal === "string"
+      ? compactGoalText(bundle.recipe.scenario.goal)
+      : "";
+  const recipeSummary =
+    typeof bundle.recipe?.scenario?.summary === "string"
+      ? compactGoalText(bundle.recipe.scenario.summary)
+      : "";
+  const objective = taskTitle || recipeGoal || recipeSummary || targetLabel;
+  return `/goal ${truncateGoalText(`Execute AgentPlane ${targetLabel}: ${objective}`)}`;
+}
+
 export function renderTaskRunnerBootstrap(
   bundle: RunnerContextBundle,
   invocation?: RunnerInvocation,
@@ -8,6 +33,7 @@ export function renderTaskRunnerBootstrap(
     bundle.target.kind === "task"
       ? `task ${bundle.target.task_id}`
       : `recipe scenario ${bundle.target.recipe_id}:${bundle.target.scenario_id}`;
+  const codexGoalLine = renderCodexGoalLine(bundle, targetLabel);
   const stopRules = bundle.blueprint?.stopReasons ?? [];
   const playbook = bundle.playbook?.selected_playbook;
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
@@ -19,6 +45,7 @@ export function renderTaskRunnerBootstrap(
       }
     | undefined;
   return [
+    ...(codexGoalLine ? [codexGoalLine, ""] : []),
     "# agentplane runner bootstrap",
     "",
     "This invocation is already inside an approved runner execution.",

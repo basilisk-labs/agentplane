@@ -108,14 +108,13 @@ prompts.
 
 ### runner
 
-Runner configuration is reserved for the deferred v0.7 runner surface. It is not part of the
-current public execution path; use normal tasks, Verify Steps, handoffs, and PR artifacts with
-agents working in the repository.
+Runner configuration controls the local `agentplane task run <task-id>` execution path. The default
+adapter is `codex`; it runs Codex non-interactively against the prepared AgentPlane bundle and starts
+the prompt with `/goal ...`.
 
 ### runner.custom
 
-Custom runner configuration is also deferred to v0.7 and should not be used as current workflow
-guidance.
+Custom runner configuration controls the `custom` adapter command and enforcement settings.
 
 ### feedback
 
