@@ -1,7 +1,7 @@
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
 
 function compactGoalText(value: string): string {
-  return value.replace(/\s+/g, " ").trim();
+  return value.replaceAll(/\s+/g, " ").trim();
 }
 
 function truncateGoalText(value: string, maxLength = 320): string {
