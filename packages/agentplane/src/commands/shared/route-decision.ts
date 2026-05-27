@@ -8,6 +8,7 @@ import {
   type RouteBatchOwnership,
   type RouteBatchNextAction,
 } from "./route-batch-ownership.js";
+import { deriveRouteOracle, type RouteBlocker, type RouteOracle } from "./route-oracle.js";
 import { workStartCommand } from "./work-start-command.js";
 
 import { loadBackendTask, loadCommandContext, type CommandContext } from "./task-backend.js";
@@ -15,11 +16,6 @@ import {
   buildRouteSourceConfidenceBase,
   type SourceConfidence as RouteSourceConfidence,
 } from "./source-confidence.js";
-
-type RouteBlocker = {
-  code: string;
-  summary: string;
-};
 
 type RouteNextAction = RouteBatchNextAction;
 
@@ -69,6 +65,7 @@ type TaskRouteDecision = {
   blockers: RouteBlocker[];
   ambiguities: RouteAmbiguity[];
   nextAction: RouteNextAction;
+  oracle: RouteOracle;
   repairPlan: RouteRepairStep[];
   sourceConfidence: Record<string, RouteSourceConfidence>;
 };
@@ -514,6 +511,13 @@ export async function buildTaskRouteDecision(opts: {
     blockers,
     batchOwnership,
   });
+  const oracle = deriveRouteOracle({
+    task,
+    workflowMode: ctx.config.workflow_mode,
+    nextAction,
+    blockers,
+    batchOwnership,
+  });
   const partial = {
     task: taskSummary(task),
     workflowMode: ctx.config.workflow_mode,
@@ -530,6 +534,7 @@ export async function buildTaskRouteDecision(opts: {
     prFlow,
     blockers,
     nextAction,
+    oracle,
   };
   const withAmbiguities = { ...partial, ambiguities: deriveAmbiguities({ decision: partial }) };
   return {

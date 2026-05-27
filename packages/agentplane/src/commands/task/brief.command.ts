@@ -21,6 +21,8 @@ export type TaskBriefParsed = {
 
 type TaskBriefRoute = {
   workflow_mode: string;
+  phase: string;
+  authoritative_checkout: string;
   checkout_role: string;
   branch: string | null;
   base_branch: string | null;
@@ -322,6 +324,8 @@ async function buildTaskBrief(opts: {
     },
     route: {
       workflow_mode: route.workflowMode,
+      phase: route.oracle.phase,
+      authoritative_checkout: route.oracle.authoritativeCheckout,
       checkout_role: route.workspace.checkoutRole,
       branch: route.workspace.branch,
       base_branch: route.workspace.baseBranch,
@@ -393,6 +397,8 @@ export function makeRunTaskBriefHandler(getCtx: (cmd: string) => Promise<Command
         { label: "title", value: brief.task.title },
         { label: "owner", value: brief.task.owner },
         { label: "workflow", value: brief.workflow.mode },
+        { label: "phase", value: brief.route.phase },
+        { label: "authoritative_checkout", value: brief.route.authoritative_checkout },
         { label: "checkout_role", value: brief.workflow.checkout_role },
         { label: "branch", value: brief.workflow.branch ?? "unknown" },
         { label: "base_branch", value: brief.workflow.base_branch ?? "unknown" },
