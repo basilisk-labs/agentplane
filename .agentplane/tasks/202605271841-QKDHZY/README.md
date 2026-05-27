@@ -1,10 +1,11 @@
 ---
 id: "202605271841-QKDHZY"
 title: "Add runner observability foundation"
-status: "DOING"
+result_summary: "Merged via PR #4174."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -47,11 +48,16 @@ quality_review:
     - "Resolved review blocker: stderr logs now use trace artifact reader semantics and can read retained gzip artifacts."
     - "Resolved review blocker: task run logs --follow exits cleanly for prepared runs instead of waiting forever."
     - "Coordination and lifecycle authority prompts remain covered for independent Codex runners."
-commit: null
+commit:
+  hash: "37d70d9c6bb3c1363221885edd63573d8cd9f37f"
+  message: "Merge pull request #4174 from basilisk-labs/task/202605271841-QKDHZY/runner-observability-foundation"
 comments:
   -
     author: "CODER"
     body: "Start: Implement runner observability foundation in the dedicated task worktree, limited to runner CLI/status surfaces, bootstrap coordination contract, tests, and user docs."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4174 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -72,9 +78,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Runner observability foundation and review edge cases verified after af9fb0/8bcc follow-up."
+  -
+    type: "status"
+    at: "2026-05-27T20:19:04.371Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4174 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-27T19:27:17.039Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-27T20:19:04.377Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add public runner status/inspect/logs surfaces and coordination/authority prompt contracts so independent Codex task runners can be monitored safely before adding parallelization recipes."
 sections:
   Summary: |-
