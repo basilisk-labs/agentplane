@@ -48,6 +48,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - PR
   - [integrate](#integrate)
   - [integrate queue claim](#integrate-queue-claim)
+  - [integrate queue doctor](#integrate-queue-doctor)
   - [integrate queue enqueue](#integrate-queue-enqueue)
   - [integrate queue list](#integrate-queue-list)
   - [integrate queue release](#integrate-queue-release)
@@ -263,6 +264,7 @@ Options:
 - `--mode <quick|full>`: Preflight depth. quick skips backend task-list probe; full includes backend readiness. (choices=quick|full, default=quick)
 - `--full`: Shortcut for --mode full. (default=false)
 - `--json`: Emit machine-readable JSON report. (default=false)
+- `--role <ROLE>`: Optional active role to include in next-command guidance.
 
 Examples:
 
@@ -1414,6 +1416,22 @@ Options:
 - `--lease-ms <ms>`: Lease duration.
 - `--json`: Emit JSON. (default=false)
 
+### integrate queue doctor
+
+Diagnose and optionally repair stale branch_pr integration queue state.
+
+Usage:
+
+```text
+agentplane integrate queue doctor [options]
+```
+
+Options:
+
+- `--fix`: Apply safe queue repairs. (default=false)
+- `--dry-run`: Report repairs without writing queue state. (default=false)
+- `--json`: Emit JSON. (default=false)
+
 ### integrate queue enqueue
 
 Add or refresh a verified task branch in the integration queue.
@@ -1480,6 +1498,11 @@ Options:
 - `--quiet`: Reduce output noise. (default=false)
 - `--drain`: Keep claiming queued entries after successful integrations until the lane blocks or empties. (default=false)
 - `--wait`: Poll a busy merge lane until it opens or --timeout-ms elapses. (default=false)
+- `--hosted`: Wait for hosted GitHub PR checks before running integrate. (default=false)
+- `--stable-polls <count>`: Consecutive hosted-ready polls required when --hosted is enabled.
+- `--hosted-poll-interval-ms <ms>`: Delay between hosted-check polls when --hosted is enabled.
+- `--hosted-timeout-ms <ms>`: Maximum hosted-check wait time when --hosted is enabled.
+- `--required-check <name>`: Repeatable hosted check name that must appear in the PR rollup. (repeatable)
 
 ### pr check
 
@@ -1494,6 +1517,11 @@ agentplane pr check <task-id> [options]
 Options:
 
 - `--branch <name>`: Task branch to validate when local artifacts are stale or ambiguous.
+- `--hosted`: Require hosted GitHub PR checks to be complete and stable. (default=false)
+- `--stable-polls <count>`: Consecutive hosted-ready polls required when --hosted is enabled.
+- `--poll-interval-ms <ms>`: Delay between hosted-check polls when --hosted is enabled.
+- `--timeout-ms <ms>`: Maximum hosted-check wait time when --hosted is enabled.
+- `--required-check <name>`: Repeatable hosted check name that must appear in the PR rollup. (repeatable)
 
 Examples:
 

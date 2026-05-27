@@ -7,7 +7,7 @@ import { renderPreflightText } from "./preflight-render.js";
 
 const output = createCliEmitter();
 
-type PreflightParsed = { json: boolean; mode: PreflightMode };
+type PreflightParsed = { json: boolean; mode: PreflightMode; role: string | null };
 
 export const preflightSpec: CommandSpec<PreflightParsed> = {
   id: ["preflight"],
@@ -35,6 +35,12 @@ export const preflightSpec: CommandSpec<PreflightParsed> = {
       default: false,
       description: "Emit machine-readable JSON report.",
     },
+    {
+      kind: "string",
+      name: "role",
+      valueHint: "<ROLE>",
+      description: "Optional active role to include in next-command guidance.",
+    },
   ],
   examples: [
     { cmd: "agentplane preflight --json", why: "Produce one-shot agent-readable preflight." },
@@ -47,6 +53,7 @@ export const preflightSpec: CommandSpec<PreflightParsed> = {
     json: raw.opts.json === true,
     mode:
       raw.opts.full === true ? "full" : ((raw.opts.mode as PreflightMode | undefined) ?? "quick"),
+    role: typeof raw.opts.role === "string" ? raw.opts.role : null,
   }),
 };
 
@@ -55,12 +62,14 @@ async function cmdPreflight(opts: {
   rootOverride?: string;
   json: boolean;
   mode: PreflightMode;
+  role: string | null;
 }): Promise<number> {
   return wrapCommand({ command: "preflight", rootOverride: opts.rootOverride }, async () => {
     const report = await buildPreflightReport({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       mode: opts.mode,
+      role: opts.role,
     });
     if (opts.json) {
       output.json(report);
@@ -77,5 +86,6 @@ export const runPreflight: CommandHandler<PreflightParsed> = (ctx, parsed) => {
     rootOverride: ctx.rootOverride,
     json: parsed.json,
     mode: parsed.mode,
+    role: parsed.role,
   });
 };

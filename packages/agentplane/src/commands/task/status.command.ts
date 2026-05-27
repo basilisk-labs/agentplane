@@ -78,11 +78,13 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
     ];
     if (parsed.route) {
       entries.push(
+        { label: "phase", value: decision.oracle.phase },
+        { label: "authoritative_checkout", value: decision.oracle.authoritativeCheckout },
         { label: "branch", value: decision.workspace.branch ?? "unknown" },
         { label: "checkout_role", value: decision.workspace.checkoutRole },
         { label: "pr_branch", value: decision.workspace.prBranch ?? "missing" },
         { label: "next_code", value: decision.nextAction.code },
-        { label: "next", value: decision.nextAction.command ?? decision.nextAction.summary },
+        { label: "next", value: decision.oracle.nextCommand ?? decision.oracle.summary },
         {
           label: "effective_mutation_approval",
           value: String(decision.approval.effectiveMutationApprovalRequired),

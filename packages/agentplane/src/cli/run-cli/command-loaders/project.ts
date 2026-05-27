@@ -209,6 +209,10 @@ export const loadIntegrateQueueListSpec = (deps: RunDeps) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
     m.makeRunIntegrateQueueListHandler(deps.getCtx),
   );
+export const loadIntegrateQueueDoctorSpec = (deps: RunDeps) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueDoctorHandler(deps.getCtx),
+  );
 export const loadIntegrateQueueClaimSpec = (deps: RunDeps) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
     m.makeRunIntegrateQueueClaimHandler(deps.getCtx),

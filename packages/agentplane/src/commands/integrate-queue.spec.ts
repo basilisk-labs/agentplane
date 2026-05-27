@@ -20,7 +20,9 @@ export const integrateQueueSpec: CommandSpec<IntegrateQueueGroupParsed> = {
   id: ["integrate", "queue"],
   group: "PR",
   summary: "Serialize branch_pr integration into one merge lane.",
-  synopsis: ["agentplane integrate queue <enqueue|list|claim|release|run-next> [args] [options]"],
+  synopsis: [
+    "agentplane integrate queue <enqueue|list|doctor|claim|release|run-next> [args] [options]",
+  ],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
     {
@@ -92,6 +94,29 @@ export const integrateQueueListSpec: CommandSpec<IntegrateQueueListParsed> = {
   parse: (raw) => ({ json: raw.opts.json === true }),
 };
 
+export type IntegrateQueueDoctorParsed = { fix: boolean; dryRun: boolean; json: boolean };
+
+export const integrateQueueDoctorSpec: CommandSpec<IntegrateQueueDoctorParsed> = {
+  id: ["integrate", "queue", "doctor"],
+  group: "PR",
+  summary: "Diagnose and optionally repair stale branch_pr integration queue state.",
+  options: [
+    { kind: "boolean", name: "fix", default: false, description: "Apply safe queue repairs." },
+    {
+      kind: "boolean",
+      name: "dry-run",
+      default: false,
+      description: "Report repairs without writing queue state.",
+    },
+    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
+  ],
+  parse: (raw) => ({
+    fix: raw.opts.fix === true,
+    dryRun: raw.opts["dry-run"] === true,
+    json: raw.opts.json === true,
+  }),
+};
+
 export type IntegrateQueueClaimParsed = {
   worker: string | null;
   leaseMs: number | null;
@@ -156,6 +181,11 @@ export type IntegrateQueueRunNextParsed = {
   quiet: boolean;
   drain: boolean;
   wait: boolean;
+  hosted: boolean;
+  stablePolls: number | null;
+  hostedPollIntervalMs: number | null;
+  hostedTimeoutMs: number | null;
+  requiredChecks: string[];
 };
 
 export const integrateQueueRunNextSpec: CommandSpec<IntegrateQueueRunNextParsed> = {
@@ -193,6 +223,37 @@ export const integrateQueueRunNextSpec: CommandSpec<IntegrateQueueRunNextParsed>
       default: false,
       description: "Poll a busy merge lane until it opens or --timeout-ms elapses.",
     },
+    {
+      kind: "boolean",
+      name: "hosted",
+      default: false,
+      description: "Wait for hosted GitHub PR checks before running integrate.",
+    },
+    {
+      kind: "string",
+      name: "stable-polls",
+      valueHint: "<count>",
+      description: "Consecutive hosted-ready polls required when --hosted is enabled.",
+    },
+    {
+      kind: "string",
+      name: "hosted-poll-interval-ms",
+      valueHint: "<ms>",
+      description: "Delay between hosted-check polls when --hosted is enabled.",
+    },
+    {
+      kind: "string",
+      name: "hosted-timeout-ms",
+      valueHint: "<ms>",
+      description: "Maximum hosted-check wait time when --hosted is enabled.",
+    },
+    {
+      kind: "string",
+      name: "required-check",
+      valueHint: "<name>",
+      repeatable: true,
+      description: "Repeatable hosted check name that must appear in the PR rollup.",
+    },
   ],
   parse: (raw) => ({
     worker: typeof raw.opts.worker === "string" ? raw.opts.worker : null,
@@ -204,6 +265,15 @@ export const integrateQueueRunNextSpec: CommandSpec<IntegrateQueueRunNextParsed>
     quiet: raw.opts.quiet === true,
     drain: raw.opts.drain === true,
     wait: raw.opts.wait === true,
+    hosted: raw.opts.hosted === true,
+    stablePolls: parseOptionalPositiveInteger(raw.opts["stable-polls"]),
+    hostedPollIntervalMs: parseOptionalPositiveInteger(raw.opts["hosted-poll-interval-ms"]),
+    hostedTimeoutMs: parseOptionalPositiveInteger(raw.opts["hosted-timeout-ms"]),
+    requiredChecks: Array.isArray(raw.opts["required-check"])
+      ? raw.opts["required-check"].map(String)
+      : typeof raw.opts["required-check"] === "string"
+        ? [String(raw.opts["required-check"])]
+        : [],
   }),
   validateRaw: (raw) => {
     validateOptionalPositiveInteger(raw.opts["lease-ms"], integrateQueueRunNextSpec, "lease-ms");
@@ -216,6 +286,21 @@ export const integrateQueueRunNextSpec: CommandSpec<IntegrateQueueRunNextParsed>
       raw.opts["timeout-ms"],
       integrateQueueRunNextSpec,
       "timeout-ms",
+    );
+    validateOptionalPositiveInteger(
+      raw.opts["stable-polls"],
+      integrateQueueRunNextSpec,
+      "stable-polls",
+    );
+    validateOptionalPositiveInteger(
+      raw.opts["hosted-poll-interval-ms"],
+      integrateQueueRunNextSpec,
+      "hosted-poll-interval-ms",
+    );
+    validateOptionalPositiveInteger(
+      raw.opts["hosted-timeout-ms"],
+      integrateQueueRunNextSpec,
+      "hosted-timeout-ms",
     );
   },
 };

@@ -58,6 +58,7 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
     if (parsed.json) {
       output.json({
         task: decision.task,
+        route_oracle: decision.oracle,
         next_action: decision.nextAction,
         blockers: decision.blockers,
         source_confidence: {
@@ -71,10 +72,18 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
     }
     output.report(
       [
+        { label: "phase", value: decision.oracle.phase },
+        { label: "authoritative_checkout", value: decision.oracle.authoritativeCheckout },
         { label: "code", value: decision.nextAction.code },
         { label: "summary", value: decision.nextAction.summary },
         { label: "requires_approval", value: decision.nextAction.requiresApproval },
-        { label: "command", value: decision.nextAction.command ?? "none" },
+        { label: "next_command", value: decision.oracle.nextCommand ?? "none" },
+        {
+          label: "primary_blocker",
+          value: decision.oracle.blocker
+            ? `${decision.oracle.blocker.code}: ${decision.oracle.blocker.summary}`
+            : "none",
+        },
         ...(parsed.explain
           ? [
               { label: "workflow", value: decision.workflowMode },
