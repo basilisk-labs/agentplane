@@ -39,6 +39,12 @@ export function renderTaskRunnerBootstrap(
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
   const routeDecision = bundle.route_decision as
     | {
+        oracle?: {
+          phase?: string;
+          authoritativeCheckout?: string;
+          blocker?: { code?: string; summary?: string } | null;
+          nextCommand?: string | null;
+        };
         nextAction?: { code?: string; command?: string | null; summary?: string };
         workspace?: { checkoutRole?: string };
         approval?: { effectiveMutationApprovalRequired?: boolean };
@@ -64,8 +70,23 @@ export function renderTaskRunnerBootstrap(
     ...(routeDecision
       ? [
           `- checkout_role: ${routeDecision.workspace?.checkoutRole ?? "unknown"}`,
+          `- route_phase: ${routeDecision.oracle?.phase ?? "unknown"}`,
+          `- route_authoritative_checkout: ${
+            routeDecision.oracle?.authoritativeCheckout ??
+            routeDecision.workspace?.checkoutRole ??
+            "unknown"
+          }`,
           `- route_next_action: ${routeDecision.nextAction?.code ?? "unknown"}`,
-          `- route_next_command: ${routeDecision.nextAction?.command ?? "none"}`,
+          `- route_next_command: ${
+            routeDecision.oracle?.nextCommand ?? routeDecision.nextAction?.command ?? "none"
+          }`,
+          `- route_primary_blocker: ${
+            routeDecision.oracle?.blocker
+              ? `${routeDecision.oracle.blocker.code ?? "unknown"}: ${
+                  routeDecision.oracle.blocker.summary ?? "blocked"
+                }`
+              : "none"
+          }`,
           `- effective_mutation_approval: ${String(
             routeDecision.approval?.effectiveMutationApprovalRequired ?? true,
           )}`,
@@ -74,6 +95,7 @@ export function renderTaskRunnerBootstrap(
     "",
     "Use bundle.json as the complete runner input. Do not reconstruct prompts or route decisions from CLI argv.",
     "Follow route_decision in bundle.json unless local state has changed; if it may be stale, run `agentplane task next-action <task-id> --explain` before mutating.",
+    "Route oracle contract: follow next_command, run it from authoritative_checkout, treat primary_blocker as the current stop reason, and use phase instead of manually reconstructing branch/worktree/PR state.",
     ...(stopRules.length > 0
       ? [
           "",
