@@ -1,10 +1,11 @@
 ---
 id: "202605270820-6AM6AH"
 title: "Clarify untracked git status preflight"
-status: "DOING"
+result_summary: "Merged via PR #4166."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Command: node scripts/generate/generate-llms-full.mjs --check. Result: pass. Evidence: website/static/llms-full.txt is fresh after reviewer-requested regeneration. Scope: LLM docs bundle. Command: bun run docs:site:generate:check. Result: pass. Evidence: generated reference and llms-full bundle fresh. Scope: docs generated surfaces."
   attempts: 0
-commit: null
+commit:
+  hash: "f04c88b889c64870e363b9700d43aa2d2fc87c53"
+  message: "🚧 6AM6AH task: Refresh LLM docs bundle"
 comments:
   -
     author: "CODER"
     body: "Start: Clarify the bootstrap git status contract so tracked-only cleanliness remains explicit while agents also inspect full working-tree changes, including untracked files."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4166 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -54,9 +60,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: node scripts/generate/generate-llms-full.mjs --check. Result: pass. Evidence: website/static/llms-full.txt is fresh after reviewer-requested regeneration. Scope: LLM docs bundle. Command: bun run docs:site:generate:check. Result: pass. Evidence: generated reference and llms-full bundle fresh. Scope: docs generated surfaces."
+  -
+    type: "status"
+    at: "2026-05-27T09:47:53.437Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4166 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-27T09:42:52.673Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-27T09:47:53.443Z"
+doc_updated_by: "INTEGRATOR"
 description: "Clarify bootstrap and policy preflight so agents distinguish tracked-only cleanliness from full working-tree changes including untracked files."
 sections:
   Summary: |-
