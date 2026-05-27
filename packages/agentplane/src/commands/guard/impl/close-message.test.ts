@@ -71,10 +71,9 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toBe("cli: add close commit mode");
-    expect(msg.subject).not.toContain("✅");
-    expect(msg.subject).not.toContain("R18Y1Q");
-    expect(msg.body).toContain("Summary:\n- Add close commit mode.");
+    expect(msg.subject).toBe("✨ R18Y1Q cli: add close commit mode");
+    expect(msg.body).toContain("Summary:\n- Updated implementation code.");
+    expect(msg.body).not.toContain("Summary:\n- Add close commit mode.");
     expect(msg.body).toContain("Verification:\n- Bun run test:full passed.");
     expect(msg.body).toContain("Refs:\n- Agentplane task: R18Y1Q");
     expect(msg.body).toContain("- Agentplane run: 202602081506-R18Y1Q");
@@ -101,7 +100,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toBe("cli: add close commit mode");
+    expect(msg.subject).toBe("🧩 R18Y1Q cli: add close commit mode");
     expect(msg.subject).not.toContain("(no result_summary)");
   });
 
@@ -128,8 +127,8 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toBe("docs: finish force approval");
-    expect(msg.subject).not.toBe("docs: force-finish-check");
+    expect(msg.subject).toBe("🧩 R18Y1Q docs: finish force approval");
+    expect(msg.subject).not.toBe("🧩 R18Y1Q docs: force-finish-check");
   });
 
   it("uses spike emoji and does not require verify summary", async () => {
@@ -154,8 +153,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toBe("cli: spike close message builder");
-    expect(msg.subject.startsWith("🧪")).toBe(false);
+    expect(msg.subject).toBe("🧩 R18Y1Q cli: spike close message builder");
     expect(msg.body).toContain("Verification:\n- Not required (spike).");
   });
 
@@ -219,7 +217,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
     expect(msg.subject).toBe(
-      "cli: this summary is intentionally very long to exceed the close subject...",
+      "🧩 R18Y1Q cli: this summary is intentionally very long to exceed the close subject...",
     );
     expect(msg.body).toContain("Verification:\n- Ok (see task verification note).");
     expect(msg.body).toContain("Why:\n- Task metadata: breaking; risk=high.");
@@ -329,8 +327,6 @@ describe("renderMergeMessage", () => {
       "docs: regenerate CLI reference for context commands
 
       Summary:
-      - Regenerate CLI reference for context commands.
-      Changed:
       - Updated documentation artifacts.
       Verification:
       - Docs generation passed.
@@ -410,6 +406,26 @@ describe("renderMergeMessage", () => {
     expect(rendered).toContain("- Bunx vitest run pr-flow.test.ts passed.");
     expect(rendered).toContain("- Node .agentplane/policy/check-routing.mjs passed.");
     expect(rendered).not.toContain("Evidence:");
+  });
+
+  it("normalizes local pass wording in verification bullets", () => {
+    const rendered = renderMergeMessage({
+      scope: "codex",
+      subjectEmoji: "🚧",
+      taskId: "202605271519-3ES6T7",
+      prTitle: "Start Codex runner prompts with /goal",
+      verification: [
+        "Reverified after static lint fix: lint:core passed.",
+        "Typecheck passed.",
+        "Targeted task-run/bootstrap tests passed.",
+        "And git diff --check pass locally. passed.",
+      ],
+    });
+
+    expect(rendered.split("\n")[0]).toBe("🚧 3ES6T7 codex: start Codex runner prompts with /goal");
+    expect(rendered).toContain("- Git diff --check passed.");
+    expect(rendered).not.toContain("pass locally. passed");
+    expect(rendered).not.toContain("passed. passed");
   });
 
   it("caps many key files", () => {
