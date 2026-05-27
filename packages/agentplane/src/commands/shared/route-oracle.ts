@@ -41,15 +41,6 @@ export function deriveRouteOracle(opts: {
       summary: opts.nextAction.summary,
     };
   }
-  if (opts.batchOwnership.role === "included") {
-    return {
-      phase: "batch_delegate",
-      authoritativeCheckout: "primary_task_worktree",
-      blocker,
-      nextCommand: opts.nextAction.command,
-      summary: opts.nextAction.summary,
-    };
-  }
   if (opts.task.status === "DONE") {
     return {
       phase: "done_pending_cleanup",
@@ -63,6 +54,15 @@ export function deriveRouteOracle(opts: {
     return {
       phase: "needs_plan_approval",
       authoritativeCheckout: "base_checkout",
+      blocker,
+      nextCommand: opts.nextAction.command,
+      summary: opts.nextAction.summary,
+    };
+  }
+  if (opts.batchOwnership.role === "included") {
+    return {
+      phase: "batch_delegate",
+      authoritativeCheckout: "primary_task_worktree",
       blocker,
       nextCommand: opts.nextAction.command,
       summary: opts.nextAction.summary,
