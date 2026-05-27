@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-27T20:02:03Z",
+  "base": "main",
+  "branch": "task/202605271837-TFNXV6/commit-message-format",
+  "created_at": "2026-05-27T18:40:20.050Z",
+  "diffstat_sha256": "sha256:359db78359f39165989236bc23cb1b24a44ab2ec4249c8d191a4d3ac88b8887c",
+  "last_verified_at": "2026-05-27T19:06:35.136Z",
+  "last_verified_diffstat_sha256": "sha256:359db78359f39165989236bc23cb1b24a44ab2ec4249c8d191a4d3ac88b8887c",
+  "merge_commit": "944f38a1c81c8b6d4781e1061dc14791fcc5a41f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-27T20:02:03Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605271837-TFNXV6",
+  "updated_at": "2026-05-27T20:02:03Z",
+  "verify": {
+    "status": "pass"
+  }
+}
