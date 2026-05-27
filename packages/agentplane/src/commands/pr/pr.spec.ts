@@ -135,7 +135,21 @@ export const prUpdateSpec: CommandSpec<PrUpdateParsed> = {
   }),
 };
 
-export type PrCheckParsed = { taskId: string; branch: string | null };
+function parseOptionalPositiveInteger(raw: unknown): number | null {
+  if (typeof raw !== "string" || !raw.trim()) return null;
+  const value = Number.parseInt(raw.trim(), 10);
+  return Number.isSafeInteger(value) && value > 0 && String(value) === raw.trim() ? value : null;
+}
+
+export type PrCheckParsed = {
+  taskId: string;
+  branch: string | null;
+  hosted: boolean;
+  stablePolls: number | null;
+  pollIntervalMs: number | null;
+  timeoutMs: number | null;
+  requiredChecks: string[];
+};
 
 export const prCheckSpec: CommandSpec<PrCheckParsed> = {
   id: ["pr", "check"],
@@ -149,6 +163,37 @@ export const prCheckSpec: CommandSpec<PrCheckParsed> = {
       valueHint: "<name>",
       description: "Task branch to validate when local artifacts are stale or ambiguous.",
     },
+    {
+      kind: "boolean",
+      name: "hosted",
+      default: false,
+      description: "Require hosted GitHub PR checks to be complete and stable.",
+    },
+    {
+      kind: "string",
+      name: "stable-polls",
+      valueHint: "<count>",
+      description: "Consecutive hosted-ready polls required when --hosted is enabled.",
+    },
+    {
+      kind: "string",
+      name: "poll-interval-ms",
+      valueHint: "<ms>",
+      description: "Delay between hosted-check polls when --hosted is enabled.",
+    },
+    {
+      kind: "string",
+      name: "timeout-ms",
+      valueHint: "<ms>",
+      description: "Maximum hosted-check wait time when --hosted is enabled.",
+    },
+    {
+      kind: "string",
+      name: "required-check",
+      valueHint: "<name>",
+      repeatable: true,
+      description: "Repeatable hosted check name that must appear in the PR rollup.",
+    },
   ],
   examples: [
     { cmd: "agentplane pr check 202602030608-F1Q8AB", why: "Check artifacts." },
@@ -160,6 +205,15 @@ export const prCheckSpec: CommandSpec<PrCheckParsed> = {
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     branch: typeof raw.opts.branch === "string" ? raw.opts.branch : null,
+    hosted: raw.opts.hosted === true,
+    stablePolls: parseOptionalPositiveInteger(raw.opts["stable-polls"]),
+    pollIntervalMs: parseOptionalPositiveInteger(raw.opts["poll-interval-ms"]),
+    timeoutMs: parseOptionalPositiveInteger(raw.opts["timeout-ms"]),
+    requiredChecks: Array.isArray(raw.opts["required-check"])
+      ? raw.opts["required-check"].map(String)
+      : typeof raw.opts["required-check"] === "string"
+        ? [String(raw.opts["required-check"])]
+        : [],
   }),
 };
 

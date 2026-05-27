@@ -86,6 +86,11 @@ export function makeRunPrCheckHandler(getCtx: (cmd: string) => Promise<CommandCo
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,
       branch: p.branch ?? undefined,
+      hosted: p.hosted,
+      stablePolls: p.stablePolls ?? undefined,
+      pollIntervalMs: p.pollIntervalMs ?? undefined,
+      timeoutMs: p.timeoutMs ?? undefined,
+      requiredChecks: p.requiredChecks,
     });
   };
 }
