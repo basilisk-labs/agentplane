@@ -1,10 +1,11 @@
 ---
 id: "202605271932-22VJM6"
 title: "Teach agent prompts route oracle fields"
-status: "DOING"
+result_summary: "Merged via PR #4176."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ quality_review:
     - "bun test packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts; bun run typecheck; bun run format:check; bun run framework:dev:bootstrap"
   findings:
     - "Addressed PR review by naming bundle paths route_decision.oracle.nextCommand, route_decision.oracle.authoritativeCheckout, route_decision.oracle.blocker, and route_decision.oracle.phase while keeping rendered route_* summary guidance."
-commit: null
+commit:
+  hash: "82b1250035473abdd39497222749662d5caf6499"
+  message: "🚧 22VJM6 task: Refresh evaluator review"
 comments:
   -
     author: "CODER"
     body: "Start: update agent-facing prompt surfaces so route oracle fields are explicit and verified."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4176 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -57,9 +63,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented route oracle guidance in agent templates, role/quickstart/bootstrap prompt surfaces, generated agent bootstrap docs, and runner bootstrap. Evidence: focused prompt/runner tests passed (14 pass); agents:check passed; docs:bootstrap:check and docs:cli:check passed; typecheck passed; format:check passed; hotspots:check passed with existing warnings only; policy routing OK; ap doctor OK with informational runtime notices only."
+  -
+    type: "status"
+    at: "2026-05-27T20:08:58.800Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4176 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-27T19:44:23.532Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-27T20:08:58.805Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update agent-facing prompt/bootstrap guidance so agents treat task next-action --explain as the route oracle and follow phase, authoritative checkout, primary blocker, and next command instead of manually reconstructing branch_pr routes."
 sections:
   Summary: |-
