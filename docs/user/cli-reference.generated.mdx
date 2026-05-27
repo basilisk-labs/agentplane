@@ -26,6 +26,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task next-action](#task-next-action)
   - [task plan approve](#task-plan-approve)
   - [task plan set](#task-plan-set)
+  - [task run](#task-run)
   - [task search](#task-search)
   - [task show](#task-show)
   - [task start-ready](#task-start-ready)
@@ -768,6 +769,40 @@ agentplane task plan set 202602030608-F1Q8AB --file plan.md
 ```
 
 - Write plan from a file.
+
+### task run
+
+Run an AgentPlane task through the configured runner adapter.
+
+Usage:
+
+```text
+agentplane task run <task-id> [options]
+```
+
+Options:
+
+- `--dry-run`: Prepare runner artifacts and invocation without executing the adapter. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+Notes:
+
+- The task must already be DOING; use \`agentplane task start-ready ...\` first.
+- With the default Codex adapter, the runner prompt starts with \`/goal ...\` and then includes the AgentPlane bundle contract.
+
+Examples:
+
+```sh
+agentplane task run 202602030608-F1Q8AB
+```
+
+- Execute the task with the configured runner adapter.
+
+```sh
+agentplane task run 202602030608-F1Q8AB --dry-run --json
+```
+
+- Inspect the prepared runner invocation and artifact paths without starting the agent.
 
 ### task search
 

@@ -16,7 +16,7 @@ Update the AgentPlane Codex runner bootstrap so Codex exec receives a prompt tha
 ## Verification
 
 - State: ok
-- Note: Codex runner /goal bootstrap implemented and verified.
+- Note: Connected public task run command and verified Codex /goal dry-run path.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,9 +27,17 @@ Update the AgentPlane Codex runner bootstrap so Codex exec receives a prompt tha
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/runner/usecases/task-run-blueprint.test.ts | 34 ++++++++++++++++++++++
- .../src/runner/usecases/task-run-bootstrap.ts      | 27 +++++++++++++++++
- 2 files changed, 61 insertions(+)
+ docs/user/cli-reference.generated.mdx              |  35 +++++
+ docs/user/commands.mdx                             |   6 +-
+ docs/user/configuration.mdx                        |   9 +-
+ .../src/cli/run-cli.core.docs-cli.test.ts          |   2 +-
+ .../src/cli/run-cli.core.task-run.test.ts          | 101 +++++++++++++
+ .../src/cli/run-cli/command-catalog/task.ts        |   3 +
+ .../src/cli/run-cli/command-loaders/task.ts        |   2 +
+ .../agentplane/src/commands/task/run.command.ts    | 157 +++++++++++++++++++++
+ .../src/runner/usecases/task-run-blueprint.test.ts |  34 +++++
+ .../src/runner/usecases/task-run-bootstrap.ts      |  27 ++++
+ 10 files changed, 368 insertions(+), 8 deletions(-)
 ```
 
 </details>
