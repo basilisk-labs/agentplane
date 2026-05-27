@@ -1,6 +1,6 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`runCli help snapshots (cli2) > help (registry) snapshot 1`] = `
+exports[`runCli help snapshots (cli2) help (registry) snapshot 1`] = `
 "Usage:
   agentplane help [<cmd...>] [--compact] [--json]
 
@@ -50,6 +50,7 @@ Commands:
     integrate  Integrate a task branch into the base branch (branch_pr workflow).
     integrate queue  Serialize branch_pr integration into one merge lane.
     integrate queue claim  Claim the next queued integration candidate without running integrate.
+    integrate queue doctor  Diagnose and optionally repair stale branch_pr integration queue state.
     integrate queue enqueue  Add or refresh a verified task branch in the integration queue.
     integrate queue list  List branch_pr integration queue entries.
     integrate queue release  Release or complete a queue entry.
@@ -199,62 +200,7 @@ Commands:
 "
 `;
 
-exports[`runCli help snapshots (cli2) > help codex plugin install --compact snapshot 1`] = `
-"codex plugin install - Install the bundled AgentPlane plugin into a local Codex marketplace.
-
-Usage:
-  agentplane codex plugin install [options]
-
-Options:
-  --scope <user|repo>  Install to the user home marketplace or the current repository marketplace. (choices=user|repo, default=user)
-"
-`;
-
-exports[`runCli help snapshots (cli2) > help recipes install --compact snapshot 1`] = `
-"recipes install - Install a recipe into the global cache from remote index, local archive, or URL.
-
-Usage:
-  agentplane recipes install <id|path|url> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
-  agentplane recipes install --name <id> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
-  agentplane recipes install --path <path> [--yes] [--on-conflict <fail|rename|overwrite>]
-  agentplane recipes install --url <url> [--yes] [--on-conflict <fail|rename|overwrite>]
-
-Options:
-  --name <id>  Cache from remote index by recipe id.
-  --path <path>  Cache from local recipe archive path.
-  --url <url>  Cache from recipe archive URL.
-  --index <path|url>  Override recipes index location (used when installing by name / auto-name).
-  --refresh  Refresh remote index cache before installing. (default=false)
-  --yes  Auto-approve network prompts when allowed by config. (default=false)
-  --on-conflict <fail|rename|overwrite>  Deprecated compatibility no-op; recipe installs stay self-contained. (choices=fail|rename|overwrite, default=fail)
-"
-`;
-
-exports[`runCli help snapshots (cli2) > help task --compact snapshot 1`] = `
-"task - Task lifecycle and task-store commands.
-
-Usage:
-  agentplane task <subcommand> [args] [options]
-"
-`;
-
-exports[`runCli help snapshots (cli2) > help task doc set --compact snapshot 1`] = `
-"task doc set - Update a task README section.
-
-Usage:
-  agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
-  agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
-
-Options:
-  --section <name>  Target section heading (must be one of config.tasks.doc.sections). Required unless --full-doc is set.
-  --full-doc  Treat the provided text/file as the full task README payload. (default=false)
-  --text <text>  Section content (mutually exclusive with --file). Literal escaped newlines (\\n) are normalized for inline text.
-  --file <path>  Read section content from a file (mutually exclusive with --text).
-  --updated-by <id>  Optional. Override doc_updated_by metadata (must be non-empty).
-"
-`;
-
-exports[`runCli help snapshots (cli2) > help task new --compact snapshot 1`] = `
+exports[`runCli help snapshots (cli2) help task new --compact snapshot 1`] = `
 "task new - Create a new task (prints the generated task id).
 
 Usage:
@@ -277,7 +223,15 @@ Options:
 "
 `;
 
-exports[`runCli help snapshots (cli2) > help task plan --compact snapshot 1`] = `
+exports[`runCli help snapshots (cli2) help task --compact snapshot 1`] = `
+"task - Task lifecycle and task-store commands.
+
+Usage:
+  agentplane task <subcommand> [args] [options]
+"
+`;
+
+exports[`runCli help snapshots (cli2) help task plan --compact snapshot 1`] = `
 "task plan - Task plan commands (set/approve/reject).
 
 Usage:
@@ -285,7 +239,54 @@ Usage:
 "
 `;
 
-exports[`runCli help snapshots (cli2) > help work start --json snapshot 1`] = `
+exports[`runCli help snapshots (cli2) help task doc set --compact snapshot 1`] = `
+"task doc set - Update a task README section.
+
+Usage:
+  agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
+  agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
+
+Options:
+  --section <name>  Target section heading (must be one of config.tasks.doc.sections). Required unless --full-doc is set.
+  --full-doc  Treat the provided text/file as the full task README payload. (default=false)
+  --text <text>  Section content (mutually exclusive with --file). Literal escaped newlines (\\n) are normalized for inline text.
+  --file <path>  Read section content from a file (mutually exclusive with --text).
+  --updated-by <id>  Optional. Override doc_updated_by metadata (must be non-empty).
+"
+`;
+
+exports[`runCli help snapshots (cli2) help recipes install --compact snapshot 1`] = `
+"recipes install - Install a recipe into the global cache from remote index, local archive, or URL.
+
+Usage:
+  agentplane recipes install <id|path|url> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
+  agentplane recipes install --name <id> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
+  agentplane recipes install --path <path> [--yes] [--on-conflict <fail|rename|overwrite>]
+  agentplane recipes install --url <url> [--yes] [--on-conflict <fail|rename|overwrite>]
+
+Options:
+  --name <id>  Cache from remote index by recipe id.
+  --path <path>  Cache from local recipe archive path.
+  --url <url>  Cache from recipe archive URL.
+  --index <path|url>  Override recipes index location (used when installing by name / auto-name).
+  --refresh  Refresh remote index cache before installing. (default=false)
+  --yes  Auto-approve network prompts when allowed by config. (default=false)
+  --on-conflict <fail|rename|overwrite>  Deprecated compatibility no-op; recipe installs stay self-contained. (choices=fail|rename|overwrite, default=fail)
+"
+`;
+
+exports[`runCli help snapshots (cli2) help codex plugin install --compact snapshot 1`] = `
+"codex plugin install - Install the bundled AgentPlane plugin into a local Codex marketplace.
+
+Usage:
+  agentplane codex plugin install [options]
+
+Options:
+  --scope <user|repo>  Install to the user home marketplace or the current repository marketplace. (choices=user|repo, default=user)
+"
+`;
+
+exports[`runCli help snapshots (cli2) help work start --json snapshot 1`] = `
 {
   "args": [
     {
