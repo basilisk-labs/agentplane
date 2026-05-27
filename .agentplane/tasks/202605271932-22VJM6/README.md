@@ -4,7 +4,7 @@ title: "Teach agent prompts route oracle fields"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,20 +24,20 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-27T19:51:20.854Z"
+  updated_at: "2026-05-27T19:59:10.082Z"
   updated_by: "EVALUATOR"
-  note: "Agent-facing prompts now explicitly treat task next-action --explain as the route oracle and name phase, authoritative_checkout, primary_blocker, and next_command across role notes, agent templates, bootstrap docs, and runner bootstrap."
-  evaluated_sha: "c49b68363a061dc6cce2d8ccadf5417ceb6ff509"
+  note: "Agent-facing prompts now explicitly teach route oracle fields, and runner bootstrap now distinguishes rendered route_* lines from camelCase bundle JSON paths."
+  evaluated_sha: "ef0f2d993ff694ffcdadcceebed6103685d823c4"
   blueprint_digest: "60a9768b36ca75d14ae76c56c76ed86d72243cba7d5a86b232f5f1710d161933"
   evidence_refs:
     - ".agentplane/tasks/202605271932-22VJM6/README.md"
-    - ".agentplane/tasks/202605271932-22VJM6/quality/20260527-195120854-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605271932-22VJM6/quality/20260527-195120854-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605271932-22VJM6/quality/20260527-195120854-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605271932-22VJM6/quality/20260527-195910082-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605271932-22VJM6/quality/20260527-195910082-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605271932-22VJM6/quality/20260527-195910082-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605271932-22VJM6/blueprint/resolved-snapshot.json"
-    - "Local: bun test packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts; bun run agents:check; bun run docs:bootstrap:check; bun run docs:cli:check; bun run typecheck; bun run format:check; bun run hotspots:check; node .agentplane/policy/check-routing.mjs; ap doctor. Hosted: PR #4176 CodeQL, docs, PR verification, test-windows, verify-cli-critical, verify-contract, verify-unit, verify-workflow, verify-static, verify-coverage passed."
+    - "bun test packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts; bun run typecheck; bun run format:check; bun run framework:dev:bootstrap"
   findings:
-    - "Focused prompt tests, runner bootstrap tests, agent template sync, docs freshness checks, typecheck, format, hotspot check, policy routing, doctor, and hosted PR checks all passed."
+    - "Addressed PR review by naming bundle paths route_decision.oracle.nextCommand, route_decision.oracle.authoritativeCheckout, route_decision.oracle.blocker, and route_decision.oracle.phase while keeping rendered route_* summary guidance."
 commit: null
 comments:
   -
