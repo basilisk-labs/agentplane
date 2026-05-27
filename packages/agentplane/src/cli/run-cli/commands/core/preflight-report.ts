@@ -6,7 +6,7 @@ import { GitContext } from "@agentplaneorg/core/git";
 import { resolveProject } from "@agentplaneorg/core/project";
 import { normalizeTaskStatus, readTask, type TaskStatus } from "@agentplaneorg/core/tasks";
 
-import { loadTaskBackend } from "../../../../backends/task-backend.js";
+import { loadTaskBackend, toTaskSummary } from "../../../../backends/task-backend.js";
 import { validateGithubPrTitleContents } from "../../../../commands/pr/internal/review-template.js";
 import { gitCurrentBranch } from "../../../../commands/shared/git-ops.js";
 import { dedupeStrings } from "../../../../shared/strings.js";
@@ -61,6 +61,7 @@ export type PreflightReport = {
   quickstart_loaded: Probe;
   workflow_loaded: Probe;
   task_list_loaded: Probe & { count?: number };
+  active_tasks: Probe & { count?: number; task_ids?: string[] };
   working_tree_clean_tracked: Probe & { value?: boolean };
   task_artifact_drift: TaskArtifactDrift;
   message_format_guard: MessageFormatGuard;
@@ -287,10 +288,18 @@ export async function buildPreflightReport(opts: {
   cwd: string;
   rootOverride?: string;
   mode: PreflightMode;
+  role: string | null;
 }): Promise<PreflightReport> {
   const nextActions: NextAction[] = [];
   const harnessHealthReasons: string[] = [];
   const quickstartText = renderQuickstart();
+  const role = opts.role?.trim() ?? "";
+  if (role) {
+    nextActions.push({
+      command: `agentplane role ${role}`,
+      reason: "load role-specific workflow guidance before owner-scoped execution",
+    });
+  }
   const quickstartLoaded: Probe = {
     ok: quickstartText.trim().length > 0,
     error:
@@ -332,6 +341,11 @@ export async function buildPreflightReport(opts: {
     ok: false,
     error: opts.mode === "quick" ? "skipped in quick mode" : "project not resolved",
   };
+  let activeTasks: PreflightReport["active_tasks"] = {
+    ok: false,
+    error: resolved ? "skipped in quick mode without --role" : "project not resolved",
+  };
+  const activeStatuses = ["TODO", "DOING", "BLOCKED", "MERGED_PENDING_CLOSE"];
   if (opts.mode === "full" && resolved) {
     try {
       const loaded = await loadTaskBackend({
@@ -348,6 +362,45 @@ export async function buildPreflightReport(opts: {
         reason: `task backend unavailable (${message})`,
       });
       harnessHealthReasons.push("task_backend_unavailable");
+    }
+  }
+  const shouldProbeActiveTasks = opts.mode === "full" || opts.role !== null;
+  if (resolved && shouldProbeActiveTasks) {
+    try {
+      const loaded = await loadTaskBackend({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+      });
+      const summaries = loaded.backend.listProjectionTasks
+        ? await loaded.backend.listProjectionTasks({ status: activeStatuses })
+        : await loaded.backend.listTasks();
+      const taskSummaries = loaded.backend.listProjectionTasks
+        ? summaries
+        : summaries.map((task) => toTaskSummary(task));
+      const active = taskSummaries.filter((task) => {
+        const status = String(task.status).trim().toUpperCase();
+        return (
+          status === "TODO" ||
+          status === "DOING" ||
+          status === "BLOCKED" ||
+          status === "MERGED_PENDING_CLOSE"
+        );
+      });
+      activeTasks = {
+        ok: true,
+        count: active.length,
+        task_ids: active.map((task) => task.id).toSorted((a, b) => a.localeCompare(b)),
+      };
+      if (active.length > 0) {
+        nextActions.push({
+          command: "agentplane task active",
+          reason: `${active.length} active task(s) visible`,
+        });
+      }
+    } catch (err) {
+      const message = compactError(err);
+      activeTasks = { ok: false, error: message };
+      harnessHealthReasons.push("active_tasks_unavailable");
     }
   }
 
@@ -479,6 +532,7 @@ export async function buildPreflightReport(opts: {
     quickstart_loaded: quickstartLoaded,
     workflow_loaded: workflowLoaded,
     task_list_loaded: taskListLoaded,
+    active_tasks: activeTasks,
     working_tree_clean_tracked: workingTree,
     task_artifact_drift: taskArtifactDrift,
     message_format_guard: messageFormatGuard,

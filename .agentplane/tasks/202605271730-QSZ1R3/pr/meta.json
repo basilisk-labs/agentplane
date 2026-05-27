@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605271730-QSZ1R3/patch-workflow-hardening",
+  "created_at": "2026-05-27T17:32:19.320Z",
+  "diffstat_sha256": "sha256:83bb69cc706d7480fe4a044529e748ac28faf74b76e1d544d88af6c436e14874",
+  "last_verified_at": "2026-05-27T17:55:42.293Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605271730-QSZ1R3",
+  "updated_at": "2026-05-27T17:32:19.320Z",
+  "verify": {
+    "status": "pass"
+  }
+}
