@@ -1,10 +1,11 @@
 ---
 id: "202605271519-3ES6T7"
 title: "Start Codex runner prompts with /goal"
-status: "DOING"
+result_summary: "Merged via PR #4168."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "https://github.com/basilisk-labs/agentplane/pull/4168"
   findings:
     - "Implementation preserves non-codex bootstrap behavior and records runner dry-run artifacts."
-commit: null
+commit:
+  hash: "7e7acd5dce0756babb3f3b690c6e3fb987badb70"
+  message: "🚧 3ES6T7 task: record evaluator verdict"
 comments:
   -
     author: "CODER"
     body: "Start: Implement Codex runner /goal bootstrap in the dedicated task worktree, preserving the existing runner bundle and result manifest contract while adding focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4168 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Reverified after static lint fix: lint:core, typecheck, targeted task-run/bootstrap tests, and git diff --check pass locally."
+  -
+    type: "status"
+    at: "2026-05-27T18:04:54.557Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4168 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-27T17:30:02.068Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-27T18:04:54.564Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the AgentPlane Codex runner bootstrap so Codex exec receives a prompt that starts with the /goal slash command for task and context runner execution, while preserving the existing bundle/result manifest contract."
 sections:
   Summary: |-
