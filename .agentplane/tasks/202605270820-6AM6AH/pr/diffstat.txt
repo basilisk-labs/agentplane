@@ -1,0 +1,8 @@
+ docs/user/agent-bootstrap.generated.mdx                            | 5 ++++-
+ docs/user/task-lifecycle.mdx                                       | 2 ++
+ docs/user/workflow.mdx                                             | 1 +
+ packages/agentplane/assets/AGENTS.md                               | 2 +-
+ packages/agentplane/assets/codex-plugin/skills/agentplane/SKILL.md | 2 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts                     | 4 +++-
+ packages/agentplane/src/cli/command-guide.test.ts                  | 5 +++++
+ 7 files changed, 17 insertions(+), 4 deletions(-)

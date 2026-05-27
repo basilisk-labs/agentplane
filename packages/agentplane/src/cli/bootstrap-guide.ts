@@ -17,6 +17,7 @@ export const BOOTSTRAP_PREFLIGHT_COMMANDS = [
   COMMAND_SNIPPETS.core.taskList,
   COMMAND_SNIPPETS.core.taskActive,
   "git status --short --untracked-files=no",
+  "git status --short",
   "git rev-parse --abbrev-ref HEAD",
 ] as const;
 
@@ -59,10 +60,11 @@ const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
   {
     heading: "1. Preflight",
     summary:
-      "Establish workflow mode, current branch, active task candidates, and tracked working-tree state.",
+      "Establish workflow mode, current branch, active task candidates, tracked-only cleanliness, and full working-tree changes.",
     commands: BOOTSTRAP_PREFLIGHT_COMMANDS,
     notes: [
       "Run this before any mutation.",
+      "`git status --short --untracked-files=no` is tracked-only; follow it with `git status --short` so untracked files are visible before deciding what to commit.",
       "If the project is not initialized, stop and use `agentplane init` first.",
       "`task active` ranks ready work after `task list`; use `task brief <task-id>` before owner-scoped execution.",
     ],
