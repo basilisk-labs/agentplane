@@ -1,7 +1,6 @@
 import path from "node:path";
 
 import { loadDotEnv, type DotEnvLoadResult } from "../../shared/env.js";
-import { isRecord } from "../../shared/guards.js";
 import { readCloudBackendState, writeCloudBackendState } from "./cloud-backend-state.js";
 import {
   BackendError,
@@ -12,45 +11,31 @@ import {
   type TaskWriteOptions,
 } from "./shared.js";
 import type { LocalBackend } from "./local-backend.js";
-import { buildCloudPullPlan, emitCloudPullDiffSummary, readOpenConflicts } from "./cloud-pull.js";
 import { cloudPendingPushReason, pendingCloudPushError } from "./cloud-pending-push.js";
 import type { CloudBackendSettings } from "./cloud-backend-settings.js";
-import { requestCloudPush } from "./cloud-backend-push.js";
 import { cloudBackendCapabilities } from "./cloud-backend-capabilities.js";
+import {
+  assertCloudBackendConfigured,
+  inspectCloudBackendConfiguration,
+  missingCloudConfigKeys,
+} from "./cloud-backend-inspect.js";
+import { buildCloudHeaders, requestCloudBackendJson } from "./cloud-backend-request.js";
+import {
+  performCloudBackendSync,
+  requestCloudSyncStateSnapshot,
+  type CloudSyncStateSnapshot,
+} from "./cloud-backend-sync.js";
 import { refreshCloudProjectionBeforeTaskStart } from "./cloud-start-refresh.js";
 import {
-  CLOUD_PULL_REQUEST_TIMEOUT_MS,
-  CLOUD_REQUEST_TIMEOUT_MS,
-  CloudHttpError,
-  CloudNetworkError,
   cloudConfigOverrides,
-  cloudConflictMessage,
-  cloudHttpErrorMessage,
-  cloudNetworkErrorMessage,
   configureCloudFetchAddressSelection,
-  createTimeoutSignal,
-  isOptionalSyncStateFailure,
   isStale,
-  normalizeCloudPullResponse,
   normalizePositiveInteger,
-  readCloudJson,
-  readCloudSyncStateDiagnostics,
-  readSafeCommand,
-  unavailableCloudSyncStateDiagnostics,
   type CloudConfigOverride,
-  type CloudSyncStateDiagnostics,
-  type CloudSyncResponse,
 } from "./cloud-backend-utils.js";
 import { firstNonEmptyString } from "./shared/strings.js";
 
 export type { CloudBackendSettings } from "./cloud-backend-settings.js";
-
-type CloudSyncStateSnapshot = {
-  conflicts: unknown[];
-  safeCommand: string | null;
-  unavailable: boolean;
-  diagnostics: CloudSyncStateDiagnostics;
-};
 
 export class CloudBackend implements TaskBackend {
   id = "cloud";
@@ -241,239 +226,50 @@ export class CloudBackend implements TaskBackend {
     confirm: boolean;
   }): Promise<void> {
     this.assertConfigured();
-    const localTasks = await this.cache.listTasks();
-    const action = opts.direction === "pull" ? "pull" : "push";
-    const state =
-      opts.direction === "pull"
-        ? await this.requestCloudSyncState(this.projectId)
-        : {
-            conflicts: [],
-            safeCommand: null,
-            unavailable: false,
-            diagnostics: unavailableCloudSyncStateDiagnostics(false),
-          };
-    if (state.unavailable && !opts.quiet) {
-      process.stderr.write(
-        "Warning: cloud sync-state preflight is unavailable; continuing with pull endpoint conflict data.\n",
-      );
-    }
-    if (opts.direction === "pull" && state.conflicts.length > 0 && opts.conflict === "fail") {
-      throw new BackendError(
-        cloudConflictMessage({
-          conflicts: state.conflicts,
-          safeCommand:
-            state.safeCommand ?? "agentplane backend sync cloud --direction pull --conflict=diff",
-        }),
-        "E_BACKEND",
-      );
-    }
-    const response =
-      opts.direction === "push"
-        ? await requestCloudPush({
-            provider: this.provider,
-            projectId: this.projectId,
-            localTasks,
-            conflict: opts.conflict,
-            quiet: opts.quiet,
-            request: this.request.bind(this),
-          })
-        : await this.request<CloudSyncResponse>(
-            `/v1/projects/${encodeURIComponent(this.projectId)}/sync/${action}`,
-            {
-              method: "POST",
-              body: JSON.stringify({
-                provider: this.provider,
-                direction: opts.direction,
-                conflict: opts.conflict,
-              }),
-            },
-            { timeoutMs: CLOUD_PULL_REQUEST_TIMEOUT_MS },
-          );
-    const data = isRecord(response.data) ? response.data : {};
-    const pull = normalizeCloudPullResponse(response, data);
-    if (opts.direction === "pull") {
-      const conflicts = [...state.conflicts, ...readOpenConflicts(pull.conflicts)];
-      if (conflicts.length > 0 && opts.conflict === "fail") {
-        throw new BackendError(
-          cloudConflictMessage({
-            conflicts,
-            safeCommand: state.safeCommand ?? readSafeCommand(response, data),
-          }),
-          "E_BACKEND",
-        );
-      }
-      if (pull.tasks === null && !pull.noProjectionChanges) {
-        throw new BackendError(
-          [
-            "Cloud backend pull response did not include projection tasks.",
-            "Why: the cloud service did not return response.tasks or response.data.tasks and did not mark the pull as a no-op.",
-            "Fix: retry after the service exposes a projection payload or explicit no_projection_changes=true.",
-            "Safe command: agentplane backend inspect cloud --yes",
-            "Stop condition: stop if the service cannot provide a task projection contract.",
-          ].join("\n"),
-          "E_BACKEND",
-        );
-      }
-      const plan = pull.tasks ? buildCloudPullPlan(localTasks, pull.tasks) : null;
-      if (opts.conflict === "diff") {
-        emitCloudPullDiffSummary({
-          plan,
-          conflicts,
-          quiet: opts.quiet,
-        });
-        const hasPendingProjectionChanges = conflicts.length > 0 || (plan?.changed.length ?? 0) > 0;
-        const hasPendingTaskSetChanges =
-          (plan?.added.length ?? 0) > 0 || (plan?.removedIds.length ?? 0) > 0;
-        if (hasPendingProjectionChanges || hasPendingTaskSetChanges) return;
-      } else if (plan && opts.conflict === "prefer-remote") {
-        await this.assertNoPendingPushForPull();
-        if (plan.changed.length > 0 || plan.added.length > 0) {
-          await this.cache.writeTasks([...plan.changed, ...plan.added]);
-        }
-        await Promise.all(plan.removedIds.map((taskId) => this.cache.deleteTask(taskId)));
-      }
-    }
-    if (opts.direction === "pull") {
-      if (pull.lastCheckedAt) {
-        const state = await this.readState();
-        await writeCloudBackendState(this.statePath, {
-          last_checked_at: pull.lastCheckedAt,
-          last_start_ready_pull_at: state.last_start_ready_pull_at,
-          pending_push: state.pending_push,
-        });
-      }
-      return;
-    }
-    if (!pull.lastCheckedAt) {
-      await this.clearPendingPush();
-      return;
-    }
-    const existing = await this.readState();
-    await writeCloudBackendState(this.statePath, {
-      last_checked_at: pull.lastCheckedAt,
-      last_start_ready_pull_at: existing.last_start_ready_pull_at,
-      pending_push: null,
-    });
+    await performCloudBackendSync(
+      {
+        provider: this.provider,
+        projectId: this.projectId,
+        statePath: this.statePath,
+        cache: this.cache,
+        request: this.request.bind(this),
+        readState: this.readState.bind(this),
+        clearPendingPush: this.clearPendingPush.bind(this),
+        assertNoPendingPushForPull: this.assertNoPendingPushForPull.bind(this),
+        requestCloudSyncState: this.requestCloudSyncState.bind(this),
+      },
+      {
+        direction: opts.direction,
+        conflict: opts.conflict,
+        quiet: opts.quiet,
+      },
+    );
   }
 
   private async requestCloudSyncState(projectId: string): Promise<CloudSyncStateSnapshot> {
-    const headers = this.cloudHeaders();
-    let res: Response;
-    try {
-      res = await this.fetchImpl(
-        `${this.endpoint}/v1/projects/${encodeURIComponent(projectId)}/sync/state`,
-        {
-          method: "GET",
-          headers,
-          signal: createTimeoutSignal(CLOUD_REQUEST_TIMEOUT_MS),
-        },
-      );
-    } catch {
-      return {
-        conflicts: [],
-        safeCommand: null,
-        unavailable: true,
-        diagnostics: unavailableCloudSyncStateDiagnostics(true),
-      };
-    }
-    if (!res.ok) {
-      if (isOptionalSyncStateFailure(res.status)) {
-        return {
-          conflicts: [],
-          safeCommand: null,
-          unavailable: true,
-          diagnostics: unavailableCloudSyncStateDiagnostics(true),
-        };
-      }
-      throw new BackendError(await cloudHttpErrorMessage(res), "E_BACKEND");
-    }
-    let response: Record<string, unknown>;
-    try {
-      response = await readCloudJson<Record<string, unknown>>(res, CLOUD_REQUEST_TIMEOUT_MS);
-    } catch {
-      return {
-        conflicts: [],
-        safeCommand: null,
-        unavailable: true,
-        diagnostics: unavailableCloudSyncStateDiagnostics(true),
-      };
-    }
-    const data = isRecord(response.data) ? response.data : {};
-    const conflicts = readOpenConflicts(
-      response.openConflicts ??
-        response.open_conflicts ??
-        response.conflicts ??
-        data.openConflicts ??
-        data.open_conflicts ??
-        data.conflicts,
-    );
-    return {
-      conflicts,
-      safeCommand:
-        readSafeCommand(response, data) ??
-        "agentplane backend sync cloud --direction pull --conflict=diff",
-      unavailable: false,
-      diagnostics: readCloudSyncStateDiagnostics(data, conflicts.length),
-    };
+    return await requestCloudSyncStateSnapshot({
+      endpoint: this.endpoint,
+      projectId,
+      fetchImpl: this.fetchImpl,
+      headers: buildCloudHeaders(this.token),
+    });
   }
 
   async inspectConfiguration(): Promise<TaskBackendInspectionResult> {
-    const missing = this.missingConfigKeys();
-    const state = await readCloudBackendState(this.statePath);
-    const syncState =
-      missing.length === 0
-        ? await this.requestCloudSyncState(this.projectId).catch(() => null)
-        : null;
-    return {
-      backendId: this.id,
-      visibleCustomFields: [],
-      canonicalState: { configuredFieldId: null, visibleFieldId: null },
-      configuredFieldNameDrift: [],
-      connection: {
-        endpoint: this.endpoint || null,
-        projectId: this.projectId || null,
-        connected: missing.length === 0,
-        missing,
-        provider: this.provider,
-        envOverrides: this.configOverrides,
-        syncState: syncState?.diagnostics ?? null,
-      },
-      freshness: {
-        lastCheckedAt: state.last_checked_at,
-        staleAfterSeconds: this.staleAfterSeconds,
-        stale: isStale(state.last_checked_at, this.staleAfterSeconds),
-        statePath: this.statePath,
-        pendingPush: state.pending_push,
-      },
-    };
+    return await inspectCloudBackendConfiguration({
+      config: this.configSnapshot(),
+      requestCloudSyncState: this.requestCloudSyncState.bind(this),
+    });
   }
 
   private async request<T>(pathname: string, init: RequestInit, opts?: { timeoutMs?: number }) {
-    const headers = this.cloudHeaders();
-    for (const [key, value] of new Headers(init.headers)) {
-      headers.set(key, value);
-    }
-
-    let res: Response;
-    try {
-      res = await this.fetchImpl(`${this.endpoint}${pathname}`, {
-        ...init,
-        headers,
-        signal: init.signal ?? createTimeoutSignal(opts?.timeoutMs ?? CLOUD_REQUEST_TIMEOUT_MS),
-      });
-    } catch (error) {
-      throw new CloudNetworkError(cloudNetworkErrorMessage(error, opts?.timeoutMs));
-    }
-    if (!res.ok) {
-      throw new CloudHttpError(await cloudHttpErrorMessage(res), res.status);
-    }
-    return await readCloudJson<T>(res, opts?.timeoutMs);
-  }
-
-  private cloudHeaders(): Headers {
-    return new Headers({
-      "content-type": "application/json",
-      authorization: `Bearer ${this.token}`,
+    return await requestCloudBackendJson<T>({
+      endpoint: this.endpoint,
+      token: this.token,
+      fetchImpl: this.fetchImpl,
+      pathname,
+      init,
+      timeoutMs: opts?.timeoutMs,
     });
   }
 
@@ -572,26 +368,23 @@ export class CloudBackend implements TaskBackend {
   }
 
   private assertConfigured(): void {
-    const missing = this.missingConfigKeys();
-    if (missing.length > 0) {
-      throw new BackendError(
-        [
-          `Cloud backend is not configured: missing ${missing.join(", ")}`,
-          `Canonical env root: ${this.dotEnv.root}`,
-          `Checked .env: ${this.dotEnv.path}${this.dotEnv.loaded ? "" : " (not found)"}`,
-          "Fix: add the missing AGENTPLANE_CLOUD_* values to the canonical repository root .env or export them explicitly in the shell.",
-        ].join("\n"),
-        "E_BACKEND",
-      );
-    }
+    assertCloudBackendConfigured(this.configSnapshot());
   }
 
   private missingConfigKeys(): string[] {
-    const required = [
-      [this.endpoint, "AGENTPLANE_CLOUD_ENDPOINT"],
-      [this.token, "AGENTPLANE_CLOUD_TOKEN"],
-      [this.projectId, "AGENTPLANE_CLOUD_PROJECT_ID"],
-    ] as const;
-    return required.flatMap(([value, key]) => (value ? [] : [key]));
+    return missingCloudConfigKeys(this.configSnapshot());
+  }
+
+  private configSnapshot() {
+    return {
+      endpoint: this.endpoint,
+      token: this.token,
+      projectId: this.projectId,
+      provider: this.provider,
+      statePath: this.statePath,
+      staleAfterSeconds: this.staleAfterSeconds,
+      configOverrides: this.configOverrides,
+      dotEnv: this.dotEnv,
+    };
   }
 }
