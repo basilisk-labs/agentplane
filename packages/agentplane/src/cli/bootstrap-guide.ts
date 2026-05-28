@@ -89,7 +89,7 @@ const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
       "Use `agentplane role ORCHESTRATOR` during planning, then switch to `agentplane role <OWNER>` before owner-scoped execution.",
       "Fill required README sections before approval; wait for upstream DONE tasks before `task start-ready`.",
       "`task plan approve` and `task start-ready` must run sequentially, never in parallel.",
-      "Treat `task verify-show` as the verification contract right before `verify` and `finish`. Direct `finish` creates the close commit by default.",
+      "Treat `task verify-show` as the verification contract before `verify` and `finish`. Direct `finish` creates the close commit by default.",
     ],
   },
   {
