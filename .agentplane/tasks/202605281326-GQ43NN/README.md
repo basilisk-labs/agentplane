@@ -4,7 +4,7 @@ title: "Handle context verify-task non-context skip"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,23 @@ verification:
   updated_by: "CODER"
   note: "Verified explicit non-applicable skip for non-context context verify-task."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T13:34:28.145Z"
+  updated_by: "EVALUATOR"
+  note: "context verify-task now reports non-context task-new work as an explicit non-applicable skip while preserving validation failures for malformed context tasks."
+  evaluated_sha: "0ba3f34dbe2815342a0cf962b723d62b6ba3c5b5"
+  blueprint_digest: "4b510f2c38efac6bf3c2410dfb06e06745700fd819b93c264606e6eaff1a0fff"
+  evidence_refs:
+    - ".agentplane/tasks/202605281326-GQ43NN/README.md"
+    - ".agentplane/tasks/202605281326-GQ43NN/quality/20260528-133428145-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605281326-GQ43NN/quality/20260528-133428145-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605281326-GQ43NN/quality/20260528-133428145-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605281326-GQ43NN/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/context/verify-task.maximum-assimilation.unit.test.ts"
+    - "packages/agentplane/src/context/verify-task.ts"
+  findings:
+    - "Focused regression and context verification tests passed; policy routing and doctor passed; current ordinary code task produces skipped_not_applicable instead of hidden success."
 commit: null
 comments:
   -

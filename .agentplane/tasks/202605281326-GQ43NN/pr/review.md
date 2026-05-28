@@ -29,7 +29,9 @@ Created: 2026-05-28T13:27:17.393Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../verify-task.maximum-assimilation.unit.test.ts  | 62 ++++++++++++++++++++++
+ packages/agentplane/src/context/verify-task.ts     |  9 ++--
+ 2 files changed, 66 insertions(+), 5 deletions(-)
 ```
 
 </details>

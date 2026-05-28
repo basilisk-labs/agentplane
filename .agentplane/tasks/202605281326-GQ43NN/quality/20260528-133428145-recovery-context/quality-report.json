@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202605281326-GQ43NN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-28T13:34:28.145Z",
+  "verdict": "pass",
+  "summary": "context verify-task now reports non-context task-new work as an explicit non-applicable skip while preserving validation failures for malformed context tasks.",
+  "evaluated_sha": "0ba3f34dbe2815342a0cf962b723d62b6ba3c5b5",
+  "blueprint_digest": "4b510f2c38efac6bf3c2410dfb06e06745700fd819b93c264606e6eaff1a0fff",
+  "findings": [
+    "Focused regression and context verification tests passed; policy routing and doctor passed; current ordinary code task produces skipped_not_applicable instead of hidden success."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605281326-GQ43NN/README.md",
+    "packages/agentplane/src/commands/context/verify-task.maximum-assimilation.unit.test.ts",
+    "packages/agentplane/src/context/verify-task.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
