@@ -1,0 +1,5 @@
+ bun.lock                                      |  82 +++++++++++++--
+ packages/core/package.json                    |   2 +-
+ packages/core/src/process/run-process.test.ts |  18 +++-
+ packages/core/src/process/run-process.ts      | 140 ++++++++++++++++++--------
+ 4 files changed, 189 insertions(+), 53 deletions(-)
