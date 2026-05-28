@@ -1,10 +1,11 @@
 ---
 id: "202605280932-HJC244"
 title: "Fix pre-push historical commit policy upgrade mismatch"
-status: "DOING"
+result_summary: "Merged via PR #4187."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - "https://github.com/basilisk-labs/agentplane/pull/4187"
   findings:
     - "The bypass is now limited to historical commits introduced through a managed upgrade merge lineage; a linear unbound commit followed by a fake upgrade commit remains audited. Issue context escaped newlines are normalized."
-commit: null
+commit:
+  hash: "f02f2999df30ab0bbb02bcac713499b43e398214"
+  message: "✅ HJC244 task: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: implementing issue #4183 in the dedicated branch_pr worktree, focused on pre-push historical commit policy mismatch and targeted regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4187 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,9 +70,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification passed after review fix for issue #4183. Commands: bun test packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts packages/agentplane/src/cli/run-cli.core.insights-report.test.ts (24 pass); bun run format:check (pass); bun run lint:core (pass); node .agentplane/policy/check-routing.mjs (pass); AGENTPLANE_FAST_CHANGED_FILES=<touched paths> bun run ci:local:fast (pass, full-fast selector: format/schema/templates/routing/release parity/build/typecheck/bundles/docs freshness/hotspot/vitest projects/lint/unit/critical CLI)."
+  -
+    type: "status"
+    at: "2026-05-28T13:27:52.463Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4187 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T10:27:27.052Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T13:27:52.469Z"
+doc_updated_by: "INTEGRATOR"
 description: "Address GitHub issue #4183: pre-push applies current mutating-commit task-id policy to historical commits introduced by an AgentPlane upgrade merge, blocking push from main after valid lifecycle completion. Scope: pre-push/commit-policy behavior, focused tests, and issue-linked evidence."
 sections:
   Summary: |-
