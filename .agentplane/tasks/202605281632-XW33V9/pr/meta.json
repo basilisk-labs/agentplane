@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605281632-XW33V9/remove-runtime-tasks-json-dependencies",
+  "created_at": "2026-05-28T16:32:53.504Z",
+  "diffstat_sha256": "sha256:cc761959d547ac954f925734001f4af1973f2affdfecde312d36d249aace0416",
+  "last_verified_at": "2026-05-28T16:40:55.430Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605281632-XW33V9",
+  "updated_at": "2026-05-28T16:32:53.504Z",
+  "verify": {
+    "status": "pass"
+  }
+}

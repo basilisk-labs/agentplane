@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
+import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { runDoctor } from "./doctor.run.js";
@@ -106,6 +107,50 @@ async function gitInitWithCommit(root: string, subject: string): Promise<string>
   await execFileAsync("git", ["commit", "-m", subject], { cwd: root });
   const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
   return stdout.trim();
+}
+
+async function writeTaskReadmeFixture(
+  root: string,
+  task: { id: string; status: string; commit?: { hash: string } | null },
+): Promise<void> {
+  const taskDir = path.join(root, ".agentplane", "tasks", task.id);
+  await mkdir(taskDir, { recursive: true });
+  await writeFile(
+    path.join(taskDir, "README.md"),
+    renderTaskReadme(
+      {
+        id: task.id,
+        title: `Task ${task.id}`,
+        description: "Doctor fast fixture task",
+        status: task.status,
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["code"],
+        verify: [],
+        plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        commit: task.commit ?? null,
+        comments: [],
+        events: [],
+        revision: 1,
+        doc_version: 3,
+        doc_updated_at: "2026-02-11T18:00:00.000Z",
+        doc_updated_by: "CODER",
+        sections: {
+          Summary: "Doctor fast fixture task.",
+          Scope: "- In scope: doctor fixture.",
+          Plan: "1. Run doctor.",
+          "Verify Steps": "1. Run agentplane doctor.",
+          Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+          "Rollback Plan": "- Revert fixture.",
+          Findings: "",
+        },
+      },
+      "",
+    ),
+    "utf8",
+  );
 }
 
 async function addFrameworkCheckout(root: string): Promise<{
@@ -234,28 +279,20 @@ describe("doctor.fast", () => {
     }
   });
 
-  it("fails when DONE task misses implementation commit hash", async () => {
+  it("warns when DONE task misses implementation commit hash", async () => {
     const ws = await mkWorkspace();
     await gitInitWithCommit(ws.root, "feat: initial");
-    await writeFile(
-      path.join(ws.root, ".agentplane", "tasks.json"),
-      JSON.stringify(
-        {
-          tasks: [
-            { id: "202602111800-ABC123", status: "DONE", commit: null },
-            { id: "202602111801-DEF456", status: "TODO" },
-          ],
-        },
-        null,
-        2,
-      ),
-      "utf8",
-    );
+    await writeTaskReadmeFixture(ws.root, {
+      id: "202602111800-ABC123",
+      status: "DONE",
+      commit: null,
+    });
+    await writeTaskReadmeFixture(ws.root, { id: "202602111801-DEF456", status: "TODO" });
     const rc = await runDoctor(
       { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
       { fix: false, dev: false },
     );
-    expect(rc).toBe(1);
+    expect(rc).toBe(0);
   }, 60_000);
 
   it("prints runtime info when doctor runs inside a framework checkout", async () => {
