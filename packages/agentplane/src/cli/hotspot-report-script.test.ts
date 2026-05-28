@@ -168,6 +168,11 @@ describe("hotspot-report script", () => {
           threshold_lines?: number;
           modules?: { file?: string; lines?: number }[];
         };
+        agent_critical_runtime_warnings?: {
+          total?: number;
+          categories?: Record<string, number>;
+          modules?: { file?: string; lines?: number; category?: string }[];
+        };
       };
     };
 
@@ -216,6 +221,66 @@ describe("hotspot-report script", () => {
     expect(payload.metrics?.oversized_runtime_modules?.modules?.[0]?.lines).toBeGreaterThanOrEqual(
       7,
     );
+    expect(payload.metrics?.agent_critical_runtime_warnings).toEqual({
+      total: 0,
+      threshold_lines: 5,
+      categories: {},
+      modules: [],
+    });
+  });
+
+  it("classifies agent-critical runtime hotspots by domain", async () => {
+    const root = await makeTempRoot("agentplane-hotspot-agent-critical-");
+    const routeDir = path.join(root, "packages", "agentplane", "src", "commands", "shared");
+    const runnerDir = path.join(root, "packages", "agentplane", "src", "runner");
+    await mkdir(routeDir, { recursive: true });
+    await mkdir(runnerDir, { recursive: true });
+    await writeFile(
+      path.join(routeDir, "route-decision.ts"),
+      Array.from({ length: 8 }, (_, index) => `const route${index} = ${index};`).join("\n"),
+      "utf8",
+    );
+    await writeFile(
+      path.join(runnerDir, "result-manifest.ts"),
+      Array.from({ length: 7 }, (_, index) => `const runner${index} = ${index};`).join("\n"),
+      "utf8",
+    );
+
+    const result = await runScript([
+      "--root",
+      root,
+      "--warning-lines",
+      "5",
+      "--oversized-lines",
+      "20",
+    ]);
+
+    expect(result.exitCode).toBe(0);
+    const payload = JSON.parse(result.stdout) as {
+      metrics?: {
+        agent_critical_runtime_warnings?: {
+          total?: number;
+          categories?: Record<string, number>;
+          modules?: { file?: string; category?: string; lines?: number }[];
+        };
+      };
+    };
+
+    expect(payload.metrics?.agent_critical_runtime_warnings?.total).toBe(2);
+    expect(payload.metrics?.agent_critical_runtime_warnings?.categories).toEqual({
+      "route-oracle": 1,
+      runner: 1,
+    });
+    expect(payload.metrics?.agent_critical_runtime_warnings?.modules).toEqual([
+      expect.objectContaining({
+        file: "packages/agentplane/src/commands/shared/route-decision.ts",
+        category: "route-oracle",
+      }),
+      expect.objectContaining({
+        file: "packages/agentplane/src/runner/result-manifest.ts",
+        category: "runner",
+      }),
+    ]);
   });
 
   it("fails check mode when an oversized module is not allowlisted", async () => {

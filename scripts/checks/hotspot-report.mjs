@@ -29,6 +29,44 @@ const BACKEND_IS_LOCAL_HELPER_RE = /backendIsLocalFileBackend\s*\(/g;
 const BACKEND_ID_LOCAL_COMPARE_RE = /\b(?:opts\.ctx\.|ctx\.)?backendId\b\s*(?:===|!==)\s*"local"/g;
 const BACKEND_ID_REDMINE_COMPARE_RE =
   /\b(?:opts\.ctx\.|ctx\.)?backendId\b\s*(?:===|!==)\s*"redmine"/g;
+const AGENT_CRITICAL_RULES = [
+  {
+    category: "route-oracle",
+    patterns: [
+      /^packages\/agentplane\/src\/commands\/shared\/route-/,
+      /^packages\/agentplane\/src\/commands\/task\/(?:brief|next-action|status)\.command\.ts$/,
+    ],
+  },
+  {
+    category: "runner",
+    patterns: [/^packages\/agentplane\/src\/runner\//],
+  },
+  {
+    category: "evaluator",
+    patterns: [
+      /^packages\/agentplane\/src\/commands\/evaluator\//,
+      /^packages\/agentplane\/src\/evaluators\//,
+    ],
+  },
+  {
+    category: "guard",
+    patterns: [/^packages\/agentplane\/src\/commands\/guard\//],
+  },
+  {
+    category: "task-lifecycle",
+    patterns: [
+      /^packages\/agentplane\/src\/commands\/task\/(?:finish|run|verify|workflow-transition)/,
+    ],
+  },
+  {
+    category: "provider-lane",
+    patterns: [
+      /^packages\/agentplane\/src\/commands\/pr\//,
+      /^packages\/agentplane\/src\/commands\/integrate-queue\.command\.ts$/,
+      /^packages\/agentplane\/src\/commands\/release\//,
+    ],
+  },
+];
 
 function printHelp() {
   process.stdout.write(
@@ -252,6 +290,11 @@ function compareByCountThenPath(left, right) {
   return left.file.localeCompare(right.file);
 }
 
+function classifyAgentCriticalFile(file) {
+  return AGENT_CRITICAL_RULES.find((rule) => rule.patterns.some((pattern) => pattern.test(file)))
+    ?.category;
+}
+
 export function collectHotspotReport(opts) {
   if (!existsSync(opts.root)) {
     throw new Error(`Repository root is missing: ${opts.root}`);
@@ -270,6 +313,7 @@ export function collectHotspotReport(opts) {
   const backendBranchFiles = [];
   const runtimeWarningModules = [];
   const oversizedRuntimeModules = [];
+  const agentCriticalRuntimeWarnings = [];
   const testWarningModules = [];
   const oversizedTestModules = [];
 
@@ -310,6 +354,7 @@ export function collectHotspotReport(opts) {
     backendRedmineBranches += fileBackendRedmineBranches;
 
     const lines = source.split(/\r?\n/).length;
+    const agentCriticalCategory = classifyAgentCriticalFile(file);
     if (lines > opts.warningLines && lines <= opts.oversizedLines) {
       runtimeWarningModules.push({ file, lines });
     }
@@ -318,6 +363,13 @@ export function collectHotspotReport(opts) {
         file,
         lines,
         allowed: opts.allowedOversized?.includes(file) === true,
+      });
+    }
+    if (agentCriticalCategory && lines > opts.warningLines) {
+      agentCriticalRuntimeWarnings.push({
+        file,
+        lines,
+        category: agentCriticalCategory,
       });
     }
   }
@@ -347,6 +399,11 @@ export function collectHotspotReport(opts) {
   });
   oversizedRuntimeModules.sort((left, right) => {
     if (right.lines !== left.lines) return right.lines - left.lines;
+    return left.file.localeCompare(right.file);
+  });
+  agentCriticalRuntimeWarnings.sort((left, right) => {
+    if (right.lines !== left.lines) return right.lines - left.lines;
+    if (left.category !== right.category) return left.category.localeCompare(right.category);
     return left.file.localeCompare(right.file);
   });
   testWarningModules.sort((left, right) => {
@@ -401,6 +458,19 @@ export function collectHotspotReport(opts) {
         total: oversizedRuntimeModules.length,
         threshold_lines: opts.oversizedLines,
         modules: oversizedRuntimeModules,
+      },
+      agent_critical_runtime_warnings: {
+        total: agentCriticalRuntimeWarnings.length,
+        threshold_lines: opts.warningLines,
+        categories: Object.fromEntries(
+          [...new Set(agentCriticalRuntimeWarnings.map((entry) => entry.category))]
+            .toSorted()
+            .map((category) => [
+              category,
+              agentCriticalRuntimeWarnings.filter((entry) => entry.category === category).length,
+            ]),
+        ),
+        modules: agentCriticalRuntimeWarnings,
       },
       oversized_test_warnings: {
         total: testWarningModules.length,
