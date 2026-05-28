@@ -33,7 +33,11 @@ hotspot threshold check (runtime warnings 40 -> 39).
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/context/context-groups.ts         |  91 ++++
+ .../src/commands/context/context-init-runner.ts    |  55 +++
+ .../src/commands/context/context-runner.ts         | 340 ++++++++++++++
+ .../src/commands/context/context.command.ts        | 502 +--------------------
+ 4 files changed, 487 insertions(+), 501 deletions(-)
 ```
 
 </details>

@@ -4,7 +4,7 @@ title: "Context command dispatcher decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,31 @@ verification:
   updated_by: "CODER"
   note: "Context command dispatcher split into thin entrypoint, runner, group usage handlers, and interactive init runner. Verified with focused context CLI tests, typecheck, arch deps, lint, format, and hotspot threshold check (runtime warnings 40 -> 39)."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T22:30:19.420Z"
+  updated_by: "EVALUATOR"
+  note: "Context command dispatcher decomposition completed without changing CLI behavior."
+  evaluated_sha: "7b34c01e69a9f73b975e0b540b26af552c0cebaa"
+  blueprint_digest: "8e89bc7f9a108b6d0065608f3bc60397d13b55c189d9f3c6b400d8b8f8f2ba01"
+  evidence_refs:
+    - ".agentplane/tasks/202605282222-D43531/README.md"
+    - ".agentplane/tasks/202605282222-D43531/quality/20260528-223019420-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605282222-D43531/quality/20260528-223019420-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605282222-D43531/quality/20260528-223019420-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605282222-D43531/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/context/context.command.ts"
+    - "packages/agentplane/src/commands/context/context-runner.ts"
+    - "packages/agentplane/src/commands/context/context-groups.ts"
+    - "packages/agentplane/src/commands/context/context-init-runner.ts"
+    - "bunx vitest run packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/commands/context/release-readiness.test.ts --config vitest.workspace.ts"
+    - "bun run typecheck"
+    - "bun run arch:deps"
+    - "bun run lint:core"
+    - "bun run format:changed"
+    - "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300"
+  findings:
+    - "context.command.ts is now a one-line public barrel; command wrappers remain in context-runner.ts at 340 lines, group usage handlers moved to context-groups.ts, and interactive init prompting moved to context-init-runner.ts. Hotspot warning count decreased from 40 to 39."
 commit: null
 comments:
   -
