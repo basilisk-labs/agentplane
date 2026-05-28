@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-28T20:15:14Z",
   "base": "main",
   "branch": "task/202605282000-XJETF6/task-runner-execution-usecase-decomposition",
   "created_at": "2026-05-28T20:01:14.372Z",
   "diffstat_sha256": "sha256:5a40dd37f4bb43cb84ee226d1761fb4ee4838844a9dfc742bf7659d577c02428",
   "last_verified_at": "2026-05-28T20:04:39.875Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "35445ccc48d8099a2e9ff952562be8db7145ed13",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-28T20:15:14Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605282000-XJETF6",
-  "updated_at": "2026-05-28T20:01:14.372Z",
+  "updated_at": "2026-05-28T20:15:14Z",
   "verify": {
     "status": "pass"
   }

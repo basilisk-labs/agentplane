@@ -1,10 +1,11 @@
 ---
 id: "202605282000-XJETF6"
 title: "Task runner execution usecase decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4206."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "packages/agentplane/src/runner/usecases/task-run-blueprint-plan.ts"
   findings:
     - "Evidence: task-run.ts reduced from 566 to 388 lines; task-run-blueprint-plan.ts owns blueprint budget, context manifest, plan resolution, and snapshot writes; targeted runner tests, typecheck, lint:core, format:changed, and hotspot check passed."
-commit: null
+commit:
+  hash: "35445ccc48d8099a2e9ff952562be8db7145ed13"
+  message: "♻️ XJETF6 runner: keep blueprint manifest helper private"
 comments:
   -
     author: "CODER"
     body: "Start: decompose task runner execution usecase in the dedicated branch_pr worktree, preserving runner lifecycle behavior and verifying with targeted runner checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4206 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Task runner usecase decomposition verified: task-run.ts reduced from 566 to 388 lines, blueprint plan/snapshot helpers extracted, targeted runner blueprint/lifecycle tests passed, typecheck passed, lint:core passed, format:changed passed, hotspot threshold check passed."
+  -
+    type: "status"
+    at: "2026-05-28T20:16:05.428Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4206 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T20:04:39.901Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T20:16:05.434Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/runner/usecases/task-run.ts into focused runner execution modules without changing runner lifecycle behavior. Extract manifest/result construction and execution status mapping so agent-run evidence is easier to audit and future runner changes touch smaller files."
 sections:
   Summary: |-
