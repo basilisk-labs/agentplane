@@ -272,6 +272,7 @@ function policyLoadCondition(relativePath: string): PromptModuleLoadCondition | 
   if (relativePath === "workflow.direct.md") return { workflow_modes: ["direct"] };
   if (relativePath === "workflow.branch_pr.md") return { workflow_modes: ["branch_pr"] };
   if (relativePath === "framework.dev.md") return { repo_types: ["framework"] };
+  if (relativePath === "context.must.md") return { commands: ["context"] };
   return undefined;
 }
 

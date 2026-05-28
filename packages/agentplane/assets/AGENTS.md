@@ -148,8 +148,7 @@ Condition: task includes mutation (file edits, task-state changes, commits, merg
 5. IF task modifies implementation code paths THEN LOAD `@.agentplane/policy/dod.code.md`.
 6. IF task modifies docs/policy-only paths (`AGENTS.md`, docs, `.agentplane/policy/**`) THEN LOAD `@.agentplane/policy/dod.docs.md`.
 7. IF task modifies policy files (`AGENTS.md` or `.agentplane/policy/**`) THEN LOAD `@.agentplane/policy/governance.md`.
-8. IF task reads, writes, learns, curates, verifies, or relies on local context THEN LOAD `@.agentplane/policy/context.must.md`.
-9. IF task modifies `.agentplane/policy/incidents.md` THEN LOAD `@.agentplane/policy/incidents.md`.
+8. IF task modifies `.agentplane/policy/incidents.md` THEN LOAD `@.agentplane/policy/incidents.md`.
 
 Routing constraints:
 
@@ -219,7 +218,6 @@ Detailed DoD rules are in `.agentplane/policy/dod.core.md`, `.agentplane/policy/
 - DOC `.agentplane/policy/workflow.release.md`
 - DOC `.agentplane/policy/workflow.upgrade.md`
 - DOC `.agentplane/policy/security.must.md`
-- DOC `.agentplane/policy/context.must.md`
 - DOC `.agentplane/policy/dod.core.md`
 - DOC `.agentplane/policy/dod.code.md`
 - DOC `.agentplane/policy/dod.docs.md`

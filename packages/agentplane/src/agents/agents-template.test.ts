@@ -9,6 +9,7 @@ import {
   loadPolicyTemplates,
   renderMarkdownPromptTemplate,
 } from "./agents-template.js";
+import { withContextPolicyGatewayText } from "../shared/policy-gateway.js";
 
 const LOCAL_CLI = "node packages/agentplane/bin/agentplane.js";
 const GENERATED_FRAGMENT_SOURCE_ALLOWLIST = new Set(["policy/incidents.md"]);
@@ -50,7 +51,10 @@ describe("agents-template", () => {
     const renderedRepo = renderMarkdownPromptTemplate(repoText, {
       source_ref: "AGENTS.md",
     });
-    expect(renderedRepo.contents).toBe(bundledText);
+    const expected = repoText.includes(".agentplane/policy/context.must.md")
+      ? withContextPolicyGatewayText(bundledText)
+      : bundledText;
+    expect(renderedRepo.contents).toBe(expected);
     expect(bundledText).not.toContain("ap:fragment");
   });
 

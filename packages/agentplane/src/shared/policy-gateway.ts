@@ -43,6 +43,30 @@ export function renderPolicyGatewayTemplateText(
     .replaceAll("AGENTS_POLICY", "CLAUDE_POLICY");
 }
 
+export function withContextPolicyGatewayText(text: string): string {
+  const contextPath = ".agentplane/policy/context.must.md";
+  if (text.includes(contextPath)) return text;
+
+  let next = text.replace(
+    "8. IF task modifies `.agentplane/policy/incidents.md` THEN LOAD `@.agentplane/policy/incidents.md`.",
+    [
+      "8. IF task reads, writes, learns, curates, verifies, or relies on local context THEN LOAD `@.agentplane/policy/context.must.md`.",
+      "9. IF task modifies `.agentplane/policy/incidents.md` THEN LOAD `@.agentplane/policy/incidents.md`.",
+    ].join("\n"),
+  );
+
+  next = next.replace(
+    "- DOC `.agentplane/policy/security.must.md`\n- DOC `.agentplane/policy/dod.core.md`",
+    [
+      "- DOC `.agentplane/policy/security.must.md`",
+      "- DOC `.agentplane/policy/context.must.md`",
+      "- DOC `.agentplane/policy/dod.core.md`",
+    ].join("\n"),
+  );
+
+  return next;
+}
+
 export async function resolvePolicyGatewayForRepo(opts: {
   gitRoot: string;
   fallbackFlavor?: PolicyGatewayFlavor;

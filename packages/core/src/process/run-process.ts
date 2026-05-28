@@ -7,7 +7,13 @@ import path from "node:path";
 import type { Stream, Readable as ReadableStream } from "node:stream";
 import { fileURLToPath } from "node:url";
 
-import execa, { sync as execaSync, type ExecaChildProcess } from "execa";
+import * as execaModule from "execa";
+import type { ResultPromise } from "execa";
+
+type ExecaChildProcess<TOutput extends string | Buffer = string | Buffer> = ResultPromise & {
+  stdout?: TOutput;
+  stderr?: TOutput;
+};
 
 type ProcessStdioOption = "pipe" | "ignore" | "inherit" | "ipc" | Stream | number | undefined;
 type ExecFileCompatOptions = ExecFileOptions | ExecFileOptionsWithBufferEncoding;
@@ -74,6 +80,20 @@ type StartProcessFn = {
   (opts: RunProcessOptions & { encoding: null }): ExecaChildProcess<Buffer>;
   (opts: RunProcessOptions): ExecaChildProcess<string>;
 };
+
+type ExecaCompatModule = typeof execaModule & {
+  default?: typeof execaModule.execa;
+  sync?: typeof execaModule.execaSync;
+};
+
+const execaCompat = execaModule as ExecaCompatModule;
+const execa = execaCompat.execa ?? execaCompat.default;
+const execaSync = execaCompat.execaSync ?? execaCompat.sync;
+const execaUsesBufferEncoding = Boolean(execaCompat.execa);
+
+if (!execa || !execaSync) {
+  throw new Error("Unsupported execa module shape: expected execa/execaSync exports");
+}
 
 type ExecFileAsyncFn = {
   (
@@ -243,43 +263,45 @@ function runExecaSync(
   assertSupportedExecutable(command);
   switch (command) {
     case "bash": {
-      return execaSync("bash", args, options) as RunProcessResult<string | Buffer>;
+      return execaSync("bash", args, options) as unknown as RunProcessResult<string | Buffer>;
     }
     case "bun": {
-      return execaSync("bun", args, options) as RunProcessResult<string | Buffer>;
+      return execaSync("bun", args, options) as unknown as RunProcessResult<string | Buffer>;
     }
     case "cat": {
-      return execaSync("cat", args, options) as RunProcessResult<string | Buffer>;
+      return execaSync("cat", args, options) as unknown as RunProcessResult<string | Buffer>;
     }
     case "chmod": {
-      return execaSync("chmod", args, options) as RunProcessResult<string | Buffer>;
+      return execaSync("chmod", args, options) as unknown as RunProcessResult<string | Buffer>;
     }
     case "gh": {
-      return execaSync("gh", args, options) as RunProcessResult<string | Buffer>;
+      return execaSync("gh", args, options) as unknown as RunProcessResult<string | Buffer>;
     }
     case "git": {
-      return execaSync("git", sanitizeGitArgs(args), options) as RunProcessResult<string | Buffer>;
+      return execaSync("git", sanitizeGitArgs(args), options) as unknown as RunProcessResult<
+        string | Buffer
+      >;
     }
     case "node": {
-      return execaSync("node", args, options) as RunProcessResult<string | Buffer>;
+      return execaSync("node", args, options) as unknown as RunProcessResult<string | Buffer>;
     }
     case "npm": {
-      return execaSync("npm", args, options) as RunProcessResult<string | Buffer>;
+      return execaSync("npm", args, options) as unknown as RunProcessResult<string | Buffer>;
     }
     case "ps": {
-      return execaSync("ps", args, options) as RunProcessResult<string | Buffer>;
+      return execaSync("ps", args, options) as unknown as RunProcessResult<string | Buffer>;
     }
     case "sh": {
-      return execaSync("sh", args, options) as RunProcessResult<string | Buffer>;
+      return execaSync("sh", args, options) as unknown as RunProcessResult<string | Buffer>;
     }
     case "tar": {
-      return execaSync("tar", args, options) as RunProcessResult<string | Buffer>;
+      return execaSync("tar", args, options) as unknown as RunProcessResult<string | Buffer>;
     }
     case "unzip": {
-      return execaSync("unzip", args, options) as RunProcessResult<string | Buffer>;
+      return execaSync("unzip", args, options) as unknown as RunProcessResult<string | Buffer>;
     }
     case "zip": {
-      return execaSync("zip", args, options) as RunProcessResult<string | Buffer>;
+      return execaSync("zip", args, options) as unknown as RunProcessResult<string | Buffer>;
     }
     default: {
       throw new Error(`process command is not in the allowed executable set: ${command}`);
@@ -292,7 +314,15 @@ function buildProcessOptions(opts: RunProcessOptions) {
   return {
     cwd: resolveCwd(opts.cwd),
     env: opts.env ?? process.env,
-    encoding: opts.encoding === undefined ? "utf8" : opts.encoding,
+    ...(opts.encoding === null
+      ? {
+          encoding: execaUsesBufferEncoding ? "buffer" : null,
+          ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }),
+        }
+      : {
+          encoding: opts.encoding ?? "utf8",
+          ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }),
+        }),
     cleanup: opts.cleanup ?? false,
     reject: opts.reject ?? true,
     extendEnv: opts.extendEnv ?? false,
@@ -307,7 +337,21 @@ function buildProcessOptions(opts: RunProcessOptions) {
     ...(opts.stdio === undefined ? {} : { stdio: opts.stdio }),
     shell: false,
     ...(opts.detached === undefined ? {} : { detached: opts.detached }),
-    ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }),
+  };
+}
+
+function ensureBufferOutput(value: string | Buffer): Buffer {
+  return Buffer.isBuffer(value) ? value : Buffer.from(value);
+}
+
+function normalizeBufferedResult(
+  result: RunProcessResult<string | Buffer>,
+): RunProcessResult<string | Buffer> {
+  return {
+    ...result,
+    stdout: ensureBufferOutput(result.stdout),
+    stderr: ensureBufferOutput(result.stderr),
+    ...(result.all === undefined ? {} : { all: ensureBufferOutput(result.all) }),
   };
 }
 
@@ -319,7 +363,8 @@ const runProcessImpl = async (
     opts.args ?? [],
     buildProcessOptions(opts) as never,
   );
-  return result as RunProcessResult<string | Buffer>;
+  const normalized = result as unknown as RunProcessResult<string | Buffer>;
+  return opts.encoding === null ? normalizeBufferedResult(normalized) : normalized;
 };
 export const runProcess = runProcessImpl as RunProcessFn;
 
@@ -329,7 +374,7 @@ const runProcessSyncImpl = (opts: RunProcessOptions): RunProcessResult<string | 
     opts.args ?? [],
     buildProcessOptions(opts) as never,
   );
-  return result;
+  return opts.encoding === null ? normalizeBufferedResult(result) : result;
 };
 export const runProcessSync = runProcessSyncImpl as RunProcessSyncFn;
 

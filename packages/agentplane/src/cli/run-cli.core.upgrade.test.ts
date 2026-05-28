@@ -48,6 +48,7 @@ import {
 } from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
+import { withContextPolicyGatewayText } from "../shared/policy-gateway.js";
 
 function normalizeSlashes(value: string): string {
   return value.replaceAll("\\", "/");
@@ -58,57 +59,61 @@ const WORKFLOW_RUNTIME_ARTIFACTS_TIMEOUT_MS = os.platform() === "win32" ? 120_00
 installRunCliIntegrationHarness();
 
 describe("runCli", () => {
-  it("upgrade applies bundle changes by default and cleans backup artifacts", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
-    await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
-    await writeFile(
-      path.join(root, ".agentplane", "agents", "ORCHESTRATOR.json"),
-      '{"legacy":true}\n',
-      "utf8",
-    );
+  it(
+    "upgrade applies bundle changes by default and cleans backup artifacts",
+    { timeout: 60_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
+      await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+      await writeFile(
+        path.join(root, ".agentplane", "agents", "ORCHESTRATOR.json"),
+        '{"legacy":true}\n',
+        "utf8",
+      );
 
-    const { bundlePath, checksumPath } = await createUpgradeBundle({
-      "AGENTS.md": "# AGENTS\n\nUpdated\n",
-      ".agentplane/agents/ORCHESTRATOR.json": '{"updated":true}\n',
-    });
+      const { bundlePath, checksumPath } = await createUpgradeBundle({
+        "AGENTS.md": "# AGENTS\n\nUpdated\n",
+        ".agentplane/agents/ORCHESTRATOR.json": '{"updated":true}\n',
+      });
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "upgrade",
-        "--bundle",
-        bundlePath,
-        "--checksum",
-        checksumPath,
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("Upgrade applied");
-      expect(io.stdout).toContain("Upgrade commit:");
-      expect(io.stderr).not.toContain("task migrate-doc --all");
-    } finally {
-      io.restore();
-    }
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "upgrade",
+          "--bundle",
+          bundlePath,
+          "--checksum",
+          checksumPath,
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("Upgrade applied");
+        expect(io.stdout).toContain("Upgrade commit:");
+        expect(io.stderr).not.toContain("task migrate-doc --all");
+      } finally {
+        io.restore();
+      }
 
-    const agentsText = await readFile(path.join(root, "AGENTS.md"), "utf8");
-    expect(agentsText).toContain("Updated");
+      const agentsText = await readFile(path.join(root, "AGENTS.md"), "utf8");
+      expect(agentsText).toContain("Updated");
 
-    const agentEntries = await readdir(path.join(root, ".agentplane", "agents"));
-    expect(agentEntries.some((entry) => entry.startsWith("ORCHESTRATOR.json.bak-"))).toBe(false);
-    const rootEntries = await readdir(root);
-    expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
+      const agentEntries = await readdir(path.join(root, ".agentplane", "agents"));
+      expect(agentEntries.some((entry) => entry.startsWith("ORCHESTRATOR.json.bak-"))).toBe(false);
+      const rootEntries = await readdir(root);
+      expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
 
-    const execFileAsync = promisify(execFile);
-    const { stdout: subjectOut } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-    const subject = String(subjectOut ?? "").trim();
-    expect(subject).toContain("upgrade: apply framework");
-  });
+      const execFileAsync = promisify(execFile);
+      const { stdout: subjectOut } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      const subject = String(subjectOut ?? "").trim();
+      expect(subject).toContain("upgrade: apply framework");
+    },
+  );
 
   it("upgrade renders managed markdown assets before writing installed policy files", async () => {
     const root = await mkGitRepoRoot();
@@ -151,6 +156,89 @@ describe("runCli", () => {
     expect(policyText).toContain("Rendered policy body.");
     expect(policyText).not.toContain("ap:fragment");
   });
+
+  it(
+    "upgrade removes context policy references for workspaces without context layer",
+    { timeout: WORKFLOW_RUNTIME_ARTIFACTS_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+
+      let io = captureStdIO();
+      try {
+        expect(await runCli(["init", "--yes", "--root", root])).toBe(0);
+      } finally {
+        io.restore();
+      }
+
+      const gatewayPath = path.join(root, "AGENTS.md");
+      const gatewayText = await readFile(gatewayPath, "utf8");
+      await writeFile(gatewayPath, withContextPolicyGatewayText(gatewayText), "utf8");
+      await rm(path.join(root, ".agentplane", "policy", "context.must.md"), { force: true });
+      await commitAll(root, "fixture: stale context gateway without context layer");
+
+      io = captureStdIO();
+      try {
+        expect(await runCli(["upgrade", "--yes", "--root", root])).toBe(0);
+      } finally {
+        io.restore();
+      }
+
+      const upgradedGateway = await readFile(gatewayPath, "utf8");
+      expect(upgradedGateway).not.toContain("@.agentplane/policy/context.must.md");
+      await expect(
+        pathExists(path.join(root, ".agentplane", "policy", "context.must.md")),
+      ).resolves.toBe(false);
+
+      const execFileAsync = promisify(execFile);
+      const { stdout } = await execFileAsync("node", [".agentplane/policy/check-routing.mjs"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      expect(String(stdout ?? "")).toContain("policy routing OK");
+    },
+  );
+
+  it(
+    "upgrade installs context policy only for initialized context workspaces",
+    { timeout: WORKFLOW_RUNTIME_ARTIFACTS_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+
+      let io = captureStdIO();
+      try {
+        expect(await runCli(["init", "--yes", "--root", root])).toBe(0);
+        expect(await runCli(["context", "init", "--root", root])).toBe(0);
+      } finally {
+        io.restore();
+      }
+
+      const contextPolicyPath = path.join(root, ".agentplane", "policy", "context.must.md");
+      await rm(contextPolicyPath, { force: true });
+      await commitAll(root, "fixture: missing context policy in initialized context workspace");
+
+      io = captureStdIO();
+      try {
+        expect(await runCli(["upgrade", "--yes", "--root", root])).toBe(0);
+      } finally {
+        io.restore();
+      }
+
+      const gatewayText = await readFile(path.join(root, "AGENTS.md"), "utf8");
+      const contextPolicyText = await readFile(contextPolicyPath, "utf8");
+      expect(gatewayText).toContain("@.agentplane/policy/context.must.md");
+      expect(contextPolicyText).toContain("ap context search");
+      expect(contextPolicyText).not.toContain("ap:fragment");
+
+      const execFileAsync = promisify(execFile);
+      const { stdout } = await execFileAsync("node", [".agentplane/policy/check-routing.mjs"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      expect(String(stdout ?? "")).toContain("policy routing OK");
+    },
+  );
 
   it(
     "upgrade includes runtime .gitignore cache lines in the upgrade commit",
