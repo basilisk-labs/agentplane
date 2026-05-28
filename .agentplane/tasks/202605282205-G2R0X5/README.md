@@ -1,10 +1,11 @@
 ---
 id: "202605282205-G2R0X5"
 title: "Evidence command decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4222."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "packages/agentplane/src/commands/evidence/evidence-manifest.ts"
   findings:
     - "evidence.command.ts now contains command specs and handlers only; evidence-manifest.ts owns manifest types, path resolution, hashing, digest verification, and trust extension helpers. Focused evidence tests, arch:deps, typecheck, lint:core, format:changed, and hotspot report passed."
-commit: null
+commit:
+  hash: "439410994c21d0741d2678c5879ce77d4e4ee694"
+  message: "✅ G2R0X5 test: allow extracted merge mutation guard"
 comments:
   -
     author: "CODER"
     body: "Start: decompose evidence command into focused acyclic helpers while preserving bundle and verify contracts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4222 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification passed. Commands: bunx vitest run packages/agentplane/src/commands/evidence/evidence.command.test.ts --config vitest.workspace.ts (1 file, 3 tests passed); bun run typecheck (passed); bun run arch:deps (no dependency violations); bun run lint:core (passed); bun run format:changed (passed); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 (passed, runtime warnings 41 -> 40)."
+  -
+    type: "status"
+    at: "2026-05-28T22:21:16.751Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4222 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T22:09:48.667Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T22:21:16.757Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/evidence/evidence.command.ts into focused manifest/build/verify helpers while preserving evidence bundle and verify behavior. Reduce hotspot warnings and keep helper imports acyclic. Verify with evidence command tests, typecheck, lint, arch deps, format, and hotspot report."
 sections:
   Summary: |-
