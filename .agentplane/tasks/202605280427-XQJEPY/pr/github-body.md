@@ -19,14 +19,10 @@ Upgrade @agentplaneorg/core process execution from execa v5 to v9, preserve runP
 - Note:
 
 ```text
-Migrated @agentplaneorg/core process runner to execa v9.6.1 with compatibility normalization for
-named API, killed flag, Buffer output, and Bun binary-output runtime behavior. Verification passed:
-bun test packages/core/src/process/run-process.test.ts; bun run test:project -- core
-packages/core/src/process/run-process.test.ts; bun run --filter=@agentplaneorg/core build; bun run
-test:project -- core; bun run test:critical; bun run format:check; node
-.agentplane/policy/check-routing.mjs; ap doctor; targeted eslint on changed process files; git diff
---check. npm outdated reports only patch-level @typescript-eslint/eslint-plugin,
-@typescript-eslint/parser, and turbo follow-ups.
+Extended dependency update verified: upgraded @typescript-eslint/eslint-plugin to 8.60.0,
+@typescript-eslint/parser to 8.60.0, and turbo to 2.9.15; npm outdated returned {}; local checks
+passed: format:check, core build, targeted eslint, test:project -- core, test:critical, policy
+routing.
 ```
 - Canonical workflow state lives in the task README.
 
