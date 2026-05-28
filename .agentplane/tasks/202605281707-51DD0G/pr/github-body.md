@@ -67,6 +67,7 @@ docs:bootstrap:check, release:parity; Result: pass.
  .../agentplane/src/commands/task/brief.command.ts  |  23 +
  .../src/commands/task/next-action.command.ts       |   8 +
  .../agentplane/src/commands/task/status.command.ts |  10 +
+ .../agentplane/src/runner/adapters/codex.test.ts   |   2 +-
  .../agentplane/src/runner/result-manifest.test.ts  |  40 ++
  packages/agentplane/src/runner/result-manifest.ts  |  53 ++
  packages/agentplane/src/runner/types/invocation.ts |   3 +
@@ -74,7 +75,7 @@ docs:bootstrap:check, release:parity; Result: pass.
  .../src/runner/usecases/task-run-bootstrap.ts      |  25 +-
  scripts/lib/local-ci-selection.mjs                 | 103 ++++
  scripts/lib/test-route-registry.mjs                |  32 ++
- 34 files changed, 5450 insertions(+), 6 deletions(-)
+ 35 files changed, 5451 insertions(+), 7 deletions(-)
 ```
 
 </details>

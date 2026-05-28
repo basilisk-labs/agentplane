@@ -239,7 +239,7 @@ describe("CodexRunnerAdapter", () => {
         String.raw`printf '{"type":"session.started"}\n'`,
         String.raw`printf '%s\n' '${RUSSIAN_LAST_MESSAGE}' > "$out"`,
         String.raw`printf '%s\n' '${RUSSIAN_TRACE_LINE}'`,
-        String.raw`printf '{"schema_version":1,"status":"success","summary":"custom codex success","capabilities_used":["codex.exec"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        String.raw`printf '{"schema_version":1,"status":"success","summary":"custom codex success","capabilities_used":["codex.exec"],"evidence":{"evidence_paths":["codex-last-message.md"],"verification_candidates":["inspect codex-last-message.md"]}}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "exit 0",
       ].join("\n"),
     ]);
