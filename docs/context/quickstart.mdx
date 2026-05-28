@@ -5,7 +5,9 @@ description: "Initialize Agentplane context, add a source, search it, and hand i
 
 # Context quickstart
 
-This path creates a small, reviewable context layer for a repository.
+This path creates an optional, reviewable context layer for a repository. Normal Agentplane prompt
+assembly, task routing, and runner bootstrap do not require this layer; initialize it only when the
+repository needs durable project knowledge.
 
 ## Initialize context
 
@@ -17,6 +19,9 @@ agentplane context check
 `context init` creates the editable context workspace and the root wiki contract. In an empty
 directory it can bootstrap an Agentplane project first. In a non-empty directory that is not already
 an Agentplane project, run `agentplane init` explicitly before context setup.
+
+When `--profile` is omitted, `context init` uses `maximum-assimilation`. Pass `--profile adaptive`
+for a smaller wiki that grows opportunistically.
 
 ## Add the first source
 

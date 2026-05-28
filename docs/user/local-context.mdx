@@ -112,22 +112,24 @@ project first and then creates the context workspace. In a non-empty directory t
 Agentplane project, run `agentplane init` explicitly before `agentplane context init` so the project
 gateway, workflow, backend, and conflict handling stay visible.
 
-The default init profile is `adaptive`: one stable llm-wiki contract with project-specific page
-structure. Init does not pre-create the internal wiki folders; first ingest creates the starter
-structure only when there is source material to assimilate. Agents should generate the wiki hierarchy
-from evidence, but keep page frontmatter, source refs, modalities, claims, graph refs, conflicts, and
-visibility metadata stable enough for future publication proposals and context-pack synchronization.
+The default init profile is `maximum-assimilation`: a stricter context contract for preserving
+significant source meaning as durable project memory. Init does not pre-create internal wiki folders;
+first ingest creates structure only when there is source material to assimilate. Agents should
+generate the wiki hierarchy from evidence, but keep page frontmatter, source refs, modalities,
+claims, graph refs, conflicts, and visibility metadata stable enough for future publication
+proposals and context-pack synchronization.
 
 `context show` resolves whole files, markdown sections, and line ranges. Markdown section refs use
 stable slugs such as `#section=publish-gate`; line refs use `#lines=12-24` or `#line=12`.
 
 ### Maximum-assimilation profile
 
-Use `agentplane context init --profile maximum-assimilation` when the maintained wiki and derived
-artifacts should become the complete semantic memory, not just a navigable synthesis over raw files.
-In this mode, the next context ingestion tasks request the `context.maximum_assimilation` blueprint.
+Use `agentplane context init` or `agentplane context init --profile maximum-assimilation` when the
+maintained wiki and derived artifacts should become the complete semantic memory, not just a
+navigable synthesis over raw files. In this mode, the next context ingestion tasks request the
+`context.maximum_assimilation` blueprint.
 
-The contract is stricter than the default adaptive profile:
+The contract is stricter than the adaptive profile:
 
 - Preserve all significant source meaning in wiki, fact, graph, glossary, provenance,
   and coverage artifacts. If `context/raw/**` is deleted later, the maintained context should still

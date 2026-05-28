@@ -254,8 +254,8 @@ async function resolveContextInitParsed(
       [
         "Context init mode:",
         "minimal = smallest workspace scaffold",
-        "adaptive = default llm-wiki workspace for normal project context",
-        "maximum-assimilation = stricter mode for preserving significant source meaning",
+        "adaptive = smaller llm-wiki workspace for normal project context",
+        "maximum-assimilation = default mode for preserving significant source meaning",
       ].join("\n"),
     ) + "\n",
   );

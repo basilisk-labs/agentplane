@@ -465,7 +465,8 @@ Profile: ${profile}
 
 Use this directory as the human-readable context surface.
 
-AgentPlane local context uses one adaptive llm-wiki contract:
+AgentPlane local context is optional and independent from runner prompt assembly. When enabled, it
+uses one llm-wiki contract:
 
 - \`context/raw/**\` keeps source material.
 - \`context/wiki/**\` keeps readable synthesis pages with AgentPlane frontmatter.
