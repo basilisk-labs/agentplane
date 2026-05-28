@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "artifactKind": "agentplane.blueprint.resolved_snapshot",
+  "resolverInput": {
+    "taskId": "202605281713-EW6N63",
+    "title": "Optimize prompt policy surfaces",
+    "description": "Shorten AGENTS and policy prompt surfaces while preserving clearer agent behavior and GPT-5.5 prompt-guidance alignment.",
+    "tags": [
+      "policy"
+    ],
+    "owner": "DOCS",
+    "workflowMode": "branch_pr",
+    "workflowGitCapabilities": {
+      "workflowMode": "branch_pr",
+      "implementationCommitLocation": "task_worktree",
+      "finishCommitSource": "explicit_hash",
+      "closeTailRequired": true,
+      "lifecycleCommentCommitLocation": "task_worktree",
+      "finishCommitFromComment": false
+    },
+    "mutation": "none",
+    "touchedPaths": [],
+    "recipeHints": [],
+    "riskFlags": []
+  },
+  "selectedBlueprint": {
+    "id": "analysis.light",
+    "version": 1,
+    "title": "Lightweight analysis",
+    "taskKinds": [
+      "analysis"
+    ],
+    "workflowModes": []
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "blueprintId": "analysis.light",
+    "blueprintVersion": 1,
+    "title": "Lightweight analysis",
+    "taskId": "202605281713-EW6N63",
+    "workflowMode": "branch_pr",
+    "workflowGitCapabilities": {
+      "workflowMode": "branch_pr",
+      "implementationCommitLocation": "task_worktree",
+      "finishCommitSource": "explicit_hash",
+      "closeTailRequired": true,
+      "lifecycleCommentCommitLocation": "task_worktree",
+      "finishCommitFromComment": false
+    },
+    "taskIntent": {
+      "mutationScope": "none"
+    },
+    "whySelected": [
+      "task kind resolved to analysis",
+      "workflow mode: branch_pr",
+      "mutation scope: none"
+    ],
+    "states": [
+      {
+        "id": "intake",
+        "kind": "intake",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": []
+      },
+      {
+        "id": "scope",
+        "kind": "scope",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "assumptions"
+        ]
+      },
+      {
+        "id": "context_resolve",
+        "kind": "context_resolve",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "context_manifest",
+          "sources"
+        ]
+      },
+      {
+        "id": "work_unit",
+        "kind": "work_unit",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "weak_links",
+          "final_output"
+        ]
+      },
+      {
+        "id": "artifact_write",
+        "kind": "artifact_write",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "artifact"
+        ]
+      },
+      {
+        "id": "verify_record",
+        "kind": "verify_record",
+        "mode": "record",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "final_output"
+        ]
+      },
+      {
+        "id": "quality_gate",
+        "kind": "quality_gate",
+        "mode": "agentic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "quality_report"
+        ]
+      },
+      {
+        "id": "finish",
+        "kind": "finish",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "final_output"
+        ]
+      }
+    ],
+    "requiredEvidence": [
+      {
+        "id": "analysis.sources",
+        "kind": "sources",
+        "producedBy": "context_resolve",
+        "required": true,
+        "description": "Sources used for analysis."
+      },
+      {
+        "id": "analysis.assumptions",
+        "kind": "assumptions",
+        "producedBy": "scope",
+        "required": true,
+        "description": "Assumptions and constraints."
+      },
+      {
+        "id": "analysis.weak_links",
+        "kind": "weak_links",
+        "producedBy": "work_unit",
+        "required": true,
+        "description": "Weak links or uncertainty."
+      },
+      {
+        "id": "analysis.final",
+        "kind": "final_output",
+        "producedBy": "work_unit",
+        "required": true,
+        "description": "Final answer or report."
+      },
+      {
+        "id": "analysis.quality",
+        "kind": "quality_report",
+        "producedBy": "quality_gate",
+        "required": true,
+        "description": "EVALUATOR quality verdict."
+      }
+    ],
+    "policyModules": [],
+    "allowedCommands": [],
+    "contextBudget": {
+      "maxPolicyModules": 0,
+      "maxPromptBlocks": 6,
+      "rationale": "Lightweight analysis should load sources and task context without policy modules."
+    },
+    "contextManifest": [],
+    "acceptedRecipeExtensions": [],
+    "rejectedRecipeExtensions": [],
+    "stopReasons": []
+  },
+  "nodes": [
+    {
+      "id": "intake",
+      "kind": "intake",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": []
+    },
+    {
+      "id": "scope",
+      "kind": "scope",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "assumptions"
+      ]
+    },
+    {
+      "id": "context_resolve",
+      "kind": "context_resolve",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "context_manifest",
+        "sources"
+      ]
+    },
+    {
+      "id": "work_unit",
+      "kind": "work_unit",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "weak_links",
+        "final_output"
+      ]
+    },
+    {
+      "id": "artifact_write",
+      "kind": "artifact_write",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "artifact"
+      ]
+    },
+    {
+      "id": "verify_record",
+      "kind": "verify_record",
+      "mode": "record",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "final_output"
+      ]
+    },
+    {
+      "id": "quality_gate",
+      "kind": "quality_gate",
+      "mode": "agentic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "quality_report"
+      ]
+    },
+    {
+      "id": "finish",
+      "kind": "finish",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "final_output"
+      ]
+    }
+  ],
+  "requiredEvidence": [
+    {
+      "id": "analysis.sources",
+      "kind": "sources",
+      "producedBy": "context_resolve",
+      "required": true,
+      "description": "Sources used for analysis."
+    },
+    {
+      "id": "analysis.assumptions",
+      "kind": "assumptions",
+      "producedBy": "scope",
+      "required": true,
+      "description": "Assumptions and constraints."
+    },
+    {
+      "id": "analysis.weak_links",
+      "kind": "weak_links",
+      "producedBy": "work_unit",
+      "required": true,
+      "description": "Weak links or uncertainty."
+    },
+    {
+      "id": "analysis.final",
+      "kind": "final_output",
+      "producedBy": "work_unit",
+      "required": true,
+      "description": "Final answer or report."
+    },
+    {
+      "id": "analysis.quality",
+      "kind": "quality_report",
+      "producedBy": "quality_gate",
+      "required": true,
+      "description": "EVALUATOR quality verdict."
+    }
+  ],
+  "policyModules": [],
+  "allowedCommands": [],
+  "contextBudget": {
+    "maxPolicyModules": 0,
+    "maxPromptBlocks": 6,
+    "rationale": "Lightweight analysis should load sources and task context without policy modules."
+  },
+  "contextManifest": [],
+  "acceptedRecipeExtensions": [],
+  "rejectedRecipeExtensions": [],
+  "stopReasons": [],
+  "selectionReasons": [
+    "task kind resolved to analysis",
+    "workflow mode: branch_pr",
+    "mutation scope: none"
+  ],
+  "digest": {
+    "algorithm": "sha256",
+    "value": "8e5e2f2f1e84d105849882f0fa8888a4e4e0be462ffa92ae85377f1129191d82"
+  }
+}

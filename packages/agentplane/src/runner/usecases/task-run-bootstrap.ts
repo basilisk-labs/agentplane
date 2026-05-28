@@ -42,9 +42,12 @@ export function renderTaskRunnerBootstrap(
         oracle?: {
           phase?: string;
           authoritativeCheckout?: string;
+          authoritativeCheckoutPath?: string | null;
+          mutationPathHint?: string | null;
           blocker?: { code?: string; summary?: string } | null;
           nextCommand?: string | null;
         };
+        executionPacket?: { safeToMutate?: boolean };
         nextAction?: { code?: string; command?: string | null; summary?: string };
         workspace?: { checkoutRole?: string };
         approval?: { effectiveMutationApprovalRequired?: boolean };
@@ -78,6 +81,11 @@ export function renderTaskRunnerBootstrap(
             routeDecision.workspace?.checkoutRole ??
             "unknown"
           }`,
+          `- route_authoritative_checkout_path: ${
+            routeDecision.oracle?.authoritativeCheckoutPath ?? "unknown"
+          }`,
+          `- route_mutation_path_hint: ${routeDecision.oracle?.mutationPathHint ?? "none"}`,
+          `- route_safe_to_mutate: ${String(routeDecision.executionPacket?.safeToMutate ?? false)}`,
           `- route_next_action: ${routeDecision.nextAction?.code ?? "unknown"}`,
           `- route_next_command: ${
             routeDecision.oracle?.nextCommand ?? routeDecision.nextAction?.command ?? "none"
@@ -97,8 +105,9 @@ export function renderTaskRunnerBootstrap(
     "",
     "Use bundle.json as the complete runner input. Do not reconstruct prompts or route decisions from CLI argv.",
     "Follow route_decision in bundle.json unless local state has changed; if it may be stale, run `agentplane task next-action <task-id> --explain` before mutating.",
-    "Route oracle contract: follow the rendered route_next_command, run it from route_authoritative_checkout, treat route_primary_blocker as the current stop reason, and use route_phase instead of manually reconstructing branch/worktree/PR state.",
-    "When reading bundle.json directly, use camelCase JSON paths: route_decision.oracle.nextCommand, route_decision.oracle.authoritativeCheckout, route_decision.oracle.blocker, and route_decision.oracle.phase.",
+    "Route oracle contract: follow the rendered route_next_command, run it from route_authoritative_checkout_path when present, treat route_primary_blocker as the current stop reason, and use route_phase instead of manually reconstructing branch/worktree/PR state.",
+    "For file-edit tools that do not accept cwd/workdir, use absolute paths under route_mutation_path_hint when route_safe_to_mutate is true; otherwise stop before mutating files.",
+    "When reading bundle.json directly, use camelCase JSON paths: route_decision.oracle.nextCommand, route_decision.oracle.authoritativeCheckout, route_decision.oracle.authoritativeCheckoutPath, route_decision.oracle.mutationPathHint, route_decision.oracle.blocker, and route_decision.oracle.phase.",
     "If the requested work cannot be completed without widening lifecycle authority or touching likely sibling-owned files, stop and write a blocked result manifest with the conflict, affected paths, and recommended parent action.",
     ...(stopRules.length > 0
       ? [

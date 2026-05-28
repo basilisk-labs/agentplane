@@ -31,12 +31,13 @@ describe("command-guide", () => {
   it("documents merge-preserving branch_pr integration by default", () => {
     const text = renderRoleTyped("integrator");
     expect(text).toContain("Route oracle contract:");
-    expect(text).toContain("run it from `authoritative_checkout`");
+    expect(text).toContain("`authoritative_checkout`");
+    expect(text).toContain("do not manually reconstruct branch/worktree/PR state");
     expect(text).toContain(
       "agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000",
     );
-    expect(text).toContain("primary integration route is the task GitHub PR");
-    expect(text).toContain("gh pr merge --auto --rebase");
+    expect(text).toContain("protected bases merge through GitHub");
+    expect(text).toContain("Task Hosted Close finishes");
     expect(text).not.toContain("--merge-strategy squash --run-verify");
   });
 
@@ -93,7 +94,7 @@ describe("command-guide", () => {
     expect(text).toContain("source confidence");
     expect(text).toContain("agentplane task start-ready");
     expect(text).toContain("agentplane pr check <task-id>");
-    expect(text).toContain("GitHub CLI");
+    expect(text).toContain("authenticated `gh`");
     expect(text).toContain("GH_TOKEN");
     expect(text).toContain("Framework maintainers may use repo-local helper scripts");
     expect(text).toContain("workflow:wait-remote-checks");
@@ -119,14 +120,12 @@ describe("command-guide", () => {
     expect(text).toContain("tracked-only cleanliness");
     expect(text).toContain("git status --short --untracked-files=no");
     expect(text).toContain("\n- `git status --short`\n");
-    expect(text).toContain("source confidence labels");
+    expect(text).toContain("source confidence");
     expect(text).toContain("Use `agentplane role ORCHESTRATOR` during planning");
     expect(text).toContain("agentplane incidents advise <task-id>");
     expect(text).toContain("agentplane incidents collect <task-id> --check");
-    expect(text).toContain(
-      "add `--promote --external` or `--repo-fixable` only for real reusable incidents",
-    );
-    expect(text).toContain("Plain prose in `Findings` stays task-local");
+    expect(text).toContain("promote only real reusable incidents");
+    expect(text).toContain("plain prose stays task-local");
     expect(text).toContain("configured CI/provider gate");
     expect(text).toContain("workflow:wait-remote-checks");
     expect(text).not.toContain(

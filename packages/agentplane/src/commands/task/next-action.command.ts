@@ -59,6 +59,7 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
       output.json({
         task: decision.task,
         route_oracle: decision.oracle,
+        execution_packet: decision.executionPacket,
         next_action: decision.nextAction,
         blockers: decision.blockers,
         source_confidence: {
@@ -74,6 +75,12 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
       [
         { label: "phase", value: decision.oracle.phase },
         { label: "authoritative_checkout", value: decision.oracle.authoritativeCheckout },
+        {
+          label: "authoritative_checkout_path",
+          value: decision.oracle.authoritativeCheckoutPath ?? "unknown",
+        },
+        { label: "mutation_path_hint", value: decision.oracle.mutationPathHint ?? "none" },
+        { label: "safe_to_mutate", value: decision.executionPacket.safeToMutate },
         { label: "code", value: decision.nextAction.code },
         { label: "summary", value: decision.nextAction.summary },
         { label: "requires_approval", value: decision.nextAction.requiresApproval },

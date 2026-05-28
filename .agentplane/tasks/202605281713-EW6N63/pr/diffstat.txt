@@ -1,0 +1,18 @@
+ .agentplane/policy/dod.docs.md                     |  15 +-
+ .agentplane/policy/governance.md                   |  15 +-
+ .agentplane/policy/workflow.branch_pr.md           |  44 +---
+ .agentplane/policy/workflow.direct.md              |  13 +-
+ docs/user/agent-bootstrap.generated.mdx            |  26 +--
+ packages/agentplane/assets/AGENTS.md               |  48 +---
+ packages/agentplane/src/cli/bootstrap-guide.ts     |  26 +--
+ packages/agentplane/src/cli/command-guide.test.ts  |  17 +-
+ packages/agentplane/src/cli/command-guide.ts       |  18 +-
+ .../src/cli/run-cli.core.route-decision.test.ts    |  35 ++-
+ .../src/commands/shared/route-decision.ts          |  53 ++++-
+ .../agentplane/src/commands/shared/route-oracle.ts | 246 +++++++++++++++------
+ .../agentplane/src/commands/task/brief.command.ts  |  39 ++++
+ .../src/commands/task/next-action.command.ts       |   7 +
+ .../agentplane/src/commands/task/status.command.ts |   6 +
+ .../src/runner/usecases/task-run-blueprint.test.ts |   9 +-
+ .../src/runner/usecases/task-run-bootstrap.ts      |  13 +-
+ 17 files changed, 407 insertions(+), 223 deletions(-)

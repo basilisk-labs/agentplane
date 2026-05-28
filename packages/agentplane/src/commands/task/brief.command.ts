@@ -23,6 +23,8 @@ type TaskBriefRoute = {
   workflow_mode: string;
   phase: string;
   authoritative_checkout: string;
+  authoritative_checkout_path: string | null;
+  mutation_path_hint: string | null;
   checkout_role: string;
   branch: string | null;
   base_branch: string | null;
@@ -82,6 +84,19 @@ type TaskBrief = {
     requires_approval: boolean;
   };
   blockers: { code: string; summary: string }[];
+  execution_packet: {
+    schema_version: number;
+    action_kind: string;
+    safe_to_mutate: boolean;
+    requires_provider_action: boolean;
+    recommended_role: string;
+    authoritative_checkout: string;
+    authoritative_checkout_path: string | null;
+    mutation_path_hint: string | null;
+    evidence_missing: string[];
+    verification_candidate: string | null;
+    stop_reason: string | null;
+  };
   verify_steps: {
     filled: boolean;
     quality: "missing" | "fallback" | "specific";
@@ -326,6 +341,8 @@ async function buildTaskBrief(opts: {
       workflow_mode: route.workflowMode,
       phase: route.oracle.phase,
       authoritative_checkout: route.oracle.authoritativeCheckout,
+      authoritative_checkout_path: route.oracle.authoritativeCheckoutPath,
+      mutation_path_hint: route.oracle.mutationPathHint,
       checkout_role: route.workspace.checkoutRole,
       branch: route.workspace.branch,
       base_branch: route.workspace.baseBranch,
@@ -344,6 +361,19 @@ async function buildTaskBrief(opts: {
       requires_approval: route.nextAction.requiresApproval,
     },
     blockers: route.blockers.map((blocker) => ({ ...blocker })),
+    execution_packet: {
+      schema_version: route.executionPacket.schemaVersion,
+      action_kind: route.executionPacket.actionKind,
+      safe_to_mutate: route.executionPacket.safeToMutate,
+      requires_provider_action: route.executionPacket.requiresProviderAction,
+      recommended_role: route.executionPacket.recommendedRole,
+      authoritative_checkout: route.executionPacket.authoritativeCheckout,
+      authoritative_checkout_path: route.executionPacket.authoritativeCheckoutPath,
+      mutation_path_hint: route.executionPacket.mutationPathHint,
+      evidence_missing: route.executionPacket.evidenceMissing,
+      verification_candidate: route.executionPacket.verificationCandidate,
+      stop_reason: route.executionPacket.stopReason,
+    },
     verify_steps: {
       filled: isVerifyStepsFilled(verifySteps),
       quality: verifyQuality,
@@ -399,12 +429,21 @@ export function makeRunTaskBriefHandler(getCtx: (cmd: string) => Promise<Command
         { label: "workflow", value: brief.workflow.mode },
         { label: "phase", value: brief.route.phase },
         { label: "authoritative_checkout", value: brief.route.authoritative_checkout },
+        {
+          label: "authoritative_checkout_path",
+          value: brief.route.authoritative_checkout_path ?? "unknown",
+        },
+        { label: "mutation_path_hint", value: brief.route.mutation_path_hint ?? "none" },
         { label: "checkout_role", value: brief.workflow.checkout_role },
         { label: "branch", value: brief.workflow.branch ?? "unknown" },
         { label: "base_branch", value: brief.workflow.base_branch ?? "unknown" },
         { label: "pr_branch", value: brief.workflow.pr_branch ?? "missing" },
         { label: "next_code", value: brief.next_action.code },
         { label: "next", value: brief.next_action.command ?? brief.next_action.summary },
+        {
+          label: "safe_to_mutate",
+          value: String(brief.execution_packet.safe_to_mutate),
+        },
         { label: "requires_approval", value: String(brief.next_action.requires_approval) },
         { label: "remote", value: brief.remote.note },
         { label: "confidence", value: formatSourceConfidence(brief.source_confidence) },

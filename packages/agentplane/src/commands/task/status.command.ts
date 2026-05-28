@@ -80,6 +80,12 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
       entries.push(
         { label: "phase", value: decision.oracle.phase },
         { label: "authoritative_checkout", value: decision.oracle.authoritativeCheckout },
+        {
+          label: "authoritative_checkout_path",
+          value: decision.oracle.authoritativeCheckoutPath ?? "unknown",
+        },
+        { label: "mutation_path_hint", value: decision.oracle.mutationPathHint ?? "none" },
+        { label: "safe_to_mutate", value: String(decision.executionPacket.safeToMutate) },
         { label: "branch", value: decision.workspace.branch ?? "unknown" },
         { label: "checkout_role", value: decision.workspace.checkoutRole },
         { label: "pr_branch", value: decision.workspace.prBranch ?? "missing" },

@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, realpath, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -67,6 +67,7 @@ describe("runCli route decision commands", () => {
       root,
     ]);
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    const rootRealpath = await realpath(root);
 
     const statusIo = captureStdIO();
     try {
@@ -89,8 +90,17 @@ describe("runCli route decision commands", () => {
         route_oracle: {
           phase: string;
           authoritativeCheckout: string;
+          authoritativeCheckoutPath: string | null;
+          mutationPathHint: string | null;
           blocker: { code: string } | null;
           nextCommand: string;
+        };
+        execution_packet: {
+          actionKind: string;
+          safeToMutate: boolean;
+          authoritativeCheckoutPath: string | null;
+          mutationPathHint: string | null;
+          evidenceMissing: string[];
         };
         next_action: { code: string; command: string };
       };
@@ -99,6 +109,19 @@ describe("runCli route decision commands", () => {
         authoritativeCheckout: "base_checkout",
         blocker: { code: "missing_pr_branch" },
       });
+      expect(await realpath(parsed.route_oracle.authoritativeCheckoutPath ?? "")).toBe(
+        rootRealpath,
+      );
+      expect(await realpath(parsed.route_oracle.mutationPathHint ?? "")).toBe(rootRealpath);
+      expect(parsed.execution_packet).toMatchObject({
+        actionKind: "local_command",
+        safeToMutate: true,
+      });
+      expect(await realpath(parsed.execution_packet.authoritativeCheckoutPath ?? "")).toBe(
+        rootRealpath,
+      );
+      expect(await realpath(parsed.execution_packet.mutationPathHint ?? "")).toBe(rootRealpath);
+      expect(parsed.execution_packet.evidenceMissing).toContain("task_branch");
       expect(parsed.next_action.code).toBe("start_or_recover_worktree");
       expect(parsed.next_action.command).toBe(
         `agentplane work start ${taskId} --agent CODER --slug route-decision-task --worktree`,
@@ -261,7 +284,13 @@ describe("runCli route decision commands", () => {
             workflow_mode: string;
             phase: string;
             authoritative_checkout: string;
+            authoritative_checkout_path: string | null;
+            mutation_path_hint: string | null;
             next_action_code: string;
+          };
+          execution_packet: {
+            safe_to_mutate: boolean;
+            mutation_path_hint: string | null;
           };
           next_action: { code: string; command: string };
           verify_steps: { text: string; filled: boolean; quality: string };
@@ -282,7 +311,11 @@ describe("runCli route decision commands", () => {
         expect(parsed.route.workflow_mode).toBe("branch_pr");
         expect(parsed.route.phase).toBe("verify_or_pr_update");
         expect(parsed.route.authoritative_checkout).toBe("task_worktree");
+        expect(parsed.route.authoritative_checkout_path).toBe(null);
+        expect(parsed.route.mutation_path_hint).toBe(null);
         expect(parsed.route.next_action_code).toBe("verify_or_update_pr");
+        expect(parsed.execution_packet.safe_to_mutate).toBe(false);
+        expect(parsed.execution_packet.mutation_path_hint).toBe(null);
         expect(parsed.next_action.code).toBe("verify_or_update_pr");
         expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
         expect(parsed.verify_steps.text).toContain("PLANNER fallback scaffold");
