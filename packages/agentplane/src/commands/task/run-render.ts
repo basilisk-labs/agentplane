@@ -5,7 +5,7 @@ import type { LoadedTaskRunnerInspection } from "../../runner/usecases/task-run-
 import type { RunnerLifecycleStatus } from "../../runner/types.js";
 import { isProcessAlive } from "../../runner/process-supervision/signals.js";
 import { CliError } from "../../shared/errors.js";
-import type { TaskRunLogsParsed } from "./run.command.js";
+import type { TaskRunLogsParsed } from "./run-parse.js";
 
 export function renderTaskRunPayload(opts: {
   taskId: string;
