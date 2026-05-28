@@ -1,6 +1,3 @@
-import os from "node:os";
-
-import { gitDiffNames } from "@agentplaneorg/core/git";
 import type { CommandCtx, CommandHandler } from "../cli/spec/spec.js";
 import {
   loadDirectSubcommandNames,
@@ -10,22 +7,28 @@ import {
 import { createCliEmitter, emptyStateMessage } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
 import { sleep } from "../backends/task-backend/shared/concurrency.js";
-import { loadBackendTask, type CommandContext } from "./shared/task-backend.js";
+import type { CommandContext } from "./shared/task-backend.js";
 import { gitRevParse } from "./shared/git-ops.js";
 import { cmdIntegrate } from "./pr/integrate/cmd.js";
-import { resolvePrFlowStatus } from "./pr/flow-status.js";
 import { prepareIntegrate } from "./pr/integrate/internal/prepare.js";
 import {
   claimNextQueuedEntry,
   markQueueEntry,
-  queueBaseConflictReason,
   readIntegrationQueue,
   upsertQueuedEntry,
   withIntegrationQueueMutex,
   writeIntegrationQueue,
-  type IntegrationQueueEntry,
 } from "./pr/integrate/queue-state.js";
-import { applyIntegrationQueueDoctorRepairs } from "./integrate-queue-doctor.js";
+import { runIntegrationQueueDoctor } from "./integrate-queue-doctor-command.js";
+import {
+  defaultIntegrationQueueWorker,
+  findActiveIntegrationLane,
+  hasQueuedIntegrationEntries,
+  normalizeTerminalQueueEntries,
+  recoverStaleActiveLane,
+  rejectIfQueuedEntryIsStale,
+  renderIntegrationQueueEntry,
+} from "./integrate-queue-lane.js";
 import type {
   IntegrateQueueClaimParsed,
   IntegrateQueueDoctorParsed,
@@ -35,7 +38,6 @@ import type {
   IntegrateQueueRunNextParsed,
 } from "./integrate-queue.spec.js";
 import { integrateQueueSpec } from "./integrate-queue.spec.js";
-import { decideIntegrationQueueRecovery } from "./integrate-queue-recovery.js";
 import { waitForHostedChecks } from "./pr/hosted-checks.js";
 
 const DEFAULT_QUEUE_POLL_INTERVAL_MS = 30_000;
@@ -61,180 +63,6 @@ async function runIntegrateQueueRootGroup(
     subcommands: await loadDirectSubcommandNames(["integrate", "queue"]),
     command: "integrate queue",
   });
-}
-
-function defaultWorker(): string {
-  return `${os.userInfo().username}@${os.hostname()}`;
-}
-
-function renderEntry(entry: IntegrationQueueEntry): string {
-  const pr = entry.pr_number ? `#${entry.pr_number}` : "no-pr";
-  return `${entry.status.padEnd(7)} ${entry.task_id} ${pr} priority=${entry.priority} branch=${entry.branch}`;
-}
-
-function findActiveLane(entries: IntegrationQueueEntry[]): IntegrationQueueEntry | null {
-  return entries.find((entry) => entry.status === "claimed" || entry.status === "handoff") ?? null;
-}
-
-function hasQueuedEntries(entries: IntegrationQueueEntry[]): boolean {
-  return entries.some((entry) => entry.status === "queued");
-}
-
-async function rejectIfQueuedHeadChanged(opts: {
-  gitRoot: string;
-  entry: IntegrationQueueEntry;
-}): Promise<IntegrationQueueEntry | null> {
-  const currentHead = await gitRevParse(opts.gitRoot, [opts.entry.branch]);
-  if (currentHead === opts.entry.head_sha) return null;
-  return {
-    ...opts.entry,
-    status: "rework",
-    updated_at: new Date().toISOString(),
-    reason: `branch head changed after enqueue: queued=${opts.entry.head_sha} current=${currentHead}`,
-  };
-}
-
-async function rejectIfQueuedBaseConflicts(opts: {
-  gitRoot: string;
-  entry: IntegrationQueueEntry;
-}): Promise<IntegrationQueueEntry | null> {
-  const currentBaseSha = await gitRevParse(opts.gitRoot, [opts.entry.base]);
-  const baseChangedPaths =
-    currentBaseSha === opts.entry.base_sha
-      ? []
-      : await gitDiffNames(opts.gitRoot, opts.entry.base_sha, opts.entry.base);
-  const reason = queueBaseConflictReason({
-    entry: opts.entry,
-    currentBaseSha,
-    baseChangedPaths,
-  });
-  if (!reason) return null;
-  return {
-    ...opts.entry,
-    status: "rework",
-    updated_at: new Date().toISOString(),
-    reason,
-  };
-}
-
-async function rejectIfQueuedEntryIsStale(opts: {
-  gitRoot: string;
-  entry: IntegrationQueueEntry;
-}): Promise<IntegrationQueueEntry | null> {
-  return (await rejectIfQueuedHeadChanged(opts)) ?? (await rejectIfQueuedBaseConflicts(opts));
-}
-
-async function recoverStaleActiveLane(opts: {
-  ctx: CommandContext;
-  cwd: string;
-  rootOverride?: string | null;
-  gitRoot: string;
-  entry: IntegrationQueueEntry;
-  quiet: boolean;
-}): Promise<boolean> {
-  const report = await resolvePrFlowStatus({
-    ctx: opts.ctx,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride ?? undefined,
-    taskId: opts.entry.task_id,
-  });
-  const decision = decideIntegrationQueueRecovery({ entry: opts.entry, report });
-  if (decision.action === "keep") {
-    if (!opts.quiet) {
-      createCliEmitter().line(
-        `integration queue lane retained: task=${opts.entry.task_id} status=${opts.entry.status} reason=${decision.reason}`,
-      );
-    }
-    return false;
-  }
-
-  const updated = await withIntegrationQueueMutex(opts.gitRoot, async () => {
-    const queue = await readIntegrationQueue(opts.gitRoot);
-    const current = queue.entries.find((entry) => entry.task_id === opts.entry.task_id);
-    if (current?.status !== "handoff") return false;
-    await writeIntegrationQueue(
-      opts.gitRoot,
-      markQueueEntry(queue, opts.entry.task_id, decision.status, decision.reason),
-    );
-    return true;
-  });
-  if (!updated) return false;
-  if (!opts.quiet) {
-    createCliEmitter().line(
-      `integration queue recovered: task=${opts.entry.task_id} status=${decision.status} reason=${decision.reason}`,
-    );
-  }
-  return true;
-}
-
-async function normalizeTerminalQueueEntries(opts: {
-  ctx: CommandContext;
-  cwd: string;
-  rootOverride?: string | null;
-  gitRoot: string;
-  quiet: boolean;
-}): Promise<void> {
-  const snapshot = await readIntegrationQueue(opts.gitRoot);
-  const candidates = snapshot.entries.filter(
-    (entry) => entry.status !== "done" && entry.status !== "claimed",
-  );
-  const decisions: {
-    taskId: string;
-    fromStatus: IntegrationQueueEntry["status"];
-    reason: string;
-  }[] = [];
-
-  for (const entry of candidates) {
-    const loaded = await loadBackendTask({
-      ctx: opts.ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-      taskId: entry.task_id,
-    }).catch(() => null);
-    if (loaded?.task.status === "DONE") {
-      decisions.push({
-        taskId: entry.task_id,
-        fromStatus: entry.status,
-        reason: "task is already DONE; queue entry is terminal stale",
-      });
-      continue;
-    }
-
-    if (entry.status !== "handoff") continue;
-    const report = await resolvePrFlowStatus({
-      ctx: opts.ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? undefined,
-      taskId: entry.task_id,
-    }).catch(() => null);
-    if (!report) continue;
-    const decision = decideIntegrationQueueRecovery({ entry, report });
-    if (decision.action !== "mark" || decision.status !== "done") continue;
-    decisions.push({ taskId: entry.task_id, fromStatus: entry.status, reason: decision.reason });
-  }
-
-  if (decisions.length === 0) return;
-
-  const normalized = await withIntegrationQueueMutex(opts.gitRoot, async () => {
-    let queue = await readIntegrationQueue(opts.gitRoot);
-    const applied: { taskId: string; reason: string }[] = [];
-    for (const decision of decisions) {
-      const current = queue.entries.find((entry) => entry.task_id === decision.taskId);
-      if (current?.status !== decision.fromStatus) continue;
-      queue = markQueueEntry(queue, decision.taskId, "done", decision.reason);
-      applied.push({ taskId: decision.taskId, reason: decision.reason });
-    }
-    if (applied.length > 0) await writeIntegrationQueue(opts.gitRoot, queue);
-    return applied;
-  });
-
-  if (!opts.quiet) {
-    for (const item of normalized) {
-      createCliEmitter().line(
-        `integration queue normalized: task=${item.taskId} status=done reason=${item.reason}`,
-      );
-    }
-  }
 }
 
 export function makeRunIntegrateQueueHandler(
@@ -306,7 +134,7 @@ export function makeRunIntegrateQueueListHandler(getCtx: (cmd: string) => Promis
       output.line(emptyStateMessage("integration queue entries"));
       return 0;
     }
-    output.lines(active.map((entry) => renderEntry(entry)));
+    output.lines(active.map((entry) => renderIntegrationQueueEntry(entry)));
     return 0;
   };
 }
@@ -316,75 +144,7 @@ export function makeRunIntegrateQueueDoctorHandler(
 ) {
   return async (ctx: CommandCtx, p: IntegrateQueueDoctorParsed): Promise<number> => {
     const commandCtx = await getCtx("integrate queue doctor");
-    const gitRoot = commandCtx.resolvedProject.gitRoot;
-    const before = await readIntegrationQueue(gitRoot);
-    const findings: { task_id: string; status: string; reason: string; repair: string | null }[] =
-      [];
-    let nextQueue = before;
-
-    for (const entry of before.entries) {
-      const loaded = await loadBackendTask({
-        ctx: commandCtx,
-        cwd: ctx.cwd,
-        rootOverride: ctx.rootOverride ?? null,
-        taskId: entry.task_id,
-      }).catch(() => null);
-      if (loaded?.task.status === "DONE" && entry.status !== "done") {
-        const reason = "task is already DONE; queue entry is terminal stale";
-        findings.push({
-          task_id: entry.task_id,
-          status: entry.status,
-          reason,
-          repair: "mark_done",
-        });
-        nextQueue = markQueueEntry(nextQueue, entry.task_id, "done", reason);
-        continue;
-      }
-      if (entry.status !== "handoff") continue;
-      const report = await resolvePrFlowStatus({
-        ctx: commandCtx,
-        cwd: ctx.cwd,
-        rootOverride: ctx.rootOverride ?? undefined,
-        taskId: entry.task_id,
-      }).catch(() => null);
-      if (!report) continue;
-      const decision = decideIntegrationQueueRecovery({ entry, report });
-      if (decision.action !== "mark") continue;
-      findings.push({
-        task_id: entry.task_id,
-        status: entry.status,
-        reason: decision.reason,
-        repair: `mark_${decision.status}`,
-      });
-      nextQueue = markQueueEntry(nextQueue, entry.task_id, decision.status, decision.reason);
-    }
-
-    if (p.fix && !p.dryRun) {
-      await withIntegrationQueueMutex(gitRoot, async () => {
-        await writeIntegrationQueue(
-          gitRoot,
-          applyIntegrationQueueDoctorRepairs(await readIntegrationQueue(gitRoot), findings),
-        );
-      });
-    }
-
-    const output = createCliEmitter();
-    if (p.json) {
-      output.json({ findings, applied: p.fix && !p.dryRun });
-      return 0;
-    }
-    if (findings.length === 0) {
-      output.success("integration queue doctor", undefined, "no stale entries detected");
-      return 0;
-    }
-    output.lines(
-      findings.map((finding) => {
-        const suffix =
-          p.fix && !p.dryRun ? "applied" : p.fix && p.dryRun ? "would_apply" : "not_applied";
-        return `${finding.task_id} ${finding.status}: ${finding.reason} repair=${finding.repair ?? "none"} ${suffix}`;
-      }),
-    );
-    return 0;
+    return runIntegrationQueueDoctor({ commandCtx, ctx, parsed: p });
   };
 }
 
@@ -397,7 +157,7 @@ export function makeRunIntegrateQueueClaimHandler(
     const claimed = await withIntegrationQueueMutex(gitRoot, async () => {
       const queue = await readIntegrationQueue(gitRoot);
       const next = claimNextQueuedEntry(queue, {
-        worker: p.worker ?? defaultWorker(),
+        worker: p.worker ?? defaultIntegrationQueueWorker(),
         ...(p.leaseMs === null ? {} : { leaseMs: p.leaseMs }),
       });
       if (!next.entry) {
@@ -465,7 +225,7 @@ export function makeRunIntegrateQueueRunNextHandler(
       const claimed = await withIntegrationQueueMutex(gitRoot, async () => {
         const queue = await readIntegrationQueue(gitRoot);
         const next = claimNextQueuedEntry(queue, {
-          worker: p.worker ?? defaultWorker(),
+          worker: p.worker ?? defaultIntegrationQueueWorker(),
           ...(p.leaseMs === null ? {} : { leaseMs: p.leaseMs }),
         });
         if (!next.entry) {
@@ -489,8 +249,8 @@ export function makeRunIntegrateQueueRunNextHandler(
         return next;
       });
       if (!claimed.entry) {
-        const activeLane = findActiveLane(claimed.state.entries);
-        if (p.wait && (activeLane || hasQueuedEntries(claimed.state.entries))) {
+        const activeLane = findActiveIntegrationLane(claimed.state.entries);
+        if (p.wait && (activeLane || hasQueuedIntegrationEntries(claimed.state.entries))) {
           if (
             activeLane &&
             (await recoverStaleActiveLane({
