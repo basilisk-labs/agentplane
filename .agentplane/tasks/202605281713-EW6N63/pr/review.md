@@ -30,7 +30,7 @@ Created: 2026-05-28T17:30:45.669Z
 
 ```text
  docs/user/agent-bootstrap.generated.mdx            |  26 +--
- packages/agentplane/assets/AGENTS.md               |  45 ++--
+ packages/agentplane/assets/AGENTS.md               |  31 ++-
  packages/agentplane/src/cli/bootstrap-guide.ts     |  26 +--
  packages/agentplane/src/cli/command-guide.test.ts  |  17 +-
  packages/agentplane/src/cli/command-guide.ts       |  18 +-
@@ -42,7 +42,7 @@ Created: 2026-05-28T17:30:45.669Z
  .../agentplane/src/commands/task/status.command.ts |   6 +
  .../src/runner/usecases/task-run-blueprint.test.ts |   9 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |  13 +-
- 13 files changed, 391 insertions(+), 149 deletions(-)
+ 13 files changed, 391 insertions(+), 135 deletions(-)
 ```
 
 </details>

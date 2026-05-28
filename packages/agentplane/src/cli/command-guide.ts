@@ -209,7 +209,7 @@ export function renderQuickstart(): string {
     "",
     "Configured workflow route:",
     "",
-    `- \`branch_pr\`: base checkout owns plan/approve and merge lane; task worktree owns implementation commits and PR artifacts; INTEGRATOR runs \`pr check\` and \`integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000\` from base until GitHub PR merge and Task Hosted Close complete.`,
+    `- \`branch_pr\`: base checkout owns plan/approve and merge lane; task worktree owns implementation commits and local PR artifacts; INTEGRATOR runs \`pr check\` and \`integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000\` from base until GitHub PR merge and Task Hosted Close complete.`,
     "- After preflight, use `agentplane task active` to pick ready work and `agentplane task brief <task-id>` to load task docs, Verify Steps, route state, blueprint evidence, policy modules, and source confidence before owner-scoped execution.",
     "- `branch_pr`: use `agentplane task next-action <task-id> --explain` as the route oracle; follow `next_command`, `authoritative_checkout`, `primary_blocker`, and `phase`.",
     "- `branch_pr`: agents that inherit the user's GitHub session must treat `gh pr merge`, GitHub UI merge, and auto-merge enablement as user-attributed publication; use them only after the integration queue/handoff route, stable hosted checks, and merge-lane approval are clear.",

@@ -20,7 +20,7 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 
 - Repository type: user project initialized with `agentplane`.
 - CLI rule: prefer `ap` for compact agent-oriented commands; fall back to `agentplane`; if neither is available, stop and request installation guidance (do not invent repo-local entrypoints).
-- Startup shortcut: run `## COMMANDS -> Preflight`; use `ap quickstart`; activate `ap role ORCHESTRATOR` for planning and `ap role <ROLE>` for execution; then apply `## LOAD RULES` before mutation. Treat `ap task brief <task-id>` and `ap task next-action <task-id> --explain` as the route oracle: follow the emitted checkout, blocker, and next command instead of reconstructing workflow state.
+- Startup shortcut: run `## COMMANDS -> Preflight`; use `ap quickstart`; activate `ap role ORCHESTRATOR` for planning and `ap role <ROLE>` for execution; then apply `## LOAD RULES` before mutation. The guarded route is determined by `workflow.mode` in `.agentplane/WORKFLOW.md`; treat `ap task brief <task-id>` and `ap task next-action <task-id> --explain` as the route oracle: follow the emitted checkout, blocker, and next command instead of reconstructing workflow state.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.source_of_truth.sources.of.truth" slot="source_of_truth" mutability="replaceable" -->
@@ -83,6 +83,20 @@ ap task plan approve <task-id> --by ORCHESTRATOR
 ap task start-ready <task-id> --author <ROLE> --body "Start: ..."
 ap verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
 ap finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>
+```
+
+### branch_pr lifecycle
+
+```bash
+ap work start <task-id> --agent <ROLE> --slug <slug> --worktree
+ap task start-ready <task-id> --author <ROLE> --body "Start: ..."
+git commit -m "Implement <task>"
+ap task verify-show <task-id>
+ap pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
+ap verify <task-id> --ok|--rework --by <ROLE> --note "..."
+ap evaluator run <task-id> --verdict pass|rework|blocked|human_review --summary "..." --finding "..." --evidence <path-or-check>
+ap integrate <task-id> --branch task/<task-id>/<slug> --run-verify
+ap finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
 
 ### Verification
