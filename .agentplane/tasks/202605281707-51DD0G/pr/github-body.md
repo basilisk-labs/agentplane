@@ -2,18 +2,6 @@ Task: `202605281707-51DD0G`
 Title: Route packet v2 for agent next-action surfaces
 Canonical task record: `.agentplane/tasks/202605281707-51DD0G/README.md`
 
-## Batch Tasks
-
-- Primary: `202605281707-51DD0G`
-- Closure policy: `all_or_fail`
-- Included: `202605281707-6MNB2K`
-- Included: `202605281707-7FSSSP`
-- Included: `202605281707-B1DQCY`
-- Included: `202605281707-DPJKMR`
-- Included: `202605281707-FMY3FQ`
-- Included: `202605281707-QEW595`
-- Included: `202605281707-VP74QA`
-
 ## Summary
 
 Route packet v2 for agent next-action surfaces
@@ -52,19 +40,19 @@ docs:bootstrap:check, release:parity; Result: pass.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202605281707-6MNB2K/README.md    | 136 +++++
+ .agentplane/tasks/202605281707-6MNB2K/README.md    | 137 +++++
  .../blueprint/resolved-snapshot.json               | 572 ++++++++++++++++++++
- .agentplane/tasks/202605281707-7FSSSP/README.md    | 136 +++++
+ .agentplane/tasks/202605281707-7FSSSP/README.md    | 137 +++++
  .../blueprint/resolved-snapshot.json               | 572 ++++++++++++++++++++
- .agentplane/tasks/202605281707-B1DQCY/README.md    | 136 +++++
+ .agentplane/tasks/202605281707-B1DQCY/README.md    | 137 +++++
  .../blueprint/resolved-snapshot.json               | 572 ++++++++++++++++++++
- .agentplane/tasks/202605281707-DPJKMR/README.md    | 136 +++++
+ .agentplane/tasks/202605281707-DPJKMR/README.md    | 137 +++++
  .../blueprint/resolved-snapshot.json               | 572 ++++++++++++++++++++
- .agentplane/tasks/202605281707-FMY3FQ/README.md    | 136 +++++
+ .agentplane/tasks/202605281707-FMY3FQ/README.md    | 137 +++++
  .../blueprint/resolved-snapshot.json               | 598 +++++++++++++++++++++
- .agentplane/tasks/202605281707-QEW595/README.md    | 136 +++++
+ .agentplane/tasks/202605281707-QEW595/README.md    | 137 +++++
  .../blueprint/resolved-snapshot.json               | 572 ++++++++++++++++++++
- .agentplane/tasks/202605281707-VP74QA/README.md    | 136 +++++
+ .agentplane/tasks/202605281707-VP74QA/README.md    | 137 +++++
  .../blueprint/resolved-snapshot.json               | 455 ++++++++++++++++
  docs/user/cli-reference.generated.mdx              |   2 +
  .../agentplane/src/cli/local-ci-selection.test.ts  |  54 ++
@@ -86,7 +74,7 @@ docs:bootstrap:check, release:parity; Result: pass.
  .../src/runner/usecases/task-run-bootstrap.ts      |  25 +-
  scripts/lib/local-ci-selection.mjs                 | 103 ++++
  scripts/lib/test-route-registry.mjs                |  33 ++
- 34 files changed, 5444 insertions(+), 6 deletions(-)
+ 34 files changed, 5451 insertions(+), 6 deletions(-)
 ```
 
 </details>
