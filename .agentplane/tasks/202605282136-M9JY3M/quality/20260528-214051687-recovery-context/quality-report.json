@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202605282136-M9JY3M",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-28T21:40:51.687Z",
+  "verdict": "pass",
+  "summary": "Task run command decomposition preserves runner CLI behavior while reducing task/run.command.ts below the hotspot threshold.",
+  "evaluated_sha": "efabaea85dab384a44002a3350aa7298857dd583",
+  "blueprint_digest": "edeff3ec03f169e4ee95a77bbac0cd33f436ed9469364a1b55848e207cca6a33",
+  "findings": [
+    "Extracted task-run payload rendering, log loading, and integer parsing into focused helper modules. Focused task-run tests passed, plus typecheck, lint, format, and hotspot check."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605282136-M9JY3M/README.md",
+    "packages/agentplane/src/commands/task/run.command.ts",
+    "packages/agentplane/src/commands/task/run-render.ts",
+    "packages/agentplane/src/commands/task/run-parse.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Task-run behavior is covered by focused CLI/usecase tests; hosted CI is still required before merge."
+  ]
+}

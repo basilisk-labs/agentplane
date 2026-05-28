@@ -29,7 +29,10 @@ Created: 2026-05-28T21:36:56.557Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ packages/agentplane/src/commands/task/run-parse.ts |  15 ++
+ .../agentplane/src/commands/task/run-render.ts     | 166 +++++++++++++++++++
+ .../agentplane/src/commands/task/run.command.ts    | 180 ++-------------------
+ 3 files changed, 196 insertions(+), 165 deletions(-)
 ```
 
 </details>

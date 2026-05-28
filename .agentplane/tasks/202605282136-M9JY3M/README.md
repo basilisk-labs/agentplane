@@ -4,7 +4,7 @@ title: "Task run command decomposition"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -33,6 +33,24 @@ verification:
   updated_by: "CODER"
   note: "Task run command decomposition verified locally."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T21:40:51.687Z"
+  updated_by: "EVALUATOR"
+  note: "Task run command decomposition preserves runner CLI behavior while reducing task/run.command.ts below the hotspot threshold."
+  evaluated_sha: "efabaea85dab384a44002a3350aa7298857dd583"
+  blueprint_digest: "edeff3ec03f169e4ee95a77bbac0cd33f436ed9469364a1b55848e207cca6a33"
+  evidence_refs:
+    - ".agentplane/tasks/202605282136-M9JY3M/README.md"
+    - ".agentplane/tasks/202605282136-M9JY3M/quality/20260528-214051687-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605282136-M9JY3M/quality/20260528-214051687-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605282136-M9JY3M/quality/20260528-214051687-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605282136-M9JY3M/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/task/run.command.ts"
+    - "packages/agentplane/src/commands/task/run-render.ts"
+    - "packages/agentplane/src/commands/task/run-parse.ts"
+  findings:
+    - "Extracted task-run payload rendering, log loading, and integer parsing into focused helper modules. Focused task-run tests passed, plus typecheck, lint, format, and hotspot check."
 commit: null
 comments:
   -
