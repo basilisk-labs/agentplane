@@ -1,10 +1,11 @@
 ---
 id: "202605282032-G4EWJG"
 title: "Guard commit implementation decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4210."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "packages/agentplane/src/commands/guard/impl/commit-runner.ts"
   findings:
     - "Extracted close-tail commit handling into commit-close.ts and lock-aware git commit execution into commit-runner.ts; local guard tests, typecheck, lint, format, hotspot check, and the ap commit smoke path passed."
-commit: null
+commit:
+  hash: "8f5572ca21a9fb9c4a5b96d4998ad0d38d53580f"
+  message: "✅ G4EWJG task: fix routed guard CI"
 comments:
   -
     author: "CODER"
     body: "Start: decompose guard commit implementation into focused helper modules while preserving behavior and verifying with targeted guard checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4210 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -67,9 +73,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "CI failure reproduced and fixed locally."
+  -
+    type: "status"
+    at: "2026-05-28T20:55:43.733Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4210 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T20:50:14.699Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T20:55:43.739Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/guard/impl/commit.ts into smaller focused modules without changing guard behavior. Preserve existing command contracts, keep public exports stable, and verify with targeted guard tests plus typecheck/lint/hotspot checks."
 sections:
   Summary: |-
