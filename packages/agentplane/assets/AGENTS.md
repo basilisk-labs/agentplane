@@ -74,6 +74,17 @@ ap task next-action <task-id> --explain
 ap work resume <task-id>
 ```
 
+### Task lifecycle
+
+```bash
+ap task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>
+ap task plan set <task-id> --text "..." --updated-by <ROLE>
+ap task plan approve <task-id> --by ORCHESTRATOR
+ap task start-ready <task-id> --author <ROLE> --body "Start: ..."
+ap verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
+ap finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>
+```
+
 ### Verification
 
 ```bash

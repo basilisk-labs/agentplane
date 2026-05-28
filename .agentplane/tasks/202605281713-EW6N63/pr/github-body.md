@@ -39,7 +39,7 @@ bun test packages/agentplane/src/cli/command-guide.test.ts \
 
 ```text
  docs/user/agent-bootstrap.generated.mdx            |  26 +--
- packages/agentplane/assets/AGENTS.md               |  48 +---
+ packages/agentplane/assets/AGENTS.md               |  45 ++--
  packages/agentplane/src/cli/bootstrap-guide.ts     |  26 +--
  packages/agentplane/src/cli/command-guide.test.ts  |  17 +-
  packages/agentplane/src/cli/command-guide.ts       |  18 +-
@@ -51,7 +51,7 @@ bun test packages/agentplane/src/cli/command-guide.test.ts \
  .../agentplane/src/commands/task/status.command.ts |   6 +
  .../src/runner/usecases/task-run-blueprint.test.ts |   9 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |  13 +-
- 13 files changed, 387 insertions(+), 156 deletions(-)
+ 13 files changed, 391 insertions(+), 149 deletions(-)
 ```
 
 </details>
