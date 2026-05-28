@@ -1,0 +1,5 @@
+ .../src/commands/task/finish-execute-close.ts      | 140 +++++++++
+ .../src/commands/task/finish-execute-commit.ts     | 105 +++++++
+ .../src/commands/task/finish-execute-load.ts       |  66 +++++
+ .../agentplane/src/commands/task/finish-execute.ts | 313 +--------------------
+ 4 files changed, 317 insertions(+), 307 deletions(-)
