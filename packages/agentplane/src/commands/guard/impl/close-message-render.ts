@@ -9,7 +9,7 @@ export type NumstatEntry = {
   churn: number;
 };
 
-export function uniqInOrder(values: string[]): string[] {
+function uniqInOrder(values: string[]): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
   for (const v of values) {
