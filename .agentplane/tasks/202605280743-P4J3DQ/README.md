@@ -4,7 +4,7 @@ title: "Gate context policy during upgrade"
 status: "DOING"
 priority: "med"
 owner: "UPGRADER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,22 @@ verification:
   updated_by: "UPGRADER"
   note: "Verified after replacing fallback Verify Steps with task-specific checks: context-policy upgrade regression passed 2/2; baseline upgrade suite passed 14/14; core run-process buffered execution passed 11/11; critical CLI suite passed all 5 chunks; agents/docs/typecheck/routing checks passed; framework bootstrap, ap config show, ap quickstart, task brief, next-action, and doctor passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T08:36:16.491Z"
+  updated_by: "EVALUATOR"
+  note: "Upgrade now gates context policy installation on initialized context workspaces and preserves non-context upgrades."
+  evaluated_sha: "e00b980f2d43af7a4602eb85ac611c6ce078e802"
+  blueprint_digest: "5a757ffdef075e49edafea4e2924f0ed2d08ea61f3069df5e04f329f052ebe2c"
+  evidence_refs:
+    - ".agentplane/tasks/202605280743-P4J3DQ/README.md"
+    - ".agentplane/tasks/202605280743-P4J3DQ/quality/20260528-083616491-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605280743-P4J3DQ/quality/20260528-083616491-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605280743-P4J3DQ/quality/20260528-083616491-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605280743-P4J3DQ/blueprint/resolved-snapshot.json"
+    - "GitHub PR #4185 checks: PR verification, test-windows, verify-unit, verify-static, verify-cli-critical, verify-contract, verify-coverage, verify-workflow, docs, CodeQL"
+  findings:
+    - "Regression coverage verifies that plain upgraded repositories do not install or reference context.must.md, while context-initialized repositories do install and route it. Required local and hosted checks passed after aligning init policy template tests."
 commit: null
 comments:
   -
