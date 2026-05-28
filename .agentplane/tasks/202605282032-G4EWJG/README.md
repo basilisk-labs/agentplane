@@ -4,7 +4,7 @@ title: "Guard commit implementation decomposition"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Guard commit decomposition verified locally."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T20:38:16.727Z"
+  updated_by: "EVALUATOR"
+  note: "Guard commit implementation decomposition preserves behavior while reducing commit.ts from 556 to 200 lines."
+  evaluated_sha: "f0ef4fb03c3dbd03ecfc8172da8fee34b0e66de7"
+  blueprint_digest: "045083bdc837f95d4444d995f9b17645221b17711f80a9a552e7cc26361a0746"
+  evidence_refs:
+    - ".agentplane/tasks/202605282032-G4EWJG/README.md"
+    - ".agentplane/tasks/202605282032-G4EWJG/quality/20260528-203816727-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605282032-G4EWJG/quality/20260528-203816727-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605282032-G4EWJG/quality/20260528-203816727-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605282032-G4EWJG/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/guard/impl/commit.ts"
+    - "packages/agentplane/src/commands/guard/impl/commit-close.ts"
+    - "packages/agentplane/src/commands/guard/impl/commit-runner.ts"
+  findings:
+    - "Extracted close-tail commit handling into commit-close.ts and lock-aware git commit execution into commit-runner.ts; local guard tests, typecheck, lint, format, hotspot check, and the ap commit smoke path passed."
 commit: null
 comments:
   -
