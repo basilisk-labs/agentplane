@@ -566,6 +566,35 @@ const CONTEXT_TEST_FILES = [
   "packages/agentplane/src/blueprints/validate.test.ts",
 ];
 
+const RUNNER_TEST_FILES = [
+  "packages/agentplane/src/runner/result-manifest.test.ts",
+  "packages/agentplane/src/runner/result-manifest-policy.test.ts",
+  "packages/agentplane/src/runner/process-supervision.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
+];
+
+const ROUTE_ORACLE_TEST_FILES = [
+  "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts",
+  "packages/agentplane/src/cli/command-guide.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts",
+];
+
+const PROMPT_MODULES_TEST_FILES = [
+  "packages/agentplane/src/runtime/prompt-modules/compiler.test.ts",
+  "packages/agentplane/src/runtime/prompt-modules/model.test.ts",
+  "packages/agentplane/src/runtime/prompt-modules/mutations.test.ts",
+  "packages/agentplane/src/runtime/prompt-modules/registry.test.ts",
+  "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts",
+];
+
+const EVALUATOR_TEST_FILES = [
+  "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts",
+];
+
 export const LOCAL_CI_TARGET_TEST_FILES = {
   backend: BACKEND_CRITICAL_FILES,
   "cli-core": CLI_CORE_TEST_FILES,
@@ -580,6 +609,10 @@ export const LOCAL_CI_TARGET_TEST_FILES = {
   "pr-flow-status": PR_FLOW_STATUS_TEST_FILES,
   "pr-integrate": PR_INTEGRATE_TEST_FILES,
   release: RELEASE_TEST_FILES,
+  runner: RUNNER_TEST_FILES,
+  "route-oracle": ROUTE_ORACLE_TEST_FILES,
+  "prompt-modules": PROMPT_MODULES_TEST_FILES,
+  evaluator: EVALUATOR_TEST_FILES,
   task: TASK_TEST_FILES,
   upgrade: UPGRADE_TEST_FILES,
   workflow: [],

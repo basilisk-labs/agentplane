@@ -85,6 +85,13 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
         { label: "summary", value: decision.nextAction.summary },
         { label: "requires_approval", value: decision.nextAction.requiresApproval },
         { label: "next_command", value: decision.oracle.nextCommand ?? "none" },
+        { label: "action_kind", value: decision.executionPacket.actionKind },
+        { label: "safe_to_mutate", value: decision.executionPacket.safeToMutate },
+        { label: "recommended_role", value: decision.executionPacket.recommendedRole },
+        {
+          label: "requires_provider_action",
+          value: decision.executionPacket.requiresProviderAction,
+        },
         {
           label: "primary_blocker",
           value: decision.oracle.blocker

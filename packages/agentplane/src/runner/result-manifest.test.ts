@@ -30,9 +30,12 @@ describe("runner result manifest", () => {
           evidence: {
             evidence_paths: ["reports/out.txt", "logs/out.log"],
             changed_paths: ["src/runner/task-state.ts"],
+            conflict_paths: ["src/runner/conflict.ts"],
             files_changed_count: 1,
             tests_run: ["bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts"],
             verification_candidates: ["inspect reports/out.txt"],
+            blocked_reason: "sibling runner owns the same file",
+            recommended_parent_action: "split task scope before retrying",
           },
         },
         null,
@@ -54,9 +57,12 @@ describe("runner result manifest", () => {
       evidence: {
         evidence_paths: ["reports/out.txt", "logs/out.log"],
         changed_paths: ["src/runner/task-state.ts"],
+        conflict_paths: ["src/runner/conflict.ts"],
         files_changed_count: 1,
         tests_run: ["bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts"],
         verification_candidates: ["inspect reports/out.txt"],
+        blocked_reason: "sibling runner owns the same file",
+        recommended_parent_action: "split task scope before retrying",
       },
     });
   });
@@ -96,6 +102,40 @@ describe("runner result manifest", () => {
     expect(error).toBeInstanceOf(InvalidRunnerResultManifestError);
     expect(error?.result_path).toBe(resultPath);
     expect(error?.reason).toContain("artifacts[].label");
+  });
+
+  it("rejects successful manifests without quality evidence", async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-result-manifest-quality-"));
+    const resultPath = path.join(tempDir, "result.json");
+    await writeFile(
+      resultPath,
+      JSON.stringify({ schema_version: 1, status: "success", summary: "done" }),
+      "utf8",
+    );
+
+    await expect(readRunnerResultManifest(resultPath)).rejects.toMatchObject({
+      reason:
+        "successful manifests must include evidence paths, tests, verification candidates, or artifacts",
+    });
+  });
+
+  it("requires blocked conflict manifests to name the parent action", async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-result-manifest-conflict-"));
+    const resultPath = path.join(tempDir, "result.json");
+    await writeFile(
+      resultPath,
+      JSON.stringify({
+        schema_version: 1,
+        status: "failed",
+        summary: "blocked",
+        evidence: { conflict_paths: ["src/a.ts"] },
+      }),
+      "utf8",
+    );
+
+    await expect(readRunnerResultManifest(resultPath)).rejects.toMatchObject({
+      reason: "evidence.conflict_paths requires evidence.blocked_reason",
+    });
   });
 
   it("preserves malformed manifest payloads for later inspection", async () => {

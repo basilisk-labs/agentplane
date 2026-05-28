@@ -1,7 +1,7 @@
 import { parseGroupCommand, type GroupCommandParsed } from "../cli/group-command.js";
 import type { CommandSpec } from "../cli/spec/spec.js";
 
-export type RuntimeExplainParsed = { json: boolean };
+export type RuntimeExplainParsed = { json: boolean; compact: boolean };
 
 export const runtimeSpec: CommandSpec<GroupCommandParsed> = {
   id: ["runtime"],
@@ -24,6 +24,12 @@ export const runtimeExplainSpec: CommandSpec<RuntimeExplainParsed> = {
       default: false,
       description: "Emit machine-readable runtime details.",
     },
+    {
+      kind: "boolean",
+      name: "compact",
+      default: false,
+      description: "Emit a compact prompt diagnostics payload for agent consumption.",
+    },
   ],
   examples: [
     { cmd: "agentplane runtime explain", why: "Show the active runtime as readable text." },
@@ -32,5 +38,5 @@ export const runtimeExplainSpec: CommandSpec<RuntimeExplainParsed> = {
       why: "Show runtime details for scripts and diagnostics tooling.",
     },
   ],
-  parse: (raw) => ({ json: raw.opts.json === true }),
+  parse: (raw) => ({ json: raw.opts.json === true, compact: raw.opts.compact === true }),
 };

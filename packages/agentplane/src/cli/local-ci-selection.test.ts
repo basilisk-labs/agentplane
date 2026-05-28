@@ -24,6 +24,10 @@ type FastCiPlan =
         | "context"
         | "pr"
         | "cli-runtime"
+        | "runner"
+        | "route-oracle"
+        | "prompt-modules"
+        | "evaluator"
         | "release"
         | "upgrade"
         | "guard"
@@ -157,6 +161,56 @@ describe("local CI fast selection", () => {
     expect(plan.bucket).toBe("task");
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+    );
+  });
+
+  it("routes isolated runner paths to the runner bucket", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/runner/usecases/task-run.ts",
+      "packages/agentplane/src/runner/result-manifest-policy.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("runner");
+    expect(plan.reason).toBe("runner_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/runner/result-manifest.test.ts");
+  });
+
+  it("routes isolated route oracle paths to the route-oracle bucket", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/commands/shared/route-decision.ts",
+      "packages/agentplane/src/commands/task/next-action.command.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("route-oracle");
+    expect(plan.reason).toBe("route_oracle_paths_only");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
+    );
+  });
+
+  it("routes isolated prompt module paths to the prompt-modules bucket", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/runtime/prompt-modules/compiler.ts",
+      "packages/agentplane/src/commands/shared/prompt-graph-diagnostics.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("prompt-modules");
+    expect(plan.reason).toBe("prompt_module_paths_only");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/runtime/prompt-modules/compiler.test.ts",
+    );
+  });
+
+  it("routes isolated evaluator paths to the evaluator bucket", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/commands/evaluator/evaluator.command.ts",
+      "packages/agentplane/src/evaluators/catalog.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("evaluator");
+    expect(plan.reason).toBe("evaluator_paths_only");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
     );
   });
 

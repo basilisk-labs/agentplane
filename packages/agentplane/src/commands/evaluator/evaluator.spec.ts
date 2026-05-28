@@ -25,6 +25,7 @@ export type EvaluatorRunParsed = {
   missingTests: string[];
   hiddenAssumptions: string[];
   residualRisks: string[];
+  reworkContext: string[];
   json: boolean;
   record: boolean;
 };
@@ -125,6 +126,13 @@ export const evaluatorRunSpec: CommandSpec<EvaluatorRunParsed> = {
       description: "Residual risk after review. May be repeated.",
     },
     {
+      kind: "string",
+      name: "rework-context",
+      valueHint: "<text>",
+      repeatable: true,
+      description: "Machine-readable rework instruction for the next runner pass. May be repeated.",
+    },
+    {
       kind: "boolean",
       name: "no-record",
       default: false,
@@ -165,6 +173,7 @@ export const evaluatorRunSpec: CommandSpec<EvaluatorRunParsed> = {
     missingTests: toStringList(raw.opts["missing-test"]),
     hiddenAssumptions: toStringList(raw.opts["hidden-assumption"]),
     residualRisks: toStringList(raw.opts["residual-risk"]),
+    reworkContext: toStringList(raw.opts["rework-context"]),
     json: raw.opts.json === true,
     record: raw.opts["no-record"] !== true,
   }),

@@ -2427,6 +2427,7 @@ agentplane runtime explain [options]
 Options:
 
 - `--json`: Emit machine-readable runtime details. (default=false)
+- `--compact`: Emit a compact prompt diagnostics payload for agent consumption. (default=false)
 
 Examples:
 
@@ -3793,6 +3794,7 @@ Options:
 - `--missing-test <text>`: Missing test or check. May be repeated. (repeatable)
 - `--hidden-assumption <text>`: Hidden assumption found during review. May be repeated. (repeatable)
 - `--residual-risk <text>`: Residual risk after review. May be repeated. (repeatable)
+- `--rework-context <text>`: Machine-readable rework instruction for the next runner pass. May be repeated. (repeatable)
 - `--no-record`: Write evaluator artifacts without updating task quality_review. (default=false)
 - `--json`: Emit JSON. (default=false)
 

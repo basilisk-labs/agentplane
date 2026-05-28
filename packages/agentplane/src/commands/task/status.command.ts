@@ -91,6 +91,16 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
         { label: "pr_branch", value: decision.workspace.prBranch ?? "missing" },
         { label: "next_code", value: decision.nextAction.code },
         { label: "next", value: decision.oracle.nextCommand ?? decision.oracle.summary },
+        { label: "action_kind", value: decision.executionPacket.actionKind },
+        { label: "safe_to_mutate", value: String(decision.executionPacket.safeToMutate) },
+        {
+          label: "recommended_role",
+          value: decision.executionPacket.recommendedRole,
+        },
+        {
+          label: "requires_provider_action",
+          value: String(decision.executionPacket.requiresProviderAction),
+        },
         {
           label: "effective_mutation_approval",
           value: String(decision.approval.effectiveMutationApprovalRequired),
