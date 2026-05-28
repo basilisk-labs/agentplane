@@ -4,7 +4,7 @@ title: "Optimize prompt policy surfaces"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,25 @@ verification:
   updated_by: "DOCS"
   note: "Command: bun test packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts -> pass, 23 tests. Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass, policy routing OK. Command: bun run framework:dev:bootstrap -> pass; repo-local runtime 0.6.11 active. Command: ap task next-action 202605281713-EW6N63 --explain -> pass; prints authoritative_checkout_path, mutation_path_hint, safe_to_mutate. Command: ap doctor -> OK with 0 warnings. Command: git diff --check -> pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T17:33:53.022Z"
+  updated_by: "EVALUATOR"
+  note: "Route surfaces now expose authoritative checkout paths and mutation hints; base checkout tracked state is clean and task changes are isolated in the branch_pr worktree."
+  evaluated_sha: "ba88e90b1dd2404277c21e8c68ca72c89f49ec72"
+  blueprint_digest: "8e5e2f2f1e84d105849882f0fa8888a4e4e0be462ffa92ae85377f1129191d82"
+  evidence_refs:
+    - ".agentplane/tasks/202605281713-EW6N63/README.md"
+    - ".agentplane/tasks/202605281713-EW6N63/quality/20260528-173353022-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605281713-EW6N63/quality/20260528-173353022-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605281713-EW6N63/quality/20260528-173353022-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605281713-EW6N63/blueprint/resolved-snapshot.json"
+    - "bun test packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts"
+    - "bunx tsc -p packages/agentplane/tsconfig.json --noEmit"
+    - "node .agentplane/policy/check-routing.mjs"
+    - "ap doctor"
+  findings:
+    - "Added route execution packet, path hints, CLI/runner rendering, and regression coverage for tools without cwd/workdir."
 commit: null
 comments:
   -

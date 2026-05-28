@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202605281713-EW6N63",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-28T17:33:53.022Z",
+  "verdict": "pass",
+  "summary": "Route surfaces now expose authoritative checkout paths and mutation hints; base checkout tracked state is clean and task changes are isolated in the branch_pr worktree.",
+  "evaluated_sha": "ba88e90b1dd2404277c21e8c68ca72c89f49ec72",
+  "blueprint_digest": "8e5e2f2f1e84d105849882f0fa8888a4e4e0be462ffa92ae85377f1129191d82",
+  "findings": [
+    "Added route execution packet, path hints, CLI/runner rendering, and regression coverage for tools without cwd/workdir."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605281713-EW6N63/README.md",
+    "bun test packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts",
+    "bunx tsc -p packages/agentplane/tsconfig.json --noEmit",
+    "node .agentplane/policy/check-routing.mjs",
+    "ap doctor"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
