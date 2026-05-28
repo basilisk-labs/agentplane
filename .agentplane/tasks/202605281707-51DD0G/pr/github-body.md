@@ -2,6 +2,18 @@ Task: `202605281707-51DD0G`
 Title: Route packet v2 for agent next-action surfaces
 Canonical task record: `.agentplane/tasks/202605281707-51DD0G/README.md`
 
+## Batch Tasks
+
+- Primary: `202605281707-51DD0G`
+- Closure policy: `all_or_fail`
+- Included: `202605281707-6MNB2K`
+- Included: `202605281707-7FSSSP`
+- Included: `202605281707-B1DQCY`
+- Included: `202605281707-DPJKMR`
+- Included: `202605281707-FMY3FQ`
+- Included: `202605281707-QEW595`
+- Included: `202605281707-VP74QA`
+
 ## Summary
 
 Route packet v2 for agent next-action surfaces

@@ -2,6 +2,18 @@
 
 Created: 2026-05-28T17:09:33.355Z
 
+## Batch Tasks
+
+- Primary: `202605281707-51DD0G`
+- Closure policy: `all_or_fail`
+- Included: `202605281707-6MNB2K`
+- Included: `202605281707-7FSSSP`
+- Included: `202605281707-B1DQCY`
+- Included: `202605281707-DPJKMR`
+- Included: `202605281707-FMY3FQ`
+- Included: `202605281707-QEW595`
+- Included: `202605281707-VP74QA`
+
 ## Task
 
 - Task: `202605281707-51DD0G`
