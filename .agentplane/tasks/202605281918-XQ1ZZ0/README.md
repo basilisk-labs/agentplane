@@ -4,7 +4,7 @@ title: "Hotspot baseline and refactor guardrails"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -30,6 +30,25 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts --config vitest.workspace.ts. Result: pass. Evidence: 1 test file, 11 tests passed. Scope: hotspot report schema and agent-critical classification behavior. Command: node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300. Result: pass. Evidence: threshold check passed; current baseline reports 50 runtime warnings and 11 oversized test warnings under existing thresholds. Scope: hotspot guardrail compatibility. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: TypeScript validity. Command: bun run format:changed. Result: pass. Evidence: changed files use Prettier style. Scope: formatting for changed files."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T19:22:43.404Z"
+  updated_by: "EVALUATOR"
+  note: "Hotspot report now exposes an agent-critical machine-readable baseline while preserving existing threshold behavior."
+  evaluated_sha: "63b38cca6b304b70abdf71a9a5f898c5f7626b3c"
+  blueprint_digest: "9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540"
+  evidence_refs:
+    - ".agentplane/tasks/202605281918-XQ1ZZ0/README.md"
+    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260528-192243404-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260528-192243404-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260528-192243404-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json"
+    - "bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts --config vitest.workspace.ts"
+    - "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300"
+    - "bun run typecheck"
+    - "8db032be4a99"
+  findings:
+    - "Added agent_critical_runtime_warnings with category counts and per-file modules for route-oracle, runner, evaluator, guard, task-lifecycle, and provider-lane surfaces."
 commit: null
 comments:
   -
