@@ -18,7 +18,20 @@ Apply when task changes docs or policy files only.
 
 ## Verification evidence contract
 
-Record docs/policy verification via `agentplane verify ...`: exact command, pass/fail result, short evidence, covered changed paths, and updated canonical links/examples. For skipped checks, record skipped command, concrete blocker, risk, and approval.
+Record docs/policy verification via `agentplane verify ...` and keep residual deviations or follow-ups in the task-local observation section (`Notes` in `doc_version=2`, `Findings` in `doc_version=3`) using this template:
+
+- `Command`: exact command string.
+- `Result`: `pass` or `fail`.
+- `Evidence`: short output summary.
+- `Scope`: changed docs/policy paths covered by the check.
+- `Links`: updated canonical docs/examples referenced by the change.
+
+For skipped checks, record:
+
+- `Skipped`: command not executed.
+- `Reason`: concrete blocker.
+- `Risk`: impact of skipping.
+- `Approval`: who approved the skip.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.dod.docs.check.evidence.checklist" slot="check" mutability="append_only" -->

@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202605281713-EW6N63/optimize-prompt-policy-surfaces",
   "created_at": "2026-05-28T17:30:45.669Z",
-  "diffstat_sha256": "sha256:3a480506a878482064653a50340d3fecd65db9c1269e157908729948ef0739d7",
+  "diffstat_sha256": "sha256:ee9da57968b161c0d9a43b09dc6bff93dceb7b94da908675de83818c8c2f833f",
   "last_verified_at": null,
   "schema_version": 1,
   "task_id": "202605281713-EW6N63",

@@ -12,7 +12,10 @@ Use this module when `workflow_mode=direct`.
 1. CHECKPOINT A: run preflight and publish summary.
 2. CHECKPOINT B: build task graph and obtain explicit user approval.
 3. Create/reuse task ID.
-4. Fill task docs for the active README contract from `.agentplane/policy/dod.core.md`; batched pre-approval doc updates are allowed.
+4. Fill task docs for the active README contract.
+   - `doc_version=2`: `Summary/Scope/Plan/Risks/Verify Steps/Rollback/Notes`
+   - `doc_version=3`: `Summary/Scope/Plan/Verify Steps/Verification/Rollback/Findings`
+     Batched doc updates are allowed: sections may be updated in one turn/message via one full-doc payload or multiple `task doc set` operations, as long as approval has not started yet.
 5. Approve plan (if required), then start task sequentially.
 6. Implement changes in current checkout.
 7. Run verification commands from loaded DoD modules.
@@ -41,10 +44,12 @@ agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "...
 If any step fails:
 
 1. Stop mutation immediately.
-2. Record failure details in the task-local observation section (`Notes` for `doc_version=2`, `Findings` for `doc_version=3`).
+2. Record failure details in the task-local observation section.
+   - `doc_version=2`: task `Notes`
+   - `doc_version=3`: task `Findings`
 3. Mark task blocked: `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`.
 4. Request re-approval before scope/risk changes.
-5. For reusable external/process advice, record structured `Observation` / `Impact` / `Resolution` in `Findings` and mark `Fixability: external` or `IncidentExternal: true`; plain prose stays task-local.
+5. If failure is external/process-related and should become reusable advice, record a structured `Observation` / `Impact` / `Resolution` block in `Findings` and mark it with `Fixability: external` (or `IncidentExternal: true`); plain prose in `Findings` stays task-local and does not update `.agentplane/policy/incidents.md`.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.direct.hard_constraint.constraints" slot="hard_constraint" mutability="append_only" -->
@@ -56,7 +61,7 @@ If any step fails:
 - MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
 - `task start-ready` MAY surface targeted incident advice for analogous scope/tags; follow it before widening scope.
 - In direct mode, `finish` auto-creates the deterministic close commit by default; use `--no-close-commit` only for explicit manual handling.
-- `finish` may promote structured reusable external findings to `.agentplane/policy/incidents.md`; plain `Findings` remains task-local.
+- `finish` evaluates structured resolved external findings, auto-derives incident advice when only `Observation` / `Impact` / `Resolution` plus `Fixability: external` are present, and appends valid entries to `.agentplane/policy/incidents.md`; plain `Findings` text remains task-local.
 - MUST stop and request re-approval on material drift.
 - Do not use worktrees in direct mode.
 - Do not perform `branch_pr`-only operations.

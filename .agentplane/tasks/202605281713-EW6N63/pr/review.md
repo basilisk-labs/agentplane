@@ -29,10 +29,6 @@ Created: 2026-05-28T17:30:45.669Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/policy/dod.docs.md                     |  15 +-
- .agentplane/policy/governance.md                   |  15 +-
- .agentplane/policy/workflow.branch_pr.md           |  44 +---
- .agentplane/policy/workflow.direct.md              |  13 +-
  docs/user/agent-bootstrap.generated.mdx            |  26 +--
  packages/agentplane/assets/AGENTS.md               |  48 +---
  packages/agentplane/src/cli/bootstrap-guide.ts     |  26 +--
@@ -46,7 +42,7 @@ Created: 2026-05-28T17:30:45.669Z
  .../agentplane/src/commands/task/status.command.ts |   6 +
  .../src/runner/usecases/task-run-blueprint.test.ts |   9 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |  13 +-
- 17 files changed, 407 insertions(+), 223 deletions(-)
+ 13 files changed, 387 insertions(+), 156 deletions(-)
 ```
 
 </details>
