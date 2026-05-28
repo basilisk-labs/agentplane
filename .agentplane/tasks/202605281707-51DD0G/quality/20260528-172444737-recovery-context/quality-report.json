@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202605281707-51DD0G",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-28T17:24:44.737Z",
+  "verdict": "pass",
+  "summary": "Route packet v2 batch implementation passed focused tests, typecheck, docs checks, policy routing, doctor, and task verification.",
+  "evaluated_sha": "afaae0408d989031f9abb4bfd9caadbec7f28e30",
+  "blueprint_digest": "a3df440f0edb36b57ad5caa7281a15070f35fd41e0d86d1f88ad1fe74e500ae9",
+  "findings": [
+    "No unresolved evaluator findings. Hotspot extraction is intentionally narrow: route packet decision helpers were isolated while broader task-run decomposition remains a future refactor because current hotspots stay under enforced thresholds."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605281707-51DD0G/README.md",
+    "d8e944335382",
+    "bunx vitest run local-ci-selection/result-manifest/route-decision/task-run-blueprint/evaluator-run",
+    "bun run typecheck",
+    "bun run docs:cli:check",
+    "ap doctor"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [],
+  "rework_context": []
+}

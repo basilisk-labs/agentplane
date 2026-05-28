@@ -4,7 +4,7 @@ title: "Route packet v2 for agent next-action surfaces"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,26 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/runner/result-manifest.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts --config vitest.workspace.ts; Result: pass, 5 files and 84 tests. Command: bun run typecheck; Result: pass. Command: bun run format:changed; Result: pass. Command: bun run hotspots:check; Result: pass with warnings below thresholds. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: ap doctor; Result: pass after framework dev bootstrap. Command: bun run docs:cli:check, docs:bootstrap:check, release:parity; Result: pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T17:24:44.737Z"
+  updated_by: "EVALUATOR"
+  note: "Route packet v2 batch implementation passed focused tests, typecheck, docs checks, policy routing, doctor, and task verification."
+  evaluated_sha: "afaae0408d989031f9abb4bfd9caadbec7f28e30"
+  blueprint_digest: "a3df440f0edb36b57ad5caa7281a15070f35fd41e0d86d1f88ad1fe74e500ae9"
+  evidence_refs:
+    - ".agentplane/tasks/202605281707-51DD0G/README.md"
+    - ".agentplane/tasks/202605281707-51DD0G/quality/20260528-172444737-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605281707-51DD0G/quality/20260528-172444737-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605281707-51DD0G/quality/20260528-172444737-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605281707-51DD0G/blueprint/resolved-snapshot.json"
+    - "d8e944335382"
+    - "bunx vitest run local-ci-selection/result-manifest/route-decision/task-run-blueprint/evaluator-run"
+    - "bun run typecheck"
+    - "bun run docs:cli:check"
+    - "ap doctor"
+  findings:
+    - "No unresolved evaluator findings. Hotspot extraction is intentionally narrow: route packet decision helpers were isolated while broader task-run decomposition remains a future refactor because current hotspots stay under enforced thresholds."
 commit: null
 comments:
   -
@@ -83,6 +103,21 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  branch_pr_batch:
+    base: "main"
+    branch: "task/202605281707-51DD0G/route-packet-v2"
+    included_task_ids:
+      - "202605281707-6MNB2K"
+      - "202605281707-7FSSSP"
+      - "202605281707-B1DQCY"
+      - "202605281707-DPJKMR"
+      - "202605281707-FMY3FQ"
+      - "202605281707-QEW595"
+      - "202605281707-VP74QA"
+    primary_task_id: "202605281707-51DD0G"
+    role: "primary"
+    updated_at: "2026-05-28T17:25:04.288Z"
 id_source: "generated"
 ---
 ## Summary
