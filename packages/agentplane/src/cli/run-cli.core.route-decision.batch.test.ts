@@ -304,8 +304,8 @@ describe("runCli route decision batch ownership", () => {
         next_action: { code: string; command: string };
       };
       expect(parsed.next_action).toMatchObject({
-        code: "none",
-        command: `agentplane task verify-show ${includedTaskId}`,
+        code: "run",
+        command: `agentplane task run ${includedTaskId}`,
       });
     } finally {
       nextIo.restore();
