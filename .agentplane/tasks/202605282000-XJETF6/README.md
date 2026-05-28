@@ -4,7 +4,7 @@ title: "Task runner execution usecase decomposition"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,23 @@ verification:
   updated_by: "CODER"
   note: "Task runner usecase decomposition verified: task-run.ts reduced from 566 to 388 lines, blueprint plan/snapshot helpers extracted, targeted runner blueprint/lifecycle tests passed, typecheck passed, lint:core passed, format:changed passed, hotspot threshold check passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T20:04:52.698Z"
+  updated_by: "EVALUATOR"
+  note: "Task runner usecase decomposed by extracting blueprint plan and snapshot helpers."
+  evaluated_sha: "83b2e005cace2239004f24590409dfce8a6c9ac1"
+  blueprint_digest: "000c32c7735bd834124cb44e81f34c1083fe2b6023c5efae60a4195bdc50a6c0"
+  evidence_refs:
+    - ".agentplane/tasks/202605282000-XJETF6/README.md"
+    - ".agentplane/tasks/202605282000-XJETF6/quality/20260528-200452698-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605282000-XJETF6/quality/20260528-200452698-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605282000-XJETF6/quality/20260528-200452698-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605282000-XJETF6/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/runner/usecases/task-run.ts"
+    - "packages/agentplane/src/runner/usecases/task-run-blueprint-plan.ts"
+  findings:
+    - "Evidence: task-run.ts reduced from 566 to 388 lines; task-run-blueprint-plan.ts owns blueprint budget, context manifest, plan resolution, and snapshot writes; targeted runner tests, typecheck, lint:core, format:changed, and hotspot check passed."
 commit: null
 comments:
   -

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202605282000-XJETF6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-28T20:04:52.698Z",
+  "verdict": "pass",
+  "summary": "Task runner usecase decomposed by extracting blueprint plan and snapshot helpers.",
+  "evaluated_sha": "83b2e005cace2239004f24590409dfce8a6c9ac1",
+  "blueprint_digest": "000c32c7735bd834124cb44e81f34c1083fe2b6023c5efae60a4195bdc50a6c0",
+  "findings": [
+    "Evidence: task-run.ts reduced from 566 to 388 lines; task-run-blueprint-plan.ts owns blueprint budget, context manifest, plan resolution, and snapshot writes; targeted runner tests, typecheck, lint:core, format:changed, and hotspot check passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605282000-XJETF6/README.md",
+    "packages/agentplane/src/runner/usecases/task-run.ts",
+    "packages/agentplane/src/runner/usecases/task-run-blueprint-plan.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

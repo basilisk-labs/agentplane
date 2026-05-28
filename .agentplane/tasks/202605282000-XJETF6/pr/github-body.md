@@ -33,7 +33,9 @@ lint:core passed, format:changed passed, hotspot threshold check passed.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/runner/usecases/task-run-blueprint-plan.ts | 189 ++++++++++++++++++++
+ .../agentplane/src/runner/usecases/task-run.ts     | 190 +--------------------
+ 2 files changed, 195 insertions(+), 184 deletions(-)
 ```
 
 </details>

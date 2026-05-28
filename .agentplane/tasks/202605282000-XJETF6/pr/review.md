@@ -29,7 +29,9 @@ Created: 2026-05-28T20:01:14.372Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/runner/usecases/task-run-blueprint-plan.ts | 189 ++++++++++++++++++++
+ .../agentplane/src/runner/usecases/task-run.ts     | 190 +--------------------
+ 2 files changed, 195 insertions(+), 184 deletions(-)
 ```
 
 </details>
