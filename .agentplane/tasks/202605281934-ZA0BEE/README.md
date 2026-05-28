@@ -4,7 +4,7 @@ title: "Route decision module decomposition"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,25 @@ verification:
   updated_by: "CODER"
   note: "Route decision decomposition verified: facade reduced to 335 lines, blockers/next-action/types extracted into focused modules, route-decision CLI tests passed, typecheck passed, hotspot threshold check passed, format:changed passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T19:40:03.838Z"
+  updated_by: "EVALUATOR"
+  note: "Route decision facade decomposed into focused modules with unchanged CLI route-decision behavior."
+  evaluated_sha: "68b96584c9a3aba4ca7823af4115b599558bfc62"
+  blueprint_digest: "cba1b8dabedfca03e084b837fcea290fe2bd08ab57aa5c5f8c1f9ca106f5a9e5"
+  evidence_refs:
+    - ".agentplane/tasks/202605281934-ZA0BEE/README.md"
+    - ".agentplane/tasks/202605281934-ZA0BEE/quality/20260528-194003838-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605281934-ZA0BEE/quality/20260528-194003838-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605281934-ZA0BEE/quality/20260528-194003838-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605281934-ZA0BEE/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/shared/route-decision.ts"
+    - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+    - "packages/agentplane/src/commands/shared/route-decision-next-action.ts"
+    - "packages/agentplane/src/commands/shared/route-decision-types.ts"
+  findings:
+    - "Evidence: route-decision facade is 335 lines; extracted blockers, next-action, and shared types modules; vitest route-decision suites passed; typecheck, hotspot check, and format:changed passed."
 commit: null
 comments:
   -
