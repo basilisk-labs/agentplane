@@ -29,7 +29,11 @@ Created: 2026-05-28T19:34:55.525Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/shared/route-decision-blockers.ts |  93 +++++++
+ .../commands/shared/route-decision-next-action.ts  | 116 +++++++++
+ .../src/commands/shared/route-decision-types.ts    |  75 ++++++
+ .../src/commands/shared/route-decision.ts          | 280 +--------------------
+ 4 files changed, 292 insertions(+), 272 deletions(-)
 ```
 
 </details>

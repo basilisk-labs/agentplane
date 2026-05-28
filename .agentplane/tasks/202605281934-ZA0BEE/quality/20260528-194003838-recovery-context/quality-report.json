@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202605281934-ZA0BEE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-28T19:40:03.838Z",
+  "verdict": "pass",
+  "summary": "Route decision facade decomposed into focused modules with unchanged CLI route-decision behavior.",
+  "evaluated_sha": "68b96584c9a3aba4ca7823af4115b599558bfc62",
+  "blueprint_digest": "cba1b8dabedfca03e084b837fcea290fe2bd08ab57aa5c5f8c1f9ca106f5a9e5",
+  "findings": [
+    "Evidence: route-decision facade is 335 lines; extracted blockers, next-action, and shared types modules; vitest route-decision suites passed; typecheck, hotspot check, and format:changed passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605281934-ZA0BEE/README.md",
+    "packages/agentplane/src/commands/shared/route-decision.ts",
+    "packages/agentplane/src/commands/shared/route-decision-blockers.ts",
+    "packages/agentplane/src/commands/shared/route-decision-next-action.ts",
+    "packages/agentplane/src/commands/shared/route-decision-types.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
