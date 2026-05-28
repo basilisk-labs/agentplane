@@ -1,5 +1,13 @@
 import { CliError } from "../../shared/errors.js";
 
+export type TaskRunLogsParsed = {
+  taskId: string;
+  runId?: string;
+  stream: "events" | "trace" | "stderr";
+  follow: boolean;
+  tail: number;
+};
+
 export function parsePositiveInteger(value: unknown, fallback: number, flag: string): number {
   const raw = typeof value === "string" ? value.trim() : "";
   if (!raw) return fallback;

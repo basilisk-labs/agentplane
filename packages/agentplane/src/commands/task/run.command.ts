@@ -6,7 +6,7 @@ import {
   prepareTaskRunnerExecution,
 } from "../../runner/usecases/task-run.js";
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
-import { parsePositiveInteger } from "./run-parse.js";
+import { type TaskRunLogsParsed, parsePositiveInteger } from "./run-parse.js";
 import {
   isTerminalRunnerStatus,
   loadRunnerLogText,
@@ -35,14 +35,6 @@ export type TaskRunInspectParsed = {
   runId?: string;
   json: boolean;
   events: number;
-};
-
-export type TaskRunLogsParsed = {
-  taskId: string;
-  runId?: string;
-  stream: "events" | "trace" | "stderr";
-  follow: boolean;
-  tail: number;
 };
 
 export const taskRunSpec: CommandSpec<TaskRunParsed> = {
