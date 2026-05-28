@@ -1,0 +1,4 @@
+ .../src/context/harvest-tasks-artifacts.ts         | 447 +--------------------
+ .../src/context/harvest-tasks-builders.ts          | 277 +++++++++++++
+ .../agentplane/src/context/harvest-tasks-model.ts  | 162 ++++++++
+ 3 files changed, 460 insertions(+), 426 deletions(-)

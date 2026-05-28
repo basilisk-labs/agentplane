@@ -2,12 +2,13 @@
   "base": "main",
   "branch": "task/202605282313-0JV1JB/harvest-artifacts-decomposition",
   "created_at": "2026-05-28T23:13:46.861Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:0699138c577471a2675ba1104d496a132e780339150c0df9bef0a4e22f9fe604",
+  "last_verified_at": "2026-05-28T23:20:59.721Z",
+  "last_verified_diffstat_sha256": "sha256:0699138c577471a2675ba1104d496a132e780339150c0df9bef0a4e22f9fe604",
   "schema_version": 1,
   "task_id": "202605282313-0JV1JB",
   "updated_at": "2026-05-28T23:13:46.861Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
