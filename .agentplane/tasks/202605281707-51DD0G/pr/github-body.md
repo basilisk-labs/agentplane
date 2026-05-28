@@ -73,8 +73,8 @@ docs:bootstrap:check, release:parity; Result: pass.
  .../src/runner/usecases/task-run-blueprint.test.ts |  14 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |  25 +-
  scripts/lib/local-ci-selection.mjs                 | 103 ++++
- scripts/lib/test-route-registry.mjs                |  33 ++
- 34 files changed, 5451 insertions(+), 6 deletions(-)
+ scripts/lib/test-route-registry.mjs                |  32 ++
+ 34 files changed, 5450 insertions(+), 6 deletions(-)
 ```
 
 </details>

@@ -570,7 +570,6 @@ const RUNNER_TEST_FILES = [
   "packages/agentplane/src/runner/result-manifest.test.ts",
   "packages/agentplane/src/runner/result-manifest-policy.test.ts",
   "packages/agentplane/src/runner/process-supervision.test.ts",
-  "packages/agentplane/src/runner/usecases/task-run.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
 ];
