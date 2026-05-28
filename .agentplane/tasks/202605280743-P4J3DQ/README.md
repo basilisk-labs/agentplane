@@ -1,10 +1,11 @@
 ---
 id: "202605280743-P4J3DQ"
 title: "Gate context policy during upgrade"
-status: "DOING"
+result_summary: "Merged via PR #4185."
+status: "DONE"
 priority: "med"
 owner: "UPGRADER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ quality_review:
     - "GitHub PR #4185 checks: PR verification, test-windows, verify-unit, verify-static, verify-cli-critical, verify-contract, verify-coverage, verify-workflow, docs, CodeQL"
   findings:
     - "Regression coverage verifies that plain upgraded repositories do not install or reference context.must.md, while context-initialized repositories do install and route it. Required local and hosted checks passed after aligning init policy template tests."
-commit: null
+commit:
+  hash: "4b7b13871b1d670e8151e59a6e1bb9d4b1cbc01e"
+  message: "Merge pull request #4185 from basilisk-labs/task/202605280743-P4J3DQ/gate-context-policy-upgrade"
 comments:
   -
     author: "UPGRADER"
     body: "Start: implementing verified upgrade gating for context policy installation and preserving regression evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4185 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "UPGRADER"
     state: "ok"
     note: "Verified after replacing fallback Verify Steps with task-specific checks: context-policy upgrade regression passed 2/2; baseline upgrade suite passed 14/14; core run-process buffered execution passed 11/11; critical CLI suite passed all 5 chunks; agents/docs/typecheck/routing checks passed; framework bootstrap, ap config show, ap quickstart, task brief, next-action, and doctor passed."
+  -
+    type: "status"
+    at: "2026-05-28T08:42:48.746Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4185 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T08:08:04.034Z"
-doc_updated_by: "UPGRADER"
+doc_updated_at: "2026-05-28T08:42:48.752Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix upgrade so context.must.md is installed only for repositories with initialized context layer, and add regression coverage."
 sections:
   Summary: |-
