@@ -19,10 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-28T11:57:52.933Z"
-  updated_by: "UPGRADER"
-  note: "Local release gates and GitHub PR checks passed for v0.6.11 release candidate."
-  attempts: 0
+  updated_at: "2026-05-28T12:22:27.211Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.11."
 quality_review:
   state: "pass"
   updated_at: "2026-05-28T11:57:59.892Z"
@@ -71,8 +70,8 @@ events:
     to: "DONE"
     note: "Verified: PR #4189 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T12:10:49.687Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-28T12:22:27.211Z"
+doc_updated_by: "DEUS"
 description: "Verify current AgentPlane changes and prepare the next patch release through the branch_pr release workflow if all gates pass."
 sections:
   Summary: |-
@@ -91,25 +90,19 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    ### 2026-05-28T11:57:52.933Z — VERIFY — ok
-
-    By: UPGRADER
-
-    Note: Local release gates and GitHub PR checks passed for v0.6.11 release candidate.
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T08:49:50.907Z, excerpt_hash=sha256:784b4f637fecd99064ba5dfa9bc4802e7d76d24e0bdbadb897665c5eeb789ff5
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605280849-V3BV1D-v0611-patch-release/.agentplane/tasks/202605280849-V3BV1D/blueprint/resolved-snapshot.json
-    - old_digest: d34cf48421582334f51e67735f3c644c65d594023c2da51f714848c9ba82cc8e
-    - current_digest: d34cf48421582334f51e67735f3c644c65d594023c2da51f714848c9ba82cc8e
-    - route_changed: no
-    - safe_command: agentplane blueprint snapshot 202605280849-V3BV1D
-
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.11.
+    - Details:
+      - release_sha: f64842db3ede31bdac865dbc7b501351e4c922a3
+      - version: 0.6.11
+      - tag: v0.6.11
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.11
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26574155157
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -146,25 +139,19 @@ PLANNER fallback scaffold for "Prepare next patch release". Replace with task-sp
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-### 2026-05-28T11:57:52.933Z — VERIFY — ok
-
-By: UPGRADER
-
-Note: Local release gates and GitHub PR checks passed for v0.6.11 release candidate.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T08:49:50.907Z, excerpt_hash=sha256:784b4f637fecd99064ba5dfa9bc4802e7d76d24e0bdbadb897665c5eeb789ff5
-
-Details:
-
-BlueprintSnapshotRef:
-- state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605280849-V3BV1D-v0611-patch-release/.agentplane/tasks/202605280849-V3BV1D/blueprint/resolved-snapshot.json
-- old_digest: d34cf48421582334f51e67735f3c644c65d594023c2da51f714848c9ba82cc8e
-- current_digest: d34cf48421582334f51e67735f3c644c65d594023c2da51f714848c9ba82cc8e
-- route_changed: no
-- safe_command: agentplane blueprint snapshot 202605280849-V3BV1D
-
+- State: ok
+- Note: Hosted publish confirmed for v0.6.11.
+- Details:
+  - release_sha: f64842db3ede31bdac865dbc7b501351e4c922a3
+  - version: 0.6.11
+  - tag: v0.6.11
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.11
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26574155157
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
