@@ -3,7 +3,7 @@ import { findWorktreeForBranch } from "@agentplaneorg/core/git";
 import { CliError } from "../../shared/errors.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
 import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.shared.js";
-import { resolveBatchOwnership, type RouteBatchOwnership } from "./route-batch-ownership.js";
+import { resolveBatchOwnership } from "./route-batch-ownership.js";
 import { deriveBlockers } from "./route-decision-blockers.js";
 import { deriveNextAction } from "./route-decision-next-action.js";
 import {
@@ -12,18 +12,11 @@ import {
   type RouteRepairStep,
   type TaskRouteDecision,
 } from "./route-decision-types.js";
-import {
-  deriveRouteExecutionPacket,
-  deriveRouteOracle,
-  type RouteBlocker,
-} from "./route-oracle.js";
+import { deriveRouteExecutionPacket, deriveRouteOracle } from "./route-oracle.js";
 import { workStartCommand } from "./work-start-command.js";
 
 import { loadBackendTask, loadCommandContext, type CommandContext } from "./task-backend.js";
-import {
-  buildRouteSourceConfidenceBase,
-  type SourceConfidence as RouteSourceConfidence,
-} from "./source-confidence.js";
+import { buildRouteSourceConfidenceBase } from "./source-confidence.js";
 
 function isCliUsageOrIo(err: unknown): boolean {
   return err instanceof CliError && (err.code === "E_USAGE" || err.code === "E_IO");
