@@ -1,10 +1,11 @@
 ---
 id: "202605282057-M1Z3D9"
 title: "Task finish execution decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4212."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -44,11 +45,16 @@ quality_review:
     - "packages/agentplane/src/commands/task/finish-execute-close.ts"
   findings:
     - "Extracted finish loading/incidents, commit-info/status-commit handling, and close-tail preflight/finalization into focused modules. Local finish validation/state/close-tail/quality tests passed, plus typecheck, lint, format, and hotspot check."
-commit: null
+commit:
+  hash: "f7449ab91cba633cbde5c86524abbaeedc713c33"
+  message: "✅ M1Z3D9 task: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: decompose task finish execution orchestration while preserving finish behavior and close-tail gates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4212 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Task finish execution decomposition verified locally."
+  -
+    type: "status"
+    at: "2026-05-28T21:09:34.824Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4212 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T21:03:19.433Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T21:09:34.830Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/task/finish-execute.ts into focused helper modules without changing finish behavior, close-tail contracts, evaluator freshness gates, or branch_pr/direct semantics. Verify with focused finish tests, typecheck, lint, format, hotspot, and hosted CI."
 sections:
   Summary: |-
