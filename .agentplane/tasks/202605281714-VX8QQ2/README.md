@@ -1,10 +1,11 @@
 ---
 id: "202605281714-VX8QQ2"
 title: "Decouple prompt assembly from optional local context"
-status: "DOING"
+result_summary: "Merged via PR #4196."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Focused prompt/context tests, docs freshness checks, typecheck, format check, diff check, routing policy, and doctor passed. Local context is now documented as optional and independent from runner prompt assembly; context init default remains maximum-assimilation."
   attempts: 0
-commit: null
+commit:
+  hash: "fdcc8b2ec410b48df6ba206748379458e5e004d8"
+  message: "✅ VX8QQ2 task: refresh LLM discovery index"
 comments:
   -
     author: "CODER"
     body: "Start: decouple runner prompt assembly from the optional local context workspace and align context init defaults with maximum-assimilation docs/tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4196 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused prompt/context tests, docs freshness checks, typecheck, format check, diff check, routing policy, and doctor passed. Local context is now documented as optional and independent from runner prompt assembly; context init default remains maximum-assimilation."
+  -
+    type: "status"
+    at: "2026-05-28T17:35:42.717Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4196 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T17:20:11.674Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T17:35:42.722Z"
+doc_updated_by: "INTEGRATOR"
 description: "Clarify and enforce that runner prompt assembly is independent from the optional local context workspace, and keep context init defaulting to maximum-assimilation across docs/tests."
 sections:
   Summary: |-
