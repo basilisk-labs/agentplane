@@ -1,10 +1,11 @@
 ---
 id: "202605282234-DXR7ZX"
 title: "Context init builder decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4226."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -48,11 +49,16 @@ quality_review:
     - "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300"
   findings:
     - "packages/agentplane/src/commands/context/init.ts now focuses on command orchestration and workspace file writes at 284 lines; bootstrap/git helpers moved to context-init-bootstrap.ts, and generated content builders moved to context-init-builders.ts. Hotspot warning count decreased from 39 to 38."
-commit: null
+commit:
+  hash: "16e5a403401614346b4a6c6397dd52fb20ae923e"
+  message: "✅ DXR7ZX context: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: decompose context init builders from command orchestration while preserving context init behavior and verifying hotspot warning reduction."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4226 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -67,9 +73,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Context init was decomposed into command orchestration, bootstrap/git helpers, and content builders. Verified with focused context CLI tests, typecheck, arch deps, lint, format, and hotspot threshold check (runtime warnings 39 -> 38)."
+  -
+    type: "status"
+    at: "2026-05-28T22:46:02.559Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4226 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T22:42:34.712Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T22:46:02.565Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/context/init.ts by extracting context init content builders and small file-read helpers into focused modules, preserving context init behavior and reducing hotspot warning count."
 sections:
   Summary: |-
