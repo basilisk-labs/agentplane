@@ -121,7 +121,8 @@ export steps.
 ## Enable local context
 
 Use local context when agents need reusable project knowledge, source-backed facts, or task-scoped
-research material.
+research material. This layer is optional: normal prompt assembly and task execution work after
+`agentplane init` without `agentplane context init`.
 
 ```bash
 agentplane context init
@@ -132,6 +133,10 @@ agentplane context search "first task"
 In an empty standalone directory, `agentplane context init` also performs the initial Agentplane
 bootstrap before writing context files. For non-empty uninitialized projects, run `agentplane init`
 first so conflicts and gateway/workflow choices stay explicit.
+
+When no profile is provided, context initialization uses `maximum-assimilation`. Use
+`agentplane context init --profile adaptive` when the repository only needs a smaller, opportunistic
+wiki.
 
 For a task that needs context ingestion:
 

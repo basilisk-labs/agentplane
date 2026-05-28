@@ -1,0 +1,13 @@
+ docs/context/index.mdx                             |  9 ++++++---
+ docs/context/modes.mdx                             | 23 +++++++++++++++++-----
+ docs/context/quickstart.mdx                        |  7 ++++++-
+ .../documentation-information-architecture.mdx     |  4 +++-
+ docs/user/commands.mdx                             |  7 ++++---
+ docs/user/local-context.mdx                        | 20 ++++++++++---------
+ docs/user/overview.mdx                             |  6 +++++-
+ docs/user/setup.mdx                                |  7 ++++++-
+ docs/user/website-ia.mdx                           |  5 ++++-
+ .../src/commands/context/context.command.ts        |  4 ++--
+ packages/agentplane/src/commands/context/init.ts   |  3 ++-
+ .../src/runner/context/base-prompts.test.ts        | 20 +++++++++++++++++++
+ 12 files changed, 87 insertions(+), 28 deletions(-)

@@ -28,8 +28,12 @@ task -> plan -> approve -> implement -> verify -> finish
 The default path is:
 
 ```text
-install -> init -> context init -> hand off to an agent -> review task evidence
+install -> init -> hand off to an agent -> review task evidence
 ```
+
+Run `context init` only when the repository needs durable local knowledge. It is independent from
+the prompt assembly path that gives agents policy, owner profile, route, recipe, skill, and task
+context.
 
 Manual CLI usage beyond setup, recovery, and review is an advanced operator path. User guides should
 teach the harness boundary first; the command reference holds the exhaustive flags.

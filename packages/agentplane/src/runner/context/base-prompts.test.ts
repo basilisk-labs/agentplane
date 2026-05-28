@@ -142,6 +142,26 @@ describe("collectRunnerBasePrompts", () => {
     expect(prompts[2]?.resolution?.winner.layer).toBe("builtin");
   });
 
+  it("assembles runner prompts without an initialized local context workspace", async () => {
+    const root = await makeTempRepo();
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(path.join(root, "AGENTS.md"), "# Repo Policy\n\nNo local context layer.\n");
+
+    const prompts = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+    });
+
+    expect(prompts.map((prompt) => prompt.id)).toEqual([
+      "base.framework_runner",
+      "base.policy_gateway",
+      "base.owner_profile",
+    ]);
+    expect(prompts.find((prompt) => prompt.id === "base.policy_gateway")?.content).toContain(
+      "No local context layer",
+    );
+  });
+
   it("reuses static bundled framework prompt assembly across repeated collections", async () => {
     const root = await makeTempRepo();
 

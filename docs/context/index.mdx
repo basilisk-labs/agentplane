@@ -5,9 +5,12 @@ description: "Use Agentplane context to give humans and agents durable project k
 
 # Context
 
-Agentplane context is repo-owned project knowledge for humans and agents. It keeps conventions,
-source notes, wiki pages, facts, graph relationships, and task-derived knowledge close to the code
-so later agent runs can search and reuse it.
+Agentplane context is an optional repo-owned project knowledge layer for humans and agents. It keeps
+conventions, source notes, wiki pages, facts, graph relationships, and task-derived knowledge close
+to the code so later agent runs can search and reuse it.
+
+Agentplane prompt assembly and runner bootstrap are separate surfaces. A normal task run can assemble
+policy, owner profile, recipe, skill, route, and task context without `agentplane context init`.
 
 ## Start here
 
