@@ -1,10 +1,11 @@
 ---
 id: "202605280849-V3BV1D"
 title: "Prepare next patch release"
-status: "DOING"
+result_summary: "Merged via PR #4189."
+status: "DONE"
 priority: "high"
 owner: "UPGRADER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ quality_review:
     - "https://github.com/basilisk-labs/agentplane/pull/4189"
   findings:
     - "Evidence: local release:check, release:ci-check, focused regression tests, release-ci-base, workflow/significant coverage, release-critical, and GitHub PR #4189 green checks."
-commit: null
+commit:
+  hash: "03fe802a0d8be99ad1bcfdacb011ae68a0cdaa0d"
+  message: "🔒 V3BV1D release: sync bun lockfile"
 comments:
   -
     author: "UPGRADER"
     body: "Start: verifying current AgentPlane main and preparing v0.6.11 patch release candidate through the branch_pr release workflow after green checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4189 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -57,9 +63,16 @@ events:
     author: "UPGRADER"
     state: "ok"
     note: "Local release gates and GitHub PR checks passed for v0.6.11 release candidate."
+  -
+    type: "status"
+    at: "2026-05-28T12:10:49.683Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4189 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T11:57:52.954Z"
-doc_updated_by: "UPGRADER"
+doc_updated_at: "2026-05-28T12:10:49.687Z"
+doc_updated_by: "INTEGRATOR"
 description: "Verify current AgentPlane changes and prepare the next patch release through the branch_pr release workflow if all gates pass."
 sections:
   Summary: |-
