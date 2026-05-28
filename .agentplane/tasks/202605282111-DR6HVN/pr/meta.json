@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202605282111-DR6HVN/integrate-queue-command-decomposition",
   "created_at": "2026-05-28T21:12:29.916Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:02f82043569e1d55ae77ea88a898f2c0e52dcde7a30ea5ff8d7fabeaf6f198c1",
   "last_verified_at": "2026-05-28T21:18:23.341Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "schema_version": 1,
