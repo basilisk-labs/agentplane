@@ -71,10 +71,9 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toBe("cli: add close commit mode");
-    expect(msg.subject).not.toContain("✅");
-    expect(msg.subject).not.toContain("R18Y1Q");
-    expect(msg.body).toContain("Summary:\n- Add close commit mode.");
+    expect(msg.subject).toBe("✨ R18Y1Q cli: add close commit mode");
+    expect(msg.body).toContain("Summary:\n- Updated implementation code.");
+    expect(msg.body).not.toContain("Summary:\n- Add close commit mode.");
     expect(msg.body).toContain("Verification:\n- Bun run test:full passed.");
     expect(msg.body).toContain("Refs:\n- Agentplane task: R18Y1Q");
     expect(msg.body).toContain("- Agentplane run: 202602081506-R18Y1Q");
@@ -84,7 +83,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     expect(msg.body).not.toContain(".agentplane/tasks/");
   });
 
-  it("uses a clear fallback marker when result_summary is missing", async () => {
+  it("preserves the legacy subject shape when the implementation commit is not task-formatted", async () => {
     const { root, implHash } = await mkRepoWithImplCommit();
     const task: TaskData = {
       id: "202602081506-R18Y1Q",
@@ -155,7 +154,6 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
     expect(msg.subject).toBe("cli: spike close message builder");
-    expect(msg.subject.startsWith("🧪")).toBe(false);
     expect(msg.body).toContain("Verification:\n- Not required (spike).");
   });
 
@@ -329,8 +327,6 @@ describe("renderMergeMessage", () => {
       "docs: regenerate CLI reference for context commands
 
       Summary:
-      - Regenerate CLI reference for context commands.
-      Changed:
       - Updated documentation artifacts.
       Verification:
       - Docs generation passed.
@@ -410,6 +406,26 @@ describe("renderMergeMessage", () => {
     expect(rendered).toContain("- Bunx vitest run pr-flow.test.ts passed.");
     expect(rendered).toContain("- Node .agentplane/policy/check-routing.mjs passed.");
     expect(rendered).not.toContain("Evidence:");
+  });
+
+  it("normalizes local pass wording in verification bullets", () => {
+    const rendered = renderMergeMessage({
+      scope: "codex",
+      subjectEmoji: "🚧",
+      taskId: "202605271519-3ES6T7",
+      prTitle: "Start Codex runner prompts with /goal",
+      verification: [
+        "Reverified after static lint fix: lint:core passed.",
+        "Typecheck passed.",
+        "Targeted task-run/bootstrap tests passed.",
+        "And git diff --check pass locally. passed.",
+      ],
+    });
+
+    expect(rendered.split("\n")[0]).toBe("🚧 3ES6T7 codex: start Codex runner prompts with /goal");
+    expect(rendered).toContain("- Git diff --check passed.");
+    expect(rendered).not.toContain("pass locally. passed");
+    expect(rendered).not.toContain("passed. passed");
   });
 
   it("caps many key files", () => {

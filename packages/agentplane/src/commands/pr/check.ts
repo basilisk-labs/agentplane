@@ -29,6 +29,7 @@ import {
 } from "./internal/pr-artifact-snapshot.js";
 import { computePrDiffstat } from "./internal/sync-branch.js";
 import { tryLookupExistingGithubPrByBranch } from "./internal/sync-github.js";
+import { waitForHostedChecks } from "./hosted-checks.js";
 
 export async function cmdPrCheck(opts: {
   ctx?: CommandContext;
@@ -36,6 +37,11 @@ export async function cmdPrCheck(opts: {
   rootOverride?: string;
   taskId: string;
   branch?: string;
+  hosted?: boolean;
+  stablePolls?: number;
+  pollIntervalMs?: number;
+  timeoutMs?: number;
+  requiredChecks?: readonly string[];
 }): Promise<number> {
   try {
     const output = createCliEmitter();
@@ -263,6 +269,21 @@ export async function cmdPrCheck(opts: {
         prNumber,
         unresolved: reviewThreads.unresolved,
       });
+    }
+    if (opts.hosted === true) {
+      const hosted = await waitForHostedChecks({
+        gitRoot: resolved.gitRoot,
+        prNumber,
+        stablePolls: opts.stablePolls ?? 2,
+        pollIntervalMs: opts.pollIntervalMs ?? null,
+        timeoutMs: opts.timeoutMs ?? null,
+        requiredChecks: opts.requiredChecks ?? [],
+      });
+      output.success(
+        "hosted checks",
+        prNumber ? `#${prNumber}` : undefined,
+        `total=${hosted.total} passing=${hosted.passing}`,
+      );
     }
 
     output.success("pr check", path.relative(resolved.gitRoot, prDir));

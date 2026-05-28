@@ -215,6 +215,67 @@ describe("runCli route decision batch ownership", () => {
     }
   });
 
+  it("reports included batch delegation in the route oracle after plan approval", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const primaryTaskId = await createTask(root);
+    const includedTaskId = await createTask(root);
+    await approveTasks(root, [primaryTaskId, includedTaskId], "Exercise batch oracle routing.");
+    const branch = `task/${primaryTaskId}/batch-owner`;
+    await writeBatchMeta({ root, primaryTaskId, includedTaskId, branch, status: "OPEN" });
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", includedTaskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        next_action: { code: string };
+        route_oracle: { phase: string; authoritativeCheckout: string };
+      };
+      expect(parsed.next_action.code).toBe("verify_included_task");
+      expect(parsed.route_oracle).toMatchObject({
+        phase: "batch_delegate",
+        authoritativeCheckout: "primary_task_worktree",
+      });
+    } finally {
+      nextIo.restore();
+    }
+  });
+
+  it("keeps plan approval ahead of included batch delegation in the route oracle", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const primaryTaskId = await createTask(root);
+    const includedTaskId = await createTask(root);
+    const branch = `task/${primaryTaskId}/batch-owner`;
+    await writeBatchMeta({ root, primaryTaskId, includedTaskId, branch, status: "OPEN" });
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", includedTaskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        next_action: { code: string; command: string };
+        route_oracle: { phase: string; authoritativeCheckout: string };
+      };
+      expect(parsed.next_action.code).toBe("approve_plan");
+      expect(parsed.route_oracle).toMatchObject({
+        phase: "needs_plan_approval",
+        authoritativeCheckout: "base_checkout",
+      });
+    } finally {
+      nextIo.restore();
+    }
+  });
+
   it("does not let stale batch PR artifacts override direct-mode routing", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

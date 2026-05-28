@@ -57,6 +57,7 @@ export type SqliteDatabase = {
 
 type GlobalWithSqlite = typeof globalThis & {
   __agentplaneSqlite?: SqliteModule;
+  __agentplaneSqliteLoading?: Promise<SqliteModule | null>;
 };
 
 function firstColumn(row: unknown): unknown {
@@ -131,10 +132,51 @@ class NodeSqliteDatabaseAdapter implements SqliteDatabase {
 }
 
 async function loadSqlite(): Promise<SqliteModule | null> {
-  const cached = (globalThis as GlobalWithSqlite).__agentplaneSqlite;
+  const globalSqlite = globalThis as GlobalWithSqlite;
+  const cached = globalSqlite.__agentplaneSqlite;
   if (cached) return cached;
+  if (globalSqlite.__agentplaneSqliteLoading) return globalSqlite.__agentplaneSqliteLoading;
+  const loading = loadSqliteUncached();
+  globalSqlite.__agentplaneSqliteLoading = loading;
   try {
-    const sqlite = (await import(NODE_SQLITE_SPECIFIER)) as NodeSqliteModule;
+    return await loading;
+  } finally {
+    if (globalSqlite.__agentplaneSqliteLoading === loading) {
+      delete globalSqlite.__agentplaneSqliteLoading;
+    }
+  }
+}
+
+async function loadSqliteUncached(): Promise<SqliteModule | null> {
+  try {
+    const originalEmitWarning = process.emitWarning.bind(process);
+    const warningShim = ((warning: string | Error, ...args: unknown[]) => {
+      const warningName =
+        typeof warning === "string"
+          ? typeof args[0] === "string"
+            ? args[0]
+            : typeof (args[0] as { type?: unknown } | undefined)?.type === "string"
+              ? String((args[0] as { type?: unknown }).type)
+              : ""
+          : warning.name;
+      const warningMessage = typeof warning === "string" ? warning : warning.message;
+      if (
+        warningName === "ExperimentalWarning" &&
+        warningMessage.includes("SQLite is an experimental feature")
+      ) {
+        return;
+      }
+      return originalEmitWarning.call(process, warning as never, ...(args as never[]));
+    }) as typeof process.emitWarning;
+    process.emitWarning = warningShim;
+    let sqlite: NodeSqliteModule;
+    try {
+      sqlite = (await import(NODE_SQLITE_SPECIFIER)) as NodeSqliteModule;
+    } finally {
+      if (process.emitWarning === warningShim) {
+        process.emitWarning = originalEmitWarning;
+      }
+    }
     const loaded = { kind: "node" as const, module: sqlite };
     (globalThis as GlobalWithSqlite).__agentplaneSqlite = loaded;
     return loaded;

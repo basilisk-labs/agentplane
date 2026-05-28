@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { extractTaskSuffix } from "@agentplaneorg/core/commit";
+import { extractTaskSuffix, parseTaskSubjectTemplate } from "@agentplaneorg/core/commit";
 
 import type { TaskData } from "../../../backends/task-backend.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
@@ -169,6 +169,8 @@ function normalizeScope(opts: {
 }): string {
   const preferred = [
     "context",
+    "codex",
+    "runner",
     "cli",
     "docs",
     "release",
@@ -260,9 +262,12 @@ function normalizeCheckLabel(value: string): string {
   const text = value
     .trim()
     .replaceAll(/\s+/g, " ")
+    .replace(/^and\s+/iu, "")
     .replaceAll(/\bResult:\s*pass(?:ed)?\.?/giu, "")
     .replaceAll(/\bEvidence:\s*/giu, "")
     .replaceAll(/\bScope:\s*[^.]+\.?/giu, "")
+    .replace(/\s+(?:pass|passed)\.?$/iu, "")
+    .replace(/\s+(?:pass|passed)\s+locally\.?$/iu, "")
     .trim()
     .replaceAll(/\s+/g, " ");
   const lower = text.toLowerCase();
@@ -320,6 +325,12 @@ function deriveChanged(files: string[]): string[] {
   if (files.some((file) => /\.(test|spec)\.tsx?$/u.test(file))) {
     bullets.push("Updated automated test coverage.");
   }
+  if (
+    bullets.length === 0 &&
+    files.some((file) => !isTaskArtifactPath(file) && !file.startsWith("docs/"))
+  ) {
+    bullets.push("Updated implementation code.");
+  }
   return uniqInOrder(bullets);
 }
 
@@ -368,6 +379,7 @@ function formatSection(title: string, lines: string[]): string[] {
 
 type MergeMessageInput = {
   scope?: string;
+  subjectEmoji?: string;
   tags?: string[];
   prTitle?: string;
   prBody?: string;
@@ -391,8 +403,31 @@ type MergeMessageInput = {
   };
 };
 
+function comparableText(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replaceAll(/[^\p{L}\p{N}\s/-]/gu, " ")
+    .replaceAll(/\s+/g, " ")
+    .trim();
+}
+
+function subjectSummaryFromSubject(subject: string): string {
+  const separator = subject.indexOf(":");
+  if (separator === -1) return subject.trim();
+  return subject.slice(separator + 1).trim();
+}
+
+function renderSubjectWithTaskPrefix(input: MergeMessageInput, subject: string): string {
+  const emoji = input.subjectEmoji?.trim() ?? "";
+  const suffix = shortTaskId(input.taskId);
+  if (!emoji || !suffix) return subject;
+  return normalizeOneLine(`${emoji} ${suffix} ${subject}`, 96);
+}
+
 export function renderMergeMessage(input: MergeMessageInput): string {
-  const subject = normalizeSubject(input);
+  const semanticSubject = normalizeSubject(input);
+  const subject = renderSubjectWithTaskPrefix(input, semanticSubject);
   const files = uniqInOrder([...(input.keyFiles ?? []), ...(input.changedFiles ?? [])]);
   const keyFileSource = input.keyFiles ?? input.changedFiles ?? [];
   const keyFiles = capBullets(keyFileSource.slice(0, 20), 8, (count) => `+${count} more files`);
@@ -404,11 +439,28 @@ export function renderMergeMessage(input: MergeMessageInput): string {
     : input.prTitle
       ? [input.prTitle]
       : [];
+  const subjectSummary = comparableText(subjectSummaryFromSubject(semanticSubject));
+  const changed = (input.changed ?? []).map((candidate) => sentence(candidate)).filter(Boolean);
+  const derivedChanged = deriveChanged(files);
+  const changedLines = changed.length > 0 ? changed : derivedChanged;
   const summary = summaryCandidates
     .map((candidate) => sentence(candidate))
     .filter(Boolean)
-    .filter((line) => !isNoisyOperationalTitle(line));
-  const changed = (input.changed ?? []).map((candidate) => sentence(candidate)).filter(Boolean);
+    .filter((line) => !isNoisyOperationalTitle(line))
+    .filter((line) => comparableText(line) !== subjectSummary);
+  const summaryFallback = changedLines.length > 0 ? changedLines : [];
+  const summaryLines =
+    summary.length > 0
+      ? summary
+      : summaryFallback.length > 0
+        ? summaryFallback
+        : input.taskId
+          ? [`Merged Agentplane task ${shortTaskId(input.taskId) ?? input.taskId}.`]
+          : [];
+  const changedSection = changedLines.filter((line) => {
+    const normalized = comparableText(line);
+    return !summaryLines.some((summaryLine) => comparableText(summaryLine) === normalized);
+  });
   const refs = [
     input.sourcePrNumber ? `Source PR: #${input.sourcePrNumber}` : "",
     input.mergePrNumber ? `Merge PR: #${input.mergePrNumber}` : "",
@@ -417,16 +469,9 @@ export function renderMergeMessage(input: MergeMessageInput): string {
   ].filter(Boolean);
 
   const body = [
-    ...formatSection(
-      "Summary",
-      summary.length > 0
-        ? summary
-        : input.taskId
-          ? [`Merged Agentplane task ${shortTaskId(input.taskId) ?? input.taskId}.`]
-          : [],
-    ),
+    ...formatSection("Summary", summaryLines),
     ...formatSection("Why", input.why ?? []),
-    ...formatSection("Changed", changed.length > 0 ? changed : deriveChanged(files)),
+    ...formatSection("Changed", changedSection),
     ...formatSection("Verification", verification),
     ...formatSection("Key files", keyFiles),
     ...formatSection("Refs", refs),
@@ -489,8 +534,10 @@ export async function buildCloseCommitMessage(opts: {
     resultSummary && !isNoisyOperationalTitle(resultSummary) && !isMachineSummary(resultSummary)
       ? resultSummary
       : task.title;
+  const parsedSubject = parseTaskSubjectTemplate(task.commit?.message ?? "");
   const rendered = renderMergeMessage({
     scope: normalizeScope({ tags, title, files: keyFiles }),
+    subjectEmoji: parsedSubject?.emoji,
     tags,
     prTitle: title,
     sourcePrNumber,

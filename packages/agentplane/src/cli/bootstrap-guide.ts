@@ -17,6 +17,7 @@ export const BOOTSTRAP_PREFLIGHT_COMMANDS = [
   COMMAND_SNIPPETS.core.taskList,
   COMMAND_SNIPPETS.core.taskActive,
   "git status --short --untracked-files=no",
+  "git status --short",
   "git rev-parse --abbrev-ref HEAD",
 ] as const;
 
@@ -59,10 +60,11 @@ const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
   {
     heading: "1. Preflight",
     summary:
-      "Establish workflow mode, current branch, active task candidates, and tracked working-tree state.",
+      "Establish workflow mode, current branch, active task candidates, tracked-only cleanliness, and full working-tree changes.",
     commands: BOOTSTRAP_PREFLIGHT_COMMANDS,
     notes: [
       "Run this before any mutation.",
+      "`git status --short --untracked-files=no` is tracked-only; follow it with `git status --short` so untracked files are visible before deciding what to commit.",
       "If the project is not initialized, stop and use `agentplane init` first.",
       "`task active` ranks ready work after `task list`; use `task brief <task-id>` before owner-scoped execution.",
     ],
@@ -156,13 +158,13 @@ export function renderBootstrapDoc(): string {
     "",
     ...renderCommandBlock(BOOTSTRAP_PREFLIGHT_COMMANDS),
     "",
-    `After preflight, use \`${COMMAND_SNIPPETS.core.taskActive}\` to choose ready work and \`${COMMAND_SNIPPETS.core.taskBrief}\` to load the task context surface. Prefer the concrete next command emitted by \`task brief\` or \`agentplane task next-action <task-id> --explain\` before manually assembling route commands. Then follow the configured workflow mode. In repositories configured for \`branch_pr\`, start with the emitted route command or \`agentplane help work start\` as the low-level contract, keep local PR artifacts current with \`agentplane pr ...\`, ${BRANCH_PR_HOSTED_GATE_GUIDANCE}, and let base-checkout \`integrate\` drive the task GitHub PR merge; use the direct-mode route below only when \`workflow_mode=direct\` is intentional.`,
+    `After preflight, use \`${COMMAND_SNIPPETS.core.taskActive}\` to choose ready work and \`${COMMAND_SNIPPETS.core.taskBrief}\` to load the task context surface. Treat \`agentplane task next-action <task-id> --explain\` as the route oracle before mutating: follow \`next_command\`, run it from \`authoritative_checkout\`, treat \`primary_blocker\` as the current stop reason, and use \`phase\` to avoid manually reconstructing branch/worktree/PR state. Then follow the configured workflow mode. In repositories configured for \`branch_pr\`, start with the emitted route command or \`agentplane help work start\` as the low-level contract, keep local PR artifacts current with \`agentplane pr ...\`, ${BRANCH_PR_HOSTED_GATE_GUIDANCE}, and let base-checkout \`integrate\` drive the task GitHub PR merge; use the direct-mode route below only when \`workflow_mode=direct\` is intentional.`,
     "",
     ...renderBootstrapSectionLines(BOOTSTRAP_SECTIONS),
     "",
     "## Non-default paths",
     "",
-    `- \`branch_pr\`: in repositories configured this way, use \`${COMMAND_SNIPPETS.core.taskBrief}\` first, prefer its emitted next command or \`agentplane task next-action <task-id> --explain\`, start a task branch/worktree, maintain PR artifacts, ${BRANCH_PR_HOSTED_GATE_GUIDANCE}, and finalize through the task GitHub PR merge plus Task Hosted Close.`,
+    `- \`branch_pr\`: in repositories configured this way, use \`${COMMAND_SNIPPETS.core.taskBrief}\` first, then follow the route oracle from \`agentplane task next-action <task-id> --explain\`: \`phase\` explains the lane, \`authoritative_checkout\` tells where to run, \`primary_blocker\` explains why not to continue, and \`next_command\` is the command to execute when unblocked. Maintain PR artifacts, ${BRANCH_PR_HOSTED_GATE_GUIDANCE}, and finalize through the task GitHub PR merge plus Task Hosted Close.`,
     "- `direct`: use `task new/plan approve/start-ready -> task verify-show -> verify -> finish` only when `workflow_mode=direct` is intentional.",
     "- Use manual close flags only when a specific policy or recovery situation requires them.",
     "",

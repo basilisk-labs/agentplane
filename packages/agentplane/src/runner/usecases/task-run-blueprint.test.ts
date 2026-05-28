@@ -6,6 +6,72 @@ import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
 import { assertRunnerBlueprintPolicyModuleBudget, renderTaskRunnerBootstrap } from "./task-run.js";
 
 describe("runner blueprint guards", () => {
+  it("starts codex task bootstraps with the /goal slash command", () => {
+    const bundle = makeRunnerContextBundle({
+      adapterId: "codex",
+      taskId: "202605271519-3ES6T7",
+      title: "Start Codex runner prompts with /goal",
+    });
+
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+
+    expect(bootstrap.split("\n")[0]).toBe(
+      "/goal Execute AgentPlane task 202605271519-3ES6T7: Start Codex runner prompts with /goal",
+    );
+    expect(bootstrap).toContain("# agentplane runner bootstrap");
+    expect(bootstrap).toContain(
+      "- bundle_path: /repo/.agentplane/tasks/202605271519-3ES6T7/runs/run-123/bundle.json",
+    );
+    expect(bootstrap).toContain(
+      "- result_path: /repo/.agentplane/tasks/202605271519-3ES6T7/runs/run-123/result.json",
+    );
+    expect(bootstrap).toContain("Keep lifecycle authority with the parent AgentPlane workflow");
+    expect(bootstrap).toContain("Assume sibling runners may be executing concurrently");
+    expect(bootstrap).toContain("report possible write conflicts in the result manifest");
+  });
+
+  it("leaves non-codex task bootstraps on the standard runner heading", () => {
+    const bundle = makeRunnerContextBundle({
+      adapterId: "custom",
+      taskId: "202605271519-3ES6T7",
+      title: "Start Codex runner prompts with /goal",
+    });
+
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+
+    expect(bootstrap.split("\n")[0]).toBe("# agentplane runner bootstrap");
+    expect(bootstrap).not.toContain("/goal");
+  });
+
+  it("renders route oracle fields into the runner bootstrap", () => {
+    const bundle = makeRunnerContextBundle();
+    bundle.route_decision = {
+      oracle: {
+        phase: "worktree_needed",
+        authoritativeCheckout: "base_checkout",
+        blocker: {
+          code: "missing_pr_branch",
+          summary: "branch_pr task has no recorded PR branch",
+        },
+        nextCommand: "agentplane work start 202603231410-ABC123 --agent CODER --worktree",
+      },
+      nextAction: {
+        code: "start_or_recover_worktree",
+        command: "agentplane work start 202603231410-ABC123 --agent CODER --worktree",
+      },
+      workspace: { checkoutRole: "base" },
+      approval: { effectiveMutationApprovalRequired: false },
+    };
+
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+
+    expect(bootstrap).toContain("- route_phase: worktree_needed");
+    expect(bootstrap).toContain("- route_authoritative_checkout: base_checkout");
+    expect(bootstrap).toContain("- route_primary_blocker: missing_pr_branch");
+    expect(bootstrap).toContain("Route oracle contract: follow the rendered route_next_command");
+    expect(bootstrap).toContain("route_decision.oracle.nextCommand");
+  });
+
   it("rejects bundle policy modules that exceed the resolved blueprint budget", () => {
     const bundle = makeRunnerContextBundle();
     bundle.blueprint = {

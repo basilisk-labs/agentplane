@@ -26,6 +26,10 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task next-action](#task-next-action)
   - [task plan approve](#task-plan-approve)
   - [task plan set](#task-plan-set)
+  - [task run](#task-run)
+  - [task run inspect](#task-run-inspect)
+  - [task run logs](#task-run-logs)
+  - [task run status](#task-run-status)
   - [task search](#task-search)
   - [task show](#task-show)
   - [task start-ready](#task-start-ready)
@@ -44,6 +48,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - PR
   - [integrate](#integrate)
   - [integrate queue claim](#integrate-queue-claim)
+  - [integrate queue doctor](#integrate-queue-doctor)
   - [integrate queue enqueue](#integrate-queue-enqueue)
   - [integrate queue list](#integrate-queue-list)
   - [integrate queue release](#integrate-queue-release)
@@ -259,6 +264,7 @@ Options:
 - `--mode <quick|full>`: Preflight depth. quick skips backend task-list probe; full includes backend readiness. (choices=quick|full, default=quick)
 - `--full`: Shortcut for --mode full. (default=false)
 - `--json`: Emit machine-readable JSON report. (default=false)
+- `--role <ROLE>`: Optional active role to include in next-command guidance.
 
 Examples:
 
@@ -768,6 +774,112 @@ agentplane task plan set 202602030608-F1Q8AB --file plan.md
 ```
 
 - Write plan from a file.
+
+### task run
+
+Run an AgentPlane task through the configured runner adapter.
+
+Usage:
+
+```text
+agentplane task run <task-id> [options]
+```
+
+Options:
+
+- `--dry-run`: Prepare runner artifacts and invocation without executing the adapter. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+Notes:
+
+- The task must already be DOING; use \`agentplane task start-ready ...\` first.
+- With the default Codex adapter, the runner prompt starts with \`/goal ...\` and then includes the AgentPlane bundle contract.
+
+Examples:
+
+```sh
+agentplane task run 202602030608-F1Q8AB
+```
+
+- Execute the task with the configured runner adapter.
+
+```sh
+agentplane task run 202602030608-F1Q8AB --dry-run --json
+```
+
+- Inspect the prepared runner invocation and artifact paths without starting the agent.
+
+### task run inspect
+
+Inspect task runner artifacts, state, and recent events.
+
+Usage:
+
+```text
+agentplane task run inspect <task-id> [options]
+```
+
+Options:
+
+- `--run-id <run-id>`: Inspect a specific runner run id.
+- `--json`: Emit JSON. (default=false)
+- `--events <count>`: Number of recent runner events to show. (default=10)
+
+Examples:
+
+```sh
+agentplane task run inspect 202602030608-F1Q8AB
+```
+
+- Inspect artifact paths and recent runner events.
+
+### task run logs
+
+Print task runner events, trace, or stderr logs.
+
+Usage:
+
+```text
+agentplane task run logs <task-id> [options]
+```
+
+Options:
+
+- `--run-id <run-id>`: Inspect a specific runner run id.
+- `--stream <events|trace|stderr>`: Runner log stream to print. (choices=events|trace|stderr, default=trace)
+- `-f, --follow`: Follow log output until the run exits. (default=false)
+- `--tail <lines>`: Number of trailing lines to print before following. (default=80)
+
+Examples:
+
+```sh
+agentplane task run logs 202602030608-F1Q8AB --stream events --follow
+```
+
+- Watch runner lifecycle events while a task run is active.
+
+### task run status
+
+Show the latest or selected task runner run status.
+
+Usage:
+
+```text
+agentplane task run status <task-id> [options]
+```
+
+Options:
+
+- `--run-id <run-id>`: Inspect a specific runner run id.
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane task run status 202602030608-F1Q8AB --json
+```
+
+- Inspect the latest runner state for a task.
 
 ### task search
 
@@ -1304,6 +1416,22 @@ Options:
 - `--lease-ms <ms>`: Lease duration.
 - `--json`: Emit JSON. (default=false)
 
+### integrate queue doctor
+
+Diagnose and optionally repair stale branch_pr integration queue state.
+
+Usage:
+
+```text
+agentplane integrate queue doctor [options]
+```
+
+Options:
+
+- `--fix`: Apply safe queue repairs. (default=false)
+- `--dry-run`: Report repairs without writing queue state. (default=false)
+- `--json`: Emit JSON. (default=false)
+
 ### integrate queue enqueue
 
 Add or refresh a verified task branch in the integration queue.
@@ -1370,6 +1498,11 @@ Options:
 - `--quiet`: Reduce output noise. (default=false)
 - `--drain`: Keep claiming queued entries after successful integrations until the lane blocks or empties. (default=false)
 - `--wait`: Poll a busy merge lane until it opens or --timeout-ms elapses. (default=false)
+- `--hosted`: Wait for hosted GitHub PR checks before running integrate. (default=false)
+- `--stable-polls <count>`: Consecutive hosted-ready polls required when --hosted is enabled.
+- `--hosted-poll-interval-ms <ms>`: Delay between hosted-check polls when --hosted is enabled.
+- `--hosted-timeout-ms <ms>`: Maximum hosted-check wait time when --hosted is enabled.
+- `--required-check <name>`: Repeatable hosted check name that must appear in the PR rollup. (repeatable)
 
 ### pr check
 
@@ -1384,6 +1517,11 @@ agentplane pr check <task-id> [options]
 Options:
 
 - `--branch <name>`: Task branch to validate when local artifacts are stale or ambiguous.
+- `--hosted`: Require hosted GitHub PR checks to be complete and stable. (default=false)
+- `--stable-polls <count>`: Consecutive hosted-ready polls required when --hosted is enabled.
+- `--poll-interval-ms <ms>`: Delay between hosted-check polls when --hosted is enabled.
+- `--timeout-ms <ms>`: Maximum hosted-check wait time when --hosted is enabled.
+- `--required-check <name>`: Repeatable hosted check name that must appear in the PR rollup. (repeatable)
 
 Examples:
 

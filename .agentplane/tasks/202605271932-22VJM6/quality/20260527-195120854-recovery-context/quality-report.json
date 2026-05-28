@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202605271932-22VJM6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-27T19:51:20.854Z",
+  "verdict": "pass",
+  "summary": "Agent-facing prompts now explicitly treat task next-action --explain as the route oracle and name phase, authoritative_checkout, primary_blocker, and next_command across role notes, agent templates, bootstrap docs, and runner bootstrap.",
+  "evaluated_sha": "c49b68363a061dc6cce2d8ccadf5417ceb6ff509",
+  "blueprint_digest": "60a9768b36ca75d14ae76c56c76ed86d72243cba7d5a86b232f5f1710d161933",
+  "findings": [
+    "Focused prompt tests, runner bootstrap tests, agent template sync, docs freshness checks, typecheck, format, hotspot check, policy routing, doctor, and hosted PR checks all passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605271932-22VJM6/README.md",
+    "Local: bun test packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts; bun run agents:check; bun run docs:bootstrap:check; bun run docs:cli:check; bun run typecheck; bun run format:check; bun run hotspots:check; node .agentplane/policy/check-routing.mjs; ap doctor. Hosted: PR #4176 CodeQL, docs, PR verification, test-windows, verify-cli-critical, verify-contract, verify-unit, verify-workflow, verify-static, verify-coverage passed."
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Adding evaluator metadata will trigger one more hosted PR run before integration."
+  ]
+}

@@ -1,0 +1,7 @@
+ .../src/cli/run-cli.core.route-decision.test.ts    |  31 ++++-
+ .../src/commands/shared/route-decision.ts          |  19 ++-
+ .../agentplane/src/commands/shared/route-oracle.ts | 150 +++++++++++++++++++++
+ .../agentplane/src/commands/task/brief.command.ts  |   6 +
+ .../src/commands/task/next-action.command.ts       |  11 +-
+ .../agentplane/src/commands/task/status.command.ts |   4 +-
+ 6 files changed, 213 insertions(+), 8 deletions(-)

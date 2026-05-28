@@ -54,6 +54,7 @@ import { workResumeSpec } from "../../../commands/branch/work-resume.command.js"
 import { integrateSpec } from "../../../commands/integrate.spec.js";
 import {
   integrateQueueClaimSpec,
+  integrateQueueDoctorSpec,
   integrateQueueEnqueueSpec,
   integrateQueueListSpec,
   integrateQueueReleaseSpec,
@@ -175,6 +176,7 @@ import {
   loadIntegrateQueueEnqueueSpec,
   loadIntegrateQueueListSpec,
   loadIntegrateQueueClaimSpec,
+  loadIntegrateQueueDoctorSpec,
   loadIntegrateQueueReleaseSpec,
   loadIntegrateQueueRunNextSpec,
   loadAcrSpec,
@@ -339,6 +341,7 @@ export const PROJECT_COMMANDS = [
   declareCommand(integrateQueueSpec, { load: loadIntegrateQueueSpec, needs: "none" }),
   declareCommand(integrateQueueEnqueueSpec, { load: loadIntegrateQueueEnqueueSpec }),
   declareCommand(integrateQueueListSpec, { load: loadIntegrateQueueListSpec }),
+  declareCommand(integrateQueueDoctorSpec, { load: loadIntegrateQueueDoctorSpec }),
   declareCommand(integrateQueueClaimSpec, { load: loadIntegrateQueueClaimSpec }),
   declareCommand(integrateQueueReleaseSpec, { load: loadIntegrateQueueReleaseSpec }),
   declareCommand(integrateQueueRunNextSpec, { load: loadIntegrateQueueRunNextSpec }),

@@ -52,7 +52,7 @@ describe("runCli docs cli", () => {
       expect(text).toContain("# CLI Reference (Generated)");
       expect(text).toContain("## Task");
       expect(text).toContain("### task new");
-      expect(text).not.toContain("### task run");
+      expect(text).toContain("### task run");
       expect(text).toContain("### cleanup merged");
       expect(text).not.toContain("### cleanup\n");
       expect(text).not.toContain("### task\n");

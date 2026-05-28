@@ -17,7 +17,7 @@ Use AgentPlane through its CLI instead of editing `.agentplane/` state directly.
 
 1. If the repository is not initialized, run `ap init` or `agentplane init`.
 2. Run `ap quickstart`.
-3. Inspect `AGENTS.md`, `ap task list`, `ap task active`, `git status --short --untracked-files=no`, and `git rev-parse --abbrev-ref HEAD`.
+3. Inspect `AGENTS.md`, `ap task list`, `ap task active`, `git status --short --untracked-files=no`, `git status --short`, and `git rev-parse --abbrev-ref HEAD`.
 4. Use `ap task brief <task-id>` before owner-scoped execution; add `--remote` only when hosted PR/check/review state is needed.
 5. Use `ap role ORCHESTRATOR` while planning and approvals are active.
 6. Switch to `ap role <ROLE>` before owner-scoped execution or verification.

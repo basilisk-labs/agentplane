@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-27T20:18:19Z",
+  "base": "main",
+  "branch": "task/202605271841-QKDHZY/runner-observability-foundation",
+  "created_at": "2026-05-27T18:42:53.887Z",
+  "diffstat_sha256": "sha256:73f5715c7cfedb25d95e41cdabae0ef5f4fdee2438b8d83a0ac05b57fb29ffa4",
+  "last_verified_at": "2026-05-27T19:27:16.970Z",
+  "last_verified_diffstat_sha256": "sha256:73f5715c7cfedb25d95e41cdabae0ef5f4fdee2438b8d83a0ac05b57fb29ffa4",
+  "merge_commit": "37d70d9c6bb3c1363221885edd63573d8cd9f37f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-27T20:18:19Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605271841-QKDHZY",
+  "updated_at": "2026-05-27T20:18:19Z",
+  "verify": {
+    "status": "pass"
+  }
+}

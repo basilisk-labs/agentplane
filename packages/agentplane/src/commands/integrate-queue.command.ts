@@ -25,8 +25,10 @@ import {
   writeIntegrationQueue,
   type IntegrationQueueEntry,
 } from "./pr/integrate/queue-state.js";
+import { applyIntegrationQueueDoctorRepairs } from "./integrate-queue-doctor.js";
 import type {
   IntegrateQueueClaimParsed,
+  IntegrateQueueDoctorParsed,
   IntegrateQueueEnqueueParsed,
   IntegrateQueueListParsed,
   IntegrateQueueReleaseParsed,
@@ -34,12 +36,14 @@ import type {
 } from "./integrate-queue.spec.js";
 import { integrateQueueSpec } from "./integrate-queue.spec.js";
 import { decideIntegrationQueueRecovery } from "./integrate-queue-recovery.js";
+import { waitForHostedChecks } from "./pr/hosted-checks.js";
 
 const DEFAULT_QUEUE_POLL_INTERVAL_MS = 30_000;
 const DEFAULT_QUEUE_WAIT_TIMEOUT_MS = 10 * 60_000;
 
 export {
   integrateQueueClaimSpec,
+  integrateQueueDoctorSpec,
   integrateQueueEnqueueSpec,
   integrateQueueListSpec,
   integrateQueueReleaseSpec,
@@ -307,6 +311,83 @@ export function makeRunIntegrateQueueListHandler(getCtx: (cmd: string) => Promis
   };
 }
 
+export function makeRunIntegrateQueueDoctorHandler(
+  getCtx: (cmd: string) => Promise<CommandContext>,
+) {
+  return async (ctx: CommandCtx, p: IntegrateQueueDoctorParsed): Promise<number> => {
+    const commandCtx = await getCtx("integrate queue doctor");
+    const gitRoot = commandCtx.resolvedProject.gitRoot;
+    const before = await readIntegrationQueue(gitRoot);
+    const findings: { task_id: string; status: string; reason: string; repair: string | null }[] =
+      [];
+    let nextQueue = before;
+
+    for (const entry of before.entries) {
+      const loaded = await loadBackendTask({
+        ctx: commandCtx,
+        cwd: ctx.cwd,
+        rootOverride: ctx.rootOverride ?? null,
+        taskId: entry.task_id,
+      }).catch(() => null);
+      if (loaded?.task.status === "DONE" && entry.status !== "done") {
+        const reason = "task is already DONE; queue entry is terminal stale";
+        findings.push({
+          task_id: entry.task_id,
+          status: entry.status,
+          reason,
+          repair: "mark_done",
+        });
+        nextQueue = markQueueEntry(nextQueue, entry.task_id, "done", reason);
+        continue;
+      }
+      if (entry.status !== "handoff") continue;
+      const report = await resolvePrFlowStatus({
+        ctx: commandCtx,
+        cwd: ctx.cwd,
+        rootOverride: ctx.rootOverride ?? undefined,
+        taskId: entry.task_id,
+      }).catch(() => null);
+      if (!report) continue;
+      const decision = decideIntegrationQueueRecovery({ entry, report });
+      if (decision.action !== "mark") continue;
+      findings.push({
+        task_id: entry.task_id,
+        status: entry.status,
+        reason: decision.reason,
+        repair: `mark_${decision.status}`,
+      });
+      nextQueue = markQueueEntry(nextQueue, entry.task_id, decision.status, decision.reason);
+    }
+
+    if (p.fix && !p.dryRun) {
+      await withIntegrationQueueMutex(gitRoot, async () => {
+        await writeIntegrationQueue(
+          gitRoot,
+          applyIntegrationQueueDoctorRepairs(await readIntegrationQueue(gitRoot), findings),
+        );
+      });
+    }
+
+    const output = createCliEmitter();
+    if (p.json) {
+      output.json({ findings, applied: p.fix && !p.dryRun });
+      return 0;
+    }
+    if (findings.length === 0) {
+      output.success("integration queue doctor", undefined, "no stale entries detected");
+      return 0;
+    }
+    output.lines(
+      findings.map((finding) => {
+        const suffix =
+          p.fix && !p.dryRun ? "applied" : p.fix && p.dryRun ? "would_apply" : "not_applied";
+        return `${finding.task_id} ${finding.status}: ${finding.reason} repair=${finding.repair ?? "none"} ${suffix}`;
+      }),
+    );
+    return 0;
+  };
+}
+
 export function makeRunIntegrateQueueClaimHandler(
   getCtx: (cmd: string) => Promise<CommandContext>,
 ) {
@@ -450,6 +531,17 @@ export function makeRunIntegrateQueueRunNextHandler(
       ranEntry = true;
       const claimedEntry = claimed.entry;
       try {
+        if (p.hosted) {
+          await waitForHostedChecks({
+            gitRoot,
+            prNumber: claimedEntry.pr_number,
+            stablePolls: p.stablePolls ?? 2,
+            pollIntervalMs: p.hostedPollIntervalMs,
+            timeoutMs: p.hostedTimeoutMs,
+            requiredChecks: p.requiredChecks,
+            quiet: p.quiet,
+          });
+        }
         lastResult = await cmdIntegrate({
           ctx: commandCtx,
           cwd: ctx.cwd,

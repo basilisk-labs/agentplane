@@ -80,8 +80,8 @@ describe("runCli task handoff and recovery", () => {
       };
       expect(payload.task_id).toBe(taskId);
       expect(payload.to_role).toBe("CODER");
-      expect(payload.runner?.next_action).toBe("none");
-      expect(payload.runner?.next_command).toBeNull();
+      expect(payload.runner?.next_action).toBe("run");
+      expect(payload.runner?.next_command).toBe(`agentplane task run ${taskId}`);
       expect(io.stdout).toBe(`${JSON.stringify(payload, null, 2)}\n`);
     } finally {
       io.restore();

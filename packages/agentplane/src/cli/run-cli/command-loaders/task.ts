@@ -73,6 +73,20 @@ export const loadTaskBriefSpec = (deps: RunDeps) =>
   import("../../../commands/task/brief.command.js").then((m) =>
     m.makeRunTaskBriefHandler(deps.getCtx),
   );
+export const loadTaskRunSpec = (deps: RunDeps) =>
+  import("../../../commands/task/run.command.js").then((m) => m.makeRunTaskRunHandler(deps.getCtx));
+export const loadTaskRunStatusSpec = (deps: RunDeps) =>
+  import("../../../commands/task/run.command.js").then((m) =>
+    m.makeRunTaskRunStatusHandler(deps.getCtx),
+  );
+export const loadTaskRunInspectSpec = (deps: RunDeps) =>
+  import("../../../commands/task/run.command.js").then((m) =>
+    m.makeRunTaskRunInspectHandler(deps.getCtx),
+  );
+export const loadTaskRunLogsSpec = (deps: RunDeps) =>
+  import("../../../commands/task/run.command.js").then((m) =>
+    m.makeRunTaskRunLogsHandler(deps.getCtx),
+  );
 export const loadTaskCompleteSpec = (deps: RunDeps) =>
   import("../../../commands/task/complete.command.js").then((m) =>
     m.makeRunTaskCompleteHandler(deps.getCtx),

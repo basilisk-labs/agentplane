@@ -1,0 +1,4 @@
+ ...run-cli.core.guard.commit-wrapper.close.test.ts |  5 +-
+ .../src/commands/guard/impl/close-message.test.ts  | 40 ++++++++----
+ .../src/commands/guard/impl/close-message.ts       | 71 ++++++++++++++++++----
+ 3 files changed, 89 insertions(+), 27 deletions(-)
