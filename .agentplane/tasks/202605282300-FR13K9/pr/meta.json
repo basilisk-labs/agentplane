@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-28T23:11:00Z",
   "base": "main",
   "branch": "task/202605282300-FR13K9/insights-report-decomposition",
   "created_at": "2026-05-28T23:00:26.850Z",
   "diffstat_sha256": "sha256:d26c202b0797756e5f2986348e721676404f1076cf1c46324e9ff47347e04073",
   "last_verified_at": "2026-05-28T23:05:30.755Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "5828786d4a6a11f88cfe9ccd39022732dddd37a9",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-28T23:11:00Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605282300-FR13K9",
-  "updated_at": "2026-05-28T23:00:26.850Z",
+  "updated_at": "2026-05-28T23:11:00Z",
   "verify": {
     "status": "pass"
   }

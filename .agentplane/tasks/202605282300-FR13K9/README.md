@@ -1,10 +1,11 @@
 ---
 id: "202605282300-FR13K9"
 title: "Insights command report decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4230."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -48,11 +49,16 @@ quality_review:
     - "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300"
   findings:
     - "insights.command.ts is now the CLI wiring layer at 178 lines; report model/build/render moved to insights-report.ts and issue title/body rendering moved to insights-issue-render.ts. Hotspot warning count decreased from 37 to 36."
-commit: null
+commit:
+  hash: "5828786d4a6a11f88cfe9ccd39022732dddd37a9"
+  message: "✅ FR13K9 insights: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: extract insights report and issue rendering helpers while preserving CLI behavior and reducing hotspot size."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4230 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -67,9 +73,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Insights command report decomposition completed. Verified with insights report/issue/error-map tests, typecheck, arch deps, lint, format, and hotspot threshold check (runtime warnings 37 -> 36)."
+  -
+    type: "status"
+    at: "2026-05-28T23:11:51.856Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4230 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T23:05:30.780Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T23:11:51.862Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/insights/insights.command.ts by extracting insights report model/build/render helpers and issue body rendering helpers into focused modules while preserving CLI behavior and reducing hotspot warning count."
 sections:
   Summary: |-
