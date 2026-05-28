@@ -1,12 +1,18 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-28T18:28:37Z",
   "base": "main",
   "branch": "task/202605281713-EW6N63/optimize-prompt-policy-surfaces",
   "created_at": "2026-05-28T17:30:45.669Z",
   "diffstat_sha256": "sha256:84674fb4c6916606261bbb9f8a220411647abd83f0bd8148d6fc4d1434aa99d4",
   "last_verified_at": null,
+  "merge_commit": "c8f07a1712d4eed3ebfd8f47ecc06a85bfab05c9",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-28T18:28:37Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605281713-EW6N63",
-  "updated_at": "2026-05-28T17:30:45.669Z",
+  "updated_at": "2026-05-28T18:28:37Z",
   "verify": {
     "status": "skipped"
   }

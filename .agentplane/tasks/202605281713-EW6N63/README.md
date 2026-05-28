@@ -1,10 +1,11 @@
 ---
 id: "202605281713-EW6N63"
 title: "Optimize prompt policy surfaces"
-status: "DOING"
+result_summary: "Merged via PR #4198."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "ap doctor"
   findings:
     - "Added route execution packet, path hints, CLI/runner rendering, and regression coverage for tools without cwd/workdir."
-commit: null
+commit:
+  hash: "c8f07a1712d4eed3ebfd8f47ecc06a85bfab05c9"
+  message: "Merge pull request #4198 from basilisk-labs/task/202605281713-EW6N63/optimize-prompt-policy-surfaces"
 comments:
   -
     author: "DOCS"
     body: "Start: optimize prompt and policy surfaces using GPT-5.5 prompt-guidance criteria while preserving strict route and approval behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4198 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -72,9 +78,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts -> pass, 23 tests. Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass, policy routing OK. Command: bun run framework:dev:bootstrap -> pass; repo-local runtime 0.6.11 active. Command: ap task next-action 202605281713-EW6N63 --explain -> pass; prints authoritative_checkout_path, mutation_path_hint, safe_to_mutate. Command: ap doctor -> OK with 0 warnings. Command: git diff --check -> pass."
+  -
+    type: "status"
+    at: "2026-05-28T18:29:36.692Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4198 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T17:26:58.418Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-28T18:29:36.699Z"
+doc_updated_by: "INTEGRATOR"
 description: "Shorten AGENTS and policy prompt surfaces while preserving clearer agent behavior and GPT-5.5 prompt-guidance alignment."
 sections:
   Summary: |-
