@@ -1,0 +1,3 @@
+ .../evaluator/evaluator-quality-artifacts.ts       | 118 +++++++++++++++++++++
+ .../src/commands/evaluator/evaluator.command.ts    | 118 +++------------------
+ 2 files changed, 132 insertions(+), 104 deletions(-)

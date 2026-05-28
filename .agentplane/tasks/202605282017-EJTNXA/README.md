@@ -4,7 +4,7 @@ title: "Evaluator command decomposition"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,23 @@ verification:
   updated_by: "CODER"
   note: "Evaluator command decomposition verified: evaluator.command.ts reduced from 455 to 365 lines, quality artifact rendering/helpers extracted, evaluator run focused tests passed, typecheck passed, lint:core passed, format:changed passed, hotspot threshold check passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T20:21:40.187Z"
+  updated_by: "EVALUATOR"
+  note: "Evaluator command decomposed by extracting quality artifact helpers."
+  evaluated_sha: "9dd5da22fb6a910ed761563141f7164cc2b709ca"
+  blueprint_digest: "ab4abe2d89a62a67484ee6f40ff476601da6f3570e7a51e62c085636edc96e33"
+  evidence_refs:
+    - ".agentplane/tasks/202605282017-EJTNXA/README.md"
+    - ".agentplane/tasks/202605282017-EJTNXA/quality/20260528-202140187-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605282017-EJTNXA/quality/20260528-202140187-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605282017-EJTNXA/quality/20260528-202140187-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605282017-EJTNXA/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/evaluator/evaluator.command.ts"
+    - "packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts"
+  findings:
+    - "Evidence: evaluator.command.ts reduced from 455 to 365 lines; evaluator-quality-artifacts.ts owns report rendering/path helpers; focused evaluator tests, typecheck, lint:core, format:changed, and hotspot check passed."
 commit: null
 comments:
   -

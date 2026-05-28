@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202605282017-EJTNXA",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-28T20:21:40.187Z",
+  "verdict": "pass",
+  "summary": "Evaluator command decomposed by extracting quality artifact helpers.",
+  "evaluated_sha": "9dd5da22fb6a910ed761563141f7164cc2b709ca",
+  "blueprint_digest": "ab4abe2d89a62a67484ee6f40ff476601da6f3570e7a51e62c085636edc96e33",
+  "findings": [
+    "Evidence: evaluator.command.ts reduced from 455 to 365 lines; evaluator-quality-artifacts.ts owns report rendering/path helpers; focused evaluator tests, typecheck, lint:core, format:changed, and hotspot check passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605282017-EJTNXA/README.md",
+    "packages/agentplane/src/commands/evaluator/evaluator.command.ts",
+    "packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
