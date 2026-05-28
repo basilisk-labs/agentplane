@@ -2,6 +2,7 @@ import {
   getProtectedPathOverride,
   protectedPathKindForFile,
 } from "../../shared/protected-paths.js";
+import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../shared/git-path.js";
 
 import { gitError, okResult } from "../result.js";
 import type { PolicyAction, PolicyContext, PolicyResult } from "../model.js";
@@ -16,6 +17,22 @@ function renderProtectedMessage(opts: {
     return `${opts.filePath} is protected by agentplane hooks (set ${opts.overrideEnvVar}=1 to override)`;
   }
   return `Staged file is protected by default: ${opts.filePath} (use ${opts.overrideFlag} to override)`;
+}
+
+function isHookAllowedTaskArtifact(opts: {
+  filePath: string;
+  tasksPath: string;
+  workflowDir: string;
+  taskId: string | undefined;
+}): boolean {
+  if (!opts.taskId) return false;
+  const filePath = normalizeGitPathPrefix(opts.filePath);
+  const tasksPath = normalizeGitPathPrefix(opts.tasksPath);
+  if (filePath === tasksPath) return false;
+  return gitPathIsUnderPrefix(
+    filePath,
+    `${normalizeGitPathPrefix(opts.workflowDir)}/${opts.taskId}`,
+  );
 }
 
 export function protectedPathsRule(ctx: PolicyContext): PolicyResult {
@@ -40,11 +57,24 @@ export function protectedPathsRule(ctx: PolicyContext): PolicyResult {
     });
     if (!kind) continue;
 
+    if (
+      ctx.action === "hook_pre_commit" &&
+      kind === "tasks" &&
+      isHookAllowedTaskArtifact({
+        filePath,
+        tasksPath,
+        workflowDir: ctx.config.paths.workflow_dir,
+        taskId: ctx.taskId,
+      })
+    ) {
+      continue;
+    }
+
     if (kind === "tasks" && !allowTasks) {
       const override = getProtectedPathOverride(kind);
       errors.push(
         ctx.action === "hook_pre_commit"
-          ? `${tasksPath} is protected by agentplane hooks (set ${override.envVar}=1 to override)`
+          ? `${filePath} is protected by agentplane hooks (set ${override.envVar}=1 to override)`
           : `Staged file is forbidden by default: ${filePath} (use ${override.cliFlag} to override)`,
       );
       continue;

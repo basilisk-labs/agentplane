@@ -8,6 +8,14 @@ export type ProtectedPathOverride = {
   envVar: string;
 };
 
+function isSafeTaskPathSegment(taskId: string): boolean {
+  return taskId !== "." && taskId !== ".." && !taskId.includes("/") && !taskId.includes("\\");
+}
+
+function taskWorkflowPrefixIsUnderWorkflowDir(workflowDir: string, taskPrefix: string): boolean {
+  return taskPrefix === workflowDir || gitPathIsUnderPrefix(taskPrefix, workflowDir);
+}
+
 function taskWorkflowPrefix(
   workflowDir: string | undefined,
   taskId: string | undefined,
@@ -15,7 +23,10 @@ function taskWorkflowPrefix(
   const dir = normalizeGitPathPrefix(workflowDir ?? "");
   const id = (taskId ?? "").trim();
   if (!dir || !id) return null;
-  return normalizeGitPathPrefix(`${dir}/${id}`);
+  if (!isSafeTaskPathSegment(id)) return null;
+  const prefix = normalizeGitPathPrefix(`${dir}/${id}`);
+  if (!taskWorkflowPrefixIsUnderWorkflowDir(dir, prefix)) return null;
+  return prefix;
 }
 
 export function taskArtifactPrefixes(opts: {

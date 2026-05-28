@@ -298,7 +298,7 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
       "integrate",
       "finish",
     ],
-    quickstartCommandOrder: ["branch_pr", "task worktree", "local PR artifacts", "INTEGRATOR"],
+    quickstartCommandOrder: ["branch_pr", "task worktree", "PR artifacts", "INTEGRATOR"],
   },
 } as const satisfies Record<WorkflowMode, WorkflowLifecycleContract>;
 

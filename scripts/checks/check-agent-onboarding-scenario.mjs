@@ -66,7 +66,7 @@ const onboardingScenarios = [
       ["bootstrap", "## 3. Direct happy path"],
       [
         "bootstrap",
-        "Treat `task verify-show` as the verification contract right before `verify` and `finish`.",
+        "Treat `task verify-show` as the verification contract before `verify` and `finish`",
       ],
       ["bootstrap", "## 4. Verification and incident reuse"],
       ["bootstrap", "agentplane incidents advise <task-id>"],
