@@ -4,7 +4,7 @@ title: "Guard commit implementation decomposition"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-28T20:37:33.408Z"
+  updated_at: "2026-05-28T20:50:14.667Z"
   updated_by: "CODER"
-  note: "Guard commit decomposition verified locally."
+  note: "CI failure reproduced and fixed locally."
   attempts: 0
 quality_review:
   state: "pass"
@@ -61,8 +61,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Guard commit decomposition verified locally."
+  -
+    type: "verify"
+    at: "2026-05-28T20:50:14.667Z"
+    author: "CODER"
+    state: "ok"
+    note: "CI failure reproduced and fixed locally."
 doc_version: 3
-doc_updated_at: "2026-05-28T20:37:33.434Z"
+doc_updated_at: "2026-05-28T20:50:14.699Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/commands/guard/impl/commit.ts into smaller focused modules without changing guard behavior. Preserve existing command contracts, keep public exports stable, and verify with targeted guard tests plus typecheck/lint/hotspot checks."
 sections:
@@ -106,6 +112,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605282032-G4EWJG
 
+    ### 2026-05-28T20:50:14.667Z — VERIFY — ok
+
+    By: CODER
+
+    Note: CI failure reproduced and fixed locally.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T20:37:33.434Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605282032-G4EWJG-guard-commit-decomposition/.agentplane/tasks/202605282032-G4EWJG/blueprint/resolved-snapshot.json
+    - old_digest: 045083bdc837f95d4444d995f9b17645221b17711f80a9a552e7cc26361a0746
+    - current_digest: 045083bdc837f95d4444d995f9b17645221b17711f80a9a552e7cc26361a0746
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605282032-G4EWJG
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -114,6 +139,10 @@ sections:
     - Observation: Command: bunx vitest run packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --config vitest.workspace.ts; Result: pass; Evidence: 5 files, 73 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b completed. Command: bun run lint:core; Result: pass; Evidence: eslint completed. Command: bun run format:changed; Result: pass; Evidence: all matched files use Prettier. Command: node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; Result: pass; Evidence: runtime hotspot warnings reduced 47 to 46.
       Impact: commit.ts now delegates close-tail commit flow and lock-aware git commit execution to focused modules; guard behavior is unchanged.
       Resolution: Proceed to PR and hosted checks.
+
+    - Observation: Command: bun run ci:local:fast; Result: pass; Evidence: full fast route completed, 338 test files passed, 2024 tests passed, critical-cli chunks 5/5 passed. Command: bunx vitest run packages/agentplane/src/shared/git-index-lock-guard.test.ts --config vitest.workspace.ts; Result: pass; Evidence: 1 file, 1 test passed. Command: bun run docs:onboarding:check && bun run docs:bootstrap:check; Result: pass; Evidence: onboarding and bootstrap docs aligned.
+      Impact: Hosted verify-routed failure was caused by onboarding text drift and lock-ownership allowlist drift after extracting commit-runner.ts.
+      Resolution: Updated bootstrap source/generated doc and moved index.lock ownership allowlist from commit.ts to commit-runner.ts.
 id_source: "generated"
 ---
 ## Summary
@@ -165,6 +194,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605282032-G4EWJG
 
+### 2026-05-28T20:50:14.667Z — VERIFY — ok
+
+By: CODER
+
+Note: CI failure reproduced and fixed locally.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T20:37:33.434Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605282032-G4EWJG-guard-commit-decomposition/.agentplane/tasks/202605282032-G4EWJG/blueprint/resolved-snapshot.json
+- old_digest: 045083bdc837f95d4444d995f9b17645221b17711f80a9a552e7cc26361a0746
+- current_digest: 045083bdc837f95d4444d995f9b17645221b17711f80a9a552e7cc26361a0746
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605282032-G4EWJG
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -177,3 +225,7 @@ BlueprintSnapshotRef:
 - Observation: Command: bunx vitest run packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --config vitest.workspace.ts; Result: pass; Evidence: 5 files, 73 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b completed. Command: bun run lint:core; Result: pass; Evidence: eslint completed. Command: bun run format:changed; Result: pass; Evidence: all matched files use Prettier. Command: node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; Result: pass; Evidence: runtime hotspot warnings reduced 47 to 46.
   Impact: commit.ts now delegates close-tail commit flow and lock-aware git commit execution to focused modules; guard behavior is unchanged.
   Resolution: Proceed to PR and hosted checks.
+
+- Observation: Command: bun run ci:local:fast; Result: pass; Evidence: full fast route completed, 338 test files passed, 2024 tests passed, critical-cli chunks 5/5 passed. Command: bunx vitest run packages/agentplane/src/shared/git-index-lock-guard.test.ts --config vitest.workspace.ts; Result: pass; Evidence: 1 file, 1 test passed. Command: bun run docs:onboarding:check && bun run docs:bootstrap:check; Result: pass; Evidence: onboarding and bootstrap docs aligned.
+  Impact: Hosted verify-routed failure was caused by onboarding text drift and lock-ownership allowlist drift after extracting commit-runner.ts.
+  Resolution: Updated bootstrap source/generated doc and moved index.lock ownership allowlist from commit.ts to commit-runner.ts.
