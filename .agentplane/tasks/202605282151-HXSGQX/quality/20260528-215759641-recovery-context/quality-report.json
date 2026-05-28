@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202605282151-HXSGQX",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-28T21:57:59.641Z",
+  "verdict": "pass",
+  "summary": "Task brief command decomposition preserves behavior and reduces hotspot pressure.",
+  "evaluated_sha": "cffbded2866e0b3c9b6cbb06f85653bd2d3af9b7",
+  "blueprint_digest": "7e9060979838e9b97c2321bb399a9d48062a0b705ac3bcbfee59fa0afa5558f8",
+  "findings": [
+    "brief.command.ts now contains only CLI spec/handler wiring; brief-model.ts owns JSON contract assembly; brief-render.ts owns text output. Focused route-decision tests, arch:deps, typecheck, lint:core, format:changed, and hotspot report passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605282151-HXSGQX/README.md",
+    "packages/agentplane/src/commands/task/brief.command.ts",
+    "packages/agentplane/src/commands/task/brief-model.ts",
+    "packages/agentplane/src/commands/task/brief-render.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "No full test suite run; coverage is focused on task brief/route-decision behavior and shared gates."
+  ]
+}
