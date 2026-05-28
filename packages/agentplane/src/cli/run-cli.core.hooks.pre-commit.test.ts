@@ -328,6 +328,32 @@ describe("runCli hooks pre-commit guards", () => {
     }
   });
 
+  it("hooks run pre-commit rejects traversal task env for protected policy paths", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await mkdir(`${root}/.agentplane/policy`, { recursive: true });
+    await writeFile(`${root}/.agentplane/policy/foo.md`, "# policy\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", ".agentplane/policy/foo.md"], { cwd: root });
+
+    const prevTaskId = process.env.AGENTPLANE_TASK_ID;
+    const prevAllowPolicy = process.env.AGENTPLANE_ALLOW_POLICY;
+    process.env.AGENTPLANE_TASK_ID = "../policy";
+    process.env.AGENTPLANE_ALLOW_POLICY = "0";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain(".agentplane/policy/foo.md is protected by agentplane hooks");
+      expect(io.stderr).toContain("AGENTPLANE_ALLOW_POLICY=1");
+    } finally {
+      io.restore();
+      restoreEnv("AGENTPLANE_TASK_ID", prevTaskId);
+      restoreEnv("AGENTPLANE_ALLOW_POLICY", prevAllowPolicy);
+    }
+  });
+
   it("hooks run pre-commit allows AGENTS.md with env override", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
