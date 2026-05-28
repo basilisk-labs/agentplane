@@ -137,7 +137,7 @@ function buildCompactPromptDiagnostics(promptGraph: PromptGraphInspection) {
     winning_fragments: promptGraph.modules
       .filter((module) => module.fragmentId)
       .map((module) => ({
-        fragment_id: module.fragmentId as string,
+        fragment_id: module.fragmentId!,
         address: module.address,
         owner: module.ownerLabel,
         source_kind: module.sourceKind,

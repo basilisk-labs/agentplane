@@ -100,6 +100,20 @@ export function renderTaskRunnerBootstrap(
           `- effective_mutation_approval: ${String(
             routeDecision.approval?.effectiveMutationApprovalRequired ?? true,
           )}`,
+          `- route_action_kind: ${routeDecision.executionPacket?.actionKind ?? "unknown"}`,
+          `- route_safe_to_mutate: ${String(routeDecision.executionPacket?.safeToMutate ?? false)}`,
+          `- route_recommended_role: ${
+            routeDecision.executionPacket?.recommendedRole ?? "unknown"
+          }`,
+          `- route_requires_provider_action: ${String(
+            routeDecision.executionPacket?.requiresProviderAction ?? false,
+          )}`,
+          `- route_evidence_missing: ${
+            routeDecision.executionPacket?.evidenceMissing?.join(", ") ?? "none"
+          }`,
+          `- route_verification_candidate: ${
+            routeDecision.executionPacket?.verificationCandidate ?? "none"
+          }`,
         ]
       : []),
     "",
