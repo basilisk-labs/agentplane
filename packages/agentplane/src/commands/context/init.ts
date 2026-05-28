@@ -23,15 +23,13 @@ import {
   shouldRewriteExistingContextFile,
 } from "./init-profile-switch.js";
 import { buildContextManifestYaml } from "./init-manifest.js";
+import {
+  ensureRootGatewayReferencesContextPolicy,
+  renderContextPolicyMarkdown,
+} from "./init-policy-gateway.js";
 import { starterWikiPageFiles, wikiFrontmatter } from "./init-wiki.js";
 import { buildWikiPolicyMarkdown } from "./init-wiki-policy.js";
 import { cmdContextReindex } from "./reindex.js";
-import { renderMarkdownPromptTemplate } from "../../agents/agents-template.js";
-import { resolveAgentplaneAssetPath } from "../../shared/package-paths.js";
-import {
-  resolvePolicyGatewayForRepo,
-  withContextPolicyGatewayText,
-} from "../../shared/policy-gateway.js";
 
 const execFileAsync = promisify(execFile);
 const CONTEXT_BOOTSTRAP_TASK_ID = "202601010101-CTX1NT";
@@ -412,26 +410,6 @@ async function createContextWorkspace(
   }
 
   return { created, rewritten, skipped };
-}
-
-async function renderContextPolicyMarkdown(): Promise<string> {
-  const source = await readFile(resolveAgentplaneAssetPath("policy/context.must.md"), "utf8");
-  return renderMarkdownPromptTemplate(source, {
-    source_ref: "packages/agentplane/assets/policy/context.must.md",
-  }).contents;
-}
-
-async function ensureRootGatewayReferencesContextPolicy(
-  root: string,
-  report: Pick<InitReport, "rewritten">,
-): Promise<void> {
-  const gateway = await resolvePolicyGatewayForRepo({ gitRoot: root, fallbackFlavor: "codex" });
-  const current = await readExisting(gateway.absPath);
-  if (current === null) return;
-  const next = withContextPolicyGatewayText(current);
-  if (next === current) return;
-  await writeTextIfChanged(gateway.absPath, next);
-  report.rewritten.push(gateway.fileName);
 }
 
 async function ensureContextGitignore(root: string, parsed: ContextInitParsed): Promise<boolean> {
