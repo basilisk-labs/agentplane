@@ -1,0 +1,11 @@
+ packages/agentplane/assets/AGENTS.md               |   4 +-
+ .../agentplane/src/agents/agents-template.test.ts  |   6 +-
+ .../src/cli/run-cli.core.upgrade.test.ts           | 180 +++++++++++++++------
+ packages/agentplane/src/commands/context/init.ts   |  33 ++++
+ packages/agentplane/src/commands/upgrade/plan.ts   |  36 ++++-
+ .../src/runtime/prompt-modules/registry.test.ts    |  18 +++
+ .../src/runtime/prompt-modules/registry.ts         |   1 +
+ .../src/shared/builtin-assets.generated.ts         |  24 +--
+ packages/agentplane/src/shared/policy-gateway.ts   |  24 +++
+ packages/core/src/process/run-process.ts           |  81 +++++++---
+ 10 files changed, 324 insertions(+), 83 deletions(-)

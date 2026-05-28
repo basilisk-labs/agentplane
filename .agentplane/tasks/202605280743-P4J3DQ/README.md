@@ -4,7 +4,7 @@ title: "Gate context policy during upgrade"
 status: "DOING"
 priority: "med"
 owner: "UPGRADER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-28T07:44:38.448Z"
+  updated_by: "UPGRADER"
+  note: "Verified upgrade gating for context policy: typecheck passed; full upgrade suite passed; combined targeted vitest passed; policy routing and builtin asset freshness passed; ap config show and ap quickstart passed after repo-local rebuild."
   attempts: 0
 commit: null
 comments:
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implementing verified upgrade gating for context policy installation and preserving regression evidence."
+  -
+    type: "verify"
+    at: "2026-05-28T07:44:38.448Z"
+    author: "UPGRADER"
+    state: "ok"
+    note: "Verified upgrade gating for context policy: typecheck passed; full upgrade suite passed; combined targeted vitest passed; policy routing and builtin asset freshness passed; ap config show and ap quickstart passed after repo-local rebuild."
 doc_version: 3
-doc_updated_at: "2026-05-28T07:43:53.013Z"
+doc_updated_at: "2026-05-28T07:44:38.500Z"
 doc_updated_by: "UPGRADER"
 description: "Fix upgrade so context.must.md is installed only for repositories with initialized context layer, and add regression coverage."
 sections:
@@ -62,6 +68,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-28T07:44:38.448Z — VERIFY — ok
+
+    By: UPGRADER
+
+    Note: Verified upgrade gating for context policy: typecheck passed; full upgrade suite passed; combined targeted vitest passed; policy routing and builtin asset freshness passed; ap config show and ap quickstart passed after repo-local rebuild.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T07:43:53.013Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605280743-P4J3DQ/blueprint/resolved-snapshot.json
+    - old_digest: 5a757ffdef075e49edafea4e2924f0ed2d08ea61f3069df5e04f329f052ebe2c
+    - current_digest: 5a757ffdef075e49edafea4e2924f0ed2d08ea61f3069df5e04f329f052ebe2c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605280743-P4J3DQ
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -100,6 +125,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-28T07:44:38.448Z — VERIFY — ok
+
+By: UPGRADER
+
+Note: Verified upgrade gating for context policy: typecheck passed; full upgrade suite passed; combined targeted vitest passed; policy routing and builtin asset freshness passed; ap config show and ap quickstart passed after repo-local rebuild.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T07:43:53.013Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605280743-P4J3DQ/blueprint/resolved-snapshot.json
+- old_digest: 5a757ffdef075e49edafea4e2924f0ed2d08ea61f3069df5e04f329f052ebe2c
+- current_digest: 5a757ffdef075e49edafea4e2924f0ed2d08ea61f3069df5e04f329f052ebe2c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605280743-P4J3DQ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
