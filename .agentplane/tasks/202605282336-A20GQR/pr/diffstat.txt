@@ -1,0 +1,4 @@
+ .../agentplane/src/commands/context/wiki-lint.ts   | 182 ++++++++++
+ .../agentplane/src/commands/context/wiki-page.ts   | 194 +++++++++++
+ packages/agentplane/src/commands/context/wiki.ts   | 383 +--------------------
+ 3 files changed, 392 insertions(+), 367 deletions(-)
