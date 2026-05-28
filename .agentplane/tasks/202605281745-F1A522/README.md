@@ -1,10 +1,11 @@
 ---
 id: "202605281745-F1A522"
 title: "Respect ignored tasks.json in hooks"
-status: "DOING"
+result_summary: "Merged via PR #4200."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified issue #4188 hook behavior fix. Focused hook/protected-path tests passed; format:changed, typecheck, policy routing, and doctor passed."
   attempts: 0
-commit: null
+commit:
+  hash: "7d6128d20eacdb7e1dedee24294e21b4655c0d75"
+  message: "Respect ignored tasks.json in hooks"
 comments:
   -
     author: "CODER"
     body: "Start: implement issue #4188 hook protection fix in the dedicated branch_pr worktree, keeping enforcement for tracked or explicitly staged protected files and adding focused regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4200 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified issue #4188 hook behavior fix. Focused hook/protected-path tests passed; format:changed, typecheck, policy routing, and doctor passed."
+  -
+    type: "status"
+    at: "2026-05-28T19:25:23.261Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4200 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T17:52:34.252Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T19:25:23.265Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix Git hook task-protection behavior from GitHub issue #4188 so ignored .agentplane/tasks.json does not require AGENTPLANE_ALLOW_TASKS unless tracked or explicitly staged."
 sections:
   Summary: |-
