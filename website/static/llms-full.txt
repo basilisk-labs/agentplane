@@ -205,8 +205,12 @@ task -> plan -> approve -> implement -> verify -> finish
 The default path is:
 
 ```text
-install -> init -> context init -> hand off to an agent -> review task evidence
+install -> init -> hand off to an agent -> review task evidence
 ```
+
+Run `context init` only when the repository needs durable local knowledge. It is independent from
+the prompt assembly path that gives agents policy, owner profile, route, recipe, skill, and task
+context.
 
 Manual CLI usage beyond setup, recovery, and review is an advanced operator path. User guides should
 teach the harness boundary first; the command reference holds the exhaustive flags.
@@ -424,7 +428,8 @@ export steps.
 ## Enable local context
 
 Use local context when agents need reusable project knowledge, source-backed facts, or task-scoped
-research material.
+research material. This layer is optional: normal prompt assembly and task execution work after
+`agentplane init` without `agentplane context init`.
 
 ```bash
 agentplane context init
@@ -435,6 +440,10 @@ agentplane context search "first task"
 In an empty standalone directory, `agentplane context init` also performs the initial Agentplane
 bootstrap before writing context files. For non-empty uninitialized projects, run `agentplane init`
 first so conflicts and gateway/workflow choices stay explicit.
+
+When no profile is provided, context initialization uses `maximum-assimilation`. Use
+`agentplane context init --profile adaptive` when the repository only needs a smaller, opportunistic
+wiki.
 
 For a task that needs context ingestion:
 
@@ -1018,9 +1027,10 @@ agentplane --version
 `agentplane --help` and `agentplane help` show the normal installed-project surface by default.
 The first screen is intentionally biased toward commands an agent needs for project work: startup,
 task lifecycle, branch/PR workflow, backend sync, recipes, diagnostics, and setup.
-For context management, `agentplane` keeps the human task-factory surface visible: `context init`,
-`context learn files`, `context learn changes`, `context learn tasks`, `context search`,
-`context show`, and `context check`.
+For optional local context management, `agentplane` keeps the human task-factory surface visible:
+`context init`, `context learn files`, `context learn changes`, `context learn tasks`,
+`context search`, `context show`, and `context check`. Runner prompt assembly does not require this
+local context layer.
 
 Advanced recovery and maintenance commands stay available through direct help or the full registry:
 
@@ -1127,8 +1137,21 @@ agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
 
-Execution is owned by agents working in the repository through Codex, an IDE, or another
-human-assisted workflow. The runner command family is not part of the current public CLI surface.
+Execution is usually owned by agents working in the repository through Codex, an IDE, or another
+human-assisted workflow. For repositories that opt into the local runner path, `agentplane task run
+<task-id>` prepares AgentPlane runner artifacts and executes the configured adapter; with the default
+Codex adapter the prompt begins with `/goal ...` before the runner bundle contract.
+
+Runner observability commands are part of the same public surface:
+
+```bash
+agentplane task run status <task-id> --json
+agentplane task run inspect <task-id>
+agentplane task run logs <task-id> --stream events --follow
+```
+
+Use them from the parent/orchestrator context to monitor child runners without taking over their
+lifecycle authority.
 
 ## Advanced task projections
 
