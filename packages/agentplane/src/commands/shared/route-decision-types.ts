@@ -1,6 +1,5 @@
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
-import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { RouteBatchNextAction, RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
 import type { SourceConfidence as RouteSourceConfidence } from "./source-confidence.js";
