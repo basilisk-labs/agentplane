@@ -4,7 +4,7 @@ title: "Fix pre-push historical commit policy upgrade mismatch"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,23 @@ verification:
   updated_by: "CODER"
   note: "Verification passed after review fix for issue #4183. Commands: bun test packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts packages/agentplane/src/cli/run-cli.core.insights-report.test.ts (24 pass); bun run format:check (pass); bun run lint:core (pass); node .agentplane/policy/check-routing.mjs (pass); AGENTPLANE_FAST_CHANGED_FILES=<touched paths> bun run ci:local:fast (pass, full-fast selector: format/schema/templates/routing/release parity/build/typecheck/bundles/docs freshness/hotspot/vitest projects/lint/unit/critical CLI)."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T13:08:14.336Z"
+  updated_by: "EVALUATOR"
+  note: "Pre-push historical upgrade-merge policy fix is implemented and verified."
+  evaluated_sha: "2488e5c6ec8d10f33f08146a46262454e8c6d99f"
+  blueprint_digest: "e1248d0e20264125bcdc30bbf145ca99c978b171555046c3529dd855e45eca28"
+  evidence_refs:
+    - ".agentplane/tasks/202605280932-HJC244/README.md"
+    - ".agentplane/tasks/202605280932-HJC244/quality/20260528-130814336-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605280932-HJC244/quality/20260528-130814336-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605280932-HJC244/quality/20260528-130814336-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605280932-HJC244/blueprint/resolved-snapshot.json"
+    - "https://github.com/basilisk-labs/agentplane/actions/runs/26576371094"
+    - "https://github.com/basilisk-labs/agentplane/pull/4187"
+  findings:
+    - "The bypass is now limited to historical commits introduced through a managed upgrade merge lineage; a linear unbound commit followed by a fake upgrade commit remains audited. Issue context escaped newlines are normalized."
 commit: null
 comments:
   -
