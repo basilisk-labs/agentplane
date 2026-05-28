@@ -155,9 +155,31 @@ function isCommitAncestorOf(gitRoot: string, ancestor: string, descendant: strin
   return result.exitCode === 0;
 }
 
+function readCommitParents(gitRoot: string, commit: string): string[] {
+  return readGitText(gitRoot, ["rev-list", "--parents", "-n", "1", commit])
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(1);
+}
+
+function isMergedUpgradeLineagePredecessor(
+  gitRoot: string,
+  commit: string,
+  upgradeCommit: string,
+  mergeInfos: readonly { firstParent: string; mergedParents: readonly string[] }[],
+): boolean {
+  if (commit === upgradeCommit || !isCommitAncestorOf(gitRoot, commit, upgradeCommit)) {
+    return false;
+  }
+  return mergeInfos.some(
+    ({ firstParent, mergedParents }) =>
+      !isCommitAncestorOf(gitRoot, commit, firstParent) &&
+      mergedParents.some((parent) => isCommitAncestorOf(gitRoot, upgradeCommit, parent)),
+  );
+}
+
 function readCommitFiles(gitRoot: string, commit: string): string[] {
-  const parentLine = readGitText(gitRoot, ["rev-list", "--parents", "-n", "1", commit]);
-  const parentCount = parentLine.split(/\s+/).filter(Boolean).length - 1;
+  const parentCount = readCommitParents(gitRoot, commit).length;
   const args =
     parentCount > 1
       ? ["diff-tree", "--cc", "--no-commit-id", "--name-only", "-r", commit]
@@ -185,10 +207,13 @@ export function findTaskBoundOutgoingCommitFailures(gitRoot: string, range: Comm
   const managedUpgradeCommits = commits.filter((commit) =>
     hasManagedUpgradeEvidence(commitBodyFor(commit)),
   );
+  const mergeInfos = commits.flatMap((commit) => {
+    const [firstParent, ...mergedParents] = readCommitParents(gitRoot, commit);
+    return firstParent && mergedParents.length > 0 ? [{ firstParent, mergedParents }] : [];
+  });
   const isPreUpgradeCommit = (commit: string): boolean =>
-    managedUpgradeCommits.some(
-      (upgradeCommit) =>
-        commit !== upgradeCommit && isCommitAncestorOf(gitRoot, commit, upgradeCommit),
+    managedUpgradeCommits.some((upgradeCommit) =>
+      isMergedUpgradeLineagePredecessor(gitRoot, commit, upgradeCommit, mergeInfos),
     );
 
   const failures: string[] = [];

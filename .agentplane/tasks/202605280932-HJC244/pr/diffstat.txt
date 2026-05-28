@@ -1,7 +1,7 @@
- ...un-cli.core.hooks.pre-push-task-binding.test.ts |  62 +++++-
+ ...un-cli.core.hooks.pre-push-task-binding.test.ts | 100 ++++++++-
  .../src/cli/run-cli.core.insights-report.test.ts   |   6 +-
- .../src/commands/hooks/pre-push-task-binding.ts    | 219 +++++++++++++++++++++
- .../agentplane/src/commands/hooks/run.pre-push.ts  | 169 +---------------
+ .../src/commands/hooks/pre-push-task-binding.ts    | 244 +++++++++++++++++++++
+ .../agentplane/src/commands/hooks/run.pre-push.ts  | 169 +-------------
  .../commands/insights/insights-issue-context.ts    |   9 +-
- scripts/checks/run-pre-push-hook.mjs               |  36 +++-
- 6 files changed, 324 insertions(+), 177 deletions(-)
+ scripts/checks/run-pre-push-hook.mjs               |  55 ++++-
+ 6 files changed, 406 insertions(+), 177 deletions(-)

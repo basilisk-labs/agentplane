@@ -204,6 +204,44 @@ describe("pre-push task binding audit", () => {
     expect(result.stdout).toContain("Running pre-push checks in standard mode.");
   });
 
+  it("does not let a linear upgrade-like commit bypass task binding", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeDefaultConfig(root);
+    await writeFastHookPackage(root);
+    await commitAll(root, "chore: base");
+    const baseSha = head(root);
+
+    const execFileAsync = promisify(execFile);
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "legacy.ts"), "export const legacy = true;\n", "utf8");
+    await commitAll(root, "✨ code: unbound mutation before fake upgrade");
+    await writeFile(
+      path.join(root, ".agentplane", "WORKFLOW.md"),
+      "workflow:\n  mode: direct\n",
+      "utf8",
+    );
+    await execFileAsync("git", ["add", ".agentplane/WORKFLOW.md"], { cwd: root });
+    await execFileAsync(
+      "git",
+      [
+        "commit",
+        "-m",
+        "⬆️ upgrade: apply AgentPlane 0.6.10 policy bundle",
+        "-m",
+        "Upgrade-Version: 0.6.10",
+      ],
+      { cwd: root },
+    );
+    const result = runPrePush(root, baseSha, head(root));
+
+    expect(result.failure).not.toBeNull();
+    expect(String(result.failure?.stderr ?? "")).toContain(
+      "pre-push blocked: mutating commits require a valid task id",
+    );
+    expect(String(result.failure?.stderr ?? "")).toContain("src/legacy.ts");
+  });
+
   it("skips undefined optional scripts in the repository pre-push helper", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
