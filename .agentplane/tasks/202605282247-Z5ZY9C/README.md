@@ -4,7 +4,7 @@ title: "Cloud backend sync decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,31 @@ verification:
   updated_by: "CODER"
   note: "Cloud backend sync decomposition completed. Verified with backend load/sync tests, typecheck, arch deps, lint, format, and hotspot threshold check (runtime warnings 38 -> 37)."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T22:55:18.110Z"
+  updated_by: "EVALUATOR"
+  note: "Cloud backend sync decomposition completed without public API changes."
+  evaluated_sha: "6ddfbb2b71d356d0c1729d114d5ac6ccb4f55610"
+  blueprint_digest: "9582e9d4bf08873b3e3f23a9d55d275ccc90d7995d2a593123b4d6c9223ce26a"
+  evidence_refs:
+    - ".agentplane/tasks/202605282247-Z5ZY9C/README.md"
+    - ".agentplane/tasks/202605282247-Z5ZY9C/quality/20260528-225518110-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605282247-Z5ZY9C/quality/20260528-225518110-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605282247-Z5ZY9C/quality/20260528-225518110-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605282247-Z5ZY9C/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/backends/task-backend/cloud-backend.ts"
+    - "packages/agentplane/src/backends/task-backend/cloud-backend-sync.ts"
+    - "packages/agentplane/src/backends/task-backend/cloud-backend-inspect.ts"
+    - "packages/agentplane/src/backends/task-backend/cloud-backend-request.ts"
+    - "bunx vitest run packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts --config vitest.workspace.ts"
+    - "bun run typecheck"
+    - "bun run arch:deps"
+    - "bun run lint:core"
+    - "bun run format:changed"
+    - "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300"
+  findings:
+    - "cloud-backend.ts now remains the CloudBackend facade at 390 lines; sync orchestration moved to cloud-backend-sync.ts, inspect/config reporting moved to cloud-backend-inspect.ts, and HTTP request/header transport moved to cloud-backend-request.ts. Hotspot warning count decreased from 38 to 37."
 commit: null
 comments:
   -

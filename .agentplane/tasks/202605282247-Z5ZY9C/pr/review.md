@@ -29,7 +29,11 @@ Created: 2026-05-28T22:48:16.959Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../backends/task-backend/cloud-backend-inspect.ts |  79 +++++
+ .../backends/task-backend/cloud-backend-request.ts |  45 +++
+ .../backends/task-backend/cloud-backend-sync.ts    | 249 ++++++++++++++++
+ .../src/backends/task-backend/cloud-backend.ts     | 329 ++++-----------------
+ 4 files changed, 434 insertions(+), 268 deletions(-)
 ```
 
 </details>
