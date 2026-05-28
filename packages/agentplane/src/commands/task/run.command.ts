@@ -6,12 +6,17 @@ import {
   prepareTaskRunnerExecution,
 } from "../../runner/usecases/task-run.js";
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
-import { RunnerRunRepository } from "../../runner/run-repository.js";
-import { readTraceArtifactText } from "../../runner/trace-artifacts.js";
-import { isProcessAlive } from "../../runner/process-supervision/signals.js";
-import { CliError } from "../../shared/errors.js";
-import type { LoadedTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
-import type { RunnerLifecycleStatus } from "../../runner/types.js";
+import { parsePositiveInteger } from "./run-parse.js";
+import {
+  isTerminalRunnerStatus,
+  loadRunnerLogText,
+  renderRunnerInspectPayload,
+  renderRunnerStatusPayload,
+  renderTaskRunPayload,
+  reportExecutedTaskRun,
+  reportPreparedTaskRun,
+  tailText,
+} from "./run-render.js";
 
 export type TaskRunParsed = {
   taskId: string;
@@ -190,138 +195,6 @@ export const taskRunLogsSpec: CommandSpec<TaskRunLogsParsed> = {
   }),
 };
 
-function renderPayload(opts: {
-  taskId: string;
-  mode: "dry_run" | "execute";
-  adapterId: string;
-  runId: string;
-  runDir: string;
-  bundlePath: string;
-  bootstrapPath: string;
-  resultPath: string;
-  status?: string;
-  exitCode?: number | null;
-  summary?: string;
-}) {
-  return {
-    task_id: opts.taskId,
-    mode: opts.mode,
-    adapter_id: opts.adapterId,
-    run_id: opts.runId,
-    run_dir: opts.runDir,
-    bundle_path: opts.bundlePath,
-    bootstrap_path: opts.bootstrapPath,
-    result_path: opts.resultPath,
-    ...(opts.status ? { status: opts.status } : {}),
-    ...(opts.exitCode === undefined ? {} : { exit_code: opts.exitCode }),
-    ...(opts.summary ? { summary: opts.summary } : {}),
-  };
-}
-
-function parsePositiveInteger(value: unknown, fallback: number, flag: string): number {
-  const raw = typeof value === "string" ? value.trim() : "";
-  if (!raw) return fallback;
-  const parsed = Number.parseInt(raw, 10);
-  if (!Number.isInteger(parsed) || parsed < 0) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: `Invalid ${flag}: ${String(value)} (expected a non-negative integer)`,
-    });
-  }
-  return parsed;
-}
-
-function isTerminalRunnerStatus(status: RunnerLifecycleStatus): boolean {
-  return status === "success" || status === "failed" || status === "cancelled";
-}
-
-function tailText(text: string, lineCount: number): string {
-  if (lineCount === 0) return "";
-  const normalized = text.replaceAll("\r\n", "\n");
-  const lines = normalized.split("\n");
-  const trailingEmpty = lines.at(-1) === "" ? lines.slice(0, -1) : lines;
-  return trailingEmpty.slice(-lineCount).join("\n");
-}
-
-function runnerProcessAlive(inspection: LoadedTaskRunnerInspection): boolean | null {
-  const pid = inspection.state.supervision?.pid;
-  if (typeof pid !== "number") return null;
-  return isProcessAlive(pid);
-}
-
-function renderRunnerStatusPayload(inspection: LoadedTaskRunnerInspection) {
-  const state = inspection.state;
-  const supervision = state.supervision ?? null;
-  return {
-    task_id: inspection.task_id,
-    run_id: inspection.run_id,
-    selection: inspection.selection,
-    status: state.status,
-    mode: state.mode,
-    adapter_id: state.adapter_id,
-    target: state.target,
-    created_at: state.created_at,
-    updated_at: state.updated_at,
-    started_at: supervision?.started_at ?? null,
-    heartbeat_at: supervision?.heartbeat_at ?? null,
-    ended_at: state.result?.ended_at ?? null,
-    pid: supervision?.pid ?? null,
-    pid_alive: runnerProcessAlive(inspection),
-    exit_code: state.result?.exit_code ?? null,
-    summary: state.result?.summary ?? null,
-    paths: {
-      run_dir: inspection.paths.run_dir,
-      state: inspection.paths.state_path,
-      events: inspection.paths.events_path,
-      trace: inspection.paths.trace_path,
-      stderr: inspection.paths.stderr_path,
-      result: inspection.paths.result_path,
-      bundle: inspection.paths.bundle_path,
-      bootstrap: inspection.paths.bootstrap_path,
-    },
-  };
-}
-
-function renderRunnerInspectPayload(inspection: LoadedTaskRunnerInspection, eventCount: number) {
-  return {
-    ...renderRunnerStatusPayload(inspection),
-    recent_events: inspection.events.slice(-eventCount),
-    result: inspection.state.result ?? null,
-    prepared_metadata: inspection.state.prepared_metadata ?? null,
-    policy_decision: inspection.state.policy_decision ?? null,
-  };
-}
-
-async function loadRunnerLogText(
-  inspection: LoadedTaskRunnerInspection,
-  stream: TaskRunLogsParsed["stream"],
-): Promise<string> {
-  if (stream === "events") return inspection.events_text;
-  if (stream === "trace") {
-    const repository = new RunnerRunRepository(inspection.paths);
-    return await repository.readTraceTextRequired({
-      task_id: inspection.task_id,
-      run_id: inspection.run_id,
-    });
-  }
-  try {
-    return await readTraceArtifactText(inspection.paths.stderr_path);
-  } catch (err) {
-    const code = (err as NodeJS.ErrnoException | null)?.code;
-    if (code === "ENOENT") {
-      throw new CliError({
-        exitCode: 4,
-        code: "E_IO",
-        message:
-          `Runner artifact not found for ${inspection.task_id}:${inspection.run_id} ` +
-          `(stderr at ${inspection.paths.stderr_path} or ${inspection.paths.stderr_path}.gz)`,
-      });
-    }
-    throw err;
-  }
-}
-
 async function sleep(ms: number): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -338,7 +211,7 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
         task_id: parsed.taskId,
         mode: "dry_run",
       });
-      const payload = renderPayload({
+      const payload = renderTaskRunPayload({
         taskId: parsed.taskId,
         mode: "dry_run",
         adapterId: prepared.invocation.adapter_id,
@@ -351,18 +224,7 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
       if (parsed.json) {
         output.json(payload);
       } else {
-        output.report(
-          [
-            { label: "task", value: payload.task_id },
-            { label: "mode", value: payload.mode },
-            { label: "adapter", value: payload.adapter_id },
-            { label: "run", value: payload.run_id },
-            { label: "bundle", value: payload.bundle_path },
-            { label: "bootstrap", value: payload.bootstrap_path },
-            { label: "result", value: payload.result_path },
-          ],
-          { header: infoMessage(`task run prepared: ${parsed.taskId}`) },
-        );
+        reportPreparedTaskRun(payload, parsed.taskId);
       }
       return 0;
     }
@@ -373,7 +235,7 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
       rootOverride: ctx.rootOverride ?? null,
       task_id: parsed.taskId,
     });
-    const payload = renderPayload({
+    const payload = renderTaskRunPayload({
       taskId: parsed.taskId,
       mode: "execute",
       adapterId: executed.invocation.adapter_id,
@@ -389,19 +251,7 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
     if (parsed.json) {
       output.json(payload);
     } else {
-      output.report(
-        [
-          { label: "task", value: payload.task_id },
-          { label: "mode", value: payload.mode },
-          { label: "adapter", value: payload.adapter_id },
-          { label: "run", value: payload.run_id },
-          { label: "status", value: payload.status ?? "unknown" },
-          { label: "exit_code", value: payload.exit_code ?? null },
-          { label: "summary", value: payload.summary ?? null },
-          { label: "result", value: payload.result_path },
-        ],
-        { header: infoMessage(`task run completed: ${parsed.taskId}`) },
-      );
+      reportExecutedTaskRun(payload, parsed.taskId);
     }
     return executed.result.status === "success" ? 0 : 1;
   };
