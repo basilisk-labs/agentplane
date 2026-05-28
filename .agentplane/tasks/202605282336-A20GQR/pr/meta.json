@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-28T23:44:04Z",
   "base": "main",
   "branch": "task/202605282336-A20GQR/context-wiki-decomposition",
   "created_at": "2026-05-28T23:36:39.147Z",
   "diffstat_sha256": "sha256:e290aaf672b9ba5a290e34a00f0fe09c99413cf39e9f39ded19b3aa431de840c",
   "last_verified_at": "2026-05-28T23:41:18.460Z",
   "last_verified_diffstat_sha256": "sha256:e290aaf672b9ba5a290e34a00f0fe09c99413cf39e9f39ded19b3aa431de840c",
+  "merge_commit": "3e61df3abbb93f01d735a73167c357fc40a6bad1",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-28T23:44:04Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605282336-A20GQR",
-  "updated_at": "2026-05-28T23:36:39.147Z",
+  "updated_at": "2026-05-28T23:44:04Z",
   "verify": {
     "status": "pass"
   }

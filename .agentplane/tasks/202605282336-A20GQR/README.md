@@ -1,10 +1,11 @@
 ---
 id: "202605282336-A20GQR"
 title: "Context wiki command decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4236."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified context wiki command decomposition. Commands passed: focused wiki vitest (3 files, 26 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 34 to 33; wiki.ts is 220 lines."
   attempts: 0
-commit: null
+commit:
+  hash: "3e61df3abbb93f01d735a73167c357fc40a6bad1"
+  message: "✅ A20GQR context: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: Decompose context wiki rendering and lint helpers in the task worktree while preserving wiki new, lint, explain, link, and index behavior under focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4236 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified context wiki command decomposition. Commands passed: focused wiki vitest (3 files, 26 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 34 to 33; wiki.ts is 220 lines."
+  -
+    type: "status"
+    at: "2026-05-28T23:44:46.552Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4236 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T23:41:18.485Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T23:44:46.557Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/context/wiki.ts by extracting wiki page rendering and lint/catalog helpers while preserving context wiki command behavior."
 sections:
   Summary: |-
