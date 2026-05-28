@@ -33,7 +33,9 @@ lint:core passed, format:changed passed, hotspot threshold check passed.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../evaluator/evaluator-quality-artifacts.ts       | 118 +++++++++++++++++++++
+ .../src/commands/evaluator/evaluator.command.ts    | 118 +++------------------
+ 2 files changed, 132 insertions(+), 104 deletions(-)
 ```
 
 </details>
