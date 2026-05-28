@@ -4,7 +4,7 @@ title: "Migrate process runner to execa v9"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -49,7 +49,7 @@ events:
     state: "ok"
     note: "Extended dependency update verified: upgraded @typescript-eslint/eslint-plugin to 8.60.0, @typescript-eslint/parser to 8.60.0, and turbo to 2.9.15; npm outdated returned {}; local checks passed: format:check, core build, targeted eslint, test:project -- core, test:critical, policy routing."
 doc_version: 3
-doc_updated_at: "2026-05-28T05:51:00.621Z"
+doc_updated_at: "2026-05-28T07:33:51.724Z"
 doc_updated_by: "CODER"
 description: "Upgrade @agentplaneorg/core process execution from execa v5 to v9, preserve runProcess/runProcessSync/startProcess/execFileAsync behavior, and audit other outdated package versions for follow-up decisions."
 sections:
@@ -122,6 +122,10 @@ sections:
     - Observation: Follow-up direct dependency audit is now clean after upgrading @typescript-eslint/eslint-plugin to 8.60.0, @typescript-eslint/parser to 8.60.0, and turbo to 2.9.15.
       Impact: The execa major migration PR no longer leaves known outdated direct packages from the audit.
       Resolution: Updated package.json and bun.lock, refreshed installed dependencies, and reran npm outdated plus local verification before merge.
+
+    - Observation: Codex review identified that @agentplaneorg/core still advertised Node >=20 while execa 9 requires >=20.5.0 for Node 20.
+      Impact: Published core consumers on Node 20.0-20.4 would see an advertised-supported runtime with an incompatible dependency.
+      Resolution: Raised @agentplaneorg/core engines.node to >=20.5.0; agentplane CLI already requires >=24, and recipes has no execa dependency.
 id_source: "generated"
 ---
 ## Summary
@@ -207,3 +211,7 @@ BlueprintSnapshotRef:
 - Observation: Follow-up direct dependency audit is now clean after upgrading @typescript-eslint/eslint-plugin to 8.60.0, @typescript-eslint/parser to 8.60.0, and turbo to 2.9.15.
   Impact: The execa major migration PR no longer leaves known outdated direct packages from the audit.
   Resolution: Updated package.json and bun.lock, refreshed installed dependencies, and reran npm outdated plus local verification before merge.
+
+- Observation: Codex review identified that @agentplaneorg/core still advertised Node >=20 while execa 9 requires >=20.5.0 for Node 20.
+  Impact: Published core consumers on Node 20.0-20.4 would see an advertised-supported runtime with an incompatible dependency.
+  Resolution: Raised @agentplaneorg/core engines.node to >=20.5.0; agentplane CLI already requires >=24, and recipes has no execa dependency.
