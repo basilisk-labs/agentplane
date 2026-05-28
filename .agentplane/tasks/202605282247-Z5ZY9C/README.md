@@ -1,10 +1,11 @@
 ---
 id: "202605282247-Z5ZY9C"
 title: "Cloud backend sync decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4228."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -49,11 +50,16 @@ quality_review:
     - "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300"
   findings:
     - "cloud-backend.ts now remains the CloudBackend facade at 390 lines; sync orchestration moved to cloud-backend-sync.ts, inspect/config reporting moved to cloud-backend-inspect.ts, and HTTP request/header transport moved to cloud-backend-request.ts. Hotspot warning count decreased from 38 to 37."
-commit: null
+commit:
+  hash: "2b8de25724ebc129d987d07fdb5c75e15ee21b2d"
+  message: "✅ Z5ZY9C cloud: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: extract CloudBackend sync orchestration and sync-state helpers while preserving backend behavior and reducing hotspot size."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4228 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -68,9 +74,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Cloud backend sync decomposition completed. Verified with backend load/sync tests, typecheck, arch deps, lint, format, and hotspot threshold check (runtime warnings 38 -> 37)."
+  -
+    type: "status"
+    at: "2026-05-28T22:58:53.333Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4228 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T22:55:02.128Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T22:58:53.340Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/backends/task-backend/cloud-backend.ts by extracting cloud sync orchestration and sync-state request handling into focused helper modules while preserving CloudBackend public behavior and reducing hotspot warning count."
 sections:
   Summary: |-
