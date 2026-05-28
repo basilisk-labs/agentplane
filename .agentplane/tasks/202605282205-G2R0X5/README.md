@@ -4,7 +4,7 @@ title: "Evidence command decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,23 @@ verification:
   updated_by: "CODER"
   note: "Verification passed. Commands: bunx vitest run packages/agentplane/src/commands/evidence/evidence.command.test.ts --config vitest.workspace.ts (1 file, 3 tests passed); bun run typecheck (passed); bun run arch:deps (no dependency violations); bun run lint:core (passed); bun run format:changed (passed); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 (passed, runtime warnings 41 -> 40)."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T22:10:10.815Z"
+  updated_by: "EVALUATOR"
+  note: "Evidence command decomposition preserves bundle and verify behavior while reducing hotspot pressure."
+  evaluated_sha: "1df942c762de20d0efc3755b479e77b65016a43f"
+  blueprint_digest: "1bd060a0b4b971863019a1e5050f7387ce4c4186ae9244987b96e47f47a70ad3"
+  evidence_refs:
+    - ".agentplane/tasks/202605282205-G2R0X5/README.md"
+    - ".agentplane/tasks/202605282205-G2R0X5/quality/20260528-221010815-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605282205-G2R0X5/quality/20260528-221010815-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605282205-G2R0X5/quality/20260528-221010815-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605282205-G2R0X5/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/evidence/evidence.command.ts"
+    - "packages/agentplane/src/commands/evidence/evidence-manifest.ts"
+  findings:
+    - "evidence.command.ts now contains command specs and handlers only; evidence-manifest.ts owns manifest types, path resolution, hashing, digest verification, and trust extension helpers. Focused evidence tests, arch:deps, typecheck, lint:core, format:changed, and hotspot report passed."
 commit: null
 comments:
   -
