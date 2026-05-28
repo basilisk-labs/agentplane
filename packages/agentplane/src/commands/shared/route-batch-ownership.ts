@@ -17,6 +17,7 @@ export type RouteBatchNextAction = {
   command: string | null;
   summary: string;
   requiresApproval: boolean;
+  actionKind?: "local_command" | "provider_action" | "wait" | "stop";
 };
 
 export type RouteBatchOwnership =

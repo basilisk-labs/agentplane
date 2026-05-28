@@ -13,7 +13,11 @@ const {
   pr: PR_TEST_FILES,
   "pr-flow-status": PR_FLOW_STATUS_TEST_FILES,
   "pr-integrate": PR_INTEGRATE_TEST_FILES,
+  "prompt-modules": PROMPT_MODULES_TEST_FILES,
   release: RELEASE_TEST_FILES,
+  "route-oracle": ROUTE_ORACLE_TEST_FILES,
+  runner: RUNNER_TEST_FILES,
+  evaluator: EVALUATOR_TEST_FILES,
   task: TASK_TEST_FILES,
   upgrade: UPGRADE_TEST_FILES,
   workflow: WORKFLOW_TEST_FILES,
@@ -32,6 +36,29 @@ const DOCS_ONLY_PATTERNS = [
 const NEUTRAL_TASK_ARTIFACT_PATTERNS = [/^\.agentplane\/tasks\//];
 
 const TASK_BUCKET_PATTERNS = [/^packages\/agentplane\/src\/commands\/task\//];
+
+const RUNNER_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/runner(?:\/|\.|$)/,
+  /^packages\/agentplane\/src\/runtime\/capabilities\/runner(?:\.test)?\.ts$/,
+];
+
+const ROUTE_ORACLE_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/commands\/shared\/route-(?:decision|oracle|batch-ownership)(?:\.test)?\.ts$/,
+  /^packages\/agentplane\/src\/commands\/task\/(?:brief|next-action|status)\.command(?:\.test)?\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.route-decision(?:\.batch)?\.test\.ts$/,
+];
+
+const PROMPT_MODULES_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/runtime\/prompt-modules\//,
+  /^packages\/agentplane\/src\/runner\/context\/prompt-module-bridge(?:\.test)?\.ts$/,
+  /^packages\/agentplane\/src\/commands\/shared\/prompt-graph-diagnostics(?:\.test)?\.ts$/,
+];
+
+const EVALUATOR_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/commands\/evaluator(?:\/|\.|$)/,
+  /^packages\/agentplane\/src\/evaluators\//,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle\.verify\.test\.ts$/,
+];
 
 const HOSTED_CLOSE_PR_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/task\/hosted-close-pr(?:\.|\/|$)/,
@@ -181,6 +208,34 @@ const TARGET_BUCKET_DEFINITIONS = [
     patterns: HOSTED_CLOSE_PR_BUCKET_PATTERNS,
     testFiles: HOSTED_CLOSE_PR_TEST_FILES,
     vitestPool: "forks",
+  },
+  {
+    bucket: "runner",
+    reason: "runner_paths_only",
+    patterns: RUNNER_BUCKET_PATTERNS,
+    testFiles: RUNNER_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "route-oracle",
+    reason: "route_oracle_paths_only",
+    patterns: ROUTE_ORACLE_BUCKET_PATTERNS,
+    testFiles: ROUTE_ORACLE_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "prompt-modules",
+    reason: "prompt_module_paths_only",
+    patterns: PROMPT_MODULES_BUCKET_PATTERNS,
+    testFiles: PROMPT_MODULES_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "evaluator",
+    reason: "evaluator_paths_only",
+    patterns: EVALUATOR_BUCKET_PATTERNS,
+    testFiles: EVALUATOR_TEST_FILES,
+    vitestPool: "threads",
   },
   {
     bucket: "task",
@@ -363,6 +418,54 @@ export function selectFastCiPlan(changedFiles) {
       lintTargets: effectiveFiles,
       testFiles: HOSTED_CLOSE_PR_TEST_FILES,
       vitestPool: "forks",
+    };
+  }
+
+  if (everyPathMatches(effectiveFiles, RUNNER_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "runner",
+      reason: "runner_paths_only",
+      files,
+      lintTargets: effectiveFiles,
+      testFiles: RUNNER_TEST_FILES,
+      vitestPool: "threads",
+    };
+  }
+
+  if (everyPathMatches(effectiveFiles, ROUTE_ORACLE_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "route-oracle",
+      reason: "route_oracle_paths_only",
+      files,
+      lintTargets: effectiveFiles,
+      testFiles: ROUTE_ORACLE_TEST_FILES,
+      vitestPool: "threads",
+    };
+  }
+
+  if (everyPathMatches(effectiveFiles, PROMPT_MODULES_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "prompt-modules",
+      reason: "prompt_module_paths_only",
+      files,
+      lintTargets: effectiveFiles,
+      testFiles: PROMPT_MODULES_TEST_FILES,
+      vitestPool: "threads",
+    };
+  }
+
+  if (everyPathMatches(effectiveFiles, EVALUATOR_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "evaluator",
+      reason: "evaluator_paths_only",
+      files,
+      lintTargets: effectiveFiles,
+      testFiles: EVALUATOR_TEST_FILES,
+      vitestPool: "threads",
     };
   }
 

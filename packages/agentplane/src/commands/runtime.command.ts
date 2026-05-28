@@ -49,6 +49,22 @@ export type RuntimeExplainPayload = RuntimeSourceInfo & {
   frameworkDev: FrameworkDevWorkflow;
   repoCliExpectation: RepoCliVersionExpectation;
   promptGraph: PromptGraphInspection;
+  promptDiagnosticsCompact?: {
+    artifact_state: string;
+    active_recipes: string[];
+    module_count: number;
+    repo_override_count: number;
+    diagnostic_count: number;
+    winning_fragments: {
+      fragment_id: string;
+      address: string;
+      owner: string;
+      source_kind: string;
+      source_ref: string;
+      recipe_id: string | null;
+    }[];
+    diagnostics: { severity: string; code: string; message: string }[];
+  };
 };
 
 export { runtimeExplainSpec, runtimeSpec } from "./runtime.spec.js";
@@ -108,6 +124,31 @@ function buildRuntimeExplainPayload(
       recovery: null,
     },
     promptGraph,
+  };
+}
+
+function buildCompactPromptDiagnostics(promptGraph: PromptGraphInspection) {
+  return {
+    artifact_state: promptGraph.artifactState,
+    active_recipes: promptGraph.activeRecipeIds,
+    module_count: promptGraph.summary?.moduleCount ?? promptGraph.modules.length,
+    repo_override_count: promptGraph.summary?.repoOverrideCount ?? 0,
+    diagnostic_count: promptGraph.diagnostics.length,
+    winning_fragments: promptGraph.modules
+      .filter((module) => module.fragmentId)
+      .map((module) => ({
+        fragment_id: module.fragmentId as string,
+        address: module.address,
+        owner: module.ownerLabel,
+        source_kind: module.sourceKind,
+        source_ref: module.sourceRef,
+        recipe_id: module.recipeId,
+      })),
+    diagnostics: promptGraph.diagnostics.map((diagnostic) => ({
+      severity: diagnostic.severity,
+      code: diagnostic.code,
+      message: diagnostic.message,
+    })),
   };
 }
 
@@ -216,7 +257,13 @@ export const runRuntimeExplain: CommandHandler<RuntimeExplainParsed> = (ctx, p) 
       rootOverride: ctx.rootOverride ?? null,
     }),
   ]).then(([repoCliExpectation, promptGraph]) => {
-    const payload = { ...buildRuntimeExplainPayload(report, promptGraph), repoCliExpectation };
+    const payload = {
+      ...buildRuntimeExplainPayload(report, promptGraph),
+      repoCliExpectation,
+      ...(p.compact
+        ? { promptDiagnosticsCompact: buildCompactPromptDiagnostics(promptGraph) }
+        : {}),
+    };
     if (p.json) {
       output.json(payload);
       return 0;

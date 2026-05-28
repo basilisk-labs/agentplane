@@ -150,10 +150,27 @@ function normalizeEvidence(value: unknown): RunnerResultEvidence | undefined {
   if (evidencePaths) evidence.evidence_paths = evidencePaths;
   const changedPaths = normalizeStringArray(value.changed_paths);
   if (changedPaths) evidence.changed_paths = changedPaths;
+  const conflictPaths = normalizeStringArray(value.conflict_paths);
+  if (conflictPaths) evidence.conflict_paths = conflictPaths;
   const testsRun = normalizeStringArray(value.tests_run);
   if (testsRun) evidence.tests_run = testsRun;
   const verificationCandidates = normalizeStringArray(value.verification_candidates);
   if (verificationCandidates) evidence.verification_candidates = verificationCandidates;
+  if (value.blocked_reason !== undefined) {
+    if (typeof value.blocked_reason !== "string" || !value.blocked_reason.trim()) {
+      throw new Error("evidence.blocked_reason must be a non-empty string when present");
+    }
+    evidence.blocked_reason = value.blocked_reason.trim();
+  }
+  if (value.recommended_parent_action !== undefined) {
+    if (
+      typeof value.recommended_parent_action !== "string" ||
+      !value.recommended_parent_action.trim()
+    ) {
+      throw new Error("evidence.recommended_parent_action must be a non-empty string when present");
+    }
+    evidence.recommended_parent_action = value.recommended_parent_action.trim();
+  }
   if (value.files_changed_count !== undefined) {
     if (
       typeof value.files_changed_count !== "number" ||
@@ -165,6 +182,41 @@ function normalizeEvidence(value: unknown): RunnerResultEvidence | undefined {
     evidence.files_changed_count = value.files_changed_count;
   }
   return Object.keys(evidence).length > 0 ? evidence : undefined;
+}
+
+function assertRunnerManifestQuality(manifest: RunnerResultManifest, resultPath: string): void {
+  const rawContent = JSON.stringify(manifest, null, 2);
+  if (manifest.status === "success") {
+    const evidence = manifest.evidence;
+    const hasEvidence =
+      (evidence?.evidence_paths?.length ?? 0) > 0 ||
+      (evidence?.tests_run?.length ?? 0) > 0 ||
+      (evidence?.verification_candidates?.length ?? 0) > 0 ||
+      (manifest.artifacts?.length ?? 0) > 0;
+    if (!hasEvidence) {
+      invalidManifest(
+        resultPath,
+        "successful manifests must include evidence paths, tests, verification candidates, or artifacts",
+        rawContent,
+      );
+    }
+  }
+  if ((manifest.evidence?.conflict_paths?.length ?? 0) > 0) {
+    if (!manifest.evidence?.blocked_reason) {
+      invalidManifest(
+        resultPath,
+        "evidence.conflict_paths requires evidence.blocked_reason",
+        rawContent,
+      );
+    }
+    if (!manifest.evidence?.recommended_parent_action) {
+      invalidManifest(
+        resultPath,
+        "evidence.conflict_paths requires evidence.recommended_parent_action",
+        rawContent,
+      );
+    }
+  }
 }
 
 function normalizeStatus(value: unknown): RunnerResultStatus | undefined {
@@ -269,6 +321,7 @@ export async function readRunnerResultManifest(
       const message = err instanceof Error ? err.message : String(err);
       invalidManifest(resultPath, message, rawText);
     }
+    assertRunnerManifestQuality(manifest, resultPath);
     return manifest;
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
