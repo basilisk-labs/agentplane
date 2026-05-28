@@ -1,10 +1,11 @@
 ---
 id: "202605281934-ZA0BEE"
 title: "Route decision module decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4204."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -44,11 +45,16 @@ quality_review:
     - "packages/agentplane/src/commands/shared/route-decision-types.ts"
   findings:
     - "Evidence: route-decision facade is 335 lines; extracted blockers, next-action, and shared types modules; vitest route-decision suites passed; typecheck, hotspot check, and format:changed passed."
-commit: null
+commit:
+  hash: "c960ed9ba36f16632853e54d2230bd636dafd1de"
+  message: "♻️ ZA0BEE code: satisfy route lint"
 comments:
   -
     author: "CODER"
     body: "Start: decompose route decision internals from the dedicated branch_pr worktree while preserving the public route oracle output and verifying with targeted tests plus typecheck."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4204 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Route decision decomposition verified: facade reduced to 335 lines, blockers/next-action/types extracted into focused modules, route-decision CLI tests passed, typecheck passed, hotspot threshold check passed, format:changed passed."
+  -
+    type: "status"
+    at: "2026-05-28T19:52:23.329Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4204 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T19:39:40.390Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T19:52:23.336Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose the route decision hotspot into focused, testable modules without changing route semantics. Keep the public command behavior stable while isolating pure route classification, hosted/PR state interpretation, blocker formatting, and next-command rendering so agents receive the same or better next-action guidance from smaller code units."
 sections:
   Summary: |-
