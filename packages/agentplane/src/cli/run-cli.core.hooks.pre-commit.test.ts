@@ -40,6 +40,62 @@ describe("runCli hooks pre-commit guards", () => {
     }
   });
 
+  it("hooks run pre-commit ignores untracked ignored tasks.json while allowing active task artifacts", async () => {
+    const taskId = "202601010101-ABCDEF";
+    const root = await mkGitRepoRootWithBranch(`task/${taskId}/hook-scope`);
+    await writeDefaultConfig(root);
+    await writeFile(`${root}/.gitignore`, ".agentplane/tasks.json\n", "utf8");
+    await writeFile(`${root}/README.md`, "base\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", ".gitignore", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "base"], { cwd: root });
+    await mkdir(`${root}/.agentplane/tasks/${taskId}`, { recursive: true });
+    await writeFile(`${root}/.agentplane/tasks.json`, "{}\n", "utf8");
+    await writeFile(`${root}/.agentplane/tasks/${taskId}/README.md`, "# Task\n", "utf8");
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/README.md`], {
+      cwd: root,
+    });
+
+    const prev = process.env.AGENTPLANE_ALLOW_TASKS;
+    delete process.env.AGENTPLANE_ALLOW_TASKS;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stderr).not.toContain(".agentplane/tasks.json is protected");
+    } finally {
+      io.restore();
+      restoreEnv("AGENTPLANE_ALLOW_TASKS", prev);
+    }
+  });
+
+  it("hooks run pre-commit still blocks force-staged ignored tasks.json", async () => {
+    const taskId = "202601010101-ABCDEF";
+    const root = await mkGitRepoRootWithBranch(`task/${taskId}/hook-scope`);
+    await writeDefaultConfig(root);
+    await writeFile(`${root}/.gitignore`, ".agentplane/tasks.json\n", "utf8");
+    await writeFile(`${root}/README.md`, "base\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", ".gitignore", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "base"], { cwd: root });
+    await writeFile(`${root}/.agentplane/tasks.json`, "{}\n", "utf8");
+    await execFileAsync("git", ["add", "-f", ".agentplane/tasks.json"], { cwd: root });
+
+    const prev = process.env.AGENTPLANE_ALLOW_TASKS;
+    delete process.env.AGENTPLANE_ALLOW_TASKS;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain(".agentplane/tasks.json is protected by agentplane hooks");
+    } finally {
+      io.restore();
+      restoreEnv("AGENTPLANE_ALLOW_TASKS", prev);
+    }
+  });
+
   it("hooks run pre-commit blocks mutating paths without active task context", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
