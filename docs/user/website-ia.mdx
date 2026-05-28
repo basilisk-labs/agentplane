@@ -65,8 +65,11 @@ navigation.
 The first-time path should show the default operating model before advanced command details:
 
 ```text
-install -> init -> context init -> hand off to an agent -> review task evidence
+install -> init -> hand off to an agent -> review task evidence
 ```
+
+Show `context init` as an optional local-knowledge branch from setup, not as a prerequisite for
+agent handoff or prompt assembly.
 
 Manual CLI usage beyond setup and recovery is an advanced operator path. Framework internals stay in
 the direct-link maintainer docs and are not part of the public user path.

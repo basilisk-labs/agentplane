@@ -19,17 +19,30 @@ knowledge.
 | Coverage reports, glossary discipline, and raw-deletion resilience                         | `maximum-assimilation` |
 | A project knowledge base that should be useful even when raw sources are later unavailable | `maximum-assimilation` |
 
-## Adaptive
+## Default
 
-`adaptive` is the default.
+`maximum-assimilation` is the default for `agentplane context init`.
 
 ```bash
 agentplane context init
 ```
 
-Use it for most software repositories. It creates a stable context contract and lets the wiki
-structure grow from actual sources. Agents should keep the smallest useful structure, cite sources,
-and avoid duplicating concepts.
+Use the default when the context layer should become durable project memory. It creates the same
+editable context workspace as smaller profiles, but asks future context-ingestion work to preserve
+source meaning through wiki pages, facts, graph rows, glossary entries, provenance, and coverage.
+
+## Adaptive
+
+Choose `adaptive` explicitly when review cost matters more than exhaustive assimilation.
+
+```bash
+agentplane context init --profile adaptive
+```
+
+Use it for ordinary software repositories that only need reusable conventions and a small wiki that
+grows as work happens. It creates a stable context contract and lets the wiki structure grow from
+actual sources. Agents should keep the smallest useful structure, cite sources, and avoid duplicating
+concepts.
 
 Adaptive mode is best when:
 

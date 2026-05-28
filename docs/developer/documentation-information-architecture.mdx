@@ -62,12 +62,14 @@ or developer paths as if they were active guidance.
 The public docs entrypoints should mirror the default product journey:
 
 ```text
-install -> init -> context init -> hand off to an agent -> review task evidence
+install -> init -> hand off to an agent -> review task evidence
 ```
 
 Humans install and initialize Agentplane. Coding agents operate the lifecycle. Reviewers inspect the
 evidence in Git. Manual CLI operation after initialization is an advanced path for operators,
 maintainers, recovery, and debugging.
+Local context setup is an optional branch for repositories that need durable project knowledge; it is
+not part of prompt assembly or the required handoff path.
 
 1. **Start**: repository entry, setup, agent handoff, prerequisites, bootstrap.
 2. **Use with agents**: one agent-agnostic harness guide for coding agents, CI, and review modes around Agentplane.

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605281714-VX8QQ2/prompt-context-decoupling",
+  "created_at": "2026-05-28T17:15:16.988Z",
+  "diffstat_sha256": "sha256:6e24fcac960f75dfc10f504865c479a72b8ac5c2f7b934484b68856c1ba76b70",
+  "last_verified_at": "2026-05-28T17:20:11.658Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605281714-VX8QQ2",
+  "updated_at": "2026-05-28T17:15:16.988Z",
+  "verify": {
+    "status": "pass"
+  }
+}
