@@ -4,7 +4,7 @@ title: "Integrate queue command decomposition"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -33,6 +33,24 @@ verification:
   updated_by: "CODER"
   note: "Integrate queue command decomposition verified locally."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T21:18:54.144Z"
+  updated_by: "EVALUATOR"
+  note: "Integrate queue command decomposition preserves queue behavior while reducing integrate-queue.command.ts below the hotspot threshold."
+  evaluated_sha: "e8f8e4fe89cdb8e3489c73167ad77b4cd69c8a6a"
+  blueprint_digest: "8e6958ec00d74ac366879cc5750620983ece4e750a34cd373e1071e0df4c814a"
+  evidence_refs:
+    - ".agentplane/tasks/202605282111-DR6HVN/README.md"
+    - ".agentplane/tasks/202605282111-DR6HVN/quality/20260528-211854144-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605282111-DR6HVN/quality/20260528-211854144-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605282111-DR6HVN/quality/20260528-211854144-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605282111-DR6HVN/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/integrate-queue.command.ts"
+    - "packages/agentplane/src/commands/integrate-queue-lane.ts"
+    - "packages/agentplane/src/commands/integrate-queue-doctor-command.ts"
+  findings:
+    - "Extracted lane rendering/stale checks/recovery/normalization and doctor diagnostics into focused modules. Focused integrate queue and PR integration tests passed, plus typecheck, lint, format, and hotspot check."
 commit: null
 comments:
   -
