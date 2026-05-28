@@ -1,10 +1,11 @@
 ---
 id: "202605282111-DR6HVN"
 title: "Integrate queue command decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4214."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -51,11 +52,16 @@ quality_review:
     - "packages/agentplane/src/commands/integrate-queue-doctor-command.ts"
   findings:
     - "Extracted lane rendering/stale checks/recovery/normalization and doctor diagnostics into focused modules. Focused integrate queue and PR integration tests passed, plus typecheck, lint, format, and hotspot check."
-commit: null
+commit:
+  hash: "7c147b3641cc687b5fba5f35cef78f450658473e"
+  message: "✅ DR6HVN task: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: decompose integrate queue command handlers and helpers while preserving branch_pr merge-lane behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4214 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Integrate queue command decomposition verified locally."
+  -
+    type: "status"
+    at: "2026-05-28T21:24:59.018Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4214 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T21:18:23.368Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T21:24:59.024Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/integrate-queue.command.ts into focused queue helper modules without changing branch_pr merge-lane behavior, hosted check waiting, stale lane recovery, or queue state transitions. Reduce the command file below the hotspot warning threshold when safe."
 sections:
   Summary: |-
