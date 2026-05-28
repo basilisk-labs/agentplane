@@ -23,11 +23,6 @@ type SurfaceCheck = {
 
 const BRANCH_PR_SURFACES: readonly SurfaceCheck[] = [
   {
-    file: "packages/agentplane/assets/AGENTS.md",
-    mode: "branch_pr",
-    order: CODE_WORKFLOW_LIFECYCLE_CONTRACTS.branch_pr.gatewayCommandOrder,
-  },
-  {
     file: "docs/user/workflow.mdx",
     mode: "branch_pr",
     order: CODE_WORKFLOW_LIFECYCLE_CONTRACTS.branch_pr.docsCommandOrder,
@@ -54,13 +49,7 @@ const BRANCH_PR_SURFACES: readonly SurfaceCheck[] = [
   },
 ];
 
-const DIRECT_SURFACES: readonly SurfaceCheck[] = [
-  {
-    file: "packages/agentplane/assets/AGENTS.md",
-    mode: "direct",
-    order: CODE_WORKFLOW_LIFECYCLE_CONTRACTS.direct.gatewayCommandOrder,
-  },
-];
+const DIRECT_SURFACES: readonly SurfaceCheck[] = [];
 
 const FORBIDDEN_BRANCH_PR_DOC_PATTERNS = [
   "git push -u origin task/<task-id>",

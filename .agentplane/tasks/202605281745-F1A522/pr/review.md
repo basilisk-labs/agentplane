@@ -42,9 +42,11 @@ Created: 2026-05-28T17:46:18.377Z
  packages/agentplane/src/cli/command-guide.ts       |  18 +-
  .../src/cli/run-cli.core.hooks.pre-commit.test.ts  |  56 ++++
  .../agentplane/src/policy/rules/protected-paths.ts |  32 +-
+ .../agentplane/src/workflow-lifecycle/contract.ts  |   2 +-
+ .../src/workflow-lifecycle/parity-check.ts         |  13 +-
  scripts/checks/check-agent-bootstrap-fresh.mjs     |  12 +-
  scripts/checks/check-agent-onboarding-scenario.mjs |   2 +-
- 15 files changed, 886 insertions(+), 96 deletions(-)
+ 17 files changed, 888 insertions(+), 109 deletions(-)
 ```
 
 </details>
