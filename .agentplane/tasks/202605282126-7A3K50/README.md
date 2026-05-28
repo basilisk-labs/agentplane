@@ -1,10 +1,11 @@
 ---
 id: "202605282126-7A3K50"
 title: "PR integrate merge strategy decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4216."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -53,11 +54,16 @@ quality_review:
     - "packages/agentplane/src/commands/pr/integrate/internal/merge-mutation.ts"
   findings:
     - "Extracted git mutation diagnostics and task artifact collision handling into focused internal modules. Focused merge/integration tests passed, plus typecheck, lint, format, and hotspot check."
-commit: null
+commit:
+  hash: "a29c6c8f7a148791afad042308aff49dcfd3ad81"
+  message: "✅ 7A3K50 task: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: decompose PR integrate merge strategy helpers while preserving merge lane behavior and failure handling."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4216 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -72,9 +78,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "PR integrate merge strategy decomposition verified locally."
+  -
+    type: "status"
+    at: "2026-05-28T21:34:39.801Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4216 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T21:30:26.534Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T21:34:39.811Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/pr/integrate/internal/merge.ts into focused merge strategy helper modules without changing squash merge, merge commit, rebase fast-forward, task artifact collision handling, integration mutation lock behavior, or verify execution semantics. Reduce the merge strategy file below the hotspot warning threshold when safe."
 sections:
   Summary: |-
