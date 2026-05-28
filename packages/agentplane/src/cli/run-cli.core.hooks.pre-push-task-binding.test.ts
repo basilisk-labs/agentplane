@@ -162,6 +162,48 @@ describe("pre-push task binding audit", () => {
     expect(String(result.failure?.stderr ?? "")).toContain("src/app.ts");
   });
 
+  it("does not apply upgraded task-binding policy to pre-upgrade historical commits", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeDefaultConfig(root);
+    await writeFastHookPackage(root);
+    await commitAll(root, "chore: base");
+    const baseSha = head(root);
+
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", "upgrade-lineage"], { cwd: root });
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "legacy.ts"), "export const legacy = true;\n", "utf8");
+    await commitAll(root, "✨ code: legacy mutation before stricter policy");
+    await writeFile(
+      path.join(root, ".agentplane", "WORKFLOW.md"),
+      "workflow:\n  mode: direct\n",
+      "utf8",
+    );
+    await execFileAsync("git", ["add", ".agentplane/WORKFLOW.md"], { cwd: root });
+    await execFileAsync(
+      "git",
+      [
+        "commit",
+        "-m",
+        "⬆️ upgrade: apply AgentPlane 0.6.10 policy bundle",
+        "-m",
+        "Upgrade-Version: 0.6.10",
+      ],
+      { cwd: root },
+    );
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["merge", "--no-ff", "upgrade-lineage", "-m", "Merge AgentPlane upgrade lineage"],
+      { cwd: root },
+    );
+    const result = runPrePush(root, baseSha, head(root));
+
+    expect(result.failure).toBeNull();
+    expect(result.stdout).toContain("Running pre-push checks in standard mode.");
+  });
+
   it("skips undefined optional scripts in the repository pre-push helper", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
@@ -346,18 +388,28 @@ describe("pre-push task binding audit", () => {
       "task\n",
       "utf8",
     );
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 'base';\n", "utf8");
     await commitAll(root, "chore: base");
     const baseSha = head(root);
 
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["checkout", "-b", "feature"], { cwd: root });
-    await mkdir(path.join(root, "src"), { recursive: true });
-    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 'feature';\n", "utf8");
     await commitAll(root, "✨ ABCDEF code: connect managed API");
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
-    await execFileAsync("git", ["merge", "--no-ff", "feature", "-m", "Merge feature branch"], {
-      cwd: root,
-    });
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 'main';\n", "utf8");
+    await commitAll(root, "✨ ABCDEF code: update managed API base");
+    let mergeConflicted = false;
+    try {
+      await execFileAsync("git", ["merge", "--no-ff", "feature"], { cwd: root });
+    } catch {
+      mergeConflicted = true;
+    }
+    expect(mergeConflicted).toBe(true);
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 'merged';\n", "utf8");
+    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "Merge feature branch"], { cwd: root });
     const result = runPrePush(root, baseSha, head(root));
 
     expect(result.failure).not.toBeNull();
