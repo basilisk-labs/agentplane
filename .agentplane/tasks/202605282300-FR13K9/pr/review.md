@@ -29,7 +29,10 @@ Created: 2026-05-28T23:00:26.850Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/insights/insights-issue-render.ts |  47 +++
+ .../src/commands/insights/insights-report.ts       | 376 ++++++++++++++++++
+ .../src/commands/insights/insights.command.ts      | 423 +--------------------
+ 3 files changed, 428 insertions(+), 418 deletions(-)
 ```
 
 </details>
