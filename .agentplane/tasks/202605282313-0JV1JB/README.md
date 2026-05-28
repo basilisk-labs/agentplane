@@ -4,7 +4,7 @@ title: "Harvest task artifacts decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-28T23:20:59.721Z"
+  updated_by: "CODER"
+  note: "Verified harvest task artifacts decomposition. Commands passed: focused harvest context vitest (11 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 36 to 35; harvest-tasks-artifacts.ts is 175 lines."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Decompose harvest task artifact model and builders in the task worktree, preserving the existing context harvest tasks API and verifying focused behavior before opening the PR."
+  -
+    type: "verify"
+    at: "2026-05-28T23:20:59.721Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified harvest task artifacts decomposition. Commands passed: focused harvest context vitest (11 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 36 to 35; harvest-tasks-artifacts.ts is 175 lines."
 doc_version: 3
-doc_updated_at: "2026-05-28T23:13:46.745Z"
+doc_updated_at: "2026-05-28T23:20:59.746Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/context/harvest-tasks-artifacts.ts by extracting stable model/build/render helpers while preserving the existing context harvest tasks API and behavior."
 sections:
@@ -69,6 +75,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-28T23:20:59.721Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified harvest task artifacts decomposition. Commands passed: focused harvest context vitest (11 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 36 to 35; harvest-tasks-artifacts.ts is 175 lines.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T23:13:46.745Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605282313-0JV1JB-harvest-artifacts-decomposition/.agentplane/tasks/202605282313-0JV1JB/blueprint/resolved-snapshot.json
+    - old_digest: 156a5710586c99ee5501205337abbffb2275ba5eb5b9c5ba2c8effdce767082f
+    - current_digest: 156a5710586c99ee5501205337abbffb2275ba5eb5b9c5ba2c8effdce767082f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605282313-0JV1JB
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -112,6 +137,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-28T23:20:59.721Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified harvest task artifacts decomposition. Commands passed: focused harvest context vitest (11 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 36 to 35; harvest-tasks-artifacts.ts is 175 lines.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T23:13:46.745Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605282313-0JV1JB-harvest-artifacts-decomposition/.agentplane/tasks/202605282313-0JV1JB/blueprint/resolved-snapshot.json
+- old_digest: 156a5710586c99ee5501205337abbffb2275ba5eb5b9c5ba2c8effdce767082f
+- current_digest: 156a5710586c99ee5501205337abbffb2275ba5eb5b9c5ba2c8effdce767082f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605282313-0JV1JB
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

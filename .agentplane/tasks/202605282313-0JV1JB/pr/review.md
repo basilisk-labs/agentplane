@@ -12,8 +12,8 @@ Created: 2026-05-28T23:13:46.861Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified harvest task artifacts decomposition. Commands passed: focused harvest context vitest (11 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 36 to 35; harvest-tasks-artifacts.ts is 175 lines.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,10 @@ Created: 2026-05-28T23:13:46.861Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/context/harvest-tasks-artifacts.ts         | 447 +--------------------
+ .../src/context/harvest-tasks-builders.ts          | 277 +++++++++++++
+ .../agentplane/src/context/harvest-tasks-model.ts  | 162 ++++++++
+ 3 files changed, 460 insertions(+), 426 deletions(-)
 ```
 
 </details>
