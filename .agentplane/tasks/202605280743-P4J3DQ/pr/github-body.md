@@ -34,7 +34,6 @@ framework bootstrap, ap config show, ap quickstart, task brief, next-action, and
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/recipes-inventory.json                        |  63 +++++++++++++
  packages/agentplane/assets/AGENTS.md               |   4 +-
  .../agentplane/src/agents/agents-template.test.ts  |   6 +-
  .../run-cli.core.upgrade.context-policy.test.ts    | 105 +++++++++++++++++++++
@@ -46,8 +45,8 @@ framework bootstrap, ap config show, ap quickstart, task brief, next-action, and
  .../src/runtime/prompt-modules/registry.ts         |   1 +
  .../src/shared/builtin-assets.generated.ts         |  24 ++---
  packages/agentplane/src/shared/policy-gateway.ts   |  24 +++++
- packages/core/src/process/run-process.ts           |  83 ++++++++++++----
- 13 files changed, 426 insertions(+), 83 deletions(-)
+ packages/core/src/process/run-process.ts           |  27 +++++-
+ 12 files changed, 322 insertions(+), 68 deletions(-)
 ```
 
 </details>
