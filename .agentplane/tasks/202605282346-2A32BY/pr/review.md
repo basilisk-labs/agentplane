@@ -31,7 +31,9 @@ Created: 2026-05-28T23:46:36.926Z
 ```text
  .../src/commands/blueprints/catalog-model.ts       | 278 ++++++++++++++++++++
  .../agentplane/src/commands/blueprints/catalog.ts  | 291 ++-------------------
- 2 files changed, 293 insertions(+), 276 deletions(-)
+ .../commands/guard/impl/close-message-render.ts    |   2 +-
+ .../src/context/harvest-tasks-builders.ts          |   2 +-
+ 4 files changed, 295 insertions(+), 278 deletions(-)
 ```
 
 </details>

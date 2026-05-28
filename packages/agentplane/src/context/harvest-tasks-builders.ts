@@ -238,7 +238,7 @@ function buildReport(opts: {
   };
 }
 
-export function reportPathForWiki(wikiPath: string): string {
+function reportPathForWiki(wikiPath: string): string {
   return `.agentplane/context/derived/reports/task-harvest-${stableHash(wikiPath)}.json`;
 }
 

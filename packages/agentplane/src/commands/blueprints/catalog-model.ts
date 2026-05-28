@@ -80,7 +80,7 @@ export type InstalledBlueprint = {
   recommendedAllowedIds: string[];
 };
 
-export function parseCatalogEntry(raw: unknown, field: string): CatalogEntry {
+function parseCatalogEntry(raw: unknown, field: string): CatalogEntry {
   if (!isRecord(raw)) throw new ValidationError({ message: `${field} entry must be an object.` });
   const id = typeof raw.id === "string" ? raw.id.trim() : "";
   const entryPath = typeof raw.path === "string" ? raw.path.trim() : undefined;
