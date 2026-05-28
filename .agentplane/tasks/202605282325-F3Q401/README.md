@@ -4,7 +4,7 @@ title: "Close commit message decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-28T23:30:46.101Z"
+  updated_by: "CODER"
+  note: "Verified close commit message decomposition. Commands passed: close-message focused vitest (34 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 35 to 34; close-message.ts is 112 lines."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Decompose close commit message helpers in the task worktree while preserving renderMergeMessage and buildCloseCommitMessage behavior under existing focused tests."
+  -
+    type: "verify"
+    at: "2026-05-28T23:30:46.101Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified close commit message decomposition. Commands passed: close-message focused vitest (34 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 35 to 34; close-message.ts is 112 lines."
 doc_version: 3
-doc_updated_at: "2026-05-28T23:26:21.679Z"
+doc_updated_at: "2026-05-28T23:30:46.126Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/commands/guard/impl/close-message.ts by extracting git metadata and rendering helpers while preserving buildCloseCommitMessage/renderMergeMessage behavior."
 sections:
@@ -69,6 +75,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-28T23:30:46.101Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified close commit message decomposition. Commands passed: close-message focused vitest (34 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 35 to 34; close-message.ts is 112 lines.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T23:26:21.679Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605282325-F3Q401-close-message-decomposition/.agentplane/tasks/202605282325-F3Q401/blueprint/resolved-snapshot.json
+    - old_digest: d2a4d77317bd4c4639cbcd149e7addf6c4ac1ae678a924161de98ec91411ef99
+    - current_digest: d2a4d77317bd4c4639cbcd149e7addf6c4ac1ae678a924161de98ec91411ef99
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605282325-F3Q401
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -112,6 +137,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-28T23:30:46.101Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified close commit message decomposition. Commands passed: close-message focused vitest (34 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 35 to 34; close-message.ts is 112 lines.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T23:26:21.679Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605282325-F3Q401-close-message-decomposition/.agentplane/tasks/202605282325-F3Q401/blueprint/resolved-snapshot.json
+- old_digest: d2a4d77317bd4c4639cbcd149e7addf6c4ac1ae678a924161de98ec91411ef99
+- current_digest: d2a4d77317bd4c4639cbcd149e7addf6c4ac1ae678a924161de98ec91411ef99
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605282325-F3Q401
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

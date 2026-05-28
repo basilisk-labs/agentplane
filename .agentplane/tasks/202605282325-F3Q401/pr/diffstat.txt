@@ -1,0 +1,4 @@
+ .../src/commands/guard/impl/close-message-git.ts   |  85 ++++
+ .../commands/guard/impl/close-message-render.ts    | 397 +++++++++++++++++
+ .../src/commands/guard/impl/close-message.ts       | 494 +--------------------
+ 3 files changed, 499 insertions(+), 477 deletions(-)
