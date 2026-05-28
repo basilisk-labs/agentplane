@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605282205-G2R0X5/evidence-command-decomposition",
+  "created_at": "2026-05-28T22:06:13.021Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-05-28T22:09:48.642Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605282205-G2R0X5",
+  "updated_at": "2026-05-28T22:06:13.021Z",
+  "verify": {
+    "status": "pass"
+  }
+}
