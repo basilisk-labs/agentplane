@@ -64,7 +64,7 @@ export function assertRunnerBlueprintPolicyModuleBudget(bundle: RunnerContextBun
   });
 }
 
-export function buildRunnerBlueprintContextManifest(opts: {
+function buildRunnerBlueprintContextManifest(opts: {
   basePrompts: readonly RunnerPromptBlock[];
   recipe?: RunnerRecipeContext;
   policyModules: readonly string[];
