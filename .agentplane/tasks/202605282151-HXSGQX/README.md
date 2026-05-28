@@ -1,10 +1,11 @@
 ---
 id: "202605282151-HXSGQX"
 title: "Task brief command decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4220."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "packages/agentplane/src/commands/task/brief-render.ts"
   findings:
     - "brief.command.ts now contains only CLI spec/handler wiring; brief-model.ts owns JSON contract assembly; brief-render.ts owns text output. Focused route-decision tests, arch:deps, typecheck, lint:core, format:changed, and hotspot report passed."
-commit: null
+commit:
+  hash: "594d42480782d76172678dbe39a1309a48864933"
+  message: "✅ HXSGQX task: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: decompose task brief command into focused, acyclic helpers while preserving JSON/text output contracts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4220 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification passed. Commands: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts --config vitest.workspace.ts (2 files, 13 tests passed); bun run arch:deps (no dependency violations); bun run typecheck (passed); bun run lint:core (passed); bun run format:changed (passed); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 (passed, runtime warnings 42 -> 41)."
+  -
+    type: "status"
+    at: "2026-05-28T22:01:29.662Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4220 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T21:57:37.492Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T22:01:29.668Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/task/brief.command.ts by extracting pure brief assembly/rendering helpers while preserving task brief output and reducing hotspot pressure for agent-facing context commands. Verify with focused task brief CLI tests, typecheck, lint, arch deps, format, and hotspot report."
 sections:
   Summary: |-

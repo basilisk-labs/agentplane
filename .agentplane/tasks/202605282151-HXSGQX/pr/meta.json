@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-28T22:00:40Z",
   "base": "main",
   "branch": "task/202605282151-HXSGQX/task-brief-command-decomposition",
   "created_at": "2026-05-28T21:52:17.186Z",
   "diffstat_sha256": "sha256:75306354accc857c5fea48beb0f5e03e8bef2d6064886189f634510ee2f18bd7",
   "last_verified_at": "2026-05-28T21:57:37.467Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "594d42480782d76172678dbe39a1309a48864933",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-28T22:00:40Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605282151-HXSGQX",
-  "updated_at": "2026-05-28T21:52:17.186Z",
+  "updated_at": "2026-05-28T22:00:40Z",
   "verify": {
     "status": "pass"
   }
