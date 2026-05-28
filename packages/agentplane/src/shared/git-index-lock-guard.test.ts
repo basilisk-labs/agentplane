@@ -27,6 +27,10 @@ const allowedIndexLockFiles = new Map<string, string>([
     "checks for pre-integration git index lock state",
   ],
   [
+    "packages/agentplane/src/commands/pr/integrate/internal/merge-mutation.ts",
+    "checks for pre-integration git index lock state after merge mutation extraction",
+  ],
+  [
     "packages/agentplane/src/shared/git-index-lock-guard.test.ts",
     "enforces the Git index lock ownership guard",
   ],
