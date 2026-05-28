@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-28T07:42:49Z",
   "base": "main",
   "branch": "task/202605280427-XQJEPY/migrate-process-runner-to-execa-v9",
   "created_at": "2026-05-28T04:28:48.102Z",
   "diffstat_sha256": "sha256:70ae6e690e31dd8e6bd16d33ebb5a203810b74f5ba01a551a5df762d3cbd5fd4",
   "last_verified_at": "2026-05-28T05:51:00.457Z",
   "last_verified_diffstat_sha256": "sha256:70ae6e690e31dd8e6bd16d33ebb5a203810b74f5ba01a551a5df762d3cbd5fd4",
+  "merge_commit": "7e6d4d63d0e340b01a484148791fc56e4177c9f5",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-28T07:42:49Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605280427-XQJEPY",
-  "updated_at": "2026-05-28T04:28:48.102Z",
+  "updated_at": "2026-05-28T07:42:49Z",
   "verify": {
     "status": "pass"
   }

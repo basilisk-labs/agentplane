@@ -1,10 +1,11 @@
 ---
 id: "202605280427-XQJEPY"
 title: "Migrate process runner to execa v9"
-status: "DOING"
+result_summary: "Merged via PR #4182."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Extended dependency update verified: upgraded @typescript-eslint/eslint-plugin to 8.60.0, @typescript-eslint/parser to 8.60.0, and turbo to 2.9.15; npm outdated returned {}; local checks passed: format:check, core build, targeted eslint, test:project -- core, test:critical, policy routing."
   attempts: 0
-commit: null
+commit:
+  hash: "7e6d4d63d0e340b01a484148791fc56e4177c9f5"
+  message: "Merge pull request #4182 from basilisk-labs/task/202605280427-XQJEPY/migrate-process-runner-to-execa-v9"
 comments:
   -
     author: "CODER"
     body: "Start: Migrate the core process runner to execa v9 in the dedicated branch_pr worktree, preserve the public process API, and record an outdated dependency audit without upgrading unrelated packages."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4182 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Extended dependency update verified: upgraded @typescript-eslint/eslint-plugin to 8.60.0, @typescript-eslint/parser to 8.60.0, and turbo to 2.9.15; npm outdated returned {}; local checks passed: format:check, core build, targeted eslint, test:project -- core, test:critical, policy routing."
+  -
+    type: "status"
+    at: "2026-05-28T07:43:32.104Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4182 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T07:33:51.724Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T07:43:32.109Z"
+doc_updated_by: "INTEGRATOR"
 description: "Upgrade @agentplaneorg/core process execution from execa v5 to v9, preserve runProcess/runProcessSync/startProcess/execFileAsync behavior, and audit other outdated package versions for follow-up decisions."
 sections:
   Summary: |-
