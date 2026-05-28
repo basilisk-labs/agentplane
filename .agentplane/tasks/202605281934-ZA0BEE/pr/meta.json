@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-28T19:51:36Z",
   "base": "main",
   "branch": "task/202605281934-ZA0BEE/route-decision-module-decomposition",
   "created_at": "2026-05-28T19:34:55.525Z",
   "diffstat_sha256": "sha256:f10ba4ddf1f4d8fb345c155969eebe2d9dd1ad8daa8920750f24cc14e3bec361",
   "last_verified_at": "2026-05-28T19:39:40.365Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "c960ed9ba36f16632853e54d2230bd636dafd1de",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-28T19:51:36Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605281934-ZA0BEE",
-  "updated_at": "2026-05-28T19:34:55.525Z",
+  "updated_at": "2026-05-28T19:51:36Z",
   "verify": {
     "status": "pass"
   }
