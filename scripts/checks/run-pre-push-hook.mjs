@@ -379,9 +379,24 @@ function isCommitAncestorOf(ancestor, descendant) {
   }
 }
 
+function readCommitParents(commit) {
+  return readQuiet("git", ["rev-list", "--parents", "-n", "1", commit])
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(1);
+}
+
+function isMergedUpgradeLineagePredecessor(commit, upgradeCommit, mergeInfos) {
+  if (commit === upgradeCommit || !isCommitAncestorOf(commit, upgradeCommit)) return false;
+  return mergeInfos.some(
+    ({ firstParent, mergedParents }) =>
+      !isCommitAncestorOf(commit, firstParent) &&
+      mergedParents.some((parent) => isCommitAncestorOf(upgradeCommit, parent)),
+  );
+}
+
 function readCommitFiles(commit) {
-  const parentLine = readQuiet("git", ["rev-list", "--parents", "-n", "1", commit]);
-  const parentCount = parentLine.split(/\s+/).filter(Boolean).length - 1;
+  const parentCount = readCommitParents(commit).length;
   const args =
     parentCount > 1
       ? ["diff-tree", "--cc", "--no-commit-id", "--name-only", "-r", commit]
@@ -408,9 +423,13 @@ function enforceTaskBoundOutgoingCommits(range) {
   const managedUpgradeCommits = commits.filter((commit) =>
     hasManagedUpgradeEvidence(commitBodyFor(commit)),
   );
+  const mergeInfos = commits.flatMap((commit) => {
+    const [firstParent, ...mergedParents] = readCommitParents(commit);
+    return firstParent && mergedParents.length > 0 ? [{ firstParent, mergedParents }] : [];
+  });
   const isPreUpgradeCommit = (commit) =>
-    managedUpgradeCommits.some(
-      (upgradeCommit) => commit !== upgradeCommit && isCommitAncestorOf(commit, upgradeCommit),
+    managedUpgradeCommits.some((upgradeCommit) =>
+      isMergedUpgradeLineagePredecessor(commit, upgradeCommit, mergeInfos),
     );
   const failures = [];
   for (const commit of commits) {

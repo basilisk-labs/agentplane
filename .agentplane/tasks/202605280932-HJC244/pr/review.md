@@ -13,7 +13,7 @@ Created: 2026-05-28T10:01:37.913Z
 ## Verification
 
 - State: ok
-- Note: Verification passed for issue #4183 fix. Commands: bun test packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts packages/agentplane/src/cli/run-cli.core.insights-report.test.ts (23 pass); bun run format:check (pass); node .agentplane/policy/check-routing.mjs (pass); AGENTPLANE_FAST_CHANGED_FILES=<touched paths> bun run ci:local:fast (pass, full-fast selector).
+- Note: Verification passed after review fix for issue #4183. Commands: bun test packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts packages/agentplane/src/cli/run-cli.core.insights-report.test.ts (24 pass); bun run format:check (pass); bun run lint:core (pass); node .agentplane/policy/check-routing.mjs (pass); AGENTPLANE_FAST_CHANGED_FILES=<touched paths> bun run ci:local:fast (pass, full-fast selector: format/schema/templates/routing/release parity/build/typecheck/bundles/docs freshness/hotspot/vitest projects/lint/unit/critical CLI).
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,13 +29,13 @@ Created: 2026-05-28T10:01:37.913Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...un-cli.core.hooks.pre-push-task-binding.test.ts |  62 +++++-
+ ...un-cli.core.hooks.pre-push-task-binding.test.ts | 100 ++++++++-
  .../src/cli/run-cli.core.insights-report.test.ts   |   6 +-
- .../src/commands/hooks/pre-push-task-binding.ts    | 219 +++++++++++++++++++++
- .../agentplane/src/commands/hooks/run.pre-push.ts  | 169 +---------------
+ .../src/commands/hooks/pre-push-task-binding.ts    | 244 +++++++++++++++++++++
+ .../agentplane/src/commands/hooks/run.pre-push.ts  | 169 +-------------
  .../commands/insights/insights-issue-context.ts    |   9 +-
- scripts/checks/run-pre-push-hook.mjs               |  36 +++-
- 6 files changed, 324 insertions(+), 177 deletions(-)
+ scripts/checks/run-pre-push-hook.mjs               |  55 ++++-
+ 6 files changed, 406 insertions(+), 177 deletions(-)
 ```
 
 </details>
