@@ -62,7 +62,10 @@ function normalizeSlashes(value: string): string {
 function normalInstalledPolicyTemplates(
   templates: Awaited<ReturnType<typeof loadPolicyTemplates>>,
 ): Awaited<ReturnType<typeof loadPolicyTemplates>> {
-  return templates.filter((policy) => policy.relativePath !== "framework.dev.md");
+  return templates.filter((policy) => {
+    const relativePath = normalizeSlashes(policy.relativePath);
+    return relativePath !== "framework.dev.md" && relativePath !== "context.must.md";
+  });
 }
 
 installRunCliIntegrationHarness();

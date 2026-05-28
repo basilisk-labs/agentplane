@@ -7,7 +7,8 @@ import path from "node:path";
 import type { Stream, Readable as ReadableStream } from "node:stream";
 import { fileURLToPath } from "node:url";
 
-import { execa, execaSync, type ResultPromise } from "execa";
+import * as execaModule from "execa";
+import type { ResultPromise } from "execa";
 
 type ProcessStdioOption = "pipe" | "ignore" | "inherit" | "ipc" | Stream | number | undefined;
 type ExecFileCompatOptions = ExecFileOptions | ExecFileOptionsWithBufferEncoding;
@@ -75,6 +76,20 @@ type StartProcessFn = {
   (opts: RunProcessOptions & { encoding: null }): ManagedProcess;
   (opts: RunProcessOptions): ManagedProcess;
 };
+
+type ExecaCompatModule = typeof execaModule & {
+  default?: typeof execaModule.execa;
+  sync?: typeof execaModule.execaSync;
+};
+
+const execaCompat = execaModule as ExecaCompatModule;
+const execa = execaCompat.execa ?? execaCompat.default;
+const execaSync = execaCompat.execaSync ?? execaCompat.sync;
+const execaUsesBufferEncoding = Boolean(execaCompat.execa);
+
+if (!execa || !execaSync) {
+  throw new Error("Unsupported execa module shape: expected execa/execaSync exports");
+}
 
 type ExecFileAsyncFn = {
   (
@@ -350,7 +365,14 @@ function buildProcessOptions(opts: RunProcessOptions) {
   return {
     cwd: resolveCwd(opts.cwd),
     env: opts.env ?? process.env,
-    encoding: binaryOutput ? (isBunRuntime() ? "latin1" : "buffer") : (opts.encoding ?? "utf8"),
+    encoding: binaryOutput
+      ? isBunRuntime()
+        ? "latin1"
+        : execaUsesBufferEncoding
+          ? "buffer"
+          : null
+      : (opts.encoding ?? "utf8"),
+    ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }),
     cleanup: opts.cleanup ?? false,
     reject: opts.reject ?? true,
     extendEnv: opts.extendEnv ?? false,
@@ -365,7 +387,6 @@ function buildProcessOptions(opts: RunProcessOptions) {
     ...(opts.stdio === undefined ? {} : { stdio: opts.stdio }),
     shell: false,
     ...(opts.detached === undefined ? {} : { detached: opts.detached }),
-    ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }),
   };
 }
 

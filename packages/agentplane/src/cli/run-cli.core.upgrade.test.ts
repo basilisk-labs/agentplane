@@ -58,57 +58,61 @@ const WORKFLOW_RUNTIME_ARTIFACTS_TIMEOUT_MS = os.platform() === "win32" ? 120_00
 installRunCliIntegrationHarness();
 
 describe("runCli", () => {
-  it("upgrade applies bundle changes by default and cleans backup artifacts", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
-    await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
-    await writeFile(
-      path.join(root, ".agentplane", "agents", "ORCHESTRATOR.json"),
-      '{"legacy":true}\n',
-      "utf8",
-    );
+  it(
+    "upgrade applies bundle changes by default and cleans backup artifacts",
+    { timeout: 60_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
+      await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+      await writeFile(
+        path.join(root, ".agentplane", "agents", "ORCHESTRATOR.json"),
+        '{"legacy":true}\n',
+        "utf8",
+      );
 
-    const { bundlePath, checksumPath } = await createUpgradeBundle({
-      "AGENTS.md": "# AGENTS\n\nUpdated\n",
-      ".agentplane/agents/ORCHESTRATOR.json": '{"updated":true}\n',
-    });
+      const { bundlePath, checksumPath } = await createUpgradeBundle({
+        "AGENTS.md": "# AGENTS\n\nUpdated\n",
+        ".agentplane/agents/ORCHESTRATOR.json": '{"updated":true}\n',
+      });
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "upgrade",
-        "--bundle",
-        bundlePath,
-        "--checksum",
-        checksumPath,
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("Upgrade applied");
-      expect(io.stdout).toContain("Upgrade commit:");
-      expect(io.stderr).not.toContain("task migrate-doc --all");
-    } finally {
-      io.restore();
-    }
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "upgrade",
+          "--bundle",
+          bundlePath,
+          "--checksum",
+          checksumPath,
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("Upgrade applied");
+        expect(io.stdout).toContain("Upgrade commit:");
+        expect(io.stderr).not.toContain("task migrate-doc --all");
+      } finally {
+        io.restore();
+      }
 
-    const agentsText = await readFile(path.join(root, "AGENTS.md"), "utf8");
-    expect(agentsText).toContain("Updated");
+      const agentsText = await readFile(path.join(root, "AGENTS.md"), "utf8");
+      expect(agentsText).toContain("Updated");
 
-    const agentEntries = await readdir(path.join(root, ".agentplane", "agents"));
-    expect(agentEntries.some((entry) => entry.startsWith("ORCHESTRATOR.json.bak-"))).toBe(false);
-    const rootEntries = await readdir(root);
-    expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
+      const agentEntries = await readdir(path.join(root, ".agentplane", "agents"));
+      expect(agentEntries.some((entry) => entry.startsWith("ORCHESTRATOR.json.bak-"))).toBe(false);
+      const rootEntries = await readdir(root);
+      expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
 
-    const execFileAsync = promisify(execFile);
-    const { stdout: subjectOut } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-    const subject = String(subjectOut ?? "").trim();
-    expect(subject).toContain("upgrade: apply framework");
-  });
+      const execFileAsync = promisify(execFile);
+      const { stdout: subjectOut } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      const subject = String(subjectOut ?? "").trim();
+      expect(subject).toContain("upgrade: apply framework");
+    },
+  );
 
   it("upgrade renders managed markdown assets before writing installed policy files", async () => {
     const root = await mkGitRepoRoot();

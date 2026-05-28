@@ -5,7 +5,10 @@ import { fileExists, getPathKind } from "../../cli/fs-utils.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import { renderMarkdownPromptTemplate } from "../../agents/agents-template.js";
-import { renderPolicyGatewayTemplateText } from "../../shared/policy-gateway.js";
+import {
+  renderPolicyGatewayTemplateText,
+  withContextPolicyGatewayText,
+} from "../../shared/policy-gateway.js";
 
 import {
   INCIDENTS_POLICY_PATH,
@@ -16,6 +19,14 @@ import {
   toUpgradeBaselineKey,
 } from "./policy.js";
 import type { FrameworkManifest, UpgradeReviewRecord } from "./types.js";
+
+const CONTEXT_POLICY_ENTRY: FrameworkManifest["files"][number] = {
+  path: ".agentplane/policy/context.must.md",
+  source_path: "policy/context.must.md",
+  type: "markdown",
+  merge_strategy: "agents_policy_markdown",
+  required: true,
+};
 
 export type ManagedUpgradePlan = {
   additions: string[];
@@ -54,6 +65,7 @@ function renderIncomingMarkdownAsset(opts: {
   rel: string;
   sourceRel: string;
   data: Buffer;
+  contextPolicyEnabled: boolean;
 }): Buffer {
   let source = opts.data.toString("utf8");
   if (opts.rel === "AGENTS.md" || opts.rel === "CLAUDE.md") {
@@ -62,7 +74,11 @@ function renderIncomingMarkdownAsset(opts: {
   const rendered = renderMarkdownPromptTemplate(source, {
     source_ref: `upgrade:${opts.sourceRel}`,
   });
-  return Buffer.from(rendered.contents, "utf8");
+  const contents =
+    opts.contextPolicyEnabled && (opts.rel === "AGENTS.md" || opts.rel === "CLAUDE.md")
+      ? withContextPolicyGatewayText(rendered.contents)
+      : rendered.contents;
+  return Buffer.from(contents, "utf8");
 }
 
 export async function planManagedUpgrade(opts: {
@@ -81,6 +97,19 @@ export async function planManagedUpgrade(opts: {
   const missingRequired: string[] = [];
   const reviewRecords: UpgradeReviewRecord[] = [];
   let incidentsAppendedCount = 0;
+  const contextPolicyEnabled = await fileExists(
+    path.join(opts.gitRoot, ".agentplane", "context", "agentplane.context.yaml"),
+  );
+  const manifestFiles = contextPolicyEnabled
+    ? [
+        ...opts.manifest.files,
+        ...(opts.manifest.files.some(
+          (entry) => entry.path.replaceAll("\\", "/") === CONTEXT_POLICY_ENTRY.path,
+        )
+          ? []
+          : [CONTEXT_POLICY_ENTRY]),
+      ]
+    : opts.manifest.files;
 
   const policyGatewayRel = await resolvePolicyGatewayRel(opts.gitRoot);
   const remapManagedGatewayRel = (rel: string): string => {
@@ -114,7 +143,7 @@ export async function planManagedUpgrade(opts: {
     return remapManagedGatewayRel(relRaw);
   };
 
-  for (const entry of opts.manifest.files) {
+  for (const entry of manifestFiles) {
     const rel = normalizeManagedRel(entry.path);
     const destPath = path.join(opts.gitRoot, rel);
     const kind = await getPathKind(destPath);
@@ -148,6 +177,7 @@ export async function planManagedUpgrade(opts: {
         rel,
         sourceRel: sourceCandidates[0] ?? sourceRelRaw,
         data: incomingData,
+        contextPolicyEnabled,
       });
     }
 

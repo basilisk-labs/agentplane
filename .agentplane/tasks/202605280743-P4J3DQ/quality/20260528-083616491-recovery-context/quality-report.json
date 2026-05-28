@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202605280743-P4J3DQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-28T08:36:16.491Z",
+  "verdict": "pass",
+  "summary": "Upgrade now gates context policy installation on initialized context workspaces and preserves non-context upgrades.",
+  "evaluated_sha": "e00b980f2d43af7a4602eb85ac611c6ce078e802",
+  "blueprint_digest": "5a757ffdef075e49edafea4e2924f0ed2d08ea61f3069df5e04f329f052ebe2c",
+  "findings": [
+    "Regression coverage verifies that plain upgraded repositories do not install or reference context.must.md, while context-initialized repositories do install and route it. Required local and hosted checks passed after aligning init policy template tests."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605280743-P4J3DQ/README.md",
+    "GitHub PR #4185 checks: PR verification, test-windows, verify-unit, verify-static, verify-cli-critical, verify-contract, verify-coverage, verify-workflow, docs, CodeQL"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Upgrade behavior now depends on .agentplane/context/agentplane.context.yaml as the context-layer marker; repositories with manually partial context artifacts but no manifest remain treated as non-context."
+  ]
+}

@@ -168,6 +168,9 @@ describe("framework prompt module registry", () => {
     expect(addresses).not.toContain(
       "framework/policy/.agentplane~policy/body/policy.framework_dev.body.framework.dev",
     );
+    expect(addresses).not.toContain(
+      "framework/policy/.agentplane~policy/body/policy.context.must.body.context.must",
+    );
 
     const compiledModules = compiled.nodes.map((node) => node.module);
     const gatewayText = assembleStringModules(
@@ -189,6 +192,21 @@ describe("framework prompt module registry", () => {
     expect(branchPolicyText).toBe(
       policyTemplates.find((template) => template.relativePath === "workflow.branch_pr.md")
         ?.contents,
+    );
+
+    const contextCompiled = compilePromptModuleGraph({
+      graph: registry,
+      context: {
+        command: "context",
+        commands: ["context"],
+        policy_gateway: "codex",
+        workflow_mode: "branch_pr",
+      },
+    });
+    const contextAddresses = contextCompiled.nodes.map((node) => node.module.address.value);
+    expect(contextCompiled.ok).toBe(true);
+    expect(contextAddresses).toContain(
+      "framework/policy/.agentplane~policy/body/policy.context.must.body.context.must",
     );
   });
 

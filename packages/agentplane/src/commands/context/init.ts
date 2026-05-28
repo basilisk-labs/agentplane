@@ -23,6 +23,10 @@ import {
   shouldRewriteExistingContextFile,
 } from "./init-profile-switch.js";
 import { buildContextManifestYaml } from "./init-manifest.js";
+import {
+  ensureRootGatewayReferencesContextPolicy,
+  renderContextPolicyMarkdown,
+} from "./init-policy-gateway.js";
 import { starterWikiPageFiles, wikiFrontmatter } from "./init-wiki.js";
 import { buildWikiPolicyMarkdown } from "./init-wiki-policy.js";
 import { cmdContextReindex } from "./reindex.js";
@@ -293,6 +297,7 @@ async function createContextWorkspace(
   const skipped: string[] = [];
   const now = new Date().toISOString();
   const projectName = path.basename(root);
+  const contextPolicyText = await renderContextPolicyMarkdown();
   const files: { relative: string; content: string; policy?: boolean }[] = [
     { relative: "context/README.md", content: buildContextReadme(parsed.profile) },
     { relative: "context/raw/.gitkeep", content: "" },
@@ -319,6 +324,11 @@ async function createContextWorkspace(
     {
       relative: ".agentplane/context/policies/context.rules.md",
       content: buildPolicyMarkdown("Context rules"),
+      policy: true,
+    },
+    {
+      relative: ".agentplane/policy/context.must.md",
+      content: contextPolicyText,
       policy: true,
     },
     {
@@ -381,6 +391,7 @@ async function createContextWorkspace(
   });
 
   await assertProfileSwitchIsExplicit({ root, parsed, readExisting });
+  await ensureRootGatewayReferencesContextPolicy(root, { rewritten });
 
   for (const file of files) {
     const abs = path.join(root, file.relative);

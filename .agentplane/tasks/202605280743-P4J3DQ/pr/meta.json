@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605280743-P4J3DQ/gate-context-policy-upgrade",
+  "created_at": "2026-05-28T07:44:38.631Z",
+  "diffstat_sha256": "sha256:eab08bcd6c3740a3024b2c882c05fc0777b13e9b2fea704c36ee61eafec68bdd",
+  "last_verified_at": "2026-05-28T08:08:04.016Z",
+  "last_verified_diffstat_sha256": "sha256:11be59ee0504838a926b93aa90d9f3c3771ee54bc0513207358b047d954773b4",
+  "schema_version": 1,
+  "task_id": "202605280743-P4J3DQ",
+  "updated_at": "2026-05-28T07:44:38.631Z",
+  "verify": {
+    "status": "pass"
+  }
+}
