@@ -12,8 +12,8 @@ Created: 2026-05-28T23:36:39.147Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified context wiki command decomposition. Commands passed: focused wiki vitest (3 files, 26 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 34 to 33; wiki.ts is 220 lines.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,10 @@ Created: 2026-05-28T23:36:39.147Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../agentplane/src/commands/context/wiki-lint.ts   | 182 ++++++++++
+ .../agentplane/src/commands/context/wiki-page.ts   | 194 +++++++++++
+ packages/agentplane/src/commands/context/wiki.ts   | 383 +--------------------
+ 3 files changed, 392 insertions(+), 367 deletions(-)
 ```
 
 </details>

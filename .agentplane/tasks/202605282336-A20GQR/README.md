@@ -4,7 +4,7 @@ title: "Context wiki command decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-28T23:41:18.460Z"
+  updated_by: "CODER"
+  note: "Verified context wiki command decomposition. Commands passed: focused wiki vitest (3 files, 26 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 34 to 33; wiki.ts is 220 lines."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Decompose context wiki rendering and lint helpers in the task worktree while preserving wiki new, lint, explain, link, and index behavior under focused tests."
+  -
+    type: "verify"
+    at: "2026-05-28T23:41:18.460Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified context wiki command decomposition. Commands passed: focused wiki vitest (3 files, 26 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 34 to 33; wiki.ts is 220 lines."
 doc_version: 3
-doc_updated_at: "2026-05-28T23:36:39.033Z"
+doc_updated_at: "2026-05-28T23:41:18.485Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/commands/context/wiki.ts by extracting wiki page rendering and lint/catalog helpers while preserving context wiki command behavior."
 sections:
@@ -69,6 +75,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-28T23:41:18.460Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified context wiki command decomposition. Commands passed: focused wiki vitest (3 files, 26 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 34 to 33; wiki.ts is 220 lines.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T23:36:39.033Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605282336-A20GQR-context-wiki-decomposition/.agentplane/tasks/202605282336-A20GQR/blueprint/resolved-snapshot.json
+    - old_digest: f5cec90fb014cc16db3b213a9f1021bf2f8489a6717c729ccf7af5bd16d6a617
+    - current_digest: f5cec90fb014cc16db3b213a9f1021bf2f8489a6717c729ccf7af5bd16d6a617
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605282336-A20GQR
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -112,6 +137,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-28T23:41:18.460Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified context wiki command decomposition. Commands passed: focused wiki vitest (3 files, 26 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 34 to 33; wiki.ts is 220 lines.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T23:36:39.033Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605282336-A20GQR-context-wiki-decomposition/.agentplane/tasks/202605282336-A20GQR/blueprint/resolved-snapshot.json
+- old_digest: f5cec90fb014cc16db3b213a9f1021bf2f8489a6717c729ccf7af5bd16d6a617
+- current_digest: f5cec90fb014cc16db3b213a9f1021bf2f8489a6717c729ccf7af5bd16d6a617
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605282336-A20GQR
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
