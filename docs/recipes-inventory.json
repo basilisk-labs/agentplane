@@ -39,6 +39,69 @@
           }
         }
       ]
+    },
+    {
+      "id": "llm-wiki",
+      "name": "LLM Wiki",
+      "version": "0.1.0",
+      "summary": "Adds an agent-maintained project wiki with raw-source ingestion, query routing, and stale-input guardrails.",
+      "source": "agentplane-recipes/recipes/llm-wiki",
+      "self_contained": true,
+      "scenarios": [
+        {
+          "id": "llm-wiki",
+          "summary": "Create the llm-wiki structure or assimilate incoming source files before project work continues.",
+          "use_when": [
+            "The project has no llm-wiki namespace yet.",
+            "llm-wiki/_input or the configured input directory contains unprocessed files.",
+            "A request depends on project knowledge that should be routed through llm-wiki/index.md."
+          ],
+          "required_inputs": ["wiki_root", "input_dir"],
+          "outputs": ["wiki_root", "input_dir", "assimilated_files", "updated_index"],
+          "agents_involved": ["llm-wiki-operator"],
+          "skills_used": ["llm-wiki-discipline"],
+          "tools_used": [],
+          "run_profile": {
+            "mode": "analysis",
+            "sandbox": "workspace-write",
+            "writes_artifacts_to": ["llm-wiki/"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "parallel-codex",
+      "name": "Parallel Codex Runners",
+      "version": "0.1.0",
+      "summary": "Plan and supervise independent Codex task runners with AgentPlane run observability.",
+      "source": "agentplane-recipes/recipes/parallel-codex",
+      "self_contained": true,
+      "scenarios": [
+        {
+          "id": "parallel-codex",
+          "summary": "Split safe work into independent AgentPlane tasks and supervise each Codex runner.",
+          "use_when": [
+            "The parent scope can be split into independent child tasks with non-overlapping file ownership.",
+            "Each child can produce its own verification evidence and result manifest.",
+            "You need live progress visibility while several Codex runners execute."
+          ],
+          "required_inputs": ["parent_goal", "candidate_slices", "conflict_boundaries"],
+          "outputs": [
+            "child_task_ids",
+            "runner_run_ids",
+            "monitoring_commands",
+            "integration_order"
+          ],
+          "agents_involved": ["parallel-codex-coordinator"],
+          "skills_used": ["parallel-codex-discipline"],
+          "tools_used": [],
+          "run_profile": {
+            "mode": "execution",
+            "sandbox": "workspace-write",
+            "writes_artifacts_to": ["artifacts/parallel-codex-plan.md"]
+          }
+        }
+      ]
     }
   ]
 }

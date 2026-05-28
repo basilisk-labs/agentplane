@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { execFileAsync, runProcess, runProcessSync } from "./run-process.js";
+import { execFileAsync, runProcess, runProcessSync, startProcess } from "./run-process.js";
 
 describe("run-process", () => {
   it("returns utf8 stdout without stripping the trailing newline", async () => {
@@ -43,6 +43,22 @@ describe("run-process", () => {
       encoding: "utf8",
     });
     expect(result.stdout).toBe("sync");
+  });
+
+  it("returns a subprocess for streaming callers", async () => {
+    const child = startProcess({
+      command: "node",
+      args: ["-e", "process.stdout.write('streamed')"],
+      encoding: "utf8",
+      stdout: "pipe",
+    });
+    let stdout = "";
+    child.stdout?.on("data", (chunk: Buffer | string) => {
+      stdout += String(chunk);
+    });
+    const result = await child;
+    expect(result.exitCode).toBe(0);
+    expect(stdout).toBe("streamed");
   });
 
   it("rejects executable names that cannot be passed safely as argv", async () => {
