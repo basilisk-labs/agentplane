@@ -15,8 +15,8 @@ Verify current AgentPlane changes and prepare the next patch release through the
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Local release gates and GitHub PR checks passed for v0.6.11 release candidate.
 - Canonical workflow state lives in the task README.
 
 <details>
