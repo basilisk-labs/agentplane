@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202605282325-F3Q401/close-message-decomposition",
+  "created_at": "2026-05-28T23:26:21.787Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202605282325-F3Q401",
+  "updated_at": "2026-05-28T23:26:21.787Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
