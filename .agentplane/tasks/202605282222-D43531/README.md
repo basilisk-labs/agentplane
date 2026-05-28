@@ -1,10 +1,11 @@
 ---
 id: "202605282222-D43531"
 title: "Context command dispatcher decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4224."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -49,11 +50,16 @@ quality_review:
     - "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300"
   findings:
     - "context.command.ts is now a one-line public barrel; command wrappers remain in context-runner.ts at 340 lines, group usage handlers moved to context-groups.ts, and interactive init prompting moved to context-init-runner.ts. Hotspot warning count decreased from 40 to 39."
-commit: null
+commit:
+  hash: "544242446f4f3b3bacd9535a46e5e6802a22ed32"
+  message: "✅ D43531 context: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: decompose context command dispatcher into focused acyclic helpers while preserving context CLI behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4224 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -68,9 +74,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Context command dispatcher split into thin entrypoint, runner, group usage handlers, and interactive init runner. Verified with focused context CLI tests, typecheck, arch deps, lint, format, and hotspot threshold check (runtime warnings 40 -> 39)."
+  -
+    type: "status"
+    at: "2026-05-28T22:33:19.294Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4224 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T22:29:54.395Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T22:33:19.299Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/context/context.command.ts by extracting group dispatch and context command runner helpers while preserving context CLI behavior. Reduce hotspot warnings and keep command imports acyclic. Verify with focused context CLI tests, typecheck, lint, arch deps, format, and hotspot report."
 sections:
   Summary: |-
