@@ -1,3 +1,5 @@
+import { findWorktreeForBranch } from "@agentplaneorg/core/git";
+
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
@@ -8,7 +10,13 @@ import {
   type RouteBatchOwnership,
   type RouteBatchNextAction,
 } from "./route-batch-ownership.js";
-import { deriveRouteOracle, type RouteBlocker, type RouteOracle } from "./route-oracle.js";
+import {
+  deriveRouteExecutionPacket,
+  deriveRouteOracle,
+  type RouteBlocker,
+  type RouteExecutionPacket,
+  type RouteOracle,
+} from "./route-oracle.js";
 import { workStartCommand } from "./work-start-command.js";
 
 import { loadBackendTask, loadCommandContext, type CommandContext } from "./task-backend.js";
@@ -50,6 +58,8 @@ type TaskRouteDecision = {
     headSha: string | null;
     prBranch: string | null;
     checkoutRole: "base" | "task_worktree" | "unknown";
+    baseCheckoutPath: string | null;
+    taskWorktreePath: string | null;
   };
   approval: {
     runtime: {
@@ -66,6 +76,7 @@ type TaskRouteDecision = {
   ambiguities: RouteAmbiguity[];
   nextAction: RouteNextAction;
   oracle: RouteOracle;
+  executionPacket: RouteExecutionPacket;
   repairPlan: RouteRepairStep[];
   sourceConfidence: Record<string, RouteSourceConfidence>;
 };
@@ -287,6 +298,23 @@ function deriveCheckoutRole(
 ): TaskRouteDecision["workspace"]["checkoutRole"] {
   if (!resume.branch || !resume.base_branch) return "unknown";
   return resume.branch === resume.base_branch ? "base" : "task_worktree";
+}
+
+async function findWorktreePath(cwd: string, branch: string | null): Promise<string | null> {
+  if (!branch) return null;
+  return findWorktreeForBranch(cwd, branch).catch(() => null);
+}
+
+function inferredTaskBranch(
+  resume: TaskResumeContext,
+  prFlow: PrFlowStatusReport | null,
+): string | null {
+  if (prFlow?.branch.name) return prFlow.branch.name;
+  if (resume.pr_branch) return resume.pr_branch;
+  if (resume.branch && resume.base_branch && resume.branch !== resume.base_branch) {
+    return resume.branch;
+  }
+  return null;
 }
 
 function deriveApprovalContract(ctx: CommandContext): TaskRouteDecision["approval"] {
@@ -511,12 +539,32 @@ export async function buildTaskRouteDecision(opts: {
     blockers,
     batchOwnership,
   });
+  const baseCheckoutPath = await findWorktreePath(ctx.resolvedProject.gitRoot, resume.base_branch);
+  const taskWorktreePath =
+    ctx.config.workflow_mode === "branch_pr"
+      ? await findWorktreePath(ctx.resolvedProject.gitRoot, inferredTaskBranch(resume, prFlow))
+      : null;
   const oracle = deriveRouteOracle({
     task,
     workflowMode: ctx.config.workflow_mode,
     nextAction,
     blockers,
     batchOwnership,
+    paths: {
+      baseCheckoutPath,
+      taskWorktreePath,
+      primaryTaskWorktreePath:
+        batchOwnership.role === "included"
+          ? await findWorktreePath(ctx.resolvedProject.gitRoot, batchOwnership.branch)
+          : taskWorktreePath,
+      currentCheckoutPath: resume.workspace_root,
+    },
+  });
+  const executionPacket = deriveRouteExecutionPacket({
+    task,
+    nextAction,
+    blockers,
+    oracle,
   });
   const partial = {
     task: taskSummary(task),
@@ -528,6 +576,8 @@ export async function buildTaskRouteDecision(opts: {
       headSha: resume.head_sha,
       prBranch: resume.pr_branch,
       checkoutRole: deriveCheckoutRole(resume),
+      baseCheckoutPath,
+      taskWorktreePath,
     },
     approval: deriveApprovalContract(ctx),
     batchOwnership,
@@ -535,6 +585,7 @@ export async function buildTaskRouteDecision(opts: {
     blockers,
     nextAction,
     oracle,
+    executionPacket,
   };
   const withAmbiguities = { ...partial, ambiguities: deriveAmbiguities({ decision: partial }) };
   return {

@@ -49,12 +49,15 @@ describe("runner blueprint guards", () => {
       oracle: {
         phase: "worktree_needed",
         authoritativeCheckout: "base_checkout",
+        authoritativeCheckoutPath: "/repo",
+        mutationPathHint: "/repo",
         blocker: {
           code: "missing_pr_branch",
           summary: "branch_pr task has no recorded PR branch",
         },
         nextCommand: "agentplane work start 202603231410-ABC123 --agent CODER --worktree",
       },
+      executionPacket: { safeToMutate: true },
       nextAction: {
         code: "start_or_recover_worktree",
         command: "agentplane work start 202603231410-ABC123 --agent CODER --worktree",
@@ -67,8 +70,12 @@ describe("runner blueprint guards", () => {
 
     expect(bootstrap).toContain("- route_phase: worktree_needed");
     expect(bootstrap).toContain("- route_authoritative_checkout: base_checkout");
+    expect(bootstrap).toContain("- route_authoritative_checkout_path: /repo");
+    expect(bootstrap).toContain("- route_mutation_path_hint: /repo");
+    expect(bootstrap).toContain("- route_safe_to_mutate: true");
     expect(bootstrap).toContain("- route_primary_blocker: missing_pr_branch");
-    expect(bootstrap).toContain("Route oracle contract: follow the rendered route_next_command");
+    expect(bootstrap).toContain("run it from route_authoritative_checkout_path");
+    expect(bootstrap).toContain("use absolute paths under route_mutation_path_hint");
     expect(bootstrap).toContain("route_decision.oracle.nextCommand");
   });
 

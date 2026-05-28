@@ -24,7 +24,7 @@ export type RoleProfileGuide = {
 const SHARED_STARTUP_NOTE = `- Shared startup path: \`${COMMAND_SNIPPETS.core.quickstart}\` is the canonical installed bootstrap; use \`${COMMAND_SNIPPETS.core.taskActive}\` to select ready work, \`${COMMAND_SNIPPETS.core.taskBrief}\` to load task context, \`agentplane task next-action <task-id> --explain\` as the route oracle, and \`${COMMAND_SNIPPETS.core.role}\` to activate the current role before role-scoped planning or execution.`;
 
 const ROUTE_ORACLE_NOTE =
-  "- Route oracle contract: follow `next_command`, run it from `authoritative_checkout`, treat `primary_blocker` as the current stop reason, and use `phase` instead of manually reconstructing branch/worktree/PR state.";
+  "- Route oracle contract: follow `next_command`, `authoritative_checkout`, `primary_blocker`, and `phase`; do not manually reconstruct branch/worktree/PR state.";
 
 function renderQuickstartCommandBlock(commands: readonly string[]): string[] {
   return ["```bash", ...commands, "```"];
@@ -59,9 +59,9 @@ const ROLE_GUIDES: RoleGuide[] = [
     lines: [
       SHARED_STARTUP_NOTE,
       ROUTE_ORACLE_NOTE,
-      "- direct: stay in the current checkout; branch_pr: start a task branch/worktree first, create implementation commits there, keep local PR artifacts current, and wait for hosted required checks before handing off to INTEGRATOR.",
+      "- direct: stay in the current checkout; branch_pr: implement in the task worktree, keep PR artifacts current, and wait for hosted checks before INTEGRATOR handoff.",
       "- Start owner-scoped work from `agentplane task brief <task-id>` so Verify Steps, policy modules, blueprint evidence, route state, and source confidence are loaded together.",
-      "- If branch_pr state is ambiguous after interruption, run `agentplane task next-action <task-id> --explain`, `agentplane task status <task-id> --route`, or `agentplane work resume <task-id>` before choosing a checkout or opening/updating a PR.",
+      "- If branch_pr state is ambiguous, use `task next-action --explain`, `task status --route`, or `work resume` before choosing a checkout or PR action.",
       `- For the common path, use \`${COMMAND_SNIPPETS.core.taskBegin}\` to create/approve/start-or-route and \`${COMMAND_SNIPPETS.core.taskComplete}\` after checks pass.`,
       `- Start deterministically with \`${COMMAND_SNIPPETS.core.startTask}\` after plan approval.`,
       `- Treat \`${COMMAND_SNIPPETS.core.taskVerifyShow}\` as the verification contract, then record \`${COMMAND_SNIPPETS.core.verifyTask}\`.`,
@@ -107,9 +107,9 @@ const ROLE_GUIDES: RoleGuide[] = [
     lines: [
       SHARED_STARTUP_NOTE,
       ROUTE_ORACLE_NOTE,
-      "- Run `agentplane task brief <task-id>` before integration to confirm task context and source confidence, then `agentplane task next-action <task-id> --explain` or `agentplane flow repair <task-id> --dry-run` before manually repairing branch/worktree/PR/close-tail drift.",
-      `- branch_pr: the primary integration route is the task GitHub PR. Require a green hosted PR gate first (${BRANCH_PR_HOSTED_GATE_GUIDANCE}), then run \`agentplane pr check <task-id>\` -> \`agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000\`; on protected bases, integrate drives \`gh pr merge --auto --rebase\` when GitHub CLI is installed/authenticated, falls back to the GitHub API with explicit GH_TOKEN/GITHUB_TOKEN, and holds the queue lane until GitHub merges the PR and Task Hosted Close finishes.`,
-      "- branch_pr close tail: after the task PR merges, `Task Hosted Close` pushes the deterministic closure branch and opens the follow-up closure PR when organization policy allows Actions PR creation; otherwise it leaves a manual PR link on the merged task PR. Pull the updated base branch after that closure PR merges instead of creating a local finish-only tail commit.",
+      "- Run `agentplane task brief <task-id>` before integration, then `agentplane task next-action <task-id> --explain` or `agentplane flow repair <task-id> --dry-run` before repairing route drift.",
+      `- branch_pr: require a green hosted PR gate first (${BRANCH_PR_HOSTED_GATE_GUIDANCE}), then run \`agentplane pr check <task-id>\` -> \`agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000\`; protected bases merge through GitHub and hold the lane until Task Hosted Close finishes.`,
+      "- branch_pr close tail: after Task Hosted Close lands or opens the closure PR, pull updated base instead of creating a local finish-only tail commit.",
       `- direct: the task owner normally closes with \`${COMMAND_SNIPPETS.core.finishTask}\` plus \`--result-file ./result.txt\`.`,
       "- For branch-level flags and branch/base diagnostics, use `agentplane help work start`, `agentplane help integrate`, and `agentplane help branch base`.",
     ],
@@ -209,12 +209,12 @@ export function renderQuickstart(): string {
     "",
     "Configured workflow route:",
     "",
-    `- \`branch_pr\`: base checkout owns plan/approve and the merge lane; the task worktree owns implementation commits and local PR artifacts; the primary finalization route is the task GitHub PR, so INTEGRATOR runs \`pr check\` and \`integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000\` from the base checkout to drive/hold the GitHub PR merge until Task Hosted Close lands the close tail.`,
+    `- \`branch_pr\`: base checkout owns plan/approve and merge lane; task worktree owns implementation commits and local PR artifacts; INTEGRATOR runs \`pr check\` and \`integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000\` from base until GitHub PR merge and Task Hosted Close complete.`,
     "- After preflight, use `agentplane task active` to pick ready work and `agentplane task brief <task-id>` to load task docs, Verify Steps, route state, blueprint evidence, policy modules, and source confidence before owner-scoped execution.",
-    "- `branch_pr`: before manually combining `task show`, `task resume-context`, `pr flow status`, and preflight output, use `agentplane task next-action <task-id> --explain` as the route oracle. Follow `next_command`, run it from `authoritative_checkout`, treat `primary_blocker` as the current stop reason, and use `phase` instead of reconstructing branch/worktree/PR state by hand.",
+    "- `branch_pr`: use `agentplane task next-action <task-id> --explain` as the route oracle; follow `next_command`, `authoritative_checkout`, `primary_blocker`, and `phase`.",
     "- `branch_pr`: agents that inherit the user's GitHub session must treat `gh pr merge`, GitHub UI merge, and auto-merge enablement as user-attributed publication; use them only after the integration queue/handoff route, stable hosted checks, and merge-lane approval are clear.",
     "- `branch_pr`: post-merge fixes for an already `DONE` task need a new task or an explicit follow-up branch slug (`post-merge-*` or `followup` as a start/end/hyphen-bounded token); generic same-task branches can conflict with hosted close.",
-    "- `branch_pr` GitHub transport: install GitHub CLI yourself (`brew install gh` on macOS, `winget install --id GitHub.cli` on Windows, or the Linux package from `https://cli.github.com/manual/installation`), then run `gh auth login`; if `gh` is unavailable, `integrate` can use explicit `GH_TOKEN`/`GITHUB_TOKEN` as a GitHub API fallback.",
+    "- `branch_pr` GitHub transport: use authenticated `gh`; if unavailable, `integrate` can use explicit `GH_TOKEN`/`GITHUB_TOKEN` API fallback.",
     `- \`direct\`: task setup is \`${BOOTSTRAP_TASK_PREP_COMMANDS[0]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[1]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[2]}\`.`,
     `- \`direct\`: execution is \`${COMMAND_SNIPPETS.core.startTask}\` -> \`${COMMAND_SNIPPETS.core.taskVerifyShow}\` -> \`${COMMAND_SNIPPETS.core.verifyTask}\` -> \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result-file ./result.txt\`.`,
     "- Lifecycle/status commits are task-state checkpoints; they are not implementation commits. In `branch_pr`, `finish --commit-from-comment` is unsupported because finish runs from the base checkout.",

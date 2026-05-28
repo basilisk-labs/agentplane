@@ -1,0 +1,14 @@
+ docs/user/agent-bootstrap.generated.mdx            |  26 +--
+ packages/agentplane/assets/AGENTS.md               |  31 ++-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |  26 +--
+ packages/agentplane/src/cli/command-guide.test.ts  |  17 +-
+ packages/agentplane/src/cli/command-guide.ts       |  18 +-
+ .../src/cli/run-cli.core.route-decision.test.ts    |  35 ++-
+ .../src/commands/shared/route-decision.ts          |  53 ++++-
+ .../agentplane/src/commands/shared/route-oracle.ts | 246 +++++++++++++++------
+ .../agentplane/src/commands/task/brief.command.ts  |  39 ++++
+ .../src/commands/task/next-action.command.ts       |   7 +
+ .../agentplane/src/commands/task/status.command.ts |   6 +
+ .../src/runner/usecases/task-run-blueprint.test.ts |   9 +-
+ .../src/runner/usecases/task-run-bootstrap.ts      |  13 +-
+ 13 files changed, 391 insertions(+), 135 deletions(-)
