@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-28T22:45:18Z",
   "base": "main",
   "branch": "task/202605282234-DXR7ZX/context-init-builder-decomposition",
   "created_at": "2026-05-28T22:34:52.803Z",
   "diffstat_sha256": "sha256:0aaa5e180903e9161b8f7ba73a0dea53f7cb568eb073e9c90277116874f4a711",
   "last_verified_at": "2026-05-28T22:42:34.688Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "16e5a403401614346b4a6c6397dd52fb20ae923e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-28T22:45:18Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605282234-DXR7ZX",
-  "updated_at": "2026-05-28T22:34:52.803Z",
+  "updated_at": "2026-05-28T22:45:18Z",
   "verify": {
     "status": "pass"
   }
