@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-28T20:54:49Z",
   "base": "main",
   "branch": "task/202605282032-G4EWJG/guard-commit-decomposition",
   "created_at": "2026-05-28T20:32:58.005Z",
   "diffstat_sha256": "sha256:b31927c2874e4b0f43b50e46a7f0ea6dd2ca4803629f84468b94c5fc7e08455f",
   "last_verified_at": "2026-05-28T20:50:14.667Z",
   "last_verified_diffstat_sha256": "sha256:c7c24d7ec8c88797baf2577f9ef480acbbc7a8c6ba99fcc515b607a6bfed7a3d",
+  "merge_commit": "8f5572ca21a9fb9c4a5b96d4998ad0d38d53580f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-28T20:54:49Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605282032-G4EWJG",
-  "updated_at": "2026-05-28T20:32:58.005Z",
+  "updated_at": "2026-05-28T20:54:49Z",
   "verify": {
     "status": "pass"
   }
