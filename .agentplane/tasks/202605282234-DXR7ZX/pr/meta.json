@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605282234-DXR7ZX/context-init-builder-decomposition",
+  "created_at": "2026-05-28T22:34:52.803Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-05-28T22:42:34.688Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605282234-DXR7ZX",
+  "updated_at": "2026-05-28T22:34:52.803Z",
+  "verify": {
+    "status": "pass"
+  }
+}
