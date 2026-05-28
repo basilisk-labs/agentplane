@@ -90,6 +90,7 @@ const execaCompat = execaModule as ExecaCompatModule;
 const execa = execaCompat.execa ?? execaCompat.default;
 const execaSync = execaCompat.execaSync ?? execaCompat.sync;
 const execaUsesBufferEncoding = Boolean(execaCompat.execa);
+const isBunRuntime = Boolean((process.versions as Record<string, string | undefined>).bun);
 
 if (!execa || !execaSync) {
   throw new Error("Unsupported execa module shape: expected execa/execaSync exports");
@@ -311,12 +312,13 @@ function runExecaSync(
 
 function buildProcessOptions(opts: RunProcessOptions) {
   assertSafeExecutable(opts.command);
+  const bufferedEncoding = execaUsesBufferEncoding ? (isBunRuntime ? "utf8" : "buffer") : null;
   return {
     cwd: resolveCwd(opts.cwd),
     env: opts.env ?? process.env,
     ...(opts.encoding === null
       ? {
-          encoding: execaUsesBufferEncoding ? "buffer" : null,
+          encoding: bufferedEncoding,
           ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }),
         }
       : {
