@@ -1,0 +1,3 @@
+ .../src/cli/hotspot-report-script.test.ts          | 65 ++++++++++++++++++++
+ scripts/checks/hotspot-report.mjs                  | 70 ++++++++++++++++++++++
+ 2 files changed, 135 insertions(+)
