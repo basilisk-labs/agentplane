@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605282032-G4EWJG/guard-commit-decomposition",
+  "created_at": "2026-05-28T20:32:58.005Z",
+  "diffstat_sha256": "sha256:c7c24d7ec8c88797baf2577f9ef480acbbc7a8c6ba99fcc515b607a6bfed7a3d",
+  "last_verified_at": "2026-05-28T20:37:33.408Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605282032-G4EWJG",
+  "updated_at": "2026-05-28T20:32:58.005Z",
+  "verify": {
+    "status": "pass"
+  }
+}

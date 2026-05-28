@@ -1,0 +1,4 @@
+ .../src/commands/guard/impl/commit-close.ts        | 231 +++++++++++++
+ .../src/commands/guard/impl/commit-runner.ts       | 150 ++++++++
+ .../agentplane/src/commands/guard/impl/commit.ts   | 376 +--------------------
+ 3 files changed, 387 insertions(+), 370 deletions(-)
