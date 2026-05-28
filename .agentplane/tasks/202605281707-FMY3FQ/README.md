@@ -83,21 +83,7 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
-extensions:
-  branch_pr_batch:
-    base: "main"
-    branch: "task/202605281707-51DD0G/route-packet-v2"
-    included_task_ids:
-      - "202605281707-6MNB2K"
-      - "202605281707-7FSSSP"
-      - "202605281707-B1DQCY"
-      - "202605281707-DPJKMR"
-      - "202605281707-FMY3FQ"
-      - "202605281707-QEW595"
-      - "202605281707-VP74QA"
-    primary_task_id: "202605281707-51DD0G"
-    role: "included"
-    updated_at: "2026-05-28T17:25:10.626Z"
+extensions: {}
 id_source: "generated"
 ---
 ## Summary
