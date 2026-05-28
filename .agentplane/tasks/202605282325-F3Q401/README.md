@@ -1,10 +1,11 @@
 ---
 id: "202605282325-F3Q401"
 title: "Close commit message decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4234."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified close commit message decomposition. Commands passed: close-message focused vitest (34 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 35 to 34; close-message.ts is 112 lines."
   attempts: 0
-commit: null
+commit:
+  hash: "83d45861e2e2ae2e728a77decb4d5226d94e12f5"
+  message: "✅ F3Q401 guard: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: Decompose close commit message helpers in the task worktree while preserving renderMergeMessage and buildCloseCommitMessage behavior under existing focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4234 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified close commit message decomposition. Commands passed: close-message focused vitest (34 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 35 to 34; close-message.ts is 112 lines."
+  -
+    type: "status"
+    at: "2026-05-28T23:34:00.767Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4234 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T23:30:46.126Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T23:34:00.771Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/guard/impl/close-message.ts by extracting git metadata and rendering helpers while preserving buildCloseCommitMessage/renderMergeMessage behavior."
 sections:
   Summary: |-
