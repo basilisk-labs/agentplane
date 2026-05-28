@@ -1,10 +1,11 @@
 ---
 id: "202605280346-TXHZV0"
 title: "Update recipes submodule pointer"
-status: "DOING"
+result_summary: "Merged via PR #4180."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "01d24953515990f451e965cb73298ebbe04ab4aa"
+  message: "Merge pull request #4180 from basilisk-labs/task/202605280346-TXHZV0/update-recipes-submodule-pointer"
 comments:
   -
     author: "CODER"
     body: "Start: update only the agentplane-recipes submodule pointer to the recipes main merge commit and verify the resulting gitlink diff."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4180 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -38,9 +44,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: update only the agentplane-recipes submodule pointer to the recipes main merge commit and verify the resulting gitlink diff."
+  -
+    type: "status"
+    at: "2026-05-28T03:50:54.847Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4180 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T03:46:36.641Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T03:50:54.852Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the agentplane-recipes submodule pointer to the recipes main commit that includes the parallel-codex recipe PR merge. Scope: gitlink agentplane-recipes only. No implementation code changes."
 sections:
   Summary: |-
