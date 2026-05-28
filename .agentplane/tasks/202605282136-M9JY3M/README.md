@@ -1,10 +1,11 @@
 ---
 id: "202605282136-M9JY3M"
 title: "Task run command decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4218."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -51,11 +52,16 @@ quality_review:
     - "packages/agentplane/src/commands/task/run-parse.ts"
   findings:
     - "Extracted task-run payload rendering, log loading, and integer parsing into focused helper modules. Focused task-run tests passed, plus typecheck, lint, format, and hotspot check."
-commit: null
+commit:
+  hash: "ebb2457292616f112ee1b586621c0ec792be1e9e"
+  message: "♻️ M9JY3M task: break run helper import cycle"
 comments:
   -
     author: "CODER"
     body: "Start: decompose task run command helpers while preserving runner lifecycle and output behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4218 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Task run command decomposition verified locally."
+  -
+    type: "status"
+    at: "2026-05-28T21:50:27.413Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4218 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T21:40:30.218Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T21:50:27.420Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/task/run.command.ts into focused task-run CLI helper modules without changing runner lifecycle, status, inspect, logs, wait, or JSON/text output behavior. Reduce the command file below the hotspot warning threshold when safe."
 sections:
   Summary: |-
