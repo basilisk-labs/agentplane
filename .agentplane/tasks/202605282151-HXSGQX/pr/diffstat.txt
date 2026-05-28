@@ -1,0 +1,4 @@
+ .../agentplane/src/commands/task/brief-model.ts    | 343 ++++++++++++++++
+ .../agentplane/src/commands/task/brief-render.ts   | 101 +++++
+ .../agentplane/src/commands/task/brief.command.ts  | 451 +--------------------
+ 3 files changed, 449 insertions(+), 446 deletions(-)

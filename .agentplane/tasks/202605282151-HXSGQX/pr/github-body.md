@@ -37,7 +37,10 @@ scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../agentplane/src/commands/task/brief-model.ts    | 343 ++++++++++++++++
+ .../agentplane/src/commands/task/brief-render.ts   | 101 +++++
+ .../agentplane/src/commands/task/brief.command.ts  | 451 +--------------------
+ 3 files changed, 449 insertions(+), 446 deletions(-)
 ```
 
 </details>

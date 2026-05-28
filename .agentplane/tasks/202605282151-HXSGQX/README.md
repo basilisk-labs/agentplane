@@ -4,7 +4,7 @@ title: "Task brief command decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Verification passed. Commands: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts --config vitest.workspace.ts (2 files, 13 tests passed); bun run arch:deps (no dependency violations); bun run typecheck (passed); bun run lint:core (passed); bun run format:changed (passed); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 (passed, runtime warnings 42 -> 41)."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T21:57:59.641Z"
+  updated_by: "EVALUATOR"
+  note: "Task brief command decomposition preserves behavior and reduces hotspot pressure."
+  evaluated_sha: "cffbded2866e0b3c9b6cbb06f85653bd2d3af9b7"
+  blueprint_digest: "7e9060979838e9b97c2321bb399a9d48062a0b705ac3bcbfee59fa0afa5558f8"
+  evidence_refs:
+    - ".agentplane/tasks/202605282151-HXSGQX/README.md"
+    - ".agentplane/tasks/202605282151-HXSGQX/quality/20260528-215759641-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605282151-HXSGQX/quality/20260528-215759641-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605282151-HXSGQX/quality/20260528-215759641-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605282151-HXSGQX/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/task/brief.command.ts"
+    - "packages/agentplane/src/commands/task/brief-model.ts"
+    - "packages/agentplane/src/commands/task/brief-render.ts"
+  findings:
+    - "brief.command.ts now contains only CLI spec/handler wiring; brief-model.ts owns JSON contract assembly; brief-render.ts owns text output. Focused route-decision tests, arch:deps, typecheck, lint:core, format:changed, and hotspot report passed."
 commit: null
 comments:
   -
