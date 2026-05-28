@@ -4,7 +4,7 @@ title: "Context init builder decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,30 @@ verification:
   updated_by: "CODER"
   note: "Context init was decomposed into command orchestration, bootstrap/git helpers, and content builders. Verified with focused context CLI tests, typecheck, arch deps, lint, format, and hotspot threshold check (runtime warnings 39 -> 38)."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T22:42:50.512Z"
+  updated_by: "EVALUATOR"
+  note: "Context init builder decomposition completed without behavior changes."
+  evaluated_sha: "0f3c098c28ff587e4eb9080963c05f75e08f58c6"
+  blueprint_digest: "ac2130312a9c9df8994ec714ec7c87b2f489c88307bfaca5bfc69cdca2fa590a"
+  evidence_refs:
+    - ".agentplane/tasks/202605282234-DXR7ZX/README.md"
+    - ".agentplane/tasks/202605282234-DXR7ZX/quality/20260528-224250512-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605282234-DXR7ZX/quality/20260528-224250512-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605282234-DXR7ZX/quality/20260528-224250512-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605282234-DXR7ZX/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/context/init.ts"
+    - "packages/agentplane/src/commands/context/context-init-bootstrap.ts"
+    - "packages/agentplane/src/commands/context/context-init-builders.ts"
+    - "bunx vitest run packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/commands/context/release-readiness.test.ts --config vitest.workspace.ts"
+    - "bun run typecheck"
+    - "bun run arch:deps"
+    - "bun run lint:core"
+    - "bun run format:changed"
+    - "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300"
+  findings:
+    - "packages/agentplane/src/commands/context/init.ts now focuses on command orchestration and workspace file writes at 284 lines; bootstrap/git helpers moved to context-init-bootstrap.ts, and generated content builders moved to context-init-builders.ts. Hotspot warning count decreased from 39 to 38."
 commit: null
 comments:
   -
