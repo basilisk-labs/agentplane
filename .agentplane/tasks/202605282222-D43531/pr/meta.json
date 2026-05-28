@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-28T22:32:33Z",
   "base": "main",
   "branch": "task/202605282222-D43531/context-command-dispatcher-decomposition",
   "created_at": "2026-05-28T22:23:10.540Z",
   "diffstat_sha256": "sha256:dfd5bc26a17aad17f645dbf687287a7a4e2ec990df8defd7e5aa67c66e901122",
   "last_verified_at": "2026-05-28T22:29:54.367Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "544242446f4f3b3bacd9535a46e5e6802a22ed32",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-28T22:32:33Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605282222-D43531",
-  "updated_at": "2026-05-28T22:23:10.540Z",
+  "updated_at": "2026-05-28T22:32:33Z",
   "verify": {
     "status": "pass"
   }
