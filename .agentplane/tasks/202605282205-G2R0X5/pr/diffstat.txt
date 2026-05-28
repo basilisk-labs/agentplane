@@ -1,0 +1,3 @@
+ .../src/commands/evidence/evidence-manifest.ts     | 297 ++++++++++++++++++++
+ .../src/commands/evidence/evidence.command.ts      | 309 ++-------------------
+ 2 files changed, 313 insertions(+), 293 deletions(-)

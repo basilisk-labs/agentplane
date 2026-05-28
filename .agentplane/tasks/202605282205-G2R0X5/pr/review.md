@@ -29,7 +29,9 @@ Created: 2026-05-28T22:06:13.021Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/evidence/evidence-manifest.ts     | 297 ++++++++++++++++++++
+ .../src/commands/evidence/evidence.command.ts      | 309 ++-------------------
+ 2 files changed, 313 insertions(+), 293 deletions(-)
 ```
 
 </details>
