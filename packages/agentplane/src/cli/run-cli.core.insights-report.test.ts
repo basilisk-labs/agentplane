@@ -194,7 +194,7 @@ describe("runCli insights report", () => {
         "--error-code",
         "E_INTERNAL",
         "--agent-context",
-        "Intent: test the public feedback issue payload. Observed failure: simulated E_INTERNAL during command dispatch. Sensitive data omitted: task prose, env, remotes, and raw output.",
+        String.raw`Intent: test the public feedback issue payload.\nObserved failure: simulated E_INTERNAL during command dispatch.\nSensitive data omitted: task prose, env, remotes, and raw output.`,
         "--failure-command",
         "task start-ready",
         "--failure-phase",
@@ -230,6 +230,10 @@ describe("runCli insights report", () => {
       expect(payload.labels).toEqual(["agentplane-feedback", "bug"]);
       expect(payload.body).toContain("privacy-bounded");
       expect(payload.body).toContain("## Agent context");
+      expect(payload.body).toContain(
+        "Intent: test the public feedback issue payload.\nObserved failure:",
+      );
+      expect(payload.body).not.toContain(String.raw`payload.\nObserved failure`);
       expect(payload.body).toContain("simulated E_INTERNAL during command dispatch");
       expect(payload.body).toContain('"schema": "agentplane.insights.report.v1"');
       expect(payload.body).toContain('"failure"');

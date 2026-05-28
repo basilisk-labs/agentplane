@@ -368,8 +368,25 @@ function readCommitList(range) {
     .filter(Boolean);
 }
 
+function isCommitAncestorOf(ancestor, descendant) {
+  try {
+    execFileSync("git", ["merge-base", "--is-ancestor", ancestor, descendant], {
+      stdio: "ignore",
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function readCommitFiles(commit) {
-  return readQuiet("git", ["diff-tree", "--no-commit-id", "--name-only", "-r", "-m", commit])
+  const parentLine = readQuiet("git", ["rev-list", "--parents", "-n", "1", commit]);
+  const parentCount = parentLine.split(/\s+/).filter(Boolean).length - 1;
+  const args =
+    parentCount > 1
+      ? ["diff-tree", "--cc", "--no-commit-id", "--name-only", "-r", commit]
+      : ["diff-tree", "--no-commit-id", "--name-only", "-r", commit];
+  return readQuiet("git", args)
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
@@ -381,13 +398,28 @@ function readCommitBody(commit) {
 
 function enforceTaskBoundOutgoingCommits(range) {
   const commits = readCommitList(range);
+  const commitBodies = new Map();
+  const commitBodyFor = (commit) => {
+    if (commitBodies.has(commit)) return commitBodies.get(commit);
+    const body = readCommitBody(commit);
+    commitBodies.set(commit, body);
+    return body;
+  };
+  const managedUpgradeCommits = commits.filter((commit) =>
+    hasManagedUpgradeEvidence(commitBodyFor(commit)),
+  );
+  const isPreUpgradeCommit = (commit) =>
+    managedUpgradeCommits.some(
+      (upgradeCommit) => commit !== upgradeCommit && isCommitAncestorOf(commit, upgradeCommit),
+    );
   const failures = [];
   for (const commit of commits) {
+    if (isPreUpgradeCommit(commit)) continue;
     const files = readCommitFiles(commit);
     const mutating = files.filter((filePath) => isMutatingPath(filePath));
     if (mutating.length === 0) continue;
 
-    const body = readCommitBody(commit);
+    const body = commitBodyFor(commit);
     const subject =
       body
         .split("\n")

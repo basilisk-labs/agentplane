@@ -64,17 +64,22 @@ function trimOptional(value: string | undefined): string | null {
   return trimmed || null;
 }
 
+function normalizeEscapedNewlines(value: string): string {
+  return value.replaceAll(String.raw`\r\n`, "\n").replaceAll(String.raw`\n`, "\n");
+}
+
 export async function resolveAgentContext(opts: {
   inline: string | undefined;
   file: string | undefined;
   root: string;
 }): Promise<string | null> {
   const inline = trimOptional(opts.inline);
-  if (inline) return inline;
+  if (inline) return normalizeEscapedNewlines(inline);
   const file = trimOptional(opts.file);
   if (!file) return null;
   const absolutePath = path.isAbsolute(file) ? file : path.join(opts.root, file);
-  return trimOptional(await readFile(absolutePath, "utf8"));
+  const content = trimOptional(await readFile(absolutePath, "utf8"));
+  return content ? normalizeEscapedNewlines(content) : null;
 }
 
 export function renderAgentContext(context: string | null): string[] {
