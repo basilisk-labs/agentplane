@@ -1,10 +1,11 @@
 ---
 id: "202605281326-GQ43NN"
 title: "Handle context verify-task non-context skip"
-status: "DOING"
+result_summary: "Merged via PR #4193."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - "packages/agentplane/src/context/verify-task.ts"
   findings:
     - "Focused regression and context verification tests passed; policy routing and doctor passed; current ordinary code task produces skipped_not_applicable instead of hidden success."
-commit: null
+commit:
+  hash: "ceeff569cf82dc00bb7613199ba165076e87fef6"
+  message: "🚧 GQ43NN task: record evaluator evidence"
 comments:
   -
     author: "CODER"
     body: "Start: implement explicit context verify-task non-applicable skip handling for ordinary non-context tasks, add regression coverage, and verify with targeted tests plus policy/doctor gates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4193 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -58,9 +64,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified explicit non-applicable skip for non-context context verify-task."
+  -
+    type: "status"
+    at: "2026-05-28T14:05:33.726Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4193 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T13:32:52.005Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T14:05:33.732Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix context verify-task handling so tasks created through ordinary task new that are not task_kind=context are reported as an explicit non-applicable skip when appropriate, and cover the behavior with focused tests."
 sections:
   Summary: |-
