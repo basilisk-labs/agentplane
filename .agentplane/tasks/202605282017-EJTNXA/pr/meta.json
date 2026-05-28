@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-28T20:26:48Z",
   "base": "main",
   "branch": "task/202605282017-EJTNXA/evaluator-command-decomposition",
   "created_at": "2026-05-28T20:18:18.862Z",
   "diffstat_sha256": "sha256:6adf8874ee6581df3887b7fbac598044f939e8d9ee10052e965511f1ea6bcb75",
   "last_verified_at": "2026-05-28T20:21:29.143Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "02c01eeb95f5709089e0faa813b084c26db88785",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-28T20:26:48Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605282017-EJTNXA",
-  "updated_at": "2026-05-28T20:18:18.862Z",
+  "updated_at": "2026-05-28T20:26:48Z",
   "verify": {
     "status": "pass"
   }
