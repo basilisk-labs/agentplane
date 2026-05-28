@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202605282234-DXR7ZX",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-28T22:42:50.512Z",
+  "verdict": "pass",
+  "summary": "Context init builder decomposition completed without behavior changes.",
+  "evaluated_sha": "0f3c098c28ff587e4eb9080963c05f75e08f58c6",
+  "blueprint_digest": "ac2130312a9c9df8994ec714ec7c87b2f489c88307bfaca5bfc69cdca2fa590a",
+  "findings": [
+    "packages/agentplane/src/commands/context/init.ts now focuses on command orchestration and workspace file writes at 284 lines; bootstrap/git helpers moved to context-init-bootstrap.ts, and generated content builders moved to context-init-builders.ts. Hotspot warning count decreased from 39 to 38."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605282234-DXR7ZX/README.md",
+    "packages/agentplane/src/commands/context/init.ts",
+    "packages/agentplane/src/commands/context/context-init-bootstrap.ts",
+    "packages/agentplane/src/commands/context/context-init-builders.ts",
+    "bunx vitest run packages/agentplane/src/cli/run-cli.core.context-init.test.ts packages/agentplane/src/commands/context/release-readiness.test.ts --config vitest.workspace.ts",
+    "bun run typecheck",
+    "bun run arch:deps",
+    "bun run lint:core",
+    "bun run format:changed",
+    "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Remaining context hotspots such as context/wiki.ts and context harvest/ingest modules are intentionally outside this bounded init split and should be handled as separate tasks."
+  ]
+}

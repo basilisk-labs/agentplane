@@ -33,7 +33,10 @@ check (runtime warnings 39 -> 38).
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/context/context-init-bootstrap.ts | 200 ++++++++++++
+ .../src/commands/context/context-init-builders.ts  | 131 ++++++++
+ packages/agentplane/src/commands/context/init.ts   | 340 +--------------------
+ 3 files changed, 347 insertions(+), 324 deletions(-)
 ```
 
 </details>
