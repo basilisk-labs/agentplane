@@ -1,10 +1,11 @@
 ---
 id: "202605282313-0JV1JB"
 title: "Harvest task artifacts decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4232."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified harvest task artifacts decomposition. Commands passed: focused harvest context vitest (11 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 36 to 35; harvest-tasks-artifacts.ts is 175 lines."
   attempts: 0
-commit: null
+commit:
+  hash: "982c840b175ad755326df64dfb5b9ffbbb5beeef"
+  message: "✅ 0JV1JB context: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: Decompose harvest task artifact model and builders in the task worktree, preserving the existing context harvest tasks API and verifying focused behavior before opening the PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4232 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified harvest task artifacts decomposition. Commands passed: focused harvest context vitest (11 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 36 to 35; harvest-tasks-artifacts.ts is 175 lines."
+  -
+    type: "status"
+    at: "2026-05-28T23:24:27.017Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4232 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T23:20:59.746Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-28T23:24:27.021Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/context/harvest-tasks-artifacts.ts by extracting stable model/build/render helpers while preserving the existing context harvest tasks API and behavior."
 sections:
   Summary: |-
