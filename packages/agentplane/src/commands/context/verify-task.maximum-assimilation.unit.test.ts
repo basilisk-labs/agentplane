@@ -29,6 +29,68 @@ async function write(root: string, rel: string, text: string): Promise<void> {
 }
 
 describe("maximum-assimilation task verification", () => {
+  it("reports ordinary task-new tasks as an explicit non-applicable skip", async () => {
+    const root = await tempRoot();
+    const task = {
+      id: "202605281326-CODE01",
+      status: "DOING",
+      owner: "CODER",
+      mutation_scope: "code",
+      blueprint_request: "code.branch_pr",
+      runner: { evidence: { changed_paths: ["packages/agentplane/src/context/verify-task.ts"] } },
+    };
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { getTask: () => Promise.resolve(task) },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await expect(
+      cmdContextVerifyTask({
+        ctx,
+        cwd: root,
+        parsed: { taskId: task.id },
+      }),
+    ).resolves.toBe(0);
+
+    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
+      "context verify-task 202605281326-CODE01: skipped_not_applicable (task_kind=unknown; expected context)",
+    );
+  });
+
+  it("still rejects context tasks with invalid mutation scope", async () => {
+    const root = await tempRoot();
+    const task = {
+      id: "202605281326-CTXBAD",
+      status: "DOING",
+      owner: "CURATOR",
+      task_kind: "context",
+      mutation_scope: "code",
+      blueprint_request: "context.assimilation",
+      extensions: { "agentplane.context": {} },
+    };
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { getTask: () => Promise.resolve(task) },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+
+    await expect(
+      cmdContextVerifyTask({
+        ctx,
+        cwd: root,
+        parsed: { taskId: task.id },
+      }),
+    ).rejects.toThrow(/invalid mutation scope/u);
+  });
+
   it("rejects glossary files without navigable canonical entries", async () => {
     const root = await tempRoot();
     await write(

@@ -458,11 +458,10 @@ export async function cmdContextVerifyTask(opts: {
     });
   }
   if (task.task_kind !== "context") {
-    throw new CliError({
-      exitCode: 3,
-      code: "E_VALIDATION",
-      message: `Task ${opts.parsed.taskId} is not a context task (found ${task.task_kind ?? "unknown"})`,
-    });
+    process.stdout.write(
+      `context verify-task ${opts.parsed.taskId}: skipped_not_applicable (task_kind=${task.task_kind ?? "unknown"}; expected context)\n`,
+    );
+    return 0;
   }
   if (task.mutation_scope !== "context") {
     throw new CliError({

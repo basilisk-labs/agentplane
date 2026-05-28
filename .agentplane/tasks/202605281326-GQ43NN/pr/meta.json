@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605281326-GQ43NN/handle-context-verify-task-non-context-skip",
+  "created_at": "2026-05-28T13:27:17.393Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-05-28T13:32:51.911Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605281326-GQ43NN",
+  "updated_at": "2026-05-28T13:27:17.393Z",
+  "verify": {
+    "status": "pass"
+  }
+}
