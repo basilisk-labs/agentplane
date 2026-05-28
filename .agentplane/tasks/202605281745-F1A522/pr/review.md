@@ -29,15 +29,22 @@ Created: 2026-05-28T17:46:18.377Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/policy/dod.docs.md                     | 15 +++++-
- .agentplane/policy/governance.md                   | 15 +++---
- .agentplane/policy/workflow.branch_pr.md           | 44 +++++++++++++----
- .agentplane/policy/workflow.direct.md              | 13 +++--
- .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 56 ++++++++++++++++++++++
- .../agentplane/src/policy/rules/protected-paths.ts | 32 ++++++++++++-
- scripts/checks/check-agent-bootstrap-fresh.mjs     | 12 +++--
- scripts/checks/check-agent-onboarding-scenario.mjs |  2 +-
- 8 files changed, 162 insertions(+), 27 deletions(-)
+ .agentplane/tasks/202605281713-EW6N63/README.md    | 262 +++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 360 +++++++++++++++++++++
+ .../evaluator-opinion.md                           |  21 ++
+ .../evaluator-prompt.md                            |  74 +++++
+ .../quality-report.json                            |  23 ++
+ docs/user/agent-bootstrap.generated.mdx            |  26 +-
+ packages/agentplane/assets/AGENTS.md               |  48 +--
+ .../agentplane/src/agents/agents-template.test.ts  |   5 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |  26 +-
+ packages/agentplane/src/cli/command-guide.test.ts  |  17 +-
+ packages/agentplane/src/cli/command-guide.ts       |  18 +-
+ .../src/cli/run-cli.core.hooks.pre-commit.test.ts  |  56 ++++
+ .../agentplane/src/policy/rules/protected-paths.ts |  32 +-
+ scripts/checks/check-agent-bootstrap-fresh.mjs     |  12 +-
+ scripts/checks/check-agent-onboarding-scenario.mjs |   2 +-
+ 15 files changed, 886 insertions(+), 96 deletions(-)
 ```
 
 </details>

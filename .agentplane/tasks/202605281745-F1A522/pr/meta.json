@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202605281745-F1A522/respect-ignored-tasks-json-in-hooks",
   "created_at": "2026-05-28T17:46:18.377Z",
-  "diffstat_sha256": "sha256:14fe8aa9a46bd67e18133678724093016fa35e9934643d02f13ea9d1d9312f2e",
+  "diffstat_sha256": "sha256:d45c32cba560df8e05146774961bec32a483d38add8c79a4ec045ad7c84d552b",
   "last_verified_at": "2026-05-28T17:52:34.201Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "schema_version": 1,
