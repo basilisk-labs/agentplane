@@ -4,7 +4,7 @@ title: "PR integrate merge strategy decomposition"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -35,6 +35,24 @@ verification:
   updated_by: "CODER"
   note: "PR integrate merge strategy decomposition verified locally."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T21:30:48.827Z"
+  updated_by: "EVALUATOR"
+  note: "PR integrate merge strategy decomposition preserves merge behavior while reducing merge.ts below the hotspot threshold."
+  evaluated_sha: "7534fff38ea089afe0d2520c2a5c18ec451d64b1"
+  blueprint_digest: "d92238d9feb19103cdd5fee4a1f958f4f5d9c44f86b26991503c1b938e0a7c38"
+  evidence_refs:
+    - ".agentplane/tasks/202605282126-7A3K50/README.md"
+    - ".agentplane/tasks/202605282126-7A3K50/quality/20260528-213048827-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605282126-7A3K50/quality/20260528-213048827-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605282126-7A3K50/quality/20260528-213048827-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605282126-7A3K50/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/pr/integrate/internal/merge.ts"
+    - "packages/agentplane/src/commands/pr/integrate/internal/merge-artifacts.ts"
+    - "packages/agentplane/src/commands/pr/integrate/internal/merge-mutation.ts"
+  findings:
+    - "Extracted git mutation diagnostics and task artifact collision handling into focused internal modules. Focused merge/integration tests passed, plus typecheck, lint, format, and hotspot check."
 commit: null
 comments:
   -

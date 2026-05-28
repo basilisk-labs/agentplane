@@ -29,7 +29,10 @@ Created: 2026-05-28T21:26:47.182Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../pr/integrate/internal/merge-artifacts.ts       | 106 ++++++++++
+ .../pr/integrate/internal/merge-mutation.ts        | 115 +++++++++++
+ .../src/commands/pr/integrate/internal/merge.ts    | 218 +--------------------
+ 3 files changed, 223 insertions(+), 216 deletions(-)
 ```
 
 </details>
