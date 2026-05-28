@@ -44,7 +44,6 @@ function actionKindFor(opts: {
   nextAction: RouteBatchNextAction;
 }): RouteExecutionPacket["actionKind"] {
   if (opts.task.status === "DONE" && opts.nextAction.command === null) return "stop";
-  if (opts.nextAction.code.startsWith("wait_")) return "wait";
   if (opts.nextAction.requiresApproval && !opts.nextAction.command) return "provider_action";
   return opts.nextAction.command ? "local_command" : "stop";
 }
