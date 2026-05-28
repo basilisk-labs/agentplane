@@ -4,7 +4,7 @@ title: "Task finish execution decomposition"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,25 @@ verification:
   updated_by: "CODER"
   note: "Task finish execution decomposition verified locally."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-28T21:04:07.499Z"
+  updated_by: "EVALUATOR"
+  note: "Task finish execution decomposition preserves finish behavior while reducing finish-execute.ts from 541 to 251 lines."
+  evaluated_sha: "42392203f531c7079b2a028e8377e293904a554f"
+  blueprint_digest: "f847d972b46cff3d62c15342a6f0a83060536391419b1bd1967e4617a38c39b8"
+  evidence_refs:
+    - ".agentplane/tasks/202605282057-M1Z3D9/README.md"
+    - ".agentplane/tasks/202605282057-M1Z3D9/quality/20260528-210407499-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605282057-M1Z3D9/quality/20260528-210407499-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605282057-M1Z3D9/quality/20260528-210407499-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605282057-M1Z3D9/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/task/finish-execute.ts"
+    - "packages/agentplane/src/commands/task/finish-execute-load.ts"
+    - "packages/agentplane/src/commands/task/finish-execute-commit.ts"
+    - "packages/agentplane/src/commands/task/finish-execute-close.ts"
+  findings:
+    - "Extracted finish loading/incidents, commit-info/status-commit handling, and close-tail preflight/finalization into focused modules. Local finish validation/state/close-tail/quality tests passed, plus typecheck, lint, format, and hotspot check."
 commit: null
 comments:
   -

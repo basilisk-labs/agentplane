@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202605282057-M1Z3D9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-28T21:04:07.499Z",
+  "verdict": "pass",
+  "summary": "Task finish execution decomposition preserves finish behavior while reducing finish-execute.ts from 541 to 251 lines.",
+  "evaluated_sha": "42392203f531c7079b2a028e8377e293904a554f",
+  "blueprint_digest": "f847d972b46cff3d62c15342a6f0a83060536391419b1bd1967e4617a38c39b8",
+  "findings": [
+    "Extracted finish loading/incidents, commit-info/status-commit handling, and close-tail preflight/finalization into focused modules. Local finish validation/state/close-tail/quality tests passed, plus typecheck, lint, format, and hotspot check."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605282057-M1Z3D9/README.md",
+    "packages/agentplane/src/commands/task/finish-execute.ts",
+    "packages/agentplane/src/commands/task/finish-execute-load.ts",
+    "packages/agentplane/src/commands/task/finish-execute-commit.ts",
+    "packages/agentplane/src/commands/task/finish-execute-close.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted CI still pending for PR #4212."
+  ]
+}
