@@ -1,0 +1,3 @@
+ .../src/commands/blueprints/catalog-model.ts       | 278 ++++++++++++++++++++
+ .../agentplane/src/commands/blueprints/catalog.ts  | 291 ++-------------------
+ 2 files changed, 293 insertions(+), 276 deletions(-)
