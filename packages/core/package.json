@@ -25,7 +25,7 @@
   },
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=20.5.0"
   },
   "exports": {
     ".": {
@@ -103,7 +103,7 @@
   },
   "dependencies": {
     "canonicalize": "^3.0.0",
-    "execa": "^5.1.1",
+    "execa": "^9.6.1",
     "yaml": "^2.8.2",
     "zod": "^4.4.3",
     "zod-validation-error": "^5.0.0"

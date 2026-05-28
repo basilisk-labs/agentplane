@@ -10,15 +10,11 @@ import { fileURLToPath } from "node:url";
 import * as execaModule from "execa";
 import type { ResultPromise } from "execa";
 
-type ExecaChildProcess<TOutput extends string | Buffer = string | Buffer> = ResultPromise & {
-  stdout?: TOutput;
-  stderr?: TOutput;
-};
-
 type ProcessStdioOption = "pipe" | "ignore" | "inherit" | "ipc" | Stream | number | undefined;
 type ExecFileCompatOptions = ExecFileOptions | ExecFileOptionsWithBufferEncoding;
 type ExecFileStringOptions = ExecFileOptions & { encoding?: BufferEncoding };
 type ExecFileBufferOptions = ExecFileOptionsWithBufferEncoding & { encoding: "buffer" | null };
+type ManagedProcess = ResultPromise;
 
 export type RunProcessOptions = {
   command: string;
@@ -76,9 +72,9 @@ type RunProcessSyncFn = {
 };
 
 type StartProcessFn = {
-  (opts: RunProcessOptions & { encoding?: BufferEncoding | undefined }): ExecaChildProcess<string>;
-  (opts: RunProcessOptions & { encoding: null }): ExecaChildProcess<Buffer>;
-  (opts: RunProcessOptions): ExecaChildProcess<string>;
+  (opts: RunProcessOptions & { encoding?: BufferEncoding | undefined }): ManagedProcess;
+  (opts: RunProcessOptions & { encoding: null }): ManagedProcess;
+  (opts: RunProcessOptions): ManagedProcess;
 };
 
 type ExecaCompatModule = typeof execaModule & {
@@ -90,7 +86,6 @@ const execaCompat = execaModule as ExecaCompatModule;
 const execa = execaCompat.execa ?? execaCompat.default;
 const execaSync = execaCompat.execaSync ?? execaCompat.sync;
 const execaUsesBufferEncoding = Boolean(execaCompat.execa);
-const isBunRuntime = Boolean((process.versions as Record<string, string | undefined>).bun);
 
 if (!execa || !execaSync) {
   throw new Error("Unsupported execa module shape: expected execa/execaSync exports");
@@ -116,11 +111,55 @@ type ExecFileAsyncFn = {
 
 function normalizeProcessError(err: unknown): unknown {
   if (!err || typeof err !== "object") return err;
-  const error = err as { code?: number | string; exitCode?: number };
+  const error = err as {
+    code?: number | string;
+    exitCode?: number;
+    killed?: boolean;
+    isTerminated?: boolean;
+    isForcefullyTerminated?: boolean;
+  };
   if (typeof error.code !== "number" && typeof error.exitCode === "number") {
     error.code = error.exitCode;
   }
+  if (typeof error.killed !== "boolean") {
+    error.killed = error.isTerminated === true || error.isForcefullyTerminated === true;
+  }
   return error;
+}
+
+function normalizeProcessResult<TOutput extends string | Buffer>(
+  result: unknown,
+  binaryOutput = false,
+): RunProcessResult<TOutput> {
+  const normalized = result as RunProcessResult<TOutput> & {
+    all?: unknown;
+    isTerminated?: boolean;
+    isForcefullyTerminated?: boolean;
+  };
+  normalized.stdout = normalizeBinaryOutput(normalized.stdout, binaryOutput) as TOutput;
+  normalized.stderr = normalizeBinaryOutput(normalized.stderr, binaryOutput) as TOutput;
+  if (normalized.all !== undefined) {
+    normalized.all = normalizeBinaryOutput(normalized.all, binaryOutput) as TOutput;
+  }
+  if (typeof normalized.killed !== "boolean") {
+    normalized.killed =
+      normalized.isTerminated === true || normalized.isForcefullyTerminated === true;
+  }
+  return normalized;
+}
+
+function normalizeBinaryOutput(value: unknown, binaryOutput: boolean): unknown {
+  if (value instanceof Uint8Array && !Buffer.isBuffer(value)) {
+    return Buffer.from(value);
+  }
+  if (binaryOutput && typeof value === "string") {
+    return Buffer.from(value, "latin1");
+  }
+  return value;
+}
+
+function isBunRuntime(): boolean {
+  return typeof (process.versions as NodeJS.ProcessVersions & { bun?: string }).bun === "string";
 }
 
 function resolveCwd(cwd: string | URL | undefined): string | undefined {
@@ -204,51 +243,47 @@ function sanitizeGitArgs(args: readonly string[]): string[] {
   return args.map((arg) => sanitizeGitArg(arg));
 }
 
-function runExeca(
-  command: string,
-  args: readonly string[],
-  options: never,
-): ExecaChildProcess<string | Buffer> {
+function runExeca(command: string, args: readonly string[], options: never): ManagedProcess {
   assertSupportedExecutable(command);
   switch (command) {
     case "bash": {
-      return execa("bash", args, options) as ExecaChildProcess<string | Buffer>;
+      return execa("bash", args, options) as ManagedProcess;
     }
     case "bun": {
-      return execa("bun", args, options) as ExecaChildProcess<string | Buffer>;
+      return execa("bun", args, options) as ManagedProcess;
     }
     case "cat": {
-      return execa("cat", args, options) as ExecaChildProcess<string | Buffer>;
+      return execa("cat", args, options) as ManagedProcess;
     }
     case "chmod": {
-      return execa("chmod", args, options) as ExecaChildProcess<string | Buffer>;
+      return execa("chmod", args, options) as ManagedProcess;
     }
     case "gh": {
-      return execa("gh", args, options) as ExecaChildProcess<string | Buffer>;
+      return execa("gh", args, options) as ManagedProcess;
     }
     case "git": {
-      return execa("git", sanitizeGitArgs(args), options) as ExecaChildProcess<string | Buffer>;
+      return execa("git", sanitizeGitArgs(args), options) as ManagedProcess;
     }
     case "node": {
-      return execa("node", args, options) as ExecaChildProcess<string | Buffer>;
+      return execa("node", args, options) as ManagedProcess;
     }
     case "npm": {
-      return execa("npm", args, options) as ExecaChildProcess<string | Buffer>;
+      return execa("npm", args, options) as ManagedProcess;
     }
     case "ps": {
-      return execa("ps", args, options) as ExecaChildProcess<string | Buffer>;
+      return execa("ps", args, options) as ManagedProcess;
     }
     case "sh": {
-      return execa("sh", args, options) as ExecaChildProcess<string | Buffer>;
+      return execa("sh", args, options) as ManagedProcess;
     }
     case "tar": {
-      return execa("tar", args, options) as ExecaChildProcess<string | Buffer>;
+      return execa("tar", args, options) as ManagedProcess;
     }
     case "unzip": {
-      return execa("unzip", args, options) as ExecaChildProcess<string | Buffer>;
+      return execa("unzip", args, options) as ManagedProcess;
     }
     case "zip": {
-      return execa("zip", args, options) as ExecaChildProcess<string | Buffer>;
+      return execa("zip", args, options) as ManagedProcess;
     }
     default: {
       throw new Error(`process command is not in the allowed executable set: ${command}`);
@@ -260,49 +295,63 @@ function runExecaSync(
   command: string,
   args: readonly string[],
   options: never,
+  binaryOutput: boolean,
 ): RunProcessResult<string | Buffer> {
   assertSupportedExecutable(command);
   switch (command) {
     case "bash": {
-      return execaSync("bash", args, options) as unknown as RunProcessResult<string | Buffer>;
+      return normalizeProcessResult<string | Buffer>(
+        execaSync("bash", args, options),
+        binaryOutput,
+      );
     }
     case "bun": {
-      return execaSync("bun", args, options) as unknown as RunProcessResult<string | Buffer>;
+      return normalizeProcessResult<string | Buffer>(execaSync("bun", args, options), binaryOutput);
     }
     case "cat": {
-      return execaSync("cat", args, options) as unknown as RunProcessResult<string | Buffer>;
+      return normalizeProcessResult<string | Buffer>(execaSync("cat", args, options), binaryOutput);
     }
     case "chmod": {
-      return execaSync("chmod", args, options) as unknown as RunProcessResult<string | Buffer>;
+      return normalizeProcessResult<string | Buffer>(
+        execaSync("chmod", args, options),
+        binaryOutput,
+      );
     }
     case "gh": {
-      return execaSync("gh", args, options) as unknown as RunProcessResult<string | Buffer>;
+      return normalizeProcessResult<string | Buffer>(execaSync("gh", args, options), binaryOutput);
     }
     case "git": {
-      return execaSync("git", sanitizeGitArgs(args), options) as unknown as RunProcessResult<
-        string | Buffer
-      >;
+      return normalizeProcessResult<string | Buffer>(
+        execaSync("git", sanitizeGitArgs(args), options),
+        binaryOutput,
+      );
     }
     case "node": {
-      return execaSync("node", args, options) as unknown as RunProcessResult<string | Buffer>;
+      return normalizeProcessResult<string | Buffer>(
+        execaSync("node", args, options),
+        binaryOutput,
+      );
     }
     case "npm": {
-      return execaSync("npm", args, options) as unknown as RunProcessResult<string | Buffer>;
+      return normalizeProcessResult<string | Buffer>(execaSync("npm", args, options), binaryOutput);
     }
     case "ps": {
-      return execaSync("ps", args, options) as unknown as RunProcessResult<string | Buffer>;
+      return normalizeProcessResult<string | Buffer>(execaSync("ps", args, options), binaryOutput);
     }
     case "sh": {
-      return execaSync("sh", args, options) as unknown as RunProcessResult<string | Buffer>;
+      return normalizeProcessResult<string | Buffer>(execaSync("sh", args, options), binaryOutput);
     }
     case "tar": {
-      return execaSync("tar", args, options) as unknown as RunProcessResult<string | Buffer>;
+      return normalizeProcessResult<string | Buffer>(execaSync("tar", args, options), binaryOutput);
     }
     case "unzip": {
-      return execaSync("unzip", args, options) as unknown as RunProcessResult<string | Buffer>;
+      return normalizeProcessResult<string | Buffer>(
+        execaSync("unzip", args, options),
+        binaryOutput,
+      );
     }
     case "zip": {
-      return execaSync("zip", args, options) as unknown as RunProcessResult<string | Buffer>;
+      return normalizeProcessResult<string | Buffer>(execaSync("zip", args, options), binaryOutput);
     }
     default: {
       throw new Error(`process command is not in the allowed executable set: ${command}`);
@@ -312,19 +361,18 @@ function runExecaSync(
 
 function buildProcessOptions(opts: RunProcessOptions) {
   assertSafeExecutable(opts.command);
-  const bufferedEncoding = execaUsesBufferEncoding ? (isBunRuntime ? "utf8" : "buffer") : null;
+  const binaryOutput = opts.encoding === null;
   return {
     cwd: resolveCwd(opts.cwd),
     env: opts.env ?? process.env,
-    ...(opts.encoding === null
-      ? {
-          encoding: bufferedEncoding,
-          ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }),
-        }
-      : {
-          encoding: opts.encoding ?? "utf8",
-          ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }),
-        }),
+    encoding: binaryOutput
+      ? isBunRuntime()
+        ? "latin1"
+        : execaUsesBufferEncoding
+          ? "buffer"
+          : null
+      : (opts.encoding ?? "utf8"),
+    ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }),
     cleanup: opts.cleanup ?? false,
     reject: opts.reject ?? true,
     extendEnv: opts.extendEnv ?? false,
@@ -342,31 +390,16 @@ function buildProcessOptions(opts: RunProcessOptions) {
   };
 }
 
-function ensureBufferOutput(value: string | Buffer): Buffer {
-  return Buffer.isBuffer(value) ? value : Buffer.from(value);
-}
-
-function normalizeBufferedResult(
-  result: RunProcessResult<string | Buffer>,
-): RunProcessResult<string | Buffer> {
-  return {
-    ...result,
-    stdout: ensureBufferOutput(result.stdout),
-    stderr: ensureBufferOutput(result.stderr),
-    ...(result.all === undefined ? {} : { all: ensureBufferOutput(result.all) }),
-  };
-}
-
 const runProcessImpl = async (
   opts: RunProcessOptions,
 ): Promise<RunProcessResult<string | Buffer>> => {
+  const binaryOutput = opts.encoding === null;
   const result = await runExeca(
     normalizeSupportedExecutable(opts.command),
     opts.args ?? [],
     buildProcessOptions(opts) as never,
   );
-  const normalized = result as unknown as RunProcessResult<string | Buffer>;
-  return opts.encoding === null ? normalizeBufferedResult(normalized) : normalized;
+  return normalizeProcessResult<string | Buffer>(result, binaryOutput);
 };
 export const runProcess = runProcessImpl as RunProcessFn;
 
@@ -375,12 +408,13 @@ const runProcessSyncImpl = (opts: RunProcessOptions): RunProcessResult<string | 
     normalizeSupportedExecutable(opts.command),
     opts.args ?? [],
     buildProcessOptions(opts) as never,
+    opts.encoding === null,
   );
-  return opts.encoding === null ? normalizeBufferedResult(result) : result;
+  return result;
 };
 export const runProcessSync = runProcessSyncImpl as RunProcessSyncFn;
 
-const startProcessImpl = (opts: RunProcessOptions): ExecaChildProcess<string | Buffer> => {
+const startProcessImpl = (opts: RunProcessOptions): ManagedProcess => {
   const child = execa(
     opts.command,
     opts.args ?? [],
@@ -389,7 +423,7 @@ const startProcessImpl = (opts: RunProcessOptions): ExecaChildProcess<string | B
       reject: opts.reject ?? false,
       buffer: opts.buffer ?? false,
     }) as never,
-  ) as ExecaChildProcess<string | Buffer>;
+  ) as ManagedProcess;
   void child.catch(() => null);
   return child;
 };

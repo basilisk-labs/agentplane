@@ -161,8 +161,8 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^25.9.1",
-    "@typescript-eslint/eslint-plugin": "^8.59.4",
-    "@typescript-eslint/parser": "^8.59.4",
+    "@typescript-eslint/eslint-plugin": "^8.60.0",
+    "@typescript-eslint/parser": "^8.60.0",
     "@vitest/coverage-v8": "4.1.7",
     "dependency-cruiser": "^17.4.2",
     "eslint": "^10.4.0",
@@ -178,7 +178,7 @@
     "lefthook": "^2.1.8",
     "prettier": "^3.8.3",
     "tsup": "^8.5.1",
-    "turbo": "^2.9.14",
+    "turbo": "^2.9.15",
     "typescript": "^6.0.3",
     "vitest": "4.1.7"
   }
