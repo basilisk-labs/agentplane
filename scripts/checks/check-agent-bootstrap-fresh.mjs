@@ -163,11 +163,13 @@ const main = defineScript({
       "AGENTS preflight block",
     );
     assertEqualCommandBlock(
-      extractCodeBlock(agentsRaw, "### Task lifecycle"),
-      bootstrapModule.BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS.filter(
-        (command) => command !== "agentplane task verify-show <task-id>",
-      ),
-      "AGENTS task lifecycle block",
+      extractCodeBlock(agentsRaw, "### Route commands"),
+      [
+        "agentplane task brief <task-id>",
+        "agentplane task next-action <task-id> --explain",
+        "agentplane work resume <task-id>",
+      ],
+      "AGENTS route commands block",
     );
     assertEqualCommandBlock(
       extractCodeBlock(agentsRaw, "### Verification"),

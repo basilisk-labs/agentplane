@@ -29,9 +29,15 @@ Created: 2026-05-28T17:46:18.377Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/dod.docs.md                     | 15 +++++-
+ .agentplane/policy/governance.md                   | 15 +++---
+ .agentplane/policy/workflow.branch_pr.md           | 44 +++++++++++++----
+ .agentplane/policy/workflow.direct.md              | 13 +++--
  .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 56 ++++++++++++++++++++++
  .../agentplane/src/policy/rules/protected-paths.ts | 32 ++++++++++++-
- 2 files changed, 87 insertions(+), 1 deletion(-)
+ scripts/checks/check-agent-bootstrap-fresh.mjs     | 12 +++--
+ scripts/checks/check-agent-onboarding-scenario.mjs |  2 +-
+ 8 files changed, 162 insertions(+), 27 deletions(-)
 ```
 
 </details>
