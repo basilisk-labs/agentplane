@@ -15,8 +15,14 @@ Decompose packages/agentplane/src/commands/guard/impl/close-message.ts by extrac
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified close commit message decomposition. Commands passed: close-message focused vitest (34
+tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot
+report check. Runtime hotspot warnings decreased from 35 to 34; close-message.ts is 112 lines.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +33,10 @@ Decompose packages/agentplane/src/commands/guard/impl/close-message.ts by extrac
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/guard/impl/close-message-git.ts   |  85 ++++
+ .../commands/guard/impl/close-message-render.ts    | 397 +++++++++++++++++
+ .../src/commands/guard/impl/close-message.ts       | 494 +--------------------
+ 3 files changed, 499 insertions(+), 477 deletions(-)
 ```
 
 </details>
