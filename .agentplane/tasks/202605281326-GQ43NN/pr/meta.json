@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-28T14:04:46Z",
   "base": "main",
   "branch": "task/202605281326-GQ43NN/handle-context-verify-task-non-context-skip",
   "created_at": "2026-05-28T13:27:17.393Z",
   "diffstat_sha256": "sha256:578212f948ae10f5d2ee35efe7f6ee8e8a40579a4e4fcb4b5f79c2828a7a572c",
   "last_verified_at": "2026-05-28T13:32:51.911Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "ceeff569cf82dc00bb7613199ba165076e87fef6",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-28T14:04:46Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605281326-GQ43NN",
-  "updated_at": "2026-05-28T13:27:17.393Z",
+  "updated_at": "2026-05-28T14:04:46Z",
   "verify": {
     "status": "pass"
   }
