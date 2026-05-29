@@ -89,7 +89,7 @@ sections:
 
     BlueprintSnapshotRef:
     - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290203-E5E8EF-blueprint-validate-decomposition/.agentplane/tasks/202605290203-E5E8EF/blueprint/resolved-snapshot.json
+    - path: .agentplane/tasks/202605290203-E5E8EF/blueprint/resolved-snapshot.json
     - old_digest: b770774286c9309b399a6d4e36ef03ce0194740ff988b3014182dcf7122ef8b7
     - current_digest: b770774286c9309b399a6d4e36ef03ce0194740ff988b3014182dcf7122ef8b7
     - route_changed: no
@@ -152,7 +152,7 @@ Details:
 
 BlueprintSnapshotRef:
 - state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290203-E5E8EF-blueprint-validate-decomposition/.agentplane/tasks/202605290203-E5E8EF/blueprint/resolved-snapshot.json
+- path: .agentplane/tasks/202605290203-E5E8EF/blueprint/resolved-snapshot.json
 - old_digest: b770774286c9309b399a6d4e36ef03ce0194740ff988b3014182dcf7122ef8b7
 - current_digest: b770774286c9309b399a6d4e36ef03ce0194740ff988b3014182dcf7122ef8b7
 - route_changed: no
