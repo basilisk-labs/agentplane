@@ -4,7 +4,7 @@ title: "Release v0.6.12"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -34,6 +34,24 @@ verification:
   updated_by: "CODER"
   note: "Release checks passed: release candidate prepared for v0.6.12; release:prepublish:fast passed; release:prepublish:heavy passed including release-ci-base 67/67 chunks, workflow/significant coverage, and release-critical suite; pre-push standard mode passed before branch update."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-29T08:32:14.670Z"
+  updated_by: "EVALUATOR"
+  note: "v0.6.12 release candidate satisfies the approved release.strict scope: release plan targets v0.6.12, candidate branch was prepared without tag publication, local fast/heavy release gates passed, PR #4306 hosted checks are stable green, and post-merge hosted npm publish remains the expected external tail."
+  evaluated_sha: "33ebb8c617ae86bf25d9c8edecc2490f7dc4bc29"
+  blueprint_digest: "5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61"
+  evidence_refs:
+    - ".agentplane/tasks/202605290732-0XREE3/README.md"
+    - ".agentplane/tasks/202605290732-0XREE3/quality/20260529-083214670-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605290732-0XREE3/quality/20260529-083214670-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605290732-0XREE3/quality/20260529-083214670-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605290732-0XREE3/blueprint/resolved-snapshot.json"
+    - ".agentplane/.release/apply/2026-05-29T08-16-14-927Z.json"
+    - "ap pr check 202605290732-0XREE3 --hosted: 18/18 passing"
+    - "bun run release:prepublish:heavy: release-ci-base 67/67, workflow coverage, significant coverage, release-critical passed"
+  findings:
+    - "Release notes, social image artifact, package version bump, release parity, lifecycle invariant refresh, release-ci-base 67/67 chunks, workflow/significant coverage, release-critical suite, standard pre-push, and hosted PR checks all passed for the candidate branch."
 commit: null
 comments:
   -
