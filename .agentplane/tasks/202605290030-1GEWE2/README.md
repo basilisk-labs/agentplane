@@ -1,10 +1,11 @@
 ---
 id: "202605290030-1GEWE2"
 title: "Blueprint model decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4244."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified blueprint model decomposition. Commands passed: blueprint focused tests (resolve, recipe-hints, task-input), bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 30 to 29; model.ts is 5 lines."
   attempts: 0
-commit: null
+commit:
+  hash: "a160777b00b7e43dd0ab85acf11cdb0a84180996"
+  message: "✅ 1GEWE2 blueprints: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: Split blueprint model type declarations into focused modules with model.ts as compatibility barrel."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4244 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified blueprint model decomposition. Commands passed: blueprint focused tests (resolve, recipe-hints, task-input), bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 30 to 29; model.ts is 5 lines."
+  -
+    type: "status"
+    at: "2026-05-29T00:42:11.705Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4244 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T00:36:12.155Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T00:42:11.709Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/blueprints/model.ts into focused blueprint model schema/type modules while preserving public blueprint model exports and reducing runtime hotspot warnings."
 sections:
   Summary: |-
