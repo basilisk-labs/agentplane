@@ -15,8 +15,18 @@ Decompose packages/agentplane/src/runtime/prompt-modules/validation.ts by extrac
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified prompt module validation decomposition. Commands passed: bunx vitest run
+packages/agentplane/src/runtime/prompt-modules/model.test.ts
+packages/agentplane/src/runtime/prompt-modules/mutations.test.ts
+packages/agentplane/src/runtime/prompt-modules/registry.test.ts --config vitest.workspace.ts (13
+tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run
+format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 23 to 22;
+validation.ts is 342 lines, below the 400-line warning threshold.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +37,10 @@ Decompose packages/agentplane/src/runtime/prompt-modules/validation.ts by extrac
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../runtime/prompt-modules/validation-constants.ts | 119 ++++++++++++
+ .../runtime/prompt-modules/validation-guards.ts    |  73 +++++++
+ .../src/runtime/prompt-modules/validation.ts       | 213 +++------------------
+ 3 files changed, 223 insertions(+), 182 deletions(-)
 ```
 
 </details>
