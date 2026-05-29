@@ -26,6 +26,7 @@ import { resolveHostedMergeTargetFromEvent } from "./hosted-merge-sync.js";
 import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import type { TaskHostedCloseParsed } from "./hosted-close.spec.js";
+import type { HostedCloseOutcome } from "./hosted-close.types.js";
 import {
   buildHostedTaskFromTrackedPrArtifacts,
   hasTaskArtifactChanges,
@@ -35,11 +36,6 @@ import {
 } from "./hosted-close-recovery.js";
 
 export { taskHostedCloseSpec } from "./hosted-close.spec.js";
-
-type HostedCloseOutcome =
-  | { outcome: "noop"; detail: string }
-  | { outcome: "closed"; taskId: string; mergeHash: string }
-  | { outcome: "meta-only"; taskId: string; mergeHash: string };
 
 async function loadHostedBatchTasks(opts: {
   ctx: CommandContext;
