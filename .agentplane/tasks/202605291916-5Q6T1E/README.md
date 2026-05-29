@@ -4,7 +4,7 @@ title: "Add provider-neutral task sync envelope"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -24,23 +24,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-29T20:33:23.166Z"
+  updated_at: "2026-05-29T21:02:25.885Z"
   updated_by: "EVALUATOR"
-  note: "CI gate fix after hosted static/unit failures."
-  evaluated_sha: "299e5b9df260fc16a626afd648476a836df82067"
+  note: "Static CI fix after hosted knip baseline failure."
+  evaluated_sha: "cc9f811baa6136659ee92d050077cc4da376c9da"
   blueprint_digest: "2462cf8787ac4d7caee778f65bc126c9c76c0c47818d096ed9b76af6efbb5491"
   evidence_refs:
     - ".agentplane/tasks/202605291916-5Q6T1E/README.md"
-    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-203323166-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-203323166-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-203323166-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-210225885-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-210225885-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-210225885-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605291916-5Q6T1E/blueprint/resolved-snapshot.json"
+    - "bun run knip:check"
     - "bun run lint:core"
-    - "bun run build"
-    - "bun run test:fast"
-    - "bun x vitest run packages/agentplane/src/backends/task-backend.cloud-regression.test.ts packages/agentplane/src/backends/task-backend.cloud-start-refresh.test.ts packages/core/src/tasks/task-provider-safe-projection.test.ts"
+    - "bun run --filter=agentplane build"
   findings:
-    - "Provider-safe projection lint now uses string status without a redundant union; legacy cloud import tests explicitly opt into remote_create_policy=import where they materialize remote-only tasks."
+    - "Removed the unused backend shared re-export of TaskSyncEnvelope while keeping it as an internal TaskData.sync type; knip baseline and lint:core pass locally."
 commit: null
 comments:
   -
