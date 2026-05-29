@@ -4,7 +4,7 @@ title: "Add provider-neutral task sync envelope"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -24,22 +24,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-29T21:02:25.885Z"
+  updated_at: "2026-05-29T21:10:46.724Z"
   updated_by: "EVALUATOR"
-  note: "Static CI fix after hosted knip baseline failure."
-  evaluated_sha: "cc9f811baa6136659ee92d050077cc4da376c9da"
+  note: "Review-thread fix for Redmine sync envelope preservation."
+  evaluated_sha: "5f40b1cec814bf6b0fa7bbbab52ac04b74e8269d"
   blueprint_digest: "2462cf8787ac4d7caee778f65bc126c9c76c0c47818d096ed9b76af6efbb5491"
   evidence_refs:
     - ".agentplane/tasks/202605291916-5Q6T1E/README.md"
-    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-210225885-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-210225885-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-210225885-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-211046724-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-211046724-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-211046724-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605291916-5Q6T1E/blueprint/resolved-snapshot.json"
-    - "bun run knip:check"
-    - "bun run lint:core"
+    - "bun x vitest run packages/agentplane/src/backends/task-backend.redmine.write.test.ts"
+    - "bun run typecheck"
     - "bun run --filter=agentplane build"
   findings:
-    - "Removed the unused backend shared re-export of TaskSyncEnvelope while keeping it as an internal TaskData.sync type; knip baseline and lint:core pass locally."
+    - "Redmine issue mapping now carries canonical_state.sync into TaskData and the write mapping test covers provider external refs, field policies, freshness, and conflicts round-trip preservation."
 commit: null
 comments:
   -
