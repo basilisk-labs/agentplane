@@ -1,10 +1,11 @@
 ---
 id: "202605290455-3GZJ8E"
 title: "Task obsidian command decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4282."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Observed: pure Obsidian projection rendering moved into obsidian.render.ts; obsidian.ts is below hotspot threshold. Checks: obsidian.unit.test, typecheck, arch:check, knip:check, lint:core, format:changed, hotspots:check passed."
   attempts: 0
-commit: null
+commit:
+  hash: "2636c48c001c6017f4f97b708864ddfa07648923"
+  message: "♻️ 3GZJ8E task: decompose obsidian rendering"
 comments:
   -
     author: "CODER"
     body: "Start: Extract task obsidian pure rendering helpers while preserving projection generation and clean behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4282 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Observed: pure Obsidian projection rendering moved into obsidian.render.ts; obsidian.ts is below hotspot threshold. Checks: obsidian.unit.test, typecheck, arch:check, knip:check, lint:core, format:changed, hotspots:check passed."
+  -
+    type: "status"
+    at: "2026-05-29T05:05:53.609Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4282 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T05:02:26.132Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T05:05:53.614Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract focused helpers from packages/agentplane/src/commands/task/obsidian.ts to reduce the runtime hotspot below the warning threshold without changing task obsidian behavior."
 sections:
   Summary: |-
