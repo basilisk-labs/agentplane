@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202605290344-YV53ZN/pr-review-template-hosted-formatting",
+  "created_at": "2026-05-29T03:44:48.756Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202605290344-YV53ZN",
+  "updated_at": "2026-05-29T03:44:48.756Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
