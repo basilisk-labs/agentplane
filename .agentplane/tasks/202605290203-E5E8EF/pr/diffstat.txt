@@ -1,0 +1,3 @@
+ .../agentplane/src/blueprints/validate-helpers.ts  | 124 +++++++++++++++++
+ packages/agentplane/src/blueprints/validate.ts     | 147 +++------------------
+ 2 files changed, 146 insertions(+), 125 deletions(-)
