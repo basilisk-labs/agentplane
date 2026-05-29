@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202605290732-0XREE3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-29T08:36:09.917Z",
+  "verdict": "pass",
+  "summary": "v0.6.12 release candidate remains acceptable after the bun.lock review fix. The lockfile now matches package workspace metadata at 0.6.12, frozen lockfile install passes, release:check passes, and the prior heavy candidate gates still establish release readiness subject to fresh hosted checks on the latest branch head.",
+  "evaluated_sha": "76081ab34d03cdf4f68f9314e634c157e58eb1d8",
+  "blueprint_digest": "5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61",
+  "findings": [
+    "Resolved PR #4306 review thread by syncing root bun.lock metadata for agentplane, @agentplaneorg/core, @agentplaneorg/recipes, and @agentplane/testkit dependency references to 0.6.12."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605290732-0XREE3/README.md",
+    "bun install --frozen-lockfile --ignore-scripts: pass",
+    "bun run release:check: pass",
+    "GitHub review thread PRRT_kwDORCLmJM6FoDe4 resolved"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Need fresh hosted PR checks on commit 76081ab34 or later before integration."
+  ]
+}

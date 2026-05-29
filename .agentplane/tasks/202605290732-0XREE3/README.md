@@ -4,7 +4,7 @@ title: "Release v0.6.12"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -30,28 +30,28 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-29T08:25:31.502Z"
+  updated_at: "2026-05-29T08:35:56.976Z"
   updated_by: "CODER"
-  note: "Release checks passed: release candidate prepared for v0.6.12; release:prepublish:fast passed; release:prepublish:heavy passed including release-ci-base 67/67 chunks, workflow/significant coverage, and release-critical suite; pre-push standard mode passed before branch update."
+  note: "Release checks refreshed after bun.lock sync: bun install --frozen-lockfile --ignore-scripts passed; bun run release:check passed with 0.6.12 package metadata; prior release:prepublish:heavy and hosted checks remain covered, pending fresh hosted rerun for the latest branch head."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-29T08:32:14.670Z"
+  updated_at: "2026-05-29T08:36:09.917Z"
   updated_by: "EVALUATOR"
-  note: "v0.6.12 release candidate satisfies the approved release.strict scope: release plan targets v0.6.12, candidate branch was prepared without tag publication, local fast/heavy release gates passed, PR #4306 hosted checks are stable green, and post-merge hosted npm publish remains the expected external tail."
-  evaluated_sha: "33ebb8c617ae86bf25d9c8edecc2490f7dc4bc29"
+  note: "v0.6.12 release candidate remains acceptable after the bun.lock review fix. The lockfile now matches package workspace metadata at 0.6.12, frozen lockfile install passes, release:check passes, and the prior heavy candidate gates still establish release readiness subject to fresh hosted checks on the latest branch head."
+  evaluated_sha: "76081ab34d03cdf4f68f9314e634c157e58eb1d8"
   blueprint_digest: "5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61"
   evidence_refs:
     - ".agentplane/tasks/202605290732-0XREE3/README.md"
-    - ".agentplane/tasks/202605290732-0XREE3/quality/20260529-083214670-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605290732-0XREE3/quality/20260529-083214670-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605290732-0XREE3/quality/20260529-083214670-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605290732-0XREE3/quality/20260529-083609917-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605290732-0XREE3/quality/20260529-083609917-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605290732-0XREE3/quality/20260529-083609917-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605290732-0XREE3/blueprint/resolved-snapshot.json"
-    - ".agentplane/.release/apply/2026-05-29T08-16-14-927Z.json"
-    - "ap pr check 202605290732-0XREE3 --hosted: 18/18 passing"
-    - "bun run release:prepublish:heavy: release-ci-base 67/67, workflow coverage, significant coverage, release-critical passed"
+    - "bun install --frozen-lockfile --ignore-scripts: pass"
+    - "bun run release:check: pass"
+    - "GitHub review thread PRRT_kwDORCLmJM6FoDe4 resolved"
   findings:
-    - "Release notes, social image artifact, package version bump, release parity, lifecycle invariant refresh, release-ci-base 67/67 chunks, workflow/significant coverage, release-critical suite, standard pre-push, and hosted PR checks all passed for the candidate branch."
+    - "Resolved PR #4306 review thread by syncing root bun.lock metadata for agentplane, @agentplaneorg/core, @agentplaneorg/recipes, and @agentplane/testkit dependency references to 0.6.12."
 commit: null
 comments:
   -
@@ -71,8 +71,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release checks passed: release candidate prepared for v0.6.12; release:prepublish:fast passed; release:prepublish:heavy passed including release-ci-base 67/67 chunks, workflow/significant coverage, and release-critical suite; pre-push standard mode passed before branch update."
+  -
+    type: "verify"
+    at: "2026-05-29T08:35:56.976Z"
+    author: "CODER"
+    state: "ok"
+    note: "Release checks refreshed after bun.lock sync: bun install --frozen-lockfile --ignore-scripts passed; bun run release:check passed with 0.6.12 package metadata; prior release:prepublish:heavy and hosted checks remain covered, pending fresh hosted rerun for the latest branch head."
 doc_version: 3
-doc_updated_at: "2026-05-29T08:25:31.519Z"
+doc_updated_at: "2026-05-29T08:35:56.996Z"
 doc_updated_by: "CODER"
 description: "Prepare, validate, merge, publish, and record evidence for the next patch release v0.6.12."
 sections:
@@ -110,6 +116,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605290732-0XREE3
 
+    ### 2026-05-29T08:35:56.976Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Release checks refreshed after bun.lock sync: bun install --frozen-lockfile --ignore-scripts passed; bun run release:check passed with 0.6.12 package metadata; prior release:prepublish:heavy and hosted checks remain covered, pending fresh hosted rerun for the latest branch head.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T08:25:31.519Z, excerpt_hash=sha256:5eb4a05248f73af6cb4fe68575656b182c87d990abd716dd79704d515a9d87c0
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605290732-0XREE3-release-v0-6-12/.agentplane/tasks/202605290732-0XREE3/blueprint/resolved-snapshot.json
+    - old_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
+    - current_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290732-0XREE3
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -118,6 +143,10 @@ sections:
     - Observation: Release candidate commit df47c6576/b390c4c3/df47c657 lineage was amended only for formatting and PR metadata; final HEAD is b390c4c3 before verification refresh.
       Impact: Candidate branch is ready for PR integration; hosted publish still required after merge to main.
       Resolution: Use branch_pr integration, then dispatch hosted Publish to npm with the merged release commit SHA and verify npm/tag/GitHub Release.
+
+    - Observation: Addressed PR #4306 review thread by updating root bun.lock workspace metadata from 0.6.11 to 0.6.12.
+      Impact: Fresh publish checkout using frozen lockfile should no longer fail before build/publish.
+      Resolution: Wait for hosted PR checks on the updated branch and continue branch_pr integration.
 id_source: "generated"
 ---
 ## Summary
@@ -164,6 +193,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605290732-0XREE3
 
+### 2026-05-29T08:35:56.976Z — VERIFY — ok
+
+By: CODER
+
+Note: Release checks refreshed after bun.lock sync: bun install --frozen-lockfile --ignore-scripts passed; bun run release:check passed with 0.6.12 package metadata; prior release:prepublish:heavy and hosted checks remain covered, pending fresh hosted rerun for the latest branch head.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T08:25:31.519Z, excerpt_hash=sha256:5eb4a05248f73af6cb4fe68575656b182c87d990abd716dd79704d515a9d87c0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605290732-0XREE3-release-v0-6-12/.agentplane/tasks/202605290732-0XREE3/blueprint/resolved-snapshot.json
+- old_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
+- current_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290732-0XREE3
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -176,3 +224,7 @@ BlueprintSnapshotRef:
 - Observation: Release candidate commit df47c6576/b390c4c3/df47c657 lineage was amended only for formatting and PR metadata; final HEAD is b390c4c3 before verification refresh.
   Impact: Candidate branch is ready for PR integration; hosted publish still required after merge to main.
   Resolution: Use branch_pr integration, then dispatch hosted Publish to npm with the merged release commit SHA and verify npm/tag/GitHub Release.
+
+- Observation: Addressed PR #4306 review thread by updating root bun.lock workspace metadata from 0.6.11 to 0.6.12.
+  Impact: Fresh publish checkout using frozen lockfile should no longer fail before build/publish.
+  Resolution: Wait for hosted PR checks on the updated branch and continue branch_pr integration.
