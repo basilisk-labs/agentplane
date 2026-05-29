@@ -4,7 +4,7 @@ title: "Blueprint command listing decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T03:37:02.570Z"
+  updated_by: "CODER"
+  note: "Verified blueprint command listing decomposition. Commands passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.blueprint.test.ts packages/agentplane/src/commands/blueprint/task-input.test.ts packages/agentplane/src/commands/blueprint/snapshot-artifact.test.ts --config vitest.workspace.ts (29 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 18 to 17; blueprint.command.ts is 336 lines, below the 400-line warning threshold."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: extract blueprint examples/list handlers into a focused module while preserving command exports and CLI output."
+  -
+    type: "verify"
+    at: "2026-05-29T03:37:02.570Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified blueprint command listing decomposition. Commands passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.blueprint.test.ts packages/agentplane/src/commands/blueprint/task-input.test.ts packages/agentplane/src/commands/blueprint/snapshot-artifact.test.ts --config vitest.workspace.ts (29 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 18 to 17; blueprint.command.ts is 336 lines, below the 400-line warning threshold."
 doc_version: 3
-doc_updated_at: "2026-05-29T03:33:22.706Z"
+doc_updated_at: "2026-05-29T03:37:02.608Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/commands/blueprint/blueprint.command.ts by extracting blueprint list/examples command handlers into a focused module, preserving command-loader exports and CLI output while reducing runtime hotspot count."
 sections:
@@ -73,6 +79,25 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T03:37:02.570Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified blueprint command listing decomposition. Commands passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.blueprint.test.ts packages/agentplane/src/commands/blueprint/task-input.test.ts packages/agentplane/src/commands/blueprint/snapshot-artifact.test.ts --config vitest.workspace.ts (29 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 18 to 17; blueprint.command.ts is 336 lines, below the 400-line warning threshold.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T03:33:22.706Z, excerpt_hash=sha256:865891e195871975ec552f0ad30c4c359a5e97cca429e9a5bd044ee62cc81c8c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: .agentplane/tasks/202605290332-X3NHBJ/blueprint/resolved-snapshot.json
+    - old_digest: 4567f910fd09f75235e481f26e4e9912805eb7dfcf6a9aceebc69d63cba7e760
+    - current_digest: 4567f910fd09f75235e481f26e4e9912805eb7dfcf6a9aceebc69d63cba7e760
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290332-X3NHBJ
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -121,6 +146,25 @@ PLANNER fallback scaffold for "Blueprint command listing decomposition". Replace
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T03:37:02.570Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified blueprint command listing decomposition. Commands passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.blueprint.test.ts packages/agentplane/src/commands/blueprint/task-input.test.ts packages/agentplane/src/commands/blueprint/snapshot-artifact.test.ts --config vitest.workspace.ts (29 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 18 to 17; blueprint.command.ts is 336 lines, below the 400-line warning threshold.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T03:33:22.706Z, excerpt_hash=sha256:865891e195871975ec552f0ad30c4c359a5e97cca429e9a5bd044ee62cc81c8c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: .agentplane/tasks/202605290332-X3NHBJ/blueprint/resolved-snapshot.json
+- old_digest: 4567f910fd09f75235e481f26e4e9912805eb7dfcf6a9aceebc69d63cba7e760
+- current_digest: 4567f910fd09f75235e481f26e4e9912805eb7dfcf6a9aceebc69d63cba7e760
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290332-X3NHBJ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
