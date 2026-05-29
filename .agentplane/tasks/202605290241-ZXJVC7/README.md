@@ -1,0 +1,124 @@
+---
+id: "202605290241-ZXJVC7"
+title: "PR integrate command decomposition"
+status: "DOING"
+priority: "med"
+owner: "CODER"
+revision: 4
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "code"
+  - "hotspot"
+  - "pr-integrate"
+verify: []
+plan_approval:
+  state: "approved"
+  updated_at: "2026-05-29T02:42:03.740Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: extract protected-base GitHub PR integrate handoff routing while preserving cmdIntegrate behavior and diagnostics."
+events:
+  -
+    type: "status"
+    at: "2026-05-29T02:42:28.193Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: extract protected-base GitHub PR integrate handoff routing while preserving cmdIntegrate behavior and diagnostics."
+doc_version: 3
+doc_updated_at: "2026-05-29T02:42:28.193Z"
+doc_updated_by: "CODER"
+description: "Decompose packages/agentplane/src/commands/pr/integrate/cmd.ts by extracting protected-base GitHub PR handoff/merge routing while preserving integrate behavior and diagnostics."
+sections:
+  Summary: |-
+    PR integrate command decomposition
+
+    Decompose packages/agentplane/src/commands/pr/integrate/cmd.ts by extracting protected-base GitHub PR handoff/merge routing while preserving integrate behavior and diagnostics.
+  Scope: |-
+    - In scope: Decompose packages/agentplane/src/commands/pr/integrate/cmd.ts by extracting protected-base GitHub PR handoff/merge routing while preserving integrate behavior and diagnostics.
+    - Out of scope: unrelated refactors not required for "PR integrate command decomposition".
+  Plan: |-
+    Plan:
+    1. Start a branch_pr worktree for CODER.
+    2. Extract protected-base GitHub PR merge/handoff routing from packages/agentplane/src/commands/pr/integrate/cmd.ts into a focused internal module.
+    3. Preserve cmdIntegrate public behavior, E_HANDOFF diagnostics, handoff artifact contents, and local merge route behavior.
+    4. Verify with focused pr integrate tests, typecheck, arch/knip/lint/format, and hotspot threshold report.
+    5. Open PR, wait for hosted checks, merge to main, close lifecycle, and clean worktree.
+
+    Acceptance:
+    - Protected-base integrate still records handoff artifacts and emits the same handoff reason codes.
+    - Local integrate paths are not semantically changed.
+    - cmd.ts drops below the 400-line hotspot warning threshold.
+    - Runtime hotspot warning count decreases from 22 to 21 without introducing new warning-sized runtime modules.
+  Verify Steps: |-
+    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
+
+    1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+    2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+id_source: "generated"
+---
+## Summary
+
+PR integrate command decomposition
+
+Decompose packages/agentplane/src/commands/pr/integrate/cmd.ts by extracting protected-base GitHub PR handoff/merge routing while preserving integrate behavior and diagnostics.
+
+## Scope
+
+- In scope: Decompose packages/agentplane/src/commands/pr/integrate/cmd.ts by extracting protected-base GitHub PR handoff/merge routing while preserving integrate behavior and diagnostics.
+- Out of scope: unrelated refactors not required for "PR integrate command decomposition".
+
+## Plan
+
+Plan:
+1. Start a branch_pr worktree for CODER.
+2. Extract protected-base GitHub PR merge/handoff routing from packages/agentplane/src/commands/pr/integrate/cmd.ts into a focused internal module.
+3. Preserve cmdIntegrate public behavior, E_HANDOFF diagnostics, handoff artifact contents, and local merge route behavior.
+4. Verify with focused pr integrate tests, typecheck, arch/knip/lint/format, and hotspot threshold report.
+5. Open PR, wait for hosted checks, merge to main, close lifecycle, and clean worktree.
+
+Acceptance:
+- Protected-base integrate still records handoff artifacts and emits the same handoff reason codes.
+- Local integrate paths are not semantically changed.
+- cmd.ts drops below the 400-line hotspot warning threshold.
+- Runtime hotspot warning count decreases from 22 to 21 without introducing new warning-sized runtime modules.
+
+## Verify Steps
+
+PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
+
+1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
