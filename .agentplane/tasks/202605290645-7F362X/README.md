@@ -1,10 +1,11 @@
 ---
 id: "202605290645-7F362X"
 title: "Hosted close command type decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4303."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "HostedCloseOutcome moved to packages/agentplane/src/commands/task/hosted-close.types.ts; hosted-close runtime behavior and public exports are preserved. Checks passed: hosted-close tests (6 pass); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed; bun run hotspots:check (zero runtime hotspot warnings)."
   attempts: 0
-commit: null
+commit:
+  hash: "b3cae26fcc5ad1c241821e275f2027ae7600317a"
+  message: "♻️ 7F362X task: decompose hosted close type"
 comments:
   -
     author: "CODER"
     body: "Start: extracting hosted-close command type-only declarations while preserving hosted close recovery, batch close, and follow-up branch behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4303 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "HostedCloseOutcome moved to packages/agentplane/src/commands/task/hosted-close.types.ts; hosted-close runtime behavior and public exports are preserved. Checks passed: hosted-close tests (6 pass); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed; bun run hotspots:check (zero runtime hotspot warnings)."
+  -
+    type: "status"
+    at: "2026-05-29T07:04:29.382Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4303 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T06:47:14.765Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T07:04:29.386Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor packages/agentplane/src/commands/task/hosted-close.command.ts below the 400-line hotspot warning by extracting small type-only declarations into focused module(s). Preserve task hosted-close behavior, follow-up branch detection export, recovery paths, batch close behavior, and hosted close output. Acceptance: hosted-close command tests pass, typecheck/arch/knip/lint/format pass, and bun run hotspots:check reports zero runtime hotspots."
 sections:
   Summary: |-
