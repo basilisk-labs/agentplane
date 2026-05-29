@@ -5,13 +5,11 @@ import path from "node:path";
 
 import { loadConfig } from "@agentplaneorg/core/config";
 
-import { loadDotEnv } from "../../shared/env.js";
 import { isRecord } from "../../shared/guards.js";
 
 import { LocalBackend } from "./local-backend.js";
-import { RedmineBackend, type RedmineSettings } from "./redmine-backend.js";
 import { CloudBackend, type CloudBackendSettings } from "./cloud-backend.js";
-import { toStringSafe, type TaskBackend } from "./shared.js";
+import { BackendError, toStringSafe, type TaskBackend } from "./shared.js";
 
 type BackendConfig = {
   id?: string;
@@ -63,19 +61,6 @@ function loadLocalTaskBackend(ctx: TaskBackendLoaderContext): TaskBackendLoaderR
   };
 }
 
-async function loadRedmineTaskBackend(
-  ctx: TaskBackendLoaderContext,
-): Promise<TaskBackendLoaderResult> {
-  await loadDotEnv(ctx.resolved.gitRoot);
-  const cacheDirRaw = resolveMaybeRelative(ctx.resolved.gitRoot, ctx.settings.cache_dir);
-  const cacheDir = cacheDirRaw ?? path.join(ctx.resolved.gitRoot, ctx.config.paths.workflow_dir);
-  const cache = cacheDir ? new LocalBackend({ dir: cacheDir }) : null;
-  return {
-    backend: new RedmineBackend(ctx.settings as RedmineSettings, { cache }),
-    backendId: "redmine",
-  };
-}
-
 async function loadCloudTaskBackend(
   ctx: TaskBackendLoaderContext,
 ): Promise<TaskBackendLoaderResult> {
@@ -96,12 +81,22 @@ async function loadCloudTaskBackend(
 
 const TASK_BACKEND_LOADERS: Record<string, TaskBackendLoader> = {
   local: loadLocalTaskBackend,
-  redmine: loadRedmineTaskBackend,
   cloud: loadCloudTaskBackend,
 };
 
 function resolveTaskBackendLoader(backendId: string): TaskBackendLoader {
-  return TASK_BACKEND_LOADERS[backendId] ?? TASK_BACKEND_LOADERS.local;
+  const loader = TASK_BACKEND_LOADERS[backendId];
+  if (loader) return loader;
+  if (backendId === "redmine") {
+    throw new BackendError(
+      "The direct Redmine task backend has moved to AgentPlane Cloud sync. Configure backend id 'cloud' and connect Redmine through the cloud service.",
+      "E_BACKEND",
+    );
+  }
+  throw new BackendError(
+    `Unsupported task backend '${backendId}'. Supported backends: local, cloud.`,
+    "E_BACKEND",
+  );
 }
 
 async function instantiateTaskBackend(opts: {

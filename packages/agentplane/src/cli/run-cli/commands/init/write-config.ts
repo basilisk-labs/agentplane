@@ -88,14 +88,6 @@ export async function writeBackendStubs(opts: {
     version: 1,
     settings: { dir: ".agentplane/tasks" },
   };
-  const redmineBackendPayload = {
-    id: "redmine",
-    version: 1,
-    settings: {
-      owner_agent: "REDMINE",
-      custom_fields: { task_id: 1 },
-    },
-  };
   const cloudBackendPayload = {
     id: "cloud",
     version: 1,
@@ -104,11 +96,6 @@ export async function writeBackendStubs(opts: {
       stale_after_seconds: 300,
     },
   };
-  const payload =
-    opts.backend === "redmine"
-      ? redmineBackendPayload
-      : opts.backend === "cloud"
-        ? cloudBackendPayload
-        : localBackendPayload;
+  const payload = opts.backend === "cloud" ? cloudBackendPayload : localBackendPayload;
   await writeJsonStableIfChanged(opts.backendPath, payload);
 }

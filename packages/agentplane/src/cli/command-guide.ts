@@ -123,14 +123,6 @@ const ROLE_GUIDES: RoleGuide[] = [
     ],
   },
   {
-    role: "REDMINE",
-    lines: [
-      SHARED_STARTUP_NOTE,
-      `- Sync explicitly with \`${COMMAND_SNIPPETS.sync.pullRedmineExplicit}\` / \`${COMMAND_SNIPPETS.sync.pushRedmineExplicitWithYes}\`.`,
-      "- After sync, follow the same task/bootstrap lifecycle as local backends.",
-    ],
-  },
-  {
     role: "UPDATER",
     lines: [
       SHARED_STARTUP_NOTE,

@@ -53,7 +53,7 @@ describe("init prompt steps", () => {
       .mockResolvedValueOnce("claude")
       .mockResolvedValueOnce("cursor")
       .mockResolvedValueOnce("branch_pr")
-      .mockResolvedValueOnce("redmine")
+      .mockResolvedValueOnce("cloud")
       .mockResolvedValueOnce("aggressive");
     mocks.confirmMock
       .mockResolvedValueOnce(false)
@@ -102,7 +102,7 @@ describe("init prompt steps", () => {
       workflow: "branch_pr",
       directCloseDirtyPolicy: "allow_other_task_readmes",
     });
-    expect(backend).toEqual({ backend: "redmine" });
+    expect(backend).toEqual({ backend: "cloud" });
     expect(advanced).toEqual({
       hooks: true,
       requirePlanApproval: true,
@@ -141,8 +141,8 @@ describe("init prompt steps", () => {
       directCloseDirtyPolicy: "allow_other_task_readmes",
     });
     await expect(
-      promptBackendStep({ clack: prompt, flags: { backend: "redmine" } }),
-    ).resolves.toEqual({ backend: "redmine" });
+      promptBackendStep({ clack: prompt, flags: { backend: "cloud" } }),
+    ).resolves.toEqual({ backend: "cloud" });
     await expect(
       promptAdvancedSettingsStep({
         clack: prompt,
