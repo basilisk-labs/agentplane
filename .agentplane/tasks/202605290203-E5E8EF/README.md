@@ -4,7 +4,7 @@ title: "Blueprint validate decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T02:13:21.445Z"
+  updated_by: "CODER"
+  note: "Verified blueprint validation helper decomposition. Commands passed: bunx vitest run packages/agentplane/src/blueprints/validate.test.ts --config vitest.workspace.ts (23 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 24 to 23; validate.ts is 390 lines, below the 400-line warning threshold."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: decompose blueprint validation helpers while preserving validateBlueprint, validateBlueprintRegistry, and validateBlueprintPlanArtifact behavior."
+  -
+    type: "verify"
+    at: "2026-05-29T02:13:21.445Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified blueprint validation helper decomposition. Commands passed: bunx vitest run packages/agentplane/src/blueprints/validate.test.ts --config vitest.workspace.ts (23 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 24 to 23; validate.ts is 390 lines, below the 400-line warning threshold."
 doc_version: 3
-doc_updated_at: "2026-05-29T02:04:06.647Z"
+doc_updated_at: "2026-05-29T02:13:21.470Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/blueprints/validate.ts by extracting shared graph/evidence validation helpers while preserving blueprint and plan validation behavior and reducing runtime hotspot warnings."
 sections:
@@ -70,6 +76,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T02:13:21.445Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified blueprint validation helper decomposition. Commands passed: bunx vitest run packages/agentplane/src/blueprints/validate.test.ts --config vitest.workspace.ts (23 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 24 to 23; validate.ts is 390 lines, below the 400-line warning threshold.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T02:04:06.647Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290203-E5E8EF-blueprint-validate-decomposition/.agentplane/tasks/202605290203-E5E8EF/blueprint/resolved-snapshot.json
+    - old_digest: b770774286c9309b399a6d4e36ef03ce0194740ff988b3014182dcf7122ef8b7
+    - current_digest: b770774286c9309b399a6d4e36ef03ce0194740ff988b3014182dcf7122ef8b7
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290203-E5E8EF
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -114,6 +139,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T02:13:21.445Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified blueprint validation helper decomposition. Commands passed: bunx vitest run packages/agentplane/src/blueprints/validate.test.ts --config vitest.workspace.ts (23 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 24 to 23; validate.ts is 390 lines, below the 400-line warning threshold.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T02:04:06.647Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290203-E5E8EF-blueprint-validate-decomposition/.agentplane/tasks/202605290203-E5E8EF/blueprint/resolved-snapshot.json
+- old_digest: b770774286c9309b399a6d4e36ef03ce0194740ff988b3014182dcf7122ef8b7
+- current_digest: b770774286c9309b399a6d4e36ef03ce0194740ff988b3014182dcf7122ef8b7
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290203-E5E8EF
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
