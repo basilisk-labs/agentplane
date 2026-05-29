@@ -1,0 +1,33 @@
+Task: `202605290133-HM89S8`
+Title: Blueprint builtins registry decomposition
+Canonical task record: `.agentplane/tasks/202605290133-HM89S8/README.md`
+
+## Summary
+
+Blueprint builtins registry decomposition
+
+Decompose packages/agentplane/src/blueprints/builtins.ts by extracting builtin node sequences and common blueprint entries while preserving builtin blueprint registry semantics and reducing the runtime hotspot warning count.
+
+## Scope
+
+- In scope: Decompose packages/agentplane/src/blueprints/builtins.ts by extracting builtin node sequences and common blueprint entries while preserving builtin blueprint registry semantics and reducing the runtime hotspot warning count.
+- Out of scope: unrelated refactors not required for "Blueprint builtins registry decomposition".
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-29T01:33:59.494Z
+- Branch: task/202605290133-HM89S8/blueprint-builtins-decomposition
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+No changes detected.
+```
+
+</details>
