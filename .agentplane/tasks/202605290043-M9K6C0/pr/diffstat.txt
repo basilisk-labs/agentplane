@@ -1,0 +1,4 @@
+ .../commands/core/preflight-report-drift.ts        | 187 ++++++++++++++++
+ .../core/preflight-report-message-guard.ts         |  52 +++++
+ .../cli/run-cli/commands/core/preflight-report.ts  | 241 +--------------------
+ 3 files changed, 251 insertions(+), 229 deletions(-)
