@@ -1115,44 +1115,17 @@ describe(
       expect(findings).toHaveLength(0);
     });
 
-    it("warns when a Redmine backend is configured without canonical_state readiness", async () => {
+    it("rejects legacy direct Redmine backend configs with a cloud migration message", async () => {
       const ws = await mkWorkspace();
       await configureRedmineBackend(ws.root);
-      const stderr = spyOnStderrWrite();
-      try {
-        const rc = await withIsolatedRedmineEnv(async () => {
-          return await runDoctor(
+      await expect(
+        withIsolatedRedmineEnv(async () => {
+          await runDoctor(
             { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
             { fix: false, dev: false },
           );
-        });
-        expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
-        expect(output).toContain("Redmine backend is running in partial compatibility mode");
-        expect(output).toContain("agentplane backend inspect redmine --yes");
-        expect(output).toContain("supports_task_revisions=false");
-      } finally {
-        stderr.mockRestore();
-      }
-    });
-
-    it("stays quiet on Redmine readiness when canonical_state support is configured", async () => {
-      const ws = await mkWorkspace();
-      await configureRedmineBackend(ws.root, { canonicalStateFieldId: "9" });
-      const stderr = spyOnStderrWrite();
-      try {
-        const rc = await withIsolatedRedmineEnv(async () => {
-          return await runDoctor(
-            { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
-            { fix: false, dev: false },
-          );
-        });
-        expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
-        expect(output).not.toContain("Redmine backend is running in partial compatibility mode");
-      } finally {
-        stderr.mockRestore();
-      }
+        }),
+      ).rejects.toThrow(/direct Redmine task backend has moved to AgentPlane Cloud sync/u);
     });
 
     it("fails dev checks when monorepo source tree is unavailable", async () => {
