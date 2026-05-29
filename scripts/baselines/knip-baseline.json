@@ -470,66 +470,61 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/blueprints/model.ts",
+      "file": "packages/agentplane/src/blueprints/model-core.ts",
       "types": [
         {
           "name": "BlueprintDefinition",
-          "line": 102,
-          "col": 13
-        },
-        {
-          "name": "BlueprintExecutionCheckProblemCode",
-          "line": 424,
-          "col": 13
-        },
-        {
-          "name": "BlueprintExecutionEventType",
-          "line": 338,
-          "col": 13
-        },
-        {
-          "name": "BlueprintExecutionEvidenceRef",
-          "line": 350,
-          "col": 13
-        },
-        {
-          "name": "BlueprintExecutionNodeStatus",
-          "line": 329,
-          "col": 13
-        },
-        {
-          "name": "BlueprintExecutionStateEvent",
-          "line": 403,
-          "col": 13
-        },
-        {
-          "name": "BlueprintExecutionStateNode",
-          "line": 395,
-          "col": 13
-        },
-        {
-          "name": "BlueprintNodeMode",
-          "line": 50,
+          "line": 100,
           "col": 13
         },
         {
           "name": "BlueprintState",
-          "line": 103,
+          "line": 101,
           "col": 13
         },
         {
           "name": "BuiltinBlueprintId",
-          "line": 3,
+          "line": 1,
           "col": 13
         },
         {
           "name": "RecipeExtensionPoint",
-          "line": 156,
+          "line": 154,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/blueprints/model-execution.ts",
+      "types": [
+        {
+          "name": "BlueprintExecutionCheckProblemCode",
+          "line": 105,
           "col": 13
         },
         {
-          "name": "SkippedNode",
-          "line": 244,
+          "name": "BlueprintExecutionEventType",
+          "line": 19,
+          "col": 13
+        },
+        {
+          "name": "BlueprintExecutionEvidenceRef",
+          "line": 31,
+          "col": 13
+        },
+        {
+          "name": "BlueprintExecutionNodeStatus",
+          "line": 10,
+          "col": 13
+        },
+        {
+          "name": "BlueprintExecutionStateEvent",
+          "line": 84,
+          "col": 13
+        },
+        {
+          "name": "BlueprintExecutionStateNode",
+          "line": 76,
           "col": 13
         }
       ]
@@ -601,12 +596,12 @@
         },
         {
           "name": "BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS",
-          "line": 34,
+          "line": 35,
           "col": 14
         },
         {
           "name": "BOOTSTRAP_VERIFICATION_COMMANDS",
-          "line": 42,
+          "line": 43,
           "col": 14
         }
       ]
@@ -616,7 +611,7 @@
       "exports": [
         {
           "name": "getCanonicalCommandInvocation",
-          "line": 40,
+          "line": 44,
           "col": 17
         }
       ]
@@ -826,7 +821,7 @@
       "exports": [
         {
           "name": "inferMutationFromTask",
-          "line": 68,
+          "line": 33,
           "col": 17
         }
       ]
@@ -921,12 +916,12 @@
       "types": [
         {
           "name": "CloseTailStatus",
-          "line": 43,
+          "line": 39,
           "col": 13
         },
         {
           "name": "RemotePrStatus",
-          "line": 30,
+          "line": 26,
           "col": 13
         }
       ]
@@ -956,7 +951,7 @@
       "exports": [
         {
           "name": "isUnknownRevisionError",
-          "line": 30,
+          "line": 32,
           "col": 17
         }
       ]
@@ -3055,7 +3050,7 @@
       "exports": [
         {
           "name": "buildFrameworkExecutionProfilePromptModule",
-          "line": 384,
+          "line": 385,
           "col": 17
         }
       ]
@@ -3664,9 +3659,9 @@
   "counts": {
     "files": 1,
     "exports": 207,
-    "types": 358,
+    "types": 356,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 566
+    "total": 564
   }
 }
