@@ -2,13 +2,31 @@ import type {
   Blueprint,
   BlueprintNodeKind,
   BlueprintPlanArtifact,
-  BlueprintPlanValidationProblem,
-  BlueprintPlanValidationResult,
   BlueprintRegistry,
   BlueprintValidationProblem,
   BlueprintValidationResult,
-  WorkflowMode,
 } from "./model.js";
+import type {
+  BlueprintPlanValidationProblem,
+  BlueprintPlanValidationResult,
+} from "./model-core.js";
+import {
+  blueprintPolicyModuleSet,
+  collectEntryNodeIds,
+  evidenceKindsByProducer,
+  findDuplicates,
+  hasApprovalGate,
+  hasCycle,
+  hasEdge,
+  hasRollbackEvidence,
+  hasText,
+  hasWorkflowModes,
+  isPolicyModulePath,
+  nodeIds,
+  nodeKinds,
+  planProblem,
+  problem,
+} from "./validate-helpers.js";
 
 const REQUIRED_CORE_NODE_KINDS = [
   "intake",
@@ -27,108 +45,6 @@ const ANALYSIS_CONTENT_DISALLOWED_NODE_KINDS = [
   "hosted_checks",
   "publish_or_integrate",
 ] as const satisfies readonly BlueprintNodeKind[];
-
-function problem(
-  code: BlueprintValidationProblem["code"],
-  message: string,
-  path?: string,
-): BlueprintValidationProblem {
-  return {
-    code,
-    message,
-    ...(path ? { path } : {}),
-  };
-}
-
-function planProblem(
-  code: BlueprintPlanValidationProblem["code"],
-  message: string,
-  path?: string,
-): BlueprintPlanValidationProblem {
-  return {
-    code,
-    message,
-    ...(path ? { path } : {}),
-  };
-}
-
-function hasText(value: string): boolean {
-  return value.trim().length > 0;
-}
-
-function findDuplicates(values: readonly string[]): string[] {
-  const seen = new Set<string>();
-  const duplicates = new Set<string>();
-  for (const value of values) {
-    if (seen.has(value)) {
-      duplicates.add(value);
-    }
-    seen.add(value);
-  }
-  return [...duplicates].toSorted();
-}
-
-function nodeKinds(blueprint: Blueprint): Set<BlueprintNodeKind> {
-  return new Set(blueprint.nodes.map((node) => node.kind));
-}
-
-function nodeIds(blueprint: Blueprint): Set<string> {
-  return new Set(blueprint.nodes.map((node) => node.id));
-}
-
-function collectEntryNodeIds(blueprint: Blueprint): string[] {
-  const incoming = new Set(blueprint.edges.map((edge) => edge.to));
-  return blueprint.nodes.map((node) => node.id).filter((id) => !incoming.has(id));
-}
-
-function hasCycle(blueprint: Blueprint): boolean {
-  const adjacency = new Map<string, string[]>();
-  for (const node of blueprint.nodes) {
-    adjacency.set(node.id, []);
-  }
-  for (const edge of blueprint.edges) {
-    adjacency.get(edge.from)?.push(edge.to);
-  }
-
-  const visiting = new Set<string>();
-  const visited = new Set<string>();
-
-  function visit(id: string): boolean {
-    if (visiting.has(id)) return true;
-    if (visited.has(id)) return false;
-
-    visiting.add(id);
-    for (const next of adjacency.get(id) ?? []) {
-      if (visit(next)) return true;
-    }
-    visiting.delete(id);
-    visited.add(id);
-    return false;
-  }
-
-  return blueprint.nodes.some((node) => visit(node.id));
-}
-
-function hasWorkflowModes(blueprint: Blueprint, expected: readonly WorkflowMode[]): boolean {
-  const actual = blueprint.workflowModes ?? [];
-  return actual.length === expected.length && expected.every((mode) => actual.includes(mode));
-}
-
-function hasApprovalGate(blueprint: Blueprint): boolean {
-  return blueprint.nodes.some((node) => node.kind === "approval_gate");
-}
-
-function hasRollbackEvidence(blueprint: Blueprint): boolean {
-  return blueprint.requiredEvidence.some((evidence) => evidence.kind === "rollback");
-}
-
-function evidenceKindsByProducer(blueprint: Blueprint): Map<string, Set<string>> {
-  const byNode = new Map<string, Set<string>>();
-  for (const node of blueprint.nodes) {
-    byNode.set(node.id, node.evidence ? new Set(node.evidence) : new Set());
-  }
-  return byNode;
-}
 
 function validateRequiredText(blueprint: Blueprint, errors: BlueprintValidationProblem[]): void {
   if (!hasText(blueprint.id)) {
@@ -350,25 +266,6 @@ export function validateBlueprintRegistry(registry: BlueprintRegistry): Blueprin
   };
 }
 
-function blueprintPolicyModuleSet(blueprint: Blueprint): Set<string> {
-  return new Set([
-    ...blueprint.policyModules,
-    ...blueprint.nodes.flatMap((node) => node.policyModules ?? []),
-  ]);
-}
-
-function entryNodeIds(blueprint: Blueprint): string[] {
-  return collectEntryNodeIds(blueprint);
-}
-
-function hasEdge(blueprint: Blueprint, from: string, to: string): boolean {
-  return blueprint.edges.some((edge) => edge.from === from && edge.to === to);
-}
-
-function isPolicyModulePath(value: string): boolean {
-  return value.startsWith(".agentplane/policy/");
-}
-
 export function validateBlueprintPlanArtifact(opts: {
   blueprint: Blueprint;
   plan: BlueprintPlanArtifact;
@@ -447,7 +344,7 @@ export function validateBlueprintPlanArtifact(opts: {
     );
   }
 
-  for (const entryId of entryNodeIds(opts.blueprint)) {
+  for (const entryId of collectEntryNodeIds(opts.blueprint)) {
     if (!seenStateIds.has(entryId)) {
       errors.push(
         planProblem(
