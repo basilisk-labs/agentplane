@@ -32,6 +32,7 @@ doctor, and policy routing all passed. Commits: 05b42f6f5, 5aa293214.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/developer/architecture.mdx                    |   7 +-
  docs/developer/cloud-backend-integration-plan.mdx  |   2 +-
  docs/user/cli-reference.generated.mdx              |   2 +-
  docs/user/prerequisites.mdx                        |  16 +-
@@ -91,7 +92,7 @@ doctor, and policy routing all passed. Commits: 05b42f6f5, 5aa293214.
  packages/agentplane/src/commands/sync.command.ts   |   4 +-
  scripts/checks/run-backend-live-suite.mjs          |  99 ----
  scripts/lib/test-route-registry.mjs                |   7 -
- 59 files changed, 136 insertions(+), 5699 deletions(-)
+ 60 files changed, 141 insertions(+), 5701 deletions(-)
 ```
 
 </details>
