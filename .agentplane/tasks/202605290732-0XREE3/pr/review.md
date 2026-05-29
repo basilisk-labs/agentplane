@@ -30,6 +30,7 @@ Created: 2026-05-29T07:32:51.615Z
 
 ```text
  .agentplane/WORKFLOW.md                            |   3 +-
+ bun.lock                                           |  12 +-
  docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.6.12.md                           | 200 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +-
@@ -41,7 +42,7 @@ Created: 2026-05-29T07:32:51.615Z
  scripts/checks/check-lifecycle-invariants.mjs      |  14 +-
  .../static/img/social/docs/releases/v0.6.12.png    | Bin 0 -> 41784 bytes
  website/static/img/social/manifest.json            |   8 +
- 12 files changed, 230 insertions(+), 19 deletions(-)
+ 13 files changed, 236 insertions(+), 25 deletions(-)
 ```
 
 </details>
