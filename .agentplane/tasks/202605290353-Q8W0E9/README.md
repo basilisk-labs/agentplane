@@ -1,10 +1,11 @@
 ---
 id: "202605290353-Q8W0E9"
 title: "PR sync batch ownership decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4272."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified PR sync batch ownership decomposition. Commands passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts --config vitest.workspace.ts (42 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 16 to 15; sync.ts is 354 lines, below the 400-line warning threshold."
   attempts: 0
-commit: null
+commit:
+  hash: "66176dfd619eb82fc0ba0d28ed8a5eecb8f0ce87"
+  message: "✅ Q8W0E9 pr: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: extract PR sync branch_pr batch ownership helpers into a focused internal module while preserving sync behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4272 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified PR sync batch ownership decomposition. Commands passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts --config vitest.workspace.ts (42 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 16 to 15; sync.ts is 354 lines, below the 400-line warning threshold."
+  -
+    type: "status"
+    at: "2026-05-29T04:00:59.448Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4272 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T03:56:33.796Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T04:00:59.453Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/pr/internal/sync.ts by extracting branch_pr batch ownership helpers into a focused internal module, preserving PR sync behavior while reducing runtime hotspot count."
 sections:
   Summary: |-
