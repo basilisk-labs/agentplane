@@ -4,7 +4,7 @@ title: "Fix fresh feedback issues 4312-4315"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,22 @@ verification:
   updated_by: "CODER"
   note: "Hosted PR verification is green for PR #4316 head 73b4fd790c3cd88feb223f84a03b29467d368f2c; GitHub checks pass: PR verification, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-contract, verify-coverage, test-windows, docs, plan, CodeQL. Local checks passed: targeted tests, typecheck, lint:core, format:check, policy routing, ap doctor."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-29T20:36:09.708Z"
+  updated_by: "EVALUATOR"
+  note: "Fresh feedback fixes for issues #4312-#4315 are implemented and PR #4316 required checks are green on head ce3a70420cc6dd0322b831f0d5fd723d66c1eef4."
+  evaluated_sha: "73b4fd790c3cd88feb223f84a03b29467d368f2c"
+  blueprint_digest: "b1c748cd499387e9d65234ceb0dcb0e5a5a9ab9035962bba71282c555f7a725b"
+  evidence_refs:
+    - ".agentplane/tasks/202605291931-PPJZ35/README.md"
+    - ".agentplane/tasks/202605291931-PPJZ35/quality/20260529-203609708-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605291931-PPJZ35/quality/20260529-203609708-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605291931-PPJZ35/quality/20260529-203609708-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605291931-PPJZ35/blueprint/resolved-snapshot.json"
+    - "PR #4316 required checks passed on ce3a70420cc6dd0322b831f0d5fd723d66c1eef4"
+  findings:
+    - "PASS: stale dead runner routes to reclaim instead of blocking; cloud backend no longer auto-pushes ordinary writes by default; conflict=fail refuses remote projection drift; targeted regressions and hosted checks pass."
 commit: null
 comments:
   -
