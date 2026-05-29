@@ -1,10 +1,11 @@
 ---
 id: "202605290146-32ZB9B"
 title: "SGR contracts decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4254."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified SGR contracts decomposition. Commands passed: SGR contract vitest suite (1 file, 8 tests), bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap for moved public types, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 25 to 24; contracts.ts is 322 lines."
   attempts: 0
-commit: null
+commit:
+  hash: "3f220a193b56b8c76ede98f730d02460e82d7f89"
+  message: "✅ 32ZB9B runtime: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: decompose SGR contracts into type and validator primitive modules while preserving public SGR validation exports."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4254 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified SGR contracts decomposition. Commands passed: SGR contract vitest suite (1 file, 8 tests), bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap for moved public types, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 25 to 24; contracts.ts is 322 lines."
+  -
+    type: "status"
+    at: "2026-05-29T01:57:20.246Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4254 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T01:51:33.794Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T01:57:20.251Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/runtime/sgr/contracts.ts by extracting contract types and shared validation primitives while preserving public SGR validation exports and reducing runtime hotspot warnings."
 sections:
   Summary: |-
