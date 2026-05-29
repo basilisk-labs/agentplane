@@ -1,10 +1,11 @@
 ---
 id: "202605291949-5NBC1A"
 title: "Remove direct Redmine task backend"
-status: "DOING"
+result_summary: "Merged via PR #4318."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ quality_review:
     - "bun run build; bun run test:backend-critical; ap doctor; node .agentplane/policy/check-routing.mjs"
   findings:
     - "Checks passed: focused backend/init tests, backend-critical, typecheck, build, doctor, policy routing."
-commit: null
+commit:
+  hash: "b02ba48721934533ad226b3827b34343a29366b6"
+  message: "Merge pull request #4318 from basilisk-labs/task/202605291949-5NBC1A/remove-direct-redmine-task-backend"
 comments:
   -
     author: "CODER"
     body: "Start: Remove direct Redmine task backend from public AgentPlane and keep Redmine connector behavior in cloud-sync integration scope."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4318 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -57,9 +63,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented and verified: focused backend/init tests, backend-critical suite, typecheck, build, doctor, and policy routing all passed. Commits: 05b42f6f5, 5aa293214."
+  -
+    type: "status"
+    at: "2026-05-29T21:53:02.914Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4318 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T20:12:19.570Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T21:53:02.919Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove Redmine as a first-class AgentPlane task backend so public AgentPlane exposes only local and cloud backend choices; keep cloud as the provider-agnostic handoff point for Redmine connector behavior."
 sections:
   Summary: |-
