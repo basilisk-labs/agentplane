@@ -4,7 +4,7 @@ title: "Backend command decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T03:26:01.290Z"
+  updated_by: "CODER"
+  note: "Verified backend command decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/backend.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts --config vitest.workspace.ts (21 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 19 to 18; backend.ts is 352 lines, below the 400-line warning threshold."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: extract backend connect config/dotenv helpers from backend.ts into a focused module, preserving command behavior and reducing runtime hotspot count."
+  -
+    type: "verify"
+    at: "2026-05-29T03:26:01.290Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified backend command decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/backend.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts --config vitest.workspace.ts (21 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 19 to 18; backend.ts is 352 lines, below the 400-line warning threshold."
 doc_version: 3
-doc_updated_at: "2026-05-29T03:21:56.722Z"
+doc_updated_at: "2026-05-29T03:26:01.326Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/commands/backend.ts by extracting backend connect configuration and dotenv helpers into a focused module, preserving CLI behavior while bringing backend.ts under the 400-line hotspot warning threshold."
 sections:
@@ -72,6 +78,25 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T03:26:01.290Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified backend command decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/backend.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts --config vitest.workspace.ts (21 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 19 to 18; backend.ts is 352 lines, below the 400-line warning threshold.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T03:21:56.722Z, excerpt_hash=sha256:6da40d103f05f78a7444f9a581aab8801f4109e0d3d9986a098dc76e76a268fa
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: .agentplane/tasks/202605290321-43ZECH/blueprint/resolved-snapshot.json
+    - old_digest: ed164bce3041f2f4d28cfec7e54e0b7a3795e1b9321c2200d613767c277842ad
+    - current_digest: ed164bce3041f2f4d28cfec7e54e0b7a3795e1b9321c2200d613767c277842ad
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290321-43ZECH
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -119,6 +144,25 @@ PLANNER fallback scaffold for "Backend command decomposition". Replace with task
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T03:26:01.290Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified backend command decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/backend.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts --config vitest.workspace.ts (21 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 19 to 18; backend.ts is 352 lines, below the 400-line warning threshold.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T03:21:56.722Z, excerpt_hash=sha256:6da40d103f05f78a7444f9a581aab8801f4109e0d3d9986a098dc76e76a268fa
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: .agentplane/tasks/202605290321-43ZECH/blueprint/resolved-snapshot.json
+- old_digest: ed164bce3041f2f4d28cfec7e54e0b7a3795e1b9321c2200d613767c277842ad
+- current_digest: ed164bce3041f2f4d28cfec7e54e0b7a3795e1b9321c2200d613767c277842ad
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290321-43ZECH
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

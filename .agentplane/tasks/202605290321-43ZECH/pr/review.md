@@ -12,8 +12,8 @@ Created: 2026-05-29T03:21:56.833Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified backend command decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/backend.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts --config vitest.workspace.ts (21 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 19 to 18; backend.ts is 352 lines, below the 400-line warning threshold.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,9 @@ Created: 2026-05-29T03:21:56.833Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../agentplane/src/commands/backend-connect.ts     | 140 +++++++++++++++++++++
+ packages/agentplane/src/commands/backend.ts        | 127 +------------------
+ 2 files changed, 142 insertions(+), 125 deletions(-)
 ```
 
 </details>
