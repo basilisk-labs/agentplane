@@ -4,7 +4,7 @@ title: "Blueprint model decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T00:36:12.130Z"
+  updated_by: "CODER"
+  note: "Verified blueprint model decomposition. Commands passed: blueprint focused tests (resolve, recipe-hints, task-input), bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 30 to 29; model.ts is 5 lines."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Split blueprint model type declarations into focused modules with model.ts as compatibility barrel."
+  -
+    type: "verify"
+    at: "2026-05-29T00:36:12.130Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified blueprint model decomposition. Commands passed: blueprint focused tests (resolve, recipe-hints, task-input), bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 30 to 29; model.ts is 5 lines."
 doc_version: 3
-doc_updated_at: "2026-05-29T00:30:51.773Z"
+doc_updated_at: "2026-05-29T00:36:12.155Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/blueprints/model.ts into focused blueprint model schema/type modules while preserving public blueprint model exports and reducing runtime hotspot warnings."
 sections:
@@ -69,6 +75,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T00:36:12.130Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified blueprint model decomposition. Commands passed: blueprint focused tests (resolve, recipe-hints, task-input), bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 30 to 29; model.ts is 5 lines.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T00:30:51.773Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290030-1GEWE2-blueprint-model-decomposition/.agentplane/tasks/202605290030-1GEWE2/blueprint/resolved-snapshot.json
+    - old_digest: 6e93cd8f958dd913f94319de9906fc3eaa0596c8dbbc3f48016acfa3a4170fa5
+    - current_digest: 6e93cd8f958dd913f94319de9906fc3eaa0596c8dbbc3f48016acfa3a4170fa5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290030-1GEWE2
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -112,6 +137,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T00:36:12.130Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified blueprint model decomposition. Commands passed: blueprint focused tests (resolve, recipe-hints, task-input), bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 30 to 29; model.ts is 5 lines.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T00:30:51.773Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290030-1GEWE2-blueprint-model-decomposition/.agentplane/tasks/202605290030-1GEWE2/blueprint/resolved-snapshot.json
+- old_digest: 6e93cd8f958dd913f94319de9906fc3eaa0596c8dbbc3f48016acfa3a4170fa5
+- current_digest: 6e93cd8f958dd913f94319de9906fc3eaa0596c8dbbc3f48016acfa3a4170fa5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290030-1GEWE2
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
