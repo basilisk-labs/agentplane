@@ -1908,10 +1908,10 @@ Options:
 Examples:
 
 ```sh
-agentplane backend inspect redmine --yes
+agentplane backend inspect cloud --yes
 ```
 
-- Inspect visible Redmine custom fields and canonical_state readiness without remote writes.
+- Inspect cloud backend readiness without remote writes.
 
 ### backend sync
 
@@ -1942,7 +1942,7 @@ agentplane backend sync local --direction pull
 - Pull from backend.
 
 ```sh
-agentplane backend sync redmine --direction push --yes
+agentplane backend sync cloud --direction push --yes
 ```
 
 - Push to a networked backend with explicit approval.
@@ -1975,10 +1975,10 @@ agentplane sync --direction pull
 - Pull from backend (configured backend id).
 
 ```sh
-agentplane sync redmine --direction push --yes
+agentplane sync --direction push --yes
 ```
 
-- Push to redmine backend.
+- Push to the configured backend.
 
 ## Config
 
