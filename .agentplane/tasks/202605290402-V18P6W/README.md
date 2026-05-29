@@ -1,10 +1,11 @@
 ---
 id: "202605290402-V18P6W"
 title: "ACR command specs decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4274."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified ACR command specs decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/acr/acr.command.test.ts --config vitest.workspace.ts (11 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 15 to 14; acr.command.ts is 196 lines, below the 400-line warning threshold."
   attempts: 0
-commit: null
+commit:
+  hash: "bdb551dc0489dbde38711d3fd216668b0f32ebaa"
+  message: "✅ V18P6W acr: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: extract ACR parsed types and command specs into acr.specs.ts while preserving acr.command.ts public exports."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4274 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified ACR command specs decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/acr/acr.command.test.ts --config vitest.workspace.ts (11 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 15 to 14; acr.command.ts is 196 lines, below the 400-line warning threshold."
+  -
+    type: "status"
+    at: "2026-05-29T04:13:25.308Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4274 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T04:08:04.335Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T04:13:25.312Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/acr/acr.command.ts by extracting ACR command specs and parsed types into a focused acr.specs module, preserving public exports and CLI parsing behavior while reducing runtime hotspot count."
 sections:
   Summary: |-
