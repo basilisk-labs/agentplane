@@ -1,10 +1,11 @@
 ---
 id: "202605290018-081TPS"
 title: "Context ingest pipeline decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4242."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified context ingest pipeline decomposition. Commands passed: focused context ingest tests (issue-gates.unit.test.ts and release-readiness.test.ts), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 31 to 30; ingest.ts is 167 lines."
   attempts: 0
-commit: null
+commit:
+  hash: "6310a47f7b7cda61ebdbc8886b3c62cdfb4d8322"
+  message: "✅ 081TPS context: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: Decompose context ingest manifest and source collection helpers while preserving cmdContextIngest behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4242 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified context ingest pipeline decomposition. Commands passed: focused context ingest tests (issue-gates.unit.test.ts and release-readiness.test.ts), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 31 to 30; ingest.ts is 167 lines."
+  -
+    type: "status"
+    at: "2026-05-29T00:29:17.797Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4242 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T00:26:02.646Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T00:29:17.802Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/context/ingest.ts into focused ingestion pipeline modules while preserving context ingest behavior and reducing runtime hotspot warnings."
 sections:
   Summary: |-
