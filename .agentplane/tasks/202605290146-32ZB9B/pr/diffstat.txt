@@ -1,0 +1,5 @@
+ .../agentplane/src/runtime/sgr/contract-types.ts   | 143 +++++++++++
+ .../src/runtime/sgr/contract-validators.ts         |  93 +++++++
+ packages/agentplane/src/runtime/sgr/contracts.ts   | 281 ++++-----------------
+ scripts/baselines/knip-baseline.json               | 118 ++++++---
+ 4 files changed, 379 insertions(+), 256 deletions(-)
