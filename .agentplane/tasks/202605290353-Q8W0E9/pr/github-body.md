@@ -15,8 +15,18 @@ Decompose packages/agentplane/src/commands/pr/internal/sync.ts by extracting bra
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified PR sync batch ownership decomposition. Commands passed: bunx vitest run
+packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts
+packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts
+packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts --config
+vitest.workspace.ts (42 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run
+lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from
+16 to 15; sync.ts is 354 lines, below the 400-line warning threshold.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +37,9 @@ Decompose packages/agentplane/src/commands/pr/internal/sync.ts by extracting bra
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../commands/pr/internal/sync-batch-ownership.ts   | 123 +++++++++++++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    | 120 +-------------------
+ 2 files changed, 128 insertions(+), 115 deletions(-)
 ```
 
 </details>
