@@ -1,10 +1,11 @@
 ---
 id: "202605290551-9NKYP3"
 title: "Workflow transition service decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4292."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Workflow transition verification rendering/hash helpers extracted into workflow-transition-verification.ts; workflow-transition-service.ts reduced to 353 lines while preserving transition APIs."
   attempts: 0
-commit: null
+commit:
+  hash: "0b51e40f2569eb766ab331be556a749b387f99aa"
+  message: "♻️ 9NKYP3 task: decompose transition verification"
 comments:
   -
     author: "CODER"
     body: "Start: Extract workflow transition verification rendering helpers while preserving task lifecycle transition behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4292 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Workflow transition verification rendering/hash helpers extracted into workflow-transition-verification.ts; workflow-transition-service.ts reduced to 353 lines while preserving transition APIs."
+  -
+    type: "status"
+    at: "2026-05-29T05:59:08.684Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4292 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T05:54:39.128Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T05:59:08.688Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract focused verification rendering helpers from packages/agentplane/src/commands/task/shared/workflow-transition-service.ts to reduce the runtime hotspot below the warning threshold without changing task status or verification transition behavior."
 sections:
   Summary: |-
