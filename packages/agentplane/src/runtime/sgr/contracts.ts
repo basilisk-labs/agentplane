@@ -1,230 +1,53 @@
-import { isRecord } from "../../shared/guards.js";
 import type {
-  BlueprintId,
-  EvidenceKind,
-  StopRuleSeverity,
-  TaskKind,
-} from "../../blueprints/model.js";
+  BlueprintRouteDecisionSgrResult,
+  ContextExtractionCoverage,
+  ContextExtractionGraphEdge,
+  ContextExtractionGraphEntity,
+  ContextExtractionSgrResult,
+  EvaluatorSgrResult,
+  SgrReasoningStep,
+  SgrSourceRef,
+} from "./contract-types.js";
+import { SGR_CONTRACT_SCHEMA_VERSION } from "./contract-types.js";
+import {
+  invalid,
+  optionalNumber,
+  optionalSourceRefs,
+  optionalString,
+  optionalStringArray,
+  requireArray,
+  requireEnum,
+  requireNonEmptyArray,
+  requireRecord,
+  requireSchemaVersion,
+  requireString,
+  requireStringArray,
+  validateConfidence,
+} from "./contract-validators.js";
 
-export const SGR_CONTRACT_SCHEMA_VERSION = 1 as const;
-
-export type SgrContractSchemaVersion = typeof SGR_CONTRACT_SCHEMA_VERSION;
-
-export type SgrSourceRef = {
-  path: string;
-  sha256?: `sha256:${string}`;
-  line?: number;
-  lines?: string;
-  section?: string;
-};
-
-export type SgrReasoningStep = {
-  label: string;
-  summary: string;
-  evidence_refs?: SgrSourceRef[];
-};
-
-export type ContextExtractionItemStatus = "proposed" | "accepted" | "stale" | "conflict";
-export type ContextExtractionItemKind =
-  | "wiki_update"
-  | "fact"
-  | "graph_entity"
-  | "graph_edge"
-  | "coverage"
-  | "capability_note";
-
-export type ContextExtractionCoverageStatus =
-  | "covered"
-  | "omitted_boilerplate"
-  | "redacted"
-  | "unresolved";
-
-export type ContextExtractionGraphEntity = {
-  id: string;
-  kind: string;
-  label: string;
-  aliases?: string[];
-  status?: string;
-};
-
-export type ContextExtractionGraphEdge = {
-  id?: string;
-  from: string;
-  to: string;
-  relation: string;
-  status?: string;
-};
-
-export type ContextExtractionCoverage = {
-  source_path: string;
-  status: ContextExtractionCoverageStatus;
-  reason: string;
-  covered_item_ids?: string[];
-};
-
-export type ContextExtractionItem = {
-  id: string;
-  kind: ContextExtractionItemKind;
-  summary: string;
-  source_refs: SgrSourceRef[];
-  confidence: number;
-  status: ContextExtractionItemStatus;
-  target_path?: string;
-  entity?: ContextExtractionGraphEntity;
-  edge?: ContextExtractionGraphEdge;
-  coverage?: ContextExtractionCoverage;
-  stale_markers?: string[];
-  conflict_markers?: string[];
-};
-
-export type ContextExtractionSgrResult = {
-  schema_version: SgrContractSchemaVersion;
-  kind: "context_extraction";
-  task_id?: string;
-  reasoning: SgrReasoningStep[];
-  source_refs: SgrSourceRef[];
-  extracted_items: ContextExtractionItem[];
-};
-
-export type EvaluatorVerdict = "pass" | "rework" | "blocked";
-export type EvaluatorFindingSeverity = "low" | "medium" | "high";
-
-export type EvaluatorFinding = {
-  id: string;
-  severity: EvaluatorFindingSeverity;
-  summary: string;
-  broken_invariant: string;
-  evidence_refs: SgrSourceRef[];
-};
-
-export type EvaluatorSgrResult = {
-  schema_version: SgrContractSchemaVersion;
-  kind: "evaluator_result";
-  evaluator_id: string;
-  verdict: EvaluatorVerdict;
-  findings: EvaluatorFinding[];
-  missing_tests: string[];
-  hidden_assumptions: string[];
-  recovery_context?: string;
-};
-
-export type BlueprintRejectedRoute = {
-  blueprint_id: BlueprintId;
-  reason: string;
-};
-
-export type BlueprintSelectedRoute = {
-  blueprint_id: BlueprintId;
-  task_kind: TaskKind;
-  rationale: string;
-};
-
-export type BlueprintDecisionEvidenceRequirement = {
-  id: string;
-  kind: EvidenceKind;
-  description: string;
-};
-
-export type BlueprintDecisionStopRule = {
-  id: string;
-  severity: StopRuleSeverity;
-  reason: string;
-};
-
-export type BlueprintRouteDecisionSgrResult = {
-  schema_version: SgrContractSchemaVersion;
-  kind: "blueprint_route_decision";
-  facts: SgrReasoningStep[];
-  inferences: SgrReasoningStep[];
-  rejected_routes: BlueprintRejectedRoute[];
-  selected_route: BlueprintSelectedRoute;
-  required_evidence: BlueprintDecisionEvidenceRequirement[];
-  stop_rules: BlueprintDecisionStopRule[];
-  weak_links: string[];
-};
-
-function invalid(field: string, expected: string): Error {
-  return new Error(`Invalid field ${field}: expected ${expected}`);
-}
-
-function requireRecord(raw: unknown, field: string): Record<string, unknown> {
-  if (!isRecord(raw)) throw invalid(field, "object");
-  return raw;
-}
-
-function requireString(raw: unknown, field: string): string {
-  if (typeof raw !== "string" || !raw.trim()) throw invalid(field, "non-empty string");
-  return raw.trim();
-}
-
-function optionalString(raw: unknown, field: string): string | undefined {
-  if (raw === undefined) return undefined;
-  return requireString(raw, field);
-}
-
-function requireNumber(raw: unknown, field: string): number {
-  if (typeof raw !== "number" || Number.isNaN(raw)) throw invalid(field, "number");
-  return raw;
-}
-
-function optionalNumber(raw: unknown, field: string): number | undefined {
-  if (raw === undefined) return undefined;
-  return requireNumber(raw, field);
-}
-
-function requireSchemaVersion(raw: Record<string, unknown>, field: string): void {
-  if (raw.schema_version !== SGR_CONTRACT_SCHEMA_VERSION) {
-    throw invalid(`${field}.schema_version`, String(SGR_CONTRACT_SCHEMA_VERSION));
-  }
-}
-
-function requireEnum<T extends string>(raw: unknown, field: string, allowed: readonly T[]): T {
-  const value = requireString(raw, field);
-  if (!allowed.includes(value as T)) {
-    throw invalid(field, allowed.map((item) => `"${item}"`).join(" | "));
-  }
-  return value as T;
-}
-
-function requireStringArray(raw: unknown, field: string): string[] {
-  if (!Array.isArray(raw)) throw invalid(field, "string[]");
-  return raw.map((entry, index) => requireString(entry, `${field}[${index}]`));
-}
-
-function optionalStringArray(raw: unknown, field: string): string[] | undefined {
-  if (raw === undefined) return undefined;
-  return requireStringArray(raw, field);
-}
-
-function requireArray<T>(
-  raw: unknown,
-  field: string,
-  validate: (entry: unknown, entryField: string) => T,
-): T[] {
-  if (!Array.isArray(raw)) throw invalid(field, "array");
-  return raw.map((entry, index) => validate(entry, `${field}[${index}]`));
-}
-
-function requireNonEmptyArray<T>(
-  raw: unknown,
-  field: string,
-  validate: (entry: unknown, entryField: string) => T,
-): T[] {
-  const items = requireArray(raw, field, validate);
-  if (items.length === 0) throw invalid(field, "non-empty array");
-  return items;
-}
-
-function optionalSourceRefs(raw: unknown, field: string): SgrSourceRef[] | undefined {
-  if (raw === undefined) return undefined;
-  return requireNonEmptyArray(raw, field, validateSourceRef);
-}
-
-function validateConfidence(raw: unknown, field: string): number {
-  const confidence = requireNumber(raw, field);
-  if (confidence < 0 || confidence > 1) throw invalid(field, "number between 0 and 1");
-  return confidence;
-}
+export {
+  SGR_CONTRACT_SCHEMA_VERSION,
+  type BlueprintDecisionEvidenceRequirement,
+  type BlueprintDecisionStopRule,
+  type BlueprintRejectedRoute,
+  type BlueprintRouteDecisionSgrResult,
+  type BlueprintSelectedRoute,
+  type ContextExtractionCoverage,
+  type ContextExtractionCoverageStatus,
+  type ContextExtractionGraphEdge,
+  type ContextExtractionGraphEntity,
+  type ContextExtractionItem,
+  type ContextExtractionItemKind,
+  type ContextExtractionItemStatus,
+  type ContextExtractionSgrResult,
+  type EvaluatorFinding,
+  type EvaluatorFindingSeverity,
+  type EvaluatorSgrResult,
+  type EvaluatorVerdict,
+  type SgrContractSchemaVersion,
+  type SgrReasoningStep,
+  type SgrSourceRef,
+} from "./contract-types.js";
 
 function validateSourceRef(raw: unknown, field = "source ref"): SgrSourceRef {
   const source = requireRecord(raw, field);
@@ -246,7 +69,11 @@ function validateReasoningStep(raw: unknown, field = "reasoning step"): SgrReaso
   return {
     label: requireString(step.label, `${field}.label`),
     summary: requireString(step.summary, `${field}.summary`),
-    evidence_refs: optionalSourceRefs(step.evidence_refs, `${field}.evidence_refs`),
+    evidence_refs: optionalSourceRefs(
+      step.evidence_refs,
+      `${field}.evidence_refs`,
+      validateSourceRef,
+    ),
   };
 }
 

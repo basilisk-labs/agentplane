@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202605290146-32ZB9B/sgr-contracts-decomposition",
+  "created_at": "2026-05-29T01:46:41.538Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202605290146-32ZB9B",
+  "updated_at": "2026-05-29T01:46:41.538Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
