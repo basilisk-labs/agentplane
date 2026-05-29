@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605290600-GS13TP/context-ingest-task-prompt-decomposition",
+  "created_at": "2026-05-29T06:00:47.010Z",
+  "diffstat_sha256": "sha256:9f47cb48ed32420b67842f9803fb33f2a97073ad701a1e03d369a795281eac55",
+  "last_verified_at": "2026-05-29T06:04:57.428Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605290600-GS13TP",
+  "updated_at": "2026-05-29T06:00:47.010Z",
+  "verify": {
+    "status": "pass"
+  }
+}

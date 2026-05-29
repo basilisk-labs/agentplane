@@ -1,0 +1,3 @@
+ .../agentplane/src/context/ingest-task-prompt.ts   | 142 +++++++++++++++++++++
+ packages/agentplane/src/context/ingest-task.ts     | 139 +-------------------
+ 2 files changed, 146 insertions(+), 135 deletions(-)
