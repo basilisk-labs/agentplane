@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T05:19:43Z",
   "base": "main",
   "branch": "task/202605290508-41676W/sqlite-task-cache-decomposition",
   "created_at": "2026-05-29T05:08:26.986Z",
   "diffstat_sha256": "sha256:dd6e619bda6e470d15bb7413d64ff80d615cab19bbb73ed6c5e65f073c3add5e",
   "last_verified_at": "2026-05-29T05:13:51.058Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "a522f414b567a91a13c5bf6d8e9cbb2de6d9d2b3",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T05:19:43Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605290508-41676W",
-  "updated_at": "2026-05-29T05:08:26.986Z",
+  "updated_at": "2026-05-29T05:19:43Z",
   "verify": {
     "status": "pass"
   }

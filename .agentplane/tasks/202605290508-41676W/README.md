@@ -1,10 +1,11 @@
 ---
 id: "202605290508-41676W"
 title: "SQLite task cache decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4284."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "SQLite task projection cache helpers extracted into local-task-sqlite-cache-key.ts; local-task-sqlite-cache.ts reduced from hotspot range to 236 lines. Also resolved a main-branch knip blocker in the Obsidian projection facade by making the exported file type a real facade import/re-export."
   attempts: 0
-commit: null
+commit:
+  hash: "a522f414b567a91a13c5bf6d8e9cbb2de6d9d2b3"
+  message: "♻️ 41676W task: decompose sqlite cache keys"
 comments:
   -
     author: "CODER"
     body: "Start: Extract local task SQLite cache key and fingerprint helpers while preserving SQLite projection cache behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4284 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "SQLite task projection cache helpers extracted into local-task-sqlite-cache-key.ts; local-task-sqlite-cache.ts reduced from hotspot range to 236 lines. Also resolved a main-branch knip blocker in the Obsidian projection facade by making the exported file type a real facade import/re-export."
+  -
+    type: "status"
+    at: "2026-05-29T05:20:29.465Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4284 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T05:13:51.083Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T05:20:29.470Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract focused helpers from packages/agentplane/src/backends/task-backend/local-task-sqlite-cache.ts to reduce the runtime hotspot below the warning threshold without changing local task SQLite cache behavior."
 sections:
   Summary: |-
