@@ -1,10 +1,11 @@
 ---
 id: "202605290005-7GHJ80"
 title: "Context verify-task validator decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4240."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified context verify-task validator decomposition. Commands passed: focused context verify-task tests, bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 32 to 31; verify-task.ts is 144 lines."
   attempts: 0
-commit: null
+commit:
+  hash: "d8fe92b074c7f602deb7717385191de60fa8b017"
+  message: "✅ 7GHJ80 context: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: Decompose context verify-task path policy and artifact validation helpers in the task worktree while preserving command behavior under focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4240 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified context verify-task validator decomposition. Commands passed: focused context verify-task tests, bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 32 to 31; verify-task.ts is 144 lines."
+  -
+    type: "status"
+    at: "2026-05-29T00:17:37.816Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4240 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T00:14:06.785Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T00:17:37.821Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/context/verify-task.ts by extracting path policy and artifact validation helpers while preserving context verify-task command behavior."
 sections:
   Summary: |-
