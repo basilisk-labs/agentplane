@@ -1,10 +1,11 @@
 ---
 id: "202605290332-X3NHBJ"
 title: "Blueprint command listing decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4268."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified blueprint command listing decomposition. Commands passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.blueprint.test.ts packages/agentplane/src/commands/blueprint/task-input.test.ts packages/agentplane/src/commands/blueprint/snapshot-artifact.test.ts --config vitest.workspace.ts (29 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 18 to 17; blueprint.command.ts is 336 lines, below the 400-line warning threshold."
   attempts: 0
-commit: null
+commit:
+  hash: "746ff2e41356bbe10f4b3e1cb9141bbff31b766f"
+  message: "✅ X3NHBJ blueprint: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: extract blueprint examples/list handlers into a focused module while preserving command exports and CLI output."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4268 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified blueprint command listing decomposition. Commands passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.blueprint.test.ts packages/agentplane/src/commands/blueprint/task-input.test.ts packages/agentplane/src/commands/blueprint/snapshot-artifact.test.ts --config vitest.workspace.ts (29 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 18 to 17; blueprint.command.ts is 336 lines, below the 400-line warning threshold."
+  -
+    type: "status"
+    at: "2026-05-29T03:42:58.565Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4268 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T03:37:02.608Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T03:42:58.569Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/blueprint/blueprint.command.ts by extracting blueprint list/examples command handlers into a focused module, preserving command-loader exports and CLI output while reducing runtime hotspot count."
 sections:
   Summary: |-
