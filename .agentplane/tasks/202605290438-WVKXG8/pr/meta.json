@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T04:53:55Z",
   "base": "main",
   "branch": "task/202605290438-WVKXG8/prompt-module-compiler-decomposition",
   "created_at": "2026-05-29T04:38:43.884Z",
   "diffstat_sha256": "sha256:8b2c33543cd850cf7e8d7f1f7a969284c92c6f94eab6ef6615ff2c56daea5042",
   "last_verified_at": "2026-05-29T04:44:24.056Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "9762da4dbe5390b40ca062af2d100d426fe592a0",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T04:53:55Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605290438-WVKXG8",
-  "updated_at": "2026-05-29T04:38:43.884Z",
+  "updated_at": "2026-05-29T04:53:55Z",
   "verify": {
     "status": "pass"
   }
