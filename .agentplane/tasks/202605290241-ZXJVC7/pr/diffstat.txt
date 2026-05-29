@@ -1,0 +1,3 @@
+ .../agentplane/src/commands/pr/integrate/cmd.ts    | 197 +-------------------
+ .../integrate/internal/protected-base-handoff.ts   | 206 +++++++++++++++++++++
+ 2 files changed, 209 insertions(+), 194 deletions(-)

@@ -12,8 +12,8 @@ Created: 2026-05-29T02:42:28.306Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified PR integrate command decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts --config vitest.workspace.ts (25 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 22 to 21; cmd.ts is 293 lines, below the 400-line warning threshold.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,9 @@ Created: 2026-05-29T02:42:28.306Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../agentplane/src/commands/pr/integrate/cmd.ts    | 197 +-------------------
+ .../integrate/internal/protected-base-handoff.ts   | 206 +++++++++++++++++++++
+ 2 files changed, 209 insertions(+), 194 deletions(-)
 ```
 
 </details>
