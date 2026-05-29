@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
-<title>Agentplane v0.6.1 README header</title>
+<title>AgentPlane v0.6.12 README header</title>
 <style>
   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
@@ -27,9 +27,10 @@
 <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
 <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
 <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.1</text>
+<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.12</text>
 <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
-<tspan x="52" y="594">Boring, safe, auditable agent</tspan>
-<tspan x="52" y="708">workflows — context memory.</tspan>
+<tspan x="52" y="480">Ship agent work faster with</tspan>
+<tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+<tspan x="52" y="708">and PR evidence.</tspan>
 </text>
 </svg>

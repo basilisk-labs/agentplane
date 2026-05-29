@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/readme-headers/docs.svg" alt="Agentplane docs header" style="width:100%;max-width:100%;"/>
+  <img src="assets/readme-headers/docs.svg" alt="AgentPlane docs header" style="width:100%;max-width:100%;"/>
 </p>
 
 # Docs layout
