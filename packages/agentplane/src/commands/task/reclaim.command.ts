@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
@@ -5,6 +7,8 @@ import type { CliReportEntry } from "../../cli/output.js";
 
 import { buildRecordedTaskHandoff, buildTaskResumeContext } from "./handoff.shared.js";
 import { resolveTaskHandoffPaths, writeTaskHandoff } from "../shared/task-handoff.js";
+import { isProcessAlive } from "../../runner/process-supervision/signals.js";
+import { cancelTaskRunnerExecution } from "../../runner/usecases/task-run-lifecycle.js";
 
 export type TaskReclaimParsed = {
   taskId: string;
@@ -59,11 +63,42 @@ export const taskReclaimSpec: CommandSpec<TaskReclaimParsed> = {
 
 const emitter = createCliEmitter();
 
+async function cancelStaleRunningRunner(opts: {
+  cwd: string;
+  rootOverride?: string | null;
+  taskId: string;
+  runId: string | null;
+  statePath: string | null;
+}): Promise<void> {
+  if (!opts.runId || !opts.statePath) return;
+  const state = JSON.parse(await readFile(opts.statePath, "utf8")) as {
+    status?: unknown;
+    supervision?: { pid?: unknown };
+  };
+  const pid = state.supervision?.pid;
+  if (state.status !== "running" || typeof pid !== "number" || isProcessAlive(pid)) {
+    return;
+  }
+  await cancelTaskRunnerExecution({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+    task_id: opts.taskId,
+    run_id: opts.runId,
+  });
+}
+
 export const runTaskReclaim = async (ctx: CommandCtx, parsed: TaskReclaimParsed) => {
   const resume = await buildTaskResumeContext({
     cwd: ctx.cwd,
     rootOverride: ctx.rootOverride ?? null,
     task_id: parsed.taskId,
+  });
+  await cancelStaleRunningRunner({
+    cwd: ctx.cwd,
+    rootOverride: ctx.rootOverride ?? null,
+    taskId: parsed.taskId,
+    runId: resume.runner.run_id ?? null,
+    statePath: resume.runner.state_path ?? null,
   });
   const built = await buildRecordedTaskHandoff({
     cwd: ctx.cwd,

@@ -29,13 +29,15 @@ Created: 2026-05-29T19:32:19.856Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../backends/task-backend.cloud-regression.test.ts | 70 ++++++++++++++++++
- .../backends/task-backend/cloud-backend-sync.ts    | 16 +++++
- .../src/backends/task-backend/cloud-backend.ts     |  2 +-
- .../src/cli/run-cli.core.route-decision.test.ts    | 82 ++++++++++++++++++++++
- .../agentplane/src/commands/shared/task-handoff.ts | 14 ++++
- .../agentplane/src/commands/task/handoff.shared.ts |  5 ++
- 6 files changed, 188 insertions(+), 1 deletion(-)
+ .../backends/task-backend.cloud-regression.test.ts |  70 ++++++++++++
+ .../backends/task-backend/cloud-backend-sync.ts    |  16 +++
+ .../src/backends/task-backend/cloud-backend.ts     |   2 +-
+ .../src/cli/run-cli.core.route-decision.test.ts    | 121 +++++++++++++++++++++
+ .../agentplane/src/commands/shared/task-handoff.ts |  14 +++
+ .../agentplane/src/commands/task/handoff.shared.ts |   5 +
+ .../src/commands/task/reclaim.command.ts           |  35 ++++++
+ .../src/runner/process-supervision/signals.ts      |   2 +
+ 8 files changed, 264 insertions(+), 1 deletion(-)
 ```
 
 </details>
