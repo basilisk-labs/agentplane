@@ -89,6 +89,7 @@ describe("CloudBackend regressions", () => {
         token: "token",
         project_id: "project-1",
         provider: "github-projects",
+        autosync_push_on_write: true,
       },
       { root: tempDir, cache, fetchImpl, autoSyncNetworkAllowed: true },
     );
@@ -212,5 +213,74 @@ describe("CloudBackend regressions", () => {
       status: "TODO",
       owner: "CODER",
     });
+  });
+
+  it("does not auto-push ordinary writes unless push-on-write is explicitly enabled", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    await writeFile(
+      path.join(stateDir, "state.json"),
+      `${JSON.stringify({ last_checked_at: new Date().toISOString() }, null, 2)}\n`,
+      "utf8",
+    );
+    const fetchImpl = vi.fn<typeof fetch>(() =>
+      Promise.reject(new TypeError("unexpected network call")),
+    );
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        provider: "github-projects",
+      },
+      { root: tempDir, cache, fetchImpl, autoSyncNetworkAllowed: true },
+    );
+
+    await backend.writeTask(makeTask({ id: "202605291929-PNR1" }));
+
+    expect(fetchImpl).not.toHaveBeenCalled();
+    await expect(cache.getTask("202605291929-PNR1")).resolves.toMatchObject({
+      id: "202605291929-PNR1",
+    });
+  });
+
+  it("fails implicit cloud pulls when remote projection drift would add unrelated tasks", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    await cache.writeTask(makeTask({ id: "202605291849-AC43BB", title: "GitLab connector" }));
+    await writeFile(
+      path.join(stateDir, "state.json"),
+      `${JSON.stringify({ last_checked_at: "2026-05-29T19:00:00.000Z" }, null, 2)}\n`,
+      "utf8",
+    );
+    const fetchImpl = vi.fn<typeof fetch>(() =>
+      Promise.resolve(
+        Response.json({
+          data: {
+            tasks: [
+              makeTask({ id: "202605291849-AC43BB", title: "GitLab connector" }),
+              makeTask({ id: "202605291921-TC3QWN", title: "Implement Asana connector MVP" }),
+            ],
+            last_checked_at: "2026-05-29T19:22:00.000Z",
+          },
+        }),
+      ),
+    );
+    const backend = new CloudBackend(
+      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await expect(
+      backend.sync({ direction: "pull", conflict: "fail", quiet: true, confirm: true }),
+    ).rejects.toThrow("Cloud projection has remote changes; refusing implicit pull.");
+
+    await expect(cache.getTask("202605291921-TC3QWN")).resolves.toBeNull();
+    const state = JSON.parse(await readFile(path.join(stateDir, "state.json"), "utf8")) as {
+      last_checked_at?: string;
+    };
+    expect(state.last_checked_at).toBe("2026-05-29T19:00:00.000Z");
   });
 });

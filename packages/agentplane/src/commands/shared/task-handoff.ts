@@ -210,6 +210,8 @@ export function buildRunnerHintCommands(opts: {
   task_id: string;
   run_id: string | null;
   status: string | null;
+  pid_alive?: boolean | null;
+  author?: string | null;
 }): {
   next_action: TaskHandoffRunnerNextAction;
   next_command: string | null;
@@ -223,6 +225,9 @@ export function buildRunnerHintCommands(opts: {
   const logsCommand = opts.run_id
     ? `agentplane task run logs ${opts.task_id} --run-id ${opts.run_id} --stream events --follow`
     : `agentplane task run logs ${opts.task_id} --stream events --follow`;
+  const reclaimCommand = `agentplane task reclaim ${opts.task_id} --author ${
+    opts.author?.trim() || "CODER"
+  } --reason "stale runner pid is no longer alive"`;
   if (!opts.run_id || !opts.status) {
     return {
       next_action: "run",
@@ -232,6 +237,14 @@ export function buildRunnerHintCommands(opts: {
     };
   }
   if (opts.status === "running") {
+    if (opts.pid_alive === false) {
+      return {
+        next_action: "cancel_then_resume",
+        next_command: reclaimCommand,
+        resume_command: reclaimCommand,
+        retry_command: runCommand,
+      };
+    }
     return {
       next_action: "wait",
       next_command: statusCommand,

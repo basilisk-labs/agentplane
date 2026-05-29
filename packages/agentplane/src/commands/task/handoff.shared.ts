@@ -18,6 +18,7 @@ import {
   type TaskHandoffRunnerHint,
 } from "../shared/task-handoff.js";
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
+import { isProcessAlive } from "../../runner/process-supervision/signals.js";
 import { CliError } from "../../shared/errors.js";
 
 export type TaskResumeContext = {
@@ -80,10 +81,14 @@ export async function buildTaskResumeContext(opts: {
       task_id: opts.task_id,
       run_id: opts.run_id,
     });
+    const pid = inspection.state.supervision?.pid;
+    const pidAlive = typeof pid === "number" ? isProcessAlive(pid) : null;
     const commands = buildRunnerHintCommands({
       task_id: opts.task_id,
       run_id: inspection.run_id,
       status: inspection.state.status,
+      pid_alive: pidAlive,
+      author: task.owner,
     });
     runner = {
       run_id: inspection.run_id,
