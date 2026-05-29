@@ -4,7 +4,7 @@ title: "SGR contracts decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T01:51:33.765Z"
+  updated_by: "CODER"
+  note: "Verified SGR contracts decomposition. Commands passed: SGR contract vitest suite (1 file, 8 tests), bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap for moved public types, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 25 to 24; contracts.ts is 322 lines."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: decompose SGR contracts into type and validator primitive modules while preserving public SGR validation exports."
+  -
+    type: "verify"
+    at: "2026-05-29T01:51:33.765Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified SGR contracts decomposition. Commands passed: SGR contract vitest suite (1 file, 8 tests), bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap for moved public types, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 25 to 24; contracts.ts is 322 lines."
 doc_version: 3
-doc_updated_at: "2026-05-29T01:46:41.424Z"
+doc_updated_at: "2026-05-29T01:51:33.794Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/runtime/sgr/contracts.ts by extracting contract types and shared validation primitives while preserving public SGR validation exports and reducing runtime hotspot warnings."
 sections:
@@ -70,6 +76,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T01:51:33.765Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified SGR contracts decomposition. Commands passed: SGR contract vitest suite (1 file, 8 tests), bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap for moved public types, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 25 to 24; contracts.ts is 322 lines.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T01:46:41.424Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290146-32ZB9B-sgr-contracts-decomposition/.agentplane/tasks/202605290146-32ZB9B/blueprint/resolved-snapshot.json
+    - old_digest: c8b09d8c370485f1728698191237e8f8b02220eb3cb9898c7d38f6ba215547f2
+    - current_digest: c8b09d8c370485f1728698191237e8f8b02220eb3cb9898c7d38f6ba215547f2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290146-32ZB9B
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -114,6 +139,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T01:51:33.765Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified SGR contracts decomposition. Commands passed: SGR contract vitest suite (1 file, 8 tests), bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap for moved public types, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 25 to 24; contracts.ts is 322 lines.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T01:46:41.424Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290146-32ZB9B-sgr-contracts-decomposition/.agentplane/tasks/202605290146-32ZB9B/blueprint/resolved-snapshot.json
+- old_digest: c8b09d8c370485f1728698191237e8f8b02220eb3cb9898c7d38f6ba215547f2
+- current_digest: c8b09d8c370485f1728698191237e8f8b02220eb3cb9898c7d38f6ba215547f2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290146-32ZB9B
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
