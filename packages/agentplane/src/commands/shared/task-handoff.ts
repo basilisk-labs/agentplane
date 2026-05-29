@@ -225,8 +225,9 @@ export function buildRunnerHintCommands(opts: {
   const logsCommand = opts.run_id
     ? `agentplane task run logs ${opts.task_id} --run-id ${opts.run_id} --stream events --follow`
     : `agentplane task run logs ${opts.task_id} --stream events --follow`;
+  const reclaimAuthor = opts.author?.trim() ?? "CODER";
   const reclaimCommand = `agentplane task reclaim ${opts.task_id} --author ${
-    opts.author?.trim() || "CODER"
+    reclaimAuthor
   } --reason "stale runner pid is no longer alive"`;
   if (!opts.run_id || !opts.status) {
     return {

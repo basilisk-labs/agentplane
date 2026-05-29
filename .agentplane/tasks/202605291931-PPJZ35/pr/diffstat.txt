@@ -2,6 +2,6 @@
  .../backends/task-backend/cloud-backend-sync.ts    | 16 +++++
  .../src/backends/task-backend/cloud-backend.ts     |  2 +-
  .../src/cli/run-cli.core.route-decision.test.ts    | 82 ++++++++++++++++++++++
- .../agentplane/src/commands/shared/task-handoff.ts | 13 ++++
+ .../agentplane/src/commands/shared/task-handoff.ts | 14 ++++
  .../agentplane/src/commands/task/handoff.shared.ts |  5 ++
- 6 files changed, 187 insertions(+), 1 deletion(-)
+ 6 files changed, 188 insertions(+), 1 deletion(-)
