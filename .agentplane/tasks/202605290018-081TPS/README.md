@@ -4,7 +4,7 @@ title: "Context ingest pipeline decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T00:26:02.622Z"
+  updated_by: "CODER"
+  note: "Verified context ingest pipeline decomposition. Commands passed: focused context ingest tests (issue-gates.unit.test.ts and release-readiness.test.ts), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 31 to 30; ingest.ts is 167 lines."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Decompose context ingest manifest and source collection helpers while preserving cmdContextIngest behavior."
+  -
+    type: "verify"
+    at: "2026-05-29T00:26:02.622Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified context ingest pipeline decomposition. Commands passed: focused context ingest tests (issue-gates.unit.test.ts and release-readiness.test.ts), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 31 to 30; ingest.ts is 167 lines."
 doc_version: 3
-doc_updated_at: "2026-05-29T00:19:20.810Z"
+doc_updated_at: "2026-05-29T00:26:02.646Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/context/ingest.ts into focused ingestion pipeline modules while preserving context ingest behavior and reducing runtime hotspot warnings."
 sections:
@@ -69,6 +75,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T00:26:02.622Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified context ingest pipeline decomposition. Commands passed: focused context ingest tests (issue-gates.unit.test.ts and release-readiness.test.ts), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 31 to 30; ingest.ts is 167 lines.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T00:19:20.810Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290018-081TPS-context-ingest-decomposition/.agentplane/tasks/202605290018-081TPS/blueprint/resolved-snapshot.json
+    - old_digest: 2185036efd0fb64381acf307414028201b01e71bcaaebd10455d995359e6692d
+    - current_digest: 2185036efd0fb64381acf307414028201b01e71bcaaebd10455d995359e6692d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290018-081TPS
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -112,6 +137,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T00:26:02.622Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified context ingest pipeline decomposition. Commands passed: focused context ingest tests (issue-gates.unit.test.ts and release-readiness.test.ts), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 31 to 30; ingest.ts is 167 lines.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T00:19:20.810Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290018-081TPS-context-ingest-decomposition/.agentplane/tasks/202605290018-081TPS/blueprint/resolved-snapshot.json
+- old_digest: 2185036efd0fb64381acf307414028201b01e71bcaaebd10455d995359e6692d
+- current_digest: 2185036efd0fb64381acf307414028201b01e71bcaaebd10455d995359e6692d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290018-081TPS
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

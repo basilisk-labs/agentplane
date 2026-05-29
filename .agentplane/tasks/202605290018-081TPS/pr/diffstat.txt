@@ -1,0 +1,4 @@
+ packages/agentplane/src/context/ingest-manifest.ts | 231 +++++++++++
+ packages/agentplane/src/context/ingest-sources.ts  | 198 ++++++++++
+ packages/agentplane/src/context/ingest.ts          | 434 ++-------------------
+ 3 files changed, 451 insertions(+), 412 deletions(-)

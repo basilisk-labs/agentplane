@@ -15,8 +15,15 @@ Decompose packages/agentplane/src/context/ingest.ts into focused ingestion pipel
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified context ingest pipeline decomposition. Commands passed: focused context ingest tests
+(issue-gates.unit.test.ts and release-readiness.test.ts), bun run typecheck, bun run arch:check, bun
+run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot
+warnings decreased from 31 to 30; ingest.ts is 167 lines.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +34,10 @@ Decompose packages/agentplane/src/context/ingest.ts into focused ingestion pipel
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ packages/agentplane/src/context/ingest-manifest.ts | 231 +++++++++++
+ packages/agentplane/src/context/ingest-sources.ts  | 198 ++++++++++
+ packages/agentplane/src/context/ingest.ts          | 434 ++-------------------
+ 3 files changed, 451 insertions(+), 412 deletions(-)
 ```
 
 </details>
