@@ -1,381 +1,54 @@
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { createBlueprintRegistry, getBlueprint, requireBlueprint } from "./registry.js";
-import { validateBlueprint } from "./validate.js";
 import type {
   Blueprint,
   BlueprintId,
   BlueprintRegistry,
-  BlueprintValidationProblem,
   BlueprintValidationResult,
 } from "./model.js";
+import { createBlueprintRegistry, getBlueprint, requireBlueprint } from "./registry.js";
+import { validateBlueprint } from "./validate.js";
+import {
+  problem,
+  projectBlueprintsDirectory,
+  type ProjectBlueprintCompatibilityReport,
+  type ProjectBlueprintProblem,
+  type ScaffoldProjectBlueprintOptions,
+  type TrustedProjectBlueprintRegistryResult,
+} from "./project-local-model.js";
+import { loadProjectBlueprintTrustConfig } from "./project-local-trust.js";
+import {
+  parseProjectBlueprintJsonInternal,
+  validateProjectBlueprintDirectory,
+} from "./project-local-files.js";
 
-export const PROJECT_BLUEPRINTS_DIR = ".agentplane/blueprints";
-export const PROJECT_BLUEPRINTS_CONFIG_NAME = "config.json";
+export {
+  PROJECT_BLUEPRINTS_CONFIG_NAME,
+  PROJECT_BLUEPRINTS_DIR,
+  projectBlueprintsDirectory,
+  type ProjectBlueprintCompatibilityReport,
+  type ProjectBlueprintDirectoryResult,
+  type ProjectBlueprintFileResult,
+  type ProjectBlueprintProblem,
+  type ProjectBlueprintProblemCode,
+  type ProjectBlueprintTrustConfig,
+  type ProjectBlueprintTrustConfigResult,
+  type ScaffoldProjectBlueprintOptions,
+  type TrustedProjectBlueprintRegistryResult,
+} from "./project-local-model.js";
+export {
+  validateProjectBlueprintDirectory,
+  validateProjectBlueprintFile,
+} from "./project-local-files.js";
+export {
+  loadProjectBlueprintTrustConfig,
+  projectBlueprintsConfigPath,
+} from "./project-local-trust.js";
 
-export type ProjectBlueprintProblemCode =
-  | BlueprintValidationProblem["code"]
-  | "builtin_shadow"
-  | "invalid_json"
-  | "invalid_shape"
-  | "invalid_trust_config"
-  | "missing_blueprint_directory";
-
-export type ProjectBlueprintProblem = {
-  code: ProjectBlueprintProblemCode;
-  message: string;
-  path?: string;
-};
-
-export type ProjectBlueprintFileResult = {
-  ok: boolean;
-  path: string;
-  blueprint?: Blueprint;
-  blueprintId?: string;
-  errors: ProjectBlueprintProblem[];
-};
-
-export type ProjectBlueprintDirectoryResult = {
-  ok: boolean;
-  directory: string;
-  files: ProjectBlueprintFileResult[];
-  errors: ProjectBlueprintProblem[];
-};
-
-export type ProjectBlueprintTrustConfig = {
-  schemaVersion: 1;
-  trustModel: "explicit_allowlist";
-  enabled: boolean;
-  allowedIds: readonly BlueprintId[];
-  selection: "explicit_only";
-};
-
-export type ProjectBlueprintTrustConfigResult = {
-  ok: boolean;
-  path: string;
-  exists: boolean;
-  config: ProjectBlueprintTrustConfig;
-  errors: ProjectBlueprintProblem[];
-};
-
-export type TrustedProjectBlueprintRegistryResult = {
-  ok: boolean;
-  directory: string;
-  trustConfig: ProjectBlueprintTrustConfigResult;
-  files: ProjectBlueprintFileResult[];
-  trustedBlueprints: Blueprint[];
-  errors: ProjectBlueprintProblem[];
-};
-
-export type ProjectBlueprintCompatibilityReport = {
-  schemaVersion: 1;
-  compatible: boolean;
-  directory: string;
-  trustConfig: {
-    path: string;
-    exists: boolean;
-    ok: boolean;
-    config: ProjectBlueprintTrustConfig;
-  };
-  blueprints: {
-    path: string;
-    ok: boolean;
-    blueprintId?: string;
-    trusted: boolean;
-    errors: ProjectBlueprintProblem[];
-  }[];
-  trustedBlueprintIds: readonly BlueprintId[];
-  errors: ProjectBlueprintProblem[];
-};
-
-export type ScaffoldProjectBlueprintOptions = {
-  projectRoot: string;
-  id: BlueprintId;
-  from?: BlueprintId;
-  out?: string;
-  force?: boolean;
-};
-
-function problem(
-  code: ProjectBlueprintProblemCode,
-  message: string,
-  path?: string,
-): ProjectBlueprintProblem {
-  return { code, message, ...(path ? { path } : {}) };
-}
-
-function defaultTrustConfig(): ProjectBlueprintTrustConfig {
-  return {
-    schemaVersion: 1,
-    trustModel: "explicit_allowlist",
-    enabled: false,
-    allowedIds: [],
-    selection: "explicit_only",
-  };
-}
-
-function parseTrustConfigJson(raw: string, filePath: string): ProjectBlueprintTrustConfigResult {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch (err) {
-    return {
-      ok: false,
-      path: filePath,
-      exists: true,
-      config: defaultTrustConfig(),
-      errors: [
-        problem(
-          "invalid_json",
-          `Blueprint trust config ${JSON.stringify(filePath)} is not valid JSON: ${
-            err instanceof Error ? err.message : String(err)
-          }`,
-        ),
-      ],
-    };
-  }
-
-  if (!requireObjectResult(parsed)) {
-    return {
-      ok: false,
-      path: filePath,
-      exists: true,
-      config: defaultTrustConfig(),
-      errors: [
-        problem(
-          "invalid_trust_config",
-          `Blueprint trust config ${JSON.stringify(filePath)} must contain one JSON object.`,
-        ),
-      ],
-    };
-  }
-
-  const errors: ProjectBlueprintProblem[] = [];
-  const schemaVersion = parsed.schema_version === undefined ? 1 : parsed.schema_version;
-  if (schemaVersion !== 1) {
-    errors.push(
-      problem("invalid_trust_config", "Blueprint trust config schema_version must be 1."),
-    );
-  }
-  const trustModel = parsed.trust_model === undefined ? "explicit_allowlist" : parsed.trust_model;
-  if (trustModel !== "explicit_allowlist") {
-    errors.push(
-      problem(
-        "invalid_trust_config",
-        "Blueprint trust config trust_model must be explicit_allowlist.",
-      ),
-    );
-  }
-  const enabled = parsed.enabled === true;
-  if ("enabled" in parsed && typeof parsed.enabled !== "boolean") {
-    errors.push(problem("invalid_trust_config", "Blueprint trust config enabled must be boolean."));
-  }
-  const allowedIds: string[] = [];
-  if ("allowed_ids" in parsed && !Array.isArray(parsed.allowed_ids)) {
-    errors.push(
-      problem("invalid_trust_config", "Blueprint trust config allowed_ids must be an array."),
-    );
-  }
-  if (Array.isArray(parsed.allowed_ids)) {
-    for (const [index, item] of parsed.allowed_ids.entries()) {
-      if (typeof item !== "string" || item.trim().length === 0) {
-        errors.push(
-          problem(
-            "invalid_trust_config",
-            `Blueprint trust config allowed_ids[${index}] must be a non-empty string.`,
-          ),
-        );
-        continue;
-      }
-      allowedIds.push(item.trim());
-    }
-  }
-  const selection = parsed.selection === undefined ? "explicit_only" : parsed.selection;
-  if (selection !== "explicit_only") {
-    errors.push(
-      problem("invalid_trust_config", "Blueprint trust config selection must be explicit_only."),
-    );
-  }
-
-  return {
-    ok: errors.length === 0,
-    path: filePath,
-    exists: true,
-    config: {
-      schemaVersion: 1,
-      trustModel: "explicit_allowlist",
-      enabled,
-      allowedIds: allowedIds.map((id) => id.trim() as BlueprintId),
-      selection: "explicit_only",
-    },
-    errors,
-  };
-}
-
-function requireObjectResult(value: unknown): value is Record<string, unknown> {
-  return Boolean(value && typeof value === "object" && !Array.isArray(value));
-}
-
-function requiredArrayFieldErrors(
-  value: Record<string, unknown>,
-  filePath: string,
-): ProjectBlueprintProblem[] {
-  const errors: ProjectBlueprintProblem[] = [];
-  for (const field of [
-    "taskKinds",
-    "allowedCommands",
-    "policyModules",
-    "nodes",
-    "edges",
-    "requiredEvidence",
-    "stopRules",
-  ]) {
-    if (!Array.isArray(value[field])) {
-      errors.push(
-        problem(
-          "invalid_shape",
-          `Blueprint file ${JSON.stringify(filePath)} is missing array field ${JSON.stringify(field)}.`,
-          field,
-        ),
-      );
-    }
-  }
-  return errors;
-}
-
-export function parseProjectBlueprintJson(
-  raw: string,
-  filePath: string,
-): ProjectBlueprintFileResult {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch (err) {
-    return {
-      ok: false,
-      path: filePath,
-      errors: [
-        problem(
-          "invalid_json",
-          `Blueprint file ${JSON.stringify(filePath)} is not valid JSON: ${
-            err instanceof Error ? err.message : String(err)
-          }`,
-        ),
-      ],
-    };
-  }
-
-  if (!requireObjectResult(parsed)) {
-    return {
-      ok: false,
-      path: filePath,
-      errors: [
-        problem(
-          "invalid_shape",
-          `Blueprint file ${JSON.stringify(filePath)} must contain one JSON object.`,
-        ),
-      ],
-    };
-  }
-
-  const shapeErrors = requiredArrayFieldErrors(parsed, filePath);
-  if (shapeErrors.length > 0) {
-    return {
-      ok: false,
-      path: filePath,
-      blueprintId: typeof parsed.id === "string" ? parsed.id : undefined,
-      errors: shapeErrors,
-    };
-  }
-
-  const blueprint = parsed as Blueprint;
-  let validation: BlueprintValidationResult;
-  try {
-    validation = validateBlueprint(blueprint);
-  } catch (err) {
-    return {
-      ok: false,
-      path: filePath,
-      blueprintId: typeof parsed.id === "string" ? parsed.id : undefined,
-      errors: [
-        problem(
-          "invalid_shape",
-          `Blueprint file ${JSON.stringify(filePath)} has an invalid blueprint shape: ${
-            err instanceof Error ? err.message : String(err)
-          }`,
-        ),
-      ],
-    };
-  }
-  return {
-    ok: validation.ok,
-    path: filePath,
-    blueprint,
-    blueprintId: typeof blueprint.id === "string" ? blueprint.id : undefined,
-    errors: validation.errors,
-  };
-}
-
-export async function validateProjectBlueprintFile(
-  filePath: string,
-): Promise<ProjectBlueprintFileResult> {
-  return parseProjectBlueprintJson(await readFile(filePath, "utf8"), filePath);
-}
-
-async function listJsonFiles(directory: string): Promise<string[]> {
-  try {
-    const entries = await readdir(directory, { withFileTypes: true });
-    return entries
-      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
-      .filter((entry) => entry.name !== PROJECT_BLUEPRINTS_CONFIG_NAME)
-      .map((entry) => path.join(directory, entry.name))
-      .toSorted();
-  } catch (err) {
-    if (err instanceof Error && "code" in err && err.code === "ENOENT") return [];
-    throw err;
-  }
-}
-
-export async function validateProjectBlueprintDirectory(
-  directory: string,
-): Promise<ProjectBlueprintDirectoryResult> {
-  const jsonFiles = await listJsonFiles(directory);
-  const files = await Promise.all(
-    jsonFiles.map((filePath) => validateProjectBlueprintFile(filePath)),
-  );
-  const errors = files.flatMap((file) => file.errors);
-  return {
-    ok: errors.length === 0,
-    directory,
-    files,
-    errors,
-  };
-}
-
-export function projectBlueprintsConfigPath(projectRoot: string): string {
-  return path.join(projectBlueprintsDirectory(projectRoot), PROJECT_BLUEPRINTS_CONFIG_NAME);
-}
-
-export async function loadProjectBlueprintTrustConfig(
-  projectRoot: string,
-): Promise<ProjectBlueprintTrustConfigResult> {
-  const configPath = projectBlueprintsConfigPath(projectRoot);
-  try {
-    return parseTrustConfigJson(await readFile(configPath, "utf8"), configPath);
-  } catch (err) {
-    if (err instanceof Error && "code" in err && err.code === "ENOENT") {
-      return {
-        ok: true,
-        path: configPath,
-        exists: false,
-        config: defaultTrustConfig(),
-        errors: [],
-      };
-    }
-    throw err;
-  }
-}
+// Keep the public name on the compatibility surface without exporting the internal helper module API.
+// eslint-disable-next-line unicorn/prefer-export-from
+export const parseProjectBlueprintJson = parseProjectBlueprintJsonInternal;
 
 function duplicateIds(ids: readonly BlueprintId[]): BlueprintId[] {
   const seen = new Set<string>();
@@ -496,10 +169,6 @@ export async function buildProjectBlueprintCompatibilityReport(
     trustedBlueprintIds: trusted.trustedBlueprints.map((blueprint) => blueprint.id),
     errors: trusted.errors,
   };
-}
-
-export function projectBlueprintsDirectory(projectRoot: string): string {
-  return path.join(projectRoot, PROJECT_BLUEPRINTS_DIR);
 }
 
 function filenameForBlueprintId(id: string): string {

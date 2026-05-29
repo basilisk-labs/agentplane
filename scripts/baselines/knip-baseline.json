@@ -540,39 +540,64 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/blueprints/project-local-model.ts",
+      "exports": [
+        {
+          "name": "PROJECT_BLUEPRINTS_DIR",
+          "line": 5,
+          "col": 14
+        }
+      ]
+    },
+    {
       "file": "packages/agentplane/src/blueprints/project-local.ts",
       "exports": [
         {
           "name": "parseProjectBlueprintJson",
-          "line": 247,
-          "col": 17
+          "line": 49,
+          "col": 14
         },
         {
           "name": "PROJECT_BLUEPRINTS_CONFIG_NAME",
-          "line": 15,
-          "col": 14
+          "line": 27,
+          "col": 3
         },
         {
           "name": "PROJECT_BLUEPRINTS_DIR",
-          "line": 14,
-          "col": 14
+          "line": 28,
+          "col": 3
         }
       ],
       "types": [
         {
+          "name": "ProjectBlueprintDirectoryResult",
+          "line": 31,
+          "col": 8
+        },
+        {
+          "name": "ProjectBlueprintFileResult",
+          "line": 32,
+          "col": 8
+        },
+        {
           "name": "ProjectBlueprintProblem",
-          "line": 25,
-          "col": 13
+          "line": 33,
+          "col": 8
         },
         {
           "name": "ProjectBlueprintProblemCode",
-          "line": 17,
-          "col": 13
+          "line": 34,
+          "col": 8
         },
         {
           "name": "ProjectBlueprintTrustConfig",
-          "line": 46,
-          "col": 13
+          "line": 35,
+          "col": 8
+        },
+        {
+          "name": "ProjectBlueprintTrustConfigResult",
+          "line": 36,
+          "col": 8
         }
       ]
     },
@@ -3658,10 +3683,10 @@
   ],
   "counts": {
     "files": 1,
-    "exports": 207,
-    "types": 356,
+    "exports": 208,
+    "types": 359,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 564
+    "total": 568
   }
 }
