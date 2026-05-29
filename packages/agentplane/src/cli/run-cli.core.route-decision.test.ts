@@ -412,6 +412,88 @@ describe("runCli route decision commands", () => {
     }
   });
 
+  it("does not block direct route mutation when a running runner pid is dead", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise stale runner route handling.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: create a DOING task so route decision can inspect runner state.",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "run", taskId, "--dry-run", "--root", root]);
+
+    const statusIo = captureStdIO();
+    let statePath = "";
+    try {
+      const code = await runCli(["task", "run", "status", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(statusIo.stdout) as { paths: { state: string } };
+      statePath = payload.paths.state;
+    } finally {
+      statusIo.restore();
+    }
+    const state = JSON.parse(await readFile(statePath, "utf8")) as Record<string, unknown>;
+    await writeFile(
+      statePath,
+      `${JSON.stringify(
+        {
+          ...state,
+          status: "running",
+          supervision: {
+            pid: 999999,
+            started_at: "2026-05-29T19:14:00.000Z",
+            heartbeat_at: "2026-05-29T19:14:01.000Z",
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        blockers: { code: string }[];
+        execution_packet: { safeToMutate: boolean };
+        next_action: { code: string; command: string };
+      };
+      expect(parsed.blockers.map((blocker) => blocker.code)).not.toContain("runner_alive");
+      expect(parsed.execution_packet.safeToMutate).toBe(true);
+      expect(parsed.next_action).toMatchObject({
+        code: "cancel_then_resume",
+        command: `agentplane task reclaim ${taskId} --author CODER --reason "stale runner pid is no longer alive"`,
+      });
+    } finally {
+      nextIo.restore();
+    }
+  });
+
   it("marks close-tail provider lookup as remote evidence", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
