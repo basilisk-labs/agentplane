@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T06:34:08Z",
   "base": "main",
   "branch": "task/202605290621-KC9ANF/release-plan-command-decomposition",
   "created_at": "2026-05-29T06:21:37.555Z",
   "diffstat_sha256": "sha256:f648ec6d3a3a9c0a26ce083b910b1411b063ba1da3688a1cbc0f5062845ad684",
   "last_verified_at": "2026-05-29T06:26:03.144Z",
   "last_verified_diffstat_sha256": "sha256:f648ec6d3a3a9c0a26ce083b910b1411b063ba1da3688a1cbc0f5062845ad684",
+  "merge_commit": "dbaa78cc9f46ba1ee3b05063fb5b63fef9d3d0aa",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T06:34:08Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605290621-KC9ANF",
-  "updated_at": "2026-05-29T06:21:37.555Z",
+  "updated_at": "2026-05-29T06:34:08Z",
   "verify": {
     "status": "pass"
   }

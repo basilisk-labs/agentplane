@@ -1,10 +1,11 @@
 ---
 id: "202605290621-KC9ANF"
 title: "Release plan command decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4299."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Release plan helpers extracted into packages/agentplane/src/commands/release/plan.helpers.ts; runReleasePlan behavior and generated release plan artifacts are preserved. Checks passed: release plan/apply matrix (31 pass); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed; bun run hotspots:check (runtime hotspots 3 -> 2)."
   attempts: 0
-commit: null
+commit:
+  hash: "dbaa78cc9f46ba1ee3b05063fb5b63fef9d3d0aa"
+  message: "🧩 KC9ANF task: refresh PR artifact digest"
 comments:
   -
     author: "CODER"
     body: "Start: extracting release plan helper logic while preserving runReleasePlan validation, generated artifacts, protected base resolution, and release policy gates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4299 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release plan helpers extracted into packages/agentplane/src/commands/release/plan.helpers.ts; runReleasePlan behavior and generated release plan artifacts are preserved. Checks passed: release plan/apply matrix (31 pass); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed; bun run hotspots:check (runtime hotspots 3 -> 2)."
+  -
+    type: "status"
+    at: "2026-05-29T06:34:44.264Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4299 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T06:26:03.161Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T06:34:44.267Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor packages/agentplane/src/commands/release/plan.command.ts below the 400-line hotspot warning by extracting semver/change rendering helpers into focused module(s). Preserve release plan validation, incident gate, protected base SHA resolution, generated version/changes/instructions files, and runReleasePlan public API. Acceptance: release plan tests pass, release apply tests importing runReleasePlan pass where relevant, typecheck/arch/knip/lint/format pass, and bun run hotspots:check shows one fewer runtime hotspot."
 sections:
   Summary: |-
