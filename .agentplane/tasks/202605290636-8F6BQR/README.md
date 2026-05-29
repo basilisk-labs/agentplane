@@ -1,10 +1,11 @@
 ---
 id: "202605290636-8F6BQR"
 title: "Policy taxonomy type decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4301."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "KnownPolicyActionId moved to packages/agentplane/src/policy/taxonomy-types.ts and re-exported from taxonomy.ts; descriptor data and resolvePolicyActionDescriptor behavior are unchanged. Checks passed: bun test packages/agentplane/src/policy/taxonomy.test.ts (4 pass); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed; bun run hotspots:check (runtime hotspots 2 -> 1)."
   attempts: 0
-commit: null
+commit:
+  hash: "8989d429f95bd7f731d8825c643b6d6504ecee20"
+  message: "♻️ 8F6BQR task: decompose policy taxonomy types"
 comments:
   -
     author: "CODER"
     body: "Start: extracting policy taxonomy type-only declarations while preserving descriptor runtime data, public exports, and resolver behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4301 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "KnownPolicyActionId moved to packages/agentplane/src/policy/taxonomy-types.ts and re-exported from taxonomy.ts; descriptor data and resolvePolicyActionDescriptor behavior are unchanged. Checks passed: bun test packages/agentplane/src/policy/taxonomy.test.ts (4 pass); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed; bun run hotspots:check (runtime hotspots 2 -> 1)."
+  -
+    type: "status"
+    at: "2026-05-29T06:44:57.786Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4301 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T06:38:10.210Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T06:44:57.791Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor packages/agentplane/src/policy/taxonomy.ts below the 400-line hotspot warning by extracting long type-only taxonomy declarations into focused module(s). Preserve resolvePolicyActionDescriptor behavior, public type exports, and builtin action descriptor data. Acceptance: policy taxonomy tests pass, typecheck/arch/knip/lint/format pass, and bun run hotspots:check shows one fewer runtime hotspot."
 sections:
   Summary: |-
