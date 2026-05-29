@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605290543-WSRP8V/pr-flow-status-render-decomposition",
+  "created_at": "2026-05-29T05:43:31.527Z",
+  "diffstat_sha256": "sha256:f696658dc08973d8b201b886d202527630c0bebf6103581314ef859f62a5cb77",
+  "last_verified_at": "2026-05-29T05:45:57.703Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605290543-WSRP8V",
+  "updated_at": "2026-05-29T05:43:31.527Z",
+  "verify": {
+    "status": "pass"
+  }
+}
