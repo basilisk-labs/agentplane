@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T16:54:46Z",
   "base": "main",
   "branch": "task/202605291005-SH2QS1/fix-social-preview-subtitle-slogan",
   "created_at": "2026-05-29T10:07:05.504Z",
   "diffstat_sha256": "sha256:51e01f8cbff290c69c75292dfd06690e40a914b367c78da322e5655b1b126946",
   "last_verified_at": "2026-05-29T10:39:56.536Z",
   "last_verified_diffstat_sha256": "sha256:8ad47b9f9308dba17cb753bacd9f416b15b9647770820174d57125a4664a05f2",
+  "merge_commit": "446f743e6c3489a9ff0ff804480121282a7e8015",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T16:54:46Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605291005-SH2QS1",
-  "updated_at": "2026-05-29T10:07:05.504Z",
+  "updated_at": "2026-05-29T16:54:46Z",
   "verify": {
     "status": "pass"
   }

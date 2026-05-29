@@ -1,10 +1,11 @@
 ---
 id: "202605291005-SH2QS1"
 title: "Fix social preview subtitle slogan"
-status: "DOING"
+result_summary: "Merged via PR #4309."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "https://github.com/basilisk-labs/agentplane/pull/4309/checks"
   findings:
     - "No blocking issues found in the generated social preview subtitle, README header generator, generated header artifacts, or script README freshness after the final hosted checks passed."
-commit: null
+commit:
+  hash: "446f743e6c3489a9ff0ff804480121282a7e8015"
+  message: "🚧 SH2QS1 task: Record quality review"
 comments:
   -
     author: "CODER"
     body: "Start: updating the website social preview generator subtitle slogan in the dedicated task worktree, then regenerating and verifying social image artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4309 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -77,9 +83,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run docs:social:generate; Result: pass; Evidence: generated 0 docs social images (203 unchanged). Command: bun run docs:social:check; Result: pass; Evidence: checked 203 docs social images. Command: cd website && node scripts/generate-social-images.mjs --check --strict; Result: pass. Command: bun run docs:readme-header:generate; Result: pass; Evidence: generated 14 README header images for v0.6.12 and linked 13 README files. Command: bun run docs:readme-header:check; Result: pass. Command: bun run docs:scripts:generate and bun run docs:scripts:check; Result: pass; Evidence: scripts/README.md is up to date after normalizing the scripts README generator casing. Command: bun run --cwd website check-content; Result: pass; Evidence: site-content ok. Command: bun run docs:site:build; Result: pass; Evidence: Docusaurus build generated static files and navigation-check passed. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: bunx eslint website/scripts/generate-social-images.mjs scripts/generate/generate-readme-header.mjs scripts/generate/generate-scripts-readme.mjs; Result: pass. Command: git diff --check; Result: pass."
+  -
+    type: "status"
+    at: "2026-05-29T16:55:32.941Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4309 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T10:39:56.556Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T16:55:32.948Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the website social preview image generator so the generated subtitle is a full new-version slogan describing how Agentplane speeds up agent work, then regenerate and verify social image artifacts."
 sections:
   Summary: |-
