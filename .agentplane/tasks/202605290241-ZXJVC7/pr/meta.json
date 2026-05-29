@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T02:50:10Z",
   "base": "main",
   "branch": "task/202605290241-ZXJVC7/pr-integrate-decomposition",
   "created_at": "2026-05-29T02:42:28.306Z",
   "diffstat_sha256": "sha256:34d2ad475370dae5e0f9c6b00c18e146123dfe502badaf813cad5bd81564e388",
   "last_verified_at": "2026-05-29T02:47:33.632Z",
   "last_verified_diffstat_sha256": "sha256:34d2ad475370dae5e0f9c6b00c18e146123dfe502badaf813cad5bd81564e388",
+  "merge_commit": "d2738afe2aa561bd06d9ededa1533d2218f9d25f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T02:50:10Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605290241-ZXJVC7",
-  "updated_at": "2026-05-29T02:42:28.306Z",
+  "updated_at": "2026-05-29T02:50:10Z",
   "verify": {
     "status": "pass"
   }

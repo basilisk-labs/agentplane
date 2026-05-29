@@ -1,10 +1,11 @@
 ---
 id: "202605290241-ZXJVC7"
 title: "PR integrate command decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4260."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified PR integrate command decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts --config vitest.workspace.ts (25 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 22 to 21; cmd.ts is 293 lines, below the 400-line warning threshold."
   attempts: 0
-commit: null
+commit:
+  hash: "d2738afe2aa561bd06d9ededa1533d2218f9d25f"
+  message: "✅ ZXJVC7 pr: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: extract protected-base GitHub PR integrate handoff routing while preserving cmdIntegrate behavior and diagnostics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4260 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified PR integrate command decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts --config vitest.workspace.ts (25 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 22 to 21; cmd.ts is 293 lines, below the 400-line warning threshold."
+  -
+    type: "status"
+    at: "2026-05-29T02:50:55.407Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4260 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T02:47:33.657Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T02:50:55.412Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/pr/integrate/cmd.ts by extracting protected-base GitHub PR handoff/merge routing while preserving integrate behavior and diagnostics."
 sections:
   Summary: |-
