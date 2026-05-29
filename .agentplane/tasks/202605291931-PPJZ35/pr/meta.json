@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T21:29:23Z",
   "base": "main",
   "branch": "task/202605291931-PPJZ35/fix-fresh-feedback-issues-4312-4315",
   "created_at": "2026-05-29T19:32:19.856Z",
   "diffstat_sha256": "sha256:8be8d6040c6574cab13023da4936f90d918c1da8f49d01ed00a79b00c99f5c33",
   "last_verified_at": "2026-05-29T20:29:41.653Z",
   "last_verified_diffstat_sha256": "sha256:67ed8b6697885cf6ce65d8c321bcb88f45c2572e51611c42504aa18a57933435",
+  "merge_commit": "c93743264f1d4eaa6aa19b0403133f6900327e9e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T21:29:23Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605291931-PPJZ35",
-  "updated_at": "2026-05-29T19:32:19.856Z",
+  "updated_at": "2026-05-29T21:29:23Z",
   "verify": {
     "status": "pass"
   }
