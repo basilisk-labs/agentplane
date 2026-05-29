@@ -21,7 +21,6 @@ export {
   TaskRunnerOutcome,
   TaskRunnerOutcomeStatus,
   TaskRunnerTarget,
-  TaskSyncEnvelope,
   QualityReviewResult,
   VerificationState,
   VerificationResult,
