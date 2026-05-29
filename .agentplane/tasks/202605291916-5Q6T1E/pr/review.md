@@ -35,7 +35,8 @@ Created: 2026-05-29T19:36:23.621Z
  .../blueprint/resolved-snapshot.json               | 570 +++++++++++++++++++++
  docs/developer/cloud-backend-integration-plan.mdx  |  11 +-
  docs/user/tasks-and-backends.mdx                   |  47 ++
- .../src/backends/task-backend.cloud.test.ts        | 174 ++++++-
+ ...task-backend.cloud-remote-create-policy.test.ts | 154 ++++++
+ .../src/backends/task-backend.cloud.test.ts        |   6 +-
  .../task-backend/cloud-backend-settings.ts         |   3 +
  .../backends/task-backend/cloud-backend-sync.ts    |  55 +-
  .../src/backends/task-backend/cloud-backend.ts     |   9 +
@@ -48,16 +49,16 @@ Created: 2026-05-29T19:36:23.621Z
  packages/core/src/index.ts                         |  14 +
  packages/core/src/tasks/index.ts                   |  14 +
  .../core/src/tasks/task-artifact-schema.task.ts    |  88 ++++
- .../core/src/tasks/task-artifact-schema.test.ts    | 238 +++++++++
  .../tasks/task-provider-safe-projection.test.ts    | 155 ++++++
  .../src/tasks/task-provider-safe-projection.ts     | 194 +++++++
  packages/core/src/tasks/task-store.ts              |  63 +++
+ .../src/tasks/task-sync-envelope-schema.test.ts    | 168 ++++++
  packages/core/src/tasks/tasks-export.ts            | 178 +++++++
  .../schemas/task-readme-frontmatter.schema.json    | 191 +++++++
  packages/spec/schemas/tasks-export.schema.json     | 198 +++++++
  schemas/task-readme-frontmatter.schema.json        | 191 +++++++
  schemas/tasks-export.schema.json                   | 198 +++++++
- 28 files changed, 3921 insertions(+), 15 deletions(-)
+ 29 files changed, 3837 insertions(+), 15 deletions(-)
 ```
 
 </details>

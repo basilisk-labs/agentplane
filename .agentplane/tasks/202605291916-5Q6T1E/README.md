@@ -4,7 +4,7 @@ title: "Add provider-neutral task sync envelope"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,24 +24,23 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-29T19:58:47.702Z"
+  updated_at: "2026-05-29T20:15:38.281Z"
   updated_by: "EVALUATOR"
-  note: "Provider-neutral sync envelope, explicit remote-only create policy, and provider-safe projection are implemented with focused tests and generated schema coverage."
-  evaluated_sha: "faba91ecad34f12f075b835a0cc64e84829e01d2"
+  note: "Sync contract implementation remains valid after splitting oversized tests into focused files for hotspot compliance."
+  evaluated_sha: "a7cd54cd34456718efb7aa15ec7c158a8571762e"
   blueprint_digest: "2462cf8787ac4d7caee778f65bc126c9c76c0c47818d096ed9b76af6efbb5491"
   evidence_refs:
     - ".agentplane/tasks/202605291916-5Q6T1E/README.md"
-    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-195847702-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-195847702-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-195847702-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-201538281-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-201538281-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-201538281-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605291916-5Q6T1E/blueprint/resolved-snapshot.json"
-    - "bun x vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/core/src/tasks/tasks-export.test.ts packages/core/src/tasks/task-provider-safe-projection.test.ts packages/agentplane/src/backends/task-backend.cloud.test.ts"
+    - "bun x vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/core/src/tasks/task-sync-envelope-schema.test.ts packages/core/src/tasks/tasks-export.test.ts packages/core/src/tasks/task-provider-safe-projection.test.ts packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/backends/task-backend.cloud-remote-create-policy.test.ts"
+    - "bun run hotspots:check"
+    - "bun run format:changed"
     - "bun run typecheck"
-    - "bun run schemas:check"
-    - "bun run docs:ia:check"
-    - "node .agentplane/policy/check-routing.mjs"
   findings:
-    - "No blocking findings. Residual risk is limited to downstream connector adoption in agentplane-cloud-sync, which is intentionally outside this AgentPlane task."
+    - "No blocking findings. Test coverage was preserved while oversized test guard now passes; downstream connector adoption remains outside this AgentPlane scope."
 commit: null
 comments:
   -
