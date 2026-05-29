@@ -18,13 +18,11 @@ Fix recent feedback bugs from GitHub issues #4312, #4313, #4314, and #4315: stal
 - State: ok
 - Note:
 
-```bash
-bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts \
-  packages/agentplane/src/backends/task-backend.cloud-regression.test.ts; Result: pass, 15 tests. \
-  Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun \
-  run format:check; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass. \
-  Command: ap doctor; Result: OK with info-only repo-local handoff findings. Hosted check follow-up: \
-  CI verify-static initially failed on lint in this diff; local lint now passes after correction.
+```text
+Hosted PR verification is green for PR #4316 head 73b4fd790c3cd88feb223f84a03b29467d368f2c; GitHub
+checks pass: PR verification, verify-static, verify-unit, verify-cli-critical, verify-workflow,
+verify-contract, verify-coverage, test-windows, docs, plan, CodeQL. Local checks passed: targeted
+tests, typecheck, lint:core, format:check, policy routing, ap doctor.
 ```
 - Canonical workflow state lives in the task README.
 
