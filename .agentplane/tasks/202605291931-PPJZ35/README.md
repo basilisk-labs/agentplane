@@ -1,10 +1,11 @@
 ---
 id: "202605291931-PPJZ35"
 title: "Fix fresh feedback issues 4312-4315"
-status: "DOING"
+result_summary: "Merged via PR #4316."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "PR #4316 required checks passed on ce3a70420cc6dd0322b831f0d5fd723d66c1eef4"
   findings:
     - "PASS: stale dead runner routes to reclaim instead of blocking; cloud backend no longer auto-pushes ordinary writes by default; conflict=fail refuses remote projection drift; targeted regressions and hosted checks pass."
-commit: null
+commit:
+  hash: "c93743264f1d4eaa6aa19b0403133f6900327e9e"
+  message: "🧭 PPJZ35 task: align cloud drift test after rebase"
 comments:
   -
     author: "CODER"
     body: "Start: investigate and fix GitHub feedback issues #4312-#4315 in a dedicated branch_pr worktree, with focused regression coverage and routing policy verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4316 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Hosted PR verification is green for PR #4316 head 73b4fd790c3cd88feb223f84a03b29467d368f2c; GitHub checks pass: PR verification, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-contract, verify-coverage, test-windows, docs, plan, CodeQL. Local checks passed: targeted tests, typecheck, lint:core, format:check, policy routing, ap doctor."
+  -
+    type: "status"
+    at: "2026-05-29T21:30:11.388Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4316 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T20:29:41.690Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T21:30:11.395Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix recent feedback bugs from GitHub issues #4312, #4313, #4314, and #4315: stale dead runner blocking route, policy hook staging side effect, unexpected unrelated task creation during closeout, and task plan reject hang."
 sections:
   Summary: |-
