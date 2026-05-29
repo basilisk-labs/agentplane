@@ -1,9 +1,6 @@
 import { BackendError } from "./shared.js";
 import { readCloudBackendState, writeCloudBackendState } from "./cloud-backend-state.js";
-import {
-  CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
-  cloudConflictMessage,
-} from "./cloud-backend-utils.js";
+import { CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS, cloudConflictMessage } from "./cloud-backend-utils.js";
 import { pendingCloudPushError } from "./cloud-pending-push.js";
 
 type CloudTaskStartSyncState = {

@@ -44,7 +44,7 @@ Created: 2026-05-29T19:51:11.668Z
  .../backends/task-backend/cloud-backend-sync.ts    |  16 +-
  .../backends/task-backend/cloud-backend-utils.ts   |   1 +
  .../src/backends/task-backend/cloud-backend.ts     |  13 +-
- .../backends/task-backend/cloud-start-refresh.ts   |  18 +-
+ .../backends/task-backend/cloud-start-refresh.ts   |  15 +-
  .../agentplane/src/backends/task-backend/load.ts   |  31 +-
  .../src/backends/task-backend/redmine-backend.ts   | 243 ---------
  .../task-backend/redmine/backend-cache-doc.ts      | 257 ----------
@@ -89,7 +89,7 @@ Created: 2026-05-29T19:51:11.668Z
  packages/agentplane/src/commands/sync.command.ts   |   4 +-
  scripts/checks/run-backend-live-suite.mjs          |  99 ----
  scripts/lib/test-route-registry.mjs                |   7 -
- 60 files changed, 141 insertions(+), 5701 deletions(-)
+ 60 files changed, 138 insertions(+), 5701 deletions(-)
 ```
 
 </details>
