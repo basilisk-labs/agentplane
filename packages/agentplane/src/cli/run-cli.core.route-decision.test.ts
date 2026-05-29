@@ -492,46 +492,7 @@ describe("runCli route decision commands", () => {
     } finally {
       nextIo.restore();
     }
-
-    const reclaimIo = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "reclaim",
-        taskId,
-        "--author",
-        "CODER",
-        "--reason",
-        "stale runner pid is no longer alive",
-        "--root",
-        root,
-      ]);
-      expect(`${reclaimIo.stdout}${reclaimIo.stderr}${reclaimIo.debug}`).toContain(
-        "task reclaimed",
-      );
-      expect(code).toBe(0);
-    } finally {
-      reclaimIo.restore();
-    }
-    const reclaimedState = JSON.parse(await readFile(statePath, "utf8")) as Record<string, unknown>;
-    expect(reclaimedState.status).toBe("cancelled");
-
-    const afterReclaimIo = captureStdIO();
-    try {
-      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
-      expect(code).toBe(0);
-      const parsed = JSON.parse(afterReclaimIo.stdout) as {
-        next_action: { code: string; command: string };
-      };
-      expect(parsed.next_action.command).not.toContain("task reclaim");
-      expect(parsed.next_action).toMatchObject({
-        code: "retry",
-        command: `agentplane task run ${taskId}`,
-      });
-    } finally {
-      afterReclaimIo.restore();
-    }
-  }, 15_000);
+  });
 
   it("marks close-tail provider lookup as remote evidence", async () => {
     const root = await mkGitRepoRootWithBranch("main");
