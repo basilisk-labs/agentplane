@@ -1,10 +1,11 @@
 ---
 id: "202605290532-83KGYN"
 title: "Pre-push hook decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4288."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Pre-push parsing, git/env, package-script, task-binding, and release-note helper logic extracted into run.pre-push.helpers.ts; run.pre-push.ts reduced to 184 lines while preserving hook dispatch behavior."
   attempts: 0
-commit: null
+commit:
+  hash: "cbd7b2cfff5f915cc6dac85f7a86d2ba12990087"
+  message: "♻️ 83KGYN hooks: decompose pre-push helpers"
 comments:
   -
     author: "CODER"
     body: "Start: Extract pre-push hook parsing/git/env helpers while preserving hook behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4288 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pre-push parsing, git/env, package-script, task-binding, and release-note helper logic extracted into run.pre-push.helpers.ts; run.pre-push.ts reduced to 184 lines while preserving hook dispatch behavior."
+  -
+    type: "status"
+    at: "2026-05-29T05:41:58.175Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4288 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T05:38:25.883Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T05:41:58.179Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract focused helper logic from packages/agentplane/src/commands/hooks/run.pre-push.ts to reduce the runtime hotspot below the warning threshold without changing hook behavior."
 sections:
   Summary: |-
