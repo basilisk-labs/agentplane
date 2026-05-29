@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202605290053-CR056N/blueprint-project-local-decomposition",
+  "created_at": "2026-05-29T00:54:59.111Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202605290053-CR056N",
+  "updated_at": "2026-05-29T00:54:59.111Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
