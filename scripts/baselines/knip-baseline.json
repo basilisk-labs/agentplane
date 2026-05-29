@@ -554,7 +554,7 @@
       "exports": [
         {
           "name": "parseProjectBlueprintJson",
-          "line": 49,
+          "line": 51,
           "col": 14
         },
         {
@@ -3198,82 +3198,142 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/runtime/sgr/contracts.ts",
+      "file": "packages/agentplane/src/runtime/sgr/contract-types.ts",
       "types": [
         {
           "name": "BlueprintDecisionEvidenceRequirement",
-          "line": 122,
+          "line": 121,
           "col": 13
         },
         {
           "name": "BlueprintDecisionStopRule",
-          "line": 128,
+          "line": 127,
           "col": 13
         },
         {
           "name": "BlueprintRejectedRoute",
-          "line": 111,
+          "line": 110,
           "col": 13
         },
         {
           "name": "BlueprintSelectedRoute",
-          "line": 116,
-          "col": 13
-        },
-        {
-          "name": "ContextExtractionCoverage",
-          "line": 58,
+          "line": 115,
           "col": 13
         },
         {
           "name": "ContextExtractionCoverageStatus",
-          "line": 36,
-          "col": 13
-        },
-        {
-          "name": "ContextExtractionGraphEdge",
-          "line": 50,
-          "col": 13
-        },
-        {
-          "name": "ContextExtractionGraphEntity",
-          "line": 42,
+          "line": 35,
           "col": 13
         },
         {
           "name": "ContextExtractionItemKind",
-          "line": 28,
-          "col": 13
-        },
-        {
-          "name": "ContextExtractionItemStatus",
           "line": 27,
           "col": 13
         },
         {
+          "name": "ContextExtractionItemStatus",
+          "line": 26,
+          "col": 13
+        },
+        {
           "name": "EvaluatorFinding",
-          "line": 92,
+          "line": 91,
           "col": 13
         },
         {
           "name": "EvaluatorFindingSeverity",
-          "line": 90,
-          "col": 13
-        },
-        {
-          "name": "EvaluatorVerdict",
           "line": 89,
           "col": 13
         },
         {
-          "name": "SgrContractSchemaVersion",
-          "line": 11,
+          "name": "EvaluatorVerdict",
+          "line": 88,
           "col": 13
         },
         {
-          "name": "SgrReasoningStep",
-          "line": 21,
+          "name": "SgrContractSchemaVersion",
+          "line": 10,
           "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/sgr/contracts.ts",
+      "types": [
+        {
+          "name": "BlueprintDecisionEvidenceRequirement",
+          "line": 30,
+          "col": 8
+        },
+        {
+          "name": "BlueprintDecisionStopRule",
+          "line": 31,
+          "col": 8
+        },
+        {
+          "name": "BlueprintRejectedRoute",
+          "line": 32,
+          "col": 8
+        },
+        {
+          "name": "BlueprintSelectedRoute",
+          "line": 34,
+          "col": 8
+        },
+        {
+          "name": "ContextExtractionCoverage",
+          "line": 35,
+          "col": 8
+        },
+        {
+          "name": "ContextExtractionCoverageStatus",
+          "line": 36,
+          "col": 8
+        },
+        {
+          "name": "ContextExtractionGraphEdge",
+          "line": 37,
+          "col": 8
+        },
+        {
+          "name": "ContextExtractionGraphEntity",
+          "line": 38,
+          "col": 8
+        },
+        {
+          "name": "ContextExtractionItemKind",
+          "line": 40,
+          "col": 8
+        },
+        {
+          "name": "ContextExtractionItemStatus",
+          "line": 41,
+          "col": 8
+        },
+        {
+          "name": "EvaluatorFinding",
+          "line": 43,
+          "col": 8
+        },
+        {
+          "name": "EvaluatorFindingSeverity",
+          "line": 44,
+          "col": 8
+        },
+        {
+          "name": "EvaluatorVerdict",
+          "line": 46,
+          "col": 8
+        },
+        {
+          "name": "SgrContractSchemaVersion",
+          "line": 47,
+          "col": 8
+        },
+        {
+          "name": "SgrReasoningStep",
+          "line": 48,
+          "col": 8
         }
       ]
     },
@@ -3684,9 +3744,9 @@
   "counts": {
     "files": 1,
     "exports": 208,
-    "types": 359,
+    "types": 370,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 568
+    "total": 579
   }
 }
