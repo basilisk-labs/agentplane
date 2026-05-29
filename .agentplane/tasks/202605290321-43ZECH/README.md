@@ -1,10 +1,11 @@
 ---
 id: "202605290321-43ZECH"
 title: "Backend command decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4266."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified backend command decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/backend.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts --config vitest.workspace.ts (21 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 19 to 18; backend.ts is 352 lines, below the 400-line warning threshold."
   attempts: 0
-commit: null
+commit:
+  hash: "c252876e1dcebd121c14a35105cb6c5949f07f6c"
+  message: "✅ 43ZECH backend: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: extract backend connect config/dotenv helpers from backend.ts into a focused module, preserving command behavior and reducing runtime hotspot count."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4266 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified backend command decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/backend.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts --config vitest.workspace.ts (21 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 19 to 18; backend.ts is 352 lines, below the 400-line warning threshold."
+  -
+    type: "status"
+    at: "2026-05-29T03:31:34.340Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4266 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T03:26:01.326Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T03:31:34.345Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/backend.ts by extracting backend connect configuration and dotenv helpers into a focused module, preserving CLI behavior while bringing backend.ts under the 400-line hotspot warning threshold."
 sections:
   Summary: |-
