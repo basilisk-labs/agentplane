@@ -1325,6 +1325,14 @@
       "svgSha256": "c70eda77f9aeb5e1931ecb8c567c01d8b03d13387d8f676748671f45b4b3045c"
     },
     {
+      "route": "/docs/releases/v0.6.12",
+      "output": "static/img/social/docs/releases/v0.6.12.png",
+      "section": "Releases",
+      "title": "V0.6.12",
+      "breadcrumb": "docs / releases / v0.6.12",
+      "svgSha256": "edd899c6f986c01398c0e1814b2eac50b2bf687bba646bfdf466d3556527dd86"
+    },
+    {
       "route": "/docs/releases/v0.6.2",
       "output": "static/img/social/docs/releases/v0.6.2.png",
       "section": "Releases",
