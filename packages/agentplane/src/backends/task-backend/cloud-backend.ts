@@ -27,6 +27,7 @@ import {
 } from "./cloud-backend-sync.js";
 import { refreshCloudProjectionBeforeTaskStart } from "./cloud-start-refresh.js";
 import {
+  CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
   cloudConfigOverrides,
   configureCloudFetchAddressSelection,
   isStale,
@@ -224,6 +225,8 @@ export class CloudBackend implements TaskBackend {
     conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
     quiet: boolean;
     confirm: boolean;
+    timeoutMs?: number;
+    syncStateTimeoutMs?: number;
   }): Promise<void> {
     this.assertConfigured();
     await performCloudBackendSync(
@@ -242,16 +245,22 @@ export class CloudBackend implements TaskBackend {
         direction: opts.direction,
         conflict: opts.conflict,
         quiet: opts.quiet,
+        timeoutMs: opts.timeoutMs,
+        syncStateTimeoutMs: opts.syncStateTimeoutMs,
       },
     );
   }
 
-  private async requestCloudSyncState(projectId: string): Promise<CloudSyncStateSnapshot> {
+  private async requestCloudSyncState(
+    projectId: string,
+    opts?: { timeoutMs?: number },
+  ): Promise<CloudSyncStateSnapshot> {
     return await requestCloudSyncStateSnapshot({
       endpoint: this.endpoint,
       projectId,
       fetchImpl: this.fetchImpl,
       headers: buildCloudHeaders(this.token),
+      timeoutMs: opts?.timeoutMs,
     });
   }
 
@@ -318,6 +327,8 @@ export class CloudBackend implements TaskBackend {
       conflict: "fail",
       quiet: true,
       confirm: true,
+      timeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
+      syncStateTimeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
     });
   }
 

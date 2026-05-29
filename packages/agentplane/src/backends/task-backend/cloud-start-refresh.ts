@@ -1,6 +1,9 @@
 import { BackendError } from "./shared.js";
 import { readCloudBackendState, writeCloudBackendState } from "./cloud-backend-state.js";
-import { cloudConflictMessage } from "./cloud-backend-utils.js";
+import {
+  CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
+  cloudConflictMessage,
+} from "./cloud-backend-utils.js";
 import { pendingCloudPushError } from "./cloud-pending-push.js";
 
 type CloudTaskStartSyncState = {
@@ -15,12 +18,17 @@ export async function refreshCloudProjectionBeforeTaskStart(opts: {
   missingConfigKeys: () => string[];
   projectId: string;
   statePath: string;
-  requestCloudSyncState: (projectId: string) => Promise<CloudTaskStartSyncState>;
+  requestCloudSyncState: (
+    projectId: string,
+    opts?: { timeoutMs?: number },
+  ) => Promise<CloudTaskStartSyncState>;
   sync: (syncOpts: {
     direction: "pull";
     conflict: "prefer-remote";
     quiet: true;
     confirm: true;
+    timeoutMs?: number;
+    syncStateTimeoutMs?: number;
   }) => Promise<void>;
 }): Promise<void> {
   if (!opts.autoSyncEnabled || !opts.autoSyncPullOnStartReady) return;
@@ -44,7 +52,9 @@ export async function refreshCloudProjectionBeforeTaskStart(opts: {
     );
   }
 
-  const syncState = await opts.requestCloudSyncState(opts.projectId);
+  const syncState = await opts.requestCloudSyncState(opts.projectId, {
+    timeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
+  });
   if (syncState.conflicts.length > 0) {
     throw new BackendError(
       cloudConflictMessage({
@@ -62,6 +72,8 @@ export async function refreshCloudProjectionBeforeTaskStart(opts: {
     conflict: "prefer-remote",
     quiet: true,
     confirm: true,
+    timeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
+    syncStateTimeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
   });
   const refreshed = await readCloudBackendState(opts.statePath);
   await writeCloudBackendState(opts.statePath, {
