@@ -2,6 +2,13 @@
 
 Created: 2026-05-29T19:36:23.621Z
 
+## Batch Tasks
+
+- Primary: `202605291916-5Q6T1E`
+- Closure policy: `all_or_fail`
+- Included: `202605291916-YGJASQ`
+- Included: `202605291917-4RF08R`
+
 ## Task
 
 - Task: `202605291916-5Q6T1E`
@@ -35,7 +42,9 @@ Created: 2026-05-29T19:36:23.621Z
  .../blueprint/resolved-snapshot.json               | 570 +++++++++++++++++++++
  docs/developer/cloud-backend-integration-plan.mdx  |  11 +-
  docs/user/tasks-and-backends.mdx                   |  47 ++
+ .../backends/task-backend.cloud-regression.test.ts |   7 +-
  ...task-backend.cloud-remote-create-policy.test.ts | 154 ++++++
+ .../task-backend.cloud-start-refresh.test.ts       |   1 +
  .../src/backends/task-backend.cloud.test.ts        |   6 +-
  .../task-backend/cloud-backend-settings.ts         |   3 +
  .../backends/task-backend/cloud-backend-sync.ts    |  55 +-
@@ -50,7 +59,7 @@ Created: 2026-05-29T19:36:23.621Z
  packages/core/src/tasks/index.ts                   |  14 +
  .../core/src/tasks/task-artifact-schema.task.ts    |  88 ++++
  .../tasks/task-provider-safe-projection.test.ts    | 155 ++++++
- .../src/tasks/task-provider-safe-projection.ts     | 194 +++++++
+ .../src/tasks/task-provider-safe-projection.ts     | 193 +++++++
  packages/core/src/tasks/task-store.ts              |  63 +++
  .../src/tasks/task-sync-envelope-schema.test.ts    | 168 ++++++
  packages/core/src/tasks/tasks-export.ts            | 178 +++++++
@@ -58,7 +67,7 @@ Created: 2026-05-29T19:36:23.621Z
  packages/spec/schemas/tasks-export.schema.json     | 198 +++++++
  schemas/task-readme-frontmatter.schema.json        | 191 +++++++
  schemas/tasks-export.schema.json                   | 198 +++++++
- 29 files changed, 3837 insertions(+), 15 deletions(-)
+ 31 files changed, 3843 insertions(+), 16 deletions(-)
 ```
 
 </details>
