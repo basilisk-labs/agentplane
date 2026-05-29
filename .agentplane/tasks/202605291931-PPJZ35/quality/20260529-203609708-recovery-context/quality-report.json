@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202605291931-PPJZ35",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-29T20:36:09.708Z",
+  "verdict": "pass",
+  "summary": "Fresh feedback fixes for issues #4312-#4315 are implemented and PR #4316 required checks are green on head ce3a70420cc6dd0322b831f0d5fd723d66c1eef4.",
+  "evaluated_sha": "73b4fd790c3cd88feb223f84a03b29467d368f2c",
+  "blueprint_digest": "b1c748cd499387e9d65234ceb0dcb0e5a5a9ab9035962bba71282c555f7a725b",
+  "findings": [
+    "PASS: stale dead runner routes to reclaim instead of blocking; cloud backend no longer auto-pushes ordinary writes by default; conflict=fail refuses remote projection drift; targeted regressions and hosted checks pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605291931-PPJZ35/README.md",
+    "PR #4316 required checks passed on ce3a70420cc6dd0322b831f0d5fd723d66c1eef4"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "PR merge is still branch-protection blocked until integration/approval path completes."
+  ]
+}
