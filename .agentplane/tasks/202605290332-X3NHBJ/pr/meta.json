@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T03:42:16Z",
   "base": "main",
   "branch": "task/202605290332-X3NHBJ/blueprint-command-listing-decomposition",
   "created_at": "2026-05-29T03:33:22.818Z",
   "diffstat_sha256": "sha256:52352afdff8156b894a8d73f6567368dece0ad9fcfda612e7624958b5be78dd7",
   "last_verified_at": "2026-05-29T03:37:02.570Z",
   "last_verified_diffstat_sha256": "sha256:52352afdff8156b894a8d73f6567368dece0ad9fcfda612e7624958b5be78dd7",
+  "merge_commit": "746ff2e41356bbe10f4b3e1cb9141bbff31b766f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T03:42:16Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605290332-X3NHBJ",
-  "updated_at": "2026-05-29T03:33:22.818Z",
+  "updated_at": "2026-05-29T03:42:16Z",
   "verify": {
     "status": "pass"
   }
