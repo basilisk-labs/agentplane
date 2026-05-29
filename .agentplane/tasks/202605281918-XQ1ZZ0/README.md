@@ -4,7 +4,7 @@ title: "Hotspot baseline and refactor guardrails"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-29T07:08:42.504Z"
+  updated_at: "2026-05-29T07:17:48.706Z"
   updated_by: "CODER"
-  note: "Hotspot guardrail report rebased onto current main and now exposes agent_critical_runtime_warnings on top of zero runtime hotspots. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 (runtime warnings 0, oversized runtime 0, agent-critical runtime warnings 0); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed."
+  note: "Addressed review finding by including nested task/shared workflow-transition-service.ts in agent-critical task-lifecycle hotspot classification. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -76,8 +76,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Hotspot guardrail report rebased onto current main and now exposes agent_critical_runtime_warnings on top of zero runtime hotspots. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 (runtime warnings 0, oversized runtime 0, agent-critical runtime warnings 0); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed."
+  -
+    type: "verify"
+    at: "2026-05-29T07:17:48.706Z"
+    author: "CODER"
+    state: "ok"
+    note: "Addressed review finding by including nested task/shared workflow-transition-service.ts in agent-critical task-lifecycle hotspot classification. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed."
 doc_version: 3
-doc_updated_at: "2026-05-29T07:08:42.521Z"
+doc_updated_at: "2026-05-29T07:17:48.721Z"
 doc_updated_by: "CODER"
 description: "Create a machine-readable hotspot baseline and guardrails for agent-critical refactors so each decomposition task proves reduced coupling and does not introduce new oversized agent-critical modules."
 sections:
@@ -131,6 +137,25 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: .agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
+    - old_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
+    - current_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605281918-XQ1ZZ0
+
+    ### 2026-05-29T07:17:48.706Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Addressed review finding by including nested task/shared workflow-transition-service.ts in agent-critical task-lifecycle hotspot classification. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T07:08:42.521Z, excerpt_hash=sha256:9b9e0637f9942ecb2ef849da2bc7ca5a34d1d27e19d7a410bc6a211a5ce41b63
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605281918-XQ1ZZ0-hotspot-baseline-refactor-guardrails/.agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
     - old_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
     - current_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
     - route_changed: no
@@ -203,6 +228,25 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: .agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
+- old_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
+- current_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605281918-XQ1ZZ0
+
+### 2026-05-29T07:17:48.706Z — VERIFY — ok
+
+By: CODER
+
+Note: Addressed review finding by including nested task/shared workflow-transition-service.ts in agent-critical task-lifecycle hotspot classification. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T07:08:42.521Z, excerpt_hash=sha256:9b9e0637f9942ecb2ef849da2bc7ca5a34d1d27e19d7a410bc6a211a5ce41b63
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605281918-XQ1ZZ0-hotspot-baseline-refactor-guardrails/.agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
 - old_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
 - current_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
 - route_changed: no
