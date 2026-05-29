@@ -652,9 +652,11 @@ describe("CloudBackend", () => {
     try {
       await backend.sync({ direction: "pull", conflict: "diff", quiet: false, confirm: true });
 
-      expect(io.stdout).toContain("cloud pull diff changed=1 added=1 removed=0 conflicts=0");
+      expect(io.stdout).toContain(
+        "cloud pull diff changed=1 remote_only=1 imported=0 removed=0 conflicts=0 remote_create_policy=diff",
+      );
       expect(io.stdout).toContain(`changed ${task.id}: title,status`);
-      expect(io.stdout).toContain("added remote-only 202605051806-REMOTE");
+      expect(io.stdout).toContain("remote-only 202605051806-REMOTE");
       await expect(cache.getTask(task.id)).resolves.toMatchObject({
         title: "Local title",
         status: "TODO",

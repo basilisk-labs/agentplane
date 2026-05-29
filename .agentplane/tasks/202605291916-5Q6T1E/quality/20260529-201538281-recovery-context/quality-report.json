@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202605291916-5Q6T1E",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-29T20:15:38.281Z",
+  "verdict": "pass",
+  "summary": "Sync contract implementation remains valid after splitting oversized tests into focused files for hotspot compliance.",
+  "evaluated_sha": "a7cd54cd34456718efb7aa15ec7c158a8571762e",
+  "blueprint_digest": "2462cf8787ac4d7caee778f65bc126c9c76c0c47818d096ed9b76af6efbb5491",
+  "findings": [
+    "No blocking findings. Test coverage was preserved while oversized test guard now passes; downstream connector adoption remains outside this AgentPlane scope."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605291916-5Q6T1E/README.md",
+    "bun x vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/core/src/tasks/task-sync-envelope-schema.test.ts packages/core/src/tasks/tasks-export.test.ts packages/core/src/tasks/task-provider-safe-projection.test.ts packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/backends/task-backend.cloud-remote-create-policy.test.ts",
+    "bun run hotspots:check",
+    "bun run format:changed",
+    "bun run typecheck"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

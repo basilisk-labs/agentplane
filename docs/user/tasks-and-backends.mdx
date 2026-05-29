@@ -68,6 +68,53 @@ Section semantics:
 - Plan text stays in `## Plan`.
 - Detailed verification evidence stays in `## Verification`.
 
+### Provider-neutral sync envelope
+
+Task README frontmatter may include an optional `sync` envelope for external task projections.
+The envelope is intentionally provider-neutral; GitHub, GitLab, Jira, Linear, Asana, Trello, and
+other connectors store their identities through the same shape instead of adding connector-specific
+frontmatter keys or body sections.
+
+The envelope can record:
+
+- `external_refs`: provider name, connector kind, connection or installation id, remote id, URL,
+  remote revision, title/state snapshot, and last synced time.
+- `field_policies`: per-field authority such as `agentplane`, `provider`, `bidirectional`,
+  `derived`, or `ignored`, plus the remote field name and conflict policy.
+- `freshness`: projection timestamp, projection digest, local revision, provider revision, and
+  stale-state reason.
+- `conflicts`: compact provider-neutral conflict summaries with severity, status, affected field,
+  safe command, and stop condition.
+
+The `sync` envelope is machine-readable coordination metadata. It does not make the provider a full
+task database and does not move Agentplane-owned plan text, verification evidence, findings, runner
+traces, or ACR payloads into provider-native fields.
+
+### Provider-safe cloud projection
+
+Cloud connectors should publish provider-safe task projection fields instead of full README content.
+The core projection keeps useful board data such as title, status, priority, owner, tags,
+dependency ids, approval state, verification state, section presence, rollback/finding presence,
+sync conflict counts, primary external reference metadata, and ACR summary metadata.
+
+It intentionally does not export full `## Plan`, `## Verification`, `## Findings`, raw runner
+logs, raw ACR evidence paths, or provider-specific payloads. Cloud services can map the safe
+projection to GitHub Projects, GitLab, Jira, Linear, Asana, Trello, or similar systems without
+re-parsing Markdown or inventing connector-specific README fields.
+
+### Remote-only task policy
+
+Cloud backend pulls use `remote_create_policy` for provider items that do not already have a local
+Agentplane task README:
+
+- `diff` (default): report remote-only items and do not write local READMEs or advance freshness
+  while those items need a decision.
+- `ignore`: treat remote-only items as intentionally unmanaged by Agentplane and allow freshness to
+  advance.
+- `import`: materialize remote-only items as conservative local task READMEs with a `sync`
+  external reference. Imported tasks do not receive provider-owned plan text, findings,
+  verification logs, runner traces, or ACR evidence.
+
 ## Verification sections
 
 - `## Verify Steps` is the planned verification contract.

@@ -159,7 +159,16 @@ For bidirectional projects, pull applies only service-approved operational field
 local task IDs. Full task documents returned by the service are treated as projection sources for
 those fields only; Agentplane-owned lifecycle, planning, verification, findings, rollback, comments,
 events, and README content are preserved. Remote-only service items are ignored until a
-`remote_create_policy` exists.
+`remote_create_policy` decision is made.
+
+Current remote-only policy:
+
+- `diff` is the default and reports remote-only items without writing local READMEs or advancing
+  freshness.
+- `ignore` records the pull freshness while leaving remote-only items outside Agentplane task
+  storage.
+- `import` materializes remote-only items as conservative local README tasks using the
+  provider-neutral `sync` envelope for external identity and field authority.
 
 ### C007: Update init UX and docs
 

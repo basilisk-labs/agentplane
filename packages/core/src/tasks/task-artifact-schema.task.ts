@@ -68,6 +68,29 @@ const RUNNER_OUTCOME_STATUS_VALUES = [
 ] as const;
 const RUNNER_MODE_VALUES = ["execute", "dry_run"] as const;
 const RUNNER_TARGET_KIND_VALUES = ["task", "recipe_scenario"] as const;
+const TASK_SYNC_FIELD_AUTHORITY_VALUES = [
+  "agentplane",
+  "provider",
+  "bidirectional",
+  "derived",
+  "ignored",
+] as const;
+const TASK_SYNC_CONFLICT_POLICY_VALUES = [
+  "record",
+  "manual",
+  "agentplane_wins",
+  "provider_wins",
+] as const;
+const TASK_SYNC_CONFLICT_KIND_VALUES = [
+  "field",
+  "identity",
+  "freshness",
+  "deletion",
+  "dependency",
+  "permission",
+] as const;
+const TASK_SYNC_CONFLICT_SEVERITY_VALUES = ["info", "warning", "blocking"] as const;
+const TASK_SYNC_CONFLICT_STATUS_VALUES = ["open", "resolved", "ignored"] as const;
 
 const TASK_STATUS_SCHEMA = z.enum(TASK_STATUS_VALUES);
 const TASK_PRIORITY_SCHEMA = z.enum(TASK_PRIORITY_VALUES);
@@ -149,6 +172,69 @@ const RUNNER_OUTCOME_SCHEMA = RUNNER_HISTORY_ENTRY_SCHEMA.extend({
   history: z.array(RUNNER_HISTORY_ENTRY_SCHEMA).optional(),
 });
 
+const TASK_SYNC_EXTERNAL_REF_SCHEMA = z
+  .object({
+    provider: NON_EMPTY_STRING,
+    connector_kind: NON_EMPTY_STRING.optional(),
+    connection_id: NON_EMPTY_STRING.optional(),
+    installation_id: NON_EMPTY_STRING.optional(),
+    remote_id: NON_EMPTY_STRING,
+    remote_url: NON_EMPTY_STRING.optional(),
+    remote_revision: NON_EMPTY_STRING.optional(),
+    title: NON_EMPTY_STRING.optional(),
+    state: NON_EMPTY_STRING.optional(),
+    synced_at: ISO_UTC_TIMESTAMP.optional(),
+  })
+  .strict();
+
+const TASK_SYNC_FIELD_POLICY_SCHEMA = z
+  .object({
+    authority: z.enum(TASK_SYNC_FIELD_AUTHORITY_VALUES),
+    remote_field: NON_EMPTY_STRING.optional(),
+    conflict_policy: z.enum(TASK_SYNC_CONFLICT_POLICY_VALUES).optional(),
+    updated_at: ISO_UTC_TIMESTAMP.optional(),
+    note: NON_EMPTY_STRING.optional(),
+  })
+  .strict();
+
+const TASK_SYNC_FRESHNESS_SCHEMA = z
+  .object({
+    projected_at: ISO_UTC_TIMESTAMP.optional(),
+    projection_sha256: NON_EMPTY_STRING.optional(),
+    source_revision: z.number().int().min(0).optional(),
+    provider_revision: NON_EMPTY_STRING.optional(),
+    stale: z.boolean().optional(),
+    reason: NON_EMPTY_STRING.optional(),
+  })
+  .strict();
+
+const TASK_SYNC_CONFLICT_SCHEMA = z
+  .object({
+    id: NON_EMPTY_STRING,
+    kind: z.enum(TASK_SYNC_CONFLICT_KIND_VALUES),
+    severity: z.enum(TASK_SYNC_CONFLICT_SEVERITY_VALUES),
+    status: z.enum(TASK_SYNC_CONFLICT_STATUS_VALUES),
+    summary: NON_EMPTY_STRING,
+    provider: NON_EMPTY_STRING.optional(),
+    remote_id: NON_EMPTY_STRING.optional(),
+    field: NON_EMPTY_STRING.optional(),
+    detected_at: ISO_UTC_TIMESTAMP,
+    resolved_at: ISO_UTC_TIMESTAMP.optional(),
+    safe_command: NON_EMPTY_STRING.optional(),
+    when_to_stop: NON_EMPTY_STRING.optional(),
+  })
+  .strict();
+
+const TASK_SYNC_ENVELOPE_SCHEMA = z
+  .object({
+    version: z.literal(1),
+    external_refs: z.array(TASK_SYNC_EXTERNAL_REF_SCHEMA).default([]),
+    field_policies: z.record(NON_EMPTY_STRING, TASK_SYNC_FIELD_POLICY_SCHEMA).default({}),
+    freshness: TASK_SYNC_FRESHNESS_SCHEMA.optional(),
+    conflicts: z.array(TASK_SYNC_CONFLICT_SCHEMA).default([]),
+  })
+  .strict();
+
 export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
   .object({
     id: NON_EMPTY_STRING,
@@ -172,6 +258,7 @@ export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
     verification: TASK_VERIFICATION_SCHEMA,
     quality_review: TASK_QUALITY_REVIEW_SCHEMA.optional(),
     runner: RUNNER_OUTCOME_SCHEMA.optional(),
+    sync: TASK_SYNC_ENVELOPE_SCHEMA.optional(),
     commit: TASK_COMMIT_SCHEMA.optional(),
     comments: z.array(TASK_COMMENT_SCHEMA),
     events: z.array(TASK_EVENT_SCHEMA).optional(),
@@ -212,6 +299,7 @@ const TASKS_EXPORT_TASK_SCHEMA = z
     commit: TASK_COMMIT_SCHEMA,
     comments: z.array(TASK_COMMENT_SCHEMA),
     events: z.array(TASK_EVENT_SCHEMA).optional(),
+    sync: TASK_SYNC_ENVELOPE_SCHEMA.optional(),
     doc_version: DOC_VERSION_SCHEMA,
     doc_updated_at: ISO_UTC_TIMESTAMP,
     doc_updated_by: NON_EMPTY_STRING,

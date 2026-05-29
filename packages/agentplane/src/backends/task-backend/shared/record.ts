@@ -134,6 +134,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     verification: verification ?? undefined,
     quality_review: qualityReview ?? undefined,
     runner: runner ?? undefined,
+    sync: isRecord(fm.sync) ? (fm.sync as TaskData["sync"]) : undefined,
     commit,
     comments,
     events,

@@ -16,6 +16,7 @@ export type RedmineCanonicalState = {
   revision?: number;
   origin?: TaskData["origin"];
   runner?: TaskData["runner"];
+  sync?: TaskData["sync"];
   sections?: Record<string, string>;
   plan_approval?: TaskData["plan_approval"];
   verification?: TaskData["verification"];
@@ -61,6 +62,7 @@ export function parseRedmineCanonicalState(value: unknown): RedmineCanonicalStat
   const revision = normalizeRevision(parsed.revision);
   const origin = normalizeTaskOrigin(parsed.origin) ?? undefined;
   const runner = normalizeTaskRunnerOutcome(parsed.runner) ?? undefined;
+  const sync = isRecord(parsed.sync) ? (parsed.sync as TaskData["sync"]) : undefined;
   const sections = normalizeCanonicalSections(parsed.sections);
   const planApproval = normalizePlanApproval(parsed.plan_approval) ?? undefined;
   const verification = normalizeVerificationResult(parsed.verification) ?? undefined;
@@ -70,6 +72,7 @@ export function parseRedmineCanonicalState(value: unknown): RedmineCanonicalStat
     revision === undefined &&
     origin === undefined &&
     runner === undefined &&
+    sync === undefined &&
     sections === undefined &&
     planApproval === undefined &&
     verification === undefined &&
@@ -82,6 +85,7 @@ export function parseRedmineCanonicalState(value: unknown): RedmineCanonicalStat
     ...(revision === undefined ? {} : { revision }),
     ...(origin ? { origin } : {}),
     ...(runner ? { runner } : {}),
+    ...(sync ? { sync } : {}),
     ...(sections ? { sections } : {}),
     ...(planApproval ? { plan_approval: planApproval } : {}),
     ...(verification ? { verification } : {}),
@@ -107,6 +111,7 @@ export function buildRedmineCanonicalStateWithOptions(
     normalizeTaskRunnerOutcome(task.runner) ??
     normalizeTaskRunnerOutcome(base?.runner) ??
     undefined;
+  const sync = isRecord(task.sync) ? task.sync : isRecord(base?.sync) ? base.sync : undefined;
   const sections =
     normalizeCanonicalSections(task.sections) ??
     (typeof task.doc === "string" && task.doc.trim().length > 0
@@ -128,6 +133,7 @@ export function buildRedmineCanonicalStateWithOptions(
     revision === undefined &&
     origin === undefined &&
     runner === undefined &&
+    sync === undefined &&
     sections === undefined &&
     planApproval === undefined &&
     verification === undefined &&
@@ -140,6 +146,7 @@ export function buildRedmineCanonicalStateWithOptions(
     ...(revision === undefined ? {} : { revision }),
     ...(origin ? { origin } : {}),
     ...(runner ? { runner } : {}),
+    ...(sync ? { sync } : {}),
     ...(sections ? { sections } : {}),
     ...(planApproval ? { plan_approval: planApproval } : {}),
     ...(verification ? { verification } : {}),
