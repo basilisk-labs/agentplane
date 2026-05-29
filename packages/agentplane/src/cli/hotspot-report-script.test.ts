@@ -233,8 +233,18 @@ describe("hotspot-report script", () => {
     const root = await makeTempRoot("agentplane-hotspot-agent-critical-");
     const routeDir = path.join(root, "packages", "agentplane", "src", "commands", "shared");
     const runnerDir = path.join(root, "packages", "agentplane", "src", "runner");
+    const taskSharedDir = path.join(
+      root,
+      "packages",
+      "agentplane",
+      "src",
+      "commands",
+      "task",
+      "shared",
+    );
     await mkdir(routeDir, { recursive: true });
     await mkdir(runnerDir, { recursive: true });
+    await mkdir(taskSharedDir, { recursive: true });
     await writeFile(
       path.join(routeDir, "route-decision.ts"),
       Array.from({ length: 8 }, (_, index) => `const route${index} = ${index};`).join("\n"),
@@ -243,6 +253,11 @@ describe("hotspot-report script", () => {
     await writeFile(
       path.join(runnerDir, "result-manifest.ts"),
       Array.from({ length: 7 }, (_, index) => `const runner${index} = ${index};`).join("\n"),
+      "utf8",
+    );
+    await writeFile(
+      path.join(taskSharedDir, "workflow-transition-service.ts"),
+      Array.from({ length: 6 }, (_, index) => `const transition${index} = ${index};`).join("\n"),
       "utf8",
     );
 
@@ -266,10 +281,11 @@ describe("hotspot-report script", () => {
       };
     };
 
-    expect(payload.metrics?.agent_critical_runtime_warnings?.total).toBe(2);
+    expect(payload.metrics?.agent_critical_runtime_warnings?.total).toBe(3);
     expect(payload.metrics?.agent_critical_runtime_warnings?.categories).toEqual({
       "route-oracle": 1,
       runner: 1,
+      "task-lifecycle": 1,
     });
     expect(payload.metrics?.agent_critical_runtime_warnings?.modules).toEqual([
       expect.objectContaining({
@@ -279,6 +295,10 @@ describe("hotspot-report script", () => {
       expect.objectContaining({
         file: "packages/agentplane/src/runner/result-manifest.ts",
         category: "runner",
+      }),
+      expect.objectContaining({
+        file: "packages/agentplane/src/commands/task/shared/workflow-transition-service.ts",
+        category: "task-lifecycle",
       }),
     ]);
   });

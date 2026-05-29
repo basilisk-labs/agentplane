@@ -56,6 +56,7 @@ const AGENT_CRITICAL_RULES = [
     category: "task-lifecycle",
     patterns: [
       /^packages\/agentplane\/src\/commands\/task\/(?:finish|run|verify|workflow-transition)/,
+      /^packages\/agentplane\/src\/commands\/task\/shared\/workflow-transition-service\.ts$/,
     ],
   },
   {
