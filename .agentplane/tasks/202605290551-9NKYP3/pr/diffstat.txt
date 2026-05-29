@@ -1,0 +1,3 @@
+ .../task/shared/workflow-transition-service.ts     | 81 ++--------------------
+ .../shared/workflow-transition-verification.ts     | 74 ++++++++++++++++++++
+ 2 files changed, 80 insertions(+), 75 deletions(-)
