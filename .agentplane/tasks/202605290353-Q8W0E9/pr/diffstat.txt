@@ -1,0 +1,3 @@
+ .../commands/pr/internal/sync-batch-ownership.ts   | 123 +++++++++++++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    | 120 +-------------------
+ 2 files changed, 128 insertions(+), 115 deletions(-)
