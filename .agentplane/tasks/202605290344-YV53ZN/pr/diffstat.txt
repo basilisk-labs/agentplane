@@ -1,0 +1,3 @@
+ .../commands/pr/internal/review-hosted-format.ts   | 102 +++++++++++++++++++++
+ .../src/commands/pr/internal/review-template.ts    | 102 +--------------------
+ 2 files changed, 103 insertions(+), 101 deletions(-)

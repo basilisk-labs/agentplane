@@ -4,7 +4,7 @@ title: "PR review template hosted formatting decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T03:47:29.585Z"
+  updated_by: "CODER"
+  note: "Verified PR review template hosted formatting decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts --config vitest.workspace.ts (12 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 17 to 16; review-template.ts is 368 lines, below the 400-line warning threshold."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: extract hosted GitHub verification markdown formatting helpers from review-template.ts while preserving PR artifact rendering."
+  -
+    type: "verify"
+    at: "2026-05-29T03:47:29.585Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified PR review template hosted formatting decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts --config vitest.workspace.ts (12 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 17 to 16; review-template.ts is 368 lines, below the 400-line warning threshold."
 doc_version: 3
-doc_updated_at: "2026-05-29T03:44:48.647Z"
+doc_updated_at: "2026-05-29T03:47:29.621Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/commands/pr/internal/review-template.ts by extracting hosted GitHub verification markdown command-wrapping helpers into a focused module, preserving PR artifact rendering and validation behavior while reducing hotspot count."
 sections:
@@ -72,6 +78,25 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T03:47:29.585Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified PR review template hosted formatting decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts --config vitest.workspace.ts (12 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 17 to 16; review-template.ts is 368 lines, below the 400-line warning threshold.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T03:44:48.647Z, excerpt_hash=sha256:b41763129fb03e3e0651deff32949d9a535c9970a25473632887b59cbdc28d9e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: .agentplane/tasks/202605290344-YV53ZN/blueprint/resolved-snapshot.json
+    - old_digest: dd47b97593099f5d2eb206e9f738cbad5f0486f661708705740326c77fe01c14
+    - current_digest: dd47b97593099f5d2eb206e9f738cbad5f0486f661708705740326c77fe01c14
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290344-YV53ZN
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -119,6 +144,25 @@ PLANNER fallback scaffold for "PR review template hosted formatting decompositio
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T03:47:29.585Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified PR review template hosted formatting decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts --config vitest.workspace.ts (12 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 17 to 16; review-template.ts is 368 lines, below the 400-line warning threshold.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T03:44:48.647Z, excerpt_hash=sha256:b41763129fb03e3e0651deff32949d9a535c9970a25473632887b59cbdc28d9e
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: .agentplane/tasks/202605290344-YV53ZN/blueprint/resolved-snapshot.json
+- old_digest: dd47b97593099f5d2eb206e9f738cbad5f0486f661708705740326c77fe01c14
+- current_digest: dd47b97593099f5d2eb206e9f738cbad5f0486f661708705740326c77fe01c14
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290344-YV53ZN
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

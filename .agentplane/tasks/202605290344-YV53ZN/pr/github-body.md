@@ -15,8 +15,17 @@ Decompose packages/agentplane/src/commands/pr/internal/review-template.ts by ext
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified PR review template hosted formatting decomposition. Commands passed: bunx vitest run
+packages/agentplane/src/commands/pr/internal/review-template.test.ts
+packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts --config
+vitest.workspace.ts (12 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run
+lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from
+17 to 16; review-template.ts is 368 lines, below the 400-line warning threshold.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +36,9 @@ Decompose packages/agentplane/src/commands/pr/internal/review-template.ts by ext
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../commands/pr/internal/review-hosted-format.ts   | 102 +++++++++++++++++++++
+ .../src/commands/pr/internal/review-template.ts    | 102 +--------------------
+ 2 files changed, 103 insertions(+), 101 deletions(-)
 ```
 
 </details>
