@@ -34,6 +34,7 @@ doctor, and policy routing all passed. Commits: 05b42f6f5, 5aa293214.
 ```text
  docs/developer/architecture.mdx                    |   7 +-
  docs/developer/cloud-backend-integration-plan.mdx  |   2 +-
+ docs/developer/testing-and-quality.mdx             |   7 +-
  docs/user/cli-reference.generated.mdx              |   2 +-
  docs/user/prerequisites.mdx                        |  16 +-
  package.json                                       |   4 +-
@@ -93,7 +94,8 @@ doctor, and policy routing all passed. Commits: 05b42f6f5, 5aa293214.
  scripts/README.md                                  |   4 +-
  scripts/checks/run-backend-live-suite.mjs          |  99 ----
  scripts/lib/test-route-registry.mjs                |   7 -
- 61 files changed, 140 insertions(+), 5703 deletions(-)
+ scripts/run-backend-live-suite.mjs                 |   1 -
+ 63 files changed, 143 insertions(+), 5708 deletions(-)
 ```
 
 </details>
