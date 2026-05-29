@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../docs/assets/readme-headers/skills.svg" alt="AgentPlane skills header" style="width:100%;max-width:100%;"/>
+  <img src="../docs/assets/readme-headers/skills.svg" alt="Agentplane skills header" style="width:100%;max-width:100%;"/>
 </p>
 
 # Repository-local skills

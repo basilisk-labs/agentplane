@@ -32,79 +32,79 @@ const readmeSurfaces = [
     id: "agentplane",
     readme: "README.md",
     src: "docs/assets/readme-headers/agentplane.svg",
-    alt: "AgentPlane latest release header",
+    alt: "Agentplane latest release header",
   },
   {
     id: "agentplane-cli",
     readme: "packages/agentplane/README.md",
     src: `${rawAssetBase}/agentplane-cli.svg`,
-    alt: "AgentPlane CLI package header",
+    alt: "Agentplane CLI package header",
   },
   {
     id: "core",
     readme: "packages/core/README.md",
     src: `${rawAssetBase}/core.svg`,
-    alt: "AgentPlane core package header",
+    alt: "Agentplane core package header",
   },
   {
     id: "recipes",
     readme: "packages/recipes/README.md",
     src: `${rawAssetBase}/recipes.svg`,
-    alt: "AgentPlane recipes package header",
+    alt: "Agentplane recipes package header",
   },
   {
     id: "spec",
     readme: "packages/spec/README.md",
     src: `${rawAssetBase}/spec.svg`,
-    alt: "AgentPlane spec package header",
+    alt: "Agentplane spec package header",
   },
   {
     id: "testkit",
     readme: "packages/testkit/README.md",
     src: `${rawAssetBase}/testkit.svg`,
-    alt: "AgentPlane testkit package header",
+    alt: "Agentplane testkit package header",
   },
   {
     id: "docs",
     readme: "docs/README.md",
     src: "assets/readme-headers/docs.svg",
-    alt: "AgentPlane docs header",
+    alt: "Agentplane docs header",
   },
   {
     id: "releases",
     readme: "docs/releases/README.md",
     src: "../assets/readme-headers/releases.svg",
-    alt: "AgentPlane release notes header",
+    alt: "Agentplane release notes header",
   },
   {
     id: "adr",
     readme: "docs/adr/README.md",
     src: "../assets/readme-headers/adr.svg",
-    alt: "AgentPlane ADR header",
+    alt: "Agentplane ADR header",
   },
   {
     id: "scripts",
     readme: "scripts/README.md",
     src: "../docs/assets/readme-headers/scripts.svg",
-    alt: "AgentPlane scripts header",
+    alt: "Agentplane scripts header",
   },
   {
     id: "schemas",
     readme: "schemas/README.md",
     src: "../docs/assets/readme-headers/schemas.svg",
-    alt: "AgentPlane schemas header",
+    alt: "Agentplane schemas header",
   },
   {
     id: "skills",
     readme: "skills/README.md",
     src: "../docs/assets/readme-headers/skills.svg",
-    alt: "AgentPlane skills header",
+    alt: "Agentplane skills header",
   },
   {
     id: "humanizer",
     readme: "skills/humanizer/README.md",
     src: "../../docs/assets/readme-headers/humanizer.svg",
-    alt: "AgentPlane humanizer skill header",
+    alt: "Agentplane humanizer skill header",
   },
 ];
 
@@ -221,7 +221,7 @@ function renderHeaderLines(text) {
 
 function renderSvg({ tag, headline }) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
-<title>AgentPlane ${escapeXml(tag)} README header</title>
+<title>Agentplane ${escapeXml(tag)} README header</title>
 <style>
   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }

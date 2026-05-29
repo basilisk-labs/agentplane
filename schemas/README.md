@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../docs/assets/readme-headers/schemas.svg" alt="AgentPlane schemas header" style="width:100%;max-width:100%;"/>
+  <img src="../docs/assets/readme-headers/schemas.svg" alt="Agentplane schemas header" style="width:100%;max-width:100%;"/>
 </p>
 
 # JSON Schemas

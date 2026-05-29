@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/basilisk-labs/agentplane/main/docs/assets/readme-headers/testkit.svg" alt="AgentPlane testkit package header" style="width:100%;max-width:100%;"/>
+  <img src="https://raw.githubusercontent.com/basilisk-labs/agentplane/main/docs/assets/readme-headers/testkit.svg" alt="Agentplane testkit package header" style="width:100%;max-width:100%;"/>
 </p>
 
 # @agentplane/testkit

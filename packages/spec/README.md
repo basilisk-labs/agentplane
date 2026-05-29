@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/basilisk-labs/agentplane/main/docs/assets/readme-headers/spec.svg" alt="AgentPlane spec package header" style="width:100%;max-width:100%;"/>
+  <img src="https://raw.githubusercontent.com/basilisk-labs/agentplane/main/docs/assets/readme-headers/spec.svg" alt="Agentplane spec package header" style="width:100%;max-width:100%;"/>
 </p>
 
 # @agentplane/spec (v1)

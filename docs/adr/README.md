@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../assets/readme-headers/adr.svg" alt="AgentPlane ADR header" style="width:100%;max-width:100%;"/>
+  <img src="../assets/readme-headers/adr.svg" alt="Agentplane ADR header" style="width:100%;max-width:100%;"/>
 </p>
 
 # Architecture Decision Records

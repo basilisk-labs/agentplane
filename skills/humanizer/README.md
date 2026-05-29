@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../../docs/assets/readme-headers/humanizer.svg" alt="AgentPlane humanizer skill header" style="width:100%;max-width:100%;"/>
+  <img src="../../docs/assets/readme-headers/humanizer.svg" alt="Agentplane humanizer skill header" style="width:100%;max-width:100%;"/>
 </p>
 
 # Humanizer
