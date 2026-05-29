@@ -1,0 +1,3 @@
+ .../src/blueprints/resolve-recipe-hints.ts         | 135 ++++++++++++++++++++
+ packages/agentplane/src/blueprints/resolve.ts      | 136 +--------------------
+ 2 files changed, 138 insertions(+), 133 deletions(-)

@@ -4,7 +4,7 @@ title: "Blueprint resolve decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T03:13:16.388Z"
+  updated_by: "CODER"
+  note: "Verified blueprint resolve decomposition. Commands passed: bunx vitest run packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/recipe-hints.test.ts packages/agentplane/src/blueprints/snapshot.test.ts packages/agentplane/src/blueprints/validate.test.ts --config vitest.workspace.ts (56 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 20 to 19; resolve.ts is 346 lines, below the 400-line warning threshold."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: extract recipe hint validation helpers while preserving blueprint resolve behavior and exports."
+  -
+    type: "verify"
+    at: "2026-05-29T03:13:16.388Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified blueprint resolve decomposition. Commands passed: bunx vitest run packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/recipe-hints.test.ts packages/agentplane/src/blueprints/snapshot.test.ts packages/agentplane/src/blueprints/validate.test.ts --config vitest.workspace.ts (56 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 20 to 19; resolve.ts is 346 lines, below the 400-line warning threshold."
 doc_version: 3
-doc_updated_at: "2026-05-29T03:07:30.299Z"
+doc_updated_at: "2026-05-29T03:13:16.412Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/blueprints/resolve.ts by extracting recipe hint validation helpers while preserving blueprint resolution and explanation behavior."
 sections:
@@ -70,6 +76,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T03:13:16.388Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified blueprint resolve decomposition. Commands passed: bunx vitest run packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/recipe-hints.test.ts packages/agentplane/src/blueprints/snapshot.test.ts packages/agentplane/src/blueprints/validate.test.ts --config vitest.workspace.ts (56 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 20 to 19; resolve.ts is 346 lines, below the 400-line warning threshold.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T03:07:30.299Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: .agentplane/tasks/202605290307-X81Y8X/blueprint/resolved-snapshot.json
+    - old_digest: 1ef3084ba6c5f2457bc7e333a613514829ce3f4c8da437f5a5ca8e914333fca1
+    - current_digest: 1ef3084ba6c5f2457bc7e333a613514829ce3f4c8da437f5a5ca8e914333fca1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290307-X81Y8X
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -114,6 +139,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T03:13:16.388Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified blueprint resolve decomposition. Commands passed: bunx vitest run packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/recipe-hints.test.ts packages/agentplane/src/blueprints/snapshot.test.ts packages/agentplane/src/blueprints/validate.test.ts --config vitest.workspace.ts (56 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 20 to 19; resolve.ts is 346 lines, below the 400-line warning threshold.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T03:07:30.299Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: .agentplane/tasks/202605290307-X81Y8X/blueprint/resolved-snapshot.json
+- old_digest: 1ef3084ba6c5f2457bc7e333a613514829ce3f4c8da437f5a5ca8e914333fca1
+- current_digest: 1ef3084ba6c5f2457bc7e333a613514829ce3f4c8da437f5a5ca8e914333fca1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290307-X81Y8X
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
