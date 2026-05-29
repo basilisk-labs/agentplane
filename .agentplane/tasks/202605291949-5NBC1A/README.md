@@ -4,7 +4,7 @@ title: "Remove direct Redmine task backend"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,22 @@ verification:
   updated_by: "CODER"
   note: "Implemented and verified: focused backend/init tests, backend-critical suite, typecheck, build, doctor, and policy routing all passed. Commits: 05b42f6f5, 5aa293214."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-29T20:14:27.793Z"
+  updated_by: "EVALUATOR"
+  note: "Direct Redmine backend removed from public AgentPlane and cloud autosync timeout issue fixed separately."
+  evaluated_sha: "5aa293214b812abd4086c8273fe85e5bf21e0cf6"
+  blueprint_digest: "c139396fb8bb7ab9e7da7656b26636c46267166ec1c4eb70dafd2d03852b425f"
+  evidence_refs:
+    - ".agentplane/tasks/202605291949-5NBC1A/README.md"
+    - ".agentplane/tasks/202605291949-5NBC1A/quality/20260529-201427793-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605291949-5NBC1A/quality/20260529-201427793-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605291949-5NBC1A/quality/20260529-201427793-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605291949-5NBC1A/blueprint/resolved-snapshot.json"
+    - "bun run build; bun run test:backend-critical; ap doctor; node .agentplane/policy/check-routing.mjs"
+  findings:
+    - "Checks passed: focused backend/init tests, backend-critical, typecheck, build, doctor, policy routing."
 commit: null
 comments:
   -

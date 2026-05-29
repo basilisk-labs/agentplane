@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202605291949-5NBC1A",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-29T20:14:27.793Z",
+  "verdict": "pass",
+  "summary": "Direct Redmine backend removed from public AgentPlane and cloud autosync timeout issue fixed separately.",
+  "evaluated_sha": "5aa293214b812abd4086c8273fe85e5bf21e0cf6",
+  "blueprint_digest": "c139396fb8bb7ab9e7da7656b26636c46267166ec1c4eb70dafd2d03852b425f",
+  "findings": [
+    "Checks passed: focused backend/init tests, backend-critical, typecheck, build, doctor, policy routing."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605291949-5NBC1A/README.md",
+    "bun run build; bun run test:backend-critical; ap doctor; node .agentplane/policy/check-routing.mjs"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
