@@ -1,0 +1,3 @@
+ .../src/commands/task/obsidian.render.ts           | 261 ++++++++++++++++++++
+ packages/agentplane/src/commands/task/obsidian.ts  | 262 +--------------------
+ 2 files changed, 270 insertions(+), 253 deletions(-)
