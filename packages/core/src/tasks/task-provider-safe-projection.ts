@@ -7,7 +7,6 @@ import type {
   TaskRunnerOutcomeStatus,
   VerificationState,
 } from "./task-store.js";
-import type { TaskStatus } from "./task-status.js";
 
 export type ProviderSafeAcrProjection = {
   present: boolean;
@@ -23,7 +22,7 @@ export type ProviderSafeTaskProjection = {
   schema_version: 1;
   task_id: string;
   title: string;
-  status: TaskStatus | string;
+  status: string;
   priority: string;
   owner: string;
   tags: string[];

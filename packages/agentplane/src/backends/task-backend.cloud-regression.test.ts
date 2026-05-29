@@ -188,7 +188,12 @@ describe("CloudBackend regressions", () => {
       ),
     );
     const backend = new CloudBackend(
-      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
+      {
+        endpoint: "https://cloud.example",
+        token: "token",
+        project_id: "project-1",
+        remote_create_policy: "import",
+      },
       { root: tempDir, cache, fetchImpl },
     );
 
