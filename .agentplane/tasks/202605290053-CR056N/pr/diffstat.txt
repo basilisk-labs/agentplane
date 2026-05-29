@@ -1,0 +1,6 @@
+ .../src/blueprints/project-local-files.ts          | 152 ++++++++
+ .../src/blueprints/project-local-model.ts          | 111 ++++++
+ .../src/blueprints/project-local-trust.ts          | 138 +++++++
+ .../agentplane/src/blueprints/project-local.ts     | 417 +++------------------
+ scripts/baselines/knip-baseline.json               |  55 ++-
+ 5 files changed, 484 insertions(+), 389 deletions(-)
