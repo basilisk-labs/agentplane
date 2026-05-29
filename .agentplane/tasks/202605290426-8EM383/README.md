@@ -1,10 +1,11 @@
 ---
 id: "202605290426-8EM383"
 title: "Upgrade apply command decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4278."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Observed: upgrade apply git helpers moved into apply-git.ts; apply.ts is below hotspot threshold. Checks: upgrade.safety.test, run-cli.core.upgrade-dirty-state.test, upgrade.merge.test, typecheck, arch:check, knip:check, lint:core, format:changed, hotspots:check passed."
   attempts: 0
-commit: null
+commit:
+  hash: "b0588c3f80e2ccf2c2369466b6d2ff57f76b9c54"
+  message: "♻️ 8EM383 upgrade: decompose apply git helpers"
 comments:
   -
     author: "CODER"
     body: "Start: Extract upgrade apply git helpers into focused modules while preserving exported apply API and behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4278 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Observed: upgrade apply git helpers moved into apply-git.ts; apply.ts is below hotspot threshold. Checks: upgrade.safety.test, run-cli.core.upgrade-dirty-state.test, upgrade.merge.test, typecheck, arch:check, knip:check, lint:core, format:changed, hotspots:check passed."
+  -
+    type: "status"
+    at: "2026-05-29T04:37:11.843Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4278 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T04:33:19.694Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T04:37:11.847Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract focused helpers from packages/agentplane/src/commands/upgrade/apply.ts to reduce the runtime hotspot below the warning threshold without changing upgrade apply behavior."
 sections:
   Summary: |-
