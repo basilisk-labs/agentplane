@@ -1,10 +1,11 @@
 ---
 id: "202605292132-QRQK1M"
 title: "Preserve staged index on policy hook refusal"
-status: "DOING"
+result_summary: "Merged via PR #4321."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "PR #4321 required checks passed"
   findings:
     - "PASS: managed pre-commit protected-policy refusal preserves AGENTS.md in the staged index, and retry with AGENTPLANE_ALLOW_POLICY=1 succeeds without restaging."
-commit: null
+commit:
+  hash: "5f407c7031e25e50e8e8205c63a7fd373e0eb480"
+  message: "🧪 QRQK1M task: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: add regression coverage for issue #4313 preserving staged index after protected-policy hook refusal."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4321 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused regression passes: bun test packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts -t 'hooks run pre-commit blocks AGENTS.md without env override'. Static checks pass: bun run typecheck, bun run lint:core, bun run format:check, node .agentplane/policy/check-routing.mjs."
+  -
+    type: "status"
+    at: "2026-05-29T21:42:46.766Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4321 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T21:34:37.431Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T21:42:46.772Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add regression coverage for GitHub issue #4313 so managed pre-commit protected-policy refusal preserves the staged index for retry with AGENTPLANE_ALLOW_POLICY=1."
 sections:
   Summary: |-
