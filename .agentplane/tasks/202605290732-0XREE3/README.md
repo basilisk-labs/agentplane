@@ -4,7 +4,7 @@ title: "Release v0.6.12"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -29,10 +29,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T08:25:31.502Z"
+  updated_by: "CODER"
+  note: "Release checks passed: release candidate prepared for v0.6.12; release:prepublish:fast passed; release:prepublish:heavy passed including release-ci-base 67/67 chunks, workflow/significant coverage, and release-critical suite; pre-push standard mode passed before branch update."
   attempts: 0
 commit: null
 comments:
@@ -47,8 +47,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Prepare v0.6.12 release candidate from approved release.strict plan, validate release checks, publish PR artifacts, and record evidence."
+  -
+    type: "verify"
+    at: "2026-05-29T08:25:31.502Z"
+    author: "CODER"
+    state: "ok"
+    note: "Release checks passed: release candidate prepared for v0.6.12; release:prepublish:fast passed; release:prepublish:heavy passed including release-ci-base 67/67 chunks, workflow/significant coverage, and release-critical suite; pre-push standard mode passed before branch update."
 doc_version: 3
-doc_updated_at: "2026-05-29T07:32:51.547Z"
+doc_updated_at: "2026-05-29T08:25:31.519Z"
 doc_updated_by: "CODER"
 description: "Prepare, validate, merge, publish, and record evidence for the next patch release v0.6.12."
 sections:
@@ -67,11 +73,33 @@ sections:
     4. After merge and publish, run `npm view agentplane version`, `git ls-remote --tags origin v0.6.12`, and `gh release view v0.6.12`. Expected: all external surfaces show `v0.6.12`.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T08:25:31.502Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Release checks passed: release candidate prepared for v0.6.12; release:prepublish:fast passed; release:prepublish:heavy passed including release-ci-base 67/67 chunks, workflow/significant coverage, and release-critical suite; pre-push standard mode passed before branch update.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T07:32:51.547Z, excerpt_hash=sha256:5eb4a05248f73af6cb4fe68575656b182c87d990abd716dd79704d515a9d87c0
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605290732-0XREE3-release-v0-6-12/.agentplane/tasks/202605290732-0XREE3/blueprint/resolved-snapshot.json
+    - old_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
+    - current_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290732-0XREE3
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Release candidate commit df47c6576/b390c4c3/df47c657 lineage was amended only for formatting and PR metadata; final HEAD is b390c4c3 before verification refresh.
+      Impact: Candidate branch is ready for PR integration; hosted publish still required after merge to main.
+      Resolution: Use branch_pr integration, then dispatch hosted Publish to npm with the merged release commit SHA and verify npm/tag/GitHub Release.
 id_source: "generated"
 ---
 ## Summary
@@ -99,6 +127,25 @@ Release plan: version=0.6.12, tag=v0.6.12, scope=next patch release from current
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T08:25:31.502Z — VERIFY — ok
+
+By: CODER
+
+Note: Release checks passed: release candidate prepared for v0.6.12; release:prepublish:fast passed; release:prepublish:heavy passed including release-ci-base 67/67 chunks, workflow/significant coverage, and release-critical suite; pre-push standard mode passed before branch update.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T07:32:51.547Z, excerpt_hash=sha256:5eb4a05248f73af6cb4fe68575656b182c87d990abd716dd79704d515a9d87c0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605290732-0XREE3-release-v0-6-12/.agentplane/tasks/202605290732-0XREE3/blueprint/resolved-snapshot.json
+- old_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
+- current_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290732-0XREE3
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -107,3 +154,7 @@ Release plan: version=0.6.12, tag=v0.6.12, scope=next patch release from current
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Release candidate commit df47c6576/b390c4c3/df47c657 lineage was amended only for formatting and PR metadata; final HEAD is b390c4c3 before verification refresh.
+  Impact: Candidate branch is ready for PR integration; hosted publish still required after merge to main.
+  Resolution: Use branch_pr integration, then dispatch hosted Publish to npm with the merged release commit SHA and verify npm/tag/GitHub Release.

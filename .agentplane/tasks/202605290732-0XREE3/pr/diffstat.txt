@@ -1,5 +1,13 @@
+ .agentplane/WORKFLOW.md                            |   3 +-
+ docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.6.12.md                           | 200 +++++++++++++++++++++
+ packages/agentplane/package.json                   |   6 +-
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/spec/examples/acr.json                    |   4 +-
+ packages/testkit/package.json                      |   2 +-
  scripts/checks/check-lifecycle-invariants.mjs      |  14 +-
  .../static/img/social/docs/releases/v0.6.12.png    | Bin 0 -> 41784 bytes
  website/static/img/social/manifest.json            |   8 +
- 4 files changed, 216 insertions(+), 6 deletions(-)
+ 12 files changed, 230 insertions(+), 19 deletions(-)
