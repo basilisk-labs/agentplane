@@ -1,10 +1,11 @@
 ---
 id: "202605290229-K1E9GB"
 title: "Prompt module validation decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4258."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified prompt module validation decomposition. Commands passed: bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts packages/agentplane/src/runtime/prompt-modules/registry.test.ts --config vitest.workspace.ts (13 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 23 to 22; validation.ts is 342 lines, below the 400-line warning threshold."
   attempts: 0
-commit: null
+commit:
+  hash: "8ec8658f55a4a617398643e30c0a5f6f73125593"
+  message: "✅ K1E9GB prompt modules: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: decompose prompt module validation constants and primitive guards while preserving public validation exports and runtime behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4258 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified prompt module validation decomposition. Commands passed: bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts packages/agentplane/src/runtime/prompt-modules/registry.test.ts --config vitest.workspace.ts (13 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 23 to 22; validation.ts is 342 lines, below the 400-line warning threshold."
+  -
+    type: "status"
+    at: "2026-05-29T02:40:21.183Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4258 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T02:35:06.148Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T02:40:21.188Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/runtime/prompt-modules/validation.ts by extracting prompt module validation constants and primitive field guards while preserving runtime prompt module, mutation set, and compiled graph validation behavior."
 sections:
   Summary: |-

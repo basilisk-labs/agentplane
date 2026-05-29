@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T02:39:42Z",
   "base": "main",
   "branch": "task/202605290229-K1E9GB/prompt-validation-decomposition",
   "created_at": "2026-05-29T02:29:48.627Z",
   "diffstat_sha256": "sha256:c32ecd92c5b940a8adc6e2c85e0e499992228b4991a48757b8a8bc07562b6d71",
   "last_verified_at": "2026-05-29T02:35:06.121Z",
   "last_verified_diffstat_sha256": "sha256:c32ecd92c5b940a8adc6e2c85e0e499992228b4991a48757b8a8bc07562b6d71",
+  "merge_commit": "8ec8658f55a4a617398643e30c0a5f6f73125593",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T02:39:42Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605290229-K1E9GB",
-  "updated_at": "2026-05-29T02:29:48.627Z",
+  "updated_at": "2026-05-29T02:39:42Z",
   "verify": {
     "status": "pass"
   }
