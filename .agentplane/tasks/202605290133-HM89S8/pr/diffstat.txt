@@ -1,0 +1,3 @@
+ .../agentplane/src/blueprints/builtin-nodes.ts     | 124 +++++++++++++++++++
+ packages/agentplane/src/blueprints/builtins.ts     | 133 ++-------------------
+ 2 files changed, 133 insertions(+), 124 deletions(-)

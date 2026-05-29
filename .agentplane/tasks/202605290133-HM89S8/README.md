@@ -4,7 +4,7 @@ title: "Blueprint builtins registry decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T01:36:56.535Z"
+  updated_by: "CODER"
+  note: "Verified builtin blueprint registry decomposition. Commands passed: blueprint focused vitest suite (2 files, 26 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 26 to 25; builtins.ts is 384 lines."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: decompose builtin blueprint registry into focused modules while preserving blueprint ordering, ids, and validation semantics."
+  -
+    type: "verify"
+    at: "2026-05-29T01:36:56.535Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified builtin blueprint registry decomposition. Commands passed: blueprint focused vitest suite (2 files, 26 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 26 to 25; builtins.ts is 384 lines."
 doc_version: 3
-doc_updated_at: "2026-05-29T01:33:59.380Z"
+doc_updated_at: "2026-05-29T01:36:56.574Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/blueprints/builtins.ts by extracting builtin node sequences and common blueprint entries while preserving builtin blueprint registry semantics and reducing the runtime hotspot warning count."
 sections:
@@ -70,6 +76,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T01:36:56.535Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified builtin blueprint registry decomposition. Commands passed: blueprint focused vitest suite (2 files, 26 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 26 to 25; builtins.ts is 384 lines.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T01:33:59.380Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290133-HM89S8-blueprint-builtins-decomposition/.agentplane/tasks/202605290133-HM89S8/blueprint/resolved-snapshot.json
+    - old_digest: 84d733849b2c5eae070a53271a92949dce35bbd85f3614bf0f3a4287f5423086
+    - current_digest: 84d733849b2c5eae070a53271a92949dce35bbd85f3614bf0f3a4287f5423086
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290133-HM89S8
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -114,6 +139,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T01:36:56.535Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified builtin blueprint registry decomposition. Commands passed: blueprint focused vitest suite (2 files, 26 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 26 to 25; builtins.ts is 384 lines.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T01:33:59.380Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290133-HM89S8-blueprint-builtins-decomposition/.agentplane/tasks/202605290133-HM89S8/blueprint/resolved-snapshot.json
+- old_digest: 84d733849b2c5eae070a53271a92949dce35bbd85f3614bf0f3a4287f5423086
+- current_digest: 84d733849b2c5eae070a53271a92949dce35bbd85f3614bf0f3a4287f5423086
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290133-HM89S8
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
