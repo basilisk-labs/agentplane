@@ -4,7 +4,7 @@ title: "ACR command specs decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T04:08:04.296Z"
+  updated_by: "CODER"
+  note: "Verified ACR command specs decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/acr/acr.command.test.ts --config vitest.workspace.ts (11 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 15 to 14; acr.command.ts is 196 lines, below the 400-line warning threshold."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: extract ACR parsed types and command specs into acr.specs.ts while preserving acr.command.ts public exports."
+  -
+    type: "verify"
+    at: "2026-05-29T04:08:04.296Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified ACR command specs decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/acr/acr.command.test.ts --config vitest.workspace.ts (11 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 15 to 14; acr.command.ts is 196 lines, below the 400-line warning threshold."
 doc_version: 3
-doc_updated_at: "2026-05-29T04:02:50.630Z"
+doc_updated_at: "2026-05-29T04:08:04.335Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/commands/acr/acr.command.ts by extracting ACR command specs and parsed types into a focused acr.specs module, preserving public exports and CLI parsing behavior while reducing runtime hotspot count."
 sections:
@@ -72,6 +78,25 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T04:08:04.296Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified ACR command specs decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/acr/acr.command.test.ts --config vitest.workspace.ts (11 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 15 to 14; acr.command.ts is 196 lines, below the 400-line warning threshold.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T04:02:50.630Z, excerpt_hash=sha256:a4cac58a5c13790963ac280cfdd83fc40502cf6ca25b2e47748d13b74e20eb68
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: .agentplane/tasks/202605290402-V18P6W/blueprint/resolved-snapshot.json
+    - old_digest: 26e97421e0c637c5b34a7569ba40bd500e2b7ca167594363ad338d4b0c3f0728
+    - current_digest: 26e97421e0c637c5b34a7569ba40bd500e2b7ca167594363ad338d4b0c3f0728
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290402-V18P6W
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -119,6 +144,25 @@ PLANNER fallback scaffold for "ACR command specs decomposition". Replace with ta
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T04:08:04.296Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified ACR command specs decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/acr/acr.command.test.ts --config vitest.workspace.ts (11 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 15 to 14; acr.command.ts is 196 lines, below the 400-line warning threshold.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T04:02:50.630Z, excerpt_hash=sha256:a4cac58a5c13790963ac280cfdd83fc40502cf6ca25b2e47748d13b74e20eb68
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: .agentplane/tasks/202605290402-V18P6W/blueprint/resolved-snapshot.json
+- old_digest: 26e97421e0c637c5b34a7569ba40bd500e2b7ca167594363ad338d4b0c3f0728
+- current_digest: 26e97421e0c637c5b34a7569ba40bd500e2b7ca167594363ad338d4b0c3f0728
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290402-V18P6W
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
