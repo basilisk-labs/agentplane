@@ -16,7 +16,7 @@ const checks = [
   {
     name: "branch_pr route blocks base-checkout owner execution",
     file: "packages/agentplane/src/commands/shared/route-decision.ts",
-    patterns: ["on_base_checkout", "current checkout appears to be the base branch"],
+    patterns: ["on_base_checkout", "current checkout is the base branch"],
   },
   {
     name: "branch_pr route requires close-tail after merged implementation PR",
@@ -34,12 +34,14 @@ const checks = [
     patterns: ["activeLane", 'status === "claimed" || entry.status === "handoff"'],
   },
   {
-    name: "integration queue can diagnose stale terminal entries",
+    name: "integration queue exposes doctor handler",
     file: "packages/agentplane/src/commands/integrate-queue.command.ts",
-    patterns: [
-      "makeRunIntegrateQueueDoctorHandler",
-      "task is already DONE; queue entry is terminal stale",
-    ],
+    patterns: ["makeRunIntegrateQueueDoctorHandler", "runIntegrationQueueDoctor"],
+  },
+  {
+    name: "integration queue can diagnose stale terminal entries",
+    file: "packages/agentplane/src/commands/integrate-queue-doctor-command.ts",
+    patterns: ["task is already DONE; queue entry is terminal stale"],
   },
   {
     name: "PR checks can wait for hosted required-check rollup",
