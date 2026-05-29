@@ -322,6 +322,18 @@ describe("runCli hooks pre-commit guards", () => {
       expect(code).toBe(5);
       expect(io.stderr).toContain("AGENTS.md is protected by agentplane hooks");
       expect(io.stderr).toContain("AGENTPLANE_ALLOW_POLICY=1");
+      const stagedAfterRefusal = await execFileAsync("git", ["diff", "--cached", "--name-only"], {
+        cwd: root,
+      });
+      expect(stagedAfterRefusal.stdout.trim()).toBe("AGENTS.md");
+
+      process.env.AGENTPLANE_ALLOW_POLICY = "1";
+      const retryCode = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(retryCode).toBe(0);
+      const stagedAfterRetry = await execFileAsync("git", ["diff", "--cached", "--name-only"], {
+        cwd: root,
+      });
+      expect(stagedAfterRetry.stdout.trim()).toBe("AGENTS.md");
     } finally {
       io.restore();
       restoreEnv("AGENTPLANE_ALLOW_POLICY", prev);
