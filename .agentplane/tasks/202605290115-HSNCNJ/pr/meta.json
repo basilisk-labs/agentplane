@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T01:28:12Z",
   "base": "main",
   "branch": "task/202605290115-HSNCNJ/init-execution-decomposition",
   "created_at": "2026-05-29T01:16:22.379Z",
   "diffstat_sha256": "sha256:774e9e8639f584376cb01cb67e4dc617c3b60b8dce420bfb643a036c5ff82651",
   "last_verified_at": "2026-05-29T01:22:52.543Z",
   "last_verified_diffstat_sha256": "sha256:774e9e8639f584376cb01cb67e4dc617c3b60b8dce420bfb643a036c5ff82651",
+  "merge_commit": "ec4ebc53cbb3b2775b3755d8a0e4f20cc09b341c",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T01:28:12Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605290115-HSNCNJ",
-  "updated_at": "2026-05-29T01:16:22.379Z",
+  "updated_at": "2026-05-29T01:28:12Z",
   "verify": {
     "status": "pass"
   }
