@@ -4,7 +4,7 @@ title: "Hotspot baseline and refactor guardrails"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -26,22 +26,22 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-29T07:17:48.706Z"
+  updated_at: "2026-05-29T07:19:00.898Z"
   updated_by: "CODER"
-  note: "Addressed review finding by including nested task/shared workflow-transition-service.ts in agent-critical task-lifecycle hotspot classification. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed."
+  note: "Verified current PR head after nested workflow hotspot guardrail fix and evaluator evidence refresh. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts; node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-29T07:10:26.956Z"
+  updated_at: "2026-05-29T07:18:09.249Z"
   updated_by: "EVALUATOR"
-  note: "Hotspot guardrail branch was rebased onto current main; report now exposes agent_critical_runtime_warnings while current runtime hotspot count is zero."
-  evaluated_sha: "47fd484ac3094740c4d2a60800fbe6b4f8222490"
+  note: "Review finding resolved: agent-critical hotspot classification now covers the nested workflow transition service as task-lifecycle code."
+  evaluated_sha: "2ff5cefd6af1159c38eb5fd5cc8fe3882e34a446"
   blueprint_digest: "9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540"
   evidence_refs:
     - ".agentplane/tasks/202605281918-XQ1ZZ0/README.md"
-    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260529-071026956-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260529-071026956-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260529-071026956-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260529-071809249-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260529-071809249-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260529-071809249-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json"
     - "bun test packages/agentplane/src/cli/hotspot-report-script.test.ts"
     - "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300"
@@ -49,8 +49,9 @@ quality_review:
     - "bun run arch:check"
     - "bun run knip:check"
     - "bun run lint:core"
+    - "bun run format:changed"
   findings:
-    - "Pass: checks confirm zero runtime hotspot warnings and zero agent-critical runtime warnings after the completed decomposition chain."
+    - "Pass: regression test covers packages/agentplane/src/commands/task/shared/workflow-transition-service.ts and full local checks pass on the updated diff."
 commit: null
 comments:
   -
@@ -82,8 +83,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Addressed review finding by including nested task/shared workflow-transition-service.ts in agent-critical task-lifecycle hotspot classification. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed."
+  -
+    type: "verify"
+    at: "2026-05-29T07:19:00.898Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified current PR head after nested workflow hotspot guardrail fix and evaluator evidence refresh. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts; node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed."
 doc_version: 3
-doc_updated_at: "2026-05-29T07:17:48.721Z"
+doc_updated_at: "2026-05-29T07:19:00.915Z"
 doc_updated_by: "CODER"
 description: "Create a machine-readable hotspot baseline and guardrails for agent-critical refactors so each decomposition task proves reduced coupling and does not introduce new oversized agent-critical modules."
 sections:
@@ -150,6 +157,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T07:08:42.521Z, excerpt_hash=sha256:9b9e0637f9942ecb2ef849da2bc7ca5a34d1d27e19d7a410bc6a211a5ce41b63
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: .agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
+    - old_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
+    - current_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605281918-XQ1ZZ0
+
+    ### 2026-05-29T07:19:00.898Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified current PR head after nested workflow hotspot guardrail fix and evaluator evidence refresh. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts; node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T07:17:48.721Z, excerpt_hash=sha256:9b9e0637f9942ecb2ef849da2bc7ca5a34d1d27e19d7a410bc6a211a5ce41b63
 
     Details:
 
@@ -241,6 +267,25 @@ Note: Addressed review finding by including nested task/shared workflow-transiti
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T07:08:42.521Z, excerpt_hash=sha256:9b9e0637f9942ecb2ef849da2bc7ca5a34d1d27e19d7a410bc6a211a5ce41b63
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: .agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
+- old_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
+- current_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605281918-XQ1ZZ0
+
+### 2026-05-29T07:19:00.898Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified current PR head after nested workflow hotspot guardrail fix and evaluator evidence refresh. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts; node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T07:17:48.721Z, excerpt_hash=sha256:9b9e0637f9942ecb2ef849da2bc7ca5a34d1d27e19d7a410bc6a211a5ce41b63
 
 Details:
 
