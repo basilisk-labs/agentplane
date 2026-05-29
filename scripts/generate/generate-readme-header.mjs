@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readdir, mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -10,7 +10,6 @@ const repoRoot = path.resolve(__dirname, "../..");
 const legacyOutputPath = path.join(repoRoot, "docs/assets/header.svg");
 const outputDir = path.join(repoRoot, "docs/assets/readme-headers");
 const packagePath = path.join(repoRoot, "packages/agentplane/package.json");
-const blogDir = path.join(repoRoot, "website/blog");
 const checkMode = process.argv.includes("--check");
 const rawAssetBase =
   "https://raw.githubusercontent.com/basilisk-labs/agentplane/main/docs/assets/readme-headers";
@@ -25,7 +24,8 @@ const headerTextBox = {
   descenderAllowance: 20,
   maxLines: 3,
 };
-const releaseHeadlinePrefix = "Boring, safe, auditable agent workflows";
+const releaseHeadlineSlogan =
+  "Ship agent work faster with repo-local plans, checks, traces, and PR evidence.";
 
 const readmeSurfaces = [
   {
@@ -138,93 +138,6 @@ async function packageVersionTag() {
   return `v${pkg.version}`;
 }
 
-function tagVariantGroups(tag) {
-  const normalized = tag.replace(/^v/i, "");
-  const dash = normalized.replaceAll(".", "-");
-  const [major, minor] = normalized.split(".");
-  const minorLine = major && minor ? `${major}-${minor}` : null;
-
-  return [
-    [normalized, `v${normalized}`, dash, `v${dash}`],
-    minorLine ? [minorLine, `v${minorLine}`] : [],
-  ].map((variants) => [
-    ...new Set(variants.filter(Boolean).map((variant) => variant.toLowerCase())),
-  ]);
-}
-
-function escapeRegExp(value) {
-  return value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
-}
-
-function filenameIncludesVersionToken(filename, variant) {
-  const pattern = new RegExp(`(^|[^a-z0-9])${escapeRegExp(variant)}([^a-z0-9]|$)`, "i");
-  return pattern.test(filename);
-}
-
-function extractFrontmatterValue(markdown, key) {
-  const frontmatter = markdown.match(/^---\n([\s\S]*?)\n---/);
-  if (!frontmatter) return null;
-  const pattern = new RegExp(String.raw`^${key}:\s*(?:"([^"]+)"|'([^']+)'|(.+))$`, "m");
-  const line = frontmatter[1].match(pattern);
-  return (line?.[1] ?? line?.[2] ?? line?.[3] ?? "").trim() || null;
-}
-
-async function latestReleaseBlogMeta(tag) {
-  try {
-    const directoryEntries = await readdir(blogDir);
-    const files = directoryEntries
-      .filter((name) => /\.mdx?$/.test(name))
-      .filter((name) => /release|agentplane-\d+-\d+(?:-\d+)?/i.test(name))
-      .toSorted()
-      .toReversed();
-
-    const taggedFiles =
-      tagVariantGroups(tag)
-        .map((variants) =>
-          files.filter((filename) =>
-            variants.some((variant) => filenameIncludesVersionToken(filename, variant)),
-          ),
-        )
-        .find((matches) => matches.length > 0) ?? [];
-    const ordered = taggedFiles.length > 0 ? taggedFiles : files;
-
-    for (const filename of ordered) {
-      const markdown = await readFile(path.join(blogDir, filename), "utf8");
-      const title = extractFrontmatterValue(markdown, "title");
-      const description = extractFrontmatterValue(markdown, "description");
-      if (title || description) return { title, description };
-    }
-  } catch {
-    // Non-fatal fallback below.
-  }
-
-  return { title: "Release notes", description: null };
-}
-
-function sentenceCase(value) {
-  const trimmed = value.trim();
-  if (!trimmed) return trimmed;
-  return `${trimmed[0].toLowerCase()}${trimmed.slice(1)}`;
-}
-
-function releaseFocusPhrase({ title, description }) {
-  const source = title ?? description ?? "release notes";
-  const withoutVersion = source
-    .replace(/^AgentPlane\s+v?\d+(?:\.\d+){1,2}\s*[:—-]\s*/i, "")
-    .replace(/^Release\s+v?\d+(?:\.\d+){1,2}\s*[:—-]\s*/i, "")
-    .replace(/^Context management:\s*the LLM Wiki pattern inside the repo$/i, "context memory")
-    .replace(/^Context management:\s*/i, "context management and ")
-    .replace(/^What changed in AgentPlane\s+v?\d+(?:\.\d+){1,2},?\s*in plain language:\s*/i, "")
-    .replaceAll(/\s+/g, " ")
-    .trim();
-
-  const phrase = sentenceCase(withoutVersion)
-    .replace(/[.!?]+$/u, "")
-    .replaceAll(/\s+and\s+/giu, " and ");
-
-  return phrase || "release notes";
-}
-
 function trimHeadline(value, max = 92) {
   const normalized = value.replaceAll(/\s+/g, " ").trim();
   if (normalized.length <= max) return normalized;
@@ -233,9 +146,8 @@ function trimHeadline(value, max = 92) {
   return `${clipped.slice(0, Math.max(wordBoundary, max - 18)).trimEnd()}…`;
 }
 
-function releaseHeaderText(meta) {
-  const focus = releaseFocusPhrase(meta);
-  return trimHeadline(`${releaseHeadlinePrefix} — ${focus}.`);
+function releaseHeaderText() {
+  return trimHeadline(releaseHeadlineSlogan);
 }
 
 function estimateTextWidth(value, fontSize) {
@@ -346,7 +258,7 @@ function syncReadmeHeader(readmeText, surface) {
 
 async function main() {
   const tag = latestReleaseTag() ?? (await packageVersionTag());
-  const headline = releaseHeaderText(await latestReleaseBlogMeta(tag));
+  const headline = releaseHeaderText();
   const generated = new Map();
   const stale = [];
 

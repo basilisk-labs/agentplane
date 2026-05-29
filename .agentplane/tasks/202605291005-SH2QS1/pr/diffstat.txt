@@ -1,3 +1,22 @@
+ README.md                                          |   2 +-
+ docs/README.md                                     |   2 +-
+ docs/adr/README.md                                 |   2 +-
+ docs/assets/header.svg                             |   9 +-
+ docs/assets/readme-headers/adr.svg                 |   9 +-
+ docs/assets/readme-headers/agentplane-cli.svg      |   9 +-
+ docs/assets/readme-headers/agentplane.svg          |   9 +-
+ docs/assets/readme-headers/core.svg                |   9 +-
+ docs/assets/readme-headers/docs.svg                |   9 +-
+ docs/assets/readme-headers/humanizer.svg           |   9 +-
+ docs/assets/readme-headers/recipes.svg             |   9 +-
+ docs/assets/readme-headers/releases.svg            |   9 +-
+ docs/assets/readme-headers/schemas.svg             |   9 +-
+ docs/assets/readme-headers/scripts.svg             |   9 +-
+ docs/assets/readme-headers/skills.svg              |   9 +-
+ docs/assets/readme-headers/spec.svg                |   9 +-
+ docs/assets/readme-headers/testkit.svg             |   9 +-
+ docs/releases/README.md                            |   2 +-
+ scripts/generate/generate-readme-header.mjs        | 100 +--
  website/scripts/generate-social-images.mjs         |  37 +-
  website/static/img/social/docs.png                 | Bin 46332 -> 61573 bytes
  .../img/social/docs/adr/0001-zod-config-parity.png | Bin 50908 -> 60703 bytes
@@ -203,4 +222,4 @@
  .../img/social/docs/workflow-guides/cursor.png     | Bin 51558 -> 62097 bytes
  .../social/docs/workflow-guides/github-actions.png | Bin 51384 -> 60625 bytes
  website/static/img/social/manifest.json            | 812 ++++++++++-----------
- 205 files changed, 430 insertions(+), 419 deletions(-)
+ 224 files changed, 510 insertions(+), 573 deletions(-)
