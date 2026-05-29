@@ -4,7 +4,7 @@ title: "Add provider-neutral task sync envelope"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,26 @@ verification:
   updated_by: "CODER"
   note: "Implemented provider-neutral sync envelope contract with schema/export coverage, generated schema snapshots, and docs. Verified with focused schema/export/projection/cloud tests, typecheck, schemas:check, docs IA, and policy routing."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-29T19:58:47.702Z"
+  updated_by: "EVALUATOR"
+  note: "Provider-neutral sync envelope, explicit remote-only create policy, and provider-safe projection are implemented with focused tests and generated schema coverage."
+  evaluated_sha: "faba91ecad34f12f075b835a0cc64e84829e01d2"
+  blueprint_digest: "2462cf8787ac4d7caee778f65bc126c9c76c0c47818d096ed9b76af6efbb5491"
+  evidence_refs:
+    - ".agentplane/tasks/202605291916-5Q6T1E/README.md"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-195847702-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-195847702-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-195847702-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605291916-5Q6T1E/blueprint/resolved-snapshot.json"
+    - "bun x vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/core/src/tasks/tasks-export.test.ts packages/core/src/tasks/task-provider-safe-projection.test.ts packages/agentplane/src/backends/task-backend.cloud.test.ts"
+    - "bun run typecheck"
+    - "bun run schemas:check"
+    - "bun run docs:ia:check"
+    - "node .agentplane/policy/check-routing.mjs"
+  findings:
+    - "No blocking findings. Residual risk is limited to downstream connector adoption in agentplane-cloud-sync, which is intentionally outside this AgentPlane task."
 commit: null
 comments:
   -
