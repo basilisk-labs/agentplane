@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202605291916-5Q6T1E",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-29T21:02:25.885Z",
+  "verdict": "pass",
+  "summary": "Static CI fix after hosted knip baseline failure.",
+  "evaluated_sha": "cc9f811baa6136659ee92d050077cc4da376c9da",
+  "blueprint_digest": "2462cf8787ac4d7caee778f65bc126c9c76c0c47818d096ed9b76af6efbb5491",
+  "findings": [
+    "Removed the unused backend shared re-export of TaskSyncEnvelope while keeping it as an internal TaskData.sync type; knip baseline and lint:core pass locally."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605291916-5Q6T1E/README.md",
+    "bun run knip:check",
+    "bun run lint:core",
+    "bun run --filter=agentplane build"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

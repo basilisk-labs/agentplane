@@ -12,6 +12,7 @@ import {
   type TaskRunnerHistoryEntry,
   type TaskRunnerOutcome,
   type TaskRunnerTarget,
+  type TaskSyncEnvelope,
 } from "./task-store.js";
 
 function normalizeTaskOrigin(value: unknown): TaskOrigin | undefined {
@@ -212,6 +213,181 @@ function normalizeTaskRunnerOutcome(value: unknown): TaskRunnerOutcome | undefin
   return history.length > 0 ? { ...outcome, history } : outcome;
 }
 
+function normalizeTaskSyncEnvelope(value: unknown): TaskSyncEnvelope | undefined {
+  if (!isRecord(value) || value.version !== 1) return undefined;
+  const externalRefs = Array.isArray(value.external_refs) ? value.external_refs : [];
+  const normalizedRefs = externalRefs
+    .filter((entry) => isRecord(entry))
+    .map((entry) => {
+      const provider = typeof entry.provider === "string" ? entry.provider.trim() : "";
+      const remoteId = typeof entry.remote_id === "string" ? entry.remote_id.trim() : "";
+      if (!provider || !remoteId) return null;
+      const ref: TaskSyncEnvelope["external_refs"][number] = {
+        provider,
+        remote_id: remoteId,
+      };
+      if (typeof entry.connector_kind === "string" && entry.connector_kind.trim()) {
+        ref.connector_kind = entry.connector_kind.trim();
+      }
+      if (typeof entry.connection_id === "string" && entry.connection_id.trim()) {
+        ref.connection_id = entry.connection_id.trim();
+      }
+      if (typeof entry.installation_id === "string" && entry.installation_id.trim()) {
+        ref.installation_id = entry.installation_id.trim();
+      }
+      if (typeof entry.remote_url === "string" && entry.remote_url.trim()) {
+        ref.remote_url = entry.remote_url.trim();
+      }
+      if (typeof entry.remote_revision === "string" && entry.remote_revision.trim()) {
+        ref.remote_revision = entry.remote_revision.trim();
+      }
+      if (typeof entry.title === "string" && entry.title.trim()) ref.title = entry.title.trim();
+      if (typeof entry.state === "string" && entry.state.trim()) ref.state = entry.state.trim();
+      if (typeof entry.synced_at === "string" && entry.synced_at.trim()) {
+        ref.synced_at = entry.synced_at.trim();
+      }
+      return ref;
+    })
+    .filter((entry): entry is TaskSyncEnvelope["external_refs"][number] => entry !== null);
+
+  const fieldPolicies: TaskSyncEnvelope["field_policies"] = {};
+  if (isRecord(value.field_policies)) {
+    for (const [field, rawPolicy] of Object.entries(value.field_policies)) {
+      if (!field.trim() || !isRecord(rawPolicy)) continue;
+      const authority = rawPolicy.authority;
+      if (
+        authority !== "agentplane" &&
+        authority !== "provider" &&
+        authority !== "bidirectional" &&
+        authority !== "derived" &&
+        authority !== "ignored"
+      ) {
+        continue;
+      }
+      fieldPolicies[field] = {
+        authority,
+        remote_field:
+          typeof rawPolicy.remote_field === "string" && rawPolicy.remote_field.trim()
+            ? rawPolicy.remote_field.trim()
+            : undefined,
+        conflict_policy:
+          rawPolicy.conflict_policy === "record" ||
+          rawPolicy.conflict_policy === "manual" ||
+          rawPolicy.conflict_policy === "agentplane_wins" ||
+          rawPolicy.conflict_policy === "provider_wins"
+            ? rawPolicy.conflict_policy
+            : undefined,
+        updated_at:
+          typeof rawPolicy.updated_at === "string" && rawPolicy.updated_at.trim()
+            ? rawPolicy.updated_at.trim()
+            : undefined,
+        note:
+          typeof rawPolicy.note === "string" && rawPolicy.note.trim()
+            ? rawPolicy.note.trim()
+            : undefined,
+      };
+    }
+  }
+
+  const freshness = isRecord(value.freshness)
+    ? {
+        projected_at:
+          typeof value.freshness.projected_at === "string" && value.freshness.projected_at.trim()
+            ? value.freshness.projected_at.trim()
+            : undefined,
+        projection_sha256:
+          typeof value.freshness.projection_sha256 === "string" &&
+          value.freshness.projection_sha256.trim()
+            ? value.freshness.projection_sha256.trim()
+            : undefined,
+        source_revision:
+          typeof value.freshness.source_revision === "number" &&
+          Number.isInteger(value.freshness.source_revision) &&
+          value.freshness.source_revision >= 0
+            ? value.freshness.source_revision
+            : undefined,
+        provider_revision:
+          typeof value.freshness.provider_revision === "string" &&
+          value.freshness.provider_revision.trim()
+            ? value.freshness.provider_revision.trim()
+            : undefined,
+        stale: typeof value.freshness.stale === "boolean" ? value.freshness.stale : undefined,
+        reason:
+          typeof value.freshness.reason === "string" && value.freshness.reason.trim()
+            ? value.freshness.reason.trim()
+            : undefined,
+      }
+    : undefined;
+
+  const conflicts = Array.isArray(value.conflicts) ? value.conflicts : [];
+  const normalizedConflicts = conflicts
+    .filter((entry) => isRecord(entry))
+    .map((entry) => {
+      const id = typeof entry.id === "string" ? entry.id.trim() : "";
+      const summary = typeof entry.summary === "string" ? entry.summary.trim() : "";
+      const detectedAt = typeof entry.detected_at === "string" ? entry.detected_at.trim() : "";
+      if (!id || !summary || !detectedAt) return null;
+      if (
+        entry.kind !== "field" &&
+        entry.kind !== "identity" &&
+        entry.kind !== "freshness" &&
+        entry.kind !== "deletion" &&
+        entry.kind !== "dependency" &&
+        entry.kind !== "permission"
+      ) {
+        return null;
+      }
+      if (
+        entry.severity !== "info" &&
+        entry.severity !== "warning" &&
+        entry.severity !== "blocking"
+      ) {
+        return null;
+      }
+      if (entry.status !== "open" && entry.status !== "resolved" && entry.status !== "ignored") {
+        return null;
+      }
+      const conflict: TaskSyncEnvelope["conflicts"][number] = {
+        id,
+        kind: entry.kind,
+        severity: entry.severity,
+        status: entry.status,
+        summary,
+        detected_at: detectedAt,
+      };
+      if (typeof entry.provider === "string" && entry.provider.trim()) {
+        conflict.provider = entry.provider.trim();
+      }
+      if (typeof entry.remote_id === "string" && entry.remote_id.trim()) {
+        conflict.remote_id = entry.remote_id.trim();
+      }
+      if (typeof entry.field === "string" && entry.field.trim()) {
+        conflict.field = entry.field.trim();
+      }
+      if (typeof entry.resolved_at === "string" && entry.resolved_at.trim()) {
+        conflict.resolved_at = entry.resolved_at.trim();
+      }
+      if (typeof entry.safe_command === "string" && entry.safe_command.trim()) {
+        conflict.safe_command = entry.safe_command.trim();
+      }
+      if (typeof entry.when_to_stop === "string" && entry.when_to_stop.trim()) {
+        conflict.when_to_stop = entry.when_to_stop.trim();
+      }
+      return conflict;
+    })
+    .filter((entry): entry is TaskSyncEnvelope["conflicts"][number] => entry !== null);
+
+  return {
+    version: 1,
+    external_refs: normalizedRefs,
+    field_policies: fieldPolicies,
+    ...(freshness && Object.values(freshness).some((entry) => entry !== undefined)
+      ? { freshness }
+      : {}),
+    conflicts: normalizedConflicts,
+  };
+}
+
 export function canonicalizeJson(value: unknown): unknown {
   if (Array.isArray(value)) return value.map((v) => canonicalizeJson(v));
 
@@ -257,6 +433,7 @@ export type TasksExportTask = {
     note: string | null;
   };
   runner?: TaskRunnerOutcome;
+  sync?: TaskSyncEnvelope;
   depends_on: string[];
   tags: string[];
   verify: string[];
@@ -407,6 +584,7 @@ export async function buildTasksExportSnapshot(opts: {
           : { state: "pending", updated_at: null, updated_by: null, note: null },
       verification: normalizeTaskVerification(fm.verification),
       runner: normalizeTaskRunnerOutcome(fm.runner),
+      sync: normalizeTaskSyncEnvelope(fm.sync),
       depends_on: dependsOn,
       tags,
       verify,

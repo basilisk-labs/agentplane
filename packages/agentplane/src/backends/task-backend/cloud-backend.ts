@@ -19,6 +19,7 @@ import {
   inspectCloudBackendConfiguration,
   missingCloudConfigKeys,
 } from "./cloud-backend-inspect.js";
+import { normalizeCloudRemoteCreatePolicy, type CloudRemoteCreatePolicy } from "./cloud-pull.js";
 import { buildCloudHeaders, requestCloudBackendJson } from "./cloud-backend-request.js";
 import {
   performCloudBackendSync,
@@ -45,6 +46,7 @@ export class CloudBackend implements TaskBackend {
   token: string;
   projectId: string;
   provider: string | null;
+  remoteCreatePolicy: CloudRemoteCreatePolicy;
   cache: LocalBackend;
   statePath: string;
   staleAfterSeconds: number | null;
@@ -80,6 +82,12 @@ export class CloudBackend implements TaskBackend {
     );
     this.provider =
       firstNonEmptyString(process.env.AGENTPLANE_CLOUD_PROVIDER, settings.provider) || null;
+    this.remoteCreatePolicy = normalizeCloudRemoteCreatePolicy(
+      firstNonEmptyString(
+        process.env.AGENTPLANE_CLOUD_REMOTE_CREATE_POLICY,
+        settings.remote_create_policy,
+      ),
+    );
     this.autoPushOnMutation =
       process.env.AGENTPLANE_CLOUD_AUTO_PUSH_ON_MUTATION === "1" ||
       process.env.AGENTPLANE_CLOUD_AUTO_PUSH_ON_MUTATION === "true" ||
@@ -247,6 +255,7 @@ export class CloudBackend implements TaskBackend {
         quiet: opts.quiet,
         timeoutMs: opts.timeoutMs,
         syncStateTimeoutMs: opts.syncStateTimeoutMs,
+        remoteCreatePolicy: this.remoteCreatePolicy,
       },
     );
   }

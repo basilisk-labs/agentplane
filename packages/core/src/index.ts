@@ -146,6 +146,13 @@ export {
 } from "./tasks/task-status.js";
 
 export {
+  buildProviderSafeTaskProjection,
+  type ProviderSafeAcrProjection,
+  type ProviderSafeTaskProjection,
+  type ProviderSafeTaskProjectionInput,
+} from "./tasks/task-provider-safe-projection.js";
+
+export {
   createTask,
   getTasksDir,
   listTasks,
@@ -167,6 +174,13 @@ export {
   type TaskRunnerOutcome,
   type TaskRunnerOutcomeStatus,
   type TaskRunnerTarget,
+  type TaskSyncConflict,
+  type TaskSyncConflictPolicy,
+  type TaskSyncEnvelope,
+  type TaskSyncExternalRef,
+  type TaskSyncFieldAuthority,
+  type TaskSyncFieldPolicy,
+  type TaskSyncFreshness,
   type VerificationResult,
   type VerificationState,
 } from "./tasks/task-store.js";

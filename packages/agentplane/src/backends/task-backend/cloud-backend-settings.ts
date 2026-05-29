@@ -1,8 +1,11 @@
+import type { CloudRemoteCreatePolicy } from "./cloud-pull.js";
+
 export type CloudBackendSettings = {
   endpoint?: string;
   token?: string;
   project_id?: string;
   provider?: string;
+  remote_create_policy?: CloudRemoteCreatePolicy;
   cache_dir?: string;
   stale_after_seconds?: number;
   state_path?: string;

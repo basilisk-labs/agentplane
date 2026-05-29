@@ -106,6 +106,7 @@ describe("CloudBackend task-start refresh", () => {
         project_id: "project-1",
         provider: "github-projects",
         stale_after_seconds: 86_400,
+        remote_create_policy: "import",
       },
       {
         root: tempDir,
