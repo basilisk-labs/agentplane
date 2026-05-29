@@ -1,201 +1,49 @@
 import type {
   PromptModule,
   PromptModuleAddress,
-  PromptModuleConflictPolicy,
-  PromptModuleContentKind,
   PromptModuleDependency,
   PromptModuleLoadCondition,
-  PromptModuleMergeMode,
   PromptModuleMergePolicy,
-  PromptModuleMutability,
   PromptModuleOwner,
   PromptModuleProvenance,
-  PromptModuleSlot,
-  PromptModuleSourceKind,
-  PromptModuleSurface,
-  PromptModuleTarget,
 } from "./model.js";
 import type { PromptModuleCompiledGraph } from "./compiler.js";
 import { migratePromptModuleSchemaVersion } from "./schema.js";
-import { isRecord } from "../../shared/guards.js";
 import type {
-  PromptModuleBindingKind,
   PromptModuleMutation,
   PromptModuleMutationSet,
   PromptModuleMutationWhen,
   PromptModuleSelector,
-  PromptModuleValidatorPhase,
 } from "./mutations.js";
-
-const PROMPT_MODULE_SURFACES: PromptModuleSurface[] = [
-  "gateway",
-  "policy",
-  "agent_profile",
-  "runner",
-  "validator",
-  "template",
-];
-
-const PROMPT_MODULE_TARGETS: PromptModuleTarget[] = [
-  "AGENTS.md",
-  "CLAUDE.md",
-  ".agentplane/policy",
-  ".agentplane/agents",
-  "runner.bundle",
-  "recipe.manifest",
-  "generated.artifact",
-];
-
-const PROMPT_MODULE_SLOTS: PromptModuleSlot[] = [
-  "frontmatter",
-  "purpose",
-  "startup",
-  "commands",
-  "load_rules",
-  "source_of_truth",
-  "hard_constraint",
-  "body",
-  "example",
-  "identity",
-  "inputs",
-  "outputs",
-  "permissions",
-  "workflow",
-  "cli_notes",
-  "context",
-  "schema",
-  "check",
-  "partial",
-  "file",
-];
-
-const CONTENT_KINDS: PromptModuleContentKind[] = [
-  "markdown",
-  "json",
-  "text",
-  "typescript",
-  "command",
-];
-
-const MUTABILITIES: PromptModuleMutability[] = [
-  "locked",
-  "replaceable",
-  "extendable",
-  "append_only",
-];
-
-const MERGE_MODES: PromptModuleMergeMode[] = [
-  "pick_one",
-  "replace",
-  "prepend",
-  "append",
-  "merge_object",
-  "union_by_id",
-];
-
-const CONFLICT_POLICIES: PromptModuleConflictPolicy[] = [
-  "error",
-  "highest_precedence",
-  "last_writer_wins",
-  "keep_all",
-];
-
-const SOURCE_KINDS: PromptModuleSourceKind[] = [
-  "framework_builtin",
-  "project_file",
-  "recipe_asset",
-  "generated",
-  "runtime",
-];
-
-const OWNER_KINDS = ["framework", "project", "recipe", "runtime"] as const;
-const WORKFLOW_MODES = ["direct", "branch_pr"] as const;
-const POLICY_GATEWAYS = ["codex", "claude"] as const;
-const BINDING_KINDS: PromptModuleBindingKind[] = [
-  "extends",
-  "replaces",
-  "requires",
-  "feeds",
-  "validates",
-];
-const VALIDATOR_PHASES: PromptModuleValidatorPhase[] = ["resolve", "compile", "emit", "doctor"];
-const VALIDATOR_KINDS = ["required_module", "forbidden_module", "required_command"] as const;
-const MUTATION_OPS = [
-  "add_module",
-  "replace_module",
-  "patch_module",
-  "disable_module",
-  "bind_module",
-  "add_validator",
-  "disable_validator",
-] as const;
-
-function invalid(field: string, expected: string): Error {
-  return new Error(`Invalid field ${field}: expected ${expected}`);
-}
-
-function requireRecord(raw: unknown, field: string): Record<string, unknown> {
-  if (!isRecord(raw)) throw invalid(field, "object");
-  return raw;
-}
-
-function requireString(raw: unknown, field: string): string {
-  if (typeof raw !== "string" || !raw.trim()) throw invalid(field, "non-empty string");
-  return raw.trim();
-}
-
-function optionalString(raw: unknown, field: string): string | undefined {
-  if (raw === undefined) return undefined;
-  return requireString(raw, field);
-}
-
-function optionalBoolean(raw: unknown, field: string): boolean | undefined {
-  if (raw === undefined) return undefined;
-  if (typeof raw !== "boolean") throw invalid(field, "boolean");
-  return raw;
-}
-
-function optionalNumber(raw: unknown, field: string): number | undefined {
-  if (raw === undefined) return undefined;
-  if (typeof raw !== "number" || Number.isNaN(raw)) throw invalid(field, "number");
-  return raw;
-}
-
-function validateEnum<T extends string>(raw: unknown, field: string, allowed: readonly T[]): T {
-  const value = requireString(raw, field);
-  if (!allowed.includes(value as T))
-    throw invalid(field, allowed.map((item) => `"${item}"`).join(" | "));
-  return value as T;
-}
-
-function validateOptionalStringList(raw: unknown, field: string): string[] | undefined {
-  if (raw === undefined) return undefined;
-  if (!Array.isArray(raw)) throw invalid(field, "string[]");
-  return raw.map((entry, index) => requireString(entry, `${field}[${index}]`));
-}
-
-function validateOptionalEnumList<T extends string>(
-  raw: unknown,
-  field: string,
-  allowed: readonly T[],
-): T[] | undefined {
-  if (raw === undefined) return undefined;
-  if (!Array.isArray(raw)) throw invalid(field, "array");
-  return raw.map((entry, index) => validateEnum(entry, `${field}[${index}]`, allowed));
-}
-
-function validateNamespace(raw: unknown, field: string): PromptModuleAddress["namespace"] {
-  const namespace = requireString(raw, field);
-  if (
-    namespace === "framework" ||
-    namespace === "project" ||
-    namespace === "runtime" ||
-    /^recipe\.[^/\\\s]+$/.test(namespace)
-  ) {
-    return namespace as PromptModuleAddress["namespace"];
-  }
-  throw invalid(field, '"framework" | "project" | "runtime" | "recipe.<id>"');
-}
+import {
+  BINDING_KINDS,
+  CONFLICT_POLICIES,
+  CONTENT_KINDS,
+  MERGE_MODES,
+  MUTABILITIES,
+  MUTATION_OPS,
+  OWNER_KINDS,
+  POLICY_GATEWAYS,
+  PROMPT_MODULE_SLOTS,
+  PROMPT_MODULE_SURFACES,
+  PROMPT_MODULE_TARGETS,
+  SOURCE_KINDS,
+  VALIDATOR_KINDS,
+  VALIDATOR_PHASES,
+  WORKFLOW_MODES,
+} from "./validation-constants.js";
+import {
+  invalid,
+  optionalBoolean,
+  optionalNumber,
+  optionalString,
+  requireRecord,
+  requireString,
+  validateEnum,
+  validateNamespace,
+  validateOptionalEnumList,
+  validateOptionalStringList,
+} from "./validation-guards.js";
 
 function validateAddress(raw: unknown, field: string): PromptModuleAddress {
   const address = requireRecord(raw, field);
@@ -304,7 +152,8 @@ function validateDependencies(raw: unknown, field: string): PromptModuleDependen
 }
 
 function validateModuleContent(raw: unknown, field: string): void {
-  if (typeof raw === "string" || isRecord(raw)) return;
+  if (typeof raw === "string") return;
+  if (Boolean(raw) && typeof raw === "object" && !Array.isArray(raw)) return;
   throw invalid(field, "string | object");
 }
 
