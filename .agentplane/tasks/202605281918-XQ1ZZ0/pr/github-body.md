@@ -19,15 +19,13 @@ Create a machine-readable hotspot baseline and guardrails for agent-critical ref
 - Note:
 
 ```text
-Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts --config
-vitest.workspace.ts. Result: pass. Evidence: 1 test file, 11 tests passed. Scope: hotspot report
-schema and agent-critical classification behavior. Command: node scripts/checks/hotspot-report.mjs
---check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines
-1300. Result: pass. Evidence: threshold check passed; current baseline reports 50 runtime warnings
-and 11 oversized test warnings under existing thresholds. Scope: hotspot guardrail compatibility.
-Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: TypeScript validity.
-Command: bun run format:changed. Result: pass. Evidence: changed files use Prettier style. Scope:
-formatting for changed files.
+Hotspot guardrail report rebased onto current main and now exposes agent_critical_runtime_warnings
+on top of zero runtime hotspots. Checks passed: bun test
+packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node
+scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600
+--test-warning-lines 1000 --oversized-test-lines 1300 (runtime warnings 0, oversized runtime 0,
+agent-critical runtime warnings 0); bun run typecheck; bun run arch:check; bun run knip:check; bun
+run lint:core; bun run format:changed.
 ```
 - Canonical workflow state lives in the task README.
 
