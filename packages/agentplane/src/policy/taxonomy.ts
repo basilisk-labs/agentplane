@@ -1,38 +1,6 @@
-export type KnownPolicyActionId =
-  | "guard_commit"
-  | "commit"
-  | "hook_pre_commit"
-  | "hook_commit_msg"
-  | "network_access"
-  | "force_action"
-  | "policy_write"
-  | "config_write"
-  | "dangerous_fs"
-  | "git_push"
-  | "task_list"
-  | "task_new"
-  | "task_mutation"
-  | "task_status_transition"
-  | "task_start"
-  | "task_block"
-  | "task_set_status"
-  | "task_finish"
-  | "task_plan_set"
-  | "task_plan_approve"
-  | "task_plan_reject"
-  | "task_verify"
-  | "task_run"
-  | "integrate"
-  | "work_start"
-  | "scenario_execute"
-  | "recipe_install"
-  | "recipe_list_remote"
-  | "backend_sync"
-  | "backend_migrate_canonical_state"
-  | "backend_inspect"
-  | "upgrade_apply"
-  | "release_apply"
-  | "doctor_fix";
+import type { KnownPolicyActionId } from "./taxonomy-types.js";
+
+export type { KnownPolicyActionId } from "./taxonomy-types.js";
 
 export type PolicyActionId = KnownPolicyActionId | (string & {});
 
