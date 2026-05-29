@@ -8,7 +8,7 @@ import {
 import { isRecord } from "../../../shared/guards.js";
 
 import { DEFAULT_DOC_UPDATED_BY, DOC_VERSION } from "./constants.js";
-import type { TaskData, TaskDocMeta } from "./types.js";
+import type { TaskData } from "./types.js";
 
 type ExtractTaskDoc = (body: string) => string;
 type MergeTaskDoc = (body: string, doc: string) => string;
@@ -74,21 +74,6 @@ export function resolveDocUpdatedByFromTask(task: TaskData, fallback: string): s
 
 export function normalizeDocVersion(value: unknown, fallback: 2 | 3 = DOC_VERSION): 2 | 3 {
   return normalizeTaskDocVersion(value, fallback);
-}
-
-export function ensureDocMetadata(
-  task: TaskDocMeta & Partial<Pick<TaskData, "comments" | "owner">>,
-  updatedBy?: string,
-): void {
-  task.doc_version = normalizeDocVersion(task.doc_version);
-  task.doc_updated_at = nowIso();
-  const explicit = normalizeUpdatedBy(updatedBy);
-  if (updatedBy !== undefined) {
-    task.doc_updated_by =
-      explicit || resolveDocUpdatedByFromTask(task as TaskData, DEFAULT_DOC_UPDATED_BY);
-    return;
-  }
-  task.doc_updated_by = resolveDocUpdatedByFromTask(task as TaskData, DEFAULT_DOC_UPDATED_BY);
 }
 
 export { extractTaskDoc, mergeTaskDoc };

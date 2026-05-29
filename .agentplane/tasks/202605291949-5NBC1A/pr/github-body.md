@@ -75,7 +75,12 @@ doctor, and policy routing all passed. Commits: 05b42f6f5, 5aa293214.
  .../task-backend/redmine/runtime-operations.ts     | 151 ------
  .../backends/task-backend/redmine/runtime-state.ts |  79 ---
  .../src/backends/task-backend/redmine/state.ts     | 148 ------
+ .../agentplane/src/backends/task-backend/shared.ts |   6 +-
+ .../src/backends/task-backend/shared/doc.ts        |  17 +-
  .../src/backends/task-backend/shared/errors.ts     |  30 +-
+ .../src/backends/task-backend/shared/id.ts         |   4 -
+ .../src/backends/task-backend/shared/normalize.ts  |  11 -
+ .../src/backends/task-backend/shared/types.ts      |   7 +-
  packages/agentplane/src/cli/command-guide.ts       |   8 -
  packages/agentplane/src/cli/command-snippets.ts    |   6 +-
  .../src/cli/run-cli/commands/init/execution.ts     |   6 +-
@@ -91,11 +96,13 @@ doctor, and policy routing all passed. Commits: 05b42f6f5, 5aa293214.
  .../src/commands/guard/impl/close-message.test.ts  |  34 ++
  .../src/commands/guard/impl/close-message.ts       |   6 +-
  packages/agentplane/src/commands/sync.command.ts   |   4 +-
+ packages/agentplane/src/shared/env.ts              |   2 +-
  scripts/README.md                                  |   4 +-
+ scripts/baselines/knip-baseline.json               |  96 +---
  scripts/checks/run-backend-live-suite.mjs          |  99 ----
  scripts/lib/test-route-registry.mjs                |   7 -
  scripts/run-backend-live-suite.mjs                 |   1 -
- 63 files changed, 143 insertions(+), 5708 deletions(-)
+ 70 files changed, 175 insertions(+), 5819 deletions(-)
 ```
 
 </details>

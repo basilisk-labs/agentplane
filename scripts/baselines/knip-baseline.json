@@ -3,56 +3,16 @@
   "generated_by": "check-knip-baseline.mjs",
   "entries": [
     {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync/context.ts",
-      "types": [
-        {
-          "name": "RedmineCachePort",
-          "line": 4,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync/status.ts",
-      "exports": [
-        {
-          "name": "loadRedmineInferredStatusByTaskStatus",
-          "line": 20,
-          "col": 23
-        },
-        {
-          "name": "selectRedmineInferredStatus",
-          "line": 63,
-          "col": 17
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync/sync.ts",
-      "exports": [
-        {
-          "name": "handleRedmineConflict",
-          "line": 89,
-          "col": 23
-        },
-        {
-          "name": "syncPushRedmine",
-          "line": 25,
-          "col": 23
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/backends/task-backend/shared.ts",
       "exports": [
         {
           "name": "normalizeDependsOn",
-          "line": 50,
+          "line": 47,
           "col": 3
         },
         {
           "name": "normalizeTaskRunnerOutcome",
-          "line": 46,
+          "line": 43,
           "col": 3
         }
       ]
@@ -941,12 +901,12 @@
       "types": [
         {
           "name": "CloseTailStatus",
-          "line": 39,
+          "line": 40,
           "col": 13
         },
         {
           "name": "RemotePrStatus",
-          "line": 26,
+          "line": 27,
           "col": 13
         }
       ]
@@ -986,17 +946,17 @@
       "exports": [
         {
           "name": "renderPrHandoffNotes",
-          "line": 287,
+          "line": 187,
           "col": 17
         },
         {
           "name": "updateAutoSummaryBlock",
-          "line": 265,
+          "line": 165,
           "col": 17
         },
         {
           "name": "updateHandoffNotesBlock",
-          "line": 296,
+          "line": 196,
           "col": 17
         }
       ]
@@ -1824,8 +1784,8 @@
       "types": [
         {
           "name": "ObsidianProjectionFile",
-          "line": 12,
-          "col": 13
+          "line": 21,
+          "col": 15
         }
       ]
     },
@@ -1996,12 +1956,12 @@
       "types": [
         {
           "name": "TaskStatusTransitionCommentCommitPolicy",
-          "line": 92,
+          "line": 90,
           "col": 13
         },
         {
           "name": "TaskStatusTransitionDependencyPolicy",
-          "line": 88,
+          "line": 86,
           "col": 13
         }
       ]
@@ -2111,12 +2071,12 @@
       "types": [
         {
           "name": "KnownPolicyActionId",
-          "line": 1,
-          "col": 13
+          "line": 3,
+          "col": 15
         },
         {
           "name": "PolicyActionFamily",
-          "line": 39,
+          "line": 7,
           "col": 13
         }
       ]
@@ -2761,39 +2721,39 @@
       "exports": [
         {
           "name": "matchesPromptModuleLoadCondition",
-          "line": 255,
-          "col": 17
+          "line": 27,
+          "col": 3
         },
         {
           "name": "matchesPromptModuleMutationWhen",
-          "line": 294,
+          "line": 90,
           "col": 17
         },
         {
           "name": "matchesPromptModuleSelector",
-          "line": 276,
+          "line": 72,
           "col": 17
         },
         {
           "name": "normalizePromptModuleCompilerContext",
-          "line": 169,
-          "col": 17
+          "line": 28,
+          "col": 3
         }
       ],
       "types": [
         {
           "name": "PromptModuleDiagnosticSeverity",
-          "line": 46,
+          "line": 39,
           "col": 13
         },
         {
           "name": "PromptModulePolicyGateway",
-          "line": 25,
+          "line": 32,
           "col": 13
         },
         {
           "name": "PromptModuleWorkflowMode",
-          "line": 28,
+          "line": 35,
           "col": 13
         }
       ]
@@ -3075,7 +3035,7 @@
       "exports": [
         {
           "name": "buildFrameworkExecutionProfilePromptModule",
-          "line": 385,
+          "line": 166,
           "col": 17
         }
       ]
@@ -3095,7 +3055,7 @@
       "types": [
         {
           "name": "ValidatedPromptModuleMutation",
-          "line": 493,
+          "line": 342,
           "col": 13
         }
       ]
@@ -3743,10 +3703,10 @@
   ],
   "counts": {
     "files": 1,
-    "exports": 208,
-    "types": 370,
+    "exports": 204,
+    "types": 369,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 579
+    "total": 574
   }
 }

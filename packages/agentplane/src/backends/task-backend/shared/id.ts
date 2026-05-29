@@ -20,10 +20,6 @@ export function missingTaskIdMessage(): string {
   return "Missing task id (expected non-empty value)";
 }
 
-export function unknownTaskIdMessage(taskId: string): string {
-  return `Unknown task id: ${taskId}`;
-}
-
 export function invalidLengthMessage(value: number, min: number): string {
   return `Invalid length: ${value} (expected >= ${min})`;
 }

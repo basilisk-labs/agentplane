@@ -23,17 +23,6 @@ export function normalizeDependsOn(value: unknown): string[] {
   return [];
 }
 
-export function normalizePriority(value: unknown): string {
-  const raw = toStringSafe(value).trim().toLowerCase();
-  if (!raw) return "med";
-  if (raw === "low") return "low";
-  if (raw === "normal") return "normal";
-  if (raw === "medium" || raw === "med") return "med";
-  if (raw === "high") return "high";
-  if (raw === "urgent" || raw === "immediate") return "high";
-  return "med";
-}
-
 export function defaultPlanApproval(): PlanApproval {
   return { state: "pending", updated_at: null, updated_by: null, note: null };
 }

@@ -13,7 +13,7 @@ export type DotEnvLoadResult = {
   loadedKeys: string[];
 };
 
-export function parseDotEnv(text: string): Record<string, string> {
+function parseDotEnv(text: string): Record<string, string> {
   const out: Record<string, string> = {};
   const lines = text.split(/\r?\n/u);
   for (const rawLine of lines) {
