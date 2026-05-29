@@ -15,8 +15,15 @@ Decompose packages/agentplane/src/context/verify-task.ts by extracting path poli
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified context verify-task validator decomposition. Commands passed: focused context verify-task
+tests, bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run
+format:changed, hotspot report check. Runtime hotspot warnings decreased from 32 to 31;
+verify-task.ts is 144 lines.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +34,10 @@ Decompose packages/agentplane/src/context/verify-task.ts by extracting path poli
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/context/verify-task-artifacts.ts           | 309 ++++++++++++++
+ .../agentplane/src/context/verify-task-policy.ts   | 143 +++++++
+ packages/agentplane/src/context/verify-task.ts     | 451 +--------------------
+ 3 files changed, 467 insertions(+), 436 deletions(-)
 ```
 
 </details>

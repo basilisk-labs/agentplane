@@ -1,0 +1,4 @@
+ .../src/context/verify-task-artifacts.ts           | 309 ++++++++++++++
+ .../agentplane/src/context/verify-task-policy.ts   | 143 +++++++
+ packages/agentplane/src/context/verify-task.ts     | 451 +--------------------
+ 3 files changed, 467 insertions(+), 436 deletions(-)
