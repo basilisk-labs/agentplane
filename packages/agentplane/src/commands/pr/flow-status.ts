@@ -17,6 +17,7 @@ import { readTaskHandoffLatest, resolveTaskHandoffPaths } from "../shared/task-h
 import { readIntegrationQueue, type IntegrationQueueEntry } from "../pr/integrate/queue-state.js";
 import { checkGithubUnresolvedReviewThreads } from "./internal/github-review-threads.js";
 import { resolveHostedChecksStatus, type HostedChecksSummary } from "./hosted-checks.js";
+import { renderPrFlowStatusRows } from "./flow-status.render.js";
 
 import { resolvePrPaths } from "./internal/pr-paths.js";
 import { tryLookupExistingGithubPrByBranch } from "./internal/sync-github.js";
@@ -88,11 +89,6 @@ type HandoffStatus =
       routeStatus: string | null;
       nextActions: string[];
     };
-
-function shortSha(value: string | null | undefined): string | null {
-  const trimmed = value?.trim() ?? "";
-  return trimmed ? trimmed.slice(0, 12) : null;
-}
 
 async function readPrMetaIfPresent(metaPath: string, taskId: string): Promise<PrMeta | null> {
   try {
@@ -345,41 +341,6 @@ export async function resolvePrFlowStatus(opts: {
   return report;
 }
 
-function renderHostedChecksLine(status: HostedChecksSummary): string {
-  if (!status.checked) return `unchecked: ${status.reason}`;
-  return `total=${status.total} passing=${status.passing} pending=${status.pending} failing=${status.failing}`;
-}
-
-function renderReviewThreadsLine(status: ReviewThreadsStatus): string {
-  if (!status.checked) return `unchecked: ${status.reason}`;
-  return `unresolved=${status.unresolved}`;
-}
-
-function renderQueueLine(status: QueueStatus): string {
-  if (!status.present) return "not_queued";
-  return `${status.status}${status.reason ? `: ${status.reason}` : ""}`;
-}
-
-function renderHandoffLine(status: HandoffStatus): string {
-  if (!status.present) return "none";
-  return `${status.routeStatus ?? "recorded"}: ${status.reason}`;
-}
-
-function renderPrLine(pr: RemotePrStatus): string {
-  if (pr.state === "not_found") return `github: not_found (source=${pr.source})`;
-  const number = pr.prNumber ? `#${pr.prNumber}` : "no-number";
-  const url = pr.prUrl ? ` ${pr.prUrl}` : "";
-  return `github: ${pr.state} ${number}${url} (source=${pr.source})`;
-}
-
-function renderCloseTailLine(closeTail: CloseTailStatus): string {
-  if (closeTail.state === "not_applicable") return `not_applicable: ${closeTail.reason}`;
-  if (closeTail.state === "recorded_on_base") return `recorded_on_base: ${closeTail.base}`;
-  const number = closeTail.prNumber ? ` #${closeTail.prNumber}` : "";
-  const url = closeTail.prUrl ? ` ${closeTail.prUrl}` : "";
-  return `${closeTail.state}: ${closeTail.branch}${number}${url}`;
-}
-
 export async function cmdPrFlowStatus(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -397,23 +358,7 @@ export async function cmdPrFlowStatus(opts: {
       output.json(report);
       return 0;
     }
-    output.report(
-      [
-        { label: "task", value: `${report.task.id} ${report.task.status}` },
-        { label: "verification", value: report.task.verification ?? "pending" },
-        { label: "branch", value: report.branch.name ?? "missing" },
-        { label: "branch_head", value: shortSha(report.branch.headSha) ?? "unknown" },
-        { label: "meta_head", value: shortSha(report.branch.metaHeadSha) ?? "unknown" },
-        { label: "remote_pr", value: renderPrLine(report.pr) },
-        { label: "hosted_checks", value: renderHostedChecksLine(report.hostedChecks) },
-        { label: "review_threads", value: renderReviewThreadsLine(report.reviewThreads) },
-        { label: "queue", value: renderQueueLine(report.queue) },
-        { label: "handoff", value: renderHandoffLine(report.handoff) },
-        { label: "close_tail", value: renderCloseTailLine(report.closeTail) },
-        { label: "next", value: report.nextAction },
-      ],
-      { header: "PR flow status" },
-    );
+    output.report(renderPrFlowStatusRows(report), { header: "PR flow status" });
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

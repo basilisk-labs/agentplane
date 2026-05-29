@@ -1,0 +1,3 @@
+ .../src/commands/pr/flow-status.render.ts          | 66 ++++++++++++++++++++++
+ packages/agentplane/src/commands/pr/flow-status.ts | 59 +------------------
+ 2 files changed, 68 insertions(+), 57 deletions(-)
