@@ -85,10 +85,13 @@ doctor, and policy routing all passed. Commits: 05b42f6f5, 5aa293214.
  .../src/cli/run-cli/commands/init/write-config.ts  |  15 +-
  .../src/cli/run-cli/commands/init/write-env.ts     |  61 ---
  .../src/commands/backend/sync.command.ts           |  10 +-
+ .../commands/guard/impl/close-message-render.ts    |   1 +
+ .../src/commands/guard/impl/close-message.test.ts  |  34 ++
+ .../src/commands/guard/impl/close-message.ts       |   6 +-
  packages/agentplane/src/commands/sync.command.ts   |   4 +-
  scripts/checks/run-backend-live-suite.mjs          |  99 ----
  scripts/lib/test-route-registry.mjs                |   7 -
- 56 files changed, 96 insertions(+), 5698 deletions(-)
+ 59 files changed, 136 insertions(+), 5699 deletions(-)
 ```
 
 </details>
