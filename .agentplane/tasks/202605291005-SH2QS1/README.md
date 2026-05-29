@@ -4,7 +4,7 @@ title: "Fix social preview subtitle slogan"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,22 @@ verification:
   updated_by: "CODER"
   note: "Command: bun run docs:social:generate; Result: pass; Evidence: generated 0 docs social images (203 unchanged). Command: bun run docs:social:check; Result: pass; Evidence: checked 203 docs social images. Command: cd website && node scripts/generate-social-images.mjs --check --strict; Result: pass. Command: bun run docs:readme-header:generate; Result: pass; Evidence: generated 14 README header images for v0.6.12 and linked 13 README files. Command: bun run docs:readme-header:check; Result: pass. Command: bun run docs:scripts:generate and bun run docs:scripts:check; Result: pass; Evidence: scripts/README.md is up to date after normalizing the scripts README generator casing. Command: bun run --cwd website check-content; Result: pass; Evidence: site-content ok. Command: bun run docs:site:build; Result: pass; Evidence: Docusaurus build generated static files and navigation-check passed. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: bunx eslint website/scripts/generate-social-images.mjs scripts/generate/generate-readme-header.mjs scripts/generate/generate-scripts-readme.mjs; Result: pass. Command: git diff --check; Result: pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-29T16:48:57.417Z"
+  updated_by: "EVALUATOR"
+  note: "PR #4309 is ready to integrate: local verification, generated artifacts, hosted Docs CI, Core CI, CodeQL, PR verification, and Windows checks passed."
+  evaluated_sha: "142b529fa4e3b85d76ff78d920ab5b52ef82365c"
+  blueprint_digest: "5b2fc86405027157c5d349f5296d1b4bcfd2bb230e8555f95e3ae2f828d17670"
+  evidence_refs:
+    - ".agentplane/tasks/202605291005-SH2QS1/README.md"
+    - ".agentplane/tasks/202605291005-SH2QS1/quality/20260529-164857417-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605291005-SH2QS1/quality/20260529-164857417-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605291005-SH2QS1/quality/20260529-164857417-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605291005-SH2QS1/blueprint/resolved-snapshot.json"
+    - "https://github.com/basilisk-labs/agentplane/pull/4309/checks"
+  findings:
+    - "No blocking issues found in the generated social preview subtitle, README header generator, generated header artifacts, or script README freshness after the final hosted checks passed."
 commit: null
 comments:
   -
