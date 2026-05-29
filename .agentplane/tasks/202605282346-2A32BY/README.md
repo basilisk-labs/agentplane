@@ -1,10 +1,11 @@
 ---
 id: "202605282346-2A32BY"
 title: "Blueprint catalog parser decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4238."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified blueprint catalog parser decomposition. Commands passed: focused blueprint catalog vitest (2 files, 25 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 33 to 32; catalog.ts is 307 lines."
   attempts: 0
-commit: null
+commit:
+  hash: "bf590779fc82b598258d2ec802bb52f6c299c239"
+  message: "♻️ 2A32BY static: remove unused helper exports"
 comments:
   -
     author: "CODER"
     body: "Start: Decompose blueprint catalog type and parser helpers in the task worktree while preserving catalog load, manifest, and install behavior under focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4238 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified blueprint catalog parser decomposition. Commands passed: focused blueprint catalog vitest (2 files, 25 tests), bun run typecheck, bun run arch:deps, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 33 to 32; catalog.ts is 307 lines."
+  -
+    type: "status"
+    at: "2026-05-29T00:03:07.925Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4238 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-28T23:51:11.683Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T00:03:07.930Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/blueprints/catalog.ts by extracting catalog/manifest types and parsers while preserving catalog load/install behavior."
 sections:
   Summary: |-
