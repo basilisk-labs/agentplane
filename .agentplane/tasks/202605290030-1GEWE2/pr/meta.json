@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T00:41:32Z",
   "base": "main",
   "branch": "task/202605290030-1GEWE2/blueprint-model-decomposition",
   "created_at": "2026-05-29T00:30:51.886Z",
   "diffstat_sha256": "sha256:2e1db7488b5efbc478b629e80da460f8490e80482fb863f83ed7fd0d6fe9876a",
   "last_verified_at": "2026-05-29T00:36:12.130Z",
   "last_verified_diffstat_sha256": "sha256:2e1db7488b5efbc478b629e80da460f8490e80482fb863f83ed7fd0d6fe9876a",
+  "merge_commit": "a160777b00b7e43dd0ab85acf11cdb0a84180996",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T00:41:32Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605290030-1GEWE2",
-  "updated_at": "2026-05-29T00:30:51.886Z",
+  "updated_at": "2026-05-29T00:41:32Z",
   "verify": {
     "status": "pass"
   }
