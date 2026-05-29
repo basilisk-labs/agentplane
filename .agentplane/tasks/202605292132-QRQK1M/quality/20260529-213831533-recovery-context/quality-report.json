@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202605292132-QRQK1M",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-29T21:38:31.533Z",
+  "verdict": "pass",
+  "summary": "Issue #4313 regression coverage is present and hosted PR #4321 checks are green.",
+  "evaluated_sha": "c711524a983a10ffa0fc4a21874ea6812b8ec673",
+  "blueprint_digest": "332d0080b09edf570920448a9f3dcbec331be6b0f345b7476c52da7b9ad08565",
+  "findings": [
+    "PASS: managed pre-commit protected-policy refusal preserves AGENTS.md in the staged index, and retry with AGENTPLANE_ALLOW_POLICY=1 succeeds without restaging."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605292132-QRQK1M/README.md",
+    "PR #4321 required checks passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
