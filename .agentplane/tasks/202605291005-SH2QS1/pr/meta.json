@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605291005-SH2QS1/fix-social-preview-subtitle-slogan",
+  "created_at": "2026-05-29T10:07:05.504Z",
+  "diffstat_sha256": "sha256:0065f441fae51f5480442782f752589f6ae4dba49feb7e00bbe1112b6c6ff96b",
+  "last_verified_at": "2026-05-29T10:10:08.973Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605291005-SH2QS1",
+  "updated_at": "2026-05-29T10:07:05.504Z",
+  "verify": {
+    "status": "pass"
+  }
+}

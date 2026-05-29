@@ -17,6 +17,8 @@ const manifestPath = path.join(socialRoot, "manifest.json");
 
 const WIDTH = 1280;
 const HEIGHT = 640;
+const SOCIAL_PREVIEW_SUBTITLE =
+  "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.";
 
 const args = new Set(process.argv.slice(2));
 const check = args.has("--check");
@@ -134,17 +136,16 @@ function outputPathFromRoute(route) {
 }
 
 function labelsFromRoute(route, title) {
-  const parts = route
+  const firstPart = route
     .replace(/^\/docs\/?/, "")
     .split("/")
-    .filter(Boolean);
-  const section = parts[0] ? titleCase(parts[0]) : "Docs";
-  const breadcrumb = ["docs", ...parts].join(" / ");
+    .find(Boolean);
+  const section = firstPart ? titleCase(firstPart) : "Docs";
 
   return {
     section,
+    subtitle: SOCIAL_PREVIEW_SUBTITLE,
     title,
-    breadcrumb,
   };
 }
 
@@ -181,6 +182,7 @@ function renderCardSvg(entry, logoDataUri) {
   const titleLines = wrapWords(entry.title, entry.title.length > 28 ? 32 : 25, 2);
   const titleFontSize = titleLines.length > 1 ? 64 : 80;
   const titleLineHeight = titleLines.length > 1 ? 76 : 90;
+  const subtitleLines = wrapWords(entry.subtitle, 62, 2);
 
   return `
 <svg width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}" xmlns="http://www.w3.org/2000/svg">
@@ -202,7 +204,15 @@ function renderCardSvg(entry, logoDataUri) {
     fontWeight: "760",
     fill: "#050505",
   })}
-  <text x="56" y="532" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="27" fill="#5b6472">${escapeXml(entry.breadcrumb)}</text>
+  ${renderTextLines(subtitleLines, {
+    x: 56,
+    y: subtitleLines.length > 1 ? 508 : 532,
+    lineHeight: 38,
+    fontFamily: "Inter, Arial, sans-serif",
+    fontSize: 29,
+    fontWeight: "520",
+    fill: "#46505c",
+  })}
   <path d="M32 36h18M32 36v18M1248 608h-18M1248 608v-18" stroke="#b8c0ca" stroke-width="1.1" fill="none"/>
 </svg>`;
 }
@@ -219,10 +229,11 @@ async function fileExists(filePath) {
 async function main() {
   const logo = await readFile(logoPath, "utf8");
   const logoDataUri = `data:image/svg+xml;base64,${Buffer.from(logo).toString("base64")}`;
-  const docs = (await collectDocs(docsRoot)).sort();
+  const docs = await collectDocs(docsRoot);
+  const sortedDocs = docs.toSorted();
   const entries = [];
 
-  for (const doc of docs) {
+  for (const doc of sortedDocs) {
     const source = await readFile(doc, "utf8");
     const route = routeFromDocPath(doc);
     const fallbackTitle = titleCase(
@@ -296,13 +307,13 @@ async function main() {
     written += 1;
   }
 
-  if (!check) {
+  if (check) {
+    await checkManifest(expectedManifest);
+    await checkForUnexpectedSocialImages(socialRoot, expectedOutputs);
+  } else {
     await mkdir(path.dirname(manifestPath), { recursive: true });
     await writeFile(manifestPath, expectedManifest);
     await removeStaleSocialImages(socialRoot, expectedOutputs);
-  } else {
-    await checkManifest(expectedManifest);
-    await checkForUnexpectedSocialImages(socialRoot, expectedOutputs);
   }
 
   if (stale) {
@@ -328,8 +339,8 @@ function renderManifest(entries, logo) {
         route: entry.route,
         output: path.relative(websiteRoot, entry.outputPath).split(path.sep).join("/"),
         section: entry.section,
+        subtitle: entry.subtitle,
         title: entry.title,
-        breadcrumb: entry.breadcrumb,
         svgSha256: sha256(renderCardSvg(entry, "")),
       })),
     },
