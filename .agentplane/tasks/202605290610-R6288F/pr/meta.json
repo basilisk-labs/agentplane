@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605290610-R6288F/context-reindex-projection-decomposition",
+  "created_at": "2026-05-29T06:10:23.294Z",
+  "diffstat_sha256": "sha256:43862aa8e774fc78adfebf4929410db89dc26e3af497d9390361a724a0542db2",
+  "last_verified_at": "2026-05-29T06:14:58.566Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605290610-R6288F",
+  "updated_at": "2026-05-29T06:10:23.294Z",
+  "verify": {
+    "status": "pass"
+  }
+}

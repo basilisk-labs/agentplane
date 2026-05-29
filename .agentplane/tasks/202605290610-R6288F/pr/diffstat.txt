@@ -1,0 +1,3 @@
+ .../agentplane/src/context/reindex-projection.ts   | 242 ++++++++++++++++++++
+ packages/agentplane/src/context/reindex.ts         | 251 +--------------------
+ 2 files changed, 248 insertions(+), 245 deletions(-)
