@@ -1,0 +1,3 @@
+ .../src/commands/acr/generate-extensions.ts        | 151 ++++++++++++++++++++
+ packages/agentplane/src/commands/acr/generate.ts   | 156 +--------------------
+ 2 files changed, 158 insertions(+), 149 deletions(-)
