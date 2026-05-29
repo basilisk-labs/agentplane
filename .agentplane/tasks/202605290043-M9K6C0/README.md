@@ -1,10 +1,11 @@
 ---
 id: "202605290043-M9K6C0"
 title: "Preflight report command decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4246."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified preflight report decomposition. Commands passed: focused preflight readiness test, bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 29 to 28; preflight-report.ts is 332 lines."
   attempts: 0
-commit: null
+commit:
+  hash: "872e7fd98c8ea03c9ed4f225c305f8f578093a98"
+  message: "✅ M9K6C0 cli: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: Extract preflight report drift and message guard helpers while preserving buildPreflightReport output."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4246 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified preflight report decomposition. Commands passed: focused preflight readiness test, bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 29 to 28; preflight-report.ts is 332 lines."
+  -
+    type: "status"
+    at: "2026-05-29T00:52:24.446Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4246 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T00:47:48.257Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T00:52:24.451Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/cli/run-cli/commands/core/preflight-report.ts into focused preflight report modules while preserving CLI behavior and reducing runtime hotspot warnings."
 sections:
   Summary: |-
