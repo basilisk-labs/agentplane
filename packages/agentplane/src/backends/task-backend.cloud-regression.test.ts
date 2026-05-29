@@ -275,7 +275,7 @@ describe("CloudBackend regressions", () => {
 
     await expect(
       backend.sync({ direction: "pull", conflict: "fail", quiet: true, confirm: true }),
-    ).rejects.toThrow("Cloud projection has remote changes; refusing implicit pull.");
+    ).rejects.toThrow("Cloud pull has pending projection changes.");
 
     await expect(cache.getTask("202605291921-TC3QWN")).resolves.toBeNull();
     const state = JSON.parse(await readFile(path.join(stateDir, "state.json"), "utf8")) as {
