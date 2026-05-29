@@ -1,10 +1,11 @@
 ---
 id: "202605290416-D97M2G"
 title: "Task observations command decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4276."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Observed: observations command specs were extracted into observations.specs.ts; observations.command.ts is below hotspot threshold. Checks: observations.unit.test, typecheck, arch:check, knip:check, lint:core, format:changed, hotspots:check passed."
   attempts: 0
-commit: null
+commit:
+  hash: "a9d9dca7011ff7387b30452f90222de72f8453c7"
+  message: "♻️ D97M2G task: decompose observations command specs"
 comments:
   -
     author: "CODER"
     body: "Start: Extract task observations command specs and parsing helpers into focused modules while preserving CLI behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4276 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Observed: observations command specs were extracted into observations.specs.ts; observations.command.ts is below hotspot threshold. Checks: observations.unit.test, typecheck, arch:check, knip:check, lint:core, format:changed, hotspots:check passed."
+  -
+    type: "status"
+    at: "2026-05-29T04:25:40.099Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4276 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T04:21:38.769Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T04:25:40.104Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract command wiring or rendering helpers from packages/agentplane/src/commands/task/observations.command.ts to reduce the runtime hotspot below the warning threshold without changing user-visible task observations behavior."
 sections:
   Summary: |-
