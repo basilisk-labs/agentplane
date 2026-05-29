@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T04:36:31Z",
   "base": "main",
   "branch": "task/202605290426-8EM383/upgrade-apply-command-decomposition",
   "created_at": "2026-05-29T04:27:13.087Z",
   "diffstat_sha256": "sha256:4326fd044b765542cfa4551bf30529dcc08b2a71c2135d0ffe323535bad4dcf4",
   "last_verified_at": "2026-05-29T04:33:19.669Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "b0588c3f80e2ccf2c2369466b6d2ff57f76b9c54",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T04:36:31Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605290426-8EM383",
-  "updated_at": "2026-05-29T04:27:13.087Z",
+  "updated_at": "2026-05-29T04:36:31Z",
   "verify": {
     "status": "pass"
   }
