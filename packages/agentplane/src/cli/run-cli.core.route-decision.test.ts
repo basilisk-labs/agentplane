@@ -463,7 +463,7 @@ describe("runCli route decision commands", () => {
           ...state,
           status: "running",
           supervision: {
-            pid: 999999,
+            pid: 999_999,
             started_at: "2026-05-29T19:14:00.000Z",
             heartbeat_at: "2026-05-29T19:14:01.000Z",
           },
