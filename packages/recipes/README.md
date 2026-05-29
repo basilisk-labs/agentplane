@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/basilisk-labs/agentplane/main/docs/assets/readme-headers/recipes.svg" alt="AgentPlane recipes package header" style="width:100%;max-width:100%;"/>
+  <img src="https://raw.githubusercontent.com/basilisk-labs/agentplane/main/docs/assets/readme-headers/recipes.svg" alt="Agentplane recipes package header" style="width:100%;max-width:100%;"/>
 </p>
 
 # @agentplaneorg/recipes
