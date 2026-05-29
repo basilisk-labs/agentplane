@@ -15,8 +15,15 @@ Decompose packages/agentplane/src/cli/run-cli/commands/init/execution.ts by extr
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified init execution decomposition. Commands passed: init focused vitest suite (4 files, 55
+tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run
+format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 27 to 26;
+execution.ts is 253 lines.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +34,10 @@ Decompose packages/agentplane/src/cli/run-cli/commands/init/execution.ts by extr
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/cli/run-cli/commands/init/execution.ts     | 302 +--------------------
+ .../src/cli/run-cli/commands/init/init-paths.ts    |  79 ++++++
+ .../src/cli/run-cli/commands/init/init-plan.ts     | 219 +++++++++++++++
+ 3 files changed, 311 insertions(+), 289 deletions(-)
 ```
 
 </details>

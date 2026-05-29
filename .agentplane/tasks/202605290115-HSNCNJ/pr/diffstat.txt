@@ -1,0 +1,4 @@
+ .../src/cli/run-cli/commands/init/execution.ts     | 302 +--------------------
+ .../src/cli/run-cli/commands/init/init-paths.ts    |  79 ++++++
+ .../src/cli/run-cli/commands/init/init-plan.ts     | 219 +++++++++++++++
+ 3 files changed, 311 insertions(+), 289 deletions(-)
