@@ -4,7 +4,7 @@ title: "Init execution decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T01:22:52.543Z"
+  updated_by: "CODER"
+  note: "Verified init execution decomposition. Commands passed: init focused vitest suite (4 files, 55 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 27 to 26; execution.ts is 253 lines."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: decompose init execution planning helpers in a task worktree, preserve init behavior, and verify hotspot reduction with focused init tests plus static checks."
+  -
+    type: "verify"
+    at: "2026-05-29T01:22:52.543Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified init execution decomposition. Commands passed: init focused vitest suite (4 files, 55 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 27 to 26; execution.ts is 253 lines."
 doc_version: 3
-doc_updated_at: "2026-05-29T01:16:22.265Z"
+doc_updated_at: "2026-05-29T01:22:52.568Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/cli/run-cli/commands/init/execution.ts by extracting focused init planning/effect helpers while preserving init behavior and reducing the runtime hotspot warning count."
 sections:
@@ -70,6 +76,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T01:22:52.543Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified init execution decomposition. Commands passed: init focused vitest suite (4 files, 55 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 27 to 26; execution.ts is 253 lines.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T01:16:22.265Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290115-HSNCNJ-init-execution-decomposition/.agentplane/tasks/202605290115-HSNCNJ/blueprint/resolved-snapshot.json
+    - old_digest: 0a77629d4323a11f152631dbea83a1a93bafd23fbf85a69b17415888b3598862
+    - current_digest: 0a77629d4323a11f152631dbea83a1a93bafd23fbf85a69b17415888b3598862
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290115-HSNCNJ
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -114,6 +139,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T01:22:52.543Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified init execution decomposition. Commands passed: init focused vitest suite (4 files, 55 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 27 to 26; execution.ts is 253 lines.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T01:16:22.265Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290115-HSNCNJ-init-execution-decomposition/.agentplane/tasks/202605290115-HSNCNJ/blueprint/resolved-snapshot.json
+- old_digest: 0a77629d4323a11f152631dbea83a1a93bafd23fbf85a69b17415888b3598862
+- current_digest: 0a77629d4323a11f152631dbea83a1a93bafd23fbf85a69b17415888b3598862
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290115-HSNCNJ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
