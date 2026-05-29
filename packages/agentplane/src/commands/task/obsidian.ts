@@ -11,11 +11,14 @@ import { toTaskSummaries, type TaskSummary } from "../../backends/task-backend.j
 import {
   GENERATED_OBSIDIAN_NOTE,
   renderObsidianTaskProjection,
+  type ObsidianProjectionFile,
   type ObsidianProjectionResult,
 } from "./obsidian.render.js";
 
 export { renderObsidianTaskProjection } from "./obsidian.render.js";
-export type { ObsidianProjectionFile, ObsidianProjectionResult } from "./obsidian.render.js";
+// The explicit type re-export keeps Knip aware that the render type is part of this facade API.
+// eslint-disable-next-line unicorn/prefer-export-from
+export type { ObsidianProjectionFile, ObsidianProjectionResult };
 
 export type ObsidianCleanResult = {
   deleted: string[];

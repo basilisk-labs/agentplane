@@ -1,0 +1,4 @@
+ .../task-backend/local-task-sqlite-cache-key.ts    | 212 ++++++++++++++++++++
+ .../task-backend/local-task-sqlite-cache.ts        | 222 +--------------------
+ packages/agentplane/src/commands/task/obsidian.ts  |   3 +-
+ 3 files changed, 225 insertions(+), 212 deletions(-)
