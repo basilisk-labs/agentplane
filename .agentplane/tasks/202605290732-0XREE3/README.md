@@ -31,10 +31,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-29T08:35:56.976Z"
-  updated_by: "CODER"
-  note: "Release checks refreshed after bun.lock sync: bun install --frozen-lockfile --ignore-scripts passed; bun run release:check passed with 0.6.12 package metadata; prior release:prepublish:heavy and hosted checks remain covered, pending fresh hosted rerun for the latest branch head."
-  attempts: 0
+  updated_at: "2026-05-29T08:57:19.111Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.12."
 quality_review:
   state: "pass"
   updated_at: "2026-05-29T08:36:09.917Z"
@@ -91,8 +90,8 @@ events:
     to: "DONE"
     note: "Verified: PR #4306 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T08:43:48.857Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-29T08:57:19.111Z"
+doc_updated_by: "DEUS"
 description: "Prepare, validate, merge, publish, and record evidence for the next patch release v0.6.12."
 sections:
   Summary: |-
@@ -110,44 +109,19 @@ sections:
     4. After merge and publish, run `npm view agentplane version`, `git ls-remote --tags origin v0.6.12`, and `gh release view v0.6.12`. Expected: all external surfaces show `v0.6.12`.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    ### 2026-05-29T08:25:31.502Z — VERIFY — ok
-
-    By: CODER
-
-    Note: Release checks passed: release candidate prepared for v0.6.12; release:prepublish:fast passed; release:prepublish:heavy passed including release-ci-base 67/67 chunks, workflow/significant coverage, and release-critical suite; pre-push standard mode passed before branch update.
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T07:32:51.547Z, excerpt_hash=sha256:5eb4a05248f73af6cb4fe68575656b182c87d990abd716dd79704d515a9d87c0
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605290732-0XREE3-release-v0-6-12/.agentplane/tasks/202605290732-0XREE3/blueprint/resolved-snapshot.json
-    - old_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
-    - current_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
-    - route_changed: no
-    - safe_command: agentplane blueprint snapshot 202605290732-0XREE3
-
-    ### 2026-05-29T08:35:56.976Z — VERIFY — ok
-
-    By: CODER
-
-    Note: Release checks refreshed after bun.lock sync: bun install --frozen-lockfile --ignore-scripts passed; bun run release:check passed with 0.6.12 package metadata; prior release:prepublish:heavy and hosted checks remain covered, pending fresh hosted rerun for the latest branch head.
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T08:25:31.519Z, excerpt_hash=sha256:5eb4a05248f73af6cb4fe68575656b182c87d990abd716dd79704d515a9d87c0
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605290732-0XREE3-release-v0-6-12/.agentplane/tasks/202605290732-0XREE3/blueprint/resolved-snapshot.json
-    - old_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
-    - current_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
-    - route_changed: no
-    - safe_command: agentplane blueprint snapshot 202605290732-0XREE3
-
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.12.
+    - Details:
+      - release_sha: 0aef2e3f8bf5965acee1568a994ac4e63d20151b
+      - version: 0.6.12
+      - tag: v0.6.12
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.12
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26627924743
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -187,44 +161,19 @@ Release plan: version=0.6.12, tag=v0.6.12, scope=next patch release from current
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-### 2026-05-29T08:25:31.502Z — VERIFY — ok
-
-By: CODER
-
-Note: Release checks passed: release candidate prepared for v0.6.12; release:prepublish:fast passed; release:prepublish:heavy passed including release-ci-base 67/67 chunks, workflow/significant coverage, and release-critical suite; pre-push standard mode passed before branch update.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T07:32:51.547Z, excerpt_hash=sha256:5eb4a05248f73af6cb4fe68575656b182c87d990abd716dd79704d515a9d87c0
-
-Details:
-
-BlueprintSnapshotRef:
-- state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605290732-0XREE3-release-v0-6-12/.agentplane/tasks/202605290732-0XREE3/blueprint/resolved-snapshot.json
-- old_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
-- current_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
-- route_changed: no
-- safe_command: agentplane blueprint snapshot 202605290732-0XREE3
-
-### 2026-05-29T08:35:56.976Z — VERIFY — ok
-
-By: CODER
-
-Note: Release checks refreshed after bun.lock sync: bun install --frozen-lockfile --ignore-scripts passed; bun run release:check passed with 0.6.12 package metadata; prior release:prepublish:heavy and hosted checks remain covered, pending fresh hosted rerun for the latest branch head.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T08:25:31.519Z, excerpt_hash=sha256:5eb4a05248f73af6cb4fe68575656b182c87d990abd716dd79704d515a9d87c0
-
-Details:
-
-BlueprintSnapshotRef:
-- state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605290732-0XREE3-release-v0-6-12/.agentplane/tasks/202605290732-0XREE3/blueprint/resolved-snapshot.json
-- old_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
-- current_digest: 5431508d1fc82b5c6f67b63b729406018703b29e6015f73a839161e4631abe61
-- route_changed: no
-- safe_command: agentplane blueprint snapshot 202605290732-0XREE3
-
+- State: ok
+- Note: Hosted publish confirmed for v0.6.12.
+- Details:
+  - release_sha: 0aef2e3f8bf5965acee1568a994ac4e63d20151b
+  - version: 0.6.12
+  - tag: v0.6.12
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.12
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26627924743
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
