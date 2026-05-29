@@ -8,1625 +8,1625 @@
       "route": "/docs/adr/0001-zod-config-parity",
       "output": "static/img/social/docs/adr/0001-zod-config-parity.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0001 Zod Config Parity",
-      "breadcrumb": "docs / adr / 0001-zod-config-parity",
-      "svgSha256": "da6d2925850adca77cb9f13edade880cb852eacbe44c51f6ac3005ddee2c25c3"
+      "svgSha256": "3a4678dac12a9d5af237f7575747798d6cbb4ced90e653e1a5a880a627c1dd82"
     },
     {
       "route": "/docs/adr/0002-adr-process",
       "output": "static/img/social/docs/adr/0002-adr-process.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0002 Adr Process",
-      "breadcrumb": "docs / adr / 0002-adr-process",
-      "svgSha256": "5e28d74fd3c27a76907998e86cc608e7061851413583dd24c95b127ec7d2273a"
+      "svgSha256": "72858e9b4838d5073f64d29af71cbf3b4924d7548e7f20f2a8aa0af6bf5926c9"
     },
     {
       "route": "/docs/adr/0003-refactor-sequencing",
       "output": "static/img/social/docs/adr/0003-refactor-sequencing.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0003 Refactor Sequencing",
-      "breadcrumb": "docs / adr / 0003-refactor-sequencing",
-      "svgSha256": "7d399cb0d9852577b7bf6dfa39619859c9a7d73c9572c7d8185c6411f7e812eb"
+      "svgSha256": "37b97cda8c5f551c1d6a522e13dc641c2b776a3d02fd25d7a4de31af2a81d4bf"
     },
     {
       "route": "/docs/adr/0004-keep-custom-cli-stack",
       "output": "static/img/social/docs/adr/0004-keep-custom-cli-stack.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0004 Keep Custom Cli Stack",
-      "breadcrumb": "docs / adr / 0004-keep-custom-cli-stack",
-      "svgSha256": "3e4d5b853fb31098748a7f24b75a8f7bbe3f75ccf3cb2a6cfdcc0a846ec59cc3"
+      "svgSha256": "3fb5d74c4ccc8ce50a4a8d7697d82094e4695e109105c81ac43d71d8c3987019"
     },
     {
       "route": "/docs/adr/0005-defer-biome-migration",
       "output": "static/img/social/docs/adr/0005-defer-biome-migration.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0005 Defer Biome Migration",
-      "breadcrumb": "docs / adr / 0005-defer-biome-migration",
-      "svgSha256": "495e26b159d9d4e96ed81eab5519ac8d4aeafe360412b10ac2061d18df156bbe"
+      "svgSha256": "2ad34419b047227fd2f938311f981b2414c3efb64d3b3680a202b0f486bbd8fe"
     },
     {
       "route": "/docs/adr/0006-no-effect-fp-ts-migration",
       "output": "static/img/social/docs/adr/0006-no-effect-fp-ts-migration.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0006 No Effect Fp Ts Migration",
-      "breadcrumb": "docs / adr / 0006-no-effect-fp-ts-migration",
-      "svgSha256": "f22c9e5131b84311e011a38969393d2908512c93d5a2f36b1f8ca134276d1052"
+      "svgSha256": "b578cd36d592f433030baf882d5d2e9b48a65ed91ad34c039faac332a2961158"
     },
     {
       "route": "/docs/adr/0007-freeze-yaml-parser-stack",
       "output": "static/img/social/docs/adr/0007-freeze-yaml-parser-stack.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0007 Freeze Yaml Parser Stack",
-      "breadcrumb": "docs / adr / 0007-freeze-yaml-parser-stack",
-      "svgSha256": "dcfdf0c97283126c177916f0ce2fe05afb000b3f7468805e5ed22b2bd3250ba9"
+      "svgSha256": "823fb5de658f446790031e9d7d77d05e497422ad6430b1f7bee586ab24b72dcd"
     },
     {
       "route": "/docs/adr/0008-keep-yauzl-for-zip-validation",
       "output": "static/img/social/docs/adr/0008-keep-yauzl-for-zip-validation.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0008 Keep Yauzl For Zip Validation",
-      "breadcrumb": "docs / adr / 0008-keep-yauzl-for-zip-validation",
-      "svgSha256": "19d81ca27b233ff78e4d8ad9fe1c68f35409ffa761bf4ecb91897fa268d26335"
+      "svgSha256": "1fb07ce39ae15f616a4289e31ac26f5d0735f15b591742fdb0952d4d646c1d70"
     },
     {
       "route": "/docs/adr/0009-recipes-index-signing-algorithm-policy",
       "output": "static/img/social/docs/adr/0009-recipes-index-signing-algorithm-policy.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0009 Recipes Index Signing Algorithm Policy",
-      "breadcrumb": "docs / adr / 0009-recipes-index-signing-algorithm-policy",
-      "svgSha256": "87fb1545af86e99e788bd04cfd71b9ff1b842ee26e6fa1266bbdd17cab9c2e57"
+      "svgSha256": "2e722fca23c66c42c51c4a67b5b9c9336da13916fbc20a5d1ffffdd6e205d94b"
     },
     {
       "route": "/docs/adr/0010-core-root-export-compatibility",
       "output": "static/img/social/docs/adr/0010-core-root-export-compatibility.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0010 Core Root Export Compatibility",
-      "breadcrumb": "docs / adr / 0010-core-root-export-compatibility",
-      "svgSha256": "8b2f4e46ab758905bfff11363cc48670ec290147ed6a1cc43e33fb0292db652a"
+      "svgSha256": "abc1c6ac3cb9de7e9840933ff281d04cd504f9cd5584b8d98f317f9ee1a43fb5"
     },
     {
       "route": "/docs/adr/0011-v0.3-surface-freeze",
       "output": "static/img/social/docs/adr/0011-v0.3-surface-freeze.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0011 V0.3 Surface Freeze",
-      "breadcrumb": "docs / adr / 0011-v0.3-surface-freeze",
-      "svgSha256": "2f120264b38f4c4de80b1e717a13a9e80d44b0990f1b60a6f7f343b90df148e8"
+      "svgSha256": "08cbc2bdda881f4de3347706fc3905c199606dcae3e65804e56720241e88b151"
     },
     {
       "route": "/docs/adr/0012-v0.4-surface-transition",
       "output": "static/img/social/docs/adr/0012-v0.4-surface-transition.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0012 V0.4 Surface Transition",
-      "breadcrumb": "docs / adr / 0012-v0.4-surface-transition",
-      "svgSha256": "758f42a16adb62fdca23b799c4e092a8635be5a27144a34abae85dd5a843e807"
+      "svgSha256": "b45772ba89871f3286c6bed5ca11effa699f25cceeba1337fd63eb351ddced83"
     },
     {
       "route": "/docs/adr/0013-zod-contract-ssot",
       "output": "static/img/social/docs/adr/0013-zod-contract-ssot.png",
       "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "ADR 0013: Zod Contract SSOT",
-      "breadcrumb": "docs / adr / 0013-zod-contract-ssot",
-      "svgSha256": "f98432d3adf6ad2823afd748a0f0e31ed0e0cdb06d60f12816b715329fddda37"
+      "svgSha256": "8ee4b00a9dc22b2390eadf505c6022ce67099f2dbb42775c3f38b0cf667d1758"
     },
     {
       "route": "/docs/archive/v0-3/cli-bug-ledger-v0-3-x",
       "output": "static/img/social/docs/archive/v0-3/cli-bug-ledger-v0-3-x.png",
       "section": "Archive",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "CLI bug ledger (v0.3.x archive)",
-      "breadcrumb": "docs / archive / v0-3 / cli-bug-ledger-v0-3-x",
-      "svgSha256": "78f8ff2aeed47987bb908d9559190fe42a13ad25811969935a96385ec43a470c"
+      "svgSha256": "6711a99c52320e9aee26eff3b340e810303c4526c2a57f66c4f8f6203004db99"
     },
     {
       "route": "/docs/archive/v0-3/framework-refactor-program",
       "output": "static/img/social/docs/archive/v0-3/framework-refactor-program.png",
       "section": "Archive",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Framework refactor program (v0.3 archive)",
-      "breadcrumb": "docs / archive / v0-3 / framework-refactor-program",
-      "svgSha256": "52f89812917992c6a30022c7f4f462248a02b1c7c84ed2eb832eac15b1639110"
+      "svgSha256": "bd273eb88579d759b90430c6d64614dacbf7a97a573ea848407b8c4492f22c80"
     },
     {
       "route": "/docs/compare",
       "output": "static/img/social/docs/compare.png",
       "section": "Compare",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "How Agentplane compares",
-      "breadcrumb": "docs / compare",
-      "svgSha256": "0c3b2da108e048621b9923ec74eb5d94fa4004babc52fddb4327cae1ce130dd3"
+      "svgSha256": "0110d0b314e1116d84ae32317edd6f5274da293892c58a349aa9fe795a0a77f8"
     },
     {
       "route": "/docs/concepts/agent-workflows",
       "output": "static/img/social/docs/concepts/agent-workflows.png",
       "section": "Concepts",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Agent workflows",
-      "breadcrumb": "docs / concepts / agent-workflows",
-      "svgSha256": "f83e0c168af7212eb7737f2ae361bac5734821d9f1ecf41a67e58758d68d89bb"
+      "svgSha256": "6423da05bc16bf0d69601a65ea8f231a7d3d8168bc3b61bee93cf4e3d8f520e3"
     },
     {
       "route": "/docs/concepts/context-engineering",
       "output": "static/img/social/docs/concepts/context-engineering.png",
       "section": "Concepts",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Context engineering for AI agents",
-      "breadcrumb": "docs / concepts / context-engineering",
-      "svgSha256": "76a91d56f2dc282b7b6d5662003a0028dc2917ac448b1d1708e5c5d624e38648"
+      "svgSha256": "aca75799ca7f644b8b2c119f6117c426f03ca62b17f98bb1076656ed0bcbf0bb"
     },
     {
       "route": "/docs/concepts/harness-engineering",
       "output": "static/img/social/docs/concepts/harness-engineering.png",
       "section": "Concepts",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Harness engineering for AI agents",
-      "breadcrumb": "docs / concepts / harness-engineering",
-      "svgSha256": "a87e50ceaa7016264858be253131645e820c764019445fd0097a2aecb839205b"
+      "svgSha256": "487904297b57395697a2853cdaafc4df82ed3d2c5d3a97e12fd897baa0983f3f"
     },
     {
       "route": "/docs/concepts/traces",
       "output": "static/img/social/docs/concepts/traces.png",
       "section": "Concepts",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Traces for AI agent runs",
-      "breadcrumb": "docs / concepts / traces",
-      "svgSha256": "dd93fe6aa6d094c9602bb8e0b3b47f37f5645a5db4598ac0987acef4fcd2eaa1"
+      "svgSha256": "65d1ae6641e6a779496f3227a91c672275baddcef2afb02b326380de876e134f"
     },
     {
       "route": "/docs/context/agent-guide",
       "output": "static/img/social/docs/context/agent-guide.png",
       "section": "Context",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Agent guide to project context",
-      "breadcrumb": "docs / context / agent-guide",
-      "svgSha256": "a31249872b00ccbcfefbe6fc3667960a1d3223454839ab6f6997c33ad49d4520"
+      "svgSha256": "ec3fe6d6573c26ef1d9dd122a0d5d2a8478eeac1ebc563c9f8320b7789aeb9ba"
     },
     {
       "route": "/docs/context/files",
       "output": "static/img/social/docs/context/files.png",
       "section": "Context",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "What context writes",
-      "breadcrumb": "docs / context / files",
-      "svgSha256": "36affe35c752ba518f1b4708a53e31cefb60b121bcc8d27d99bd681574b51793"
+      "svgSha256": "279aa693edf78eb0a9a6faa1f8e1102b47e3f6d58a0a30e8d6691e76e986fa68"
     },
     {
       "route": "/docs/context",
       "output": "static/img/social/docs/context.png",
       "section": "Context",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Context",
-      "breadcrumb": "docs / context",
-      "svgSha256": "b4a8736df8d6fbe67b0f3d3755c27c21eb7f289c99da7ddb0603bce03b0ecb74"
+      "svgSha256": "85e78497490744ec00cfc1add0c58f823e6e1ae0637e6dc76b20bcd9f5877147"
     },
     {
       "route": "/docs/context/ingest",
       "output": "static/img/social/docs/context/ingest.png",
       "section": "Context",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Add documents to context",
-      "breadcrumb": "docs / context / ingest",
-      "svgSha256": "93f53dd5919cc5911b985d4bafe785c5e7a249c7fb8598d9dfde03faa9c5f536"
+      "svgSha256": "25b3aa68939968f34f665aa2349f2529a1ce294d3084d7032c777a5083d1e20c"
     },
     {
       "route": "/docs/context/modes",
       "output": "static/img/social/docs/context/modes.png",
       "section": "Context",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Choose a context mode",
-      "breadcrumb": "docs / context / modes",
-      "svgSha256": "1e780ceb16129ff3fa02d8e7f8a87aa68397f8707df9cab36c5462c96da90124"
+      "svgSha256": "d7d8f61846beb8ebe5f16bebc75f7960e7d8beed9585b41ebe18ade053bd3485"
     },
     {
       "route": "/docs/context/quickstart",
       "output": "static/img/social/docs/context/quickstart.png",
       "section": "Context",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Context quickstart",
-      "breadcrumb": "docs / context / quickstart",
-      "svgSha256": "9b74efa9ad0408c17803fb229c9613ca3c6ca991803bc001eadec93759ac2d7c"
+      "svgSha256": "c850c9fe5bd3a2e65bfee4b576f0f33eb44ab16c01dd4f815bd0fec7086847f8"
     },
     {
       "route": "/docs/context/review",
       "output": "static/img/social/docs/context/review.png",
       "section": "Context",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Review context changes",
-      "breadcrumb": "docs / context / review",
-      "svgSha256": "e824acc4fca60e305d6f280e6b2bebe40426b7612e5e09db03a42c16145f800a"
+      "svgSha256": "d061ce155bcfc4c1a1dcdb16edf87f0104cfeb7f16a838516391de38d3c63109"
     },
     {
       "route": "/docs/context/troubleshooting",
       "output": "static/img/social/docs/context/troubleshooting.png",
       "section": "Context",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Context troubleshooting",
-      "breadcrumb": "docs / context / troubleshooting",
-      "svgSha256": "b3d532a1890fe0ffc9888042ca3f0228a344e700fccd3ec45db645167c51e34d"
+      "svgSha256": "d654e15fddc630e729f10b0f38f827512363cdd677acc37cfe0d73442727b74e"
     },
     {
       "route": "/docs/contributing/citation-guidelines",
       "output": "static/img/social/docs/contributing/citation-guidelines.png",
       "section": "Contributing",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Citation guidelines",
-      "breadcrumb": "docs / contributing / citation-guidelines",
-      "svgSha256": "22983b4e632cb104c7d9c45d391690650c3018b0ea5b0d9b445b1170e1704c48"
+      "svgSha256": "4a9afaf3cd61c5aa1126fdbea27b6f8a14d7cf2e693e6ff48ea1b22f9c0462f2"
     },
     {
       "route": "/docs/developer/agent-change-record-implementation",
       "output": "static/img/social/docs/developer/agent-change-record-implementation.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "ACR implementation plan",
-      "breadcrumb": "docs / developer / agent-change-record-implementation",
-      "svgSha256": "6f120dc6e6dad6c99355789548f327af84564d6142f18f2486227047df141363"
+      "svgSha256": "d055c3dfcec4649c579d5f927314d0ef3701f191a594fdd74fb4a2f89eaf280d"
     },
     {
       "route": "/docs/developer/architecture",
       "output": "static/img/social/docs/developer/architecture.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Architecture",
-      "breadcrumb": "docs / developer / architecture",
-      "svgSha256": "9da13d75b727c5906c8b1b30a55ede567c74c8e01a3a7ea47b1152040f5dae1d"
+      "svgSha256": "6f22571f4c07966867fc9384e63ddb2819c56a840c5cc268e22dc47bf37bf925"
     },
     {
       "route": "/docs/developer/blueprints",
       "output": "static/img/social/docs/developer/blueprints.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Blueprints",
-      "breadcrumb": "docs / developer / blueprints",
-      "svgSha256": "b5657a36757353e5c124c7c590a85acb0691240a6bbfd9c27d98a8c3c3cc94f7"
+      "svgSha256": "5c21742e1392b880c7f2a420c090ffa6d6f1fac4e2ffef3cb683bf6817693204"
     },
     {
       "route": "/docs/developer/cli-contract",
       "output": "static/img/social/docs/developer/cli-contract.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "CLI contract",
-      "breadcrumb": "docs / developer / cli-contract",
-      "svgSha256": "9c4062ec296645b53661bd56ceb47cf23b3ad72677535c076ea67df2c6d6f8bc"
+      "svgSha256": "1af076f6852bd8e8248aeff4797745d34e549591fc226f260846eb835f52635d"
     },
     {
       "route": "/docs/developer/cli-help-json",
       "output": "static/img/social/docs/developer/cli-help-json.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "CLI Help JSON Contract (spec-driven CLI)",
-      "breadcrumb": "docs / developer / cli-help-json",
-      "svgSha256": "981552558bdd86e8e522b6c169e535a5f66973751e2496a53ab740d5eb3980dc"
+      "svgSha256": "22d3a38907b41f244f47ad8723809bd5896ee525648a2a8954d19253d5970a02"
     },
     {
       "route": "/docs/developer/close-taxonomy",
       "output": "static/img/social/docs/developer/close-taxonomy.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Close taxonomy",
-      "breadcrumb": "docs / developer / close-taxonomy",
-      "svgSha256": "bb7393f2c886f47fcb8fc56d94e1491cc9f5963a803e378263bb63b3b11063c4"
+      "svgSha256": "191ef9711a4e286db5276352fe7ed668bd207ecd77c3599db2ea3e3cb4af1f37"
     },
     {
       "route": "/docs/developer/cloud-backend-integration-plan",
       "output": "static/img/social/docs/developer/cloud-backend-integration-plan.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Cloud backend integration plan",
-      "breadcrumb": "docs / developer / cloud-backend-integration-plan",
-      "svgSha256": "4db48ea369dca09f8028b768354521ba062a469d7171aba6246ff4c464952f92"
+      "svgSha256": "b6d8aabef1216eb7241c615bcbc670ea018b8ac9b6818e17e86fa332e042a2bc"
     },
     {
       "route": "/docs/developer/code-quality",
       "output": "static/img/social/docs/developer/code-quality.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Code Quality Gates",
-      "breadcrumb": "docs / developer / code-quality",
-      "svgSha256": "6e26ae7597e87b81001e7f0316553b1d64055b7f0fe5679b5f556bdb90e556a6"
+      "svgSha256": "1e11d14b3e97786003258122df8ad2e7d48494596483dd1e35f49420dd2f09e8"
     },
     {
       "route": "/docs/developer/contributing",
       "output": "static/img/social/docs/developer/contributing.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Contributing",
-      "breadcrumb": "docs / developer / contributing",
-      "svgSha256": "a9581a850619b3552009145c1b48895ca3d80dfa4550213e74fa57d11ec992ef"
+      "svgSha256": "b839843eb3edf7328f9e8e5cae9372db6b3c133ddab4b2099fd06d681a6d7088"
     },
     {
       "route": "/docs/developer/design-principles",
       "output": "static/img/social/docs/developer/design-principles.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Design principles",
-      "breadcrumb": "docs / developer / design-principles",
-      "svgSha256": "d2f76deb90f8086270431c2f60a60b75cea6abb9f0ad57e29e4a86507197f052"
+      "svgSha256": "196a03b8ab7283e59012e776204f653b851cb52bcc6adb1e2d3277c526f29d13"
     },
     {
       "route": "/docs/developer/documentation-information-architecture",
       "output": "static/img/social/docs/developer/documentation-information-architecture.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Documentation information architecture",
-      "breadcrumb": "docs / developer / documentation-information-architecture",
-      "svgSha256": "5682ce238a36070c62566537d792d783bcc78e8d4fe7ab4d9efb1b56160f5b57"
+      "svgSha256": "b7a0042ff3b6959b92c40b57002ca05b719b4f3193953ccb94fe24e31d0ea47a"
     },
     {
       "route": "/docs/developer/evaluation-and-recursive-improvement",
       "output": "static/img/social/docs/developer/evaluation-and-recursive-improvement.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Evaluation and recursive improvement",
-      "breadcrumb": "docs / developer / evaluation-and-recursive-improvement",
-      "svgSha256": "83ba4d4f56947ea3ad0885a275b9bc7db83c0a14360a41d86a07ca34d8f1d423"
+      "svgSha256": "b86739161966d00ee0d986f9176262980b6374819806d8092844dbd1e42ec62b"
     },
     {
       "route": "/docs/developer/harness-dev",
       "output": "static/img/social/docs/developer/harness-dev.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Harness/dev documentation",
-      "breadcrumb": "docs / developer / harness-dev",
-      "svgSha256": "09382309da50e0a4654e7be49d16b0fda082fd024f99a7aa9f726034788cc458"
+      "svgSha256": "2c86d205494d096c5169736c03bcb86322e3c022fd09dbd39fbb8c6c706a26e9"
     },
     {
       "route": "/docs/developer/harness-engineering",
       "output": "static/img/social/docs/developer/harness-engineering.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Harness Engineering",
-      "breadcrumb": "docs / developer / harness-engineering",
-      "svgSha256": "502f1554987a24781ae307dddde73cba06aa30800f499f84ab2b07bc3d2a3be5"
+      "svgSha256": "df80ca72abbae17aafa7d1c92906338e0be29f49366fb3e8f7aed346a2ad47de"
     },
     {
       "route": "/docs/developer/incident-archive",
       "output": "static/img/social/docs/developer/incident-archive.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Incident Archive",
-      "breadcrumb": "docs / developer / incident-archive",
-      "svgSha256": "b2de9557df3d59636ed62286c306ef1d9d32478b648d8b42348529d8ace32060"
+      "svgSha256": "525ec816286fa3c6d220a718a84bec9a906663862e90414a292f6eb8f6b285c9"
     },
     {
       "route": "/docs/developer/local-context",
       "output": "static/img/social/docs/developer/local-context.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Local context implementation",
-      "breadcrumb": "docs / developer / local-context",
-      "svgSha256": "5d52a96842d2a354bcfad23c58e4d921f37646bb9e86cfc4f0af830eea0e73c2"
+      "svgSha256": "42af8c18ea9318a0ade96b37495664c211976242cfa76037c1a81bb3673a6ea3"
     },
     {
       "route": "/docs/developer/modular-prompt-assembly",
       "output": "static/img/social/docs/developer/modular-prompt-assembly.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Modular prompt assembly",
-      "breadcrumb": "docs / developer / modular-prompt-assembly",
-      "svgSha256": "2bded1c814f2abdadf320bd12b29a368543997576356df895577375b5d22fc3c"
+      "svgSha256": "7ffd2e4a83f046bad6d9fb904334120c7b5b4fe3126259899822b3062a4484a5"
     },
     {
       "route": "/docs/developer/module-topology",
       "output": "static/img/social/docs/developer/module-topology.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Module topology",
-      "breadcrumb": "docs / developer / module-topology",
-      "svgSha256": "e7f6354b7e3c8d82992c89a748ca6505740a62e163e84f64ecb4c352e8b8bcf2"
+      "svgSha256": "3e83f2534889e896e53a3e5cc94a5123db2bdc59ab2cb92942d1b77b5a9c9b2e"
     },
     {
       "route": "/docs/developer/performance-baselines",
       "output": "static/img/social/docs/developer/performance-baselines.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Performance baselines",
-      "breadcrumb": "docs / developer / performance-baselines",
-      "svgSha256": "75383f6a6e12c3aeae759dd97b814815dbd84d0b0022f3bd1ad435f00da1f189"
+      "svgSha256": "fb16d9f37af2b64b2b15a1272c8de7c6d221b174cc1bc7db36558cc79694ac43"
     },
     {
       "route": "/docs/developer/project-layout",
       "output": "static/img/social/docs/developer/project-layout.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Project layout",
-      "breadcrumb": "docs / developer / project-layout",
-      "svgSha256": "84c7ad452c534767f6dd5f3c90be98c64362c5584143438216dac88a83af80e4"
+      "svgSha256": "6ae5a5bd241ea0da44da70c3d3b116e4c09e935873b12b8836ec2250cf562053"
     },
     {
       "route": "/docs/developer/recipes-development",
       "output": "static/img/social/docs/developer/recipes-development.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Recipes development",
-      "breadcrumb": "docs / developer / recipes-development",
-      "svgSha256": "446b4447f6a4928c357a3fe7e514b7a5937bf9b02112ba42195025188a349745"
+      "svgSha256": "17a2951c8d1dd01e95cf75692aa9cfbfcde130ead955bb24b005d486f2009b8c"
     },
     {
       "route": "/docs/developer/recipes-how-it-works",
       "output": "static/img/social/docs/developer/recipes-how-it-works.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "How recipes work",
-      "breadcrumb": "docs / developer / recipes-how-it-works",
-      "svgSha256": "8c82f714d472bb250d5fe64f421957734eec163d0e613696327d1b2317235532"
+      "svgSha256": "1a695b732198267dd7f0c0f868a7d8f317fbe00f9b038223cc7450157cc23992"
     },
     {
       "route": "/docs/developer/recipes-safety",
       "output": "static/img/social/docs/developer/recipes-safety.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Recipes safety",
-      "breadcrumb": "docs / developer / recipes-safety",
-      "svgSha256": "670dce635ba658704b7d04ed56a11fd1532d8a6fd0bcb1495debe0afcb318af1"
+      "svgSha256": "e496e229d3879ef092d11d2f18522a41e2673da02e7787bde31dd3c3d7ed9faa"
     },
     {
       "route": "/docs/developer/recipes-spec",
       "output": "static/img/social/docs/developer/recipes-spec.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Recipes specification",
-      "breadcrumb": "docs / developer / recipes-spec",
-      "svgSha256": "ac044d90f43081654c48b8b1b27be5db3e2e83500ca7c9970e68dca1caf05e81"
+      "svgSha256": "ca5ca278c2fce4d189e99e4e00c0e0bea11a62f9366c092f5acabfcb84fb4b3e"
     },
     {
       "route": "/docs/developer/release-and-publishing",
       "output": "static/img/social/docs/developer/release-and-publishing.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Release and publishing",
-      "breadcrumb": "docs / developer / release-and-publishing",
-      "svgSha256": "ed926c71d98dfa168f1817ad7a400b8125f892eecef9c6b8f582c6eb81d7c35e"
+      "svgSha256": "8b01e4ee37a5d980b2b32a68197ef3762e14c6a8383c61dc9a998cf9f7c95392"
     },
     {
       "route": "/docs/developer/schema-validation-strategy",
       "output": "static/img/social/docs/developer/schema-validation-strategy.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Schema Validation Strategy",
-      "breadcrumb": "docs / developer / schema-validation-strategy",
-      "svgSha256": "0eb52884c7958e2771767c98de84f25598ed04116d7a7d2897b45643463878d1"
+      "svgSha256": "f2fa14f70647e4ae2e5d1c4184907539c32c804811a62032b413e6c5f4609d02"
     },
     {
       "route": "/docs/developer/testing-and-quality",
       "output": "static/img/social/docs/developer/testing-and-quality.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Testing and quality",
-      "breadcrumb": "docs / developer / testing-and-quality",
-      "svgSha256": "6721440f3b6cc1b0f087f4d44b2e24884cc2f385d1aa7e86ada5386a59cd5d09"
+      "svgSha256": "df93a870c85fb6c40e79e0057670b71b5edf4adfed5c3ad0ce522afef0fe647e"
     },
     {
       "route": "/docs/developer/typescript-esm-imports",
       "output": "static/img/social/docs/developer/typescript-esm-imports.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "TypeScript ESM imports",
-      "breadcrumb": "docs / developer / typescript-esm-imports",
-      "svgSha256": "21bdb2be92fbd4be06b04d618f23314135163af6a03822710ef2ea53169927fb"
+      "svgSha256": "281dbbc762331f5569646e64ee9602affdde059bb60f7a4368f190e513e7e454"
     },
     {
       "route": "/docs/developer/website-success-metrics",
       "output": "static/img/social/docs/developer/website-success-metrics.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Website success metrics",
-      "breadcrumb": "docs / developer / website-success-metrics",
-      "svgSha256": "aed51758126754c391f2f317dd19777f8ef9e45a8410101da2eb196e6924f77b"
+      "svgSha256": "f16f1ecf1ef50c83f152922470f1a3bc118a3ef6b227acb8cc2bb16046ff7345"
     },
     {
       "route": "/docs/developer/workflow-contract",
       "output": "static/img/social/docs/developer/workflow-contract.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Workflow Contract",
-      "breadcrumb": "docs / developer / workflow-contract",
-      "svgSha256": "37ac49b4894be87e3f833c5e3caec515e4d392810f0b511c485dce4cd9cd4648"
+      "svgSha256": "0ada38ae09d97c0a26123731cacc46747935ff837d207b4528873406d0803d0c"
     },
     {
       "route": "/docs/developer/workflow-harness-test-matrix",
       "output": "static/img/social/docs/developer/workflow-harness-test-matrix.png",
       "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Workflow Harness Test Matrix",
-      "breadcrumb": "docs / developer / workflow-harness-test-matrix",
-      "svgSha256": "77e0a75d73aa03d0754a82c1da403bddc31828eb05a017a31b69856e8ce3c465"
+      "svgSha256": "a3af4467fa3ea0402a2d49980ade4f4b6769d16f88d17077df5ccc6fcee28260"
     },
     {
       "route": "/docs/examples/debug-agent-run-with-traces",
       "output": "static/img/social/docs/examples/debug-agent-run-with-traces.png",
       "section": "Examples",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Debug an agent run with traces",
-      "breadcrumb": "docs / examples / debug-agent-run-with-traces",
-      "svgSha256": "44f617e2e589a06102d4deda5ee456dcb9ef427ba0ac36829a35dd186d47617c"
+      "svgSha256": "746ba45ae2f1bb0b8bd6fc560f95dccd5cb07019bb1d48fccf600a10f58f2679"
     },
     {
       "route": "/docs/examples/export-traces",
       "output": "static/img/social/docs/examples/export-traces.png",
       "section": "Examples",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Export traces",
-      "breadcrumb": "docs / examples / export-traces",
-      "svgSha256": "e134e92ca58bcedabfdc10782dd7c54b2cf9c0412101c00c4c8e79b2398b17de"
+      "svgSha256": "1b05b0bfa9368af373b82a72d02b1bf010f0dbd2f4274e06ba3f12c31beec7b9"
     },
     {
       "route": "/docs/help/broken-workflow-runbook",
       "output": "static/img/social/docs/help/broken-workflow-runbook.png",
       "section": "Help",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Broken workflow runbook",
-      "breadcrumb": "docs / help / broken-workflow-runbook",
-      "svgSha256": "dd2d0adcea0d44cf6d48bf6d1514b424e66dbe490baa9ab05d84ee06097e8e32"
+      "svgSha256": "4be1ddf39c72772ab6bb9ed9211f16747d8ad15142c3451be5d2f9c12b2db2f5"
     },
     {
       "route": "/docs/help/glossary",
       "output": "static/img/social/docs/help/glossary.png",
       "section": "Help",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Glossary",
-      "breadcrumb": "docs / help / glossary",
-      "svgSha256": "99b02e9abd1b2b8dcf77aa9bddac356b092586d8ff6056a1994b681840ee25e6"
+      "svgSha256": "660270297c0890a7422ffdf8fdc8fa64a566e614d10003cea8d292eedd2a397f"
     },
     {
       "route": "/docs/help/legacy-upgrade-recovery",
       "output": "static/img/social/docs/help/legacy-upgrade-recovery.png",
       "section": "Help",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Upgrade recovery",
-      "breadcrumb": "docs / help / legacy-upgrade-recovery",
-      "svgSha256": "2918286b2999ab2045949812b1b3cf42e8d063ad8bbcd97324ebca18038d255b"
+      "svgSha256": "fc0f46bae34fcbaa1c821c1fa775edcca9caa148f60abc2848ca85154ebc1f5e"
     },
     {
       "route": "/docs/help/troubleshooting-by-symptom",
       "output": "static/img/social/docs/help/troubleshooting-by-symptom.png",
       "section": "Help",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Troubleshooting by symptom",
-      "breadcrumb": "docs / help / troubleshooting-by-symptom",
-      "svgSha256": "434c1266fa682d988324939c9fa2ca56ea943d1dabc40b2389cfa2e427dd7b5f"
+      "svgSha256": "630e391ae3a09813f707d33c087bdbafb1bd5caee57c56abb3bcd230fd1fe1d3"
     },
     {
       "route": "/docs/help/troubleshooting",
       "output": "static/img/social/docs/help/troubleshooting.png",
       "section": "Help",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Troubleshooting",
-      "breadcrumb": "docs / help / troubleshooting",
-      "svgSha256": "0379ba9215a4f559dd9ecc36658c532332158892b4db2597dd28133b9a00ea37"
+      "svgSha256": "a57e724b7a3f0f4c02f25111005c23bb5dd13059512d8c22e8a847f24f88fb73"
     },
     {
       "route": "/docs",
       "output": "static/img/social/docs.png",
       "section": "Docs",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Agentplane Documentation",
-      "breadcrumb": "docs",
-      "svgSha256": "9a8ea9a62e6169d3cc34e2fd635ff9e6b6e8c0957c4c37cc8ea9f904904445dc"
+      "svgSha256": "61231999cc6993285b33c3361237c714c1234887116c48b0993f5ed149926879"
     },
     {
       "route": "/docs/internal/git-mutation-model",
       "output": "static/img/social/docs/internal/git-mutation-model.png",
       "section": "Internal",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Git Mutation Model",
-      "breadcrumb": "docs / internal / git-mutation-model",
-      "svgSha256": "6c5849a5b8c1c513538c87e4503ac0cb7c16666a4548769a216db0fc91d99400"
+      "svgSha256": "19450fefd6ce734060060b01517f6a0a368140aa757b5ce81f49c5627935d014"
     },
     {
       "route": "/docs/launch/checklist",
       "output": "static/img/social/docs/launch/checklist.png",
       "section": "Launch",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Checklist",
-      "breadcrumb": "docs / launch / checklist",
-      "svgSha256": "a85a04f3fcff51b989b1197a9f4fdde3c3e1ff6676a0fab272b91f8df55a53db"
+      "svgSha256": "515f275f48f72c59d1cd19082a704db82cf4875908583a468ce018345441bf0b"
     },
     {
       "route": "/docs/launch/hn",
       "output": "static/img/social/docs/launch/hn.png",
       "section": "Launch",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Hn",
-      "breadcrumb": "docs / launch / hn",
-      "svgSha256": "4fbaf3a8b6906e964cef857aebac80b5f471ab48d3076ed8cd450c866b2c70a3"
+      "svgSha256": "29c576fa43aeaea923614e127edda79d40c2bc77b1fbb22714124ba8d8cf2052"
     },
     {
       "route": "/docs/launch/reddit",
       "output": "static/img/social/docs/launch/reddit.png",
       "section": "Launch",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Reddit",
-      "breadcrumb": "docs / launch / reddit",
-      "svgSha256": "a9f6b599ef6a2239dcabfcc9c698976c7d0aa7787709d81e85fd7e85d2acaeef"
+      "svgSha256": "58ad43835d076c1c5154c1d2006b4bd100cb28425b2e4a50c98b308ca0e264ae"
     },
     {
       "route": "/docs/launch/twitter",
       "output": "static/img/social/docs/launch/twitter.png",
       "section": "Launch",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Twitter",
-      "breadcrumb": "docs / launch / twitter",
-      "svgSha256": "03492c79e5f85aa0081ba2a9034553b0d2414741790a25988d9a021fbf39e70d"
+      "svgSha256": "66777d9eeb5b25352c2a93a6ef0a07d931bf7d878b3dab9818227d30b7815093"
     },
     {
       "route": "/docs/listing",
       "output": "static/img/social/docs/listing.png",
       "section": "Listing",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Listing submission profile",
-      "breadcrumb": "docs / listing",
-      "svgSha256": "79f9acb7822d06ed8585dd485d23ec40890ab6168cc3289b1daa9be1f2538918"
+      "svgSha256": "0dc4838e260e5c8f662da43b579b64f867aa2bc9a0fa08ce23e1de04a4d4f092"
     },
     {
       "route": "/docs/manifesto",
       "output": "static/img/social/docs/manifesto.png",
       "section": "Manifesto",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Why Agentplane exists",
-      "breadcrumb": "docs / manifesto",
-      "svgSha256": "91687bcc12c8eb803913994399e84e86b9d0d589ac3543dd5d3e8d174013e076"
+      "svgSha256": "9816e0ac2a284a3d4ba28bd4fbc648549cf0a38c3867de284a7dfcb4d349470f"
     },
     {
       "route": "/docs/recipes/docs-update",
       "output": "static/img/social/docs/recipes/docs-update.png",
       "section": "Recipes",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Docs update recipe",
-      "breadcrumb": "docs / recipes / docs-update",
-      "svgSha256": "d8d7b8373ab31614565e88e1e16e2f69a5bfd378488d355f49aa685458d5f581"
+      "svgSha256": "fdfa02b4dd560e4e6ce843fdd26bcc72311f1a18d93c05f76cf118010af222b7"
     },
     {
       "route": "/docs/recipes",
       "output": "static/img/social/docs/recipes.png",
       "section": "Recipes",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Recipes",
-      "breadcrumb": "docs / recipes",
-      "svgSha256": "011712a81c399d1e074ac58f5a226a631aa9911dc1865663d5b1e0361430e62e"
+      "svgSha256": "08f8b34b49246bbf0cdd4efad52c4a50344270dcedccc5435bb403bffba459e1"
     },
     {
       "route": "/docs/recipes/security-review",
       "output": "static/img/social/docs/recipes/security-review.png",
       "section": "Recipes",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Security review recipe",
-      "breadcrumb": "docs / recipes / security-review",
-      "svgSha256": "eabed7771bf3dc06cdf58c9fcef5ba416cc49f52865488ff1967a1edc92826f9"
+      "svgSha256": "7107aae7525547f528c28009637512168980a5aa4561f7d3498e298c4bd15923"
     },
     {
       "route": "/docs/recipes/tdd",
       "output": "static/img/social/docs/recipes/tdd.png",
       "section": "Recipes",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "TDD recipe",
-      "breadcrumb": "docs / recipes / tdd",
-      "svgSha256": "6ebeabff51ca6530a9e31ae910a1b057cfc7de3f4caa8b8ca2f088757b4f3e7e"
+      "svgSha256": "930843a1176db20f5e6f404b6f95d269bcdb9cbbfebf1a15a1d35170c641eb61"
     },
     {
       "route": "/docs/reference/acr-schema",
       "output": "static/img/social/docs/reference/acr-schema.png",
       "section": "Reference",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "ACR schema",
-      "breadcrumb": "docs / reference / acr-schema",
-      "svgSha256": "be0a83a1834bc97cd6bef378ecabf27a23c8a934ce8eab4e3346ebc5a5211c8e"
+      "svgSha256": "a22035418f61af58bfdede32866afb1a33b9e656c7c4492a13362aa3cc3f5ef6"
     },
     {
       "route": "/docs/reference/acr",
       "output": "static/img/social/docs/reference/acr.png",
       "section": "Reference",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Agent Change Records",
-      "breadcrumb": "docs / reference / acr",
-      "svgSha256": "c8797c4e268055a099d7871844d885afb21310f366b67d28dee29ffe265457d3"
+      "svgSha256": "f4d6e11a055629e797d635cf71fef51ec39dc7b65e1591e279d935b4ecd1d993"
     },
     {
       "route": "/docs/reference/cli",
       "output": "static/img/social/docs/reference/cli.png",
       "section": "Reference",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "CLI reference",
-      "breadcrumb": "docs / reference / cli",
-      "svgSha256": "bbbb99ac37d56f72656973ecda02b2248665d519c9128c3dc589c181ac783077"
+      "svgSha256": "342bb318537ae5302fdc4cdfb13fab0d981e3dcdff915c2ce4ea618b0cd8debf"
     },
     {
       "route": "/docs/reference/evidence",
       "output": "static/img/social/docs/reference/evidence.png",
       "section": "Reference",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Evidence bundles",
-      "breadcrumb": "docs / reference / evidence",
-      "svgSha256": "14298a13ade6e5d2f38a2113ed6d52d5488a5231e597176215c759da907062a2"
+      "svgSha256": "098c93977faba7f347bdadc401e69829442de3d3ecaa1b05f20980a1481ce0f3"
     },
     {
       "route": "/docs/reference/generated-reference",
       "output": "static/img/social/docs/reference/generated-reference.png",
       "section": "Reference",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Generated Reference",
-      "breadcrumb": "docs / reference / generated-reference",
-      "svgSha256": "a0b26cc56366e51b27b6d2c6e8885fa9ca489c26d55b6bd311ba92cdb97a8d46"
+      "svgSha256": "ef5861160ccdb5a85677b40ea4618694cc794a17574b530a4c06cae55772ba13"
     },
     {
       "route": "/docs/reference/runner-handoff",
       "output": "static/img/social/docs/reference/runner-handoff.png",
       "section": "Reference",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Runner handoff contract",
-      "breadcrumb": "docs / reference / runner-handoff",
-      "svgSha256": "0da8c812b24dc49ff8d9f45a332d207b98a2a616ed26ec723970f1a4de7ccda7"
+      "svgSha256": "052a734bdc315055841f29803ca07b28a4e3193c3271b69d5281d286a47b7f59"
     },
     {
       "route": "/docs/reference/task-observations",
       "output": "static/img/social/docs/reference/task-observations.png",
       "section": "Reference",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Task Observations",
-      "breadcrumb": "docs / reference / task-observations",
-      "svgSha256": "73720e98a6e74b380e2c5d5f421d75ffae0861ffdcaff4d3b90f0729cae3af5a"
+      "svgSha256": "1c1d0fc7ad411900665e3ab5e4ea6ff1cda2ec8f38adfd3dd11468bc8dfd8575"
     },
     {
       "route": "/docs/reference/trace-schema",
       "output": "static/img/social/docs/reference/trace-schema.png",
       "section": "Reference",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Trace schema",
-      "breadcrumb": "docs / reference / trace-schema",
-      "svgSha256": "1b98e17610f0e3f8e374d321c4c3494aa436a03330c3162cc7ce9792c4d4462e"
+      "svgSha256": "f163372a556ba91d3ad39cecc78099981975e0acb0ad8fa762794b20ba810820"
     },
     {
       "route": "/docs/reference/workflow-file",
       "output": "static/img/social/docs/reference/workflow-file.png",
       "section": "Reference",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Workflow file reference",
-      "breadcrumb": "docs / reference / workflow-file",
-      "svgSha256": "74a2e25e62aba9db64ed5beba4da4508f7c9ae441b10e97d4ca59121d7c273e0"
+      "svgSha256": "a47237c63ae30f884496a665de2a5416edbd87dd1b64d9bc069a77b0a552138a"
     },
     {
       "route": "/docs/releases/TEMPLATE",
       "output": "static/img/social/docs/releases/TEMPLATE.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "TEMPLATE",
-      "breadcrumb": "docs / releases / TEMPLATE",
-      "svgSha256": "0af0b3ce45c78a1ff3e9a15d7a0693ca98313a19f37922ad3ca38b3a99cf5f7c"
+      "svgSha256": "e152d24fb138b1cc0a5230552a82cefa82477d3917ad9d85d0a40f69ba547bac"
     },
     {
       "route": "/docs/releases",
       "output": "static/img/social/docs/releases.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Release Notes",
-      "breadcrumb": "docs / releases",
-      "svgSha256": "b4ea2310df8914ec33d59f6f998a5cf36b9e456479de9f2e3063aff6f154fbd1"
+      "svgSha256": "dfb32b8ba1120a653da1d31ad0ac2c45abd8b374241b6cb6e98d7eb8bdf9a629"
     },
     {
       "route": "/docs/releases/v0.1.3",
       "output": "static/img/social/docs/releases/v0.1.3.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.1.3",
-      "breadcrumb": "docs / releases / v0.1.3",
-      "svgSha256": "acd0ff09da11e4ddc95442723b949f51e889a041bed7643a288970798a8e873d"
+      "svgSha256": "61fe64ae00bcbd2016739cead6539f34f8a375bc1eb412b05cb6e9d35ccc2c05"
     },
     {
       "route": "/docs/releases/v0.1.4",
       "output": "static/img/social/docs/releases/v0.1.4.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.1.4",
-      "breadcrumb": "docs / releases / v0.1.4",
-      "svgSha256": "e71145401843dd04e8a5e547a6b08347e44abfeffb334ef3f5c991912faf411b"
+      "svgSha256": "a17c038b454e19287060546f874dc39bfef8b0efab0cd25231e524f9b896b3e4"
     },
     {
       "route": "/docs/releases/v0.1.5",
       "output": "static/img/social/docs/releases/v0.1.5.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.1.5",
-      "breadcrumb": "docs / releases / v0.1.5",
-      "svgSha256": "5b95b99bd1c7d84b2d16db00301a15e77c557a33a1de8494ca93b7ec615cee0b"
+      "svgSha256": "c1b88bdee083c83e35e3dd1aebd2ee5e2f23453674a20a470b4fa87bfdfb197c"
     },
     {
       "route": "/docs/releases/v0.1.6",
       "output": "static/img/social/docs/releases/v0.1.6.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.1.6",
-      "breadcrumb": "docs / releases / v0.1.6",
-      "svgSha256": "8b4b12d51dc2807d392bd924068df85e51ebc2945a91cce33573f4d21097158c"
+      "svgSha256": "758841bf8771a740dac8357cb1c04d97cb378d1c6c5eaf36d801d282ea42e610"
     },
     {
       "route": "/docs/releases/v0.1.7",
       "output": "static/img/social/docs/releases/v0.1.7.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.1.7",
-      "breadcrumb": "docs / releases / v0.1.7",
-      "svgSha256": "82985463b30e876caf21260e0dfaca34ddcae4b38cc1ea3178e7857ec6db17a7"
+      "svgSha256": "39b7da2368c516299dac905ea153289d3fe46af17f95a5489fe433edf6b24af9"
     },
     {
       "route": "/docs/releases/v0.1.8",
       "output": "static/img/social/docs/releases/v0.1.8.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.1.8",
-      "breadcrumb": "docs / releases / v0.1.8",
-      "svgSha256": "d8b02791d9f2beab7ce187cf9952a431472a5567ee5e9f109ad78855edeaff27"
+      "svgSha256": "b1630776a290b6107820c582c2e77854615d6ad4c5215873509d73004afc77ba"
     },
     {
       "route": "/docs/releases/v0.1.9",
       "output": "static/img/social/docs/releases/v0.1.9.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.1.9",
-      "breadcrumb": "docs / releases / v0.1.9",
-      "svgSha256": "0e4885582febf5d2c2d00cf2b07cecec1b656f037c9d909792a37244be7854c3"
+      "svgSha256": "373f69279b62e16e4e40c655b109a7f34c3a33ee010dd0c85991684f79fb86a1"
     },
     {
       "route": "/docs/releases/v0.2.0",
       "output": "static/img/social/docs/releases/v0.2.0.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.0",
-      "breadcrumb": "docs / releases / v0.2.0",
-      "svgSha256": "256f9c5f85d24787942c51c54faeb88255ac3d3a2d76e1191e23e37fde02b710"
+      "svgSha256": "d89268d5881dd4d23c910695db9d4697c066790055a423d30d625650c1b0853f"
     },
     {
       "route": "/docs/releases/v0.2.1",
       "output": "static/img/social/docs/releases/v0.2.1.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.1",
-      "breadcrumb": "docs / releases / v0.2.1",
-      "svgSha256": "b4862f19bffa98f3e44a83880eed971b4723b95250194b29154f236830dbc58e"
+      "svgSha256": "562ace88006ec0f6d4719f608086097724e8870dbd6fd875582a5a004d6a672c"
     },
     {
       "route": "/docs/releases/v0.2.10",
       "output": "static/img/social/docs/releases/v0.2.10.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.10",
-      "breadcrumb": "docs / releases / v0.2.10",
-      "svgSha256": "0d1b07aced645f41e0eefa269311cbffea305b15eadd4896b4e771205d216921"
+      "svgSha256": "3c99e81e62dba5c6affd0416786cfc8b376475f8c36389f4d56ecb306cf5c72c"
     },
     {
       "route": "/docs/releases/v0.2.11",
       "output": "static/img/social/docs/releases/v0.2.11.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.11",
-      "breadcrumb": "docs / releases / v0.2.11",
-      "svgSha256": "a30e167704bafee26346e4e9f66b3a48783d5089f04bc6a2f7c542c510c05ecb"
+      "svgSha256": "056fbf330bcd6d4a6dcfabb78b7429a9078104534db88ccc33f1bcd02e94939c"
     },
     {
       "route": "/docs/releases/v0.2.12",
       "output": "static/img/social/docs/releases/v0.2.12.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.12",
-      "breadcrumb": "docs / releases / v0.2.12",
-      "svgSha256": "6ed0bcf4782541ed95f9f98b03dd5498e1b8cb13b4e5be0b03596f5704a84247"
+      "svgSha256": "5dcc25271160c3bc76e0a138110f3a02a3ce7bcb74c1b995153a2dde44411d87"
     },
     {
       "route": "/docs/releases/v0.2.13",
       "output": "static/img/social/docs/releases/v0.2.13.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.13",
-      "breadcrumb": "docs / releases / v0.2.13",
-      "svgSha256": "5fcc809a51035d489133f340b957865e2e202173c1c5cd125faab085cc611fcd"
+      "svgSha256": "f02b338c49c001f0a7fac36b792fa847d459d280f13581ad0989610d32f39539"
     },
     {
       "route": "/docs/releases/v0.2.14",
       "output": "static/img/social/docs/releases/v0.2.14.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.14",
-      "breadcrumb": "docs / releases / v0.2.14",
-      "svgSha256": "67717d8bc7892c43abf2b2739cf261f31fb8e8443c1e1d3e7d2de03a901e796d"
+      "svgSha256": "ad828999f72b99af448a6dec0d29a84d01fd6dd0c2503b569469dd8c75a8d172"
     },
     {
       "route": "/docs/releases/v0.2.15",
       "output": "static/img/social/docs/releases/v0.2.15.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.15",
-      "breadcrumb": "docs / releases / v0.2.15",
-      "svgSha256": "e835f61fc7c7afcc14f6399bf795fb58e655bc9fb87a8a0d173f6c8dfeb44ad1"
+      "svgSha256": "245083a23c152cc225a808aa04fc9cfeaf788c75392b05ad217eea243f68fa34"
     },
     {
       "route": "/docs/releases/v0.2.16",
       "output": "static/img/social/docs/releases/v0.2.16.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.16",
-      "breadcrumb": "docs / releases / v0.2.16",
-      "svgSha256": "0b1e098d4fafdb7a3c790914e8eaec0769803e22c753c06a05571c2b83aaff9f"
+      "svgSha256": "c044f56627a119497fae3b586d855fb497ebf5c064494a5193ca90f54ca98aec"
     },
     {
       "route": "/docs/releases/v0.2.17",
       "output": "static/img/social/docs/releases/v0.2.17.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.17",
-      "breadcrumb": "docs / releases / v0.2.17",
-      "svgSha256": "5a6246d5f3206cd727743c69a1b09939188188d1d60caebbe26f5fe43f7e87b4"
+      "svgSha256": "3aa67e92deacd5d5e5c00862b7063f4d19773a786930744aac8a74e88cb554ef"
     },
     {
       "route": "/docs/releases/v0.2.18",
       "output": "static/img/social/docs/releases/v0.2.18.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.18",
-      "breadcrumb": "docs / releases / v0.2.18",
-      "svgSha256": "8fdd85858d75c983312b8206cceb60836fa845ec02c2854b385973a8771420d4"
+      "svgSha256": "f8480da65a6e83c4a81b01093f9a89cee787282be708ba4abfef5e73b69ba082"
     },
     {
       "route": "/docs/releases/v0.2.19",
       "output": "static/img/social/docs/releases/v0.2.19.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.19",
-      "breadcrumb": "docs / releases / v0.2.19",
-      "svgSha256": "92f0e5cc7bad9c071e3c2a9e7c065d276800b2e81b6fa1861d14a888bc4e3436"
+      "svgSha256": "6753b74f6baa628847dfccc4aca5204981acb63abbdefb0be03977a025223b06"
     },
     {
       "route": "/docs/releases/v0.2.2",
       "output": "static/img/social/docs/releases/v0.2.2.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.2",
-      "breadcrumb": "docs / releases / v0.2.2",
-      "svgSha256": "54cb64efa3be5cc23cdb5db0fa039279e91b7d8305e50fdea24e420e7723c8ae"
+      "svgSha256": "5d72d31b7131080023c6f54ad796c1bbce3e845e93ba63c0ddcdef366aa7b1ad"
     },
     {
       "route": "/docs/releases/v0.2.20",
       "output": "static/img/social/docs/releases/v0.2.20.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.20",
-      "breadcrumb": "docs / releases / v0.2.20",
-      "svgSha256": "5cb6465faae80c1a281e8eb502728a7e751ac068c8bfbbc825b5ec00a4ab8b9b"
+      "svgSha256": "111a359eede1036458242ebcd15ee90bf2d19381b3341315b03a7a251d2642f3"
     },
     {
       "route": "/docs/releases/v0.2.21",
       "output": "static/img/social/docs/releases/v0.2.21.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.21",
-      "breadcrumb": "docs / releases / v0.2.21",
-      "svgSha256": "ea251fd8dfac14eeac1754a80b63a695b0edbf265f029bbde41ebe77c8b72395"
+      "svgSha256": "6abb285c888dbd73e5a796289541861505f1e7026e466229e4ebe3d746fe6fbc"
     },
     {
       "route": "/docs/releases/v0.2.22",
       "output": "static/img/social/docs/releases/v0.2.22.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.22",
-      "breadcrumb": "docs / releases / v0.2.22",
-      "svgSha256": "03a44d93a6a0f5a8da790a52e2e168f4f4ca3ad000d0be7b6abdb7c163a77818"
+      "svgSha256": "28ac33e09358d96a290180e89f0a788bec1c34e51414302d04a967bfedb4e439"
     },
     {
       "route": "/docs/releases/v0.2.23",
       "output": "static/img/social/docs/releases/v0.2.23.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.23",
-      "breadcrumb": "docs / releases / v0.2.23",
-      "svgSha256": "d612a885e0d5e35c40b42c0a379da277ec71212820adbd6b334b46efa74af8f0"
+      "svgSha256": "95edc6ca2fd8ed40ff28cebd01d6ea7b1e7a225c6a2309a8d21e923020489a87"
     },
     {
       "route": "/docs/releases/v0.2.24",
       "output": "static/img/social/docs/releases/v0.2.24.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.24",
-      "breadcrumb": "docs / releases / v0.2.24",
-      "svgSha256": "97c3062bf0c892be4a9f4a62780420bcb0e8f5ed2ee24ad43e14c76d53398c4c"
+      "svgSha256": "2e474503e8718f02c35a37305b372462ac007052f5aa184a9b72d8d3f725e930"
     },
     {
       "route": "/docs/releases/v0.2.25",
       "output": "static/img/social/docs/releases/v0.2.25.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.25",
-      "breadcrumb": "docs / releases / v0.2.25",
-      "svgSha256": "77c5a7fd201b33bdae934708735a3d75fe560fbabe8f3f5637d3c22bb0f9df4d"
+      "svgSha256": "4c32a8dffec662a6314cc7352b453771076751cccb85c4146c555337b45e0dec"
     },
     {
       "route": "/docs/releases/v0.2.26",
       "output": "static/img/social/docs/releases/v0.2.26.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.26",
-      "breadcrumb": "docs / releases / v0.2.26",
-      "svgSha256": "f486a46a0145ae9b237c31b642c369f050e61d7622f8a3f96c655ec780dae6e0"
+      "svgSha256": "c602b580fe59c7446c7fa9ae396f9643fcd9cebed0d85ca8b2ae5d328f038812"
     },
     {
       "route": "/docs/releases/v0.2.3",
       "output": "static/img/social/docs/releases/v0.2.3.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.3",
-      "breadcrumb": "docs / releases / v0.2.3",
-      "svgSha256": "b7fbabe5db6b56f42e78b1d1cb7c4e8bd2c84e9c88f125553bb693a85df89d1c"
+      "svgSha256": "f8d97724fc1cabaa4fa2ce8ce8c7dcffd1d76a6623024297f9233ae4438dd973"
     },
     {
       "route": "/docs/releases/v0.2.4",
       "output": "static/img/social/docs/releases/v0.2.4.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.4",
-      "breadcrumb": "docs / releases / v0.2.4",
-      "svgSha256": "a78d0f0b61cbdd5231278683df73c32e5f83d4065295f8834b41acc4d22e0e40"
+      "svgSha256": "acc65aecfe04103909fd8117fcac705aa1d4a3d0107161dd10cc0eb19ee0bcb2"
     },
     {
       "route": "/docs/releases/v0.2.5",
       "output": "static/img/social/docs/releases/v0.2.5.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.5",
-      "breadcrumb": "docs / releases / v0.2.5",
-      "svgSha256": "0ba823a6a03638c83ef13ed93194b610f0c17745d165b191ad28b9ec64f25850"
+      "svgSha256": "143e99eb4ce255171d9b4e546382df62732404bfaf73cca1e7ca8f5b261ffd08"
     },
     {
       "route": "/docs/releases/v0.2.6",
       "output": "static/img/social/docs/releases/v0.2.6.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.6",
-      "breadcrumb": "docs / releases / v0.2.6",
-      "svgSha256": "55b3cd5c7d721aab004c1b7c534b5c0735f493222d73e31ed083fbbd159c3f4a"
+      "svgSha256": "6da10a2bf16778a140f12996ad16dc5329873a9f0dc1345344a43420e3fee0d4"
     },
     {
       "route": "/docs/releases/v0.2.7",
       "output": "static/img/social/docs/releases/v0.2.7.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.7",
-      "breadcrumb": "docs / releases / v0.2.7",
-      "svgSha256": "ca986c19a257a273f6d5363b9702c46504493eeefc260762ad147793feaec2ff"
+      "svgSha256": "38124bb2b810fcfa1e4ea28f317715c1c9c8d897bea30d5aef3f40d71265b793"
     },
     {
       "route": "/docs/releases/v0.2.8",
       "output": "static/img/social/docs/releases/v0.2.8.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.8",
-      "breadcrumb": "docs / releases / v0.2.8",
-      "svgSha256": "bfb52ebfc594e2c35d024f09628da6fa12264e27a8daa9f86bbb38795aaab29e"
+      "svgSha256": "eb37e02ea0f055551f6a2de876dc283f2ea726aef4db1798823a9d34229d464e"
     },
     {
       "route": "/docs/releases/v0.2.9",
       "output": "static/img/social/docs/releases/v0.2.9.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.2.9",
-      "breadcrumb": "docs / releases / v0.2.9",
-      "svgSha256": "95af86a18973e625303c27c2a552f90db7025d79ac6bc8836c4f4379ae6349e1"
+      "svgSha256": "900b8c5ab0158db383be1062c4bfd0ff014b914d5e1c04bedacaa7fb6999c435"
     },
     {
       "route": "/docs/releases/v0.3.0",
       "output": "static/img/social/docs/releases/v0.3.0.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.0",
-      "breadcrumb": "docs / releases / v0.3.0",
-      "svgSha256": "ea9bf394ec14976a370395232bdc840cbda1c4ba3bd5bf2dbfa223d2709ea689"
+      "svgSha256": "e67cd940c479a88e096d35ca29a1dc76242c01a6cfb49edf9077b49c91025130"
     },
     {
       "route": "/docs/releases/v0.3.1",
       "output": "static/img/social/docs/releases/v0.3.1.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.1",
-      "breadcrumb": "docs / releases / v0.3.1",
-      "svgSha256": "354301d42e55e8d37350e1f7c5a85d6218ec1e2dadec3347f3e82b136e9c796d"
+      "svgSha256": "0da745d95be86f19b8b7d7642375b7889873fba8dfb712cfa1dea9cb397c0fae"
     },
     {
       "route": "/docs/releases/v0.3.10",
       "output": "static/img/social/docs/releases/v0.3.10.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.10",
-      "breadcrumb": "docs / releases / v0.3.10",
-      "svgSha256": "aa98e51945da1fb28f50de5f11fa36cb73c44f1119b6bd08c240614aa26eceb0"
+      "svgSha256": "959dd46c900b9b9de7b81e0c46a8936d239e7206bc9dc2a19c0964dcb569bf89"
     },
     {
       "route": "/docs/releases/v0.3.11",
       "output": "static/img/social/docs/releases/v0.3.11.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.11",
-      "breadcrumb": "docs / releases / v0.3.11",
-      "svgSha256": "52b54fe303d36163f705064691bae787e4862392fa92b7c32329bb2400915208"
+      "svgSha256": "feb9df7319d2562051aa0596174444b275fca4d860e66074df498f7f907ef451"
     },
     {
       "route": "/docs/releases/v0.3.12",
       "output": "static/img/social/docs/releases/v0.3.12.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.12",
-      "breadcrumb": "docs / releases / v0.3.12",
-      "svgSha256": "c9bcf78e8dbd25060316e9ac01619f251ba0d5492b4cbcb01e2b41aa89c72e83"
+      "svgSha256": "d58ff6bf041a2a5109ebe4168a5fb97a91c7286206eb99e7236131a8fb4198dd"
     },
     {
       "route": "/docs/releases/v0.3.13",
       "output": "static/img/social/docs/releases/v0.3.13.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.13",
-      "breadcrumb": "docs / releases / v0.3.13",
-      "svgSha256": "e43b4f92b292a9418a8b8aa90fd0399f3fa6130ca5552bffcbae004e01dadf14"
+      "svgSha256": "95326c5e0ad159c2b3ab92aec0711dc99769676a581479202be2a6042d99eb19"
     },
     {
       "route": "/docs/releases/v0.3.14",
       "output": "static/img/social/docs/releases/v0.3.14.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.14",
-      "breadcrumb": "docs / releases / v0.3.14",
-      "svgSha256": "b5b35ef62d668ad1cfb9454bbce02b67a247d18855dc6adb1302e5deedd08b37"
+      "svgSha256": "540d13371d682d73b3f1bad24c0792455c2d14284fd7c3024aab8a165a59299a"
     },
     {
       "route": "/docs/releases/v0.3.15",
       "output": "static/img/social/docs/releases/v0.3.15.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.15",
-      "breadcrumb": "docs / releases / v0.3.15",
-      "svgSha256": "432ff563fd4b79e2dbb2dbb762e895f0e086208563e02b0e034aaf8345f88335"
+      "svgSha256": "cffaa67a6d263f4c478628e9387657f1cb4c00ad8becd5396f370aa77dcabe43"
     },
     {
       "route": "/docs/releases/v0.3.16",
       "output": "static/img/social/docs/releases/v0.3.16.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.16",
-      "breadcrumb": "docs / releases / v0.3.16",
-      "svgSha256": "992b508c65c979e1da495c597848ce3b4dccdbfecfd2f557b4c80f5ed607b7cf"
+      "svgSha256": "a42776c893e4c2941a94abd02a320d903be753284f3528ec3a71f3259ca00b6a"
     },
     {
       "route": "/docs/releases/v0.3.17",
       "output": "static/img/social/docs/releases/v0.3.17.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.17",
-      "breadcrumb": "docs / releases / v0.3.17",
-      "svgSha256": "fb7c5e0be96687906ea19ac5ed38a0d4221ae7770c0f14c4348840376e6f48fe"
+      "svgSha256": "c6a3c6a825c7ade2f544ddb79e8fc02160a6e942223c715c909b030a3c97e4bd"
     },
     {
       "route": "/docs/releases/v0.3.18",
       "output": "static/img/social/docs/releases/v0.3.18.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.18",
-      "breadcrumb": "docs / releases / v0.3.18",
-      "svgSha256": "6613a84eac9459baff5f404f5763017e4224ee67e7a80d4b1b0689e83d6faa43"
+      "svgSha256": "88c8da8b408c7b11d3e082af5e2e528530ef04af92c04f531542d82ec8f93358"
     },
     {
       "route": "/docs/releases/v0.3.19",
       "output": "static/img/social/docs/releases/v0.3.19.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.19",
-      "breadcrumb": "docs / releases / v0.3.19",
-      "svgSha256": "8d744ccf9a3030787d41d8a21bbdc46571e3bd7ebfb93d2bc7809f8152285650"
+      "svgSha256": "a0007f6c32fd61fc0fbaab3767af5d58aacaaf507c7472b04136ae5563603c7c"
     },
     {
       "route": "/docs/releases/v0.3.2",
       "output": "static/img/social/docs/releases/v0.3.2.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.2",
-      "breadcrumb": "docs / releases / v0.3.2",
-      "svgSha256": "b04b2d05c2454db7a24158fc8d871b504be3c592c2017c084e7371a4155bf8f6"
+      "svgSha256": "83e750119ee13ad3c0b709481aa5f505b48375915eb626dde8620d8ccf7fe76b"
     },
     {
       "route": "/docs/releases/v0.3.20",
       "output": "static/img/social/docs/releases/v0.3.20.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.20",
-      "breadcrumb": "docs / releases / v0.3.20",
-      "svgSha256": "f52c34ded5fc2b882843be953ef7c724642628e9aba01d600bc17f710ccc97aa"
+      "svgSha256": "3e27bcbc4ffb9aed377d85f740f00428ec0740eea45ea26fed77c30ca6ce173a"
     },
     {
       "route": "/docs/releases/v0.3.21",
       "output": "static/img/social/docs/releases/v0.3.21.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.21",
-      "breadcrumb": "docs / releases / v0.3.21",
-      "svgSha256": "5e971fd04828bd9de2891bc67b0b775ba86e24f8fe6971e5009eaa534c162c28"
+      "svgSha256": "db4a1ae789dde0f36c9f98f2ee8ff9e78376464a875d27a69300557c7497cf05"
     },
     {
       "route": "/docs/releases/v0.3.22",
       "output": "static/img/social/docs/releases/v0.3.22.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.22",
-      "breadcrumb": "docs / releases / v0.3.22",
-      "svgSha256": "495a33e9fd2b49cc475342ca460db7d14c867f57c3fef30b05fd009a6b9cc112"
+      "svgSha256": "77cded4a7e202aac1da125c20335953837c35d574931ed0d7c058f6d85239778"
     },
     {
       "route": "/docs/releases/v0.3.23",
       "output": "static/img/social/docs/releases/v0.3.23.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.23",
-      "breadcrumb": "docs / releases / v0.3.23",
-      "svgSha256": "25828c603283be1ed075329d12153bdd2f22f1b6a373c718ab85ae27313bd5f5"
+      "svgSha256": "79efe69d8a54d84c49d10af5b6afec3c3fc90b5e7855294f9022dea4b0be39eb"
     },
     {
       "route": "/docs/releases/v0.3.24",
       "output": "static/img/social/docs/releases/v0.3.24.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.24",
-      "breadcrumb": "docs / releases / v0.3.24",
-      "svgSha256": "370438cb82356ac676e1af0d7f451427f5cbe3503367b524504b0f2c69d7e6cb"
+      "svgSha256": "dbb77b7de7a46a542455b2df9358e563e82ec97938a8098c6436a929424f37ed"
     },
     {
       "route": "/docs/releases/v0.3.25",
       "output": "static/img/social/docs/releases/v0.3.25.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.25",
-      "breadcrumb": "docs / releases / v0.3.25",
-      "svgSha256": "e7c7d27d2afb5a07d9f8862d840959174907addbb2efc863129d0ca3c2a6a60e"
+      "svgSha256": "68ef9b7c357be57fcd19a1838c211c0971930c747da827f6c274753a71d091b7"
     },
     {
       "route": "/docs/releases/v0.3.26",
       "output": "static/img/social/docs/releases/v0.3.26.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.26",
-      "breadcrumb": "docs / releases / v0.3.26",
-      "svgSha256": "16eb8ab3ce8ab0c3a506930843a15fffb55bc53d44fecbc66b03f4b2808c8b2e"
+      "svgSha256": "1763c2b2895eaab470dc68594e0243ad8de39d2c9cd9fdf9c4f263336807e139"
     },
     {
       "route": "/docs/releases/v0.3.27",
       "output": "static/img/social/docs/releases/v0.3.27.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.27",
-      "breadcrumb": "docs / releases / v0.3.27",
-      "svgSha256": "400237fa3ad9b5aaaf9d70edc2c6ac99a85dcaf29702659f9f667b1b9fde2125"
+      "svgSha256": "d377d570fc1e4e51d8b330e9057660de6c2b6effef5c378b14b187261c9ac5b1"
     },
     {
       "route": "/docs/releases/v0.3.28",
       "output": "static/img/social/docs/releases/v0.3.28.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.28",
-      "breadcrumb": "docs / releases / v0.3.28",
-      "svgSha256": "35cbe4e1fdb4c323c4c1f4a7d87f7e61e35c157afff4d8424187d7d2945a3987"
+      "svgSha256": "e8abcfda458838439921a75671c33c5f1ffb71e62c6ff863715fe767682ba15d"
     },
     {
       "route": "/docs/releases/v0.3.29",
       "output": "static/img/social/docs/releases/v0.3.29.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.29",
-      "breadcrumb": "docs / releases / v0.3.29",
-      "svgSha256": "b664aa41821540391c74670f974f4817ffa60caac09e337eb9da04fd2ff64c96"
+      "svgSha256": "84cad71036585546a7e42795c82a1f02ecc1f14775ef38829e40a48bf5533a3f"
     },
     {
       "route": "/docs/releases/v0.3.3",
       "output": "static/img/social/docs/releases/v0.3.3.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.3",
-      "breadcrumb": "docs / releases / v0.3.3",
-      "svgSha256": "95e49677c2d318cabe20e12a36bb667db7b6506d1362e976afe2b0d6a2a6d72a"
+      "svgSha256": "ae23676f5bb92dc4a5a5a301ce7f27b1f59216b8e2b30d66c35a30c7c568a7c0"
     },
     {
       "route": "/docs/releases/v0.3.4",
       "output": "static/img/social/docs/releases/v0.3.4.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.4",
-      "breadcrumb": "docs / releases / v0.3.4",
-      "svgSha256": "5339c120c72103ed319c56fd07868d7b09e0b9afb8560c4519c7b1d5f7d626b5"
+      "svgSha256": "e353c72eba94dcf55df486f318b17e1e6b6c4154540e36a288a892878d76bdae"
     },
     {
       "route": "/docs/releases/v0.3.5",
       "output": "static/img/social/docs/releases/v0.3.5.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.5",
-      "breadcrumb": "docs / releases / v0.3.5",
-      "svgSha256": "1b6dfa1c058efd6a2ee433fe6503694689c1b8ceea07a7d2985024ed5ae0713b"
+      "svgSha256": "a6c9bad3a2baaa897c07c5e2e2c2431d546cbe8f9a714b488838aedaefacea2b"
     },
     {
       "route": "/docs/releases/v0.3.6",
       "output": "static/img/social/docs/releases/v0.3.6.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.6",
-      "breadcrumb": "docs / releases / v0.3.6",
-      "svgSha256": "14b1aaf1b2db8a7210e1e490d2ab0b210e60611ff3657258b88a26ec473fdb3d"
+      "svgSha256": "e3f2af0f2624a86a17796c5a2ab51c714f45e3a7c3542d61540362cb96206915"
     },
     {
       "route": "/docs/releases/v0.3.7",
       "output": "static/img/social/docs/releases/v0.3.7.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.7",
-      "breadcrumb": "docs / releases / v0.3.7",
-      "svgSha256": "f6f649e737004946fff4abc6fd782342cf513c7de04ed63e4958f981ae6e4527"
+      "svgSha256": "bd267b60997499cb97c666b73b0926de07a0850ab055c386a06ab241dede22c9"
     },
     {
       "route": "/docs/releases/v0.3.8",
       "output": "static/img/social/docs/releases/v0.3.8.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.8",
-      "breadcrumb": "docs / releases / v0.3.8",
-      "svgSha256": "e51f4d8e43039c56b875900a29247881479459b0032d71e709a67781f6cb522b"
+      "svgSha256": "ff20e4b024c7bc5304ddecf3c67c2d5f10f4794c834447914640beb8b02e955b"
     },
     {
       "route": "/docs/releases/v0.3.9",
       "output": "static/img/social/docs/releases/v0.3.9.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.3.9",
-      "breadcrumb": "docs / releases / v0.3.9",
-      "svgSha256": "d773af91086f928e0a0acd99d5744441d18f470a6382b97fd7b7f1aa1f777667"
+      "svgSha256": "b59d49508d78e0eac47c7b493a0c47c4b5e8efa530eae7afddf17e0d4b3a32f4"
     },
     {
       "route": "/docs/releases/v0.4.0",
       "output": "static/img/social/docs/releases/v0.4.0.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.4.0",
-      "breadcrumb": "docs / releases / v0.4.0",
-      "svgSha256": "9471e97526bfbd388310f6218644c6e3337a8dfc3dedebb488c4dcd98410fb96"
+      "svgSha256": "cb12b3738480078054e3b5d1aa6319926f487ca18697d243598fcad73308db83"
     },
     {
       "route": "/docs/releases/v0.4.1",
       "output": "static/img/social/docs/releases/v0.4.1.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.4.1",
-      "breadcrumb": "docs / releases / v0.4.1",
-      "svgSha256": "7b46f50396ab63fbb3d60f351dcc59cdc4fdb38400a78c8a37d4a9b8a7bf9f5b"
+      "svgSha256": "0aa2422307b03b9987d202849e2613c067a83c64d8ef3aa2d95f610cf793dff2"
     },
     {
       "route": "/docs/releases/v0.4.2",
       "output": "static/img/social/docs/releases/v0.4.2.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.4.2",
-      "breadcrumb": "docs / releases / v0.4.2",
-      "svgSha256": "498dcc9d272ae290647fe078c4cf971b4b3871b29b68d3185124312b4f88aab9"
+      "svgSha256": "9f623aedbf4b9ec541610513d8f7b1721f572083aaeadc1d3f009aa992768fd9"
     },
     {
       "route": "/docs/releases/v0.4.3",
       "output": "static/img/social/docs/releases/v0.4.3.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.4.3",
-      "breadcrumb": "docs / releases / v0.4.3",
-      "svgSha256": "929d8de001eca9f8467d3d6588409d50835f387521e8f8a2f64360c30d996dca"
+      "svgSha256": "f898a7f1f494a014ea7483018b1ad118baf9301820f61c75ac5fe403ac5a4427"
     },
     {
       "route": "/docs/releases/v0.4.4",
       "output": "static/img/social/docs/releases/v0.4.4.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.4.4",
-      "breadcrumb": "docs / releases / v0.4.4",
-      "svgSha256": "41926712a627cee941ba4e7adec46c16518c0f69f79b31da8ab700faf3c59f22"
+      "svgSha256": "87da72cef35538ae32157ac448a0d8601c80b1517a5bdff999897f0f90592391"
     },
     {
       "route": "/docs/releases/v0.5.0-rc.1",
       "output": "static/img/social/docs/releases/v0.5.0-rc.1.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.5.0 Rc.1",
-      "breadcrumb": "docs / releases / v0.5.0-rc.1",
-      "svgSha256": "1dff7ccc43afac968b4daa46932a5ef76eb5ddc20da7ce6a91472d8b50439afe"
+      "svgSha256": "3e4b8cbac8bdb1aa6db71e81046fd8ef308530ab75feb25257f9b33c1ddfe204"
     },
     {
       "route": "/docs/releases/v0.5.0",
       "output": "static/img/social/docs/releases/v0.5.0.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.5.0",
-      "breadcrumb": "docs / releases / v0.5.0",
-      "svgSha256": "c175ac10a88209372858d11faf356bf85eb38b97eab3f542d7fc758ab26541fb"
+      "svgSha256": "c9c3c507258cf98a7ad1d374cd2d3ffe5294529b019bd07bd508c9a8cb8a5bc3"
     },
     {
       "route": "/docs/releases/v0.6.0",
       "output": "static/img/social/docs/releases/v0.6.0.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.0",
-      "breadcrumb": "docs / releases / v0.6.0",
-      "svgSha256": "f54f07b7b7389fdc5cca9b38737e0f2f71e8c8eaabd38f07f20619ce78b8ad39"
+      "svgSha256": "df812a6c74611bffb24e3448da10845eb27f008b712ba3204aa1fb1725e44e01"
     },
     {
       "route": "/docs/releases/v0.6.1",
       "output": "static/img/social/docs/releases/v0.6.1.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.1",
-      "breadcrumb": "docs / releases / v0.6.1",
-      "svgSha256": "934cb2f270d4a7b3e62bd158ef355ca6dd17f45a60b994718c83bbe1b0d7c3ac"
+      "svgSha256": "c9f7a32575359932d967d8768f78fd19dfac8053bdb30644c266fd08cf66b5ee"
     },
     {
       "route": "/docs/releases/v0.6.10",
       "output": "static/img/social/docs/releases/v0.6.10.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.10",
-      "breadcrumb": "docs / releases / v0.6.10",
-      "svgSha256": "9c22bf4c73541cb7825963e81d6095b732d778a46a689163b53b757441a58ca8"
+      "svgSha256": "f44e75ef489b918b9c101d9e9fe0c15b534cf6a30c89980d9cb4ec335edbc3e4"
     },
     {
       "route": "/docs/releases/v0.6.11",
       "output": "static/img/social/docs/releases/v0.6.11.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.11",
-      "breadcrumb": "docs / releases / v0.6.11",
-      "svgSha256": "c70eda77f9aeb5e1931ecb8c567c01d8b03d13387d8f676748671f45b4b3045c"
+      "svgSha256": "f8a1f7616f5ddc03e096d9afe99654b9f7d9c793677101d8b7067e91e2ad021e"
     },
     {
       "route": "/docs/releases/v0.6.12",
       "output": "static/img/social/docs/releases/v0.6.12.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.12",
-      "breadcrumb": "docs / releases / v0.6.12",
-      "svgSha256": "edd899c6f986c01398c0e1814b2eac50b2bf687bba646bfdf466d3556527dd86"
+      "svgSha256": "17c823526fcd4f50edcf155111c6e671fbae965a6986293d267c65e8fe3cdfa4"
     },
     {
       "route": "/docs/releases/v0.6.2",
       "output": "static/img/social/docs/releases/v0.6.2.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.2",
-      "breadcrumb": "docs / releases / v0.6.2",
-      "svgSha256": "eee5ef37c04328ab8431f14cf76a50846a4a529c49a51dde7213cb37f2d819f6"
+      "svgSha256": "27e2f3738c4bf97dd0e418eaaf0abdcaa3e395cfaa4cffccd0aeba432ecf8d34"
     },
     {
       "route": "/docs/releases/v0.6.3",
       "output": "static/img/social/docs/releases/v0.6.3.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.3",
-      "breadcrumb": "docs / releases / v0.6.3",
-      "svgSha256": "a061e5321723c170c0a9376e803d6529c309af08bda9b5221fdfc971ab813931"
+      "svgSha256": "401feb95960d335bdad082641b47c38765b77ae57df679ad1dd40181d5a1d8d0"
     },
     {
       "route": "/docs/releases/v0.6.4",
       "output": "static/img/social/docs/releases/v0.6.4.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.4",
-      "breadcrumb": "docs / releases / v0.6.4",
-      "svgSha256": "ef0c1839109d70c40e50953ab6dd0ba959a1809832f5663f7d1f684b5090db3c"
+      "svgSha256": "3bb54d84b9740ac5677fa8438503d57ac2594b0a80741ce7ef95269c3e31608d"
     },
     {
       "route": "/docs/releases/v0.6.5",
       "output": "static/img/social/docs/releases/v0.6.5.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.5",
-      "breadcrumb": "docs / releases / v0.6.5",
-      "svgSha256": "9b03f08d015323332ccb3be3c9a6202c19a197f5307e04c0bc04f37241b46e1f"
+      "svgSha256": "eac1ea36b4c95c22d12958d0a40f9e584d30d291eb1e8d9d60b76d95ccc01301"
     },
     {
       "route": "/docs/releases/v0.6.6",
       "output": "static/img/social/docs/releases/v0.6.6.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.6",
-      "breadcrumb": "docs / releases / v0.6.6",
-      "svgSha256": "4713332757acc69564259f5548de356b0ff9b4b32594d9da87b9c7434902f822"
+      "svgSha256": "2bf71a689640b8f499efea80790512a247ef1f11f98457206000b9f1cc4acb8c"
     },
     {
       "route": "/docs/releases/v0.6.7",
       "output": "static/img/social/docs/releases/v0.6.7.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.7",
-      "breadcrumb": "docs / releases / v0.6.7",
-      "svgSha256": "aee27df32adf833ee4ff20f77d6ce90c546f555392da55f9946e042b191337c6"
+      "svgSha256": "709d907bbeb2c38dbd726ede8fb665154fc639c28b63435701b8b7c4ac957564"
     },
     {
       "route": "/docs/releases/v0.6.8",
       "output": "static/img/social/docs/releases/v0.6.8.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.8",
-      "breadcrumb": "docs / releases / v0.6.8",
-      "svgSha256": "529c3837a8ceeacd3655aba61bd8be625518126d532b7e4e89293dcd0b44c88d"
+      "svgSha256": "3197df95c5f274b17ae98e5337e53cfb87d740f97cc5a838d2c6c4a4d201b626"
     },
     {
       "route": "/docs/releases/v0.6.9",
       "output": "static/img/social/docs/releases/v0.6.9.png",
       "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.6.9",
-      "breadcrumb": "docs / releases / v0.6.9",
-      "svgSha256": "58fceb6ab0e43dc99e992bcd356e811dca673986d0d8db54821c6e5714feb560"
+      "svgSha256": "8ec98c538eeeaf3cb5a7de7349aed805a993d64ca1c34dedd33cd408e345fd6e"
     },
     {
       "route": "/docs/showcase",
       "output": "static/img/social/docs/showcase.png",
       "section": "Showcase",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Showcase",
-      "breadcrumb": "docs / showcase",
-      "svgSha256": "9db9f9b482e4a807d9360d86255622ab7ac020e4dc21217a24587ff9b72e9016"
+      "svgSha256": "0707d1f9b47d1b2b1a98d63e2f3c1d0a1116eca7ca3ba7a98dc63a7aed776e8b"
     },
     {
       "route": "/docs/start/first-local-run",
       "output": "static/img/social/docs/start/first-local-run.png",
       "section": "Start",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "First local run",
-      "breadcrumb": "docs / start / first-local-run",
-      "svgSha256": "b5fb3a8e3a4a0a89047848aa1746d92544ddc39ec71be3380669fae4cae41a96"
+      "svgSha256": "014502f9e28e5a0648ba99bd61705c909b765ecd11c416c946ff1de596153cf0"
     },
     {
       "route": "/docs/start/quickstart",
       "output": "static/img/social/docs/start/quickstart.png",
       "section": "Start",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Quickstart",
-      "breadcrumb": "docs / start / quickstart",
-      "svgSha256": "16247066a5f39a429daaf54f86a33321a0ed7608f4d37b773f145804d72e021a"
+      "svgSha256": "734ef124898be94387eb66bdddaefc871907fac8fe7693fd35249ccd54267331"
     },
     {
       "route": "/docs/start/what-agentplane-writes",
       "output": "static/img/social/docs/start/what-agentplane-writes.png",
       "section": "Start",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "What files does Agentplane write?",
-      "breadcrumb": "docs / start / what-agentplane-writes",
-      "svgSha256": "7ecb5e4619b7354e2ecaf2b952bf24d8bc89ec09b3c85bf148beed06f38d0bc3"
+      "svgSha256": "9900a6a5e086d705599ddcbede3861acea8f9371df002b9d7dea73080ccd94e7"
     },
     {
       "route": "/docs/user/agent-bootstrap.generated",
       "output": "static/img/social/docs/user/agent-bootstrap.generated.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Agent bootstrap",
-      "breadcrumb": "docs / user / agent-bootstrap.generated",
-      "svgSha256": "901cf7543102bdb0a8f9a463c4fa1eb49e9a591b4e51b3c0a830a1550d936166"
+      "svgSha256": "350fd778b5a6223ea244f0253fed7275aa7f7f6fb7ba06102d8d92ec7e112ca4"
     },
     {
       "route": "/docs/user/agent-discovery",
       "output": "static/img/social/docs/user/agent-discovery.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Agent discovery endpoints",
-      "breadcrumb": "docs / user / agent-discovery",
-      "svgSha256": "2f9690de78d434d7461e6c27a8645d9ab2ab43708554586c4e890aac66a36969"
+      "svgSha256": "261a56e7629fca92592a31e061165060b843b7bd8c61c6e370d700f925c6e47e"
     },
     {
       "route": "/docs/user/agents",
       "output": "static/img/social/docs/user/agents.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Agents",
-      "breadcrumb": "docs / user / agents",
-      "svgSha256": "4afbbce6d55de4d756bfd92f8932b5853c2c9f3196f77da4abd10538512595c9"
+      "svgSha256": "f7afa0379f303f91eb97a703299ecb31927d31786f8d6dc079084a0ce61008a7"
     },
     {
       "route": "/docs/user/branching-and-pr-artifacts",
       "output": "static/img/social/docs/user/branching-and-pr-artifacts.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Branching and PR Artifacts",
-      "breadcrumb": "docs / user / branching-and-pr-artifacts",
-      "svgSha256": "621c872dfa0e779c76dd041c02c213ba130d9aac0eeae670f8b600c2161e0107"
+      "svgSha256": "12c5dad0e9c1dd34cda897d6aa2b02412552e3aeef149a838967282623c4fc8f"
     },
     {
       "route": "/docs/user/breaking-changes",
       "output": "static/img/social/docs/user/breaking-changes.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Breaking changes",
-      "breadcrumb": "docs / user / breaking-changes",
-      "svgSha256": "7ad026011339b02eff9d840f5643463b58e2915e7dff650699375b35ebad3c74"
+      "svgSha256": "26d5085ccc6fd894e08ac584b22287ffa6dd05b4c4b5771a5b50e3a482855cea"
     },
     {
       "route": "/docs/user/cli-reference.generated",
       "output": "static/img/social/docs/user/cli-reference.generated.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Cli Reference.generated",
-      "breadcrumb": "docs / user / cli-reference.generated",
-      "svgSha256": "78e3adeea67219ba9edbaaf2e4701aebcd7fc4cbb357bdd9ac1ff0d735f93794"
+      "svgSha256": "fb716cf09c068cf98745f48019b242baefcfa4f371955ee07fd3867fd9b6952f"
     },
     {
       "route": "/docs/user/commands",
       "output": "static/img/social/docs/user/commands.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Commands",
-      "breadcrumb": "docs / user / commands",
-      "svgSha256": "0da57ead8e04207c480c3e1288433aad5d8e906ff318bc9b877141b04b14b36b"
+      "svgSha256": "376c1727998c1919a2ba573554af0a0ba9f113a3bbb3b12dd950695a7a33d221"
     },
     {
       "route": "/docs/user/configuration",
       "output": "static/img/social/docs/user/configuration.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Configuration",
-      "breadcrumb": "docs / user / configuration",
-      "svgSha256": "23d6fc76e1b626f81114b3b6f696e9819395646bb9fcfe2fc4d8b962e87fd4e8"
+      "svgSha256": "aa494d6dbf4b0a9c4826b8d8178fcf4a5c053ab4074e6f70ec1f7e4fc7ca87be"
     },
     {
       "route": "/docs/user/indexing-and-webmaster-operations",
       "output": "static/img/social/docs/user/indexing-and-webmaster-operations.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Indexing and webmaster operations",
-      "breadcrumb": "docs / user / indexing-and-webmaster-operations",
-      "svgSha256": "7528b081e47fc42f9444456a738294e65ad7c8961137e23373ab15fb5c8bcc02"
+      "svgSha256": "3885ae71e56116f9448c2736cc0af84a6e91c67dd4070c78d5044c6dee1c4e16"
     },
     {
       "route": "/docs/user/local-context",
       "output": "static/img/social/docs/user/local-context.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Local context for AI agent workflows",
-      "breadcrumb": "docs / user / local-context",
-      "svgSha256": "aaa1d1996861a3a307fbdb33f548bbc46f40cb893424cca061d91c836f0c8620"
+      "svgSha256": "3bcc8e583eba57d03425ec50e9b7bd2ea3ddf4a3e23b1bba67b7240bff80990c"
     },
     {
       "route": "/docs/user/overview",
       "output": "static/img/social/docs/user/overview.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "What is Agentplane?",
-      "breadcrumb": "docs / user / overview",
-      "svgSha256": "15ba9e9050fc2b029ff4adc5a9ef508a1cfa721dce0d638f855bc5cde878c8e4"
+      "svgSha256": "a34e683d256eac95ebf01f6928092baa94e68e0bdadff0ebe27667e34093164b"
     },
     {
       "route": "/docs/user/prerequisites",
       "output": "static/img/social/docs/user/prerequisites.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Prerequisites",
-      "breadcrumb": "docs / user / prerequisites",
-      "svgSha256": "0b98ba89a9ca84c443e77325f0fb1bf297546b21751803c9fdd87ff75051de56"
+      "svgSha256": "5c756cf9004f86f6369cf1bd9e08ed49e0dbe5910352c6913eabb431e219bc47"
     },
     {
       "route": "/docs/user/setup",
       "output": "static/img/social/docs/user/setup.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Setup",
-      "breadcrumb": "docs / user / setup",
-      "svgSha256": "b5f249b93171a29e2047bef46442b899e5ae3d9ef12deaf0966a984974ea84be"
+      "svgSha256": "87e994e9ed725ed55aed6417c90c64cb544b51ab51e17583a7bd730918c2f2b2"
     },
     {
       "route": "/docs/user/task-lifecycle",
       "output": "static/img/social/docs/user/task-lifecycle.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Task lifecycle",
-      "breadcrumb": "docs / user / task-lifecycle",
-      "svgSha256": "20b40b8bdc4e4966b62207959802b9fa7e757e67647adc43cec0176597ec3d40"
+      "svgSha256": "09fb8e008452c56abfbcdb4844f959f2aefa6501627c40a5e4fc493029edc6fa"
     },
     {
       "route": "/docs/user/tasks-and-backends",
       "output": "static/img/social/docs/user/tasks-and-backends.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Tasks and backends",
-      "breadcrumb": "docs / user / tasks-and-backends",
-      "svgSha256": "5c003d36802bf41a5ed9208e1fbdea1b4684641e6bcc7e4a4ad65060843b7e64"
+      "svgSha256": "e6f696bd8617bda3d1686eb1e03d0ac09d6086f53f2bb04d9a133b18a0757dd6"
     },
     {
       "route": "/docs/user/website-ia",
       "output": "static/img/social/docs/user/website-ia.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Website information architecture",
-      "breadcrumb": "docs / user / website-ia",
-      "svgSha256": "eb0043d1efabf6294320e31c7ae7984dde5f4c313ef530d979d3b7760b19f8ac"
+      "svgSha256": "d4663fa9e38542f8f101e4bfcb5f1400cd09944f9dc130eb0be4fb56d92075f2"
     },
     {
       "route": "/docs/user/workflow-migration",
       "output": "static/img/social/docs/user/workflow-migration.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Workflow contract recovery",
-      "breadcrumb": "docs / user / workflow-migration",
-      "svgSha256": "62e601050bffd9d8b4c284f04de9cda95af97e6f8e3168d97383d42db4d2b498"
+      "svgSha256": "6a3e46a24b900bb8e83cc7350f2c144b5eb3e7cb3da68ef1039019cb7235b579"
     },
     {
       "route": "/docs/user/workflow",
       "output": "static/img/social/docs/user/workflow.png",
       "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Workflow",
-      "breadcrumb": "docs / user / workflow",
-      "svgSha256": "3dce6270e016a51656817126413b433b793f7c7827294fabec1164f8be9d0396"
+      "svgSha256": "b795a0645b6836670b377389b78d1cfa7068213968905e09444771c29bd506d2"
     },
     {
       "route": "/docs/workflow-guides/aider",
       "output": "static/img/social/docs/workflow-guides/aider.png",
       "section": "Workflow Guides",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Aider workflow moved",
-      "breadcrumb": "docs / workflow-guides / aider",
-      "svgSha256": "497ba53be5613bb8564d0affa3d506b0e6a8a94ed1a8d85cb1c9e1427ea35813"
+      "svgSha256": "6821bf9d411162c12bdd21b9604afcb61ac7b7d2ad5b49c8c12d12b82a1420cc"
     },
     {
       "route": "/docs/workflow-guides/branch-pr",
       "output": "static/img/social/docs/workflow-guides/branch-pr.png",
       "section": "Workflow Guides",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "branch_pr workflow",
-      "breadcrumb": "docs / workflow-guides / branch-pr",
-      "svgSha256": "79c53a39a6effd7b097c772dec079ceb865cbe75b2d92dbf04911f6f5f3849cb"
+      "svgSha256": "48a95f34b9ec2b69c8e864e0bbc1fc387b3bd714bdc94a8e3951523368ec574c"
     },
     {
       "route": "/docs/workflow-guides/claude-code",
       "output": "static/img/social/docs/workflow-guides/claude-code.png",
       "section": "Workflow Guides",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Claude Code workflow moved",
-      "breadcrumb": "docs / workflow-guides / claude-code",
-      "svgSha256": "246ac4106dc7541587c2c438728b43acff72c73d321c5f5f5008032144623736"
+      "svgSha256": "fd6296fb23f51efd0346421477a38ae95656a8040373811b1365041aee1a0562"
     },
     {
       "route": "/docs/workflow-guides/codex",
       "output": "static/img/social/docs/workflow-guides/codex.png",
       "section": "Workflow Guides",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Codex workflow moved",
-      "breadcrumb": "docs / workflow-guides / codex",
-      "svgSha256": "032f8410ce4c3d319c13ed47b78d38d371626aea25578cdf41e40cfa9f6140f1"
+      "svgSha256": "99866cf033b65c92783ca09d4bffda04e129edc444fdc4b356353ad507771b0c"
     },
     {
       "route": "/docs/workflow-guides/cursor",
       "output": "static/img/social/docs/workflow-guides/cursor.png",
       "section": "Workflow Guides",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Cursor workflow moved",
-      "breadcrumb": "docs / workflow-guides / cursor",
-      "svgSha256": "1057404d9b4ef46d222b6430171cb99fe08ec5ebe39956eec7ee8cd581acbccf"
+      "svgSha256": "4f451ba9ec854a9507759a456719427624ff1d322cc29480617cbe0c21f8bd27"
     },
     {
       "route": "/docs/workflow-guides/github-actions",
       "output": "static/img/social/docs/workflow-guides/github-actions.png",
       "section": "Workflow Guides",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "GitHub Actions gate",
-      "breadcrumb": "docs / workflow-guides / github-actions",
-      "svgSha256": "bbe8b7c72e8a700da747def0a4416cbfa8241fe0f3ced59f2e41c5890b5666a0"
+      "svgSha256": "d981c568703ac20e58bb818541be5721151e16e4e871c403ea71ea7c7634990a"
     },
     {
       "route": "/docs/workflow-guides",
       "output": "static/img/social/docs/workflow-guides.png",
       "section": "Workflow Guides",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Use with coding agents",
-      "breadcrumb": "docs / workflow-guides",
-      "svgSha256": "75ff766cbb0e209f24e5f1206eafbfeaed3a6dd6ffd5428009601a7efc9e387e"
+      "svgSha256": "866efa03a6a6b8838f575ff580963e30a288b6df32f016943a341048c120c0bc"
     }
   ]
 }
