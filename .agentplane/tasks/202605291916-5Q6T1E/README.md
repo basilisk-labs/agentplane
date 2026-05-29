@@ -1,10 +1,11 @@
 ---
 id: "202605291916-5Q6T1E"
 title: "Add provider-neutral task sync envelope"
-status: "DOING"
+result_summary: "Merged via PR #4317."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "bun run --filter=agentplane build"
   findings:
     - "Redmine issue mapping now carries canonical_state.sync into TaskData and the write mapping test covers provider external refs, field policies, freshness, and conflicts round-trip preservation."
-commit: null
+commit:
+  hash: "80b423d6ac5cea94fa52fc7f8f1230df0f2c8173"
+  message: "Merge pull request #4317 from basilisk-labs/task/202605291916-5Q6T1E/task-sync-contract"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the combined task sync contract batch in this task worktree, including sync envelope, remote import policy, and provider-safe projection fields."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4317 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented provider-neutral sync envelope contract with schema/export coverage, generated schema snapshots, and docs. Verified with focused schema/export/projection/cloud tests, typecheck, schemas:check, docs IA, and policy routing."
+  -
+    type: "status"
+    at: "2026-05-29T21:15:52.431Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4317 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T19:50:10.522Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T21:15:52.437Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend the AgentPlane task README/frontmatter contract with a provider-neutral sync envelope for external references, field ownership, projection freshness, and conflict summaries without adding connector-specific fields to task bodies."
 sections:
   Summary: |-
