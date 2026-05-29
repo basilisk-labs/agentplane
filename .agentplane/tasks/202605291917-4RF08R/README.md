@@ -87,6 +87,16 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  branch_pr_batch:
+    base: "main"
+    branch: "task/202605291916-5Q6T1E/task-sync-contract"
+    included_task_ids:
+      - "202605291916-YGJASQ"
+      - "202605291917-4RF08R"
+    primary_task_id: "202605291916-5Q6T1E"
+    role: "included"
+    updated_at: "2026-05-29T20:50:38.017Z"
 id_source: "generated"
 ---
 ## Summary
