@@ -1,10 +1,11 @@
 ---
 id: "202605290522-S96Y5J"
 title: "Prompt module registry decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4286."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Prompt module registry construction helpers extracted into registry.factory.ts; registry.ts reduced to 216 lines while preserving framework prompt module graph exports."
   attempts: 0
-commit: null
+commit:
+  hash: "8380a594aa84b0d5bef39f76f585d0426cc95007"
+  message: "♻️ S96Y5J prompt: decompose registry factories"
 comments:
   -
     author: "CODER"
     body: "Start: Extract prompt module registry construction helpers while preserving framework prompt graph output."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4286 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Prompt module registry construction helpers extracted into registry.factory.ts; registry.ts reduced to 216 lines while preserving framework prompt module graph exports."
+  -
+    type: "status"
+    at: "2026-05-29T05:31:24.057Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4286 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T05:25:51.226Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T05:31:24.062Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract focused construction helpers from packages/agentplane/src/runtime/prompt-modules/registry.ts to reduce the runtime hotspot below the warning threshold without changing framework prompt module graph behavior."
 sections:
   Summary: |-
