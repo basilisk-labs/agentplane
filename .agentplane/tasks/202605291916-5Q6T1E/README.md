@@ -4,7 +4,7 @@ title: "Add provider-neutral task sync envelope"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -24,23 +24,23 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-29T20:15:38.281Z"
+  updated_at: "2026-05-29T20:33:23.166Z"
   updated_by: "EVALUATOR"
-  note: "Sync contract implementation remains valid after splitting oversized tests into focused files for hotspot compliance."
-  evaluated_sha: "a7cd54cd34456718efb7aa15ec7c158a8571762e"
+  note: "CI gate fix after hosted static/unit failures."
+  evaluated_sha: "299e5b9df260fc16a626afd648476a836df82067"
   blueprint_digest: "2462cf8787ac4d7caee778f65bc126c9c76c0c47818d096ed9b76af6efbb5491"
   evidence_refs:
     - ".agentplane/tasks/202605291916-5Q6T1E/README.md"
-    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-201538281-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-201538281-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-201538281-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-203323166-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-203323166-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605291916-5Q6T1E/quality/20260529-203323166-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605291916-5Q6T1E/blueprint/resolved-snapshot.json"
-    - "bun x vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/core/src/tasks/task-sync-envelope-schema.test.ts packages/core/src/tasks/tasks-export.test.ts packages/core/src/tasks/task-provider-safe-projection.test.ts packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/backends/task-backend.cloud-remote-create-policy.test.ts"
-    - "bun run hotspots:check"
-    - "bun run format:changed"
-    - "bun run typecheck"
+    - "bun run lint:core"
+    - "bun run build"
+    - "bun run test:fast"
+    - "bun x vitest run packages/agentplane/src/backends/task-backend.cloud-regression.test.ts packages/agentplane/src/backends/task-backend.cloud-start-refresh.test.ts packages/core/src/tasks/task-provider-safe-projection.test.ts"
   findings:
-    - "No blocking findings. Test coverage was preserved while oversized test guard now passes; downstream connector adoption remains outside this AgentPlane scope."
+    - "Provider-safe projection lint now uses string status without a redundant union; legacy cloud import tests explicitly opt into remote_create_policy=import where they materialize remote-only tasks."
 commit: null
 comments:
   -
