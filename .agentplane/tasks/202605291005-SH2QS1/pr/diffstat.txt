@@ -20,6 +20,7 @@
  schemas/README.md                                  |   2 +-
  scripts/README.md                                  |   2 +-
  scripts/generate/generate-readme-header.mjs        | 128 +---
+ scripts/generate/generate-scripts-readme.mjs       |   2 +-
  skills/README.md                                   |   2 +-
  skills/humanizer/README.md                         |   2 +-
  website/scripts/generate-social-images.mjs         |  37 +-
@@ -227,4 +228,4 @@
  .../img/social/docs/workflow-guides/cursor.png     | Bin 51558 -> 62097 bytes
  .../social/docs/workflow-guides/github-actions.png | Bin 51384 -> 60625 bytes
  website/static/img/social/manifest.json            | 812 ++++++++++-----------
- 229 files changed, 529 insertions(+), 592 deletions(-)
+ 230 files changed, 530 insertions(+), 593 deletions(-)
