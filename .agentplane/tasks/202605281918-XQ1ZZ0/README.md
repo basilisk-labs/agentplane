@@ -181,7 +181,7 @@ sections:
 
     BlueprintSnapshotRef:
     - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605281918-XQ1ZZ0-hotspot-baseline-refactor-guardrails/.agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
+    - path: .agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
     - old_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
     - current_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
     - route_changed: no
@@ -291,7 +291,7 @@ Details:
 
 BlueprintSnapshotRef:
 - state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605281918-XQ1ZZ0-hotspot-baseline-refactor-guardrails/.agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
+- path: .agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
 - old_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
 - current_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
 - route_changed: no
