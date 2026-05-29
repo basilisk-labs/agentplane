@@ -1,10 +1,10 @@
 ---
 id: "202605291916-YGJASQ"
 title: "Add remote task import policy for cloud backend"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented explicit cloud remote_create_policy behavior for diff, ignore, and import. Verified remote-only diff summary, no silent materialization, explicit import with sync envelope, typecheck, and focused cloud backend tests."
   attempts: 0
-commit: null
+commit:
+  hash: "80b423d6ac5cea94fa52fc7f8f1230df0f2c8173"
+  message: "Merge pull request #4317 from basilisk-labs/task/202605291916-5Q6T1E/task-sync-contract"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the remote task import policy inside the shared sync contract branch, with explicit remote-only diff, ignore, and import behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4317 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented explicit cloud remote_create_policy behavior for diff, ignore, and import. Verified remote-only diff summary, no silent materialization, explicit import with sync envelope, typecheck, and focused cloud backend tests."
+  -
+    type: "status"
+    at: "2026-05-29T21:15:52.447Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4317 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T19:50:22.966Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T21:15:52.453Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add an explicit remote_create_policy for cloud backend pulls so remote-only provider items can be diffed, ignored, or materialized into local AgentPlane task READMEs without silent loss or accidental provider authority."
 sections:
   Summary: |-

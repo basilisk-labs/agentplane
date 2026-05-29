@@ -1,10 +1,10 @@
 ---
 id: "202605291917-4RF08R"
 title: "Expose provider-safe task projection fields"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented provider-safe task projection helper and tests. Verified that projection emits only summary/count/presence/link metadata and excludes full plan, verification log, findings, raw evidence paths, and private payloads."
   attempts: 0
-commit: null
+commit:
+  hash: "80b423d6ac5cea94fa52fc7f8f1230df0f2c8173"
+  message: "Merge pull request #4317 from basilisk-labs/task/202605291916-5Q6T1E/task-sync-contract"
 comments:
   -
     author: "CODER"
     body: "Start: implementing provider-safe projection fields inside the shared sync contract branch, keeping sensitive task sections AgentPlane-owned."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4317 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented provider-safe task projection helper and tests. Verified that projection emits only summary/count/presence/link metadata and excludes full plan, verification log, findings, raw evidence paths, and private payloads."
+  -
+    type: "status"
+    at: "2026-05-29T21:15:52.457Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4317 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T19:50:30.375Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T21:15:52.460Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a core projection helper that derives provider-safe summary fields from task README, frontmatter, ACR, and verification state so cloud connectors can publish useful board fields without exporting full plans, findings, or raw evidence."
 sections:
   Summary: |-
