@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605290551-9NKYP3/workflow-transition-service-decomposition",
+  "created_at": "2026-05-29T05:52:16.598Z",
+  "diffstat_sha256": "sha256:cb727ae2ecfa3049a466cf100e4099c22bc1a582c4564ed9c0a125827bcf1d3e",
+  "last_verified_at": "2026-05-29T05:54:39.103Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605290551-9NKYP3",
+  "updated_at": "2026-05-29T05:52:16.598Z",
+  "verify": {
+    "status": "pass"
+  }
+}
