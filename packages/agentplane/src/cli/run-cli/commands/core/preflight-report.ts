@@ -1,13 +1,8 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 import { loadConfig, type AgentplaneConfig } from "@agentplaneorg/core/config";
 import { GitContext } from "@agentplaneorg/core/git";
 import { resolveProject } from "@agentplaneorg/core/project";
-import { normalizeTaskStatus, readTask, type TaskStatus } from "@agentplaneorg/core/tasks";
 
 import { loadTaskBackend, toTaskSummary } from "../../../../backends/task-backend.js";
-import { validateGithubPrTitleContents } from "../../../../commands/pr/internal/review-template.js";
 import { gitCurrentBranch } from "../../../../commands/shared/git-ops.js";
 import { dedupeStrings } from "../../../../shared/strings.js";
 import {
@@ -16,43 +11,20 @@ import {
   workflowEnforcementEnvHint,
 } from "../../../../workflow-runtime/index.js";
 import { renderQuickstart } from "../../../command-guide.js";
+import {
+  detectTaskArtifactDrift,
+  emptyTaskArtifactDrift,
+  type TaskArtifactDrift,
+} from "./preflight-report-drift.js";
+import {
+  emptyMessageFormatGuard,
+  validateChangedGithubTitleArtifacts,
+  type MessageFormatGuard,
+} from "./preflight-report-message-guard.js";
 
 export type PreflightMode = "quick" | "full";
 type NextAction = { command: string; reason: string };
 type Probe = { ok: boolean; error?: string };
-type TaskArtifactKind = "task_readme" | "handoff" | "pr_artifact" | "blueprint" | "unknown";
-type TaskArtifactClassification =
-  | "active_parallel_task_artifact"
-  | "stale_done_handoff"
-  | "task_blueprint_evidence"
-  | "unknown_task_artifact";
-type TaskArtifactAction =
-  | "ignore_parallel_agent"
-  | "cleanup_candidate"
-  | "commit_with_task_evidence"
-  | "inspect";
-type TaskArtifactDriftItem = {
-  path: string;
-  task_id: string;
-  artifact_kind: TaskArtifactKind;
-  classification: TaskArtifactClassification;
-  action: TaskArtifactAction;
-  status: TaskStatus | "unknown";
-  reason: string;
-};
-type TaskArtifactDrift = {
-  present: boolean;
-  task_ids: string[];
-  paths: string[];
-  actionable: boolean;
-  items: TaskArtifactDriftItem[];
-  counts: Record<TaskArtifactClassification, number>;
-};
-type MessageFormatGuard = {
-  ok: boolean;
-  checked_paths: string[];
-  errors: string[];
-};
 
 export type PreflightReport = {
   mode: PreflightMode;
@@ -108,179 +80,6 @@ function inferApprovals(config: AgentplaneConfig | null): PreflightReport["appro
     require_plan: approvals.require_plan,
     require_verify: approvals.require_verify,
     require_network: approvals.require_network,
-  };
-}
-
-function normalizeRepoPath(value: string): string {
-  return value.replaceAll("\\", "/");
-}
-
-function inferTaskArtifactKind(relativeTaskPath: string): TaskArtifactKind {
-  if (relativeTaskPath === "README.md") return "task_readme";
-  if (relativeTaskPath.startsWith("handoff/")) return "handoff";
-  if (relativeTaskPath.startsWith("pr/")) return "pr_artifact";
-  if (relativeTaskPath.startsWith("blueprint/")) return "blueprint";
-  return "unknown";
-}
-
-function isActiveParallelStatus(status: TaskStatus | "unknown"): boolean {
-  return status === "TODO" || status === "DOING" || status === "BLOCKED";
-}
-
-function classifyTaskArtifactDriftItem(opts: {
-  path: string;
-  taskId: string;
-  artifactKind: TaskArtifactKind;
-  status: TaskStatus | "unknown";
-}): TaskArtifactDriftItem {
-  if (isActiveParallelStatus(opts.status) && opts.artifactKind === "task_readme") {
-    return {
-      path: opts.path,
-      task_id: opts.taskId,
-      artifact_kind: opts.artifactKind,
-      classification: "active_parallel_task_artifact",
-      action: "ignore_parallel_agent",
-      status: opts.status,
-      reason: "README belongs to an active task and may be owned by another parallel agent",
-    };
-  }
-  if (opts.status === "DONE" && opts.artifactKind === "handoff") {
-    return {
-      path: opts.path,
-      task_id: opts.taskId,
-      artifact_kind: opts.artifactKind,
-      classification: "stale_done_handoff",
-      action: "cleanup_candidate",
-      status: opts.status,
-      reason: "handoff artifact belongs to a completed task and may be stale closure residue",
-    };
-  }
-  if (opts.artifactKind === "blueprint") {
-    return {
-      path: opts.path,
-      task_id: opts.taskId,
-      artifact_kind: opts.artifactKind,
-      classification: "task_blueprint_evidence",
-      action: "commit_with_task_evidence",
-      status: opts.status,
-      reason:
-        "blueprint artifact is task-local verification evidence and must travel with the task artifact commit",
-    };
-  }
-  return {
-    path: opts.path,
-    task_id: opts.taskId,
-    artifact_kind: opts.artifactKind,
-    classification: "unknown_task_artifact",
-    action: "inspect",
-    status: opts.status,
-    reason: "artifact ownership could not be classified from task status and path",
-  };
-}
-
-async function resolveTaskStatus(opts: {
-  gitRoot: string;
-  taskId: string;
-}): Promise<TaskStatus | "unknown"> {
-  try {
-    const task = await readTask({
-      cwd: opts.gitRoot,
-      rootOverride: opts.gitRoot,
-      taskId: opts.taskId,
-    });
-    return normalizeTaskStatus(task.frontmatter.status);
-  } catch {
-    return "unknown";
-  }
-}
-
-async function detectTaskArtifactDrift(opts: {
-  gitRoot: string;
-  changedPaths: string[];
-  workflowDir: string;
-}): Promise<TaskArtifactDrift> {
-  const workflowDir = normalizeRepoPath(opts.workflowDir).replace(/\/+$/, "");
-  const prefix = `${workflowDir}/`;
-  const matched = opts.changedPaths
-    .map((value) => normalizeRepoPath(value))
-    .filter((value) => value.startsWith(prefix))
-    .toSorted((a, b) => a.localeCompare(b));
-  const taskIds = new Set<string>();
-  for (const matchedPath of matched) {
-    const relative = matchedPath.slice(prefix.length);
-    const [taskId] = relative.split("/", 1);
-    if (taskId && taskId !== "." && taskId !== "..") {
-      taskIds.add(taskId);
-    }
-  }
-  const taskStatusById = new Map<string, TaskStatus | "unknown">();
-  for (const taskId of taskIds) {
-    taskStatusById.set(taskId, await resolveTaskStatus({ gitRoot: opts.gitRoot, taskId }));
-  }
-  const items: TaskArtifactDriftItem[] = [];
-  for (const matchedPath of matched) {
-    const relative = matchedPath.slice(prefix.length);
-    const [taskId, ...artifactParts] = relative.split("/");
-    if (!taskId || taskId === "." || taskId === "..") continue;
-    const artifactKind = inferTaskArtifactKind(artifactParts.join("/"));
-    items.push(
-      classifyTaskArtifactDriftItem({
-        path: matchedPath,
-        taskId,
-        artifactKind,
-        status: taskStatusById.get(taskId) ?? "unknown",
-      }),
-    );
-  }
-  const counts: Record<TaskArtifactClassification, number> = {
-    active_parallel_task_artifact: 0,
-    stale_done_handoff: 0,
-    task_blueprint_evidence: 0,
-    unknown_task_artifact: 0,
-  };
-  for (const item of items) {
-    counts[item.classification] += 1;
-  }
-  const actionable = items.some((item) => item.action !== "ignore_parallel_agent");
-  return {
-    present: matched.length > 0,
-    task_ids: [...taskIds].toSorted((a, b) => a.localeCompare(b)),
-    paths: matched,
-    actionable,
-    items,
-    counts,
-  };
-}
-
-async function validateChangedGithubTitleArtifacts(opts: {
-  gitRoot: string;
-  changedPaths: string[];
-  workflowDir: string;
-}): Promise<MessageFormatGuard> {
-  const workflowDir = normalizeRepoPath(opts.workflowDir).replace(/\/+$/, "");
-  const prefix = `${workflowDir}/`;
-  const suffix = "/pr/github-title.txt";
-  const checkedPaths = opts.changedPaths
-    .map((value) => normalizeRepoPath(value))
-    .filter((value) => value.startsWith(prefix) && value.endsWith(suffix))
-    .toSorted((a, b) => a.localeCompare(b));
-  const errors: string[] = [];
-  for (const relPath of checkedPaths) {
-    const relative = relPath.slice(prefix.length);
-    const taskId = relative.slice(0, -suffix.length);
-    if (!taskId || taskId.includes("/")) {
-      errors.push(`${relPath}: cannot infer task id from PR title artifact path`);
-      continue;
-    }
-    const title = await readFile(path.join(opts.gitRoot, relPath), "utf8");
-    const titleErrors: string[] = [];
-    validateGithubPrTitleContents(title, taskId, titleErrors);
-    errors.push(...titleErrors.map((message) => `${relPath}: ${message}`));
-  }
-  return {
-    ok: errors.length === 0,
-    checked_paths: checkedPaths,
-    errors,
   };
 }
 
@@ -446,24 +245,8 @@ export async function buildPreflightReport(opts: {
     ok: false,
     error: "project not resolved",
   };
-  let taskArtifactDrift: TaskArtifactDrift = {
-    present: false,
-    task_ids: [],
-    paths: [],
-    actionable: false,
-    items: [],
-    counts: {
-      active_parallel_task_artifact: 0,
-      stale_done_handoff: 0,
-      task_blueprint_evidence: 0,
-      unknown_task_artifact: 0,
-    },
-  };
-  let messageFormatGuard: MessageFormatGuard = {
-    ok: true,
-    checked_paths: [],
-    errors: [],
-  };
+  let taskArtifactDrift: TaskArtifactDrift = emptyTaskArtifactDrift();
+  let messageFormatGuard: MessageFormatGuard = emptyMessageFormatGuard();
   let branch: PreflightReport["current_branch"] = {
     ok: false,
     error: "project not resolved",
