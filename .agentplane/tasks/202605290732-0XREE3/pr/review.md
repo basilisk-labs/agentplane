@@ -13,7 +13,7 @@ Created: 2026-05-29T07:32:51.615Z
 ## Verification
 
 - State: ok
-- Note: Release checks passed: release candidate prepared for v0.6.12; release:prepublish:fast passed; release:prepublish:heavy passed including release-ci-base 67/67 chunks, workflow/significant coverage, and release-critical suite; pre-push standard mode passed before branch update.
+- Note: Release checks refreshed after bun.lock sync: bun install --frozen-lockfile --ignore-scripts passed; bun run release:check passed with 0.6.12 package metadata; prior release:prepublish:heavy and hosted checks remain covered, pending fresh hosted rerun for the latest branch head.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
