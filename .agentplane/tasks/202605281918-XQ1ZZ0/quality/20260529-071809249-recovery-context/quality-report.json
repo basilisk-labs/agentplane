@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202605281918-XQ1ZZ0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-29T07:18:09.249Z",
+  "verdict": "pass",
+  "summary": "Review finding resolved: agent-critical hotspot classification now covers the nested workflow transition service as task-lifecycle code.",
+  "evaluated_sha": "2ff5cefd6af1159c38eb5fd5cc8fe3882e34a446",
+  "blueprint_digest": "9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540",
+  "findings": [
+    "Pass: regression test covers packages/agentplane/src/commands/task/shared/workflow-transition-service.ts and full local checks pass on the updated diff."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605281918-XQ1ZZ0/README.md",
+    "bun test packages/agentplane/src/cli/hotspot-report-script.test.ts",
+    "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300",
+    "bun run typecheck",
+    "bun run arch:check",
+    "bun run knip:check",
+    "bun run lint:core",
+    "bun run format:changed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Oversized test warnings remain pre-existing baseline warnings; runtime and agent-critical runtime warnings remain zero under current thresholds."
+  ]
+}
