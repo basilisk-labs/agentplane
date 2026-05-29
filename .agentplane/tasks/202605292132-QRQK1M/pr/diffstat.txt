@@ -1,0 +1,2 @@
+ .../agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)

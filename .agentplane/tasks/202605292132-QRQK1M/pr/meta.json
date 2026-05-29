@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605292132-QRQK1M/preserve-policy-hook-index",
+  "created_at": "2026-05-29T21:33:04.651Z",
+  "diffstat_sha256": "sha256:197dc2994e53caef6d0555c031bd531839b6e7ca398004aba65101ae0d9eb19b",
+  "last_verified_at": "2026-05-29T21:34:37.417Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605292132-QRQK1M",
+  "updated_at": "2026-05-29T21:33:04.651Z",
+  "verify": {
+    "status": "pass"
+  }
+}
