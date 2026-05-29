@@ -1,10 +1,11 @@
 ---
 id: "202605290115-HSNCNJ"
 title: "Init execution decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4250."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified init execution decomposition. Commands passed: init focused vitest suite (4 files, 55 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 27 to 26; execution.ts is 253 lines."
   attempts: 0
-commit: null
+commit:
+  hash: "ec4ebc53cbb3b2775b3755d8a0e4f20cc09b341c"
+  message: "✅ HSNCNJ init: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: decompose init execution planning helpers in a task worktree, preserve init behavior, and verify hotspot reduction with focused init tests plus static checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4250 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified init execution decomposition. Commands passed: init focused vitest suite (4 files, 55 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 27 to 26; execution.ts is 253 lines."
+  -
+    type: "status"
+    at: "2026-05-29T01:28:57.857Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4250 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T01:22:52.568Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T01:28:57.862Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/cli/run-cli/commands/init/execution.ts by extracting focused init planning/effect helpers while preserving init behavior and reducing the runtime hotspot warning count."
 sections:
   Summary: |-
