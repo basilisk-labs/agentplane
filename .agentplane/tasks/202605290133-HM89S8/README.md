@@ -1,10 +1,11 @@
 ---
 id: "202605290133-HM89S8"
 title: "Blueprint builtins registry decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4252."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified builtin blueprint registry decomposition. Commands passed: blueprint focused vitest suite (2 files, 26 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 26 to 25; builtins.ts is 384 lines."
   attempts: 0
-commit: null
+commit:
+  hash: "474202850eb20372a98dddd147bce733eb132295"
+  message: "✅ HM89S8 blueprints: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: decompose builtin blueprint registry into focused modules while preserving blueprint ordering, ids, and validation semantics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4252 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified builtin blueprint registry decomposition. Commands passed: blueprint focused vitest suite (2 files, 26 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 26 to 25; builtins.ts is 384 lines."
+  -
+    type: "status"
+    at: "2026-05-29T01:42:34.422Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4252 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T01:36:56.574Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T01:42:34.427Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/blueprints/builtins.ts by extracting builtin node sequences and common blueprint entries while preserving builtin blueprint registry semantics and reducing the runtime hotspot warning count."
 sections:
   Summary: |-
