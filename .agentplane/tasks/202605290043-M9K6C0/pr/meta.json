@@ -2,12 +2,13 @@
   "base": "main",
   "branch": "task/202605290043-M9K6C0/preflight-report-decomposition",
   "created_at": "2026-05-29T00:43:29.282Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:ec6158e79f59dcf3b003034d241633ba5091962c4d340133861d19cfb1fe913b",
+  "last_verified_at": "2026-05-29T00:47:48.232Z",
+  "last_verified_diffstat_sha256": "sha256:ec6158e79f59dcf3b003034d241633ba5091962c4d340133861d19cfb1fe913b",
   "schema_version": 1,
   "task_id": "202605290043-M9K6C0",
   "updated_at": "2026-05-29T00:43:29.282Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

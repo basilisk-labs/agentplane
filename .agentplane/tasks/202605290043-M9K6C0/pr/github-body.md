@@ -15,8 +15,15 @@ Decompose packages/agentplane/src/cli/run-cli/commands/core/preflight-report.ts 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified preflight report decomposition. Commands passed: focused preflight readiness test, bun run
+typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed,
+hotspot report check. Runtime hotspot warnings decreased from 29 to 28; preflight-report.ts is 332
+lines.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +34,10 @@ Decompose packages/agentplane/src/cli/run-cli/commands/core/preflight-report.ts 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../commands/core/preflight-report-drift.ts        | 187 ++++++++++++++++
+ .../core/preflight-report-message-guard.ts         |  52 +++++
+ .../cli/run-cli/commands/core/preflight-report.ts  | 241 +--------------------
+ 3 files changed, 251 insertions(+), 229 deletions(-)
 ```
 
 </details>

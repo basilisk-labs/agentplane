@@ -4,7 +4,7 @@ title: "Preflight report command decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T00:47:48.232Z"
+  updated_by: "CODER"
+  note: "Verified preflight report decomposition. Commands passed: focused preflight readiness test, bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 29 to 28; preflight-report.ts is 332 lines."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Extract preflight report drift and message guard helpers while preserving buildPreflightReport output."
+  -
+    type: "verify"
+    at: "2026-05-29T00:47:48.232Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified preflight report decomposition. Commands passed: focused preflight readiness test, bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 29 to 28; preflight-report.ts is 332 lines."
 doc_version: 3
-doc_updated_at: "2026-05-29T00:43:29.168Z"
+doc_updated_at: "2026-05-29T00:47:48.257Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/cli/run-cli/commands/core/preflight-report.ts into focused preflight report modules while preserving CLI behavior and reducing runtime hotspot warnings."
 sections:
@@ -69,6 +75,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T00:47:48.232Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified preflight report decomposition. Commands passed: focused preflight readiness test, bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 29 to 28; preflight-report.ts is 332 lines.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T00:43:29.168Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290043-M9K6C0-preflight-report-decomposition/.agentplane/tasks/202605290043-M9K6C0/blueprint/resolved-snapshot.json
+    - old_digest: 3ecbec30b224f6f6f30dd6012db5a76def20aaec85ab14edd8c56c321f3d8b57
+    - current_digest: 3ecbec30b224f6f6f30dd6012db5a76def20aaec85ab14edd8c56c321f3d8b57
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290043-M9K6C0
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -112,6 +137,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T00:47:48.232Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified preflight report decomposition. Commands passed: focused preflight readiness test, bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, hotspot report check. Runtime hotspot warnings decreased from 29 to 28; preflight-report.ts is 332 lines.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T00:43:29.168Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605290043-M9K6C0-preflight-report-decomposition/.agentplane/tasks/202605290043-M9K6C0/blueprint/resolved-snapshot.json
+- old_digest: 3ecbec30b224f6f6f30dd6012db5a76def20aaec85ab14edd8c56c321f3d8b57
+- current_digest: 3ecbec30b224f6f6f30dd6012db5a76def20aaec85ab14edd8c56c321f3d8b57
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290043-M9K6C0
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
