@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605290636-8F6BQR/policy-taxonomy-type-decomposition",
+  "created_at": "2026-05-29T06:36:36.542Z",
+  "diffstat_sha256": "sha256:70d3fd1646ccfd87f144cfc01b75ce881540ea63df39e744cb2f2931a0f470be",
+  "last_verified_at": "2026-05-29T06:38:10.196Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605290636-8F6BQR",
+  "updated_at": "2026-05-29T06:36:36.542Z",
+  "verify": {
+    "status": "pass"
+  }
+}
