@@ -1,0 +1,8 @@
+ packages/agentplane/src/blueprints/model-core.ts   | 232 +++++++++
+ .../agentplane/src/blueprints/model-execution.ts   | 126 +++++
+ .../agentplane/src/blueprints/model-explain.ts     |  32 ++
+ .../agentplane/src/blueprints/model-resolution.ts  | 142 ++++++
+ .../agentplane/src/blueprints/model-snapshot.ts    |  89 ++++
+ packages/agentplane/src/blueprints/model.ts        | 556 +--------------------
+ scripts/baselines/knip-baseline.json               |  77 ++-
+ 7 files changed, 662 insertions(+), 592 deletions(-)
