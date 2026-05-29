@@ -4,7 +4,7 @@ title: "Hotspot baseline and refactor guardrails"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -26,29 +26,31 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-28T19:22:19.085Z"
+  updated_at: "2026-05-29T07:08:42.504Z"
   updated_by: "CODER"
-  note: "Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts --config vitest.workspace.ts. Result: pass. Evidence: 1 test file, 11 tests passed. Scope: hotspot report schema and agent-critical classification behavior. Command: node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300. Result: pass. Evidence: threshold check passed; current baseline reports 50 runtime warnings and 11 oversized test warnings under existing thresholds. Scope: hotspot guardrail compatibility. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: TypeScript validity. Command: bun run format:changed. Result: pass. Evidence: changed files use Prettier style. Scope: formatting for changed files."
+  note: "Hotspot guardrail report rebased onto current main and now exposes agent_critical_runtime_warnings on top of zero runtime hotspots. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 (runtime warnings 0, oversized runtime 0, agent-critical runtime warnings 0); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-28T19:22:43.404Z"
+  updated_at: "2026-05-29T07:10:26.956Z"
   updated_by: "EVALUATOR"
-  note: "Hotspot report now exposes an agent-critical machine-readable baseline while preserving existing threshold behavior."
-  evaluated_sha: "63b38cca6b304b70abdf71a9a5f898c5f7626b3c"
+  note: "Hotspot guardrail branch was rebased onto current main; report now exposes agent_critical_runtime_warnings while current runtime hotspot count is zero."
+  evaluated_sha: "47fd484ac3094740c4d2a60800fbe6b4f8222490"
   blueprint_digest: "9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540"
   evidence_refs:
     - ".agentplane/tasks/202605281918-XQ1ZZ0/README.md"
-    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260528-192243404-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260528-192243404-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260528-192243404-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260529-071026956-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260529-071026956-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605281918-XQ1ZZ0/quality/20260529-071026956-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json"
-    - "bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts --config vitest.workspace.ts"
+    - "bun test packages/agentplane/src/cli/hotspot-report-script.test.ts"
     - "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300"
     - "bun run typecheck"
-    - "8db032be4a99"
+    - "bun run arch:check"
+    - "bun run knip:check"
+    - "bun run lint:core"
   findings:
-    - "Added agent_critical_runtime_warnings with category counts and per-file modules for route-oracle, runner, evaluator, guard, task-lifecycle, and provider-lane surfaces."
+    - "Pass: checks confirm zero runtime hotspot warnings and zero agent-critical runtime warnings after the completed decomposition chain."
 commit: null
 comments:
   -
@@ -68,8 +70,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts --config vitest.workspace.ts. Result: pass. Evidence: 1 test file, 11 tests passed. Scope: hotspot report schema and agent-critical classification behavior. Command: node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300. Result: pass. Evidence: threshold check passed; current baseline reports 50 runtime warnings and 11 oversized test warnings under existing thresholds. Scope: hotspot guardrail compatibility. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: TypeScript validity. Command: bun run format:changed. Result: pass. Evidence: changed files use Prettier style. Scope: formatting for changed files."
+  -
+    type: "verify"
+    at: "2026-05-29T07:08:42.504Z"
+    author: "CODER"
+    state: "ok"
+    note: "Hotspot guardrail report rebased onto current main and now exposes agent_critical_runtime_warnings on top of zero runtime hotspots. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 (runtime warnings 0, oversized runtime 0, agent-critical runtime warnings 0); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed."
 doc_version: 3
-doc_updated_at: "2026-05-28T19:22:19.111Z"
+doc_updated_at: "2026-05-29T07:08:42.521Z"
 doc_updated_by: "CODER"
 description: "Create a machine-readable hotspot baseline and guardrails for agent-critical refactors so each decomposition task proves reduced coupling and does not introduce new oversized agent-critical modules."
 sections:
@@ -103,7 +111,26 @@ sections:
 
     BlueprintSnapshotRef:
     - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605281918-XQ1ZZ0-hotspot-baseline-refactor-guardrails/.agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
+    - path: .agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
+    - old_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
+    - current_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605281918-XQ1ZZ0
+
+    ### 2026-05-29T07:08:42.504Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Hotspot guardrail report rebased onto current main and now exposes agent_critical_runtime_warnings on top of zero runtime hotspots. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 (runtime warnings 0, oversized runtime 0, agent-critical runtime warnings 0); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T19:22:19.111Z, excerpt_hash=sha256:9b9e0637f9942ecb2ef849da2bc7ca5a34d1d27e19d7a410bc6a211a5ce41b63
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: .agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
     - old_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
     - current_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
     - route_changed: no
@@ -156,7 +183,26 @@ Details:
 
 BlueprintSnapshotRef:
 - state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/hotspot-refactor-canonical/.agentplane/worktrees/202605281918-XQ1ZZ0-hotspot-baseline-refactor-guardrails/.agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
+- path: .agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
+- old_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
+- current_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605281918-XQ1ZZ0
+
+### 2026-05-29T07:08:42.504Z — VERIFY — ok
+
+By: CODER
+
+Note: Hotspot guardrail report rebased onto current main and now exposes agent_critical_runtime_warnings on top of zero runtime hotspots. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts (11 pass); node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 (runtime warnings 0, oversized runtime 0, agent-critical runtime warnings 0); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T19:22:19.111Z, excerpt_hash=sha256:9b9e0637f9942ecb2ef849da2bc7ca5a34d1d27e19d7a410bc6a211a5ce41b63
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: .agentplane/tasks/202605281918-XQ1ZZ0/blueprint/resolved-snapshot.json
 - old_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
 - current_digest: 9bf319c8c9f96c2b3b09ec974e0c5b8485bba850f0a29a66ecff720c4f4a5540
 - route_changed: no
