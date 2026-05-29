@@ -28,9 +28,10 @@ Prepare, validate, merge, publish, and record evidence for the next patch releas
 
 ```text
  docs/releases/v0.6.12.md                           | 200 +++++++++++++++++++++
+ scripts/checks/check-lifecycle-invariants.mjs      |  14 +-
  .../static/img/social/docs/releases/v0.6.12.png    | Bin 0 -> 41784 bytes
  website/static/img/social/manifest.json            |   8 +
- 3 files changed, 208 insertions(+)
+ 4 files changed, 216 insertions(+), 6 deletions(-)
 ```
 
 </details>
