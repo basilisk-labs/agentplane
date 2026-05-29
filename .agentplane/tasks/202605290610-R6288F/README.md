@@ -1,10 +1,11 @@
 ---
 id: "202605290610-R6288F"
 title: "Context reindex projection decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4297."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Context reindex projection row helpers extracted into packages/agentplane/src/context/reindex-projection.ts; cmdContextReindex and readContextProjection semantics are preserved. Checks passed: bun test packages/agentplane/src/commands/context/release-readiness.test.ts (21 pass); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed; bun run hotspots:check (runtime hotspots 4 -> 3)."
   attempts: 0
-commit: null
+commit:
+  hash: "bdd7d81c15bcb3ea8c2d94f43f62385d7f3958ba"
+  message: "♻️ R6288F task: decompose context reindex projection"
 comments:
   -
     author: "CODER"
     body: "Start: extracting context reindex projection row helpers while preserving CLI reindex behavior, SQLite projection payloads, and read fallback semantics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4297 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Context reindex projection row helpers extracted into packages/agentplane/src/context/reindex-projection.ts; cmdContextReindex and readContextProjection semantics are preserved. Checks passed: bun test packages/agentplane/src/commands/context/release-readiness.test.ts (21 pass); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed; bun run hotspots:check (runtime hotspots 4 -> 3)."
+  -
+    type: "status"
+    at: "2026-05-29T06:19:27.025Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4297 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T06:14:58.591Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T06:19:27.029Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor packages/agentplane/src/context/reindex.ts below the 400-line hotspot warning by extracting projection row helpers into focused module(s). Preserve cmdContextReindex behavior, projection metadata, path selection, markdown/jsonl/text row generation, SQLite projection writes, and readContextProjection fallback semantics. Acceptance: context release-readiness tests pass, typecheck/arch/knip/lint/format pass, and bun run hotspots:check shows one fewer runtime hotspot."
 sections:
   Summary: |-
