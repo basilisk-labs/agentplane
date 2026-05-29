@@ -1,0 +1,33 @@
+Task: `202605290005-7GHJ80`
+Title: Context verify-task validator decomposition
+Canonical task record: `.agentplane/tasks/202605290005-7GHJ80/README.md`
+
+## Summary
+
+Context verify-task validator decomposition
+
+Decompose packages/agentplane/src/context/verify-task.ts by extracting path policy and artifact validation helpers while preserving context verify-task command behavior.
+
+## Scope
+
+- In scope: Decompose packages/agentplane/src/context/verify-task.ts by extracting path policy and artifact validation helpers while preserving context verify-task command behavior.
+- Out of scope: unrelated refactors not required for "Context verify-task validator decomposition".
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-29T00:05:45.215Z
+- Branch: task/202605290005-7GHJ80/context-verify-task-decomposition
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+No changes detected.
+```
+
+</details>
