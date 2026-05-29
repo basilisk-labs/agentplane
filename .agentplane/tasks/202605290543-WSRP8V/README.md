@@ -1,10 +1,11 @@
 ---
 id: "202605290543-WSRP8V"
 title: "PR flow status render decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4290."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "PR flow status text rendering extracted into flow-status.render.ts; flow-status.ts reduced to 367 lines while preserving report resolution and output rows."
   attempts: 0
-commit: null
+commit:
+  hash: "5e0036d4b83cc212d96eebdf827e87c277e8c0ac"
+  message: "♻️ WSRP8V pr: decompose flow status rendering"
 comments:
   -
     author: "CODER"
     body: "Start: Extract PR flow status text rendering while preserving report resolution and output."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4290 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "PR flow status text rendering extracted into flow-status.render.ts; flow-status.ts reduced to 367 lines while preserving report resolution and output rows."
+  -
+    type: "status"
+    at: "2026-05-29T05:50:02.678Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4290 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T05:45:57.727Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T05:50:02.682Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract text rendering helpers from packages/agentplane/src/commands/pr/flow-status.ts to reduce the runtime hotspot below the warning threshold without changing PR flow status resolution or output."
 sections:
   Summary: |-

@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T05:49:19Z",
   "base": "main",
   "branch": "task/202605290543-WSRP8V/pr-flow-status-render-decomposition",
   "created_at": "2026-05-29T05:43:31.527Z",
   "diffstat_sha256": "sha256:f696658dc08973d8b201b886d202527630c0bebf6103581314ef859f62a5cb77",
   "last_verified_at": "2026-05-29T05:45:57.703Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "5e0036d4b83cc212d96eebdf827e87c277e8c0ac",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T05:49:19Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605290543-WSRP8V",
-  "updated_at": "2026-05-29T05:43:31.527Z",
+  "updated_at": "2026-05-29T05:49:19Z",
   "verify": {
     "status": "pass"
   }
