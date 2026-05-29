@@ -1,10 +1,11 @@
 ---
 id: "202605290203-E5E8EF"
 title: "Blueprint validate decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4256."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified blueprint validation helper decomposition. Commands passed: bunx vitest run packages/agentplane/src/blueprints/validate.test.ts --config vitest.workspace.ts (23 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 24 to 23; validate.ts is 390 lines, below the 400-line warning threshold."
   attempts: 0
-commit: null
+commit:
+  hash: "ef5af8a9415306220c156d6a2ad76010b8bf4e9c"
+  message: "📝 E5E8EF blueprints: use portable snapshot path"
 comments:
   -
     author: "CODER"
     body: "Start: decompose blueprint validation helpers while preserving validateBlueprint, validateBlueprintRegistry, and validateBlueprintPlanArtifact behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4256 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified blueprint validation helper decomposition. Commands passed: bunx vitest run packages/agentplane/src/blueprints/validate.test.ts --config vitest.workspace.ts (23 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 24 to 23; validate.ts is 390 lines, below the 400-line warning threshold."
+  -
+    type: "status"
+    at: "2026-05-29T02:26:54.902Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4256 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T02:13:21.470Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T02:26:54.907Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/blueprints/validate.ts by extracting shared graph/evidence validation helpers while preserving blueprint and plan validation behavior and reducing runtime hotspot warnings."
 sections:
   Summary: |-
