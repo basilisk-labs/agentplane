@@ -141,6 +141,7 @@ export function issueToTask(opts: {
     revision: canonicalState?.revision ?? 1,
     origin,
     runner: canonicalState?.runner,
+    sync: canonicalState?.sync,
     tags: mergedTags,
     depends_on: [],
     verify: maybeParseJson(verifyVal) as string[],

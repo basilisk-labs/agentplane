@@ -464,6 +464,24 @@ describe("RedmineBackend writes and custom fields", () => {
                 scenario_id: "demo",
                 run_id: "run-42",
               },
+              sync: {
+                external_refs: [
+                  {
+                    provider: "jira",
+                    remote_id: "JIRA-42",
+                    remote_url: "https://jira.example/browse/JIRA-42",
+                  },
+                ],
+                field_policies: {
+                  title: { authority: "remote" },
+                },
+                freshness: {
+                  last_pulled_at: "2026-05-29T20:00:00.000Z",
+                  remote_updated_at: "2026-05-29T19:00:00.000Z",
+                  stale: false,
+                },
+                conflicts: [],
+              },
             }),
           },
         ],
@@ -476,6 +494,24 @@ describe("RedmineBackend writes and custom fields", () => {
       recipe_id: "viewer",
       scenario_id: "demo",
       run_id: "run-42",
+    });
+    expect(task?.sync).toMatchObject({
+      external_refs: [
+        {
+          provider: "jira",
+          remote_id: "JIRA-42",
+          remote_url: "https://jira.example/browse/JIRA-42",
+        },
+      ],
+      field_policies: {
+        title: { authority: "remote" },
+      },
+      freshness: {
+        last_pulled_at: "2026-05-29T20:00:00.000Z",
+        remote_updated_at: "2026-05-29T19:00:00.000Z",
+        stale: false,
+      },
+      conflicts: [],
     });
   });
 
