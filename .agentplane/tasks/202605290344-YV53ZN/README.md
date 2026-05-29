@@ -1,10 +1,11 @@
 ---
 id: "202605290344-YV53ZN"
 title: "PR review template hosted formatting decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4270."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified PR review template hosted formatting decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts --config vitest.workspace.ts (12 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 17 to 16; review-template.ts is 368 lines, below the 400-line warning threshold."
   attempts: 0
-commit: null
+commit:
+  hash: "5064292cc8f6aa6501f1d070dde032f52dd890d9"
+  message: "✅ YV53ZN pr: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: extract hosted GitHub verification markdown formatting helpers from review-template.ts while preserving PR artifact rendering."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4270 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified PR review template hosted formatting decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts --config vitest.workspace.ts (12 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 17 to 16; review-template.ts is 368 lines, below the 400-line warning threshold."
+  -
+    type: "status"
+    at: "2026-05-29T03:51:12.079Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4270 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T03:47:29.621Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T03:51:12.084Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/pr/internal/review-template.ts by extracting hosted GitHub verification markdown command-wrapping helpers into a focused module, preserving PR artifact rendering and validation behavior while reducing hotspot count."
 sections:
   Summary: |-
