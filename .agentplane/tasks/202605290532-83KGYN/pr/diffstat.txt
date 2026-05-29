@@ -1,0 +1,3 @@
+ .../src/commands/hooks/run.pre-push.helpers.ts     | 271 ++++++++++++++++++++
+ .../agentplane/src/commands/hooks/run.pre-push.ts  | 284 ++-------------------
+ 2 files changed, 290 insertions(+), 265 deletions(-)
