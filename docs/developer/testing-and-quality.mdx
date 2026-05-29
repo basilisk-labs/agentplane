@@ -180,10 +180,9 @@ bun run backend:matrix
 Backend matrix guidance:
 
 - `test:backend-critical` is the hermetic backend regression suite.
-- `backend:live` is an env-gated, read-only Redmine contract suite. It loads `.env`
-  when present, refreshes the local projection from Redmine, reads tasks from that projection, and
-  exports a snapshot. If required Redmine env keys are missing, it exits cleanly with a skip.
-- `backend:matrix` runs `test:backend-critical` and then the live Redmine suite.
+- `backend:live` is a compatibility notice. Live connector suites moved to `agentplane-cloud-sync`
+  with the cloud-side connector implementations.
+- `backend:matrix` runs `test:backend-critical` in this public repository.
 
 To run the canonical workflow/harness and significant-file coverage suites that GitHub workflows
 now call via shared scripts instead of inline `vitest` command lines:

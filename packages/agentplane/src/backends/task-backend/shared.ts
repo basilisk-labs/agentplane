@@ -1,4 +1,4 @@
-export { DEFAULT_DOC_UPDATED_BY, DOC_VERSION, TASK_ID_RE } from "./shared/constants.js";
+export { DEFAULT_DOC_UPDATED_BY } from "./shared/constants.js";
 
 export type {
   PlanApproval,
@@ -17,9 +17,7 @@ export type {
   TaskBackendQueryPort,
   TaskBackendSyncPort,
   TaskBackendVisibleField,
-  TaskCanonicalStateMigrationResult,
   TaskData,
-  TaskDocMeta,
   TaskEvent,
   TaskEventType,
   TaskOrigin,
@@ -42,13 +40,11 @@ export * from "./shared/export.js";
 export * from "./shared/id.js";
 export {
   defaultPlanApproval,
-  normalizeTaskOrigin,
   normalizeTaskRunnerOutcome,
   toTaskSummaries,
   toTaskSummary,
   defaultVerificationResult,
   normalizeDependsOn,
-  normalizePriority,
 } from "./shared/normalize.js";
 export * from "./shared/record.js";
 export * from "./shared/strings.js";

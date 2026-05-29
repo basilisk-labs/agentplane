@@ -43,8 +43,8 @@ export const syncSpec: CommandSpec<SyncParsed> = {
       why: "Pull from backend (configured backend id).",
     },
     {
-      cmd: COMMAND_SNIPPETS.sync.pushRedmineExplicitWithYes,
-      why: "Push to redmine backend.",
+      cmd: COMMAND_SNIPPETS.sync.pushConfiguredWithYes,
+      why: "Push to the configured backend.",
     },
   ],
   parse: (raw) => ({

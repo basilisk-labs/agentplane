@@ -1908,10 +1908,10 @@ Options:
 Examples:
 
 ```sh
-agentplane backend inspect redmine --yes
+agentplane backend inspect cloud --yes
 ```
 
-- Inspect visible Redmine custom fields and canonical_state readiness without remote writes.
+- Inspect cloud backend readiness without remote writes.
 
 ### backend sync
 
@@ -1942,7 +1942,7 @@ agentplane backend sync local --direction pull
 - Pull from backend.
 
 ```sh
-agentplane backend sync redmine --direction push --yes
+agentplane backend sync cloud --direction push --yes
 ```
 
 - Push to a networked backend with explicit approval.
@@ -1975,10 +1975,10 @@ agentplane sync --direction pull
 - Pull from backend (configured backend id).
 
 ```sh
-agentplane sync redmine --direction push --yes
+agentplane sync --direction push --yes
 ```
 
-- Push to redmine backend.
+- Push to the configured backend.
 
 ## Config
 
@@ -2115,7 +2115,7 @@ Options:
 - `--ide <codex|cursor|windsurf>`: IDE rules integration target (default: codex). (choices=codex|cursor|windsurf)
 - `--workflow <direct|branch_pr>`: Workflow mode (default: direct). (choices=direct|branch_pr)
 - `--direct-close-dirty-policy <allow-other-task-readmes|strict>`: Direct-mode close behavior when tracked dirt exists outside the active task: allow only other active task READMEs, or block on any unrelated tracked change. (choices=allow-other-task-readmes|strict)
-- `--backend <local|redmine|cloud>`: Task backend (default: local). (choices=local|redmine|cloud)
+- `--backend <local|cloud>`: Task backend (default: local). (choices=local|cloud)
 - `--hooks <true|false>`: Install managed git hooks (default by setup profile: light=false, normal/full-harness=true).
 - `--require-plan-approval <true|false>`: Require explicit plan approval before starting work.
 - `--require-network-approval <true|false>`: Require explicit approval before any network operation.

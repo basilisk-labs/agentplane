@@ -267,7 +267,6 @@ const PRECOMMIT_FILES = [
   "packages/agentplane/src/cli/output.test.ts",
   "packages/agentplane/src/cli/prompts.test.ts",
   "packages/agentplane/src/cli/error-map.test.ts",
-  "packages/agentplane/src/backends/task-backend/redmine/env.test.ts",
   "packages/core/src/config/execution-profile.test.ts",
   "packages/core/src/config/config.test.ts",
 ];
@@ -284,13 +283,7 @@ const PLATFORM_CRITICAL_FILES = [
 const BACKEND_CRITICAL_FILES = [
   "packages/agentplane/src/backends/task-backend.test.ts",
   "packages/agentplane/src/backends/task-backend.local.test.ts",
-  "packages/agentplane/src/backends/task-backend.redmine.cache.test.ts",
-  "packages/agentplane/src/backends/task-backend.redmine.docs.test.ts",
-  "packages/agentplane/src/backends/task-backend.redmine.mapping.test.ts",
-  "packages/agentplane/src/backends/task-backend.redmine.remote.test.ts",
-  "packages/agentplane/src/backends/task-backend.redmine.write.test.ts",
   "packages/agentplane/src/backends/task-backend.load.test.ts",
-  "packages/agentplane/src/backends/task-backend/redmine/env.test.ts",
   "packages/agentplane/src/commands/backend.test.ts",
   "packages/agentplane/src/commands/shared/task-backend.test.ts",
   "packages/agentplane/src/commands/task/migrate-doc.test.ts",

@@ -30,14 +30,8 @@ export async function resolveInitPaths(opts: {
   const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
   const legacyConfigPath = path.join(agentplaneDir, "config.json");
   const localBackendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
-  const redmineBackendPath = path.join(agentplaneDir, "backends", "redmine", "backend.json");
   const cloudBackendPath = path.join(agentplaneDir, "backends", "cloud", "backend.json");
-  const backendPath =
-    opts.backend === "redmine"
-      ? redmineBackendPath
-      : opts.backend === "cloud"
-        ? cloudBackendPath
-        : localBackendPath;
+  const backendPath = opts.backend === "cloud" ? cloudBackendPath : localBackendPath;
   return {
     gitRoot,
     gitRootExisted,

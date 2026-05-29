@@ -533,7 +533,7 @@ describe("runCli", () => {
   });
 
   it(
-    "init --backend redmine leaves a clean tree in a fresh repository",
+    "init --backend cloud leaves a clean tree in a fresh repository",
     { timeout: 60_000 },
     async () => {
       const root = await mkTempDir();
@@ -550,7 +550,7 @@ describe("runCli", () => {
 
       const io = captureStdIO();
       try {
-        const code = await runCli(["init", "--yes", "--backend", "redmine", "--root", root]);
+        const code = await runCli(["init", "--yes", "--backend", "cloud", "--root", root]);
         expect(code).toBe(0);
       } finally {
         io.restore();
@@ -575,81 +575,7 @@ describe("runCli", () => {
     },
   );
 
-  it("init --backend redmine sets backend config path", async () => {
-    const root = await mkGitRepoRoot();
-    await configureGitUser(root);
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["init", "--yes", "--backend", "redmine", "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
-
-    const localBackendPath = path.join(root, ".agentplane", "backends", "local", "backend.json");
-    const redmineBackendPath = path.join(
-      root,
-      ".agentplane",
-      "backends",
-      "redmine",
-      "backend.json",
-    );
-    const { config } = await loadConfig(path.join(root, ".agentplane"));
-    expect(
-      normalizeSlashes(String((config.tasks_backend as Record<string, unknown>)?.config_path)),
-    ).toBe(".agentplane/backends/redmine/backend.json");
-    expect(await pathExists(localBackendPath)).toBe(false);
-    expect(await pathExists(redmineBackendPath)).toBe(true);
-    const redmineText = await readFile(redmineBackendPath, "utf8");
-    const redmine = JSON.parse(redmineText) as Record<string, unknown>;
-    expect(redmine).toMatchObject({ id: "redmine", version: 1 });
-    const settings = (redmine.settings ?? {}) as Record<string, unknown>;
-    expect(settings.url).toBeUndefined();
-    expect(settings.api_key).toBeUndefined();
-    expect(settings.project_id).toBeUndefined();
-    expect(settings.owner_agent).toBe("REDMINE");
-    const dotEnvExamplePath = path.join(root, ".env.example");
-    const dotEnvExampleText = await readFile(dotEnvExamplePath, "utf8");
-    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_URL=https://redmine.example");
-    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_API_KEY=replace-me");
-    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_PROJECT_ID=replace-me");
-    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID=1");
-    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE=");
-    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_OWNER_AGENT=REDMINE");
-    const dotEnvPath = path.join(root, ".env");
-    const dotEnvText = await readFile(dotEnvPath, "utf8");
-    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_URL=https://redmine.example");
-  });
-
-  it("init --backend redmine keeps existing .env untouched and writes .env.example", async () => {
-    const root = await mkGitRepoRoot();
-    await configureGitUser(root);
-    await writeFile(
-      path.join(root, ".env"),
-      "AGENTPLANE_REDMINE_URL=https://redmine.internal\nEXISTING=value\n",
-      "utf8",
-    );
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["init", "--yes", "--backend", "redmine", "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
-
-    const dotEnvPath = path.join(root, ".env");
-    const dotEnvText = await readFile(dotEnvPath, "utf8");
-    expect(dotEnvText).toBe("AGENTPLANE_REDMINE_URL=https://redmine.internal\nEXISTING=value\n");
-    const dotEnvExamplePath = path.join(root, ".env.example");
-    const dotEnvExampleText = await readFile(dotEnvExamplePath, "utf8");
-    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_URL=https://redmine.example");
-    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_API_KEY=replace-me");
-    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_PROJECT_ID=replace-me");
-    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID=1");
-    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE=");
-  });
-
-  it("init --backend cloud sets backend config path", async () => {
+  it("init --backend cloud writes backend config and env template", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const io = captureStdIO();
@@ -660,11 +586,13 @@ describe("runCli", () => {
       io.restore();
     }
 
+    const localBackendPath = path.join(root, ".agentplane", "backends", "local", "backend.json");
     const cloudBackendPath = path.join(root, ".agentplane", "backends", "cloud", "backend.json");
     const { config } = await loadConfig(path.join(root, ".agentplane"));
     expect(
       normalizeSlashes(String((config.tasks_backend as Record<string, unknown>)?.config_path)),
     ).toBe(".agentplane/backends/cloud/backend.json");
+    expect(await pathExists(localBackendPath)).toBe(false);
     expect(await pathExists(cloudBackendPath)).toBe(true);
     const cloudText = await readFile(cloudBackendPath, "utf8");
     const cloud = JSON.parse(cloudText) as Record<string, unknown>;
@@ -672,8 +600,40 @@ describe("runCli", () => {
     const settings = (cloud.settings ?? {}) as Record<string, unknown>;
     expect(settings.cache_dir).toBe(".agentplane/tasks");
     expect(settings.stale_after_seconds).toBe(300);
+    const dotEnvExamplePath = path.join(root, ".env.example");
+    const dotEnvExampleText = await readFile(dotEnvExamplePath, "utf8");
+    expect(dotEnvExampleText).toContain(
+      "AGENTPLANE_CLOUD_ENDPOINT=https://agentplane-cloud.example",
+    );
+    expect(dotEnvExampleText).toContain("AGENTPLANE_CLOUD_TOKEN=replace-me");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_CLOUD_PROJECT_ID=replace-me");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_CLOUD_PROVIDER=");
+    const dotEnvPath = path.join(root, ".env");
+    const dotEnvText = await readFile(dotEnvPath, "utf8");
+    expect(dotEnvText).toContain("AGENTPLANE_CLOUD_ENDPOINT=https://agentplane-cloud.example");
+  });
 
-    const dotEnvExampleText = await readFile(path.join(root, ".env.example"), "utf8");
+  it("init --backend cloud keeps existing .env untouched and writes .env.example", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    await writeFile(
+      path.join(root, ".env"),
+      "AGENTPLANE_CLOUD_ENDPOINT=https://cloud.internal\nEXISTING=value\n",
+      "utf8",
+    );
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--backend", "cloud", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const dotEnvPath = path.join(root, ".env");
+    const dotEnvText = await readFile(dotEnvPath, "utf8");
+    expect(dotEnvText).toBe("AGENTPLANE_CLOUD_ENDPOINT=https://cloud.internal\nEXISTING=value\n");
+    const dotEnvExamplePath = path.join(root, ".env.example");
+    const dotEnvExampleText = await readFile(dotEnvExamplePath, "utf8");
     expect(dotEnvExampleText).toContain(
       "AGENTPLANE_CLOUD_ENDPOINT=https://agentplane-cloud.example",
     );

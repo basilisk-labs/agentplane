@@ -104,6 +104,40 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     expect(msg.subject).not.toContain("(no result_summary)");
   });
 
+  it("uses a commit-policy-safe scope when implementation key files are tests", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-close-msg-tests-"));
+    await execFileAsync("git", ["init", "-q"], { cwd: root });
+    await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd: root });
+    await execFileAsync("git", ["config", "user.name", "Test User"], { cwd: root });
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+    await mkdir(path.join(root, "test"), { recursive: true });
+    await writeFile(path.join(root, "test", "redmine.test.ts"), "test\n", "utf8");
+    await execFileAsync("git", ["add", "-A"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "impl"], { cwd: root });
+    const implHash = await git(root, ["rev-parse", "HEAD"]);
+
+    const msg = await buildCloseCommitMessage({
+      gitRoot: root,
+      task: {
+        id: "202602081506-R18Y1Q",
+        title: "Add Redmine connector adapter",
+        description: "desc",
+        status: "DONE",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["code"],
+        verify: [],
+        verification: { state: "ok", updated_at: nowIso(), updated_by: "TESTER", note: "ok" },
+        commit: { hash: implHash, message: "impl" },
+      },
+    });
+
+    expect(msg.subject).toBe("code: add Redmine connector adapter");
+  });
+
   it("uses the task title for the subject when result_summary is a machine slug", async () => {
     const { root, implHash } = await mkRepoWithImplCommit();
     const task: TaskData = {

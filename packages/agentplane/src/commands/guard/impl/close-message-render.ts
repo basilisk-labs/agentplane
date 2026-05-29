@@ -116,6 +116,7 @@ export function normalizeScope(opts: {
     "cli",
     "docs",
     "release",
+    "code",
     "tests",
     "traces",
     "recipes",

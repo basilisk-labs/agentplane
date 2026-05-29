@@ -89,8 +89,8 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       kind: "string",
       name: "backend",
-      valueHint: "<local|redmine|cloud>",
-      choices: ["local", "redmine", "cloud"],
+      valueHint: "<local|cloud>",
+      choices: ["local", "cloud"],
       coerce: (raw) => raw.trim().toLowerCase(),
       description: "Task backend (default: local).",
     },

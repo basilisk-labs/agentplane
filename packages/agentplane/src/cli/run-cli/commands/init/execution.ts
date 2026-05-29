@@ -17,7 +17,7 @@ import { previewInstall } from "./ui.js";
 import { ensureAgentsFiles } from "./write-agents.js";
 import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./write-config.js";
 import { ensureEvaluatorFiles } from "./write-evaluators.js";
-import { ensureInitCloudEnvTemplate, ensureInitRedmineEnvTemplate } from "./write-env.js";
+import { ensureInitCloudEnvTemplate } from "./write-env.js";
 import { ensureInitGitignore } from "./write-gitignore.js";
 import { ensureInitWorkflow } from "./write-workflow.js";
 import { assertConfirmed } from "./answers.js";
@@ -166,10 +166,6 @@ export async function applyInitPlan(opts: {
           workflowPathAbs: paths.workflowPath,
           backendPathAbs: paths.backendPath,
         });
-        if (opts.answers.backend === "redmine") {
-          await ensureInitRedmineEnvTemplate({ gitRoot: paths.gitRoot });
-          installPaths.push(".env.example");
-        }
         if (opts.answers.backend === "cloud") {
           await ensureInitCloudEnvTemplate({ gitRoot: paths.gitRoot });
           installPaths.push(".env.example");

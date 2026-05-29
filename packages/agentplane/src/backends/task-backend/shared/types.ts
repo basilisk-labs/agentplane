@@ -85,11 +85,6 @@ export type TaskData = {
 
 export type TaskSummary = Omit<TaskData, "doc" | "sections" | "events">;
 
-export type TaskDocMeta = Pick<
-  TaskData,
-  "doc" | "doc_version" | "doc_updated_at" | "doc_updated_by"
->;
-
 export type TaskWriteOptions = {
   expectedRevision?: number;
   expectedCurrentDoc?: string | null;
@@ -120,7 +115,7 @@ export type TaskProjectionRefreshOptions = {
   conflict?: "diff" | "prefer-local" | "prefer-remote" | "fail";
 };
 
-export type TaskCanonicalStateMigrationResult = {
+type TaskCanonicalStateMigrationResult = {
   scanned: number;
   migrated: string[];
   skippedStructured: string[];

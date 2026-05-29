@@ -42,7 +42,10 @@ type CloudSyncDeps = {
   readState: () => ReturnType<typeof readCloudBackendState>;
   clearPendingPush: () => Promise<void>;
   assertNoPendingPushForPull: () => Promise<void>;
-  requestCloudSyncState: (projectId: string) => Promise<CloudSyncStateSnapshot>;
+  requestCloudSyncState: (
+    projectId: string,
+    opts?: { timeoutMs?: number },
+  ) => Promise<CloudSyncStateSnapshot>;
 };
 
 export async function performCloudBackendSync(
@@ -51,6 +54,8 @@ export async function performCloudBackendSync(
     direction: "push" | "pull";
     conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
     quiet: boolean;
+    timeoutMs?: number;
+    syncStateTimeoutMs?: number;
     remoteCreatePolicy: CloudRemoteCreatePolicy;
   },
 ): Promise<void> {
@@ -58,7 +63,9 @@ export async function performCloudBackendSync(
   const action = opts.direction === "pull" ? "pull" : "push";
   const state =
     opts.direction === "pull"
-      ? await deps.requestCloudSyncState(deps.projectId)
+      ? await deps.requestCloudSyncState(deps.projectId, {
+          timeoutMs: opts.syncStateTimeoutMs,
+        })
       : {
           conflicts: [],
           safeCommand: null,
@@ -101,7 +108,7 @@ export async function performCloudBackendSync(
               remote_create_policy: opts.remoteCreatePolicy,
             }),
           },
-          { timeoutMs: CLOUD_PULL_REQUEST_TIMEOUT_MS },
+          { timeoutMs: opts.timeoutMs ?? CLOUD_PULL_REQUEST_TIMEOUT_MS },
         );
   const data = isRecord(response.data) ? response.data : {};
   const pull = normalizeCloudPullResponse(response, data);
@@ -237,6 +244,7 @@ export async function requestCloudSyncStateSnapshot(opts: {
   projectId: string;
   fetchImpl: typeof fetch;
   headers: Headers;
+  timeoutMs?: number;
 }): Promise<CloudSyncStateSnapshot> {
   let res: Response;
   try {
@@ -245,7 +253,7 @@ export async function requestCloudSyncStateSnapshot(opts: {
       {
         method: "GET",
         headers: opts.headers,
-        signal: createTimeoutSignal(CLOUD_REQUEST_TIMEOUT_MS),
+        signal: createTimeoutSignal(opts.timeoutMs ?? CLOUD_REQUEST_TIMEOUT_MS),
       },
     );
   } catch {

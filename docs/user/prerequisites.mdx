@@ -27,17 +27,17 @@ description: "What you need installed and what assumptions Agent Plane makes abo
 
 No external dependencies. Tasks live in `.agentplane/tasks`.
 
-### Redmine backend
+### Cloud backend
 
-- Network access to your Redmine host.
+- Network access to your AgentPlane Cloud sync service.
 - Required env keys:
-  - `AGENTPLANE_REDMINE_URL`
-  - `AGENTPLANE_REDMINE_API_KEY`
-  - `AGENTPLANE_REDMINE_PROJECT_ID`
+  - `AGENTPLANE_CLOUD_ENDPOINT`
+  - `AGENTPLANE_CLOUD_TOKEN`
+  - `AGENTPLANE_CLOUD_PROJECT_ID`
 - Optional env keys:
-  - `AGENTPLANE_REDMINE_OWNER_AGENT`
-  - `AGENTPLANE_REDMINE_ASSIGNEE_ID`
-  - custom field and batch keys from `.env.example`
+  - `AGENTPLANE_CLOUD_PROVIDER`
+
+Provider-specific connectors, including Redmine, are configured in AgentPlane Cloud.
 
 ## Before you initialize
 

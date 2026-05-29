@@ -78,7 +78,7 @@ export const backendSyncSpec: CommandSpec<BackendSyncParsed> = {
   examples: [
     { cmd: COMMAND_SNIPPETS.backendSync.pullLocal, why: "Pull from backend." },
     {
-      cmd: COMMAND_SNIPPETS.backendSync.pushRedmineWithYes,
+      cmd: COMMAND_SNIPPETS.backendSync.pushCloudWithYes,
       why: "Push to a networked backend with explicit approval.",
     },
   ],
@@ -107,8 +107,8 @@ export const backendMigrateCanonicalStateSpec: CommandSpec<BackendMigrateCanonic
   ],
   examples: [
     {
-      cmd: "agentplane backend migrate-canonical-state redmine --yes",
-      why: "Backfill structured canonical_state into legacy Redmine issues.",
+      cmd: "agentplane backend migrate-canonical-state cloud --yes",
+      why: "Backfill structured canonical_state through the configured cloud connector.",
     },
   ],
   parse: (raw) => ({
@@ -129,8 +129,8 @@ export const backendInspectSpec: CommandSpec<BackendInspectParsed> = {
   ],
   examples: [
     {
-      cmd: "agentplane backend inspect redmine --yes",
-      why: "Inspect visible Redmine custom fields and canonical_state readiness without remote writes.",
+      cmd: "agentplane backend inspect cloud --yes",
+      why: "Inspect cloud backend readiness without remote writes.",
     },
   ],
   parse: (raw) => ({

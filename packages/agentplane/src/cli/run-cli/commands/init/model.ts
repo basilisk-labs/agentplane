@@ -9,7 +9,7 @@ export type SetupProfilePreset = "light" | "normal" | "full-harness";
 export type InitMode = "quick" | "guided" | "advanced" | "ci";
 export type UserFacingProfile = "solo" | "team" | "strict" | "custom";
 export type InitTool = "codex" | "claude" | "cursor" | "windsurf" | "multiple" | "manual";
-export type InitBackend = "local" | "redmine" | "cloud";
+export type InitBackend = "local" | "cloud";
 
 export type InitFlags = {
   initMode?: InitMode;

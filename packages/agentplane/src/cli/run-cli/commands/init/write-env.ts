@@ -10,51 +10,6 @@ type EnvTemplateEntry = {
   required: boolean;
 };
 
-const REDMINE_ENV_TEMPLATE: EnvTemplateEntry[] = [
-  {
-    key: "AGENTPLANE_REDMINE_URL",
-    value: "https://redmine.example",
-    comment: "Redmine base URL.",
-    required: true,
-  },
-  {
-    key: "AGENTPLANE_REDMINE_API_KEY",
-    value: "replace-me",
-    comment: "Redmine API key.",
-    required: true,
-  },
-  {
-    key: "AGENTPLANE_REDMINE_PROJECT_ID",
-    value: "replace-me",
-    comment: "Project identifier (numeric ID or project slug).",
-    required: true,
-  },
-  {
-    key: "AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID",
-    value: "1",
-    comment: "Required Redmine custom field ID that stores the agentplane task id.",
-    required: true,
-  },
-  {
-    key: "AGENTPLANE_REDMINE_OWNER_AGENT",
-    value: "REDMINE",
-    comment: "Optional default owner agent.",
-    required: false,
-  },
-  {
-    key: "AGENTPLANE_REDMINE_ASSIGNEE_ID",
-    value: "",
-    comment: "Optional assignee numeric ID.",
-    required: false,
-  },
-  {
-    key: "AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE",
-    value: "",
-    comment: "Optional Redmine custom field ID for structured canonical task state JSON.",
-    required: false,
-  },
-];
-
 const CLOUD_ENV_TEMPLATE: EnvTemplateEntry[] = [
   {
     key: "AGENTPLANE_CLOUD_ENDPOINT",
@@ -139,22 +94,6 @@ function buildTemplateBlock(opts: {
   const prefix =
     existing.length > 0 && !existing.endsWith("\n") ? "\n\n" : existing.length > 0 ? "\n" : "";
   return `${existing}${prefix}${block}`;
-}
-
-export async function ensureInitRedmineEnvTemplate(opts: { gitRoot: string }): Promise<void> {
-  const dotEnvExamplePath = path.join(opts.gitRoot, ".env.example");
-  const existingExample = (await readTextIfExists(dotEnvExamplePath)) ?? "";
-  const nextExample = buildTemplateBlock({
-    existing: existingExample,
-    entries: REDMINE_ENV_TEMPLATE,
-    heading: "redmine backend configuration",
-  });
-  await writeTextIfChanged(dotEnvExamplePath, nextExample);
-
-  const dotEnvPath = path.join(opts.gitRoot, ".env");
-  const existingEnv = await readTextIfExists(dotEnvPath);
-  if (existingEnv !== null) return;
-  await writeTextIfChanged(dotEnvPath, nextExample);
 }
 
 export async function ensureInitCloudEnvTemplate(opts: { gitRoot: string }): Promise<void> {

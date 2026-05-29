@@ -206,7 +206,7 @@ describe("local CI fast selection", () => {
 
   it("routes isolated backend projection paths to the backend bucket", () => {
     const plan = selectFastCiPlan([
-      "packages/agentplane/src/backends/task-backend/redmine-backend.ts",
+      "packages/agentplane/src/backends/task-backend/cloud-backend.ts",
       "packages/agentplane/src/commands/task/migrate-doc.ts",
     ]);
     expect(plan.kind).toBe("targeted");
@@ -215,9 +215,6 @@ describe("local CI fast selection", () => {
     expect(plan.vitestPool).toBe("forks");
     expect(plan.testFiles).toContain("packages/agentplane/src/backends/task-backend.test.ts");
     expect(plan.testFiles).toContain("packages/agentplane/src/backends/task-backend.local.test.ts");
-    expect(plan.testFiles).toContain(
-      "packages/agentplane/src/backends/task-backend.redmine.mapping.test.ts",
-    );
     expect(plan.testFiles).toContain("packages/agentplane/src/backends/task-backend.load.test.ts");
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
@@ -612,7 +609,7 @@ describe("local CI fast selection", () => {
 
   it("uses forks for mixed targeted plans when any selected bucket requires fork isolation", () => {
     const plan = selectFastCiPlan([
-      "packages/agentplane/src/backends/task-backend/redmine-backend.ts",
+      "packages/agentplane/src/backends/task-backend/cloud-backend.ts",
       "packages/agentplane/src/commands/task/shared.ts",
     ]);
     expect(plan.kind).toBe("targeted");

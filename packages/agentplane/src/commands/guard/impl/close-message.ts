@@ -77,7 +77,7 @@ export async function buildCloseCommitMessage(opts: {
       : task.title;
   const parsedSubject = parseTaskSubjectTemplate(task.commit?.message ?? "");
   const rendered = renderMergeMessage({
-    scope: normalizeScope({ tags, title, files: keyFiles }),
+    scope: normalizeCloseCommitScope(normalizeScope({ tags, title, files: keyFiles })),
     subjectEmoji: parsedSubject?.emoji,
     tags,
     prTitle: title,
@@ -101,6 +101,10 @@ export async function buildCloseCommitMessage(opts: {
   });
   const [subject, ...bodyLines] = rendered.split("\n");
   return { subject: subject ?? "", body: bodyLines.join("\n").trim() };
+}
+
+function normalizeCloseCommitScope(scope: string): string {
+  return scope === "tests" ? "code" : scope;
 }
 
 export function taskReadmePathForTask(opts: {

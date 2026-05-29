@@ -8,7 +8,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   LocalBackend,
   CloudBackend,
-  RedmineBackend,
   buildTasksExportSnapshotFromTasks,
   loadTaskBackend,
   type TaskData,
@@ -79,7 +78,7 @@ describe("loadTaskBackend", () => {
     expect(result.backend.capabilities.supports_revision_guarded_writes).toBe(true);
   });
 
-  it("loads redmine backend and reads .env without overriding existing vars", async () => {
+  it("rejects direct redmine backend configs with a cloud migration message", async () => {
     const agentplaneDir = path.join(tempDir, ".agentplane");
     const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
     await mkdir(path.dirname(backendPath), { recursive: true });
@@ -93,56 +92,9 @@ describe("loadTaskBackend", () => {
       }),
       "utf8",
     );
-    await writeFile(
-      path.join(tempDir, ".env"),
-      [
-        "AGENTPLANE_REDMINE_URL=https://redmine.env",
-        'AGENTPLANE_REDMINE_API_KEY="env-key"',
-        "AGENTPLANE_REDMINE_PROJECT_ID=proj",
-      ].join("\n"),
-      "utf8",
+    await expect(loadTaskBackend({ cwd: tempDir })).rejects.toThrow(
+      /direct Redmine task backend has moved to AgentPlane Cloud sync/u,
     );
-    process.env.AGENTPLANE_REDMINE_API_KEY = "preserve";
-
-    const result = await loadTaskBackend({ cwd: tempDir });
-    expect(result.backendId).toBe("redmine");
-    expect(result.backend).toBeInstanceOf(RedmineBackend);
-    expect(result.backend.capabilities.projection_read_mode).toBe("native");
-    expect(result.backend.capabilities.supports_task_revisions).toBe(false);
-    expect(result.backend.capabilities.supports_revision_guarded_writes).toBe(false);
-    expect(process.env.AGENTPLANE_REDMINE_API_KEY).toBe("preserve");
-    expect(process.env.AGENTPLANE_REDMINE_URL).toBe("https://redmine.env");
-  });
-
-  it("reports guarded revision support when canonical_state is configured", async () => {
-    const agentplaneDir = path.join(tempDir, ".agentplane");
-    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
-    await mkdir(path.dirname(backendPath), { recursive: true });
-    await writeFile(
-      backendPath,
-      JSON.stringify({
-        id: "redmine",
-        settings: {
-          custom_fields: { task_id: 1, canonical_state: 2 },
-        },
-      }),
-      "utf8",
-    );
-    await writeFile(
-      path.join(tempDir, ".env"),
-      [
-        "AGENTPLANE_REDMINE_URL=https://redmine.env",
-        "AGENTPLANE_REDMINE_API_KEY=env-key",
-        "AGENTPLANE_REDMINE_PROJECT_ID=proj",
-      ].join("\n"),
-      "utf8",
-    );
-
-    const result = await loadTaskBackend({ cwd: tempDir });
-    expect(result.backendId).toBe("redmine");
-    expect(result.backend).toBeInstanceOf(RedmineBackend);
-    expect(result.backend.capabilities.supports_task_revisions).toBe(true);
-    expect(result.backend.capabilities.supports_revision_guarded_writes).toBe(true);
   });
 
   it("loads cloud backend with local cache and .env connection settings", async () => {
@@ -357,11 +309,8 @@ describe("loadTaskBackend", () => {
     await writeFile(
       backendPath,
       JSON.stringify({
-        id: "redmine",
-        settings: {
-          custom_fields: { task_id: 1 },
-          cache_dir: "cache",
-        },
+        id: "local",
+        settings: { dir: "cache" },
       }),
       "utf8",
     );
@@ -380,11 +329,7 @@ describe("loadTaskBackend", () => {
     );
 
     const result = await loadTaskBackend({ cwd: tempDir });
-    expect(result.backendId).toBe("redmine");
-    expect(process.env.AGENTPLANE_REDMINE_URL).toBe("https://redmine.env/");
-    expect(process.env.AGENTPLANE_REDMINE_API_KEY).toBe("env\nkey");
-    expect(process.env.AGENTPLANE_REDMINE_OWNER).toBe("  owner  ");
-    expect(process.env.AGENTPLANE_REDMINE_EXTRA).toBe("plain");
+    expect(result.backendId).toBe("local");
 
     const localBackendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
     await writeFile(
@@ -398,51 +343,21 @@ describe("loadTaskBackend", () => {
     expect(local.root).toBe(path.join(tempDir, "custom-tasks"));
   });
 
-  it("fails to load redmine backend when required env vars are missing", async () => {
+  it("fails closed on unsupported backend ids", async () => {
     const agentplaneDir = path.join(tempDir, ".agentplane");
     const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
     await mkdir(path.dirname(backendPath), { recursive: true });
     await writeFile(
       backendPath,
       JSON.stringify({
-        id: "redmine",
-        settings: {
-          custom_fields: { task_id: 1 },
-        },
-      }),
-      "utf8",
-    );
-    await rm(path.join(tempDir, ".env"), { force: true });
-
-    await expect(loadTaskBackend({ cwd: tempDir })).rejects.toThrow(
-      /AGENTPLANE_REDMINE_URL, AGENTPLANE_REDMINE_API_KEY, AGENTPLANE_REDMINE_PROJECT_ID/u,
-    );
-  });
-
-  it("fails to load redmine backend when task-id custom field env key is missing", async () => {
-    const agentplaneDir = path.join(tempDir, ".agentplane");
-    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
-    await mkdir(path.dirname(backendPath), { recursive: true });
-    await writeFile(
-      backendPath,
-      JSON.stringify({
-        id: "redmine",
+        id: "jira",
         settings: {},
       }),
       "utf8",
     );
-    await writeFile(
-      path.join(tempDir, ".env"),
-      [
-        "AGENTPLANE_REDMINE_URL=https://redmine.env",
-        "AGENTPLANE_REDMINE_API_KEY=env-key",
-        "AGENTPLANE_REDMINE_PROJECT_ID=proj",
-      ].join("\n"),
-      "utf8",
-    );
 
     await expect(loadTaskBackend({ cwd: tempDir })).rejects.toThrow(
-      /AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID/u,
+      /Unsupported task backend 'jira'. Supported backends: local, cloud/u,
     );
   });
 
@@ -474,9 +389,9 @@ describe("loadTaskBackend", () => {
     await writeFile(
       backendPath,
       JSON.stringify({
-        id: "redmine",
+        id: "cloud",
         settings: {
-          custom_fields: { task_id: 1 },
+          cache_dir: ".agentplane/tasks",
         },
       }),
       "utf8",
