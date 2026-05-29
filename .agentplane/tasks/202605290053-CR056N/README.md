@@ -1,10 +1,11 @@
 ---
 id: "202605290053-CR056N"
 title: "Blueprint project-local decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4248."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified project-local blueprint decomposition. Commands passed: project-local focused tests, bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 28 to 27; project-local.ts is below the 400-line warning threshold."
   attempts: 0
-commit: null
+commit:
+  hash: "f81f4b4a4251317cede79ff31e15e98cc3493ec5"
+  message: "✅ CR056N blueprints: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: Decompose project-local blueprint trust/config and file parsing helpers while preserving public API behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4248 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified project-local blueprint decomposition. Commands passed: project-local focused tests, bun run typecheck, bun run arch:check, bun run knip:check after reviewed baseline remap, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 28 to 27; project-local.ts is below the 400-line warning threshold."
+  -
+    type: "status"
+    at: "2026-05-29T01:11:44.106Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4248 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T01:06:18.272Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T01:11:44.109Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/blueprints/project-local.ts into focused project-local blueprint modules while preserving behavior and reducing runtime hotspot warnings."
 sections:
   Summary: |-
