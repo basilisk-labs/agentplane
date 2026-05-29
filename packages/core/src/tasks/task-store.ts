@@ -126,6 +126,68 @@ export type TaskRunnerOutcome = TaskRunnerHistoryEntry & {
   history?: TaskRunnerHistoryEntry[];
 };
 
+export type TaskSyncExternalRef = {
+  provider: string;
+  connector_kind?: string;
+  connection_id?: string;
+  installation_id?: string;
+  remote_id: string;
+  remote_url?: string;
+  remote_revision?: string;
+  title?: string;
+  state?: string;
+  synced_at?: string;
+};
+
+export type TaskSyncFieldAuthority =
+  | "agentplane"
+  | "provider"
+  | "bidirectional"
+  | "derived"
+  | "ignored";
+
+export type TaskSyncConflictPolicy = "record" | "manual" | "agentplane_wins" | "provider_wins";
+
+export type TaskSyncFieldPolicy = {
+  authority: TaskSyncFieldAuthority;
+  remote_field?: string;
+  conflict_policy?: TaskSyncConflictPolicy;
+  updated_at?: string;
+  note?: string;
+};
+
+export type TaskSyncFreshness = {
+  projected_at?: string;
+  projection_sha256?: string;
+  source_revision?: number;
+  provider_revision?: string;
+  stale?: boolean;
+  reason?: string;
+};
+
+export type TaskSyncConflict = {
+  id: string;
+  kind: "field" | "identity" | "freshness" | "deletion" | "dependency" | "permission";
+  severity: "info" | "warning" | "blocking";
+  status: "open" | "resolved" | "ignored";
+  summary: string;
+  provider?: string;
+  remote_id?: string;
+  field?: string;
+  detected_at: string;
+  resolved_at?: string;
+  safe_command?: string;
+  when_to_stop?: string;
+};
+
+export type TaskSyncEnvelope = {
+  version: 1;
+  external_refs: TaskSyncExternalRef[];
+  field_policies: Record<string, TaskSyncFieldPolicy>;
+  freshness?: TaskSyncFreshness;
+  conflicts: TaskSyncConflict[];
+};
+
 export type TaskFrontmatter = {
   id: string;
   title: string;
@@ -144,6 +206,7 @@ export type TaskFrontmatter = {
   verification?: VerificationResult;
   quality_review?: QualityReviewResult;
   runner?: TaskRunnerOutcome;
+  sync?: TaskSyncEnvelope;
   comments: { author: string; body: string }[];
   events?: TaskEvent[];
   doc_version: TaskDocVersion;

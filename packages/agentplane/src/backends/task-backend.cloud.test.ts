@@ -652,9 +652,11 @@ describe("CloudBackend", () => {
     try {
       await backend.sync({ direction: "pull", conflict: "diff", quiet: false, confirm: true });
 
-      expect(io.stdout).toContain("cloud pull diff changed=1 added=1 removed=0 conflicts=0");
+      expect(io.stdout).toContain(
+        "cloud pull diff changed=1 remote_only=1 imported=0 removed=0 conflicts=0 remote_create_policy=diff",
+      );
       expect(io.stdout).toContain(`changed ${task.id}: title,status`);
-      expect(io.stdout).toContain("added remote-only 202605051806-REMOTE");
+      expect(io.stdout).toContain("remote-only 202605051806-REMOTE");
       await expect(cache.getTask(task.id)).resolves.toMatchObject({
         title: "Local title",
         status: "TODO",
@@ -666,6 +668,174 @@ describe("CloudBackend", () => {
       io.restore();
       restoreStdIO = silenceStdIO();
     }
+  });
+
+  it("remote-only tasks are not materialized by prefer-remote unless remote_create_policy imports them", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const fetchImpl = vi.fn<typeof fetch>((input) => {
+      const url = input instanceof Request ? input.url : input.toString();
+      if (url.endsWith("/sync/state")) {
+        return Promise.resolve(Response.json({ data: { openConflicts: [] } }));
+      }
+      return Promise.resolve(
+        Response.json({
+          data: {
+            tasks: [
+              {
+                id: "202605051806-RMT1",
+                remote_id: "linear-123",
+                remote_url: "https://linear.app/example/issue/LIN-123",
+                remote_revision: "rev-1",
+                provider: "linear",
+                title: "Remote only",
+                status: "TODO",
+                priority: "high",
+                owner: "DOCS",
+                tags: ["remote"],
+              },
+            ],
+            last_checked_at: "2026-05-06T00:00:00.000Z",
+          },
+        }),
+      );
+    });
+    const backend = new CloudBackend(
+      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await expect(
+      backend.sync({
+        direction: "pull",
+        conflict: "prefer-remote",
+        quiet: true,
+        confirm: true,
+      }),
+    ).rejects.toThrow("remote_create_policy=diff");
+    await expect(cache.getTask("202605051806-RMT1")).resolves.toBeNull();
+    await expect(
+      readFile(path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"), "utf8"),
+    ).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
+  it("remote_create_policy=ignore advances freshness without writing remote-only tasks", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const fetchImpl = vi.fn<typeof fetch>((input) => {
+      const url = input instanceof Request ? input.url : input.toString();
+      if (url.endsWith("/sync/state")) {
+        return Promise.resolve(Response.json({ data: { openConflicts: [] } }));
+      }
+      return Promise.resolve(
+        Response.json({
+          data: {
+            tasks: [{ id: "202605051806-RMT1", title: "Remote only", status: "TODO" }],
+            last_checked_at: "2026-05-06T00:00:00.000Z",
+          },
+        }),
+      );
+    });
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example",
+        token: "token",
+        project_id: "project-1",
+        remote_create_policy: "ignore",
+      },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await backend.sync({
+      direction: "pull",
+      conflict: "prefer-remote",
+      quiet: true,
+      confirm: true,
+    });
+
+    await expect(cache.getTask("202605051806-RMT1")).resolves.toBeNull();
+    const stateText = await readFile(
+      path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
+      "utf8",
+    );
+    expect(stateText).toContain("2026-05-06T00:00:00.000Z");
+  });
+
+  it("remote_create_policy=import materializes remote-only tasks with a sync envelope", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const fetchImpl = vi.fn<typeof fetch>((input) => {
+      const url = input instanceof Request ? input.url : input.toString();
+      if (url.endsWith("/sync/state")) {
+        return Promise.resolve(Response.json({ data: { openConflicts: [] } }));
+      }
+      return Promise.resolve(
+        Response.json({
+          data: {
+            tasks: [
+              {
+                id: "202605051806-RMT1",
+                remote_id: "trello-card-1",
+                remote_url: "https://trello.com/c/card1",
+                remote_revision: "card-rev-1",
+                provider: "trello",
+                title: "Remote only",
+                status: "TODO",
+                priority: "high",
+                owner: "DOCS",
+                tags: ["remote"],
+              },
+            ],
+            last_checked_at: "2026-05-06T00:00:00.000Z",
+          },
+        }),
+      );
+    });
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example",
+        token: "token",
+        project_id: "project-1",
+        remote_create_policy: "import",
+      },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await backend.sync({
+      direction: "pull",
+      conflict: "prefer-remote",
+      quiet: true,
+      confirm: true,
+    });
+
+    const imported = await cache.getTask("202605051806-RMT1");
+    expect(imported).toMatchObject({
+      title: "Remote only",
+      status: "TODO",
+      priority: "high",
+      owner: "DOCS",
+      origin: {
+        system: "cloud",
+        provider: "trello",
+        issue_id: "trello-card-1",
+        url: "https://trello.com/c/card1",
+      },
+      sync: {
+        version: 1,
+        external_refs: [
+          {
+            provider: "trello",
+            connector_kind: "cloud",
+            remote_id: "trello-card-1",
+            remote_url: "https://trello.com/c/card1",
+            remote_revision: "card-rev-1",
+          },
+        ],
+      },
+    });
+    const readme = await readFile(
+      path.join(tempDir, ".agentplane", "tasks", "202605051806-RMT1", "README.md"),
+      "utf8",
+    );
+    expect(readme).toContain("sync:");
+    expect(readme).not.toContain("Raw verification log");
   });
 
   it("preserves the service freshness timestamp after a no-op cloud pull", async () => {

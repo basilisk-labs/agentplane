@@ -5,6 +5,7 @@ import type {
   TaskEvent,
   TaskOrigin,
   TaskRunnerOutcome,
+  TaskSyncEnvelope,
   QualityReviewResult,
   VerificationResult,
 } from "@agentplaneorg/core/tasks";
@@ -20,6 +21,7 @@ export {
   TaskRunnerOutcome,
   TaskRunnerOutcomeStatus,
   TaskRunnerTarget,
+  TaskSyncEnvelope,
   QualityReviewResult,
   VerificationState,
   VerificationResult,
@@ -68,6 +70,7 @@ export type TaskData = {
   verification?: VerificationResult;
   quality_review?: QualityReviewResult;
   runner?: TaskRunnerOutcome;
+  sync?: TaskSyncEnvelope;
   commit?: { hash: string; message: string } | null;
   comments?: { author: string; body: string }[];
   events?: TaskEvent[];

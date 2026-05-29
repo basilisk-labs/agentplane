@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605291916-5Q6T1E/task-sync-contract",
+  "created_at": "2026-05-29T19:36:23.621Z",
+  "diffstat_sha256": "sha256:64b9afeb73e1732c838ce9538e20ce13c96923a36cab3277a51032a527c9038e",
+  "last_verified_at": "2026-05-29T19:50:10.491Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605291916-5Q6T1E",
+  "updated_at": "2026-05-29T19:36:23.621Z",
+  "verify": {
+    "status": "pass"
+  }
+}

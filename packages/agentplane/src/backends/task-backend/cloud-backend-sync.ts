@@ -2,7 +2,13 @@ import { isRecord } from "../../shared/guards.js";
 import type { LocalBackend } from "./local-backend.js";
 import { type readCloudBackendState, writeCloudBackendState } from "./cloud-backend-state.js";
 import { requestCloudPush } from "./cloud-backend-push.js";
-import { buildCloudPullPlan, emitCloudPullDiffSummary, readOpenConflicts } from "./cloud-pull.js";
+import {
+  buildCloudPullPlan,
+  emitCloudPullDiffSummary,
+  readOpenConflicts,
+  type CloudPullPlan,
+  type CloudRemoteCreatePolicy,
+} from "./cloud-pull.js";
 import { BackendError, type TaskData } from "./shared.js";
 import {
   CLOUD_PULL_REQUEST_TIMEOUT_MS,
@@ -45,6 +51,7 @@ export async function performCloudBackendSync(
     direction: "push" | "pull";
     conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
     quiet: boolean;
+    remoteCreatePolicy: CloudRemoteCreatePolicy;
   },
 ): Promise<void> {
   const localTasks = await deps.cache.listTasks();
@@ -91,6 +98,7 @@ export async function performCloudBackendSync(
               provider: deps.provider,
               direction: opts.direction,
               conflict: opts.conflict,
+              remote_create_policy: opts.remoteCreatePolicy,
             }),
           },
           { timeoutMs: CLOUD_PULL_REQUEST_TIMEOUT_MS },
@@ -126,6 +134,7 @@ async function applyCloudPullResponse(opts: {
   opts: {
     conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
     quiet: boolean;
+    remoteCreatePolicy: CloudRemoteCreatePolicy;
   };
   localTasks: TaskData[];
   state: CloudSyncStateSnapshot;
@@ -155,7 +164,24 @@ async function applyCloudPullResponse(opts: {
       "E_BACKEND",
     );
   }
-  const plan = opts.pull.tasks ? buildCloudPullPlan(opts.localTasks, opts.pull.tasks) : null;
+  const plan = opts.pull.tasks
+    ? buildCloudPullPlan(opts.localTasks, opts.pull.tasks, {
+        provider: opts.deps.provider,
+        remoteCreatePolicy: opts.opts.remoteCreatePolicy,
+      })
+    : null;
+  if (plan && opts.opts.conflict === "fail" && hasCloudPullPendingChanges(plan)) {
+    throw new BackendError(
+      [
+        "Cloud pull has pending projection changes.",
+        "Why: --conflict=fail refuses to advance local freshness when remote task fields, local-only tasks, or remote-only tasks need a policy decision.",
+        "Fix: run agentplane backend sync cloud --direction pull --conflict=diff --yes and review the summary.",
+        "Safe command: agentplane backend sync cloud --direction pull --conflict=diff --yes",
+        "Stop condition: stop if the diff shows unexpected provider authority or remote-only tasks.",
+      ].join("\n"),
+      "E_BACKEND",
+    );
+  }
   if (opts.opts.conflict === "diff") {
     emitCloudPullDiffSummary({
       plan,
@@ -164,10 +190,24 @@ async function applyCloudPullResponse(opts: {
     });
     const hasPendingProjectionChanges = conflicts.length > 0 || (plan?.changed.length ?? 0) > 0;
     const hasPendingTaskSetChanges =
-      (plan?.added.length ?? 0) > 0 || (plan?.removedIds.length ?? 0) > 0;
+      (plan?.added.length ?? 0) > 0 ||
+      (plan?.removedIds.length ?? 0) > 0 ||
+      (plan?.remoteOnly.length ?? 0) > 0;
     if (hasPendingProjectionChanges || hasPendingTaskSetChanges) return;
   } else if (plan && opts.opts.conflict === "prefer-remote") {
     await opts.deps.assertNoPendingPushForPull();
+    if (plan.remoteCreatePolicy === "diff" && plan.remoteOnly.length > 0) {
+      throw new BackendError(
+        [
+          "Cloud pull has remote-only tasks.",
+          "Why: remote_create_policy=diff requires an explicit review before materializing provider tasks into AgentPlane README files.",
+          "Fix: set remote_create_policy to import or ignore in the cloud backend config, then retry the pull.",
+          "Safe command: agentplane backend sync cloud --direction pull --conflict=diff --yes",
+          "Stop condition: stop if remote-only tasks should not become local AgentPlane tasks.",
+        ].join("\n"),
+        "E_BACKEND",
+      );
+    }
     if (plan.changed.length > 0 || plan.added.length > 0) {
       await opts.deps.cache.writeTasks([...plan.changed, ...plan.added]);
     }
@@ -181,6 +221,15 @@ async function applyCloudPullResponse(opts: {
       pending_push: state.pending_push,
     });
   }
+}
+
+function hasCloudPullPendingChanges(plan: CloudPullPlan): boolean {
+  return (
+    plan.changed.length > 0 ||
+    plan.added.length > 0 ||
+    plan.removedIds.length > 0 ||
+    (plan.remoteCreatePolicy !== "ignore" && plan.remoteOnly.length > 0)
+  );
 }
 
 export async function requestCloudSyncStateSnapshot(opts: {
