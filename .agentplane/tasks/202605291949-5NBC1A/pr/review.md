@@ -87,9 +87,10 @@ Created: 2026-05-29T19:51:11.668Z
  .../src/commands/guard/impl/close-message.test.ts  |  34 ++
  .../src/commands/guard/impl/close-message.ts       |   6 +-
  packages/agentplane/src/commands/sync.command.ts   |   4 +-
+ scripts/README.md                                  |   4 +-
  scripts/checks/run-backend-live-suite.mjs          |  99 ----
  scripts/lib/test-route-registry.mjs                |   7 -
- 60 files changed, 138 insertions(+), 5701 deletions(-)
+ 61 files changed, 140 insertions(+), 5703 deletions(-)
 ```
 
 </details>
