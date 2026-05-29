@@ -1,10 +1,11 @@
 ---
 id: "202605290600-GS13TP"
 title: "Context ingest task prompt decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4294."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Context ingest prompt construction extracted into packages/agentplane/src/context/ingest-task-prompt.ts; createTaskNewParsed behavior and prompt payload are preserved. Checks passed: bun test packages/agentplane/src/commands/context/release-readiness.test.ts (21 pass); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed; bun run hotspots:check (runtime hotspots 5 -> 4)."
   attempts: 0
-commit: null
+commit:
+  hash: "1fd1619d745dfae7629209888c4948ae804d6c44"
+  message: "♻️ GS13TP task: decompose context ingest prompt"
 comments:
   -
     author: "CODER"
     body: "Start: extracting context ingest task prompt construction into a focused helper module while preserving createTaskNewParsed behavior and maximum-assimilation task payloads."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4294 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Context ingest prompt construction extracted into packages/agentplane/src/context/ingest-task-prompt.ts; createTaskNewParsed behavior and prompt payload are preserved. Checks passed: bun test packages/agentplane/src/commands/context/release-readiness.test.ts (21 pass); bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed; bun run hotspots:check (runtime hotspots 5 -> 4)."
+  -
+    type: "status"
+    at: "2026-05-29T06:08:41.664Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4294 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T06:04:57.453Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T06:08:41.667Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor packages/agentplane/src/context/ingest-task.ts below the 400-line hotspot warning by extracting context assimilation prompt/metadata helpers into focused module(s). Preserve createTaskNewParsed public API, maximum-assimilation task contract, prompt module payload, source-set behavior, and allowed/forbidden output semantics. Acceptance: context release-readiness tests covering ingest pass, typecheck/arch/knip/lint/format pass, and bun run hotspots:check shows one fewer runtime hotspot."
 sections:
   Summary: |-
