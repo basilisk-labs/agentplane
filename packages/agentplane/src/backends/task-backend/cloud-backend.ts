@@ -117,7 +117,7 @@ export class CloudBackend implements TaskBackend {
     this.autoSyncPullOnRead = settings.autosync_pull_on_read ?? true;
     this.autoSyncPullOnWrite = settings.autosync_pull_on_write ?? true;
     this.autoSyncPullOnStartReady = settings.autosync_pull_on_start_ready ?? true;
-    this.autoSyncPushOnWrite = settings.autosync_push_on_write ?? true;
+    this.autoSyncPushOnWrite = settings.autosync_push_on_write ?? this.autoPushOnMutation;
   }
   static async create(opts: {
     root: string;
