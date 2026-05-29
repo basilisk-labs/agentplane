@@ -13,7 +13,6 @@ import type {
   QualityReviewResult,
   VerificationResult,
 } from "./types.js";
-import { toStringSafe } from "./strings.js";
 
 export function normalizeDependsOn(value: unknown): string[] {
   if (Array.isArray(value)) {

@@ -45,7 +45,7 @@
  .../src/backends/task-backend/shared/doc.ts        |  17 +-
  .../src/backends/task-backend/shared/errors.ts     |  30 +-
  .../src/backends/task-backend/shared/id.ts         |   4 -
- .../src/backends/task-backend/shared/normalize.ts  |  11 -
+ .../src/backends/task-backend/shared/normalize.ts  |  12 -
  .../src/backends/task-backend/shared/types.ts      |   7 +-
  packages/agentplane/src/cli/command-guide.ts       |   8 -
  packages/agentplane/src/cli/command-snippets.ts    |   6 +-
@@ -68,4 +68,4 @@
  scripts/checks/run-backend-live-suite.mjs          |  99 ----
  scripts/lib/test-route-registry.mjs                |   7 -
  scripts/run-backend-live-suite.mjs                 |   1 -
- 70 files changed, 175 insertions(+), 5819 deletions(-)
+ 70 files changed, 175 insertions(+), 5820 deletions(-)
