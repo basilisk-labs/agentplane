@@ -4,7 +4,7 @@ title: "Prompt module validation decomposition"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-29T02:35:06.121Z"
+  updated_by: "CODER"
+  note: "Verified prompt module validation decomposition. Commands passed: bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts packages/agentplane/src/runtime/prompt-modules/registry.test.ts --config vitest.workspace.ts (13 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 23 to 22; validation.ts is 342 lines, below the 400-line warning threshold."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: decompose prompt module validation constants and primitive guards while preserving public validation exports and runtime behavior."
+  -
+    type: "verify"
+    at: "2026-05-29T02:35:06.121Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified prompt module validation decomposition. Commands passed: bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts packages/agentplane/src/runtime/prompt-modules/registry.test.ts --config vitest.workspace.ts (13 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 23 to 22; validation.ts is 342 lines, below the 400-line warning threshold."
 doc_version: 3
-doc_updated_at: "2026-05-29T02:29:48.514Z"
+doc_updated_at: "2026-05-29T02:35:06.148Z"
 doc_updated_by: "CODER"
 description: "Decompose packages/agentplane/src/runtime/prompt-modules/validation.ts by extracting prompt module validation constants and primitive field guards while preserving runtime prompt module, mutation set, and compiled graph validation behavior."
 sections:
@@ -70,6 +76,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-29T02:35:06.121Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified prompt module validation decomposition. Commands passed: bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts packages/agentplane/src/runtime/prompt-modules/registry.test.ts --config vitest.workspace.ts (13 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 23 to 22; validation.ts is 342 lines, below the 400-line warning threshold.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T02:29:48.514Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: .agentplane/tasks/202605290229-K1E9GB/blueprint/resolved-snapshot.json
+    - old_digest: 771cbd40ebe2e3d9d8f16c2bce9a3f2c1386d4ca8e48c4095af84fb1c10b9b6e
+    - current_digest: 771cbd40ebe2e3d9d8f16c2bce9a3f2c1386d4ca8e48c4095af84fb1c10b9b6e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605290229-K1E9GB
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -114,6 +139,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-29T02:35:06.121Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified prompt module validation decomposition. Commands passed: bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts packages/agentplane/src/runtime/prompt-modules/registry.test.ts --config vitest.workspace.ts (13 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 23 to 22; validation.ts is 342 lines, below the 400-line warning threshold.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-29T02:29:48.514Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: .agentplane/tasks/202605290229-K1E9GB/blueprint/resolved-snapshot.json
+- old_digest: 771cbd40ebe2e3d9d8f16c2bce9a3f2c1386d4ca8e48c4095af84fb1c10b9b6e
+- current_digest: 771cbd40ebe2e3d9d8f16c2bce9a3f2c1386d4ca8e48c4095af84fb1c10b9b6e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605290229-K1E9GB
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
