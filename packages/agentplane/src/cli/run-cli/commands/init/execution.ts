@@ -2,17 +2,14 @@ import path from "node:path";
 
 import { buildExecutionProfile } from "@agentplaneorg/core/config";
 import { setPinnedBaseBranch } from "@agentplaneorg/core/git";
-import { runProcess } from "@agentplaneorg/core/process";
 
-import { collectHooksInstallConflicts } from "../../../../commands/hooks/install.js";
 import { cmdHooksInstall, ensureInitCommit } from "../../../../commands/workflow.js";
 import { getVersion } from "../../../../meta/version.js";
-import { getPathKind } from "../../../fs-utils.js";
 import { InitAborted, type InitClackPrompts } from "./prompts.js";
-import type { InitEffect, InitFlags, InitParsed, InitPlan } from "./model.js";
+import type { InitParsed, InitPlan } from "./model.js";
 import type { InitAnswers } from "./answers.js";
 import { applyInitBaseBranchSelection, type InitBaseBranchSelection } from "./base-branch.js";
-import { collectInitConflicts, handleInitConflicts } from "./conflicts.js";
+import { handleInitConflicts } from "./conflicts.js";
 import { maybeSyncIde } from "./ide-sync.js";
 import { promptConflictResolverStep, applyInitWithProgress } from "./steps/index.js";
 import type { InitPromptClack } from "./steps/contracts.js";
@@ -24,291 +21,18 @@ import { ensureInitCloudEnvTemplate, ensureInitRedmineEnvTemplate } from "./writ
 import { ensureInitGitignore } from "./write-gitignore.js";
 import { ensureInitWorkflow } from "./write-workflow.js";
 import { assertConfirmed } from "./answers.js";
-import { setupProfileToUserFacingProfile } from "./modes.js";
-import { detectParentGitRoot } from "./git.js";
+import type { ResolvedInitPaths } from "./init-paths.js";
 
-export type ResolvedInitPaths = {
-  gitRoot: string;
-  gitRootExisted: boolean;
-  parentGitRoot: string | null;
-  agentplaneDir: string;
-  workflowPath: string;
-  legacyConfigPath: string;
-  backendPath: string;
-};
-
-export async function resolveInitPaths(opts: {
-  cwd: string;
-  rootOverride?: string;
-  backend: NonNullable<InitFlags["backend"]>;
-}): Promise<ResolvedInitPaths> {
-  const initRoot = path.resolve(opts.rootOverride ?? opts.cwd);
-  const gitRoot = initRoot;
-  const gitRootExisted = (await getPathKind(path.join(gitRoot, ".git"))) === "dir";
-  const parentGitRoot = gitRootExisted ? null : await detectParentGitRoot(gitRoot);
-  const agentplaneDir = path.join(gitRoot, ".agentplane");
-  const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
-  const legacyConfigPath = path.join(agentplaneDir, "config.json");
-  const localBackendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
-  const redmineBackendPath = path.join(agentplaneDir, "backends", "redmine", "backend.json");
-  const cloudBackendPath = path.join(agentplaneDir, "backends", "cloud", "backend.json");
-  const backendPath =
-    opts.backend === "redmine"
-      ? redmineBackendPath
-      : opts.backend === "cloud"
-        ? cloudBackendPath
-        : localBackendPath;
-  return {
-    gitRoot,
-    gitRootExisted,
-    parentGitRoot,
-    agentplaneDir,
-    workflowPath,
-    legacyConfigPath,
-    backendPath,
-  };
-}
-
-export async function collectInitAndHookConflicts(opts: {
-  paths: ResolvedInitPaths;
-  answers: InitAnswers;
-}): Promise<string[]> {
-  const initDirs = [
-    opts.paths.agentplaneDir,
-    path.join(opts.paths.agentplaneDir, "tasks"),
-    path.join(opts.paths.agentplaneDir, "agents"),
-    path.join(opts.paths.agentplaneDir, "evaluators"),
-    path.join(opts.paths.agentplaneDir, "cache"),
-    path.join(opts.paths.agentplaneDir, "backends"),
-    path.join(opts.paths.agentplaneDir, "backends", opts.answers.backend),
-  ];
-  const initFiles = [opts.paths.workflowPath, opts.paths.legacyConfigPath, opts.paths.backendPath];
-  const initConflicts = await collectInitConflicts({ initDirs, initFiles });
-  const hookConflicts =
-    opts.answers.hooks && opts.paths.gitRootExisted
-      ? await collectHooksInstallConflicts({
-          gitRoot: opts.paths.gitRoot,
-          agentplaneDir: opts.paths.agentplaneDir,
-        })
-      : [];
-  return [...new Set([...initConflicts, ...hookConflicts])];
-}
-
-function rel(root: string, filePath: string): string {
-  return path.relative(root, filePath) || ".";
-}
-
-export const GITHUB_CLI_INIT_RECOMMENDATION =
-  "GitHub CLI (gh) is recommended for branch_pr PR merges. Install it yourself (macOS: `brew install gh`; Windows: `winget install --id GitHub.cli`; Linux: see `https://cli.github.com/manual/installation`), then run `gh auth login`. AgentPlane will not install it for you; explicit GH_TOKEN/GITHUB_TOKEN can be used as the API fallback.";
-
-export async function detectGithubCliInstalled(cwd: string): Promise<boolean> {
-  try {
-    await runProcess({
-      command: "gh",
-      args: ["--version"],
-      cwd,
-      encoding: "utf8",
-      stdout: "ignore",
-      stderr: "ignore",
-      timeoutMs: 3000,
-    });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function initWriteEffects(opts: { paths: ResolvedInitPaths; answers: InitAnswers }): InitEffect[] {
-  const gateway = opts.answers.policyGateway === "claude" ? "CLAUDE.md" : "AGENTS.md";
-  const effects: InitEffect[] = [
-    {
-      kind: "write_file",
-      path: ".agentplane/WORKFLOW.md",
-      summary: "Write workflow contract",
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "low",
-    },
-    {
-      kind: "write_file",
-      path: rel(opts.paths.gitRoot, opts.paths.backendPath),
-      summary: `Write ${opts.answers.backend} backend stub`,
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "low",
-    },
-    {
-      kind: "write_file",
-      path: gateway,
-      summary: `Write ${opts.answers.policyGateway} policy gateway`,
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "low",
-    },
-    {
-      kind: "write_file",
-      path: ".agentplane/evaluators/recovery-context.md",
-      summary: "Write evaluator prompt module catalog",
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "low",
-    },
-    {
-      kind: "write_file",
-      path: ".gitignore",
-      summary: "Update repository ignore rules",
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "low",
-    },
-  ];
-  if (!opts.paths.gitRootExisted) {
-    effects.unshift({
-      kind: "git_init",
-      summary: "Initialize git repository after final confirmation",
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "medium",
-    });
-  }
-  if (opts.answers.hooks) {
-    effects.push({
-      kind: "install_hooks",
-      path: ".git/hooks",
-      summary: "Install managed git hooks",
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "medium",
-    });
-  }
-  if (opts.answers.ide !== "codex") {
-    effects.push({
-      kind: "sync_ide",
-      summary: `Sync ${opts.answers.ide} rules`,
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "low",
-    });
-  }
-  for (const recipe of opts.answers.recipes) {
-    effects.push({
-      kind: "vendor_recipe",
-      summary: `Materialize cached recipe ${recipe}`,
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "low",
-    });
-  }
-  for (const blueprint of opts.answers.blueprints) {
-    effects.push({
-      kind: "install_blueprint",
-      summary: `Install cached blueprint catalog entry ${blueprint}`,
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "low",
-    });
-  }
-  return effects;
-}
-
-export function buildInitPlan(opts: {
-  paths: ResolvedInitPaths;
-  answers: InitAnswers;
-  conflicts: string[];
-  conflictMode: { backup: boolean; force: boolean };
-  outputMode: "text" | "json";
-  includeInstallCommit: boolean;
-  initMode: InitPlan["mode"];
-  githubCliInstalled?: boolean | null;
-}): InitPlan {
-  const hasConflictStrategy = opts.conflictMode.backup || opts.conflictMode.force;
-  const conflictEffects: InitEffect[] = hasConflictStrategy
-    ? opts.conflicts.map((conflict) => ({
-        kind: opts.conflictMode.backup ? "backup_path" : "delete_path",
-        path: rel(opts.paths.gitRoot, conflict),
-        summary: opts.conflictMode.backup ? "Back up conflicting path" : "Delete conflicting path",
-        destructive: opts.conflictMode.force,
-        reversible: opts.conflictMode.backup,
-        requiresNetwork: false,
-        risk: opts.conflictMode.force ? "high" : "medium",
-      }))
-    : [];
-  const effects = [
-    ...conflictEffects,
-    ...initWriteEffects({ paths: opts.paths, answers: opts.answers }),
-  ];
-  if (opts.includeInstallCommit) {
-    effects.push({
-      kind: "git_commit",
-      summary: `Create initial AgentPlane install commit for ${getVersion()}`,
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "medium",
-    });
-  }
-  const githubCliInstalled =
-    opts.answers.workflow === "branch_pr" ? (opts.githubCliInstalled ?? null) : null;
-  const warnings = [
-    ...(opts.conflicts.length > 0 && !hasConflictStrategy
-      ? ["Conflicts require --backup or --force before apply."]
-      : []),
-    ...(opts.answers.workflow === "branch_pr" && githubCliInstalled === false
-      ? [GITHUB_CLI_INIT_RECOMMENDATION]
-      : []),
-  ];
-  const nextSteps = [
-    ...(opts.answers.workflow === "branch_pr" && githubCliInstalled === false
-      ? ["Install GitHub CLI yourself, then run `gh auth login`."]
-      : []),
-    "agentplane quickstart",
-    'agentplane task new --title "Trace first AI-assisted change" --owner CODER --tag code',
-  ];
-  return {
-    schemaVersion: "init-plan/v1",
-    agentplaneVersion: getVersion(),
-    root: opts.paths.gitRoot,
-    mode: opts.initMode,
-    profile: setupProfileToUserFacingProfile(opts.answers.setupProfile),
-    internalSetupProfile: opts.answers.setupProfile,
-    answers: {
-      policyGateway: opts.answers.policyGateway,
-      ide: opts.answers.ide,
-      workflow: opts.answers.workflow,
-      backend: opts.answers.backend,
-      hooks: opts.answers.hooks,
-      requirePlanApproval: opts.answers.requirePlanApproval,
-      requireNetworkApproval: opts.answers.requireNetworkApproval,
-      requireVerifyApproval: opts.answers.requireVerifyApproval,
-      feedbackGithubIssues: opts.answers.feedbackGithubIssues,
-      feedbackAnonymousCloud: opts.answers.feedbackAnonymousCloud,
-      executionProfile: opts.answers.executionProfile,
-      strictUnsafeConfirm: opts.answers.strictUnsafeConfirm,
-      recipes: [...opts.answers.recipes],
-      blueprints: [...opts.answers.blueprints],
-    },
-    context: {
-      gitRootExisted: opts.paths.gitRootExisted,
-      parentGitRoot: opts.paths.parentGitRoot,
-      outputMode: opts.outputMode,
-      githubCliInstalled,
-    },
-    effects,
-    conflicts: opts.conflicts.map((conflict) => rel(opts.paths.gitRoot, conflict)),
-    warnings,
-    nextSteps,
-  };
-}
+export {
+  collectInitAndHookConflicts,
+  resolveInitPaths,
+  type ResolvedInitPaths,
+} from "./init-paths.js";
+export {
+  buildInitPlan,
+  detectGithubCliInstalled,
+  GITHUB_CLI_INIT_RECOMMENDATION,
+} from "./init-plan.js";
 
 export async function maybeConfirmInteractiveApply(opts: {
   clack: InitClackPrompts | null;
