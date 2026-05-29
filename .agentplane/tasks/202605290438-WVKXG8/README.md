@@ -1,10 +1,11 @@
 ---
 id: "202605290438-WVKXG8"
 title: "Prompt module compiler decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4280."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Observed: prompt module compiler context normalization and load-condition matching moved into compiler.context.ts; compiler.ts is below hotspot threshold. Checks: compiler.test, mutations.test, registry.test, typecheck, arch:check, knip:check, lint:core, format:changed, hotspots:check passed."
   attempts: 0
-commit: null
+commit:
+  hash: "9762da4dbe5390b40ca062af2d100d426fe592a0"
+  message: "♻️ WVKXG8 prompt: decompose compiler context"
 comments:
   -
     author: "CODER"
     body: "Start: Extract prompt module compiler context and matching helpers while preserving compilePromptModuleGraph behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4280 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Observed: prompt module compiler context normalization and load-condition matching moved into compiler.context.ts; compiler.ts is below hotspot threshold. Checks: compiler.test, mutations.test, registry.test, typecheck, arch:check, knip:check, lint:core, format:changed, hotspots:check passed."
+  -
+    type: "status"
+    at: "2026-05-29T04:54:37.520Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4280 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T04:44:24.081Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T04:54:37.524Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract focused helpers from packages/agentplane/src/runtime/prompt-modules/compiler.ts to reduce the runtime hotspot below the warning threshold without changing prompt module compilation behavior."
 sections:
   Summary: |-
