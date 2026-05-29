@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T03:17:49Z",
   "base": "main",
   "branch": "task/202605290307-X81Y8X/blueprint-resolve-decomposition",
   "created_at": "2026-05-29T03:07:30.419Z",
   "diffstat_sha256": "sha256:2630cd121f310309409bd0cc1435adb44f1ff1f20fc7932df1c0bee945dcfb95",
   "last_verified_at": "2026-05-29T03:13:16.388Z",
   "last_verified_diffstat_sha256": "sha256:2630cd121f310309409bd0cc1435adb44f1ff1f20fc7932df1c0bee945dcfb95",
+  "merge_commit": "a97cbd444535b7b08fa2ff8e9b23a27cc05d870d",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T03:17:49Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605290307-X81Y8X",
-  "updated_at": "2026-05-29T03:07:30.419Z",
+  "updated_at": "2026-05-29T03:17:49Z",
   "verify": {
     "status": "pass"
   }

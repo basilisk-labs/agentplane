@@ -1,10 +1,11 @@
 ---
 id: "202605290307-X81Y8X"
 title: "Blueprint resolve decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4264."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified blueprint resolve decomposition. Commands passed: bunx vitest run packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/recipe-hints.test.ts packages/agentplane/src/blueprints/snapshot.test.ts packages/agentplane/src/blueprints/validate.test.ts --config vitest.workspace.ts (56 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 20 to 19; resolve.ts is 346 lines, below the 400-line warning threshold."
   attempts: 0
-commit: null
+commit:
+  hash: "a97cbd444535b7b08fa2ff8e9b23a27cc05d870d"
+  message: "✅ X81Y8X blueprints: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: extract recipe hint validation helpers while preserving blueprint resolve behavior and exports."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4264 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified blueprint resolve decomposition. Commands passed: bunx vitest run packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/recipe-hints.test.ts packages/agentplane/src/blueprints/snapshot.test.ts packages/agentplane/src/blueprints/validate.test.ts --config vitest.workspace.ts (56 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 20 to 19; resolve.ts is 346 lines, below the 400-line warning threshold."
+  -
+    type: "status"
+    at: "2026-05-29T03:18:36.963Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4264 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T03:13:16.412Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T03:18:36.967Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/blueprints/resolve.ts by extracting recipe hint validation helpers while preserving blueprint resolution and explanation behavior."
 sections:
   Summary: |-
