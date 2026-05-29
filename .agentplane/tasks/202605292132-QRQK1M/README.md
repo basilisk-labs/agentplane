@@ -4,7 +4,7 @@ title: "Preserve staged index on policy hook refusal"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,22 @@ verification:
   updated_by: "CODER"
   note: "Focused regression passes: bun test packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts -t 'hooks run pre-commit blocks AGENTS.md without env override'. Static checks pass: bun run typecheck, bun run lint:core, bun run format:check, node .agentplane/policy/check-routing.mjs."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-29T21:38:31.533Z"
+  updated_by: "EVALUATOR"
+  note: "Issue #4313 regression coverage is present and hosted PR #4321 checks are green."
+  evaluated_sha: "c711524a983a10ffa0fc4a21874ea6812b8ec673"
+  blueprint_digest: "332d0080b09edf570920448a9f3dcbec331be6b0f345b7476c52da7b9ad08565"
+  evidence_refs:
+    - ".agentplane/tasks/202605292132-QRQK1M/README.md"
+    - ".agentplane/tasks/202605292132-QRQK1M/quality/20260529-213831533-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605292132-QRQK1M/quality/20260529-213831533-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605292132-QRQK1M/quality/20260529-213831533-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605292132-QRQK1M/blueprint/resolved-snapshot.json"
+    - "PR #4321 required checks passed"
+  findings:
+    - "PASS: managed pre-commit protected-policy refusal preserves AGENTS.md in the staged index, and retry with AGENTPLANE_ALLOW_POLICY=1 succeeds without restaging."
 commit: null
 comments:
   -
