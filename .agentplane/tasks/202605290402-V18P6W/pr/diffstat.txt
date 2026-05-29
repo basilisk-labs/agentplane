@@ -1,0 +1,3 @@
+ .../agentplane/src/commands/acr/acr.command.ts     | 305 ++-------------------
+ packages/agentplane/src/commands/acr/acr.specs.ts  | 281 +++++++++++++++++++
+ 2 files changed, 305 insertions(+), 281 deletions(-)
