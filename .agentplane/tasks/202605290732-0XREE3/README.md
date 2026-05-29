@@ -1,10 +1,11 @@
 ---
 id: "202605290732-0XREE3"
 title: "Release v0.6.12"
-status: "DOING"
+result_summary: "Merged via PR #4306."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -52,11 +53,16 @@ quality_review:
     - "GitHub review thread PRRT_kwDORCLmJM6FoDe4 resolved"
   findings:
     - "Resolved PR #4306 review thread by syncing root bun.lock metadata for agentplane, @agentplaneorg/core, @agentplaneorg/recipes, and @agentplane/testkit dependency references to 0.6.12."
-commit: null
+commit:
+  hash: "682e35b41d34040077c4ee70909c396312d0d5d3"
+  message: "✅ 0XREE3 task: refresh release review evidence"
 comments:
   -
     author: "CODER"
     body: "Start: Prepare v0.6.12 release candidate from approved release.strict plan, validate release checks, publish PR artifacts, and record evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4306 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -77,9 +83,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release checks refreshed after bun.lock sync: bun install --frozen-lockfile --ignore-scripts passed; bun run release:check passed with 0.6.12 package metadata; prior release:prepublish:heavy and hosted checks remain covered, pending fresh hosted rerun for the latest branch head."
+  -
+    type: "status"
+    at: "2026-05-29T08:43:48.851Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4306 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T08:35:56.996Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T08:43:48.857Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare, validate, merge, publish, and record evidence for the next patch release v0.6.12."
 sections:
   Summary: |-
