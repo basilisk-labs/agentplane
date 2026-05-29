@@ -1,10 +1,11 @@
 ---
 id: "202605281918-XQ1ZZ0"
 title: "Hotspot baseline and refactor guardrails"
-status: "DOING"
+result_summary: "Merged via PR #4202."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -52,11 +53,16 @@ quality_review:
     - "bun run format:changed"
   findings:
     - "Pass: regression test covers packages/agentplane/src/commands/task/shared/workflow-transition-service.ts and full local checks pass on the updated diff."
-commit: null
+commit:
+  hash: "4f57c255f13acb658ae33bcef49f5009083453db"
+  message: "✅ XQ1ZZ0 task: normalize verification snapshot paths"
 comments:
   -
     author: "CODER"
     body: "Start: implement hotspot baseline and refactor guardrails from the dedicated branch_pr worktree, preserving current threshold behavior while exposing machine-readable data for follow-up decomposition tasks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4202 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -89,9 +95,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified current PR head after nested workflow hotspot guardrail fix and evaluator evidence refresh. Checks passed: bun test packages/agentplane/src/cli/hotspot-report-script.test.ts; node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run format:changed."
+  -
+    type: "status"
+    at: "2026-05-29T07:23:53.470Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4202 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T07:19:00.915Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T07:23:53.476Z"
+doc_updated_by: "INTEGRATOR"
 description: "Create a machine-readable hotspot baseline and guardrails for agent-critical refactors so each decomposition task proves reduced coupling and does not introduce new oversized agent-critical modules."
 sections:
   Summary: |-
