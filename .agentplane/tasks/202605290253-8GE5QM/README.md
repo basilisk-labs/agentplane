@@ -1,10 +1,11 @@
 ---
 id: "202605290253-8GE5QM"
 title: "ACR generate decomposition"
-status: "DOING"
+result_summary: "Merged via PR #4262."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified ACR generate decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/acr/acr.command.test.ts packages/agentplane/src/commands/task/finish.validation.unit.test.ts --config vitest.workspace.ts (33 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 21 to 20; generate.ts is 341 lines, below the 400-line warning threshold."
   attempts: 0
-commit: null
+commit:
+  hash: "6eb102d43ddae733552450b6adb9993fb6e75fcc"
+  message: "✅ 8GE5QM acr: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: decompose ACR generate helpers while preserving generated record behavior and digest validation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4262 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified ACR generate decomposition. Commands passed: bunx vitest run packages/agentplane/src/commands/acr/acr.command.test.ts packages/agentplane/src/commands/task/finish.validation.unit.test.ts --config vitest.workspace.ts (33 tests), bun run typecheck, bun run arch:check, bun run knip:check, bun run lint:core, bun run format:changed, bun run hotspots:check. Runtime hotspot warnings decreased from 21 to 20; generate.ts is 341 lines, below the 400-line warning threshold."
+  -
+    type: "status"
+    at: "2026-05-29T03:05:45.297Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4262 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-29T02:59:55.692Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-29T03:05:45.302Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose packages/agentplane/src/commands/acr/generate.ts by extracting ACR extension and residual-risk helpers while preserving generated Agent Change Record behavior."
 sections:
   Summary: |-

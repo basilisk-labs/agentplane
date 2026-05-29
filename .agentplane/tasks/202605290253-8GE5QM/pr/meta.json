@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-29T03:04:56Z",
   "base": "main",
   "branch": "task/202605290253-8GE5QM/acr-generate-decomposition",
   "created_at": "2026-05-29T02:54:05.885Z",
   "diffstat_sha256": "sha256:f4fe5f2a37ec1fabadff8ea5547136b7371d70894808b5668233c31c305a185b",
   "last_verified_at": "2026-05-29T02:59:55.667Z",
   "last_verified_diffstat_sha256": "sha256:f4fe5f2a37ec1fabadff8ea5547136b7371d70894808b5668233c31c305a185b",
+  "merge_commit": "6eb102d43ddae733552450b6adb9993fb6e75fcc",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-29T03:04:56Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605290253-8GE5QM",
-  "updated_at": "2026-05-29T02:54:05.885Z",
+  "updated_at": "2026-05-29T03:04:56Z",
   "verify": {
     "status": "pass"
   }
