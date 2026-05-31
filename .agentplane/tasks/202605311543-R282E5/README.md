@@ -4,7 +4,7 @@ title: "Make evaluator recovery batch-friendly"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-31T16:06:22.915Z"
+  updated_by: "CODER"
+  note: "Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed."
   attempts: 0
 commit: null
 comments:
@@ -41,8 +41,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implementing the approved release recovery CLI and prompt-policy improvement batch in the primary KS7B7N branch_pr worktree."
+  -
+    type: "verify"
+    at: "2026-05-31T16:06:22.915Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed."
 doc_version: 3
-doc_updated_at: "2026-05-31T15:53:30.481Z"
+doc_updated_at: "2026-05-31T16:06:22.941Z"
 doc_updated_by: "CODER"
 description: "Improve evaluator and finish sequencing for multiple related tasks by adding batch support or precise dirty-subtree recovery guidance after evaluator artifacts are written."
 sections:
@@ -66,6 +72,25 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-31T16:06:22.915Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T15:53:30.481Z, excerpt_hash=sha256:a0745f2fcf4b4c0357d1dcddf1d16e37826c4c2ac2d86f7ffec443fdbf2c28af
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311543-KS7B7N-release-recovery-cli-improvements/.agentplane/tasks/202605311543-R282E5/blueprint/resolved-snapshot.json
+    - old_digest: 13e4b239b3a5024c011f77dc2dc1e375e2400b997a75a28bca1cfef902e21bef
+    - current_digest: 13e4b239b3a5024c011f77dc2dc1e375e2400b997a75a28bca1cfef902e21bef
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605311543-R282E5
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -102,6 +127,25 @@ PLANNER fallback scaffold for "Make evaluator recovery batch-friendly". Replace 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-31T16:06:22.915Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T15:53:30.481Z, excerpt_hash=sha256:a0745f2fcf4b4c0357d1dcddf1d16e37826c4c2ac2d86f7ffec443fdbf2c28af
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311543-KS7B7N-release-recovery-cli-improvements/.agentplane/tasks/202605311543-R282E5/blueprint/resolved-snapshot.json
+- old_digest: 13e4b239b3a5024c011f77dc2dc1e375e2400b997a75a28bca1cfef902e21bef
+- current_digest: 13e4b239b3a5024c011f77dc2dc1e375e2400b997a75a28bca1cfef902e21bef
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605311543-R282E5
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

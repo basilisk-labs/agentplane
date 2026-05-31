@@ -4,7 +4,7 @@ title: "Explain blocked GitHub merge states"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -25,10 +25,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-31T16:06:32.436Z"
+  updated_by: "CODER"
+  note: "Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implementing the approved release recovery CLI and prompt-policy improvement batch in the primary KS7B7N branch_pr worktree."
+  -
+    type: "verify"
+    at: "2026-05-31T16:06:32.436Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed."
 doc_version: 3
-doc_updated_at: "2026-05-31T15:53:32.406Z"
+doc_updated_at: "2026-05-31T16:06:32.461Z"
 doc_updated_by: "CODER"
 description: "Extend ap pr check to explain GitHub mergeStateStatus=BLOCKED with review/protection/auto-merge context and emit the next permitted action instead of only reporting green checks."
 sections:
@@ -68,6 +74,25 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-31T16:06:32.436Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T15:53:32.406Z, excerpt_hash=sha256:410e694ceda74578ddfe5f14dbbcdc216bc3ba35155b1713d814eed28f5712df
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311543-KS7B7N-release-recovery-cli-improvements/.agentplane/tasks/202605311543-SEMKC7/blueprint/resolved-snapshot.json
+    - old_digest: 6a40393be3028f364870d62257284725fa87f2501cbcb90a397255ded0c9b607
+    - current_digest: 6a40393be3028f364870d62257284725fa87f2501cbcb90a397255ded0c9b607
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605311543-SEMKC7
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -104,6 +129,25 @@ PLANNER fallback scaffold for "Explain blocked GitHub merge states". Replace wit
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-31T16:06:32.436Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T15:53:32.406Z, excerpt_hash=sha256:410e694ceda74578ddfe5f14dbbcdc216bc3ba35155b1713d814eed28f5712df
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311543-KS7B7N-release-recovery-cli-improvements/.agentplane/tasks/202605311543-SEMKC7/blueprint/resolved-snapshot.json
+- old_digest: 6a40393be3028f364870d62257284725fa87f2501cbcb90a397255ded0c9b607
+- current_digest: 6a40393be3028f364870d62257284725fa87f2501cbcb90a397255ded0c9b607
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605311543-SEMKC7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
