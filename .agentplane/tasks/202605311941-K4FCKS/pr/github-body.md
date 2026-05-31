@@ -19,10 +19,12 @@ Document the target Hermes Agentplane adapter architecture and add an initial re
 - Note:
 
 ```text
-Verified on current head 1732aab54827: node .agentplane/policy/check-routing.mjs passed; ap doctor
-passed with two unrelated historical DONE-task warnings; bunx vitest run
-packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; bun run
-docs:cli:check passed; bun run format:changed passed.
+Verified Hermes plugin shim and image requirements update: remote Hermes image smoke passed with
+PYTHONPATH=/opt/hermes (plugin registers CLI command, patches kanban_db.dispatch_once, treats
+agentplane-coder as spawnable, extracts Agentplane task id); bunx vitest run
+packages/agentplane/src/commands/hermes passed; node import check for
+integrations/hermes-agentplane-plugin/src/index.mjs passed; node
+.agentplane/policy/check-routing.mjs passed; bun run format:changed passed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -36,13 +38,17 @@ docs:cli:check passed; bun run format:changed passed.
 ```text
  README.md                                          |   1 +
  docs/user/cli-reference.generated.mdx              | 100 ++++++
- docs/workflow-guides/hermes-kanban.mdx             | 194 ++++++++++
+ docs/workflow-guides/hermes-kanban.mdx             | 206 +++++++++++
  docs/workflow-guides/index.mdx                     |   5 +
+ integrations/hermes-agentplane-plugin/README.md    |  40 +++
+ .../bin/hermes-agentplane-spawn.mjs                |  46 +++
+ integrations/hermes-agentplane-plugin/package.json |  13 +
+ .../hermes-agentplane-plugin/src/index.mjs         |  47 +++
  .../src/cli/run-cli/command-catalog/project.ts     |  17 +
  .../src/cli/run-cli/command-loaders/project.ts     |  19 +
  .../src/commands/hermes/hermes.command.test.ts     | 120 +++++++
  .../src/commands/hermes/hermes.command.ts          | 395 +++++++++++++++++++++
- 8 files changed, 851 insertions(+)
+ 12 files changed, 1009 insertions(+)
 ```
 
 </details>
