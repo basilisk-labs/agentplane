@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { runCli } from "../../cli/run-cli.js";
 import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
-import { mkdir, writeFile } from "node:fs/promises";
+import { chmod, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 async function createTask(root: string): Promise<string> {
@@ -149,6 +149,42 @@ describe("hermes adapter commands", () => {
       expect(payload.execution.result.command).toContain(taskId);
     } finally {
       io.restore();
+    }
+  });
+
+  it("supervise returns the child Agentplane command failure code", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createApprovedTask(root);
+    const fakeBin = path.join(root, "failing-agentplane.sh");
+    await writeFile(fakeBin, "#!/bin/sh\necho child-failed >&2\nexit 7\n");
+    await chmod(fakeBin, 0o755);
+
+    const previous = process.env.AGENTPLANE_BIN;
+    process.env.AGENTPLANE_BIN = fakeBin;
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "hermes",
+        "supervise",
+        taskId,
+        "--execute-step",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(7);
+      const payload = JSON.parse(io.stdout) as {
+        execution: { result: { exit_code: number; stderr: string } };
+      };
+      expect(payload.execution.result.exit_code).toBe(7);
+      expect(payload.execution.result.stderr).toContain("child-failed");
+    } finally {
+      io.restore();
+      if (previous === undefined) {
+        delete process.env.AGENTPLANE_BIN;
+      } else {
+        process.env.AGENTPLANE_BIN = previous;
+      }
     }
   });
 

@@ -69,7 +69,10 @@ export async function loadLaneRegistry() {
 }
 
 export function currentAgentplaneCommand(): { command: string; argsPrefix: string[] } {
-  return { command: resolveAgentplaneBinPath(), argsPrefix: [] };
+  const rawAgentplaneBin = process.env.AGENTPLANE_BIN?.trim();
+  const command =
+    rawAgentplaneBin && rawAgentplaneBin.length > 0 ? rawAgentplaneBin : resolveAgentplaneBinPath();
+  return { command, argsPrefix: [] };
 }
 
 export function executableStepFor(packet: HermesRoutePacketForExecution): {
