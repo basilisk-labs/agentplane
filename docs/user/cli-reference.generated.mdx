@@ -1161,7 +1161,8 @@ Options:
 - `--result-file <path>`: Read the result summary from a file path (mutually exclusive with --result).
 - `--risk <low|med|high>`: Optional. Risk level stored in task metadata. (choices=low|med|high)
 - `--breaking`: Optional. Mark the change as breaking in task metadata. (default=false)
-- `--commit <hash>`: Commit hash to record on the task (optional).
+- `--commit <hash>`: Closure/evidence commit hash to record on the task (optional). Use --implementation-commit when landed implementation evidence differs.
+- `--implementation-commit <hash>`: Implementation commit hash to store separately from closure/evidence commit metadata.
 - `--force`: Force finish despite gates. (default=false)
 - `--yes`: Auto-approve force-action approval checks when required. (default=false)
 - `--commit-from-comment`: Create a commit using the comment body (requires exactly one task id). (default=false)
@@ -1828,6 +1829,8 @@ Options:
 - `--fetch`: Fetch and prune origin before candidate resolution. (default=false)
 - `--finalize`: Fetch, fast-forward the base branch, then delete merged local and remote task branches/worktrees. (default=false)
 - `--quiet`: Reduce output noise. (default=false)
+- `--preserve-dirty`: Stash dirty worktree state before removing merged worktrees. (default=false)
+- `--report <path>`: Write a cleanup candidate/result report to a repository-relative path.
 
 Examples:
 
