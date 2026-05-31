@@ -5,11 +5,15 @@ import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteNextAction } from "./route-decision-types.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { workStartCommand } from "./work-start-command.js";
+import { isRecord } from "../../shared/guards.js";
 
 function verifiedIncludedClosureCandidate(task: TaskData): boolean {
   if (task.verification?.state !== "ok") return false;
   if (String(task.status).toUpperCase() !== "DOING") return false;
   if (task.commit?.hash) return false;
+  const batch = isRecord(task.extensions?.branch_pr_batch) ? task.extensions.branch_pr_batch : null;
+  if (batch?.role === "primary") return false;
+  if (batch?.role === "included") return true;
   const haystack = [
     task.title,
     task.description,
@@ -19,11 +23,13 @@ function verifiedIncludedClosureCandidate(task: TaskData): boolean {
     .join("\n")
     .toLowerCase();
   return (
-    haystack.includes("included task") ||
-    haystack.includes("included in") ||
-    haystack.includes("batch pr") ||
+    haystack.includes("included batch task") ||
+    haystack.includes("included in batch") ||
+    haystack.includes("included in the batch") ||
+    haystack.includes("included task from merged") ||
+    haystack.includes("closed included batch task") ||
     haystack.includes("batch worktree") ||
-    haystack.includes("merged batch")
+    haystack.includes("included tasks in batch")
   );
 }
 

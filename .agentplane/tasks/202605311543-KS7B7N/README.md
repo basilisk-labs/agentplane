@@ -4,7 +4,7 @@ title: "Detect landed included tasks in route oracle"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-31T16:10:42.975Z"
+  updated_at: "2026-05-31T16:19:52.034Z"
   updated_by: "CODER"
-  note: "Verified: PR artifacts refreshed at branch head 5280b759fe8fcc87b8239f6ae1f3a78377be205f; targeted checks and batch evidence remain valid."
+  note: "Verified: regression fix prevents primary batch tasks from being classified as included-task closure. Checks passed: bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; bun run format:changed; bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs."
   attempts: 0
 quality_review:
   state: "pass"
@@ -79,8 +79,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: PR artifacts refreshed at branch head 5280b759fe8fcc87b8239f6ae1f3a78377be205f; targeted checks and batch evidence remain valid."
+  -
+    type: "verify"
+    at: "2026-05-31T16:19:52.034Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: regression fix prevents primary batch tasks from being classified as included-task closure. Checks passed: bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; bun run format:changed; bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs."
 doc_version: 3
-doc_updated_at: "2026-05-31T16:10:43.002Z"
+doc_updated_at: "2026-05-31T16:19:52.061Z"
 doc_updated_by: "CODER"
 description: "Teach branch_pr route oracle to classify verified included batch tasks whose implementation already landed but whose finish metadata is missing, instead of returning generic missing_pr_branch/worktree_needed."
 sections:
@@ -161,6 +167,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605311543-KS7B7N
 
+    ### 2026-05-31T16:19:52.034Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: regression fix prevents primary batch tasks from being classified as included-task closure. Checks passed: bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; bun run format:changed; bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T16:10:43.002Z, excerpt_hash=sha256:beb5bd452492d76123ec1a8c66795f45175489a93433f8e07b116e8e46ffff37
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311543-KS7B7N-release-recovery-cli-improvements/.agentplane/tasks/202605311543-KS7B7N/blueprint/resolved-snapshot.json
+    - old_digest: ff69bd52fc87a1822177d4063acfbfafbd1386d22e095af36f94d20dc6dd311f
+    - current_digest: ff69bd52fc87a1822177d4063acfbfafbd1386d22e095af36f94d20dc6dd311f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605311543-KS7B7N
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -181,7 +206,7 @@ extensions:
       - "202605311543-SEMKC7"
     primary_task_id: "202605311543-KS7B7N"
     role: "primary"
-    updated_at: "2026-05-31T16:11:12.472Z"
+    updated_at: "2026-05-31T16:24:35.209Z"
 id_source: "generated"
 ---
 ## Summary
@@ -259,6 +284,25 @@ Note: Verified: PR artifacts refreshed at branch head 5280b759fe8fcc87b8239f6ae1
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T16:09:33.644Z, excerpt_hash=sha256:beb5bd452492d76123ec1a8c66795f45175489a93433f8e07b116e8e46ffff37
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311543-KS7B7N-release-recovery-cli-improvements/.agentplane/tasks/202605311543-KS7B7N/blueprint/resolved-snapshot.json
+- old_digest: ff69bd52fc87a1822177d4063acfbfafbd1386d22e095af36f94d20dc6dd311f
+- current_digest: ff69bd52fc87a1822177d4063acfbfafbd1386d22e095af36f94d20dc6dd311f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605311543-KS7B7N
+
+### 2026-05-31T16:19:52.034Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: regression fix prevents primary batch tasks from being classified as included-task closure. Checks passed: bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; bun run format:changed; bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T16:10:43.002Z, excerpt_hash=sha256:beb5bd452492d76123ec1a8c66795f45175489a93433f8e07b116e8e46ffff37
 
 Details:
 
