@@ -13,7 +13,7 @@ Created: 2026-05-31T19:42:09.859Z
 ## Verification
 
 - State: ok
-- Note: Verified after commit 71b1e0af1: policy routing, Hermes vitest suite, agentplane build, CLI docs check, recipes inventory check, changed-format check, git diff checks, and Hermes recipe install/add/explain smoke all passed. Submodule recipe commit ed7fea3 is included via updated submodule pointer.
+- Note: Verified CI guard fix after commit 8d55becc7: bun run lint:core passed; bunx vitest run packages/agentplane/src/commands/hermes passed; bunx vitest run legacy-cli-regressions, bun-compiled-cli smoke, and targeted release-smoke passed; bun run test:fast passed with 336 files / 2003 tests; format/schema/docs checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -46,8 +46,8 @@ Created: 2026-05-31T19:42:09.859Z
  .../src/cli/run-cli/command-catalog/project.ts     |  20 +
  .../src/cli/run-cli/command-loaders/project.ts     |  23 +
  .../src/commands/hermes/hermes.command.test.ts     | 284 ++++++++
- .../src/commands/hermes/hermes.command.ts          | 731 +++++++++++++++++++++
- 18 files changed, 1955 insertions(+), 1 deletion(-)
+ .../src/commands/hermes/hermes.command.ts          | 745 +++++++++++++++++++++
+ 18 files changed, 1969 insertions(+), 1 deletion(-)
 ```
 
 </details>
