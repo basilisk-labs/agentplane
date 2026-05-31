@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { describe } from "vitest";
@@ -98,6 +98,31 @@ async function writeBatchMeta(opts: {
     ),
     "utf8",
   );
+}
+
+async function addIncludedBatchExtension(opts: {
+  root: string;
+  taskId: string;
+  primaryTaskId: string;
+  branch: string;
+}): Promise<void> {
+  const taskPath = path.join(opts.root, ".agentplane", "tasks", opts.taskId, "README.md");
+  const current = await readFile(taskPath, "utf8");
+  const frontmatterEnd = current.indexOf("\n---\n", 4);
+  expect(frontmatterEnd).toBeGreaterThan(0);
+  const extension = [
+    "extensions:",
+    "  branch_pr_batch:",
+    '    base: "main"',
+    `    branch: "${opts.branch}"`,
+    "    included_task_ids:",
+    `      - "${opts.taskId}"`,
+    `    primary_task_id: "${opts.primaryTaskId}"`,
+    '    role: "included"',
+    '    updated_at: "2026-05-23T00:00:00.000Z"',
+  ].join("\n");
+  const next = `${current.slice(0, frontmatterEnd)}\n${extension}${current.slice(frontmatterEnd)}`;
+  await writeFile(taskPath, next, "utf8");
 }
 
 describe("runCli route decision batch ownership", () => {
@@ -293,6 +318,64 @@ describe("runCli route decision batch ownership", () => {
         phase: "batch_delegate",
         authoritativeCheckout: "primary_task_worktree",
       });
+    } finally {
+      nextIo.restore();
+    }
+  });
+
+  it("routes verified landed included tasks to release reconciliation", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const primaryTaskId = await createTask(root);
+    const includedTaskId = await createTask(root);
+    await approveTasks(root, [primaryTaskId, includedTaskId], "Recover included closure.");
+    await runCliSilent([
+      "task",
+      "set-status",
+      includedTaskId,
+      "DOING",
+      "--force",
+      "--yes",
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "verify",
+      includedTaskId,
+      "--ok",
+      "--by",
+      "CODER",
+      "--note",
+      "Verified: included in batch implementation landed.",
+      "--local-only",
+      "--root",
+      root,
+    ]);
+
+    await addIncludedBatchExtension({
+      root,
+      taskId: includedTaskId,
+      primaryTaskId,
+      branch: `task/${primaryTaskId}/batch-owner`,
+    });
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", includedTaskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        next_action: { code: string; command: string };
+        route_oracle: { phase: string };
+      };
+      expect(parsed.next_action).toMatchObject({
+        code: "reconcile_included_task_closure",
+        command: `agentplane release tasks reconcile --task-id ${includedTaskId}`,
+      });
+      expect(parsed.route_oracle.phase).toBe("included_task_closure_needed");
     } finally {
       nextIo.restore();
     }

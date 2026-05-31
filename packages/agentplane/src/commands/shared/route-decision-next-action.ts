@@ -77,14 +77,10 @@ export function deriveNextAction(opts: {
   if (opts.batchOwnership.role === "included") {
     return opts.batchOwnership.nextOwnerAction;
   }
-  if (
-    !opts.prFlow?.branch.name &&
-    (!opts.prFlow || opts.prFlow.pr.state === "not_found") &&
-    verifiedIncludedClosureCandidate(opts.task)
-  ) {
+  if (!opts.prFlow?.branch.name && verifiedIncludedClosureCandidate(opts.task)) {
     return {
       code: "reconcile_included_task_closure",
-      command: `agentplane task normalize --sync-branch-pr-state --task-id ${id}`,
+      command: `agentplane release tasks reconcile --task-id ${id}`,
       summary:
         "verified included batch task appears landed but lacks closure metadata; reconcile landed evidence before starting a new worktree",
       requiresApproval: false,
