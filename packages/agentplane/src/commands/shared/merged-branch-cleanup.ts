@@ -8,12 +8,15 @@ export type MergedBranchCleanupResult = {
   removedWorktree: boolean;
   worktreePath: string | null;
   skippedReason: "outside_repo" | "current_worktree" | null;
+  preservedDirtyState: boolean;
+  stashMessage: string | null;
 };
 
 export async function cleanupMergedLocalBranch(opts: {
   gitRoot: string;
   branch: string;
   worktreePathHint?: string | null;
+  preserveDirty?: boolean;
 }): Promise<MergedBranchCleanupResult> {
   const repoRoot = await resolvePathFallback(opts.gitRoot);
   const discoveredWorktree = await findWorktreeForBranch(opts.gitRoot, opts.branch);
@@ -21,12 +24,15 @@ export async function cleanupMergedLocalBranch(opts: {
   const worktreePath = rawWorktreePath ? await resolvePathFallback(rawWorktreePath) : null;
 
   if (worktreePath) {
+    let stashMessage: string | null = null;
     if (!isPathWithin(repoRoot, worktreePath)) {
       return {
         removedBranch: false,
         removedWorktree: false,
         worktreePath,
         skippedReason: "outside_repo",
+        preservedDirtyState: false,
+        stashMessage: null,
       };
     }
     if (worktreePath === repoRoot) {
@@ -35,27 +41,59 @@ export async function cleanupMergedLocalBranch(opts: {
         removedWorktree: false,
         worktreePath,
         skippedReason: "current_worktree",
+        preservedDirtyState: false,
+        stashMessage: null,
       };
+    }
+    if (opts.preserveDirty === true) {
+      const { stdout } = await execFileAsync(
+        "git",
+        ["status", "--porcelain", "--untracked-files=all"],
+        {
+          cwd: worktreePath,
+          env: gitEnv(),
+        },
+      );
+      if (stdout.trim()) {
+        stashMessage = `agentplane/cleanup-preserve:${opts.branch}`;
+        await execFileAsync("git", ["stash", "push", "-u", "-m", stashMessage], {
+          cwd: worktreePath,
+          env: gitEnv(),
+        });
+      }
     }
     await execFileAsync("git", ["worktree", "remove", "--force", worktreePath], {
       cwd: opts.gitRoot,
       env: gitEnv(),
     });
+    const removed = await removeBranch(opts.gitRoot, opts.branch);
+    return {
+      removedBranch: removed,
+      removedWorktree: true,
+      worktreePath,
+      skippedReason: null,
+      preservedDirtyState: stashMessage !== null,
+      stashMessage,
+    };
   }
 
-  let removedBranch = false;
-  if (await gitBranchExists(opts.gitRoot, opts.branch)) {
-    await execFileAsync("git", ["branch", "-D", opts.branch], {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
-    });
-    removedBranch = true;
-  }
+  const removedBranch = await removeBranch(opts.gitRoot, opts.branch);
 
   return {
     removedBranch,
     removedWorktree: Boolean(worktreePath),
     worktreePath,
     skippedReason: null,
+    preservedDirtyState: false,
+    stashMessage: null,
   };
+}
+
+async function removeBranch(gitRoot: string, branch: string): Promise<boolean> {
+  if (!(await gitBranchExists(gitRoot, branch))) return false;
+  await execFileAsync("git", ["branch", "-D", branch], {
+    cwd: gitRoot,
+    env: gitEnv(),
+  });
+  return true;
 }

@@ -1,3 +1,7 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+
 import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   isTransientGhTransportError,
@@ -248,31 +252,31 @@ export async function tryCreateGithubPr(opts: {
       artifactState: "remote_staged",
     };
   }
+  let payloadDir: string | null = null;
   try {
+    payloadDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-pr-body-"));
+    const payloadPath = path.join(payloadDir, "payload.json");
+    await writeFile(
+      payloadPath,
+      `${JSON.stringify(
+        {
+          title: opts.title,
+          body: opts.body,
+          head: opts.branch,
+          base: baseBranch,
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
     const { stdout } = await withGhTransportRetry(
       () =>
-        execFileAsync(
-          "gh",
-          [
-            "api",
-            `repos/${repo}/pulls`,
-            "-X",
-            "POST",
-            "-f",
-            `title=${opts.title}`,
-            "-f",
-            `body=${opts.body}`,
-            "-f",
-            `head=${opts.branch}`,
-            "-f",
-            `base=${baseBranch}`,
-          ],
-          {
-            cwd: opts.gitRoot,
-            env: ghEnv(),
-            maxBuffer: 10 * 1024 * 1024,
-          },
-        ),
+        execFileAsync("gh", ["api", `repos/${repo}/pulls`, "-X", "POST", "--input", payloadPath], {
+          cwd: opts.gitRoot,
+          env: ghEnv(),
+          maxBuffer: 10 * 1024 * 1024,
+        }),
       { label: `running gh api repos/${repo}/pulls` },
     );
     return {
@@ -293,5 +297,7 @@ export async function tryCreateGithubPr(opts: {
       stagedReason: summarizeGithubPrCreateFailure(err),
       artifactState: "remote_failed",
     };
+  } finally {
+    if (payloadDir) await rm(payloadDir, { recursive: true, force: true }).catch(() => undefined);
   }
 }

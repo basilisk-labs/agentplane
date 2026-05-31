@@ -102,6 +102,16 @@ function deriveRepairPlan(
 ): RouteRepairStep[] {
   const steps: RouteRepairStep[] = [];
   const id = decision.task.id;
+  if (decision.nextAction.code === "reconcile_included_task_closure") {
+    return [
+      {
+        code: "reconcile_included_task_closure",
+        command: decision.nextAction.command,
+        summary: "reconcile landed included-task closure metadata before opening new work",
+        mutates: true,
+      },
+    ];
+  }
   for (const blocker of decision.blockers) {
     if (blocker.code === "missing_pr_branch") {
       steps.push({

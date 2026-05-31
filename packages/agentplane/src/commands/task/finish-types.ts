@@ -12,6 +12,7 @@ export type FinishOptions = {
   risk?: "low" | "med" | "high";
   breaking: boolean;
   commit?: string;
+  implementationCommit?: string;
   force: boolean;
   yes?: boolean;
   commitFromComment: boolean;

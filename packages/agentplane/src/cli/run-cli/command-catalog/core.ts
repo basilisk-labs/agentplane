@@ -21,6 +21,7 @@ import { incidentsSpec } from "../../../commands/incidents/incidents.command.js"
 import { releaseApplySpec, releaseCandidateSpec } from "../../../commands/release/apply.spec.js";
 import { releasePlanSpec } from "../../../commands/release/plan.spec.js";
 import { releaseSpec } from "../../../commands/release/release.command.js";
+import { releaseTasksReconcileSpec } from "../../../commands/release/tasks-reconcile.command.js";
 import {
   configSetSpec,
   configShowSpec,
@@ -71,6 +72,7 @@ import {
   loadInsightsIssueSpec,
   loadInsightsReportSpec,
   loadDemoSpec,
+  loadReleaseTasksReconcileSpec,
 } from "../command-loaders/core.js";
 
 export const CORE_COMMANDS = [
@@ -96,6 +98,12 @@ export const CORE_COMMANDS = [
   }),
   fromCommandsReleaseApplyCommand(releaseCandidateSpec, "runReleaseCandidate", {
     needs: "project",
+    surface: "framework",
+    helpGroup: "Framework Dev",
+  }),
+  declareCommand(releaseTasksReconcileSpec, {
+    load: loadReleaseTasksReconcileSpec,
+    needs: "project+config+task",
     surface: "framework",
     helpGroup: "Framework Dev",
   }),

@@ -13,6 +13,10 @@ export const fromCommandsReleasePlanCommand = commandModule(
 export const fromCommandsReleaseApplyCommand = commandModule(
   () => import("../../../commands/release/apply.command.js"),
 );
+export const loadReleaseTasksReconcileSpec = (deps: RunDeps) =>
+  import("../../../commands/release/tasks-reconcile.command.js").then((m) =>
+    m.makeRunReleaseTasksReconcileHandler(deps.getCtx),
+  );
 export const fromCommandsCoreQuickstart = commandModule(
   () => import("../commands/core/quickstart.js"),
 );

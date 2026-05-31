@@ -70,7 +70,15 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       kind: "string",
       name: "commit",
       valueHint: "<hash>",
-      description: "Commit hash to record on the task (optional).",
+      description:
+        "Closure/evidence commit hash to record on the task (optional). Use --implementation-commit when landed implementation evidence differs.",
+    },
+    {
+      kind: "string",
+      name: "implementation-commit",
+      valueHint: "<hash>",
+      description:
+        "Implementation commit hash to store separately from closure/evidence commit metadata.",
     },
     { kind: "boolean", name: "force", default: false, description: "Force finish despite gates." },
     {

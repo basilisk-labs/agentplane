@@ -30,6 +30,10 @@ Commands:
     task plan  Task plan commands (set/approve/reject).
     task plan approve  Approve the current task plan (enforces Verify Steps gating when configured).
     task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
+    task run  Run an AgentPlane task through the configured runner adapter.
+    task run inspect  Inspect task runner artifacts, state, and recent events.
+    task run logs  Print task runner events, trace, or stderr logs.
+    task run status  Show the latest or selected task runner run status.
     task search  Search tasks by text or regex with optional filters.
     task show  Print task metadata and resolved blueprint route as JSON.
     task start-ready  Run readiness checks and start a task in one deterministic command.
@@ -191,6 +195,7 @@ Commands:
     release apply  Apply a prepared direct-mode release: bump versions, validate notes, commit, and tag.
     release candidate  Prepare a branch_pr release candidate: bump versions, validate notes, commit, and optionally push the candidate branch.
     release plan  Generate an agent-assisted release plan (changes list + next patch version).
+    release tasks reconcile  Reconcile release-blocking branch_pr task closure metadata.
     workflow  Workflow contract commands.
     workflow build  Build WORKFLOW.md from template layers with strict rendering checks.
     workflow debug  Run built-in debug checks and capture workflow evidence.

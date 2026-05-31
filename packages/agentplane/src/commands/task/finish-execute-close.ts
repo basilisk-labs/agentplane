@@ -83,6 +83,7 @@ export async function assertCloseCommitCanMutateTaskState(opts: {
       `Why: deterministic ${ctx.config.workflow_mode} close commits stage only the finished task artifacts; other tracked changes would make commit creation fail after the task is marked DONE.`,
       `Dirty tracked paths: ${blockingUnstaged.slice(0, 12).join(", ")}${blockingUnstaged.length > 12 ? ` (+${blockingUnstaged.length - 12} more)` : ""}`,
       "Fix: commit, stash, or move unrelated lifecycle changes into a batch close branch before rerunning finish.",
+      "Branch PR metadata-only recovery: run finish with --no-close-commit on the base checkout, commit the resulting task artifacts on a closure branch, and open that branch through the normal PR route.",
       "Tracked-state command: git status --short --untracked-files=no",
       "Full artifact audit: git status --short --untracked-files=all",
     ].join("\n"),

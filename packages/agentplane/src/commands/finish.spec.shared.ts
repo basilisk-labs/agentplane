@@ -18,6 +18,7 @@ export type FinishParsed = {
   risk?: "low" | "med" | "high";
   breaking: boolean;
   commit?: string;
+  implementationCommit?: string;
   force: boolean;
   yes: boolean;
   commitFromComment: boolean;
@@ -236,6 +237,10 @@ export function parseFinishRaw(raw: ParsedRaw): FinishParsed {
     risk: raw.opts.risk as FinishParsed["risk"],
     breaking: raw.opts.breaking === true,
     commit: raw.opts.commit as string | undefined,
+    implementationCommit:
+      typeof raw.opts["implementation-commit"] === "string"
+        ? raw.opts["implementation-commit"]
+        : undefined,
     force: raw.opts.force === true,
     yes: raw.opts.yes === true,
     commitFromComment: raw.opts["commit-from-comment"] === true,

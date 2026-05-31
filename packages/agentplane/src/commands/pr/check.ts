@@ -1,4 +1,5 @@
 import path from "node:path";
+import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
@@ -30,6 +31,47 @@ import {
 import { computePrDiffstat } from "./internal/sync-branch.js";
 import { tryLookupExistingGithubPrByBranch } from "./internal/sync-github.js";
 import { waitForHostedChecks } from "./hosted-checks.js";
+import { ghEnv } from "./internal/gh-api.js";
+
+type GithubMergeDiagnostic = {
+  mergeStateStatus?: string | null;
+  reviewDecision?: string | null;
+  autoMergeRequest?: unknown;
+};
+
+async function lookupGithubMergeDiagnostic(opts: {
+  gitRoot: string;
+  prNumber: number | null;
+}): Promise<GithubMergeDiagnostic | null> {
+  if (opts.prNumber === null) return null;
+  try {
+    const { stdout } = await execFileAsync(
+      "gh",
+      [
+        "pr",
+        "view",
+        String(opts.prNumber),
+        "--json",
+        "mergeStateStatus,reviewDecision,autoMergeRequest",
+      ],
+      { cwd: opts.gitRoot, env: ghEnv(), maxBuffer: 1024 * 1024 },
+    );
+    return JSON.parse(stdout) as GithubMergeDiagnostic;
+  } catch {
+    return null;
+  }
+}
+
+function mergeDiagnosticNextAction(diag: GithubMergeDiagnostic): string {
+  const review = String(diag.reviewDecision ?? "").trim();
+  if (review === "REVIEW_REQUIRED" || review === "CHANGES_REQUESTED") {
+    return "request or resolve the required GitHub review, then rerun agentplane pr check --hosted";
+  }
+  if (diag.autoMergeRequest) {
+    return "auto-merge is enabled; wait for GitHub branch protection to unblock or inspect the protection rule";
+  }
+  return "inspect GitHub branch protection or enable auto-merge through the integration route";
+}
 
 export async function cmdPrCheck(opts: {
   ctx?: CommandContext;
@@ -284,6 +326,17 @@ export async function cmdPrCheck(opts: {
         prNumber ? `#${prNumber}` : undefined,
         `total=${hosted.total} passing=${hosted.passing}`,
       );
+    }
+
+    const mergeDiagnostic = await lookupGithubMergeDiagnostic({
+      gitRoot: resolved.gitRoot,
+      prNumber,
+    });
+    if (mergeDiagnostic?.mergeStateStatus === "BLOCKED") {
+      output.line(
+        `merge_state: BLOCKED review=${mergeDiagnostic.reviewDecision ?? "unknown"} auto_merge=${mergeDiagnostic.autoMergeRequest ? "enabled" : "disabled"}`,
+      );
+      output.line(`next_action: ${mergeDiagnosticNextAction(mergeDiagnostic)}`);
     }
 
     output.success("pr check", path.relative(resolved.gitRoot, prDir));

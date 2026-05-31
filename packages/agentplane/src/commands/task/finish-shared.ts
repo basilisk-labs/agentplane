@@ -211,6 +211,7 @@ export async function writeFinishedTasks(opts: {
   riskLevel?: "low" | "med" | "high";
   breaking: boolean;
   taskCommitInfo: ResolvedCommitInfo | null;
+  implementationCommitInfo?: ResolvedCommitInfo | null;
 }): Promise<void> {
   const useStore = backendUsesLocalTaskStore(opts.ctx);
   const store = useStore ? getTaskStore(opts.ctx) : null;
@@ -264,6 +265,17 @@ export async function writeFinishedTasks(opts: {
             : {}),
           ...(taskId === opts.metaTaskId && opts.riskLevel ? { risk_level: opts.riskLevel } : {}),
           ...(taskId === opts.metaTaskId && opts.breaking ? { breaking: true } : {}),
+          ...(opts.implementationCommitInfo
+            ? {
+                extensions: {
+                  ...(currentTask.extensions ?? {}),
+                  implementation_commit: {
+                    hash: opts.implementationCommitInfo.hash,
+                    message: opts.implementationCommitInfo.message,
+                  },
+                },
+              }
+            : {}),
         },
         force: true,
         dependencyPolicy: { kind: "none" },
