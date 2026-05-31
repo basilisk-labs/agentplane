@@ -1,0 +1,194 @@
+---
+title: "Agentplane + Hermes Kanban"
+description: "Use Hermes Kanban as a durable multi-agent dispatcher while Agentplane owns repository task truth, verification, branch_pr, and ACR evidence."
+---
+
+# Agentplane + Hermes Kanban
+
+## Decision
+
+Do not make Hermes Kanban an Agentplane task backend. The recommended integration is an
+Agentplane-owned Hermes adapter:
+
+```text
+Hermes Kanban = dispatch/run lifecycle
+Agentplane    = engineering task lifecycle
+Adapter       = projection boundary and deterministic supervisor
+```
+
+Hermes owns queueing, assignees, claims, retries, crash detection, comments, dashboard state, and
+human handoff. Agentplane owns task README/frontmatter, plan approval, route decisions, worktree and
+branch_pr boundaries, verification, PR artifacts, integration, finish semantics, and ACR evidence.
+
+This is a design target, not a turnkey Hermes extension point. Hermes documents a worker-lane
+contract and a plugin-provided spawn path for non-Hermes lanes, but an Agentplane integration must
+ship the missing glue: lane registration, process spawning, lifecycle API calls, workspace mapping,
+auth/policy handling, idempotency, and reconcile/doctor behavior.
+
+## Why the adapter owns completion
+
+Agents should take tasks to completion, but completion has two levels:
+
+| Hermes card kind | `done` means                                               |
+| ---------------- | ---------------------------------------------------------- |
+| Root task card   | The Agentplane task reached terminal engineering evidence. |
+| Phase/run card   | One dispatch phase or worker attempt completed.            |
+
+The root card may complete only after the Agentplane terminal gate passes:
+
+1. Agentplane task status is `DONE`.
+2. Required verification is recorded.
+3. `branch_pr` integration and finish evidence are complete when the repo uses `branch_pr`.
+4. ACR validation passes when the workflow requires ACR evidence.
+5. The Hermes run id is still current.
+6. The final Hermes comment contains evidence pointers, not raw secrets or logs.
+
+Hermes may block or complete a dispatch run. Hermes must not directly complete an Agentplane task.
+
+## Target components
+
+### Agentplane commands
+
+The repo-local Agentplane side exposes a small integration surface:
+
+```bash
+agentplane hermes enqueue <task-id> --json
+agentplane hermes supervise <task-id> --json
+agentplane hermes reconcile [--task-id <task-id>] --json
+agentplane hermes doctor --json
+```
+
+- `enqueue` renders the provider-safe card projection that a Hermes plugin should create
+  idempotently.
+- `supervise` returns the next route-gated Agentplane action packet. It does not blindly execute
+  raw shell text from a route string.
+- `reconcile` is read-only diagnostics for stale, duplicate, or false-complete projections.
+- `doctor` checks the local Agentplane side of the adapter contract.
+
+### Hermes plugin
+
+The Hermes-side plugin is the process adapter, not the source of Agentplane truth. Its target
+responsibilities are:
+
+```text
+assignee: agentplane-supervisor | agentplane-coder | agentplane-reviewer | agentplane-integrator
+spawn_fn(task, workspace, board) -> pid
+```
+
+The spawn function should launch:
+
+```bash
+agentplane hermes supervise <agentplane-task-id> --json
+```
+
+or a future long-running supervisor entrypoint with the `HERMES_KANBAN_*` environment provided by
+Hermes.
+
+### Optional MCP wrapper
+
+MCP is useful as a typed model tool surface, especially with allowlisted roots and tool filtering.
+It does not replace the worker lane. Use it for profile-mode interactions and diagnostics, while
+the Hermes plugin remains responsible for dispatch/spawn integration.
+
+## Provider-neutral sync
+
+Use Agentplane's `sync` envelope for Hermes identity and freshness. Do not add a parallel
+`extensions.hermes` source of truth for task identity.
+
+Recommended shape:
+
+```yaml
+sync:
+  external_refs:
+    - provider: hermes
+      connector_kind: kanban
+      remote_id: "<hermes_task_id>"
+      url: null
+      remote_revision: "<event_or_revision>"
+      title: "<title_snapshot>"
+      state: "<hermes_status_projection>"
+      last_synced_at: "<iso8601>"
+  field_policies:
+    status:
+      authority: agentplane
+      remote_field: hermes.status
+      conflict_policy: agentplane_wins
+    dispatch_status:
+      authority: derived
+      remote_field: hermes.status
+      conflict_policy: record
+```
+
+Keep Agentplane-owned plan text, verification evidence, findings, runner traces, and ACR payloads
+inside Agentplane artifacts. Hermes comments and metadata should contain safe pointers and compact
+summaries.
+
+## Supervisor loop
+
+The production supervisor should execute one safe route step per claim unless a route packet
+explicitly describes a safe compound operation:
+
+```text
+1. Read the Hermes root card.
+2. Resolve or create the Agentplane task id.
+3. Run `agentplane task brief <task-id> --json`.
+4. Run `agentplane task next-action <task-id> --explain --json`.
+5. Classify the route action against an allowlist.
+6. Execute one typed Agentplane command.
+7. Write a structured Hermes comment with run id, previous revision, new revision, and evidence
+   pointers.
+8. Recompute the route.
+9. Block, delegate a phase card, or complete the root card only after the terminal gate passes.
+```
+
+Never execute a raw `next_command` string as shell. Parse and classify the route action first.
+
+## Idempotency
+
+Hermes retries and crash recovery are useful only if Agentplane-side actions are idempotent. Every
+worker attempt should identify itself with:
+
+```text
+Hermes board + Hermes task id + Hermes run id + Agentplane task id + Agentplane revision before
+the step + route action kind
+```
+
+The adapter must treat repeat operations as recovery:
+
+- `work_start` resumes or reports the existing worktree.
+- `pr_open` updates or links the existing PR artifact.
+- `verify` avoids duplicate verification entries without a new evidence delta.
+- `finish` verifies the recorded commit and close state before trying again.
+- stale Hermes runs cannot complete the root card.
+
+## Default workflow
+
+For multi-agent engineering, default to Agentplane `branch_pr`.
+
+```text
+Hermes root card
+  -> agentplane-supervisor
+  -> Agentplane task + branch_pr worktree
+  -> coder phase
+  -> reviewer phase
+  -> integrator phase
+  -> Agentplane finish + ACR validation
+  -> Hermes root complete
+```
+
+Use `direct` only for single local helper tasks where concurrent workers and PR review boundaries are
+not needed.
+
+## What not to do
+
+- Do not write directly to `~/.hermes/kanban.db`.
+- Do not write directly to `.agentplane/tasks/**` outside Agentplane commands.
+- Do not treat Hermes profiles as filesystem sandboxes.
+- Do not expose arbitrary repository paths to a model-controlled MCP server.
+- Do not put secrets, raw logs, OAuth material, or full ACR payloads in Hermes comments or metadata.
+
+## Current scaffold
+
+The initial Agentplane side is intentionally local and read-oriented. It establishes the command
+contract and machine-readable packets that a Hermes plugin can consume. The live Hermes plugin,
+Kanban API client, and board mutation path are follow-up implementation surfaces.

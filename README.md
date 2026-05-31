@@ -166,6 +166,7 @@ review boundaries.
 - [Agentplane + Codex](docs/workflow-guides/codex.mdx)
 - [Agentplane + Cursor](docs/workflow-guides/cursor.mdx)
 - [Agentplane + Aider](docs/workflow-guides/aider.mdx)
+- [Agentplane + Hermes Kanban](docs/workflow-guides/hermes-kanban.mdx)
 - [Agentplane + GitHub Actions](docs/workflow-guides/github-actions.mdx)
 - [Agentplane + branch_pr workflow](docs/workflow-guides/branch-pr.mdx)
 
