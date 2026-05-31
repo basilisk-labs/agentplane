@@ -8,6 +8,7 @@ import { createCliEmitter } from "../../cli/output.js";
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guards.js";
+import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import { execFile } from "node:child_process";
@@ -269,7 +270,8 @@ function hermesEnvSnapshot() {
 }
 
 async function loadLaneRegistry() {
-  const registryPath = process.env.ARKADY_LANE_REGISTRY?.trim() || null;
+  const rawRegistryPath = process.env.ARKADY_LANE_REGISTRY?.trim();
+  const registryPath = rawRegistryPath && rawRegistryPath.length > 0 ? rawRegistryPath : null;
   if (!registryPath) {
     return {
       path: null,
@@ -301,11 +303,7 @@ async function loadLaneRegistry() {
 }
 
 function currentAgentplaneCommand(): { command: string; argsPrefix: string[] } {
-  const script = process.argv[1];
-  if (script) {
-    return { command: process.execPath, argsPrefix: [script] };
-  }
-  return { command: "agentplane", argsPrefix: [] };
+  return { command: resolveAgentplaneBinPath(), argsPrefix: [] };
 }
 
 function executableStepFor(packet: Awaited<ReturnType<typeof routePacket>>): {
@@ -314,63 +312,69 @@ function executableStepFor(packet: Awaited<ReturnType<typeof routePacket>>): {
   reason: string | null;
 } {
   const taskId = packet.task.id;
-  const owner = packet.task.owner || "CODER";
-  const slug =
-    packet.task.title
-      .toLowerCase()
-      .replaceAll(/[^a-z0-9]+/g, "-")
-      .replaceAll(/^-+|-+$/g, "")
-      .replaceAll(/-{2,}/g, "-")
-      .slice(0, 48)
-      .replaceAll(/-+$/g, "") || "hermes-work";
+  const owner = packet.task.owner ?? "CODER";
+  const normalizedSlug = packet.task.title
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-+|-+$/g, "")
+    .replaceAll(/-{2,}/g, "-")
+    .slice(0, 48)
+    .replaceAll(/-+$/g, "");
+  const slug = normalizedSlug.length > 0 ? normalizedSlug : "hermes-work";
   switch (packet.next_action.code) {
     case "update_pr_artifacts":
-    case "verify_or_update_pr":
+    case "verify_or_update_pr": {
       return { code: packet.next_action.code, args: ["pr", "update", taskId], reason: null };
-    case "open_pr":
+    }
+    case "open_pr": {
       return {
         code: packet.next_action.code,
         args: ["pr", "open", taskId, "--author", owner, "--sync-only"],
         reason: null,
       };
-    case "continue_direct":
+    }
+    case "continue_direct": {
       return {
         code: packet.next_action.code,
         args: ["task", "verify-show", taskId],
         reason: null,
       };
-    case "approve_plan":
+    }
+    case "approve_plan": {
       return {
         code: packet.next_action.code,
         args: null,
         reason:
           "plan approval is an orchestration decision and is not executed by Hermes worker lanes",
       };
+    }
     case "wait_runner":
     case "wait_hosted_checks":
     case "merge_close_tail":
     case "done":
-    case "cleanup":
+    case "cleanup": {
       return { code: packet.next_action.code, args: null, reason: packet.next_action.summary };
-    case "start_or_recover_worktree":
+    }
+    case "start_or_recover_worktree": {
       return {
         code: packet.next_action.code,
         args: ["work", "start", taskId, "--agent", owner, "--slug", slug, "--worktree"],
         reason: null,
       };
-    default:
+    }
+    default: {
       break;
+    }
   }
   const command = packet.next_action.command?.trim() ?? "";
-  const safeVerifyShow = new RegExp(
-    `^agentplane task (verify-show|status|brief) ${taskId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\s|$)`,
-  );
-  if (safeVerifyShow.test(command)) {
-    const subcommand = command.includes(" task status ")
-      ? "status"
-      : command.includes(" task brief ")
-        ? "brief"
-        : "verify-show";
+  const commandParts = command.split(/\s+/u);
+  const subcommand = commandParts[2];
+  if (
+    commandParts[0] === "agentplane" &&
+    commandParts[1] === "task" &&
+    (subcommand === "verify-show" || subcommand === "status" || subcommand === "brief") &&
+    commandParts[3] === taskId
+  ) {
     return { code: packet.next_action.code, args: ["task", subcommand, taskId], reason: null };
   }
   return {
@@ -421,7 +425,8 @@ async function runAgentplaneStep(args: string[], root: string, dryRun: boolean) 
 }
 
 function hermesCliCommand(): string {
-  return process.env.HERMES_BIN?.trim() || "hermes";
+  const rawHermesBin = process.env.HERMES_BIN?.trim();
+  return rawHermesBin && rawHermesBin.length > 0 ? rawHermesBin : "hermes";
 }
 
 export async function runHermesLifecycle(
@@ -636,52 +641,57 @@ export function makeRunHermesReconcileHandler(
   };
 }
 
-export function makeRunHermesLifecycleHandler(): CommandHandler<HermesLifecycleParsed> {
-  return async (_ctx, parsed) => {
-    if (
-      !HERMES_LIFECYCLE_ACTIONS.includes(parsed.action as (typeof HERMES_LIFECYCLE_ACTIONS)[number])
-    ) {
-      throw new CliError({
-        code: "E_USAGE",
-        message: `Unsupported Hermes lifecycle action: ${parsed.action}. Use one of: ${HERMES_LIFECYCLE_ACTIONS.join(", ")}`,
-      });
-    }
-    const action = parsed.action as (typeof HERMES_LIFECYCLE_ACTIONS)[number];
-    const env = hermesEnvSnapshot();
-    const body =
-      parsed.body ??
-      (action === "heartbeat"
-        ? `Agentplane heartbeat for Hermes run ${env.run_id ?? "unknown"}`
-        : null);
-    if (!body) {
-      throw new CliError({
-        code: "E_USAGE",
-        message: `--body is required for Hermes lifecycle action: ${action}`,
-      });
-    }
-    const result = await runHermesLifecycle(action, {
-      board: env.board,
-      taskId: env.task_id,
-      body,
-      dryRun: parsed.dryRun,
+async function runHermesLifecycleCommand(
+  _ctx: CommandCtx,
+  parsed: HermesLifecycleParsed,
+): Promise<number> {
+  if (
+    !HERMES_LIFECYCLE_ACTIONS.includes(parsed.action as (typeof HERMES_LIFECYCLE_ACTIONS)[number])
+  ) {
+    throw new CliError({
+      code: "E_USAGE",
+      message: `Unsupported Hermes lifecycle action: ${parsed.action}. Use one of: ${HERMES_LIFECYCLE_ACTIONS.join(", ")}`,
     });
-    const payload = {
-      action,
-      hermes_run: env,
-      result,
-    };
-    if (parsed.json) {
-      output.json(payload);
-    } else {
-      output.report([
-        { label: "action", value: action },
-        { label: "task", value: env.task_id ?? "unknown" },
-        { label: "board", value: env.board ?? "default" },
-        { label: "executed", value: result.executed },
-      ]);
-    }
-    return 0;
+  }
+  const action = parsed.action as (typeof HERMES_LIFECYCLE_ACTIONS)[number];
+  const env = hermesEnvSnapshot();
+  const body =
+    parsed.body ??
+    (action === "heartbeat"
+      ? `Agentplane heartbeat for Hermes run ${env.run_id ?? "unknown"}`
+      : null);
+  if (!body) {
+    throw new CliError({
+      code: "E_USAGE",
+      message: `--body is required for Hermes lifecycle action: ${action}`,
+    });
+  }
+  const result = await runHermesLifecycle(action, {
+    board: env.board,
+    taskId: env.task_id,
+    body,
+    dryRun: parsed.dryRun,
+  });
+  const payload = {
+    action,
+    hermes_run: env,
+    result,
   };
+  if (parsed.json) {
+    output.json(payload);
+  } else {
+    output.report([
+      { label: "action", value: action },
+      { label: "task", value: env.task_id ?? "unknown" },
+      { label: "board", value: env.board ?? "default" },
+      { label: "executed", value: result.executed },
+    ]);
+  }
+  return 0;
+}
+
+export function makeRunHermesLifecycleHandler(): CommandHandler<HermesLifecycleParsed> {
+  return runHermesLifecycleCommand;
 }
 
 export function makeRunHermesDoctorHandler(
@@ -691,7 +701,11 @@ export function makeRunHermesDoctorHandler(
     const commandCtx = await getCtx("hermes doctor");
     const env = hermesEnvSnapshot();
     const registry = await loadLaneRegistry();
-    const agentplaneBin = process.env.AGENTPLANE_BIN?.trim() || currentAgentplaneCommand().command;
+    const rawAgentplaneBin = process.env.AGENTPLANE_BIN?.trim();
+    const agentplaneBin =
+      rawAgentplaneBin && rawAgentplaneBin.length > 0
+        ? rawAgentplaneBin
+        : currentAgentplaneCommand().command;
     const hermesBin = hermesCliCommand();
     const payload = {
       ok: registry.error === null,
