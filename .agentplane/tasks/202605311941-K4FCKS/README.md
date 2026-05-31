@@ -4,7 +4,7 @@ title: "Design and scaffold Hermes adapter"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,28 @@ verification:
   updated_by: "CODER"
   note: "Verified after commit 71b1e0af1: policy routing, Hermes vitest suite, agentplane build, CLI docs check, recipes inventory check, changed-format check, git diff checks, and Hermes recipe install/add/explain smoke all passed. Submodule recipe commit ed7fea3 is included via updated submodule pointer."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-31T20:42:06.835Z"
+  updated_by: "EVALUATOR"
+  note: "Hermes adapter executor, lifecycle callback client, docs, and vendorable Hermes Agentplane recipe are implemented and locally verified."
+  evaluated_sha: "d9d8684c1db31c21aeefd2480c58d876b1e7f356"
+  blueprint_digest: "d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306"
+  evidence_refs:
+    - ".agentplane/tasks/202605311941-K4FCKS/README.md"
+    - ".agentplane/tasks/202605311941-K4FCKS/quality/20260531-204206835-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605311941-K4FCKS/quality/20260531-204206835-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605311941-K4FCKS/quality/20260531-204206835-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json"
+    - "node .agentplane/policy/check-routing.mjs"
+    - "bunx vitest run packages/agentplane/src/commands/hermes"
+    - "bun run --filter=agentplane build"
+    - "bun run docs:cli:check"
+    - "bun run docs:recipes:check"
+    - "bun run format:changed"
+    - "recipe install/add/explain smoke with temporary AGENTPLANE_HOME"
+  findings:
+    - "Agentplane now exposes route-gated Hermes supervision with one allowlisted step per claim, Hermes lifecycle dry-run/comment/block/complete plumbing, lane registry diagnostics, generated CLI docs, and a Hermes Agentplane recipe package that installs/adds/explains from a local archive."
 commit: null
 comments:
   -

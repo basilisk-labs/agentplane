@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202605311941-K4FCKS",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-31T20:42:06.835Z",
+  "verdict": "pass",
+  "summary": "Hermes adapter executor, lifecycle callback client, docs, and vendorable Hermes Agentplane recipe are implemented and locally verified.",
+  "evaluated_sha": "d9d8684c1db31c21aeefd2480c58d876b1e7f356",
+  "blueprint_digest": "d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306",
+  "findings": [
+    "Agentplane now exposes route-gated Hermes supervision with one allowlisted step per claim, Hermes lifecycle dry-run/comment/block/complete plumbing, lane registry diagnostics, generated CLI docs, and a Hermes Agentplane recipe package that installs/adds/explains from a local archive."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605311941-K4FCKS/README.md",
+    "node .agentplane/policy/check-routing.mjs",
+    "bunx vitest run packages/agentplane/src/commands/hermes",
+    "bun run --filter=agentplane build",
+    "bun run docs:cli:check",
+    "bun run docs:recipes:check",
+    "bun run format:changed",
+    "recipe install/add/explain smoke with temporary AGENTPLANE_HOME"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The agentplane-recipes index update requires production catalog signing before raw-main remote installation can be treated as publicly trusted."
+  ]
+}
