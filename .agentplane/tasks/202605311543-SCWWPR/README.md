@@ -140,7 +140,22 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
-extensions: {}
+extensions:
+  branch_pr_batch:
+    base: "main"
+    branch: "task/202605311543-KS7B7N/release-recovery-cli-improvements"
+    included_task_ids:
+      - "202605311543-0VPDRD"
+      - "202605311543-3H1G55"
+      - "202605311543-6N3TMM"
+      - "202605311543-NWXTSG"
+      - "202605311543-QH9XXK"
+      - "202605311543-R282E5"
+      - "202605311543-SCWWPR"
+      - "202605311543-SEMKC7"
+    primary_task_id: "202605311543-KS7B7N"
+    role: "included"
+    updated_at: "2026-05-31T16:11:12.472Z"
 id_source: "generated"
 ---
 ## Summary
