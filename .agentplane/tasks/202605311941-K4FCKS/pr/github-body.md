@@ -39,7 +39,7 @@ Hermes integration surfaces.
 ```text
  README.md                                          |   1 +
  agentplane-recipes                                 |   2 +-
- docs/recipes-inventory.json                        |  34 ++
+ docs/recipes-inventory.json                        |  39 ++
  docs/recipes/hermes-agentplane.mdx                 |  90 ++++
  docs/recipes/index.mdx                             |   1 +
  docs/user/cli-reference.generated.mdx              | 135 ++++++
@@ -56,7 +56,7 @@ Hermes integration surfaces.
  .../src/commands/hermes/hermes-runtime.ts          | 364 ++++++++++++++
  .../src/commands/hermes/hermes.command.test.ts     | 401 ++++++++++++++++
  .../src/commands/hermes/hermes.command.ts          | 527 +++++++++++++++++++++
- 19 files changed, 2260 insertions(+), 1 deletion(-)
+ 19 files changed, 2265 insertions(+), 1 deletion(-)
 ```
 
 </details>
