@@ -27,7 +27,7 @@ export type HermesRoutePacketForExecution = {
   };
 };
 
-export function taskTerminalForHermesComplete(task: {
+function taskTerminalForHermesComplete(task: {
   status: string;
   verification: string | null;
 }): boolean {
@@ -87,7 +87,7 @@ export function currentAgentplaneCommand(): { command: string; argsPrefix: strin
   return { command, argsPrefix: [] };
 }
 
-export async function runnerVisibilityPacket(opts: {
+async function runnerVisibilityPacket(opts: {
   ctx: CommandContext;
   cwd: string;
   rootOverride: string | null;
