@@ -47,7 +47,14 @@ export function renderTaskRunnerBootstrap(
           blocker?: { code?: string; summary?: string } | null;
           nextCommand?: string | null;
         };
-        executionPacket?: { safeToMutate?: boolean };
+        executionPacket?: {
+          actionKind?: string;
+          evidenceMissing?: string[];
+          recommendedRole?: string;
+          requiresProviderAction?: boolean;
+          safeToMutate?: boolean;
+          verificationCandidate?: string | null;
+        };
         nextAction?: { code?: string; command?: string | null; summary?: string };
         workspace?: { checkoutRole?: string };
         approval?: { effectiveMutationApprovalRequired?: boolean };
@@ -85,7 +92,6 @@ export function renderTaskRunnerBootstrap(
             routeDecision.oracle?.authoritativeCheckoutPath ?? "unknown"
           }`,
           `- route_mutation_path_hint: ${routeDecision.oracle?.mutationPathHint ?? "none"}`,
-          `- route_safe_to_mutate: ${String(routeDecision.executionPacket?.safeToMutate ?? false)}`,
           `- route_next_action: ${routeDecision.nextAction?.code ?? "unknown"}`,
           `- route_next_command: ${
             routeDecision.oracle?.nextCommand ?? routeDecision.nextAction?.command ?? "none"

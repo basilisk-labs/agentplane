@@ -4,7 +4,7 @@ title: "Route packet v2 for agent next-action surfaces"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-28T17:22:03.817Z"
+  updated_at: "2026-05-31T06:36:39.731Z"
   updated_by: "CODER"
-  note: "Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/runner/result-manifest.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts --config vitest.workspace.ts; Result: pass, 5 files and 84 tests. Command: bun run typecheck; Result: pass. Command: bun run format:changed; Result: pass. Command: bun run hotspots:check; Result: pass with warnings below thresholds. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: ap doctor; Result: pass after framework dev bootstrap. Command: bun run docs:cli:check, docs:bootstrap:check, release:parity; Result: pass."
+  note: "Verified after rebasing PR #4197 onto origin/main and fixing route bootstrap packet typing: route oracle now reports wait_hosted_checks as action_kind=local_command and safe_to_mutate=true; focused vitest suite passed (5 files, 85 tests); bun run typecheck passed; node .agentplane/policy/check-routing.mjs passed; ap doctor exited 0; bun run format:changed passed; bun run hotspots:check passed with warnings below thresholds; docs:cli:check, docs:bootstrap:check, and release:parity passed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -63,8 +63,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/runner/result-manifest.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts --config vitest.workspace.ts; Result: pass, 5 files and 84 tests. Command: bun run typecheck; Result: pass. Command: bun run format:changed; Result: pass. Command: bun run hotspots:check; Result: pass with warnings below thresholds. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: ap doctor; Result: pass after framework dev bootstrap. Command: bun run docs:cli:check, docs:bootstrap:check, release:parity; Result: pass."
+  -
+    type: "verify"
+    at: "2026-05-31T06:36:39.731Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified after rebasing PR #4197 onto origin/main and fixing route bootstrap packet typing: route oracle now reports wait_hosted_checks as action_kind=local_command and safe_to_mutate=true; focused vitest suite passed (5 files, 85 tests); bun run typecheck passed; node .agentplane/policy/check-routing.mjs passed; ap doctor exited 0; bun run format:changed passed; bun run hotspots:check passed with warnings below thresholds; docs:cli:check, docs:bootstrap:check, and release:parity passed."
 doc_version: 3
-doc_updated_at: "2026-05-28T17:22:03.850Z"
+doc_updated_at: "2026-05-31T06:36:39.749Z"
 doc_updated_by: "CODER"
 description: "Extend route oracle outputs into a richer execution packet for task brief/status/next-action and runner bundle consumers."
 sections:
@@ -87,6 +93,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T17:09:33.291Z, excerpt_hash=sha256:ae9b78455c155d56f8a4465875b346d252a5aa4b60af5e924c272c3d9c777837
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605281707-51DD0G-route-packet-v2/.agentplane/tasks/202605281707-51DD0G/blueprint/resolved-snapshot.json
+    - old_digest: a3df440f0edb36b57ad5caa7281a15070f35fd41e0d86d1f88ad1fe74e500ae9
+    - current_digest: a3df440f0edb36b57ad5caa7281a15070f35fd41e0d86d1f88ad1fe74e500ae9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605281707-51DD0G
+
+    ### 2026-05-31T06:36:39.731Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified after rebasing PR #4197 onto origin/main and fixing route bootstrap packet typing: route oracle now reports wait_hosted_checks as action_kind=local_command and safe_to_mutate=true; focused vitest suite passed (5 files, 85 tests); bun run typecheck passed; node .agentplane/policy/check-routing.mjs passed; ap doctor exited 0; bun run format:changed passed; bun run hotspots:check passed with warnings below thresholds; docs:cli:check, docs:bootstrap:check, and release:parity passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T17:22:03.850Z, excerpt_hash=sha256:ae9b78455c155d56f8a4465875b346d252a5aa4b60af5e924c272c3d9c777837
 
     Details:
 
@@ -136,6 +161,25 @@ Note: Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.te
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T17:09:33.291Z, excerpt_hash=sha256:ae9b78455c155d56f8a4465875b346d252a5aa4b60af5e924c272c3d9c777837
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605281707-51DD0G-route-packet-v2/.agentplane/tasks/202605281707-51DD0G/blueprint/resolved-snapshot.json
+- old_digest: a3df440f0edb36b57ad5caa7281a15070f35fd41e0d86d1f88ad1fe74e500ae9
+- current_digest: a3df440f0edb36b57ad5caa7281a15070f35fd41e0d86d1f88ad1fe74e500ae9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605281707-51DD0G
+
+### 2026-05-31T06:36:39.731Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified after rebasing PR #4197 onto origin/main and fixing route bootstrap packet typing: route oracle now reports wait_hosted_checks as action_kind=local_command and safe_to_mutate=true; focused vitest suite passed (5 files, 85 tests); bun run typecheck passed; node .agentplane/policy/check-routing.mjs passed; ap doctor exited 0; bun run format:changed passed; bun run hotspots:check passed with warnings below thresholds; docs:cli:check, docs:bootstrap:check, and release:parity passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T17:22:03.850Z, excerpt_hash=sha256:ae9b78455c155d56f8a4465875b346d252a5aa4b60af5e924c272c3d9c777837
 
 Details:
 

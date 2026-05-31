@@ -19,16 +19,12 @@ Extend route oracle outputs into a richer execution packet for task brief/status
 - Note:
 
 ```text
-Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts
-packages/agentplane/src/runner/result-manifest.test.ts
-packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
-packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts
-packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts --config
-vitest.workspace.ts; Result: pass, 5 files and 84 tests. Command: bun run typecheck; Result: pass.
-Command: bun run format:changed; Result: pass. Command: bun run hotspots:check; Result: pass with
-warnings below thresholds. Command: node .agentplane/policy/check-routing.mjs; Result: pass.
-Command: ap doctor; Result: pass after framework dev bootstrap. Command: bun run docs:cli:check,
-docs:bootstrap:check, release:parity; Result: pass.
+Verified after rebasing PR #4197 onto origin/main and fixing route bootstrap packet typing: route
+oracle now reports wait_hosted_checks as action_kind=local_command and safe_to_mutate=true; focused
+vitest suite passed (5 files, 85 tests); bun run typecheck passed; node
+.agentplane/policy/check-routing.mjs passed; ap doctor exited 0; bun run format:changed passed; bun
+run hotspots:check passed with warnings below thresholds; docs:cli:check, docs:bootstrap:check, and
+release:parity passed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -56,26 +52,20 @@ docs:bootstrap:check, release:parity; Result: pass.
  .../blueprint/resolved-snapshot.json               | 455 ++++++++++++++++
  docs/user/cli-reference.generated.mdx              |   2 +
  .../agentplane/src/cli/local-ci-selection.test.ts  |  54 ++
- .../src/cli/run-cli.core.route-decision.test.ts    |  22 +
- .../src/commands/evaluator/evaluator.command.ts    |  14 +
  .../src/commands/evaluator/evaluator.spec.ts       |   9 +
  .../agentplane/src/commands/runtime.command.ts     |  49 +-
  packages/agentplane/src/commands/runtime.spec.ts   |  10 +-
  .../src/commands/shared/route-batch-ownership.ts   |   1 +
- .../src/commands/shared/route-decision.ts          |  16 +-
- .../agentplane/src/commands/shared/route-oracle.ts |  96 ++++
- .../agentplane/src/commands/task/brief.command.ts  |  23 +
- .../src/commands/task/next-action.command.ts       |   8 +
+ .../src/commands/task/next-action.command.ts       |   7 +
  .../agentplane/src/commands/task/status.command.ts |  10 +
  .../agentplane/src/runner/adapters/codex.test.ts   |   2 +-
  .../agentplane/src/runner/result-manifest.test.ts  |  40 ++
  packages/agentplane/src/runner/result-manifest.ts  |  53 ++
  packages/agentplane/src/runner/types/invocation.ts |   3 +
- .../src/runner/usecases/task-run-blueprint.test.ts |  14 +-
- .../src/runner/usecases/task-run-bootstrap.ts      |  25 +-
+ .../src/runner/usecases/task-run-bootstrap.ts      |  24 +-
  scripts/lib/local-ci-selection.mjs                 | 103 ++++
  scripts/lib/test-route-registry.mjs                |  32 ++
- 35 files changed, 5451 insertions(+), 7 deletions(-)
+ 29 files changed, 5265 insertions(+), 6 deletions(-)
 ```
 
 </details>
