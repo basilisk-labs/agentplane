@@ -1,10 +1,11 @@
 ---
 id: "202605281632-XW33V9"
 title: "Remove runtime tasks.json dependencies"
-status: "DOING"
+result_summary: "Merged via PR #4195."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified after merging origin/main into PR #4195: focused vitest suite passed (3 files, 13 tests), bun run typecheck passed, bun run lint:core passed, node .agentplane/policy/check-routing.mjs passed, ap doctor exited 0 with only historical DONE-task warnings unrelated to this PR."
   attempts: 0
-commit: null
+commit:
+  hash: "862efcfdbd5375f8b7a5a66c106473d4a8b110f5"
+  message: "Merge pull request #4195 from basilisk-labs/task/202605281632-XW33V9/remove-runtime-tasks-json-dependencies"
 comments:
   -
     author: "CODER"
     body: "Start: Auditing and replacing runtime paths that still read or depend on legacy .agentplane/tasks.json during agent workflows; compatibility-only import/export references remain in scope only when they do not affect normal agent operation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4195 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified after merging origin/main into PR #4195: focused vitest suite passed (3 files, 13 tests), bun run typecheck passed, bun run lint:core passed, node .agentplane/policy/check-routing.mjs passed, ap doctor exited 0 with only historical DONE-task warnings unrelated to this PR."
+  -
+    type: "status"
+    at: "2026-05-31T06:43:32.918Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4195 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-31T06:26:03.412Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-31T06:43:32.923Z"
+doc_updated_by: "INTEGRATOR"
 description: "Audit and fix remaining runtime code paths that read or depend on legacy .agentplane/tasks.json during agent workflows; keep only explicit optional export/import compatibility surfaces."
 sections:
   Summary: |-
