@@ -1,10 +1,11 @@
 ---
 id: "202605281707-B1DQCY"
 title: "Runner manifest quality gate"
-status: "DOING"
+result_summary: "Closed included batch task from merged PR #4197"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,31 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts packages/agentplane/src/runner/result-manifest-policy.test.ts --config vitest.workspace.ts; Result: pass via focused suite coverage for result-manifest.test and existing policy tests. Evidence: success manifests require quality evidence; conflict paths require blocked reason and parent action. Scope: runner manifest quality gate."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-31T15:00:14.604Z"
+  updated_by: "EVALUATOR"
+  note: "Included task verified in merged batch PR #4197."
+  evaluated_sha: "c318cabc49a29ffcbf2b8246af76201f5ccbb324"
+  blueprint_digest: "59f129015fb4df73291ebc52f46aac0a7aa1b40c4098f6e69b809b4077ea8855"
+  evidence_refs:
+    - ".agentplane/tasks/202605281707-B1DQCY/README.md"
+    - ".agentplane/tasks/202605281707-B1DQCY/quality/20260531-150014604-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605281707-B1DQCY/quality/20260531-150014604-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605281707-B1DQCY/quality/20260531-150014604-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605281707-B1DQCY/blueprint/resolved-snapshot.json"
+  findings:
+    - "Task has verification.ok evidence and was included in the 51DD0G route-packet-v2 batch merged to main at 26704abb70798fb4ecca714fa3c21050d3893c18."
+commit:
+  hash: "c318cabc49a29ffcbf2b8246af76201f5ccbb324"
+  message: "Merge pull request #4329 from basilisk-labs/task/202605310706-GV6ECK/verify-ghost-progress"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing runner manifest quality gates as an included task in the approved v0.6.12 agent-efficiency batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; evaluator review recorded SHA c318cabc49a29ffcbf2b8246af76201f5ccbb324."
 events:
   -
     type: "status"
@@ -43,9 +64,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts packages/agentplane/src/runner/result-manifest-policy.test.ts --config vitest.workspace.ts; Result: pass via focused suite coverage for result-manifest.test and existing policy tests. Evidence: success manifests require quality evidence; conflict paths require blocked reason and parent action. Scope: runner manifest quality gate."
+  -
+    type: "status"
+    at: "2026-05-31T15:00:16.910Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; evaluator review recorded SHA c318cabc49a29ffcbf2b8246af76201f5ccbb324."
 doc_version: 3
-doc_updated_at: "2026-05-28T17:22:23.775Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-31T15:00:16.910Z"
+doc_updated_by: "INTEGRATOR"
 description: "Validate runner result manifests for evidence paths, changed paths, blocked reasons, conflicts, and verification candidates before projecting outcomes to tasks."
 sections:
   Summary: |-
