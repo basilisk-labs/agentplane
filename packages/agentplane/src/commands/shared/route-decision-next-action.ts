@@ -23,7 +23,6 @@ function verifiedIncludedClosureCandidate(task: TaskData): boolean {
     .join("\n")
     .toLowerCase();
   return (
-    haystack.includes("included batch task") ||
     haystack.includes("included in batch") ||
     haystack.includes("included in the batch") ||
     haystack.includes("included task from merged") ||
@@ -78,7 +77,11 @@ export function deriveNextAction(opts: {
   if (opts.batchOwnership.role === "included") {
     return opts.batchOwnership.nextOwnerAction;
   }
-  if (verifiedIncludedClosureCandidate(opts.task)) {
+  if (
+    !opts.prFlow?.branch.name &&
+    (!opts.prFlow || opts.prFlow.pr.state === "not_found") &&
+    verifiedIncludedClosureCandidate(opts.task)
+  ) {
     return {
       code: "reconcile_included_task_closure",
       command: `agentplane task normalize --sync-branch-pr-state --task-id ${id}`,
