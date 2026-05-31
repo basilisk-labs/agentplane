@@ -298,6 +298,6 @@ export async function tryCreateGithubPr(opts: {
       artifactState: "remote_failed",
     };
   } finally {
-    if (payloadDir) await rm(payloadDir, { recursive: true, force: true }).catch(() => undefined);
+    if (payloadDir) await rm(payloadDir, { recursive: true, force: true }).catch(() => null);
   }
 }

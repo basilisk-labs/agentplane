@@ -268,7 +268,7 @@ export async function writeFinishedTasks(opts: {
           ...(opts.implementationCommitInfo
             ? {
                 extensions: {
-                  ...(currentTask.extensions ?? {}),
+                  ...currentTask.extensions,
                   implementation_commit: {
                     hash: opts.implementationCommitInfo.hash,
                     message: opts.implementationCommitInfo.message,
