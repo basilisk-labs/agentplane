@@ -1,10 +1,11 @@
 ---
 id: "202605311805-PWSTQ5"
 title: "Release AgentPlane v0.6.13"
-status: "DOING"
+result_summary: "Merged via PR #4336."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "7f3cf5e7af318abfb625e5e4b31aa658e8e3f1b6"
+  message: "Merge pull request #4336 from basilisk-labs/task/202605311805-PWSTQ5/release-v0-6-13-patch"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: release v0.6.13 from clean main using the approved branch_pr candidate route, then verify hosted publish evidence before finishing."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4336 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: release v0.6.13 from clean main using the approved branch_pr candidate route, then verify hosted publish evidence before finishing."
+  -
+    type: "status"
+    at: "2026-05-31T19:09:53.589Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4336 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-31T18:59:52.437Z"
+doc_updated_at: "2026-05-31T19:09:53.593Z"
 doc_updated_by: "INTEGRATOR"
 description: "Publish AgentPlane patch release v0.6.13 from current main through the branch_pr release candidate workflow, hosted publish workflow, and final npm/tag/GitHub release verification."
 sections:
