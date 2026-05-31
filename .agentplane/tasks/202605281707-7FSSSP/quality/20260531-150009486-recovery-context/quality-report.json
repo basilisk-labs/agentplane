@@ -6,7 +6,7 @@
   "generated_at": "2026-05-31T15:00:09.486Z",
   "verdict": "pass",
   "summary": "Included task verified in merged batch PR #4197.",
-  "evaluated_sha": "c318cabc49a29ffcbf2b8246af76201f5ccbb324",
+  "evaluated_sha": "26704abb70798fb4ecca714fa3c21050d3893c18",
   "blueprint_digest": "c936b90b798eb562ce47647b552ecd9c91345ad8898a2e5165ff8c814d5e6767",
   "findings": [
     "Task has verification.ok evidence and was included in the 51DD0G route-packet-v2 batch merged to main at 26704abb70798fb4ecca714fa3c21050d3893c18."

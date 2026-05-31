@@ -30,7 +30,7 @@ quality_review:
   updated_at: "2026-05-31T15:00:19.737Z"
   updated_by: "EVALUATOR"
   note: "Included task verified in merged batch PR #4197."
-  evaluated_sha: "c318cabc49a29ffcbf2b8246af76201f5ccbb324"
+  evaluated_sha: "26704abb70798fb4ecca714fa3c21050d3893c18"
   blueprint_digest: "fe4761068130926bd7b237935d2be033234702c06a4211fe950b0dd4d03516fa"
   evidence_refs:
     - ".agentplane/tasks/202605281707-DPJKMR/README.md"
@@ -41,7 +41,7 @@ quality_review:
   findings:
     - "Task has verification.ok evidence and was included in the 51DD0G route-packet-v2 batch merged to main at 26704abb70798fb4ecca714fa3c21050d3893c18."
 commit:
-  hash: "c318cabc49a29ffcbf2b8246af76201f5ccbb324"
+  hash: "26704abb70798fb4ecca714fa3c21050d3893c18"
   message: "Merge pull request #4329 from basilisk-labs/task/202605310706-GV6ECK/verify-ghost-progress"
 comments:
   -
@@ -49,7 +49,7 @@ comments:
     body: "Start: Implementing critical-path hotspot extraction as an included task in the approved v0.6.12 agent-efficiency batch worktree."
   -
     author: "INTEGRATOR"
-    body: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; evaluator review recorded SHA c318cabc49a29ffcbf2b8246af76201f5ccbb324."
+    body: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; task commit recorded SHA 26704abb70798fb4ecca714fa3c21050d3893c18."
 events:
   -
     type: "status"
@@ -70,7 +70,7 @@ events:
     author: "INTEGRATOR"
     from: "DOING"
     to: "DONE"
-    note: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; evaluator review recorded SHA c318cabc49a29ffcbf2b8246af76201f5ccbb324."
+    note: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; task commit recorded SHA 26704abb70798fb4ecca714fa3c21050d3893c18."
 doc_version: 3
 doc_updated_at: "2026-05-31T15:00:22.028Z"
 doc_updated_by: "INTEGRATOR"
