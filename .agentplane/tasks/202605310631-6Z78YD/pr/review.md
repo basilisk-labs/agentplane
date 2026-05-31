@@ -29,7 +29,18 @@ Created: 2026-05-31T06:33:45.472Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/policy/dod.core.md                     |  2 +-
+ docs/user/agent-bootstrap.generated.mdx            |  6 ++--
+ docs/user/task-lifecycle.mdx                       |  4 +--
+ docs/user/workflow.mdx                             |  2 +-
+ packages/agentplane/assets/AGENTS.md               |  2 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |  4 +--
+ packages/agentplane/src/cli/command-guide.test.ts  |  4 +--
+ .../cli/run-cli.core.branch-meta.readiness.test.ts | 33 ++++++++++++++++++++++
+ .../cli/run-cli/commands/core/preflight-report.ts  |  4 +++
+ .../src/commands/task/finish-execute-close.ts      |  6 ++--
+ .../src/commands/task/finish.state.unit.test.ts    |  3 ++
+ 11 files changed, 56 insertions(+), 14 deletions(-)
 ```
 
 </details>

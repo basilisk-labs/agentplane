@@ -4,7 +4,7 @@ title: "Require final untracked artifact audit"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,22 @@ verification:
   updated_by: "CODER"
   note: "Implemented final untracked artifact audit guidance across policy, bootstrap, preflight, finish diagnostics, docs, and tests. Checks passed: policy routing, Vitest targeted suite, bootstrap doc freshness, format:changed, doctor, preflight, and explicit git status --short --untracked-files=all review."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-31T06:40:50.902Z"
+  updated_by: "EVALUATOR"
+  note: "Final untracked artifact audit contract is implemented and covered by targeted tests."
+  evaluated_sha: "e81a505bee4d4264e548eb090d38692e74620629"
+  blueprint_digest: "45466522adf83962cc72bf150992932ca73f856e8ff9374524f3db709954eb58"
+  evidence_refs:
+    - ".agentplane/tasks/202605310631-6Z78YD/README.md"
+    - ".agentplane/tasks/202605310631-6Z78YD/quality/20260531-064050902-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605310631-6Z78YD/quality/20260531-064050902-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605310631-6Z78YD/quality/20260531-064050902-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605310631-6Z78YD/blueprint/resolved-snapshot.json"
+    - "node .agentplane/policy/check-routing.mjs; bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts; bun run docs:bootstrap:check; bun run format:changed; ap doctor; ap preflight --mode quick --role ORCHESTRATOR; git status --short --untracked-files=all"
+  findings:
+    - "Policy, bootstrap, preflight, finish diagnostics, and generated docs now require or surface git status --short --untracked-files=all without converting active parallel task README artifacts into blanket blockers."
 commit: null
 comments:
   -
