@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202605311941-K4FCKS",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-31T21:39:30.056Z",
+  "verdict": "pass",
+  "summary": "Hermes adapter projection is implemented without fallback or legacy registry paths; AgentPlane exposes strict lifecycle projection plus runner visibility pointers.",
+  "evaluated_sha": "b002b9e23639e7290a371a3707eee3ab570efb9f",
+  "blueprint_digest": "d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306",
+  "findings": [
+    "pass: AGENTPLANE_HERMES_LANE_REGISTRY is the only lane registry env path; rg found no ARKADY/fallback/legacy/backward references in Hermes integration surfaces.",
+    "pass: enqueue/supervise/reconcile expose hermes_comment_projection, evidence refs, runner status/inspect/log commands, and AgentPlane authority boundaries.",
+    "pass: verification checks passed: policy routing, Hermes vitest, agentplane build, docs CLI, docs recipes, ci recipes, format changed, and pre-push fast local CI."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605311941-K4FCKS/README.md",
+    "packages/agentplane/src/commands/hermes/hermes-runtime.ts",
+    "packages/agentplane/src/commands/hermes/hermes.command.ts",
+    "packages/agentplane/src/commands/hermes/hermes.command.test.ts",
+    "docs/recipes/hermes-agentplane.mdx",
+    "agentplane-recipes/recipes/hermes-agentplane/package.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted PR checks still need provider-side confirmation after the final task branch push."
+  ]
+}
