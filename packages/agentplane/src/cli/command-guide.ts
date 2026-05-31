@@ -139,8 +139,38 @@ export function getRoleSupplementLines(roleRaw: string): string[] | null {
   const trimmed = roleRaw.trim();
   if (!trimmed) return null;
   const normalized = trimmed.toUpperCase();
-  const guide = ROLE_GUIDES.find((entry) => entry.role.toUpperCase() === normalized);
-  return guide ? guide.lines : null;
+  switch (normalized) {
+    case "ORCHESTRATOR": {
+      return ROLE_GUIDES[0]?.lines ?? null;
+    }
+    case "PLANNER": {
+      return ROLE_GUIDES[1]?.lines ?? null;
+    }
+    case "CODER": {
+      return ROLE_GUIDES[2]?.lines ?? null;
+    }
+    case "TESTER": {
+      return ROLE_GUIDES[3]?.lines ?? null;
+    }
+    case "DOCS": {
+      return ROLE_GUIDES[4]?.lines ?? null;
+    }
+    case "REVIEWER": {
+      return ROLE_GUIDES[5]?.lines ?? null;
+    }
+    case "INTEGRATOR": {
+      return ROLE_GUIDES[6]?.lines ?? null;
+    }
+    case "CREATOR": {
+      return ROLE_GUIDES[7]?.lines ?? null;
+    }
+    case "UPDATER": {
+      return ROLE_GUIDES[8]?.lines ?? null;
+    }
+    default: {
+      return null;
+    }
+  }
 }
 
 function renderRoleList(title: string, items: readonly string[] | undefined): string[] {
