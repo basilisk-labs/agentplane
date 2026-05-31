@@ -272,14 +272,16 @@ export async function buildPreflightReport(opts: {
       workingTree = { ok: true, value: staged.length === 0 && unstagedTracked.length === 0 };
       if (!workingTree.value) {
         harnessHealthReasons.push("working_tree_dirty");
-        nextActions.push({
-          command: "git status --short --untracked-files=no",
-          reason: "tracked changes detected",
-        });
-        nextActions.push({
-          command: "git status --short --untracked-files=all",
-          reason: "review full working-tree artifacts before closeout",
-        });
+        nextActions.push(
+          {
+            command: "git status --short --untracked-files=no",
+            reason: "tracked changes detected",
+          },
+          {
+            command: "git status --short --untracked-files=all",
+            reason: "review full working-tree artifacts before closeout",
+          },
+        );
       }
       if (taskArtifactDrift.actionable) {
         harnessHealthReasons.push("task_artifact_drift");

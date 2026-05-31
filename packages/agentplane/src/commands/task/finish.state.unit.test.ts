@@ -333,33 +333,32 @@ describeCompatible("task finish state and errors", () => {
     } as unknown as CommandContext["git"];
 
     const { cmdFinish } = await import("./finish-command.js");
-    await expect(
-      cmdFinish({
-        ctx,
-        cwd: "/repo",
-        taskIds: ["T-1"],
-        author: "A",
-        body: "Verified: direct finish should reject staged index before task mutation.",
-        result: "done",
-        breaking: false,
-        force: false,
-        commitFromComment: false,
-        commitAllow: [],
-        commitAutoAllow: false,
-        commitAllowTasks: false,
-        commitRequireClean: false,
-        statusCommit: false,
-        statusCommitAllow: [],
-        statusCommitAutoAllow: false,
-        statusCommitRequireClean: false,
-        confirmStatusCommit: false,
-        quiet: true,
-      }),
-    ).rejects.toMatchObject({
+    const finishAttempt = cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: direct finish should reject staged index before task mutation.",
+      result: "done",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+    await expect(finishAttempt).rejects.toThrow(
+      "Full artifact audit: git status --short --untracked-files=all",
+    );
+    await expect(finishAttempt).rejects.toMatchObject({
       code: "E_GIT",
-      message: expect.stringContaining(
-        "Full artifact audit: git status --short --untracked-files=all",
-      ),
       context: {
         reason_code: "git_close_commit_dirty_index",
         staged_paths: [".agentplane/tasks/T-2/README.md"],
