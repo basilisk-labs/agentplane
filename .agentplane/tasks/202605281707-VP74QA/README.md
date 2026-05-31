@@ -1,10 +1,11 @@
 ---
 id: "202605281707-VP74QA"
 title: "Provider lane hardening for PR and release tails"
-status: "DOING"
+result_summary: "Closed included batch task from merged PR #4197"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,31 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --config vitest.workspace.ts; Result: pass as part of focused suite. Evidence: execution_packet distinguishes local_command/provider_action/wait/stop and exposes provider-action flags. Scope: PR/close-tail provider lane hardening."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-31T15:00:35.085Z"
+  updated_by: "EVALUATOR"
+  note: "Included task verified in merged batch PR #4197."
+  evaluated_sha: "26704abb70798fb4ecca714fa3c21050d3893c18"
+  blueprint_digest: "a65708690dc6a515db2625cd6f6b8b464eceadfff105744ede545916abef0e6f"
+  evidence_refs:
+    - ".agentplane/tasks/202605281707-VP74QA/README.md"
+    - ".agentplane/tasks/202605281707-VP74QA/quality/20260531-150035085-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605281707-VP74QA/quality/20260531-150035085-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605281707-VP74QA/quality/20260531-150035085-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605281707-VP74QA/blueprint/resolved-snapshot.json"
+  findings:
+    - "Task has verification.ok evidence and was included in the 51DD0G route-packet-v2 batch merged to main at 26704abb70798fb4ecca714fa3c21050d3893c18."
+commit:
+  hash: "26704abb70798fb4ecca714fa3c21050d3893c18"
+  message: "Merge pull request #4329 from basilisk-labs/task/202605310706-GV6ECK/verify-ghost-progress"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing provider-lane next-action hardening as an included task in the approved v0.6.12 agent-efficiency batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; task commit recorded SHA 26704abb70798fb4ecca714fa3c21050d3893c18."
 events:
   -
     type: "status"
@@ -43,9 +64,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --config vitest.workspace.ts; Result: pass as part of focused suite. Evidence: execution_packet distinguishes local_command/provider_action/wait/stop and exposes provider-action flags. Scope: PR/close-tail provider lane hardening."
+  -
+    type: "status"
+    at: "2026-05-31T15:00:37.289Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; task commit recorded SHA 26704abb70798fb4ecca714fa3c21050d3893c18."
 doc_version: 3
-doc_updated_at: "2026-05-28T17:22:28.141Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-31T15:00:37.290Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make PR, close-tail, and release next-action surfaces distinguish local commands, provider actions, wait states, and stop conditions explicitly."
 sections:
   Summary: |-

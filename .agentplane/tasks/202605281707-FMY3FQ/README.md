@@ -1,10 +1,11 @@
 ---
 id: "202605281707-FMY3FQ"
 title: "Targeted local CI buckets for agent-critical surfaces"
-status: "DOING"
+result_summary: "Closed included batch task from merged PR #4197"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,31 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts --config vitest.workspace.ts; Result: pass as part of focused suite. Evidence: runner, route-oracle, prompt-modules, and evaluator buckets route to targeted tests. Scope: local CI bucket selection."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-31T15:00:24.930Z"
+  updated_by: "EVALUATOR"
+  note: "Included task verified in merged batch PR #4197."
+  evaluated_sha: "26704abb70798fb4ecca714fa3c21050d3893c18"
+  blueprint_digest: "442c2c9b8ead7a7b9febe8d5a7cc6f484179b3fc495a9873621ef18474db5480"
+  evidence_refs:
+    - ".agentplane/tasks/202605281707-FMY3FQ/README.md"
+    - ".agentplane/tasks/202605281707-FMY3FQ/quality/20260531-150024930-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605281707-FMY3FQ/quality/20260531-150024930-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605281707-FMY3FQ/quality/20260531-150024930-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605281707-FMY3FQ/blueprint/resolved-snapshot.json"
+  findings:
+    - "Task has verification.ok evidence and was included in the 51DD0G route-packet-v2 batch merged to main at 26704abb70798fb4ecca714fa3c21050d3893c18."
+commit:
+  hash: "26704abb70798fb4ecca714fa3c21050d3893c18"
+  message: "Merge pull request #4329 from basilisk-labs/task/202605310706-GV6ECK/verify-ghost-progress"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing targeted local CI bucket routing as an included task in the approved v0.6.12 agent-efficiency batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; task commit recorded SHA 26704abb70798fb4ecca714fa3c21050d3893c18."
 events:
   -
     type: "status"
@@ -43,9 +64,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts --config vitest.workspace.ts; Result: pass as part of focused suite. Evidence: runner, route-oracle, prompt-modules, and evaluator buckets route to targeted tests. Scope: local CI bucket selection."
+  -
+    type: "status"
+    at: "2026-05-31T15:00:27.342Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; task commit recorded SHA 26704abb70798fb4ecca714fa3c21050d3893c18."
 doc_version: 3
-doc_updated_at: "2026-05-28T17:22:22.643Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-31T15:00:27.342Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add dedicated local CI selection buckets for runner, route oracle, prompt modules, and evaluator changes."
 sections:
   Summary: |-

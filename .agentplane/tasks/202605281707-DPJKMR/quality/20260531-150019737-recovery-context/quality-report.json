@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202605281707-DPJKMR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-31T15:00:19.737Z",
+  "verdict": "pass",
+  "summary": "Included task verified in merged batch PR #4197.",
+  "evaluated_sha": "26704abb70798fb4ecca714fa3c21050d3893c18",
+  "blueprint_digest": "fe4761068130926bd7b237935d2be033234702c06a4211fe950b0dd4d03516fa",
+  "findings": [
+    "Task has verification.ok evidence and was included in the 51DD0G route-packet-v2 batch merged to main at 26704abb70798fb4ecca714fa3c21050d3893c18."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605281707-DPJKMR/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
