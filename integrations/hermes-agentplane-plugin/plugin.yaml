@@ -1,0 +1,6 @@
+name: agentplane
+version: 0.1.0
+description: "Agentplane external worker lane shim for Hermes Kanban."
+author: Agentplane
+kind: standalone
+provides_hooks: []
