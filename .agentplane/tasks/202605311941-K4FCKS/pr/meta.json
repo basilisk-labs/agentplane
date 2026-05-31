@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-31T21:49:06Z",
   "base": "main",
   "branch": "task/202605311941-K4FCKS/design-and-scaffold-hermes-adapter",
   "created_at": "2026-05-31T19:42:09.859Z",
   "diffstat_sha256": "sha256:3a277895982d53d6d07bc2d01045a4c14e538b2d6c5479fb4d72f14476e1561c",
   "last_verified_at": "2026-05-31T21:39:14.889Z",
   "last_verified_diffstat_sha256": "sha256:3a277895982d53d6d07bc2d01045a4c14e538b2d6c5479fb4d72f14476e1561c",
+  "merge_commit": "827ab20ade616914ee5b4c220a586b26927c7488",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-31T21:49:06Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605311941-K4FCKS",
-  "updated_at": "2026-05-31T19:42:09.859Z",
+  "updated_at": "2026-05-31T21:49:06Z",
   "verify": {
     "status": "pass"
   }
