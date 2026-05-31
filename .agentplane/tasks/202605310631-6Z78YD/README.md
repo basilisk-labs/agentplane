@@ -1,10 +1,11 @@
 ---
 id: "202605310631-6Z78YD"
 title: "Require final untracked artifact audit"
-status: "DOING"
+result_summary: "Merged via PR #4325."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "bun run agents:check; bun run lint:core; bun run format:changed; bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts packages/agentplane/src/agents/agents-template.test.ts; bun run docs:bootstrap:check; bunx vitest run packages/agentplane/src/cli/release-smoke.test.ts -t 'upgrade --migrate-task-docs repairs incomplete policy tree drift'; bunx vitest run packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts"
   findings:
     - "The implementation now updates both repo policy and bundled policy assets, uses lint-safe preflight next-action insertion, and keeps the finish diagnostic assertion type-safe."
-commit: null
+commit:
+  hash: "222d169facf41ba15a6706333f6af8575e73d327"
+  message: "Merge pull request #4325 from basilisk-labs/task/202605310631-6Z78YD/require-final-untracked-artifact-audit"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved final untracked artifact audit contract in the dedicated branch_pr worktree, keeping policy, CLI guidance, docs, and tests scoped to closeout visibility."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4325 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented final untracked artifact audit guidance across policy, bootstrap, preflight, finish diagnostics, docs, and tests. Checks passed: policy routing, Vitest targeted suite, bootstrap doc freshness, format:changed, doctor, preflight, and explicit git status --short --untracked-files=all review."
+  -
+    type: "status"
+    at: "2026-05-31T07:06:27.620Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4325 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-31T06:38:55.708Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-31T07:06:27.625Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make AgentPlane closeout guidance require an explicit final git status with --untracked-files=all so agents cannot miss generated task or quality artifacts before reporting completion."
 sections:
   Summary: |-
