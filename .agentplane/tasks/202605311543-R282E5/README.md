@@ -4,7 +4,7 @@ title: "Make evaluator recovery batch-friendly"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-31T16:06:22.915Z"
+  updated_at: "2026-05-31T16:09:44.737Z"
   updated_by: "CODER"
-  note: "Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed."
+  note: "Verified: final branch head includes implementation, batch metadata, and quality reviews. Checks passed: typecheck, format:changed, policy routing, agents:check, targeted Vitest suites, PR open/lifecycle tests, and manual included-task route fixture."
   attempts: 0
 quality_review:
   state: "pass"
@@ -66,8 +66,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed."
+  -
+    type: "verify"
+    at: "2026-05-31T16:09:44.737Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: final branch head includes implementation, batch metadata, and quality reviews. Checks passed: typecheck, format:changed, policy routing, agents:check, targeted Vitest suites, PR open/lifecycle tests, and manual included-task route fixture."
 doc_version: 3
-doc_updated_at: "2026-05-31T16:06:22.941Z"
+doc_updated_at: "2026-05-31T16:09:44.762Z"
 doc_updated_by: "CODER"
 description: "Improve evaluator and finish sequencing for multiple related tasks by adding batch support or precise dirty-subtree recovery guidance after evaluator artifacts are written."
 sections:
@@ -110,27 +116,31 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605311543-R282E5
 
+    ### 2026-05-31T16:09:44.737Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: final branch head includes implementation, batch metadata, and quality reviews. Checks passed: typecheck, format:changed, policy routing, agents:check, targeted Vitest suites, PR open/lifecycle tests, and manual included-task route fixture.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T16:06:22.941Z, excerpt_hash=sha256:a0745f2fcf4b4c0357d1dcddf1d16e37826c4c2ac2d86f7ffec443fdbf2c28af
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311543-KS7B7N-release-recovery-cli-improvements/.agentplane/tasks/202605311543-R282E5/blueprint/resolved-snapshot.json
+    - old_digest: 13e4b239b3a5024c011f77dc2dc1e375e2400b997a75a28bca1cfef902e21bef
+    - current_digest: 13e4b239b3a5024c011f77dc2dc1e375e2400b997a75a28bca1cfef902e21bef
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605311543-R282E5
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
-extensions:
-  branch_pr_batch:
-    base: "main"
-    branch: "task/202605311543-KS7B7N/release-recovery-cli-improvements"
-    included_task_ids:
-      - "202605311543-0VPDRD"
-      - "202605311543-3H1G55"
-      - "202605311543-6N3TMM"
-      - "202605311543-NWXTSG"
-      - "202605311543-QH9XXK"
-      - "202605311543-R282E5"
-      - "202605311543-SCWWPR"
-      - "202605311543-SEMKC7"
-    primary_task_id: "202605311543-KS7B7N"
-    role: "included"
-    updated_at: "2026-05-31T16:08:26.343Z"
+extensions: {}
 id_source: "generated"
 ---
 ## Summary
@@ -170,6 +180,25 @@ Note: Verified: release recovery CLI/policy batch implemented in commit c7c33342
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T15:53:30.481Z, excerpt_hash=sha256:a0745f2fcf4b4c0357d1dcddf1d16e37826c4c2ac2d86f7ffec443fdbf2c28af
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311543-KS7B7N-release-recovery-cli-improvements/.agentplane/tasks/202605311543-R282E5/blueprint/resolved-snapshot.json
+- old_digest: 13e4b239b3a5024c011f77dc2dc1e375e2400b997a75a28bca1cfef902e21bef
+- current_digest: 13e4b239b3a5024c011f77dc2dc1e375e2400b997a75a28bca1cfef902e21bef
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605311543-R282E5
+
+### 2026-05-31T16:09:44.737Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: final branch head includes implementation, batch metadata, and quality reviews. Checks passed: typecheck, format:changed, policy routing, agents:check, targeted Vitest suites, PR open/lifecycle tests, and manual included-task route fixture.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T16:06:22.941Z, excerpt_hash=sha256:a0745f2fcf4b4c0357d1dcddf1d16e37826c4c2ac2d86f7ffec443fdbf2c28af
 
 Details:
 

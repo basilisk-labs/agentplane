@@ -32,11 +32,8 @@ Teach branch_pr route oracle to classify verified included batch tasks whose imp
 - Note:
 
 ```text
-Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run
---filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs;
-bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR
-open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now
-resolves to included_task_closure_needed.
+Verified: PR artifacts refreshed at branch head 5280b759fe8fcc87b8239f6ae1f3a78377be205f; targeted
+checks and batch evidence remain valid.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -49,42 +46,42 @@ resolves to included_task_closure_needed.
 
 ```text
  .agentplane/policy/workflow.branch_pr.md           |   6 +-
- .agentplane/tasks/202605311543-0VPDRD/README.md    | 175 +++++++
+ .agentplane/tasks/202605311543-0VPDRD/README.md    | 220 ++++++++
  .../blueprint/resolved-snapshot.json               | 577 +++++++++++++++++++++
  .../evaluator-opinion.md                           |  22 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  24 +
- .agentplane/tasks/202605311543-3H1G55/README.md    | 175 +++++++
+ .agentplane/tasks/202605311543-3H1G55/README.md    | 220 ++++++++
  .../blueprint/resolved-snapshot.json               | 577 +++++++++++++++++++++
  .../evaluator-opinion.md                           |  22 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  24 +
- .agentplane/tasks/202605311543-6N3TMM/README.md    | 175 +++++++
+ .agentplane/tasks/202605311543-6N3TMM/README.md    | 220 ++++++++
  .../blueprint/resolved-snapshot.json               | 577 +++++++++++++++++++++
  .../evaluator-opinion.md                           |  22 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  24 +
- .agentplane/tasks/202605311543-NWXTSG/README.md    | 175 +++++++
+ .agentplane/tasks/202605311543-NWXTSG/README.md    | 220 ++++++++
  .../blueprint/resolved-snapshot.json               | 577 +++++++++++++++++++++
  .../evaluator-opinion.md                           |  22 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  24 +
- .agentplane/tasks/202605311543-QH9XXK/README.md    | 175 +++++++
+ .agentplane/tasks/202605311543-QH9XXK/README.md    | 220 ++++++++
  .../blueprint/resolved-snapshot.json               | 402 ++++++++++++++
  .../evaluator-opinion.md                           |  22 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  24 +
- .agentplane/tasks/202605311543-R282E5/README.md    | 175 +++++++
+ .agentplane/tasks/202605311543-R282E5/README.md    | 220 ++++++++
  .../blueprint/resolved-snapshot.json               | 577 +++++++++++++++++++++
  .../evaluator-opinion.md                           |  22 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  24 +
- .agentplane/tasks/202605311543-SCWWPR/README.md    | 175 +++++++
+ .agentplane/tasks/202605311543-SCWWPR/README.md    | 220 ++++++++
  .../blueprint/resolved-snapshot.json               | 577 +++++++++++++++++++++
  .../evaluator-opinion.md                           |  22 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  24 +
- .agentplane/tasks/202605311543-SEMKC7/README.md    | 177 +++++++
+ .agentplane/tasks/202605311543-SEMKC7/README.md    | 222 ++++++++
  .../blueprint/resolved-snapshot.json               | 440 ++++++++++++++++
  .../evaluator-opinion.md                           |  22 +
  .../evaluator-prompt.md                            |  74 +++
@@ -110,7 +107,7 @@ resolves to included_task_closure_needed.
  .../agentplane/src/commands/task/finish-execute.ts |   4 +-
  .../agentplane/src/commands/task/finish-shared.ts  |  12 +
  .../agentplane/src/commands/task/finish-types.ts   |   1 +
- 62 files changed, 7036 insertions(+), 41 deletions(-)
+ 62 files changed, 7396 insertions(+), 41 deletions(-)
 ```
 
 </details>

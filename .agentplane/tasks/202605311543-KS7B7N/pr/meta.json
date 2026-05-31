@@ -17,9 +17,9 @@
   },
   "branch": "task/202605311543-KS7B7N/release-recovery-cli-improvements",
   "created_at": "2026-05-31T15:53:25.815Z",
-  "diffstat_sha256": "sha256:7b296cf0baf5a447d4aaba69d0a7094b479815991fdd4cc08f2205689e217515",
-  "last_verified_at": "2026-05-31T16:06:11.546Z",
-  "last_verified_diffstat_sha256": "sha256:3c30371075748d57116f89dd66b96928ccb71061309795c478462448c9b15b98",
+  "diffstat_sha256": "sha256:450833c4e9749e948b787a4b57d8994b5b4a8a73d3f1b11796c500ec3803dd52",
+  "last_verified_at": "2026-05-31T16:10:42.975Z",
+  "last_verified_diffstat_sha256": "sha256:450833c4e9749e948b787a4b57d8994b5b4a8a73d3f1b11796c500ec3803dd52",
   "related_task_ids": [
     "202605311543-0VPDRD",
     "202605311543-3H1G55",

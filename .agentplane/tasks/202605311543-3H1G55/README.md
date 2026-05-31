@@ -4,7 +4,7 @@ title: "Use body files for PR publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-31T16:06:29.267Z"
+  updated_at: "2026-05-31T16:09:51.643Z"
   updated_by: "CODER"
-  note: "Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed."
+  note: "Verified: final branch head includes implementation, batch metadata, and quality reviews. Checks passed: typecheck, format:changed, policy routing, agents:check, targeted Vitest suites, PR open/lifecycle tests, and manual included-task route fixture."
   attempts: 0
 quality_review:
   state: "pass"
@@ -66,8 +66,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed."
+  -
+    type: "verify"
+    at: "2026-05-31T16:09:51.643Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: final branch head includes implementation, batch metadata, and quality reviews. Checks passed: typecheck, format:changed, policy routing, agents:check, targeted Vitest suites, PR open/lifecycle tests, and manual included-task route fixture."
 doc_version: 3
-doc_updated_at: "2026-05-31T16:06:29.292Z"
+doc_updated_at: "2026-05-31T16:09:51.674Z"
 doc_updated_by: "CODER"
 description: "Update ap pr open/update to generate and pass markdown PR bodies via temporary body files, preventing shell execution of markdown backticks and other inline quoting hazards."
 sections:
@@ -110,27 +116,31 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605311543-3H1G55
 
+    ### 2026-05-31T16:09:51.643Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: final branch head includes implementation, batch metadata, and quality reviews. Checks passed: typecheck, format:changed, policy routing, agents:check, targeted Vitest suites, PR open/lifecycle tests, and manual included-task route fixture.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T16:06:29.292Z, excerpt_hash=sha256:71bc1fc901c643773ea10c3fdc37dab94753b910f6a10d1e17cdd924181e1c02
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311543-KS7B7N-release-recovery-cli-improvements/.agentplane/tasks/202605311543-3H1G55/blueprint/resolved-snapshot.json
+    - old_digest: 3d2af7048646a7252657927017bfa39782ee2404a385f524df3e3cdac7daba10
+    - current_digest: 3d2af7048646a7252657927017bfa39782ee2404a385f524df3e3cdac7daba10
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605311543-3H1G55
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
-extensions:
-  branch_pr_batch:
-    base: "main"
-    branch: "task/202605311543-KS7B7N/release-recovery-cli-improvements"
-    included_task_ids:
-      - "202605311543-0VPDRD"
-      - "202605311543-3H1G55"
-      - "202605311543-6N3TMM"
-      - "202605311543-NWXTSG"
-      - "202605311543-QH9XXK"
-      - "202605311543-R282E5"
-      - "202605311543-SCWWPR"
-      - "202605311543-SEMKC7"
-    primary_task_id: "202605311543-KS7B7N"
-    role: "included"
-    updated_at: "2026-05-31T16:08:26.343Z"
+extensions: {}
 id_source: "generated"
 ---
 ## Summary
@@ -170,6 +180,25 @@ Note: Verified: release recovery CLI/policy batch implemented in commit c7c33342
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T15:53:31.790Z, excerpt_hash=sha256:71bc1fc901c643773ea10c3fdc37dab94753b910f6a10d1e17cdd924181e1c02
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311543-KS7B7N-release-recovery-cli-improvements/.agentplane/tasks/202605311543-3H1G55/blueprint/resolved-snapshot.json
+- old_digest: 3d2af7048646a7252657927017bfa39782ee2404a385f524df3e3cdac7daba10
+- current_digest: 3d2af7048646a7252657927017bfa39782ee2404a385f524df3e3cdac7daba10
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605311543-3H1G55
+
+### 2026-05-31T16:09:51.643Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: final branch head includes implementation, batch metadata, and quality reviews. Checks passed: typecheck, format:changed, policy routing, agents:check, targeted Vitest suites, PR open/lifecycle tests, and manual included-task route fixture.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T16:06:29.292Z, excerpt_hash=sha256:71bc1fc901c643773ea10c3fdc37dab94753b910f6a10d1e17cdd924181e1c02
 
 Details:
 
