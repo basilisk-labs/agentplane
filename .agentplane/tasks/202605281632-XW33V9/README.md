@@ -4,7 +4,7 @@ title: "Remove runtime tasks.json dependencies"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-28T16:40:55.430Z"
+  updated_at: "2026-05-31T06:26:03.393Z"
   updated_by: "CODER"
-  note: "Focused tests, typecheck, eslint, routing check, and doctor passed."
+  note: "Verified after merging origin/main into PR #4195: focused vitest suite passed (3 files, 13 tests), bun run typecheck passed, bun run lint:core passed, node .agentplane/policy/check-routing.mjs passed, ap doctor exited 0 with only historical DONE-task warnings unrelated to this PR."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused tests, typecheck, eslint, routing check, and doctor passed."
+  -
+    type: "verify"
+    at: "2026-05-31T06:26:03.393Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified after merging origin/main into PR #4195: focused vitest suite passed (3 files, 13 tests), bun run typecheck passed, bun run lint:core passed, node .agentplane/policy/check-routing.mjs passed, ap doctor exited 0 with only historical DONE-task warnings unrelated to this PR."
 doc_version: 3
-doc_updated_at: "2026-05-28T16:40:55.446Z"
+doc_updated_at: "2026-05-31T06:26:03.412Z"
 doc_updated_by: "CODER"
 description: "Audit and fix remaining runtime code paths that read or depend on legacy .agentplane/tasks.json during agent workflows; keep only explicit optional export/import compatibility surfaces."
 sections:
@@ -102,6 +108,25 @@ sections:
     Result: pass
     Evidence: doctor (OK), errors=0; existing historical DONE tasks without commit hash reported as WARN only.
     Scope: live repo doctor/runtime surface.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605281632-XW33V9-remove-runtime-tasks-json-dependencies/.agentplane/tasks/202605281632-XW33V9/blueprint/resolved-snapshot.json
+    - old_digest: 89d2e7dc3200fedb1c565a37f1ebd3c4d9c7741a4339bb4a3bfce06fe1853bd8
+    - current_digest: 89d2e7dc3200fedb1c565a37f1ebd3c4d9c7741a4339bb4a3bfce06fe1853bd8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605281632-XW33V9
+
+    ### 2026-05-31T06:26:03.393Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified after merging origin/main into PR #4195: focused vitest suite passed (3 files, 13 tests), bun run typecheck passed, bun run lint:core passed, node .agentplane/policy/check-routing.mjs passed, ap doctor exited 0 with only historical DONE-task warnings unrelated to this PR.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T16:40:55.446Z, excerpt_hash=sha256:03f95f9cf8916b8def6c7065146b70881b720662003040d56cc90fac877311d4
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -182,6 +207,25 @@ Command: ap doctor
 Result: pass
 Evidence: doctor (OK), errors=0; existing historical DONE tasks without commit hash reported as WARN only.
 Scope: live repo doctor/runtime surface.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605281632-XW33V9-remove-runtime-tasks-json-dependencies/.agentplane/tasks/202605281632-XW33V9/blueprint/resolved-snapshot.json
+- old_digest: 89d2e7dc3200fedb1c565a37f1ebd3c4d9c7741a4339bb4a3bfce06fe1853bd8
+- current_digest: 89d2e7dc3200fedb1c565a37f1ebd3c4d9c7741a4339bb4a3bfce06fe1853bd8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605281632-XW33V9
+
+### 2026-05-31T06:26:03.393Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified after merging origin/main into PR #4195: focused vitest suite passed (3 files, 13 tests), bun run typecheck passed, bun run lint:core passed, node .agentplane/policy/check-routing.mjs passed, ap doctor exited 0 with only historical DONE-task warnings unrelated to this PR.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-28T16:40:55.446Z, excerpt_hash=sha256:03f95f9cf8916b8def6c7065146b70881b720662003040d56cc90fac877311d4
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current
