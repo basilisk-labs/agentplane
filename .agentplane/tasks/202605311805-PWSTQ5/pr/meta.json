@@ -1,12 +1,18 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-31T19:09:13Z",
   "base": "main",
   "branch": "task/202605311805-PWSTQ5/release-v0-6-13-patch",
   "created_at": "2026-05-31T18:47:47.262Z",
   "diffstat_sha256": "sha256:33fb7665ff3ef8c2fd9915573c24a8ea612e9fd288c7c53f6428c8d04514d023",
   "last_verified_at": null,
+  "merge_commit": "7f3cf5e7af318abfb625e5e4b31aa658e8e3f1b6",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-31T19:09:13Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605311805-PWSTQ5",
-  "updated_at": "2026-05-31T18:47:47.262Z",
+  "updated_at": "2026-05-31T19:09:13Z",
   "verify": {
     "status": "skipped"
   }
