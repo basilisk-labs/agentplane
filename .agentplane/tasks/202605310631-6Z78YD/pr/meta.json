@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605310631-6Z78YD/require-final-untracked-artifact-audit",
+  "created_at": "2026-05-31T06:33:45.472Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-05-31T06:38:55.691Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202605310631-6Z78YD",
+  "updated_at": "2026-05-31T06:33:45.472Z",
+  "verify": {
+    "status": "pass"
+  }
+}

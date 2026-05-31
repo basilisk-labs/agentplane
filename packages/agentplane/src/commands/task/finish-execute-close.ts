@@ -55,7 +55,8 @@ export async function assertCloseCommitCanMutateTaskState(opts: {
         "Why: close commit creation would fail after the task is marked DONE.",
         `Staged paths: ${staged.slice(0, 12).join(", ")}${staged.length > 12 ? ` (+${staged.length - 12} more)` : ""}`,
         "Fix: commit or unstage unrelated paths before rerunning finish, or pass --close-unstage-others to let finish unstage non-task paths first.",
-        "Safe command: git status --short --untracked-files=no",
+        "Tracked-state command: git status --short --untracked-files=no",
+        "Full artifact audit: git status --short --untracked-files=all",
       ].join("\n"),
       context: {
         command: "finish",
@@ -82,7 +83,8 @@ export async function assertCloseCommitCanMutateTaskState(opts: {
       `Why: deterministic ${ctx.config.workflow_mode} close commits stage only the finished task artifacts; other tracked changes would make commit creation fail after the task is marked DONE.`,
       `Dirty tracked paths: ${blockingUnstaged.slice(0, 12).join(", ")}${blockingUnstaged.length > 12 ? ` (+${blockingUnstaged.length - 12} more)` : ""}`,
       "Fix: commit, stash, or move unrelated lifecycle changes into a batch close branch before rerunning finish.",
-      "Safe command: git status --short --untracked-files=no",
+      "Tracked-state command: git status --short --untracked-files=no",
+      "Full artifact audit: git status --short --untracked-files=all",
     ].join("\n"),
   });
 }

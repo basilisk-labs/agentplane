@@ -62,7 +62,7 @@ ap quickstart
 ap task list
 ap task active
 git status --short --untracked-files=no
-git status --short
+git status --short --untracked-files=all
 git rev-parse --abbrev-ref HEAD
 ```
 

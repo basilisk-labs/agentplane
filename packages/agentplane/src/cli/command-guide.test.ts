@@ -90,7 +90,7 @@ describe("command-guide", () => {
     expect(text).toContain("authoritative_checkout");
     expect(text).toContain("primary_blocker");
     expect(text).toContain("git status --short --untracked-files=no");
-    expect(text).toContain("\ngit status --short\n");
+    expect(text).toContain("\ngit status --short --untracked-files=all\n");
     expect(text).toContain("source confidence");
     expect(text).toContain("agentplane task start-ready");
     expect(text).toContain("agentplane pr check <task-id>");
@@ -119,7 +119,7 @@ describe("command-guide", () => {
     expect(text).toContain("authoritative_checkout");
     expect(text).toContain("tracked-only cleanliness");
     expect(text).toContain("git status --short --untracked-files=no");
-    expect(text).toContain("\n- `git status --short`\n");
+    expect(text).toContain("\n- `git status --short --untracked-files=all`\n");
     expect(text).toContain("source confidence");
     expect(text).toContain("Use `agentplane role ORCHESTRATOR` during planning");
     expect(text).toContain("agentplane incidents advise <task-id>");

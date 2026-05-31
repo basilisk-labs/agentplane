@@ -357,6 +357,9 @@ describeCompatible("task finish state and errors", () => {
       }),
     ).rejects.toMatchObject({
       code: "E_GIT",
+      message: expect.stringContaining(
+        "Full artifact audit: git status --short --untracked-files=all",
+      ),
       context: {
         reason_code: "git_close_commit_dirty_index",
         staged_paths: [".agentplane/tasks/T-2/README.md"],

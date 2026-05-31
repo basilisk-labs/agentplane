@@ -379,6 +379,39 @@ describe("runCli", () => {
     }
   });
 
+  it("preflight --json suggests a full artifact audit when tracked files are dirty", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "tracked.txt"), "clean\n", "utf8");
+    await execFileAsync("git", ["add", "tracked.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed tracked file"], { cwd: root });
+    await writeFile(path.join(root, "tracked.txt"), "dirty\n", "utf8");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        working_tree_clean_tracked?: { value?: boolean };
+        next_actions?: { command?: string; reason?: string }[];
+      };
+      expect(payload.working_tree_clean_tracked?.value).toBe(false);
+      expect(payload.next_actions).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            command: "git status --short --untracked-files=no",
+          }),
+          expect.objectContaining({
+            command: "git status --short --untracked-files=all",
+            reason: "review full working-tree artifacts before closeout",
+          }),
+        ]),
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
   it("preflight --json treats active task artifacts as parallel-agent context, not harness drift", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

@@ -276,6 +276,10 @@ export async function buildPreflightReport(opts: {
           command: "git status --short --untracked-files=no",
           reason: "tracked changes detected",
         });
+        nextActions.push({
+          command: "git status --short --untracked-files=all",
+          reason: "review full working-tree artifacts before closeout",
+        });
       }
       if (taskArtifactDrift.actionable) {
         harnessHealthReasons.push("task_artifact_drift");
