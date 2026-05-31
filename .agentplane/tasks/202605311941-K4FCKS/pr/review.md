@@ -13,7 +13,7 @@ Created: 2026-05-31T19:42:09.859Z
 ## Verification
 
 - State: ok
-- Note: Verified: integrated strict AgentPlane Hermes projection contract with structured lifecycle comment payloads, runner status/inspect/log pointers, real local projection in reconcile, and AGENTPLANE_HERMES_LANE_REGISTRY-only registry reads. Checks passed: node .agentplane/policy/check-routing.mjs; bunx vitest run packages/agentplane/src/commands/hermes; bun run --filter=agentplane build; bun run docs:cli:check; bun run docs:recipes:check; bun run ci:recipes; bun run format:changed; rg confirmed no ARKADY/fallback/legacy/backward strings in Hermes integration surfaces.
+- Note: Verified: Hermes projection is strict-current only; checks passed: policy routing, Hermes vitest, agentplane build, docs CLI, docs recipes, ci recipes, format changed, pre-push fast local CI.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

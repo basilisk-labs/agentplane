@@ -4,7 +4,7 @@ title: "Design and scaffold Hermes adapter"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 20
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -21,32 +21,32 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-31T21:24:29.475Z"
-  updated_by: "CODER"
-  note: "Verified: integrated strict AgentPlane Hermes projection contract with structured lifecycle comment payloads, runner status/inspect/log pointers, real local projection in reconcile, and AGENTPLANE_HERMES_LANE_REGISTRY-only registry reads. Checks passed: node .agentplane/policy/check-routing.mjs; bunx vitest run packages/agentplane/src/commands/hermes; bun run --filter=agentplane build; bun run docs:cli:check; bun run docs:recipes:check; bun run ci:recipes; bun run format:changed; rg confirmed no ARKADY/fallback/legacy/backward strings in Hermes integration surfaces."
+  updated_at: "2026-05-31T21:39:14.889Z"
+  updated_by: "EVALUATOR"
+  note: "Verified: Hermes projection is strict-current only; checks passed: policy routing, Hermes vitest, agentplane build, docs CLI, docs recipes, ci recipes, format changed, pre-push fast local CI."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-31T20:42:06.835Z"
+  updated_at: "2026-05-31T21:39:30.056Z"
   updated_by: "EVALUATOR"
-  note: "Hermes adapter executor, lifecycle callback client, docs, and vendorable Hermes Agentplane recipe are implemented and locally verified."
-  evaluated_sha: "d9d8684c1db31c21aeefd2480c58d876b1e7f356"
+  note: "Hermes adapter projection is implemented without fallback or legacy registry paths; AgentPlane exposes strict lifecycle projection plus runner visibility pointers."
+  evaluated_sha: "b002b9e23639e7290a371a3707eee3ab570efb9f"
   blueprint_digest: "d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306"
   evidence_refs:
     - ".agentplane/tasks/202605311941-K4FCKS/README.md"
-    - ".agentplane/tasks/202605311941-K4FCKS/quality/20260531-204206835-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605311941-K4FCKS/quality/20260531-204206835-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605311941-K4FCKS/quality/20260531-204206835-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605311941-K4FCKS/quality/20260531-213930056-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605311941-K4FCKS/quality/20260531-213930056-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605311941-K4FCKS/quality/20260531-213930056-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json"
-    - "node .agentplane/policy/check-routing.mjs"
-    - "bunx vitest run packages/agentplane/src/commands/hermes"
-    - "bun run --filter=agentplane build"
-    - "bun run docs:cli:check"
-    - "bun run docs:recipes:check"
-    - "bun run format:changed"
-    - "recipe install/add/explain smoke with temporary AGENTPLANE_HOME"
+    - "packages/agentplane/src/commands/hermes/hermes-runtime.ts"
+    - "packages/agentplane/src/commands/hermes/hermes.command.ts"
+    - "packages/agentplane/src/commands/hermes/hermes.command.test.ts"
+    - "docs/recipes/hermes-agentplane.mdx"
+    - "agentplane-recipes/recipes/hermes-agentplane/package.json"
   findings:
-    - "Agentplane now exposes route-gated Hermes supervision with one allowlisted step per claim, Hermes lifecycle dry-run/comment/block/complete plumbing, lane registry diagnostics, generated CLI docs, and a Hermes Agentplane recipe package that installs/adds/explains from a local archive."
+    - "pass: AGENTPLANE_HERMES_LANE_REGISTRY is the only lane registry env path; rg found no ARKADY/fallback/legacy/backward references in Hermes integration surfaces."
+    - "pass: enqueue/supervise/reconcile expose hermes_comment_projection, evidence refs, runner status/inspect/log commands, and AgentPlane authority boundaries."
+    - "pass: verification checks passed: policy routing, Hermes vitest, agentplane build, docs CLI, docs recipes, ci recipes, format changed, and pre-push fast local CI."
 commit: null
 comments:
   -
@@ -130,8 +130,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: integrated strict AgentPlane Hermes projection contract with structured lifecycle comment payloads, runner status/inspect/log pointers, real local projection in reconcile, and AGENTPLANE_HERMES_LANE_REGISTRY-only registry reads. Checks passed: node .agentplane/policy/check-routing.mjs; bunx vitest run packages/agentplane/src/commands/hermes; bun run --filter=agentplane build; bun run docs:cli:check; bun run docs:recipes:check; bun run ci:recipes; bun run format:changed; rg confirmed no ARKADY/fallback/legacy/backward strings in Hermes integration surfaces."
+  -
+    type: "verify"
+    at: "2026-05-31T21:39:14.889Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Verified: Hermes projection is strict-current only; checks passed: policy routing, Hermes vitest, agentplane build, docs CLI, docs recipes, ci recipes, format changed, pre-push fast local CI."
 doc_version: 3
-doc_updated_at: "2026-05-31T21:24:29.492Z"
+doc_updated_at: "2026-05-31T21:39:14.906Z"
 doc_updated_by: "CODER"
 description: "Document the target Hermes Agentplane adapter architecture and add an initial repo-local scaffold for Agentplane-owned Hermes supervision commands without creating an external repository."
 sections:
@@ -331,6 +337,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T20:56:50.932Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311941-K4FCKS-design-and-scaffold-hermes-adapter/.agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json
+    - old_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+    - current_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
+
+    ### 2026-05-31T21:39:14.889Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Verified: Hermes projection is strict-current only; checks passed: policy routing, Hermes vitest, agentplane build, docs CLI, docs recipes, ci recipes, format changed, pre-push fast local CI.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T21:24:29.492Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
 
     Details:
 
@@ -570,6 +595,25 @@ Note: Verified: integrated strict AgentPlane Hermes projection contract with str
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T20:56:50.932Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311941-K4FCKS-design-and-scaffold-hermes-adapter/.agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json
+- old_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+- current_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
+
+### 2026-05-31T21:39:14.889Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Verified: Hermes projection is strict-current only; checks passed: policy routing, Hermes vitest, agentplane build, docs CLI, docs recipes, ci recipes, format changed, pre-push fast local CI.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T21:24:29.492Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
 
 Details:
 
