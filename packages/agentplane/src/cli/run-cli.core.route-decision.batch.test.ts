@@ -101,6 +101,58 @@ async function writeBatchMeta(opts: {
 }
 
 describe("runCli route decision batch ownership", () => {
+  it("keeps a verified batch primary with PR metadata out of included closure recovery", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const primaryTaskId = await createTask(root);
+    const includedTaskId = await createTask(root);
+    await approveTasks(root, [primaryTaskId, includedTaskId], "Classify verified included tasks.");
+    await runCliSilent([
+      "task",
+      "start-ready",
+      primaryTaskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: verify primary batch routing.",
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "verify",
+      primaryTaskId,
+      "--ok",
+      "--by",
+      "CODER",
+      "--note",
+      "Verified: included batch task route fixture.",
+      "--local-only",
+      "--root",
+      root,
+    ]);
+
+    await writeBatchMeta({
+      root,
+      primaryTaskId,
+      includedTaskId,
+      branch: `task/${primaryTaskId}/batch-owner`,
+    });
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", primaryTaskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as { next_action: { code: string } };
+      expect(parsed.next_action.code).not.toBe("reconcile_included_task_closure");
+    } finally {
+      nextIo.restore();
+    }
+  });
+
   it("exposes branch_pr batch ownership in route and brief output", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
