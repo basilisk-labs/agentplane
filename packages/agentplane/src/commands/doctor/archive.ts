@@ -1,9 +1,13 @@
 import fs from "node:fs/promises";
+import type { Dirent } from "node:fs";
 import path from "node:path";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
-import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import { normalizeTaskStatus, parseTaskReadme } from "@agentplaneorg/core/tasks";
+
+import type { CommandContext } from "../shared/task-backend.js";
+import { listTasksMemo } from "../shared/task-backend.js";
 
 const DEFAULT_RECENT_DONE_TASK_LIMIT = 200;
 
@@ -164,25 +168,41 @@ function summarizeHistoricalFindings(
   ];
 }
 
-export async function checkDoneTaskCommitInvariants(
-  repoRoot: string,
-  opts: { fullArchive?: boolean } = {},
-): Promise<string[]> {
-  const tasksPath = path.join(repoRoot, ".agentplane", "tasks.json");
-  let raw = "";
+async function readTaskReadmeSnapshots(repoRoot: string): Promise<TaskSnapshotRecord[]> {
+  const tasksDir = path.join(repoRoot, ".agentplane", "tasks");
+  let entries: Dirent[];
   try {
-    raw = await fs.readFile(tasksPath, "utf8");
+    entries = await fs.readdir(tasksDir, { withFileTypes: true });
   } catch {
     return [];
   }
 
-  let parsed: { tasks?: unknown };
-  try {
-    parsed = JSON.parse(raw) as { tasks?: unknown };
-  } catch {
-    return [`Invalid JSON snapshot: ${path.relative(repoRoot, tasksPath)}`];
+  const tasks: TaskSnapshotRecord[] = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    try {
+      const text = await fs.readFile(path.join(tasksDir, entry.name, "README.md"), "utf8");
+      tasks.push(parseTaskReadme(text).frontmatter as TaskSnapshotRecord);
+    } catch {
+      continue;
+    }
   }
-  const all = Array.isArray(parsed.tasks) ? (parsed.tasks as TaskSnapshotRecord[]) : [];
+  return tasks;
+}
+
+export async function checkDoneTaskCommitInvariants(
+  repoRoot: string,
+  opts: { ctx?: CommandContext; fullArchive?: boolean } = {},
+): Promise<string[]> {
+  let all: TaskSnapshotRecord[] = [];
+  if (opts.ctx) {
+    try {
+      all = await listTasksMemo(opts.ctx);
+    } catch {
+      all = [];
+    }
+  }
+  if (all.length === 0) all = await readTaskReadmeSnapshots(repoRoot);
   const allDone = all.filter((t) => {
     return normalizeTaskStatus(t.status) === "DONE";
   });
@@ -199,7 +219,7 @@ export async function checkDoneTaskCommitInvariants(
     const hash = typeof task.commit?.hash === "string" ? task.commit.hash.trim() : "";
     if (!hash) {
       problems.push(
-        `DONE task is missing implementation commit hash: ${id} (finish with --commit <hash>).`,
+        `[WARN] DONE task is missing implementation commit hash: ${id} (finish with --commit <hash>).`,
       );
       continue;
     }

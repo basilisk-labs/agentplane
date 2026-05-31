@@ -1,5 +1,8 @@
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
+import type { Dirent } from "node:fs";
 import path from "node:path";
+
+import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";
@@ -149,24 +152,14 @@ export async function checkBranchPrBatchIncludedTaskDrift(ctx?: CommandContext):
 }
 
 async function readDoneTaskSnapshot(ctx: CommandContext): Promise<TaskData[]> {
+  let tasks: TaskData[] = [];
   try {
-    const tasks = await listTasksMemo(ctx);
-    if (tasks.length > 0) {
-      return tasks;
-    }
+    tasks = await listTasksMemo(ctx);
   } catch {
-    // Fall back to the legacy export snapshot when the live backend read is unavailable.
+    tasks = [];
   }
-
-  const tasksJsonPath = path.join(ctx.resolvedProject.agentplaneDir, "tasks.json");
-  try {
-    const raw = await readFile(tasksJsonPath, "utf8");
-    const parsed = JSON.parse(raw) as { tasks?: unknown };
-    if (!Array.isArray(parsed.tasks)) return [];
-    return parsed.tasks.filter((task): task is TaskData => isTaskDataLike(task));
-  } catch {
-    return [];
-  }
+  if (tasks.length > 0) return tasks;
+  return await readTaskReadmeSnapshot(ctx);
 }
 
 async function readTaskPrMeta(ctx: CommandContext, taskId: string) {
@@ -184,8 +177,24 @@ async function readTaskPrMeta(ctx: CommandContext, taskId: string) {
   }
 }
 
-function isTaskDataLike(value: unknown): value is TaskData {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
-  const record = value as Record<string, unknown>;
-  return typeof record.id === "string" && typeof record.status === "string";
+async function readTaskReadmeSnapshot(ctx: CommandContext): Promise<TaskData[]> {
+  const tasksDir = path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.workflow_dir);
+  let entries: Dirent[];
+  try {
+    entries = await readdir(tasksDir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  const tasks: TaskData[] = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    try {
+      const text = await readFile(path.join(tasksDir, entry.name, "README.md"), "utf8");
+      tasks.push(parseTaskReadme(text).frontmatter as TaskData);
+    } catch {
+      continue;
+    }
+  }
+  return tasks;
 }

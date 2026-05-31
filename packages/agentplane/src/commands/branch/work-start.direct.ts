@@ -63,7 +63,6 @@ export async function ensureGitClean(gitRoot: string): Promise<void> {
   // workflow without task branches, but we still expect task docs to change.
   const allowedPrefixes = [
     ".agentplane/tasks/",
-    ".agentplane/tasks.json",
     ".agentplane/cache/",
     ".agentplane/cache.sqlite",
     ".agentplane/.upgrade/",

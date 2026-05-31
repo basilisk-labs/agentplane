@@ -209,6 +209,68 @@ async function gitInitWithCommit(root: string, subject: string): Promise<string>
   return stdout.trim();
 }
 
+async function writeTaskReadmeFixture(
+  root: string,
+  task: {
+    id: string;
+    status: string;
+    doc_version?: number;
+    commit?: { hash: string } | null;
+  },
+): Promise<void> {
+  const taskDir = path.join(root, ".agentplane", "tasks", task.id);
+  await mkdir(taskDir, { recursive: true });
+  const docVersion = task.doc_version ?? 3;
+  await writeFile(
+    path.join(taskDir, "README.md"),
+    renderTaskReadme(
+      {
+        id: task.id,
+        title: `Task ${task.id}`,
+        description: "Doctor fixture task",
+        status: task.status,
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["code"],
+        verify: [],
+        plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        commit: task.commit ?? null,
+        comments: [],
+        events: [],
+        revision: 1,
+        doc_version: docVersion,
+        doc_updated_at: "2026-03-08T10:06:00.000Z",
+        doc_updated_by: "CODER",
+        sections:
+          docVersion === 3
+            ? {
+                Summary: "Doctor fixture task.",
+                Scope: "- In scope: doctor fixture.",
+                Plan: "1. Run doctor.",
+                "Verify Steps": "1. Run agentplane doctor.",
+                Verification:
+                  "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+                "Rollback Plan": "- Revert fixture.",
+                Findings: "",
+              }
+            : {
+                Summary: "Doctor fixture task.",
+                Scope: "- In scope: doctor fixture.",
+                Plan: "1. Run doctor.",
+                Risks: "- None.",
+                "Verify Steps": "1. Run agentplane doctor.",
+                "Rollback Plan": "- Revert fixture.",
+                Notes: "",
+              },
+      },
+      "",
+    ),
+    "utf8",
+  );
+}
+
 async function addFrameworkCheckout(root: string): Promise<{
   repoBin: string;
   coreRoot: string;
@@ -246,53 +308,37 @@ describe(
   "doctor.command task docs and historical commits",
   { timeout: DOCTOR_HISTORICAL_ARCHIVE_TIMEOUT_MS },
   () => {
-    it("fails when DONE task misses implementation commit hash", async () => {
+    it("warns when DONE task misses implementation commit hash", async () => {
       const ws = await mkWorkspace();
       await gitInitWithCommit(ws.root, "feat: initial");
-      await writeFile(
-        path.join(ws.root, ".agentplane", "tasks.json"),
-        JSON.stringify(
-          {
-            tasks: [
-              { id: "202602111800-ABC123", status: "DONE", commit: null },
-              { id: "202602111801-DEF456", status: "TODO" },
-            ],
-          },
-          null,
-          2,
-        ),
-        "utf8",
-      );
+      await writeTaskReadmeFixture(ws.root, {
+        id: "202602111800-ABC123",
+        status: "DONE",
+        commit: null,
+      });
+      await writeTaskReadmeFixture(ws.root, { id: "202602111801-DEF456", status: "TODO" });
       const rc = await runDoctor(
         { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
         { fix: false, dev: false },
       );
-      expect(rc).toBe(1);
+      expect(rc).toBe(0);
     });
 
     it("warns when active tasks still use legacy README v2 format", async () => {
       const ws = await mkWorkspace();
       const commitHash = await gitInitWithCommit(ws.root, "feat: baseline");
       const stderr = spyOnStderrWrite();
-      await writeFile(
-        path.join(ws.root, ".agentplane", "tasks.json"),
-        JSON.stringify(
-          {
-            tasks: [
-              { id: "202603081006-LEGACY1", status: "TODO", doc_version: 2 },
-              {
-                id: "202603081006-CURRENT1",
-                status: "DONE",
-                doc_version: 3,
-                commit: { hash: commitHash },
-              },
-            ],
-          },
-          null,
-          2,
-        ),
-        "utf8",
-      );
+      await writeTaskReadmeFixture(ws.root, {
+        id: "202603081006-LEGACY1",
+        status: "TODO",
+        doc_version: 2,
+      });
+      await writeTaskReadmeFixture(ws.root, {
+        id: "202603081006-CURRENT1",
+        status: "DONE",
+        doc_version: 3,
+        commit: { hash: commitHash },
+      });
 
       try {
         const rc = await runDoctor(
@@ -315,30 +361,18 @@ describe(
         const ws = await mkWorkspace();
         const commitHash = await gitInitWithCommit(ws.root, "feat: baseline");
         const stderr = spyOnStderrWrite();
-        await writeFile(
-          path.join(ws.root, ".agentplane", "tasks.json"),
-          JSON.stringify(
-            {
-              tasks: [
-                {
-                  id: "202603081006-LEGACY2",
-                  status: "DONE",
-                  doc_version: 2,
-                  commit: { hash: commitHash },
-                },
-                {
-                  id: "202603081006-CURRENT2",
-                  status: "DONE",
-                  doc_version: 3,
-                  commit: { hash: commitHash },
-                },
-              ],
-            },
-            null,
-            2,
-          ),
-          "utf8",
-        );
+        await writeTaskReadmeFixture(ws.root, {
+          id: "202603081006-LEGACY2",
+          status: "DONE",
+          doc_version: 2,
+          commit: { hash: commitHash },
+        });
+        await writeTaskReadmeFixture(ws.root, {
+          id: "202603081006-CURRENT2",
+          status: "DONE",
+          doc_version: 3,
+          commit: { hash: commitHash },
+        });
 
         try {
           const rc = await runDoctor(
@@ -542,23 +576,11 @@ describe(
         const ws = await mkWorkspace();
         await gitInitWithCommit(ws.root, "feat: initial");
         const stderr = spyOnStderrWrite();
-        await writeFile(
-          path.join(ws.root, ".agentplane", "tasks.json"),
-          JSON.stringify(
-            {
-              tasks: [
-                {
-                  id: "202602111801-DEF456",
-                  status: "DONE",
-                  commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
-                },
-              ],
-            },
-            null,
-            2,
-          ),
-          "utf8",
-        );
+        await writeTaskReadmeFixture(ws.root, {
+          id: "202602111801-DEF456",
+          status: "DONE",
+          commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
+        });
         try {
           const rc = await runDoctor(
             { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
@@ -592,11 +614,7 @@ describe(
         })),
       ];
       try {
-        await writeFile(
-          path.join(ws.root, ".agentplane", "tasks.json"),
-          JSON.stringify({ tasks }),
-          "utf8",
-        );
+        for (const task of tasks) await writeTaskReadmeFixture(ws.root, task);
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false },
@@ -625,11 +643,7 @@ describe(
         })),
       ];
       try {
-        await writeFile(
-          path.join(ws.root, ".agentplane", "tasks.json"),
-          JSON.stringify({ tasks }),
-          "utf8",
-        );
+        for (const task of tasks) await writeTaskReadmeFixture(ws.root, task);
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false, archiveFull: true },
@@ -646,17 +660,11 @@ describe(
       const ws = await mkWorkspace();
       const closeHash = await gitInitWithCommit(ws.root, "✅ ABC123 close: done");
       const stderr = spyOnStderrWrite();
-      await writeFile(
-        path.join(ws.root, ".agentplane", "tasks.json"),
-        JSON.stringify(
-          {
-            tasks: [{ id: "202602111802-ABC123", status: "DONE", commit: { hash: closeHash } }],
-          },
-          null,
-          2,
-        ),
-        "utf8",
-      );
+      await writeTaskReadmeFixture(ws.root, {
+        id: "202602111802-ABC123",
+        status: "DONE",
+        commit: { hash: closeHash },
+      });
       try {
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],

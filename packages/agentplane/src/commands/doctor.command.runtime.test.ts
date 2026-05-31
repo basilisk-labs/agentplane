@@ -222,6 +222,51 @@ async function gitInitWithCommit(root: string, subject: string): Promise<string>
   return stdout.trim();
 }
 
+async function writeTaskReadmeFixture(
+  root: string,
+  task: {
+    id: string;
+    status: string;
+    commit?: { hash?: string; message?: string } | null;
+    result_summary?: string;
+    verification?: { note?: string };
+    comments?: { author?: string; body?: string }[];
+  },
+): Promise<void> {
+  const taskDir = path.join(root, ".agentplane", "tasks", task.id);
+  await mkdir(taskDir, { recursive: true });
+  await writeFile(
+    path.join(taskDir, "README.md"),
+    renderTaskReadme(
+      {
+        id: task.id,
+        title: `Task ${task.id}`,
+        description: "Doctor runtime fixture task",
+        result_summary: task.result_summary,
+        status: task.status,
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["code"],
+        verify: [],
+        plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+        verification: task.verification
+          ? { state: "ok", updated_at: null, updated_by: "CODER", note: task.verification.note }
+          : { state: "pending", updated_at: null, updated_by: null, note: null },
+        commit: task.commit ?? null,
+        comments: task.comments ?? [],
+        events: [],
+        revision: 1,
+        doc_version: 3,
+        doc_updated_at: "2026-02-11T18:10:00.000Z",
+        doc_updated_by: "CODER",
+      },
+      "\n## Summary\n\nDoctor runtime fixture task.\n",
+    ),
+    "utf8",
+  );
+}
+
 function currentManagedShimText(installedRunnerPath: string): string {
   return [
     "#!/usr/bin/env sh",
@@ -332,33 +377,21 @@ describe(
       await gitInitWithCommit(ws.root, "feat: initial");
       const stderr = captureStderr();
       try {
-        await writeFile(
-          path.join(ws.root, ".agentplane", "tasks.json"),
-          JSON.stringify(
-            {
-              tasks: [
-                {
-                  id: "202602111810-AAA111",
-                  status: "DONE",
-                  commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
-                },
-                {
-                  id: "202602111811-BBB222",
-                  status: "DONE",
-                  commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
-                },
-                {
-                  id: "202602111812-CCC333",
-                  status: "DONE",
-                  commit: { hash: "463a8853f38d3b9f3ebd9f6a191f3f7c81db0aa7" },
-                },
-              ],
-            },
-            null,
-            2,
-          ),
-          "utf8",
-        );
+        await writeTaskReadmeFixture(ws.root, {
+          id: "202602111810-AAA111",
+          status: "DONE",
+          commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
+        });
+        await writeTaskReadmeFixture(ws.root, {
+          id: "202602111811-BBB222",
+          status: "DONE",
+          commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
+        });
+        await writeTaskReadmeFixture(ws.root, {
+          id: "202602111812-CCC333",
+          status: "DONE",
+          commit: { hash: "463a8853f38d3b9f3ebd9f6a191f3f7c81db0aa7" },
+        });
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false },
@@ -387,21 +420,21 @@ describe(
         const closeHashB = await gitInitWithCommit(ws.root, "✅ XYZ999 close: merged");
         const stderr = captureStderr();
         try {
-          await writeFile(
-            path.join(ws.root, ".agentplane", "tasks.json"),
-            JSON.stringify(
-              {
-                tasks: [
-                  { id: "202602111820-AAA111", status: "DONE", commit: { hash: closeHashA } },
-                  { id: "202602111821-BBB222", status: "DONE", commit: { hash: closeHashA } },
-                  { id: "202602111822-CCC333", status: "DONE", commit: { hash: closeHashB } },
-                ],
-              },
-              null,
-              2,
-            ),
-            "utf8",
-          );
+          await writeTaskReadmeFixture(ws.root, {
+            id: "202602111820-AAA111",
+            status: "DONE",
+            commit: { hash: closeHashA },
+          });
+          await writeTaskReadmeFixture(ws.root, {
+            id: "202602111821-BBB222",
+            status: "DONE",
+            commit: { hash: closeHashA },
+          });
+          await writeTaskReadmeFixture(ws.root, {
+            id: "202602111822-CCC333",
+            status: "DONE",
+            commit: { hash: closeHashB },
+          });
           const rc = await runDoctor(
             { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
             { fix: false, dev: false },
@@ -428,26 +461,14 @@ describe(
       await gitInitWithCommit(ws.root, "feat: initial");
       const stderr = captureStderr();
       try {
-        await writeFile(
-          path.join(ws.root, ".agentplane", "tasks.json"),
-          JSON.stringify(
-            {
-              tasks: [
-                {
-                  id: "202602111813-DDD444",
-                  status: "DONE",
-                  commit: {
-                    hash: "463a8853f38d3b9f3ebd9f6a191f3f7c81db0aa7",
-                    message: "Legacy completion (backfill)",
-                  },
-                },
-              ],
-            },
-            null,
-            2,
-          ),
-          "utf8",
-        );
+        await writeTaskReadmeFixture(ws.root, {
+          id: "202602111813-DDD444",
+          status: "DONE",
+          commit: {
+            hash: "463a8853f38d3b9f3ebd9f6a191f3f7c81db0aa7",
+            message: "Legacy completion (backfill)",
+          },
+        });
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false },
@@ -466,25 +487,13 @@ describe(
       const closeHash = await gitInitWithCommit(ws.root, "✅ ABC123 close: done");
       const stderr = captureStderr();
       try {
-        await writeFile(
-          path.join(ws.root, ".agentplane", "tasks.json"),
-          JSON.stringify(
-            {
-              tasks: [
-                {
-                  id: "202602111824-ABC123",
-                  status: "DONE",
-                  result_summary: "No-op: already implemented",
-                  verification: { note: "No-op: already implemented" },
-                  commit: { hash: closeHash, message: "✅ ABC123 close: done" },
-                },
-              ],
-            },
-            null,
-            2,
-          ),
-          "utf8",
-        );
+        await writeTaskReadmeFixture(ws.root, {
+          id: "202602111824-ABC123",
+          status: "DONE",
+          result_summary: "No-op: already implemented",
+          verification: { note: "No-op: already implemented" },
+          commit: { hash: closeHash, message: "✅ ABC123 close: done" },
+        });
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false },
@@ -507,29 +516,17 @@ describe(
       const closeHash = await gitInitWithCommit(ws.root, "✅ ABC123 close: record task doc");
       const stderr = captureStderr();
       try {
-        await writeFile(
-          path.join(ws.root, ".agentplane", "tasks.json"),
-          JSON.stringify(
+        await writeTaskReadmeFixture(ws.root, {
+          id: "202602111825-ABC123",
+          status: "DONE",
+          commit: { hash: closeHash, message: "✅ ABC123 close: record task doc" },
+          comments: [
             {
-              tasks: [
-                {
-                  id: "202602111825-ABC123",
-                  status: "DONE",
-                  commit: { hash: closeHash, message: "✅ ABC123 close: record task doc" },
-                  comments: [
-                    {
-                      author: "ORCHESTRATOR",
-                      body: "verified: implementation landed earlier; close commit only recorded task doc metadata.",
-                    },
-                  ],
-                },
-              ],
+              author: "ORCHESTRATOR",
+              body: "verified: implementation landed earlier; close commit only recorded task doc metadata.",
             },
-            null,
-            2,
-          ),
-          "utf8",
-        );
+          ],
+        });
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false },

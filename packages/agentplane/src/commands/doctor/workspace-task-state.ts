@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import type { Dirent } from "node:fs";
 import path from "node:path";
 
 import { GitContext } from "@agentplaneorg/core/git";
@@ -26,36 +27,43 @@ function taskDataToSnapshot(task: TaskSummary): TaskDocSnapshot {
   };
 }
 
-async function readTaskDocSnapshotsFromTasksJson(repoRoot: string): Promise<TaskDocSnapshot[]> {
-  const tasksPath = path.join(repoRoot, ".agentplane", "tasks.json");
-  let raw = "";
-  try {
-    raw = await fs.readFile(tasksPath, "utf8");
-  } catch {
-    return [];
-  }
-
-  let parsed: { tasks?: unknown };
-  try {
-    parsed = JSON.parse(raw) as { tasks?: unknown };
-  } catch {
-    return [];
-  }
-
-  return Array.isArray(parsed.tasks) ? (parsed.tasks as TaskDocSnapshot[]) : [];
-}
-
 async function readTaskDocSnapshotsFromProjection(
   ctx?: CommandContext,
-): Promise<TaskDocSnapshot[] | null> {
-  if (!ctx) return null;
+): Promise<TaskDocSnapshot[]> {
+  if (!ctx) return [];
   try {
     const tasks = await listTaskProjection(ctx);
-    if (tasks === null) return null;
+    if (tasks === null) return [];
     return tasks.map((task) => taskDataToSnapshot(task));
   } catch {
-    return null;
+    return [];
   }
+}
+
+async function readTaskDocSnapshotsFromReadmes(
+  repoRoot: string,
+  ctx?: CommandContext,
+): Promise<TaskDocSnapshot[]> {
+  const workflowDir = path.join(repoRoot, ctx?.config.paths.workflow_dir ?? ".agentplane/tasks");
+  let entries: Dirent[];
+  try {
+    entries = await fs.readdir(workflowDir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  const tasks: TaskDocSnapshot[] = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    try {
+      const text = await fs.readFile(path.join(workflowDir, entry.name, "README.md"), "utf8");
+      const parsed = parseTaskReadme(text);
+      tasks.push(parsed.frontmatter as TaskDocSnapshot);
+    } catch {
+      continue;
+    }
+  }
+  return tasks;
 }
 
 export function buildTaskReadmeMigrationFindings(tasks: TaskDocSnapshot[]): string[] {
@@ -123,9 +131,9 @@ export async function checkTaskReadmeMigrationState(
 ): Promise<string[]> {
   const projectionTasks = await readTaskDocSnapshotsFromProjection(ctx);
   const tasks =
-    projectionTasks && projectionTasks.length > 0
+    projectionTasks.length > 0
       ? projectionTasks
-      : await readTaskDocSnapshotsFromTasksJson(repoRoot);
+      : await readTaskDocSnapshotsFromReadmes(repoRoot, ctx);
   return buildTaskReadmeMigrationFindings(tasks);
 }
 
@@ -144,9 +152,9 @@ export async function checkDoneTaskReadmeArchiveDrift(
 ): Promise<string[]> {
   const projectionTasks = await readTaskDocSnapshotsFromProjection(ctx);
   const tasks =
-    projectionTasks && projectionTasks.length > 0
+    projectionTasks.length > 0
       ? projectionTasks
-      : await readTaskDocSnapshotsFromTasksJson(repoRoot);
+      : await readTaskDocSnapshotsFromReadmes(repoRoot, ctx);
   if (tasks.length === 0) return [];
 
   const workflowDir = (ctx?.config.paths.workflow_dir ?? ".agentplane/tasks").replaceAll("\\", "/");

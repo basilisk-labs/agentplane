@@ -495,49 +495,6 @@ describe(
       const taskId = "202604050901-DONEPR";
       const branchName = `task/${taskId}/open-pr`;
       await execFileAsync("git", ["branch", branchName, shippedHash], { cwd: ws.root });
-      await writeFile(
-        path.join(ws.root, ".agentplane", "tasks.json"),
-        JSON.stringify(
-          {
-            tasks: [
-              {
-                id: taskId,
-                title: "DONE task with open PR artifacts",
-                description: "Doctor should surface DONE branch_pr tasks whose PR is still open.",
-                status: "DONE",
-                priority: "med",
-                owner: "CODER",
-                depends_on: [],
-                tags: ["workflow"],
-                verify: [],
-                plan_approval: {
-                  state: "approved",
-                  updated_at: "2026-04-05T09:00:00.000Z",
-                  updated_by: "ORCHESTRATOR",
-                  note: null,
-                },
-                verification: {
-                  state: "ok",
-                  updated_at: "2026-04-05T09:10:00.000Z",
-                  updated_by: "CODER",
-                  note: "verified",
-                },
-                commit: {
-                  hash: shippedHash,
-                  message: "feat: shipped payload",
-                },
-                comments: [],
-                doc_version: 3,
-                doc_updated_at: "2026-04-05T09:10:00.000Z",
-                doc_updated_by: "CODER",
-              },
-            ],
-          },
-          null,
-          2,
-        ),
-        "utf8",
-      );
       const taskDir = path.join(ws.root, ".agentplane", "tasks", taskId);
       await mkdir(path.join(taskDir, "pr"), { recursive: true });
       await writeFile(
@@ -616,7 +573,6 @@ describe(
           "add",
           ".agentplane/WORKFLOW.md",
           ".agentplane/workflows/last-known-good.md",
-          ".agentplane/tasks.json",
           `.agentplane/tasks/${taskId}/README.md`,
           `.agentplane/tasks/${taskId}/pr/meta.json`,
         ],

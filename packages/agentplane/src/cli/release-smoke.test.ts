@@ -209,8 +209,8 @@ Legacy verification plan.
       try {
         expect(await runCli(["doctor", "--root", root])).toBe(0);
         const doctorOutput = `${io.stdout}\n${io.stderr}\n${doctorWarn.mock.calls.flat().join("\n")}`;
-        expect(doctorOutput).not.toContain("agentplane task migrate-doc --all");
-        expect(doctorOutput).not.toContain("active legacy");
+        expect(doctorOutput).toContain("agentplane task migrate-doc --all");
+        expect(doctorOutput).toContain("active legacy");
       } finally {
         doctorWarn.mockRestore();
         io.restore();
@@ -386,7 +386,7 @@ Legacy verification plan.
         expect(await runCli(["doctor", "--root", root])).toBe(1);
         const doctorOutput = `${io.stdout}\n${io.stderr}\n${doctorBefore.mock.calls.flat().join("\n")}`;
         expect(doctorOutput).toContain("framework-managed policy tree is incomplete");
-        expect(doctorOutput).not.toContain("agentplane task migrate-doc --all");
+        expect(doctorOutput).toContain("agentplane task migrate-doc --all");
       } finally {
         doctorBefore.mockRestore();
         io.restore();

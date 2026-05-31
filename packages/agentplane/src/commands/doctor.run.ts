@@ -57,7 +57,12 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
     reportProgress(
       p.archiveFull ? "checking full historical task archive" : "checking recent task archive",
     );
-    checks.push(...(await checkDoneTaskCommitInvariants(repoRoot, { fullArchive: p.archiveFull })));
+    checks.push(
+      ...(await checkDoneTaskCommitInvariants(repoRoot, {
+        ctx: commandCtx,
+        fullArchive: p.archiveFull,
+      })),
+    );
     if (!isWorkflowEnforcementDisabled()) {
       reportProgress("checking workflow contract");
       checks.push(...(await checkWorkflowContract(repoRoot)));
