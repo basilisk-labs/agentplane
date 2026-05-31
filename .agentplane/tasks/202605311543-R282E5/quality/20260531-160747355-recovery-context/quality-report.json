@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202605311543-R282E5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-05-31T16:07:47.355Z",
+  "verdict": "pass",
+  "summary": "Release recovery CLI/policy improvement batch passes targeted verification.",
+  "evaluated_sha": "c7c33342a9051d9f3c5e30b668b0b53e8137a5a7",
+  "blueprint_digest": "13e4b239b3a5024c011f77dc2dc1e375e2400b997a75a28bca1cfef902e21bef",
+  "findings": [
+    "Implementation commit c7c33342a addresses the approved task scope; targeted typecheck, formatting, policy, agents, route decision, cleanup, evaluator, PR open/lifecycle, and help snapshot checks passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605311543-R282E5/README.md",
+    "packages/agentplane/src/commands/shared/route-decision-next-action.ts",
+    "packages/agentplane/src/commands/pr/internal/sync-github.ts",
+    "packages/agentplane/src/commands/branch/cleanup-merged.ts",
+    ".agentplane/policy/workflow.branch_pr.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
