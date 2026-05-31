@@ -19,10 +19,13 @@ Document the target Hermes Agentplane adapter architecture and add an initial re
 - Note:
 
 ```text
-Verified hotspot fix after commit 03c6539e4: bun run lint:core passed; bun run hotspots:check passed
-with hermes.command.ts below oversized threshold; bunx vitest run
-packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; docs and
-format checks passed.
+Verified: integrated strict AgentPlane Hermes projection contract with structured lifecycle comment
+payloads, runner status/inspect/log pointers, real local projection in reconcile, and
+AGENTPLANE_HERMES_LANE_REGISTRY-only registry reads. Checks passed: node
+.agentplane/policy/check-routing.mjs; bunx vitest run packages/agentplane/src/commands/hermes; bun
+run --filter=agentplane build; bun run docs:cli:check; bun run docs:recipes:check; bun run
+ci:recipes; bun run format:changed; rg confirmed no ARKADY/fallback/legacy/backward strings in
+Hermes integration surfaces.
 ```
 - Canonical workflow state lives in the task README.
 
