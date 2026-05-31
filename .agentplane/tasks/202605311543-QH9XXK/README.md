@@ -1,7 +1,8 @@
 ---
 id: "202605311543-QH9XXK"
 title: "Codify branch_pr release recovery prompt rules"
-status: "DOING"
+result_summary: "Shipped on main and reconciled from local branch_pr state."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 revision: 7
@@ -47,7 +48,9 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Implementation commit c7c33342a addresses the approved task scope; targeted typecheck, formatting, policy, agents, route decision, cleanup, evaluator, PR open/lifecycle, and help snapshot checks passed."
-commit: null
+commit:
+  hash: "6da8e6202c2182ddb437feca9d15caafcac855d2"
+  message: "Shipped on main before canonical task closure"
 comments:
   -
     author: "CODER"
@@ -72,9 +75,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: final branch head includes implementation, batch metadata, and quality reviews. Checks passed: typecheck, format:changed, policy routing, agents:check, targeted Vitest suites, PR open/lifecycle tests, and manual included-task route fixture."
+  -
+    type: "status"
+    at: "2026-05-31T17:36:55.196Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Local branch_pr reconciliation detected task commit 6da8e6202c21 on base main; canonical task state normalized after shipment."
 doc_version: 3
-doc_updated_at: "2026-05-31T16:10:01.698Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-31T17:36:55.196Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add or update agent-facing prompt/policy guidance for release recovery: classify route before mutation, use GitHub truth, pass markdown bodies by file, preserve dirty cleanup state, and use ap integrate before direct gh merge."
 sections:
   Summary: |-

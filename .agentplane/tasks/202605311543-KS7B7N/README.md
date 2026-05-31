@@ -1,7 +1,8 @@
 ---
 id: "202605311543-KS7B7N"
 title: "Detect landed included tasks in route oracle"
-status: "DOING"
+result_summary: "Merged via PR #4332."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 9
@@ -48,7 +49,9 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Implementation commit c7c33342a addresses the approved task scope; targeted typecheck, formatting, policy, agents, route decision, cleanup, evaluator, PR open/lifecycle, and help snapshot checks passed."
-commit: null
+commit:
+  hash: "6da8e6202c2182ddb437feca9d15caafcac855d2"
+  message: "🚧 KS7B7N task: Detect landed included tasks in route oracle [202605311543-KS7B7N]"
 comments:
   -
     author: "CODER"
@@ -85,9 +88,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: regression fix prevents primary batch tasks from being classified as included-task closure. Checks passed: bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; bun run format:changed; bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs."
+  -
+    type: "status"
+    at: "2026-05-31T17:35:48Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Hosted PR #4332 merged on GitHub main; task projection reconciled from hosted PR artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-31T16:19:52.061Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-31T17:35:48Z"
+doc_updated_by: "INTEGRATOR"
 description: "Teach branch_pr route oracle to classify verified included batch tasks whose implementation already landed but whose finish metadata is missing, instead of returning generic missing_pr_branch/worktree_needed."
 sections:
   Summary: |-
