@@ -266,6 +266,7 @@ async function routePacket(opts: {
   cwd: string;
   rootOverride: string | null;
   taskId: string;
+  includeRemote: boolean;
 }) {
   const fullTask = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   const decision = await buildTaskRouteDecision({
@@ -273,7 +274,7 @@ async function routePacket(opts: {
     cwd: opts.cwd,
     rootOverride: opts.rootOverride,
     taskId: opts.taskId,
-    includeRemote: false,
+    includeRemote: opts.includeRemote,
   });
   return {
     task: {
@@ -311,6 +312,7 @@ export function makeRunHermesEnqueueHandler(
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
       taskId: parsed.taskId,
+      includeRemote: false,
     });
     const payload = {
       idempotency_key: `agentplane:${commandCtx.resolvedProject.gitRoot}:${parsed.taskId}:${parsed.role}`,
@@ -370,6 +372,7 @@ export function makeRunHermesSuperviseHandler(
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
       taskId: parsed.taskId,
+      includeRemote: true,
     });
     const step = executableStepFor(packet);
     const stepResult =
@@ -414,6 +417,9 @@ export function makeRunHermesSuperviseHandler(
         { label: "execute_step", value: parsed.executeStep },
         { label: "execution_allowed", value: Boolean(step.args) },
       ]);
+    }
+    if (stepResult?.executed === true && typeof stepResult.exit_code === "number") {
+      return stepResult.exit_code;
     }
     return 0;
   };
