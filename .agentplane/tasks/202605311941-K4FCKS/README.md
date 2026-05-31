@@ -4,7 +4,7 @@ title: "Design and scaffold Hermes adapter"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-31T20:56:50.913Z"
+  updated_at: "2026-05-31T21:24:29.475Z"
   updated_by: "CODER"
-  note: "Verified hotspot fix after commit 03c6539e4: bun run lint:core passed; bun run hotspots:check passed with hermes.command.ts below oversized threshold; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; docs and format checks passed."
+  note: "Verified: integrated strict AgentPlane Hermes projection contract with structured lifecycle comment payloads, runner status/inspect/log pointers, real local projection in reconcile, and AGENTPLANE_HERMES_LANE_REGISTRY-only registry reads. Checks passed: node .agentplane/policy/check-routing.mjs; bunx vitest run packages/agentplane/src/commands/hermes; bun run --filter=agentplane build; bun run docs:cli:check; bun run docs:recipes:check; bun run ci:recipes; bun run format:changed; rg confirmed no ARKADY/fallback/legacy/backward strings in Hermes integration surfaces."
   attempts: 0
 quality_review:
   state: "pass"
@@ -124,8 +124,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified hotspot fix after commit 03c6539e4: bun run lint:core passed; bun run hotspots:check passed with hermes.command.ts below oversized threshold; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; docs and format checks passed."
+  -
+    type: "verify"
+    at: "2026-05-31T21:24:29.475Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: integrated strict AgentPlane Hermes projection contract with structured lifecycle comment payloads, runner status/inspect/log pointers, real local projection in reconcile, and AGENTPLANE_HERMES_LANE_REGISTRY-only registry reads. Checks passed: node .agentplane/policy/check-routing.mjs; bunx vitest run packages/agentplane/src/commands/hermes; bun run --filter=agentplane build; bun run docs:cli:check; bun run docs:recipes:check; bun run ci:recipes; bun run format:changed; rg confirmed no ARKADY/fallback/legacy/backward strings in Hermes integration surfaces."
 doc_version: 3
-doc_updated_at: "2026-05-31T20:56:50.932Z"
+doc_updated_at: "2026-05-31T21:24:29.492Z"
 doc_updated_by: "CODER"
 description: "Document the target Hermes Agentplane adapter architecture and add an initial repo-local scaffold for Agentplane-owned Hermes supervision commands without creating an external repository."
 sections:
@@ -306,6 +312,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T20:52:30.478Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311941-K4FCKS-design-and-scaffold-hermes-adapter/.agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json
+    - old_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+    - current_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
+
+    ### 2026-05-31T21:24:29.475Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: integrated strict AgentPlane Hermes projection contract with structured lifecycle comment payloads, runner status/inspect/log pointers, real local projection in reconcile, and AGENTPLANE_HERMES_LANE_REGISTRY-only registry reads. Checks passed: node .agentplane/policy/check-routing.mjs; bunx vitest run packages/agentplane/src/commands/hermes; bun run --filter=agentplane build; bun run docs:cli:check; bun run docs:recipes:check; bun run ci:recipes; bun run format:changed; rg confirmed no ARKADY/fallback/legacy/backward strings in Hermes integration surfaces.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T20:56:50.932Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
 
     Details:
 
@@ -526,6 +551,25 @@ Note: Verified hotspot fix after commit 03c6539e4: bun run lint:core passed; bun
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T20:52:30.478Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311941-K4FCKS-design-and-scaffold-hermes-adapter/.agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json
+- old_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+- current_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
+
+### 2026-05-31T21:24:29.475Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: integrated strict AgentPlane Hermes projection contract with structured lifecycle comment payloads, runner status/inspect/log pointers, real local projection in reconcile, and AGENTPLANE_HERMES_LANE_REGISTRY-only registry reads. Checks passed: node .agentplane/policy/check-routing.mjs; bunx vitest run packages/agentplane/src/commands/hermes; bun run --filter=agentplane build; bun run docs:cli:check; bun run docs:recipes:check; bun run ci:recipes; bun run format:changed; rg confirmed no ARKADY/fallback/legacy/backward strings in Hermes integration surfaces.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T20:56:50.932Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
 
 Details:
 
