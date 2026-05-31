@@ -4,7 +4,7 @@ title: "Design and scaffold Hermes adapter"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-31T19:50:39.533Z"
+  updated_at: "2026-05-31T19:53:19.134Z"
   updated_by: "CODER"
-  note: "Final verification passed after CLI reference generation. Commands: node .agentplane/policy/check-routing.mjs (pass); ap doctor (pass, with two unrelated historical DONE-task commit warnings); bunx vitest run packages/agentplane/src/commands/hermes (1 file, 3 tests pass); bun run --filter=agentplane build (pass); bun run docs:cli:check (pass); bun run format:changed (pass)."
+  note: "Verified on current head 1732aab54827: node .agentplane/policy/check-routing.mjs passed; ap doctor passed with two unrelated historical DONE-task warnings; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; bun run docs:cli:check passed; bun run format:changed passed."
   attempts: 0
 commit: null
 comments:
@@ -50,8 +50,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Final verification passed after CLI reference generation. Commands: node .agentplane/policy/check-routing.mjs (pass); ap doctor (pass, with two unrelated historical DONE-task commit warnings); bunx vitest run packages/agentplane/src/commands/hermes (1 file, 3 tests pass); bun run --filter=agentplane build (pass); bun run docs:cli:check (pass); bun run format:changed (pass)."
+  -
+    type: "verify"
+    at: "2026-05-31T19:53:19.134Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified on current head 1732aab54827: node .agentplane/policy/check-routing.mjs passed; ap doctor passed with two unrelated historical DONE-task warnings; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; bun run docs:cli:check passed; bun run format:changed passed."
 doc_version: 3
-doc_updated_at: "2026-05-31T19:50:39.578Z"
+doc_updated_at: "2026-05-31T19:53:19.153Z"
 doc_updated_by: "CODER"
 description: "Document the target Hermes Agentplane adapter architecture and add an initial repo-local scaffold for Agentplane-owned Hermes supervision commands without creating an external repository."
 sections:
@@ -102,6 +108,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T19:49:23.327Z, excerpt_hash=sha256:aca8f2f27a23dee5790e9cae2ef6de72da26462f301820005b05c5a6917c1ccf
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311941-K4FCKS-design-and-scaffold-hermes-adapter/.agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json
+    - old_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+    - current_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
+
+    ### 2026-05-31T19:53:19.134Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified on current head 1732aab54827: node .agentplane/policy/check-routing.mjs passed; ap doctor passed with two unrelated historical DONE-task warnings; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; bun run docs:cli:check passed; bun run format:changed passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T19:50:39.578Z, excerpt_hash=sha256:aca8f2f27a23dee5790e9cae2ef6de72da26462f301820005b05c5a6917c1ccf
 
     Details:
 
@@ -176,6 +201,25 @@ Note: Final verification passed after CLI reference generation. Commands: node .
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T19:49:23.327Z, excerpt_hash=sha256:aca8f2f27a23dee5790e9cae2ef6de72da26462f301820005b05c5a6917c1ccf
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311941-K4FCKS-design-and-scaffold-hermes-adapter/.agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json
+- old_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+- current_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
+
+### 2026-05-31T19:53:19.134Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified on current head 1732aab54827: node .agentplane/policy/check-routing.mjs passed; ap doctor passed with two unrelated historical DONE-task warnings; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; bun run docs:cli:check passed; bun run format:changed passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T19:50:39.578Z, excerpt_hash=sha256:aca8f2f27a23dee5790e9cae2ef6de72da26462f301820005b05c5a6917c1ccf
 
 Details:
 

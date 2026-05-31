@@ -13,7 +13,7 @@ Created: 2026-05-31T19:42:09.859Z
 ## Verification
 
 - State: ok
-- Note: Final verification passed after CLI reference generation. Commands: node .agentplane/policy/check-routing.mjs (pass); ap doctor (pass, with two unrelated historical DONE-task commit warnings); bunx vitest run packages/agentplane/src/commands/hermes (1 file, 3 tests pass); bun run --filter=agentplane build (pass); bun run docs:cli:check (pass); bun run format:changed (pass).
+- Note: Verified on current head 1732aab54827: node .agentplane/policy/check-routing.mjs passed; ap doctor passed with two unrelated historical DONE-task warnings; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; bun run docs:cli:check passed; bun run format:changed passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
