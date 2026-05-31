@@ -65,7 +65,12 @@
           ],
           "agents_involved": ["hermes-agentplane-supervisor"],
           "skills_used": ["hermes-agentplane-worker-lane"],
-          "tools_used": [],
+          "tools_used": [
+            "agentplane hermes enqueue",
+            "agentplane hermes supervise",
+            "agentplane hermes lifecycle",
+            "agentplane hermes doctor"
+          ],
           "run_profile": {
             "mode": "execution",
             "sandbox": "workspace-write",
