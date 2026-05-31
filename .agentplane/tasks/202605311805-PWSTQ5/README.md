@@ -1,10 +1,10 @@
 ---
 id: "202605311805-PWSTQ5"
-title: "Release v0.6.13 patch"
+title: "Release AgentPlane v0.6.13"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -15,7 +15,7 @@ tags:
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-05-31T18:05:38.762Z"
+  updated_at: "2026-05-31T18:59:52.768Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
@@ -38,7 +38,7 @@ events:
     to: "DOING"
     note: "Start: release v0.6.13 from clean main using the approved branch_pr candidate route, then verify hosted publish evidence before finishing."
 doc_version: 3
-doc_updated_at: "2026-05-31T18:05:43.540Z"
+doc_updated_at: "2026-05-31T18:59:52.437Z"
 doc_updated_by: "INTEGRATOR"
 description: "Publish AgentPlane patch release v0.6.13 from current main through the branch_pr release candidate workflow, hosted publish workflow, and final npm/tag/GitHub release verification."
 sections:
@@ -49,7 +49,7 @@ sections:
   Scope: |-
     - In scope: Publish AgentPlane patch release v0.6.13 from current main through the branch_pr release candidate workflow, hosted publish workflow, and final npm/tag/GitHub release verification.
     - Out of scope: unrelated refactors not required for "Release v0.6.13 patch".
-  Plan: "Release plan: version=0.6.13, tag=v0.6.13, scope=current AgentPlane main at da729c61b with completed release-recovery fixes. Route: branch_pr release candidate, hosted PR merge, then Publish to npm workflow dispatch on the merged release commit. Verification: release gates, hosted checks, npm package readback, remote tag readback, and GitHub Release readback."
+  Plan: "Release plan: version=0.6.13, tag=v0.6.13, scope=current AgentPlane main at 83c65c431 with PR #4335 revert/removal included. Route: branch_pr release candidate, hosted PR merge, then Publish to npm workflow dispatch on the merged release commit. Verification: release gates, hosted checks, npm package readback, remote tag readback, and GitHub Release readback."
   Verify Steps: |-
     PLANNER fallback scaffold for "Release v0.6.13 patch". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -78,7 +78,7 @@ Publish AgentPlane patch release v0.6.13 from current main through the branch_pr
 
 ## Plan
 
-Release plan: version=0.6.13, tag=v0.6.13, scope=current AgentPlane main at da729c61b with completed release-recovery fixes. Route: branch_pr release candidate, hosted PR merge, then Publish to npm workflow dispatch on the merged release commit. Verification: release gates, hosted checks, npm package readback, remote tag readback, and GitHub Release readback.
+Release plan: version=0.6.13, tag=v0.6.13, scope=current AgentPlane main at 83c65c431 with PR #4335 revert/removal included. Route: branch_pr release candidate, hosted PR merge, then Publish to npm workflow dispatch on the merged release commit. Verification: release gates, hosted checks, npm package readback, remote tag readback, and GitHub Release readback.
 
 ## Verify Steps
 
