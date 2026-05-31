@@ -1,10 +1,10 @@
 ---
 id: "202605311543-SEMKC7"
 title: "Explain blocked GitHub merge states"
-status: "DONE"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -49,16 +49,11 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Implementation commit c7c33342a addresses the approved task scope; targeted typecheck, formatting, policy, agents, route decision, cleanup, evaluator, PR open/lifecycle, and help snapshot checks passed."
-commit:
-  hash: "6da8e6202c2182ddb437feca9d15caafcac855d2"
-  message: "Merge pull request #4332 from basilisk-labs/task/202605311543-KS7B7N/release-recovery-cli-improvements"
+commit: null
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved release recovery CLI and prompt-policy improvement batch in the primary KS7B7N branch_pr worktree."
-  -
-    author: "INTEGRATOR"
-    body: "Verified: PR #4332 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -79,16 +74,9 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: final branch head includes implementation, batch metadata, and quality reviews. Checks passed: typecheck, format:changed, policy routing, agents:check, targeted Vitest suites, PR open/lifecycle tests, and manual included-task route fixture."
-  -
-    type: "status"
-    at: "2026-05-31T17:36:37.301Z"
-    author: "INTEGRATOR"
-    from: "DOING"
-    to: "DONE"
-    note: "Verified: PR #4332 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-31T17:36:37.303Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-31T16:09:55.006Z"
+doc_updated_by: "CODER"
 description: "Extend ap pr check to explain GitHub mergeStateStatus=BLOCKED with review/protection/auto-merge context and emit the next permitted action instead of only reporting green checks."
 sections:
   Summary: |-

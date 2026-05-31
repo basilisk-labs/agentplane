@@ -1,11 +1,10 @@
 ---
 id: "202605311543-KS7B7N"
 title: "Detect landed included tasks in route oracle"
-result_summary: "Merged via PR #4332."
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -49,16 +48,11 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Implementation commit c7c33342a addresses the approved task scope; targeted typecheck, formatting, policy, agents, route decision, cleanup, evaluator, PR open/lifecycle, and help snapshot checks passed."
-commit:
-  hash: "6da8e6202c2182ddb437feca9d15caafcac855d2"
-  message: "Merge pull request #4332 from basilisk-labs/task/202605311543-KS7B7N/release-recovery-cli-improvements"
+commit: null
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved release recovery CLI and prompt-policy improvement batch in the primary KS7B7N branch_pr worktree."
-  -
-    author: "INTEGRATOR"
-    body: "Verified: PR #4332 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -91,16 +85,9 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: regression fix prevents primary batch tasks from being classified as included-task closure. Checks passed: bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; bun run format:changed; bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs."
-  -
-    type: "status"
-    at: "2026-05-31T17:36:37.235Z"
-    author: "INTEGRATOR"
-    from: "DOING"
-    to: "DONE"
-    note: "Verified: PR #4332 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-31T17:36:37.241Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-31T16:19:52.061Z"
+doc_updated_by: "CODER"
 description: "Teach branch_pr route oracle to classify verified included batch tasks whose implementation already landed but whose finish metadata is missing, instead of returning generic missing_pr_branch/worktree_needed."
 sections:
   Summary: |-
