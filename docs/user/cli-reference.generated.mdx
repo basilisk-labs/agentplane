@@ -157,6 +157,11 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Evidence
   - [evidence bundle](#evidence-bundle)
   - [evidence verify](#evidence-verify)
+- Integrations
+  - [hermes doctor](#hermes-doctor)
+  - [hermes enqueue](#hermes-enqueue)
+  - [hermes reconcile](#hermes-reconcile)
+  - [hermes supervise](#hermes-supervise)
 - Workflow
   - [flow repair](#flow-repair)
 
@@ -3879,6 +3884,101 @@ agentplane evidence verify 202605031625-886KZ6
 ```
 
 - Verify the task-local evidence manifest.
+
+## Integrations
+
+### hermes doctor
+
+Check the local Agentplane side of the Hermes adapter contract.
+
+Usage:
+
+```text
+agentplane hermes doctor [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable result. (default=false)
+
+Examples:
+
+```sh
+agentplane hermes doctor --json
+```
+
+- Check workflow mode, repo root, and Hermes Kanban environment variables.
+
+### hermes enqueue
+
+Render a provider-safe Hermes Kanban card projection for a task.
+
+Usage:
+
+```text
+agentplane hermes enqueue <task-id> [options]
+```
+
+Options:
+
+- `--board <slug>`: Hermes board slug for the projected card. (default=agentplane)
+- `--assignee <lane>`: Hermes assignee or lane that should own the projected root card. (default=agentplane-supervisor)
+- `--role <ROLE>`: Agentplane role represented by the projected Hermes card. (default=CODER)
+- `--workspace dir:/abs/repo`: Hermes workspace spec. Defaults to the Agentplane repository root.
+- `--json`: Emit machine-readable result. (default=false)
+
+Examples:
+
+```sh
+agentplane hermes enqueue 202605311941-K4FCKS --board my-repo --json
+```
+
+- Build the card body/metadata a Hermes plugin should create idempotently.
+
+### hermes reconcile
+
+Inspect Hermes projection drift without mutating Agentplane task truth.
+
+Usage:
+
+```text
+agentplane hermes reconcile [options]
+```
+
+Options:
+
+- `--task-id <task-id>`: Limit reconcile diagnostics to one Agentplane task id.
+- `--json`: Emit machine-readable result. (default=false)
+
+Examples:
+
+```sh
+agentplane hermes reconcile --task-id 202605311941-K4FCKS --json
+```
+
+- Inspect the local Agentplane side of a Hermes projection.
+
+### hermes supervise
+
+Compute the next safe Agentplane route step for a Hermes supervisor run.
+
+Usage:
+
+```text
+agentplane hermes supervise <task-id> [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable result. (default=false)
+
+Examples:
+
+```sh
+agentplane hermes supervise 202605311941-K4FCKS --json
+```
+
+- Return a route-gated supervisor packet without executing arbitrary shell text.
 
 ## Workflow
 

@@ -21,6 +21,9 @@ export const loadAcrExplainSpec = (deps: RunDeps) =>
 export const fromCommandsEvidenceCommand = commandModule(
   () => import("../../../commands/evidence/evidence.command.js"),
 );
+export const fromCommandsHermesCommand = commandModule(
+  () => import("../../../commands/hermes/hermes.command.js"),
+);
 export const loadEvidenceBundleSpec = (deps: RunDeps) =>
   import("../../../commands/evidence/evidence.command.js").then((m) =>
     m.makeRunEvidenceBundleHandler(deps.getCtx),
@@ -28,6 +31,22 @@ export const loadEvidenceBundleSpec = (deps: RunDeps) =>
 export const loadEvidenceVerifySpec = (deps: RunDeps) =>
   import("../../../commands/evidence/evidence.command.js").then((m) =>
     m.makeRunEvidenceVerifyHandler(deps.getCtx),
+  );
+export const loadHermesEnqueueSpec = (deps: RunDeps) =>
+  import("../../../commands/hermes/hermes.command.js").then((m) =>
+    m.makeRunHermesEnqueueHandler(deps.getCtx),
+  );
+export const loadHermesSuperviseSpec = (deps: RunDeps) =>
+  import("../../../commands/hermes/hermes.command.js").then((m) =>
+    m.makeRunHermesSuperviseHandler(deps.getCtx),
+  );
+export const loadHermesReconcileSpec = (deps: RunDeps) =>
+  import("../../../commands/hermes/hermes.command.js").then((m) =>
+    m.makeRunHermesReconcileHandler(deps.getCtx),
+  );
+export const loadHermesDoctorSpec = (deps: RunDeps) =>
+  import("../../../commands/hermes/hermes.command.js").then((m) =>
+    m.makeRunHermesDoctorHandler(deps.getCtx),
   );
 
 export const loadBlueprintSpec = (deps: RunDeps) =>
