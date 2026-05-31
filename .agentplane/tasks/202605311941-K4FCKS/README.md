@@ -4,7 +4,7 @@ title: "Design and scaffold Hermes adapter"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -16,20 +16,23 @@ verify:
   - "node .agentplane/policy/check-routing.mjs"
 plan_approval:
   state: "approved"
-  updated_at: "2026-05-31T19:41:42.278Z"
+  updated_at: "2026-05-31T20:39:33.128Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-31T20:14:03.224Z"
+  updated_at: "2026-05-31T20:41:34.518Z"
   updated_by: "CODER"
-  note: "Verified Hermes plugin shim and image requirements update: remote Hermes image smoke passed with PYTHONPATH=/opt/hermes (plugin registers CLI command, patches kanban_db.dispatch_once, treats agentplane-coder as spawnable, extracts Agentplane task id); bunx vitest run packages/agentplane/src/commands/hermes passed; node import check for integrations/hermes-agentplane-plugin/src/index.mjs passed; node .agentplane/policy/check-routing.mjs passed; bun run format:changed passed."
+  note: "Verified after commit 71b1e0af1: policy routing, Hermes vitest suite, agentplane build, CLI docs check, recipes inventory check, changed-format check, git diff checks, and Hermes recipe install/add/explain smoke all passed. Submodule recipe commit ed7fea3 is included via updated submodule pointer."
   attempts: 0
 commit: null
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved Hermes adapter documentation and initial command scaffold in the dedicated branch_pr worktree."
+  -
+    author: "CODER"
+    body: "Start: Continue after approved scope expansion by implementing Hermes supervisor lifecycle command and publish-ready Hermes Agentplane recipe assets."
 events:
   -
     type: "status"
@@ -68,8 +71,27 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified Hermes plugin shim and image requirements update: remote Hermes image smoke passed with PYTHONPATH=/opt/hermes (plugin registers CLI command, patches kanban_db.dispatch_once, treats agentplane-coder as spawnable, extracts Agentplane task id); bunx vitest run packages/agentplane/src/commands/hermes passed; node import check for integrations/hermes-agentplane-plugin/src/index.mjs passed; node .agentplane/policy/check-routing.mjs passed; bun run format:changed passed."
+  -
+    type: "status"
+    at: "2026-05-31T20:39:41.701Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Start: Continue after approved scope expansion by implementing Hermes supervisor lifecycle command and publish-ready Hermes Agentplane recipe assets."
+  -
+    type: "verify"
+    at: "2026-05-31T20:40:45.104Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified Hermes executor/lifecycle and recipe integration: node .agentplane/policy/check-routing.mjs passed; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; bun run docs:cli:check passed; bun run docs:recipes:check passed; bun run format:changed passed; git diff --check and submodule diff --check passed; recipe archive install/add/explain smoke passed with temporary AGENTPLANE_HOME."
+  -
+    type: "verify"
+    at: "2026-05-31T20:41:34.518Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified after commit 71b1e0af1: policy routing, Hermes vitest suite, agentplane build, CLI docs check, recipes inventory check, changed-format check, git diff checks, and Hermes recipe install/add/explain smoke all passed. Submodule recipe commit ed7fea3 is included via updated submodule pointer."
 doc_version: 3
-doc_updated_at: "2026-05-31T20:14:03.244Z"
+doc_updated_at: "2026-05-31T20:41:34.536Z"
 doc_updated_by: "CODER"
 description: "Document the target Hermes Agentplane adapter architecture and add an initial repo-local scaffold for Agentplane-owned Hermes supervision commands without creating an external repository."
 sections:
@@ -80,17 +102,14 @@ sections:
   Scope: |-
     - In scope: Document the target Hermes Agentplane adapter architecture and add an initial repo-local scaffold for Agentplane-owned Hermes supervision commands without creating an external repository.
     - Out of scope: unrelated refactors not required for "Design and scaffold Hermes adapter".
-  Plan: |-
-    1. Document the Agentplane-owned Hermes adapter design as the recommended path: no external repository for this task, Hermes dispatch/run lifecycle, Agentplane engineering lifecycle, end-to-end root-card completion, phase cards, idempotency, comment-first audit, sync envelope, and closure gates.
-    2. Add a repo-local initial scaffold for Hermes adapter commands/types that can be expanded later without changing Hermes or creating a separate package: expose command help/spec surfaces for enqueue/supervise/reconcile/doctor as design-target stubs with safe no-mutation behavior where appropriate.
-    3. Wire command registration and targeted unit coverage for the new scaffold, keeping implementation deterministic and route-oracle-gated by design.
-    4. Run verification: node .agentplane/policy/check-routing.mjs, ap doctor, and targeted vitest for the Hermes command scaffold.
+  Plan: "Expand the Hermes adapter beyond scaffold: add Agentplane hermes supervise execution mode for one allowlisted route step; add Hermes lifecycle command helpers for comment/block/complete/heartbeat through Hermes CLI; enhance doctor to inspect ARKADY_LANE_REGISTRY/AGENTPLANE_BIN/Hermes CLI availability; add tests for executor/registry behavior; create and document a Hermes worker recipe for prompt integration; refresh PR artifacts and verification."
   Verify Steps: |-
-    1. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing passes after docs and command registration changes.
-    2. Run `ap doctor`. Expected: workspace doctor exits 0; unrelated historical DONE-task commit warnings may remain.
-    3. Run `bunx vitest run packages/agentplane/src/commands/hermes`. Expected: Hermes adapter command tests pass.
-    4. Run `bun run --filter=agentplane build`. Expected: new command specs and route packet code typecheck and bundle.
-    5. Run `bun run format:changed`. Expected: changed docs and TypeScript files pass Prettier.
+    1. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing passes.
+    2. Run `bunx vitest run packages/agentplane/src/commands/hermes`. Expected: Hermes adapter executor, doctor, and registry tests pass.
+    3. Run `bun run --filter=agentplane build`. Expected: command specs and executor code typecheck.
+    4. Run `bun run docs:cli:check`. Expected: generated CLI reference is current.
+    5. Run `bun run recipes:check` if available, otherwise run the nearest recipe/schema check. Expected: Hermes recipe validates.
+    6. Run `bun run format:changed`. Expected: changed docs, recipes, and TypeScript pass Prettier.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-31T19:49:23.310Z — VERIFY — ok
@@ -188,11 +207,56 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
 
+    ### 2026-05-31T20:40:45.104Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified Hermes executor/lifecycle and recipe integration: node .agentplane/policy/check-routing.mjs passed; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; bun run docs:cli:check passed; bun run docs:recipes:check passed; bun run format:changed passed; git diff --check and submodule diff --check passed; recipe archive install/add/explain smoke passed with temporary AGENTPLANE_HOME.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T20:39:41.701Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311941-K4FCKS-design-and-scaffold-hermes-adapter/.agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json
+    - old_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+    - current_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
+
+    ### 2026-05-31T20:41:34.518Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified after commit 71b1e0af1: policy routing, Hermes vitest suite, agentplane build, CLI docs check, recipes inventory check, changed-format check, git diff checks, and Hermes recipe install/add/explain smoke all passed. Submodule recipe commit ed7fea3 is included via updated submodule pointer.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T20:40:45.123Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311941-K4FCKS-design-and-scaffold-hermes-adapter/.agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json
+    - old_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+    - current_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Hermes Agentplane recipe is cataloged in the submodule and validates locally; public catalog signing still requires the agentplane-recipes production signing key before remote users can trust the updated index.
+      Impact: Agentplane can now expose a deterministic Hermes worker supervisor surface and a vendorable prompt recipe, while production publication remains gated by the signed catalog release process.
+      Resolution: Commit recipe source, archive, catalog index, docs inventory, CLI command docs, and tests; leave signing as a release/publishing gate because private signing material is not available in this workspace.
+
+    - Observation: The code and recipe artifacts are committed; public remote recipe availability still depends on signed agentplane-recipes catalog publication with the production key.
+      Impact: Task branch contains the Agentplane CLI executor/lifecycle surface plus vendorable Hermes prompt recipe assets and generated docs.
+      Resolution: Recorded post-commit verification so PR artifacts can reference current HEAD.
 id_source: "generated"
 ---
 ## Summary
@@ -208,18 +272,16 @@ Document the target Hermes Agentplane adapter architecture and add an initial re
 
 ## Plan
 
-1. Document the Agentplane-owned Hermes adapter design as the recommended path: no external repository for this task, Hermes dispatch/run lifecycle, Agentplane engineering lifecycle, end-to-end root-card completion, phase cards, idempotency, comment-first audit, sync envelope, and closure gates.
-2. Add a repo-local initial scaffold for Hermes adapter commands/types that can be expanded later without changing Hermes or creating a separate package: expose command help/spec surfaces for enqueue/supervise/reconcile/doctor as design-target stubs with safe no-mutation behavior where appropriate.
-3. Wire command registration and targeted unit coverage for the new scaffold, keeping implementation deterministic and route-oracle-gated by design.
-4. Run verification: node .agentplane/policy/check-routing.mjs, ap doctor, and targeted vitest for the Hermes command scaffold.
+Expand the Hermes adapter beyond scaffold: add Agentplane hermes supervise execution mode for one allowlisted route step; add Hermes lifecycle command helpers for comment/block/complete/heartbeat through Hermes CLI; enhance doctor to inspect ARKADY_LANE_REGISTRY/AGENTPLANE_BIN/Hermes CLI availability; add tests for executor/registry behavior; create and document a Hermes worker recipe for prompt integration; refresh PR artifacts and verification.
 
 ## Verify Steps
 
-1. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing passes after docs and command registration changes.
-2. Run `ap doctor`. Expected: workspace doctor exits 0; unrelated historical DONE-task commit warnings may remain.
-3. Run `bunx vitest run packages/agentplane/src/commands/hermes`. Expected: Hermes adapter command tests pass.
-4. Run `bun run --filter=agentplane build`. Expected: new command specs and route packet code typecheck and bundle.
-5. Run `bun run format:changed`. Expected: changed docs and TypeScript files pass Prettier.
+1. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing passes.
+2. Run `bunx vitest run packages/agentplane/src/commands/hermes`. Expected: Hermes adapter executor, doctor, and registry tests pass.
+3. Run `bun run --filter=agentplane build`. Expected: command specs and executor code typecheck.
+4. Run `bun run docs:cli:check`. Expected: generated CLI reference is current.
+5. Run `bun run recipes:check` if available, otherwise run the nearest recipe/schema check. Expected: Hermes recipe validates.
+6. Run `bun run format:changed`. Expected: changed docs, recipes, and TypeScript pass Prettier.
 
 ## Verification
 
@@ -319,6 +381,44 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
 
+### 2026-05-31T20:40:45.104Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified Hermes executor/lifecycle and recipe integration: node .agentplane/policy/check-routing.mjs passed; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; bun run docs:cli:check passed; bun run docs:recipes:check passed; bun run format:changed passed; git diff --check and submodule diff --check passed; recipe archive install/add/explain smoke passed with temporary AGENTPLANE_HOME.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T20:39:41.701Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311941-K4FCKS-design-and-scaffold-hermes-adapter/.agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json
+- old_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+- current_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
+
+### 2026-05-31T20:41:34.518Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified after commit 71b1e0af1: policy routing, Hermes vitest suite, agentplane build, CLI docs check, recipes inventory check, changed-format check, git diff checks, and Hermes recipe install/add/explain smoke all passed. Submodule recipe commit ed7fea3 is included via updated submodule pointer.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T20:40:45.123Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311941-K4FCKS-design-and-scaffold-hermes-adapter/.agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json
+- old_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+- current_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -327,3 +427,11 @@ BlueprintSnapshotRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Hermes Agentplane recipe is cataloged in the submodule and validates locally; public catalog signing still requires the agentplane-recipes production signing key before remote users can trust the updated index.
+  Impact: Agentplane can now expose a deterministic Hermes worker supervisor surface and a vendorable prompt recipe, while production publication remains gated by the signed catalog release process.
+  Resolution: Commit recipe source, archive, catalog index, docs inventory, CLI command docs, and tests; leave signing as a release/publishing gate because private signing material is not available in this workspace.
+
+- Observation: The code and recipe artifacts are committed; public remote recipe availability still depends on signed agentplane-recipes catalog publication with the production key.
+  Impact: Task branch contains the Agentplane CLI executor/lifecycle surface plus vendorable Hermes prompt recipe assets and generated docs.
+  Resolution: Recorded post-commit verification so PR artifacts can reference current HEAD.

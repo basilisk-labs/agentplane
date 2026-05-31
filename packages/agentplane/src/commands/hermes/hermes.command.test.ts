@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import { runCli } from "../../cli/run-cli.js";
 import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 
 async function createTask(root: string): Promise<string> {
   const io = captureStdIO();
@@ -27,10 +29,29 @@ async function createTask(root: string): Promise<string> {
   }
 }
 
+async function createApprovedTask(root: string): Promise<string> {
+  await runCliSilent(["init", "--workflow", "branch_pr", "--yes", "--root", root]);
+  const taskId = await createTask(root);
+  await runCliSilent([
+    "task",
+    "plan",
+    "set",
+    taskId,
+    "--text",
+    "Fixture plan for Hermes adapter tests.",
+    "--updated-by",
+    "CODER",
+    "--root",
+    root,
+  ]);
+  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+  return taskId;
+}
+
 describe("hermes adapter commands", () => {
   it("renders a provider-safe enqueue projection", async () => {
     const root = await mkGitRepoRoot();
-    const taskId = await createTask(root);
+    const taskId = await createApprovedTask(root);
 
     const io = captureStdIO();
     try {
@@ -95,6 +116,42 @@ describe("hermes adapter commands", () => {
     }
   });
 
+  it("supervise dry-runs one allowlisted typed route step", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createApprovedTask(root);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "hermes",
+        "supervise",
+        taskId,
+        "--execute-step",
+        "--dry-run",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        supervisor_policy: { execute_raw_shell_from_route: boolean };
+        execution: {
+          requested: boolean;
+          dry_run: boolean;
+          allowed: boolean;
+          result: { command: string[] };
+        };
+      };
+      expect(payload.supervisor_policy.execute_raw_shell_from_route).toBe(false);
+      expect(payload.execution.requested).toBe(true);
+      expect(payload.execution.dry_run).toBe(true);
+      expect(payload.execution.allowed).toBe(true);
+      expect(payload.execution.result.command).toContain(taskId);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("doctor reports the local Agentplane side of the adapter contract", async () => {
     const root = await mkGitRepoRoot();
     await runCliSilent(["init", "--yes", "--root", root]);
@@ -115,6 +172,113 @@ describe("hermes adapter commands", () => {
       expect(payload.missing_hermes_env).toContain("task_id");
     } finally {
       io.restore();
+    }
+  });
+
+  it("doctor reports Arkady lane registry state when configured", async () => {
+    const root = await mkGitRepoRoot();
+    await runCliSilent(["init", "--yes", "--root", root]);
+    const registryPath = path.join(root, "registry", "lane-registry.json");
+    await mkdir(path.dirname(registryPath), { recursive: true });
+    await writeFile(
+      registryPath,
+      JSON.stringify(
+        {
+          lanes: [
+            {
+              name: "agentplane-coder",
+              match: "agentplane-*",
+              kind: "agentplane",
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+    );
+
+    const previous = process.env.ARKADY_LANE_REGISTRY;
+    process.env.ARKADY_LANE_REGISTRY = registryPath;
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hermes", "doctor", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        lane_registry: {
+          path: string;
+          loaded: boolean;
+          agentplane_lanes: { name: string; kind: string }[];
+        };
+      };
+      expect(payload.lane_registry.path).toBe(registryPath);
+      expect(payload.lane_registry.loaded).toBe(true);
+      expect(payload.lane_registry.agentplane_lanes).toHaveLength(1);
+      expect(payload.lane_registry.agentplane_lanes[0]?.name).toBe("agentplane-coder");
+    } finally {
+      io.restore();
+      if (previous === undefined) {
+        delete process.env.ARKADY_LANE_REGISTRY;
+      } else {
+        process.env.ARKADY_LANE_REGISTRY = previous;
+      }
+    }
+  });
+
+  it("renders Hermes lifecycle callbacks without touching Hermes in dry-run mode", async () => {
+    const previousTask = process.env.HERMES_KANBAN_TASK;
+    const previousBoard = process.env.HERMES_KANBAN_BOARD;
+    const previousHermesBin = process.env.HERMES_BIN;
+    process.env.HERMES_KANBAN_TASK = "hk_123";
+    process.env.HERMES_KANBAN_BOARD = "repo-board";
+    process.env.HERMES_BIN = "/opt/hermes/bin/hermes";
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "hermes",
+        "lifecycle",
+        "comment",
+        "--body",
+        '{"agentplane_task_id":"202605311941-K4FCKS"}',
+        "--dry-run",
+        "--json",
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        action: string;
+        hermes_run: { task_id: string; board: string };
+        result: { executed: boolean; command: string[] };
+      };
+      expect(payload.action).toBe("comment");
+      expect(payload.hermes_run.task_id).toBe("hk_123");
+      expect(payload.hermes_run.board).toBe("repo-board");
+      expect(payload.result.executed).toBe(false);
+      expect(payload.result.command).toEqual([
+        "/opt/hermes/bin/hermes",
+        "kanban",
+        "--board",
+        "repo-board",
+        "comment",
+        "hk_123",
+        "--body",
+        '{"agentplane_task_id":"202605311941-K4FCKS"}',
+      ]);
+    } finally {
+      io.restore();
+      if (previousTask === undefined) {
+        delete process.env.HERMES_KANBAN_TASK;
+      } else {
+        process.env.HERMES_KANBAN_TASK = previousTask;
+      }
+      if (previousBoard === undefined) {
+        delete process.env.HERMES_KANBAN_BOARD;
+      } else {
+        process.env.HERMES_KANBAN_BOARD = previousBoard;
+      }
+      if (previousHermesBin === undefined) {
+        delete process.env.HERMES_BIN;
+      } else {
+        process.env.HERMES_BIN = previousHermesBin;
+      }
     }
   });
 });

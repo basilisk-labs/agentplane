@@ -41,6 +41,40 @@
       ]
     },
     {
+      "id": "hermes-agentplane",
+      "name": "Hermes Agentplane",
+      "version": "0.1.0",
+      "summary": "Adds prompt policy for Agentplane-owned Hermes Kanban worker lanes.",
+      "source": "agentplane-recipes/recipes/hermes-agentplane",
+      "self_contained": true,
+      "scenarios": [
+        {
+          "id": "hermes-agentplane-lane",
+          "summary": "Project an Agentplane task into Hermes Kanban and supervise it through the native Hermes adapter.",
+          "use_when": [
+            "Hermes Kanban is the operational board for multi-agent work.",
+            "Agentplane branch_pr should protect concurrent repo work.",
+            "A worker lane must complete Hermes cards only after Agentplane terminal evidence validates."
+          ],
+          "required_inputs": ["task_id", "hermes_board", "hermes_assignee"],
+          "outputs": [
+            "hermes_card_projection",
+            "agentplane_task_id",
+            "verification_evidence",
+            "acr_path"
+          ],
+          "agents_involved": ["hermes-agentplane-supervisor"],
+          "skills_used": ["hermes-agentplane-worker-lane"],
+          "tools_used": [],
+          "run_profile": {
+            "mode": "execution",
+            "sandbox": "workspace-write",
+            "writes_artifacts_to": [".agentplane/tasks/<task-id>/"]
+          }
+        }
+      ]
+    },
+    {
       "id": "llm-wiki",
       "name": "LLM Wiki",
       "version": "0.1.0",

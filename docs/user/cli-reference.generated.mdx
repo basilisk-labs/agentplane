@@ -160,6 +160,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Integrations
   - [hermes doctor](#hermes-doctor)
   - [hermes enqueue](#hermes-enqueue)
+  - [hermes lifecycle](#hermes-lifecycle)
   - [hermes reconcile](#hermes-reconcile)
   - [hermes supervise](#hermes-supervise)
 - Workflow
@@ -3935,6 +3936,38 @@ agentplane hermes enqueue 202605311941-K4FCKS --board my-repo --json
 
 - Build the card body/metadata a Hermes plugin should create idempotently.
 
+### hermes lifecycle
+
+Emit one Hermes Kanban lifecycle callback through the configured Hermes CLI.
+
+This is the Agentplane-side lifecycle client for Hermes worker lanes. It sends comment, block, complete, or heartbeat callbacks through the Hermes CLI and reads task, board, and run identity from the Hermes worker environment.
+
+Usage:
+
+```text
+agentplane hermes lifecycle comment|block|complete|heartbeat [options]
+```
+
+Options:
+
+- `--body <text>`: Callback body, reason, or summary. Heartbeat uses a default body when omitted.
+- `--json`: Emit machine-readable result. (default=false)
+- `--dry-run`: Return the Hermes CLI command without executing it. (default=false)
+
+Examples:
+
+```sh
+agentplane hermes lifecycle comment --body '{"agentplane_task_id":"202605311941-K4FCKS"}' --json
+```
+
+- Write a structured projection comment for the current Hermes card.
+
+```sh
+agentplane hermes lifecycle complete --body 'Agentplane terminal evidence validated' --json
+```
+
+- Complete the current Hermes card after Agentplane terminal gates have passed.
+
 ### hermes reconcile
 
 Inspect Hermes projection drift without mutating Agentplane task truth.
@@ -3971,6 +4004,8 @@ agentplane hermes supervise <task-id> [options]
 Options:
 
 - `--json`: Emit machine-readable result. (default=false)
+- `--execute-step`: Execute one allowlisted Agentplane route step for this Hermes claim. (default=false)
+- `--dry-run`: With --execute-step, return the planned command without executing it. (default=false)
 
 Examples:
 

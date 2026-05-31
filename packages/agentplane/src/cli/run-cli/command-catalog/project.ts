@@ -15,6 +15,7 @@ import {
 import {
   hermesDoctorSpec,
   hermesEnqueueSpec,
+  hermesLifecycleSpec,
   hermesReconcileSpec,
   hermesSpec,
   hermesSuperviseSpec,
@@ -198,6 +199,7 @@ import {
   fromCommandsHermesCommand,
   loadHermesDoctorSpec,
   loadHermesEnqueueSpec,
+  loadHermesLifecycleSpec,
   loadHermesReconcileSpec,
   loadHermesSuperviseSpec,
   loadBlueprintSpec,
@@ -229,6 +231,7 @@ export const PROJECT_COMMANDS = [
   declareCommand(hermesEnqueueSpec, { load: loadHermesEnqueueSpec }),
   declareCommand(hermesSuperviseSpec, { load: loadHermesSuperviseSpec }),
   declareCommand(hermesReconcileSpec, { load: loadHermesReconcileSpec }),
+  declareCommand(hermesLifecycleSpec, { load: loadHermesLifecycleSpec }),
   declareCommand(hermesDoctorSpec, { load: loadHermesDoctorSpec }),
   declareCommand(blueprintSpec, { load: loadBlueprintSpec, needs: "none" }),
   declareCommand(blueprintListSpec, { load: loadBlueprintListSpec, needs: "none" }),
