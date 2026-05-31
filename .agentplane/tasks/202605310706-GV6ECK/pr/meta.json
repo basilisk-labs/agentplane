@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605310706-GV6ECK/verify-ghost-progress",
+  "created_at": "2026-05-31T07:09:59.491Z",
+  "diffstat_sha256": "sha256:a7c382c792b9cf284cb8d41124b4f9914dbec211a3494a1a92fed024f5eafdbb",
+  "last_verified_at": "2026-05-31T07:13:45.530Z",
+  "last_verified_diffstat_sha256": "sha256:a7c382c792b9cf284cb8d41124b4f9914dbec211a3494a1a92fed024f5eafdbb",
+  "schema_version": 1,
+  "task_id": "202605310706-GV6ECK",
+  "updated_at": "2026-05-31T07:09:59.491Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -400,6 +400,31 @@ describe("task verify record (unit)", () => {
     writeSpy.mockRestore();
   });
 
+  it("cmdTaskVerifyOk emits early progress before backend context load when quiet=false", async () => {
+    const writes: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+      writes.push(String(chunk));
+      return true;
+    });
+    mocks.loadCommandContext.mockImplementationOnce(() => {
+      expect(writes.join("")).toContain("recording verification T-1 state=ok");
+      return Promise.reject(new Error("stop after early progress"));
+    });
+
+    const { cmdTaskVerifyOk } = await import("./verify-record.js");
+    await expect(
+      cmdTaskVerifyOk({
+        cwd: "/repo",
+        taskId: "T-1",
+        by: "REVIEWER",
+        note: "Looks good",
+        quiet: false,
+      }),
+    ).rejects.toThrow();
+
+    writeSpy.mockRestore();
+  });
+
   it("cmdTaskVerifyOk preserves legacy verification scaffold for doc_version=2", async () => {
     const writes: string[] = [];
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {

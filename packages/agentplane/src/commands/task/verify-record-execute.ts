@@ -269,6 +269,11 @@ export async function executeVerifyRecordCommand(
   opts: ExecuteVerifyRecordCommandOptions,
 ): Promise<number> {
   const input = await resolveVerifyRecordInput(opts);
+  if (!opts.quiet) {
+    process.stdout.write(
+      `${infoMessage(`recording verification ${opts.taskId} state=${opts.state}`)}\n`,
+    );
+  }
 
   try {
     await recordVerificationResult({
