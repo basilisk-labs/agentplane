@@ -1,10 +1,11 @@
 ---
 id: "202605281707-51DD0G"
 title: "Route packet v2 for agent next-action surfaces"
-status: "DOING"
+result_summary: "Merged via PR #4197."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -44,11 +45,16 @@ quality_review:
     - "ap doctor"
   findings:
     - "No unresolved evaluator findings. Hotspot extraction is intentionally narrow: route packet decision helpers were isolated while broader task-run decomposition remains a future refactor because current hotspots stay under enforced thresholds."
-commit: null
+commit:
+  hash: "26704abb70798fb4ecca714fa3c21050d3893c18"
+  message: "🐛 51DD0G code: fix route bootstrap packet typing"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the approved v0.6.12 agent-efficiency batch from the primary branch_pr worktree, beginning with route packet v2 as the shared contract."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4197 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -69,9 +75,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified after rebasing PR #4197 onto origin/main and fixing route bootstrap packet typing: route oracle now reports wait_hosted_checks as action_kind=local_command and safe_to_mutate=true; focused vitest suite passed (5 files, 85 tests); bun run typecheck passed; node .agentplane/policy/check-routing.mjs passed; ap doctor exited 0; bun run format:changed passed; bun run hotspots:check passed with warnings below thresholds; docs:cli:check, docs:bootstrap:check, and release:parity passed."
+  -
+    type: "status"
+    at: "2026-05-31T06:55:46.685Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4197 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-31T06:36:39.749Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-31T06:55:46.688Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend route oracle outputs into a richer execution packet for task brief/status/next-action and runner bundle consumers."
 sections:
   Summary: |-
