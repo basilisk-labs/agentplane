@@ -15,7 +15,7 @@ agentplane quickstart
 agentplane task list
 agentplane task active
 git status --short --untracked-files=no
-git status --short
+git status --short --untracked-files=all
 git rev-parse --abbrev-ref HEAD
 ```
 
@@ -30,11 +30,11 @@ Establish workflow mode, current branch, active task candidates, tracked-only cl
 - `agentplane task list`
 - `agentplane task active`
 - `git status --short --untracked-files=no`
-- `git status --short`
+- `git status --short --untracked-files=all`
 - `git rev-parse --abbrev-ref HEAD`
 
 - Run this before any mutation.
-- `git status --short --untracked-files=no` is tracked-only; `git status --short` also exposes untracked files.
+- `git status --short --untracked-files=no` is tracked-only; `git status --short --untracked-files=all` is the final artifact audit.
 - If the project is not initialized, stop and use `agentplane init`; otherwise use `task brief <task-id>` before owner-scoped execution.
 
 ## 2. Agent context

@@ -17,7 +17,7 @@ export const BOOTSTRAP_PREFLIGHT_COMMANDS = [
   COMMAND_SNIPPETS.core.taskList,
   COMMAND_SNIPPETS.core.taskActive,
   "git status --short --untracked-files=no",
-  "git status --short",
+  "git status --short --untracked-files=all",
   "git rev-parse --abbrev-ref HEAD",
 ] as const;
 
@@ -64,7 +64,7 @@ const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
     commands: BOOTSTRAP_PREFLIGHT_COMMANDS,
     notes: [
       "Run this before any mutation.",
-      "`git status --short --untracked-files=no` is tracked-only; `git status --short` also exposes untracked files.",
+      "`git status --short --untracked-files=no` is tracked-only; `git status --short --untracked-files=all` is the final artifact audit.",
       "If the project is not initialized, stop and use `agentplane init`; otherwise use `task brief <task-id>` before owner-scoped execution.",
     ],
   },

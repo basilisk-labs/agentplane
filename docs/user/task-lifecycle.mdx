@@ -24,7 +24,7 @@ agentplane config show
 agentplane quickstart
 agentplane task list
 git status --short --untracked-files=no
-git status --short
+git status --short --untracked-files=all
 agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
 agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
 git add <changed-files>
@@ -82,7 +82,7 @@ agentplane config show
 agentplane quickstart
 agentplane task list
 git status --short --untracked-files=no
-git status --short
+git status --short --untracked-files=all
 agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
 agentplane task verify-show <task-id>
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
