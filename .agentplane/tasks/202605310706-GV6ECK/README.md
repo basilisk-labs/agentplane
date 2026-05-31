@@ -1,10 +1,11 @@
 ---
 id: "202605310706-GV6ECK"
 title: "Fix verify ghost session progress output"
-status: "DOING"
+result_summary: "Merged via PR #4329."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: early verify progress remains covered; focused unit test, typecheck, format:changed, check-routing, doctor, and hotspots:check pass after tightening the test under the oversized baseline."
   attempts: 0
-commit: null
+commit:
+  hash: "c318cabc49a29ffcbf2b8246af76201f5ccbb324"
+  message: "Merge pull request #4329 from basilisk-labs/task/202605310706-GV6ECK/verify-ghost-progress"
 comments:
   -
     author: "CODER"
     body: "Start: fix non-quiet verify progress visibility for issue #4324."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4329 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: early verify progress remains covered; focused unit test, typecheck, format:changed, check-routing, doctor, and hotspots:check pass after tightening the test under the oversized baseline."
+  -
+    type: "status"
+    at: "2026-05-31T07:17:44.409Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4329 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-31T07:13:45.544Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-31T07:17:44.415Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve GitHub issue #4324 by ensuring agentplane verify emits an early non-quiet progress line before backend mutation work, so cloud backend waits are visible instead of appearing as a no-output ghost session."
 sections:
   Summary: |-
