@@ -1,10 +1,11 @@
 ---
 id: "202605311941-K4FCKS"
 title: "Design and scaffold Hermes adapter"
-status: "DOING"
+result_summary: "Merged via PR #4340."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -47,7 +48,9 @@ quality_review:
     - "pass: AGENTPLANE_HERMES_LANE_REGISTRY is the only lane registry env path; rg found no ARKADY/fallback/legacy/backward references in Hermes integration surfaces."
     - "pass: enqueue/supervise/reconcile expose hermes_comment_projection, evidence refs, runner status/inspect/log commands, and AgentPlane authority boundaries."
     - "pass: verification checks passed: policy routing, Hermes vitest, agentplane build, docs CLI, docs recipes, ci recipes, format changed, and pre-push fast local CI."
-commit: null
+commit:
+  hash: "827ab20ade616914ee5b4c220a586b26927c7488"
+  message: "✅ K4FCKS task: satisfy Hermes static export guard"
 comments:
   -
     author: "CODER"
@@ -55,6 +58,9 @@ comments:
   -
     author: "CODER"
     body: "Start: Continue after approved scope expansion by implementing Hermes supervisor lifecycle command and publish-ready Hermes Agentplane recipe assets."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4340 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -136,9 +142,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Verified: Hermes projection is strict-current only; checks passed: policy routing, Hermes vitest, agentplane build, docs CLI, docs recipes, ci recipes, format changed, pre-push fast local CI."
+  -
+    type: "status"
+    at: "2026-05-31T21:49:52.754Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4340 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-31T21:39:14.906Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-31T21:49:52.766Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document the target Hermes Agentplane adapter architecture and add an initial repo-local scaffold for Agentplane-owned Hermes supervision commands without creating an external repository."
 sections:
   Summary: |-
