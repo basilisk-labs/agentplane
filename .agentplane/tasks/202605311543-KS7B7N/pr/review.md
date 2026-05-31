@@ -2,6 +2,19 @@
 
 Created: 2026-05-31T15:53:25.815Z
 
+## Batch Tasks
+
+- Primary: `202605311543-KS7B7N`
+- Closure policy: `all_or_fail`
+- Included: `202605311543-0VPDRD`
+- Included: `202605311543-3H1G55`
+- Included: `202605311543-6N3TMM`
+- Included: `202605311543-NWXTSG`
+- Included: `202605311543-QH9XXK`
+- Included: `202605311543-R282E5`
+- Included: `202605311543-SCWWPR`
+- Included: `202605311543-SEMKC7`
+
 ## Task
 
 - Task: `202605311543-KS7B7N`
@@ -30,22 +43,46 @@ Created: 2026-05-31T15:53:25.815Z
 
 ```text
  .agentplane/policy/workflow.branch_pr.md           |   6 +-
- .agentplane/tasks/202605311543-0VPDRD/README.md    | 112 ++++
+ .agentplane/tasks/202605311543-0VPDRD/README.md    | 175 +++++++
  .../blueprint/resolved-snapshot.json               | 577 +++++++++++++++++++++
- .agentplane/tasks/202605311543-3H1G55/README.md    | 112 ++++
+ .../evaluator-opinion.md                           |  22 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  24 +
+ .agentplane/tasks/202605311543-3H1G55/README.md    | 175 +++++++
  .../blueprint/resolved-snapshot.json               | 577 +++++++++++++++++++++
- .agentplane/tasks/202605311543-6N3TMM/README.md    | 112 ++++
+ .../evaluator-opinion.md                           |  22 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  24 +
+ .agentplane/tasks/202605311543-6N3TMM/README.md    | 175 +++++++
  .../blueprint/resolved-snapshot.json               | 577 +++++++++++++++++++++
- .agentplane/tasks/202605311543-NWXTSG/README.md    | 112 ++++
+ .../evaluator-opinion.md                           |  22 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  24 +
+ .agentplane/tasks/202605311543-NWXTSG/README.md    | 175 +++++++
  .../blueprint/resolved-snapshot.json               | 577 +++++++++++++++++++++
- .agentplane/tasks/202605311543-QH9XXK/README.md    | 112 ++++
+ .../evaluator-opinion.md                           |  22 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  24 +
+ .agentplane/tasks/202605311543-QH9XXK/README.md    | 175 +++++++
  .../blueprint/resolved-snapshot.json               | 402 ++++++++++++++
- .agentplane/tasks/202605311543-R282E5/README.md    | 112 ++++
+ .../evaluator-opinion.md                           |  22 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  24 +
+ .agentplane/tasks/202605311543-R282E5/README.md    | 175 +++++++
  .../blueprint/resolved-snapshot.json               | 577 +++++++++++++++++++++
- .agentplane/tasks/202605311543-SCWWPR/README.md    | 112 ++++
+ .../evaluator-opinion.md                           |  22 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  24 +
+ .agentplane/tasks/202605311543-SCWWPR/README.md    | 175 +++++++
  .../blueprint/resolved-snapshot.json               | 577 +++++++++++++++++++++
- .agentplane/tasks/202605311543-SEMKC7/README.md    | 114 ++++
+ .../evaluator-opinion.md                           |  22 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  24 +
+ .agentplane/tasks/202605311543-SEMKC7/README.md    | 177 +++++++
  .../blueprint/resolved-snapshot.json               | 440 ++++++++++++++++
+ .../evaluator-opinion.md                           |  22 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  24 +
  .../agentplane/assets/policy/workflow.branch_pr.md |   6 +-
  .../run-cli.core.help-snap.test.ts.snap            |   5 +
  .../src/cli/run-cli/command-catalog/core.ts        |   8 +
@@ -67,7 +104,7 @@ Created: 2026-05-31T15:53:25.815Z
  .../agentplane/src/commands/task/finish-execute.ts |   4 +-
  .../agentplane/src/commands/task/finish-shared.ts  |  12 +
  .../agentplane/src/commands/task/finish-types.ts   |   1 +
- 38 files changed, 5572 insertions(+), 41 deletions(-)
+ 62 files changed, 7036 insertions(+), 41 deletions(-)
 ```
 
 </details>
