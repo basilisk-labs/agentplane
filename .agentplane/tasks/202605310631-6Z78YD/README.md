@@ -4,7 +4,7 @@ title: "Require final untracked artifact audit"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -27,20 +27,20 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-31T06:40:50.902Z"
+  updated_at: "2026-05-31T06:50:47.500Z"
   updated_by: "EVALUATOR"
-  note: "Final untracked artifact audit contract is implemented and covered by targeted tests."
-  evaluated_sha: "e81a505bee4d4264e548eb090d38692e74620629"
+  note: "Final untracked artifact audit contract is implemented and CI-contract fixes are covered."
+  evaluated_sha: "c479ae2fe3864fe2d60bc8983cd97156e59c0693"
   blueprint_digest: "45466522adf83962cc72bf150992932ca73f856e8ff9374524f3db709954eb58"
   evidence_refs:
     - ".agentplane/tasks/202605310631-6Z78YD/README.md"
-    - ".agentplane/tasks/202605310631-6Z78YD/quality/20260531-064050902-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202605310631-6Z78YD/quality/20260531-064050902-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202605310631-6Z78YD/quality/20260531-064050902-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605310631-6Z78YD/quality/20260531-065047500-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605310631-6Z78YD/quality/20260531-065047500-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605310631-6Z78YD/quality/20260531-065047500-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202605310631-6Z78YD/blueprint/resolved-snapshot.json"
-    - "node .agentplane/policy/check-routing.mjs; bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts; bun run docs:bootstrap:check; bun run format:changed; ap doctor; ap preflight --mode quick --role ORCHESTRATOR; git status --short --untracked-files=all"
+    - "bun run agents:check; bun run lint:core; bun run format:changed; bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts packages/agentplane/src/agents/agents-template.test.ts; bun run docs:bootstrap:check; bunx vitest run packages/agentplane/src/cli/release-smoke.test.ts -t 'upgrade --migrate-task-docs repairs incomplete policy tree drift'; bunx vitest run packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts"
   findings:
-    - "Policy, bootstrap, preflight, finish diagnostics, and generated docs now require or surface git status --short --untracked-files=all without converting active parallel task README artifacts into blanket blockers."
+    - "The implementation now updates both repo policy and bundled policy assets, uses lint-safe preflight next-action insertion, and keeps the finish diagnostic assertion type-safe."
 commit: null
 comments:
   -
