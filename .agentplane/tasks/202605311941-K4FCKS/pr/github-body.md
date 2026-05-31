@@ -19,10 +19,10 @@ Document the target Hermes Agentplane adapter architecture and add an initial re
 - Note:
 
 ```text
-Verified CI guard fix after commit 8d55becc7: bun run lint:core passed; bunx vitest run
-packages/agentplane/src/commands/hermes passed; bunx vitest run legacy-cli-regressions,
-bun-compiled-cli smoke, and targeted release-smoke passed; bun run test:fast passed with 336 files /
-2003 tests; format/schema/docs checks passed.
+Verified hotspot fix after commit 03c6539e4: bun run lint:core passed; bun run hotspots:check passed
+with hermes.command.ts below oversized threshold; bunx vitest run
+packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; docs and
+format checks passed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -36,23 +36,24 @@ bun-compiled-cli smoke, and targeted release-smoke passed; bun run test:fast pas
 ```text
  README.md                                          |   1 +
  agentplane-recipes                                 |   2 +-
- docs/recipes-inventory.json                        |  34 +
- docs/recipes/hermes-agentplane.mdx                 |  62 ++
+ docs/recipes-inventory.json                        |  34 ++
+ docs/recipes/hermes-agentplane.mdx                 |  62 +++
  docs/recipes/index.mdx                             |   1 +
- docs/user/cli-reference.generated.mdx              | 135 ++++
- docs/workflow-guides/hermes-kanban.mdx             | 214 ++++++
+ docs/user/cli-reference.generated.mdx              | 135 +++++
+ docs/workflow-guides/hermes-kanban.mdx             | 214 ++++++++
  docs/workflow-guides/index.mdx                     |   5 +
- integrations/hermes-agentplane-plugin/README.md    | 104 +++
- integrations/hermes-agentplane-plugin/__init__.py  | 228 +++++++
+ integrations/hermes-agentplane-plugin/README.md    | 104 ++++
+ integrations/hermes-agentplane-plugin/__init__.py  | 228 +++++++++
  .../bin/hermes-agentplane-spawn.mjs                |  46 ++
  integrations/hermes-agentplane-plugin/package.json |  13 +
  integrations/hermes-agentplane-plugin/plugin.yaml  |   6 +
  .../hermes-agentplane-plugin/src/index.mjs         |  47 ++
  .../src/cli/run-cli/command-catalog/project.ts     |  20 +
  .../src/cli/run-cli/command-loaders/project.ts     |  23 +
- .../src/commands/hermes/hermes.command.test.ts     | 284 ++++++++
- .../src/commands/hermes/hermes.command.ts          | 745 +++++++++++++++++++++
- 18 files changed, 1969 insertions(+), 1 deletion(-)
+ .../src/commands/hermes/hermes-runtime.ts          | 217 ++++++++
+ .../src/commands/hermes/hermes.command.test.ts     | 284 +++++++++++
+ .../src/commands/hermes/hermes.command.ts          | 554 +++++++++++++++++++++
+ 19 files changed, 1995 insertions(+), 1 deletion(-)
 ```
 
 </details>

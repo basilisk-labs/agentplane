@@ -4,7 +4,7 @@ title: "Design and scaffold Hermes adapter"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-31T20:52:30.460Z"
+  updated_at: "2026-05-31T20:56:50.913Z"
   updated_by: "CODER"
-  note: "Verified CI guard fix after commit 8d55becc7: bun run lint:core passed; bunx vitest run packages/agentplane/src/commands/hermes passed; bunx vitest run legacy-cli-regressions, bun-compiled-cli smoke, and targeted release-smoke passed; bun run test:fast passed with 336 files / 2003 tests; format/schema/docs checks passed."
+  note: "Verified hotspot fix after commit 03c6539e4: bun run lint:core passed; bun run hotspots:check passed with hermes.command.ts below oversized threshold; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; docs and format checks passed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -118,8 +118,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified CI guard fix after commit 8d55becc7: bun run lint:core passed; bunx vitest run packages/agentplane/src/commands/hermes passed; bunx vitest run legacy-cli-regressions, bun-compiled-cli smoke, and targeted release-smoke passed; bun run test:fast passed with 336 files / 2003 tests; format/schema/docs checks passed."
+  -
+    type: "verify"
+    at: "2026-05-31T20:56:50.913Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified hotspot fix after commit 03c6539e4: bun run lint:core passed; bun run hotspots:check passed with hermes.command.ts below oversized threshold; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; docs and format checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-31T20:52:30.478Z"
+doc_updated_at: "2026-05-31T20:56:50.932Z"
 doc_updated_by: "CODER"
 description: "Document the target Hermes Agentplane adapter architecture and add an initial repo-local scaffold for Agentplane-owned Hermes supervision commands without creating an external repository."
 sections:
@@ -292,6 +298,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
 
+    ### 2026-05-31T20:56:50.913Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified hotspot fix after commit 03c6539e4: bun run lint:core passed; bun run hotspots:check passed with hermes.command.ts below oversized threshold; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; docs and format checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T20:52:30.478Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311941-K4FCKS-design-and-scaffold-hermes-adapter/.agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json
+    - old_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+    - current_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -308,6 +333,10 @@ sections:
     - Observation: Hosted failures were caused by command-layer lint and legacy process.argv usage in the Hermes command; local equivalents now pass.
       Impact: PR should rerun verify-static and verify-unit without the previous failures.
       Resolution: Replaced process.argv access with resolveAgentplaneBinPath, adjusted route parsing and switch style to project lint rules, and revalidated locally.
+
+    - Observation: Pre-push was blocked by hotspots:check because hermes.command.ts exceeded 600 lines; helpers are now split into hermes-runtime.ts.
+      Impact: verify-contract should no longer fail on hotspot threshold for the Hermes adapter command file.
+      Resolution: Moved Hermes env, lane registry, executable route-step, Agentplane step execution, and lifecycle CLI helpers into packages/agentplane/src/commands/hermes/hermes-runtime.ts.
 id_source: "generated"
 ---
 ## Summary
@@ -489,6 +518,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
 
+### 2026-05-31T20:56:50.913Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified hotspot fix after commit 03c6539e4: bun run lint:core passed; bun run hotspots:check passed with hermes.command.ts below oversized threshold; bunx vitest run packages/agentplane/src/commands/hermes passed; bun run --filter=agentplane build passed; docs and format checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-31T20:52:30.478Z, excerpt_hash=sha256:a6da8b7be6bed358a22ef2f57a9ae1336dfe6a913e5827f085ea06178689b33d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605311941-K4FCKS-design-and-scaffold-hermes-adapter/.agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json
+- old_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+- current_digest: d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605311941-K4FCKS
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -509,3 +557,7 @@ BlueprintSnapshotRef:
 - Observation: Hosted failures were caused by command-layer lint and legacy process.argv usage in the Hermes command; local equivalents now pass.
   Impact: PR should rerun verify-static and verify-unit without the previous failures.
   Resolution: Replaced process.argv access with resolveAgentplaneBinPath, adjusted route parsing and switch style to project lint rules, and revalidated locally.
+
+- Observation: Pre-push was blocked by hotspots:check because hermes.command.ts exceeded 600 lines; helpers are now split into hermes-runtime.ts.
+  Impact: verify-contract should no longer fail on hotspot threshold for the Hermes adapter command file.
+  Resolution: Moved Hermes env, lane registry, executable route-step, Agentplane step execution, and lifecycle CLI helpers into packages/agentplane/src/commands/hermes/hermes-runtime.ts.
