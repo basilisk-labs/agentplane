@@ -20,11 +20,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "ok"
+  updated_at: "2026-05-31T19:20:28.111Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.13."
 commit:
   hash: "7f3cf5e7af318abfb625e5e4b31aa658e8e3f1b6"
   message: "Merge pull request #4336 from basilisk-labs/task/202605311805-PWSTQ5/release-v0-6-13-patch"
@@ -51,8 +50,8 @@ events:
     to: "DONE"
     note: "Verified: PR #4336 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-31T19:09:53.593Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-31T19:20:28.111Z"
+doc_updated_by: "DEUS"
 description: "Publish AgentPlane patch release v0.6.13 from current main through the branch_pr release candidate workflow, hosted publish workflow, and final npm/tag/GitHub release verification."
 sections:
   Summary: |-
@@ -71,6 +70,19 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.13.
+    - Details:
+      - release_sha: 7f3cf5e7af318abfb625e5e4b31aa658e8e3f1b6
+      - version: 0.6.13
+      - tag: v0.6.13
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.13
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26721957301
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -104,6 +116,19 @@ PLANNER fallback scaffold for "Release v0.6.13 patch". Replace with task-specifi
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+- State: ok
+- Note: Hosted publish confirmed for v0.6.13.
+- Details:
+  - release_sha: 7f3cf5e7af318abfb625e5e4b31aa658e8e3f1b6
+  - version: 0.6.13
+  - tag: v0.6.13
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.13
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26721957301
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
