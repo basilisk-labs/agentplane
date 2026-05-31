@@ -1,10 +1,11 @@
 ---
 id: "202605281707-7FSSSP"
 title: "Evaluator bounded rework MVP"
-status: "DOING"
+result_summary: "Closed included batch task from merged PR #4197"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,31 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts --config vitest.workspace.ts; Result: pass as part of focused suite. Evidence: evaluator rework verdict now requires --rework-context and reports rework_context in quality artifacts. Scope: evaluator rework context MVP."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-31T15:00:09.486Z"
+  updated_by: "EVALUATOR"
+  note: "Included task verified in merged batch PR #4197."
+  evaluated_sha: "c318cabc49a29ffcbf2b8246af76201f5ccbb324"
+  blueprint_digest: "c936b90b798eb562ce47647b552ecd9c91345ad8898a2e5165ff8c814d5e6767"
+  evidence_refs:
+    - ".agentplane/tasks/202605281707-7FSSSP/README.md"
+    - ".agentplane/tasks/202605281707-7FSSSP/quality/20260531-150009486-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605281707-7FSSSP/quality/20260531-150009486-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605281707-7FSSSP/quality/20260531-150009486-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605281707-7FSSSP/blueprint/resolved-snapshot.json"
+  findings:
+    - "Task has verification.ok evidence and was included in the 51DD0G route-packet-v2 batch merged to main at 26704abb70798fb4ecca714fa3c21050d3893c18."
+commit:
+  hash: "c318cabc49a29ffcbf2b8246af76201f5ccbb324"
+  message: "Merge pull request #4329 from basilisk-labs/task/202605310706-GV6ECK/verify-ghost-progress"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing evaluator bounded rework semantics as an included task in the approved v0.6.12 agent-efficiency batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; evaluator review recorded SHA c318cabc49a29ffcbf2b8246af76201f5ccbb324."
 events:
   -
     type: "status"
@@ -43,9 +64,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts --config vitest.workspace.ts; Result: pass as part of focused suite. Evidence: evaluator rework verdict now requires --rework-context and reports rework_context in quality artifacts. Scope: evaluator rework context MVP."
+  -
+    type: "status"
+    at: "2026-05-31T15:00:11.783Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; evaluator review recorded SHA c318cabc49a29ffcbf2b8246af76201f5ccbb324."
 doc_version: 3
-doc_updated_at: "2026-05-28T17:22:25.354Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-31T15:00:11.784Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add machine-readable evaluator rework context and bounded retry semantics for runner-driven tasks."
 sections:
   Summary: |-
