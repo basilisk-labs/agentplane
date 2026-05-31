@@ -4,7 +4,7 @@ title: "Split implementation and closure commit metadata"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,25 @@ verification:
   updated_by: "CODER"
   note: "Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-31T16:07:50.413Z"
+  updated_by: "EVALUATOR"
+  note: "Release recovery CLI/policy improvement batch passes targeted verification."
+  evaluated_sha: "c7c33342a9051d9f3c5e30b668b0b53e8137a5a7"
+  blueprint_digest: "b3ce78a290c213c16ca43a5f77a60f0a8701b720f14537e072b2b70b6fd04139"
+  evidence_refs:
+    - ".agentplane/tasks/202605311543-6N3TMM/README.md"
+    - ".agentplane/tasks/202605311543-6N3TMM/quality/20260531-160750413-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605311543-6N3TMM/quality/20260531-160750413-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605311543-6N3TMM/quality/20260531-160750413-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605311543-6N3TMM/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/shared/route-decision-next-action.ts"
+    - "packages/agentplane/src/commands/pr/internal/sync-github.ts"
+    - "packages/agentplane/src/commands/branch/cleanup-merged.ts"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Implementation commit c7c33342a addresses the approved task scope; targeted typecheck, formatting, policy, agents, route decision, cleanup, evaluator, PR open/lifecycle, and help snapshot checks passed."
 commit: null
 comments:
   -
