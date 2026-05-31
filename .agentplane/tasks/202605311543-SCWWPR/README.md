@@ -4,7 +4,7 @@ title: "Add release task reconciliation command"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,25 @@ verification:
   updated_by: "CODER"
   note: "Verified: release recovery CLI/policy batch implemented in commit c7c33342a. Checks passed: bun run --filter=agentplane typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs; bun run agents:check; targeted Vitest suites for route decision, cleanup merged, evaluator run, PR open/lifecycle, and help snapshots. Manual route fixture confirmed verified included task now resolves to included_task_closure_needed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-31T16:07:21.687Z"
+  updated_by: "EVALUATOR"
+  note: "Release recovery CLI/policy improvement batch passes targeted verification."
+  evaluated_sha: "c7c33342a9051d9f3c5e30b668b0b53e8137a5a7"
+  blueprint_digest: "6c103c79ad62cd42d7d01475580312163f2a8862e272c8dbad1dba2b1e5efa9b"
+  evidence_refs:
+    - ".agentplane/tasks/202605311543-SCWWPR/README.md"
+    - ".agentplane/tasks/202605311543-SCWWPR/quality/20260531-160721687-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605311543-SCWWPR/quality/20260531-160721687-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605311543-SCWWPR/quality/20260531-160721687-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605311543-SCWWPR/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/shared/route-decision-next-action.ts"
+    - "packages/agentplane/src/commands/pr/internal/sync-github.ts"
+    - "packages/agentplane/src/commands/branch/cleanup-merged.ts"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Implementation commit c7c33342a addresses the approved task scope; targeted typecheck, formatting, policy, agents, route decision, cleanup, evaluator, PR open/lifecycle, and help snapshot checks passed."
 commit: null
 comments:
   -
