@@ -25,6 +25,10 @@ contract and a plugin-provided spawn path for non-Hermes lanes, but an Agentplan
 ship the missing glue: lane registration, process spawning, lifecycle API calls, workspace mapping,
 auth/policy handling, idempotency, and reconcile/doctor behavior.
 
+Keep the first implementation in this repository, not in a separate repository. The Agentplane
+side and the reference Hermes spawn adapter should version together until the Hermes worker-lane
+API is stable enough to publish a standalone package.
+
 ## Why the adapter owns completion
 
 Agents should take tasks to completion, but completion has two levels:
@@ -78,11 +82,19 @@ spawn_fn(task, workspace, board) -> pid
 The spawn function should launch:
 
 ```bash
-agentplane hermes supervise <agentplane-task-id> --json
+hermes-agentplane-spawn \
+  --agentplane-task-id <agentplane-task-id> \
+  --repo <repo-root> \
+  --hermes-task-id <kanban-card-id> \
+  --board <board-id> \
+  --run-id <hermes-run-id> \
+  --workspace <workspace-root>
 ```
 
-or a future long-running supervisor entrypoint with the `HERMES_KANBAN_*` environment provided by
-Hermes.
+The reference scaffold lives at `integrations/hermes-agentplane-plugin/`. It is deliberately a
+thin spawn adapter over `agentplane hermes supervise <task-id> --root <repo> --json`; it does not
+write the Hermes database, publish PRs, merge branches, or infer Agentplane task completion from
+Hermes card status.
 
 ### Optional MCP wrapper
 
