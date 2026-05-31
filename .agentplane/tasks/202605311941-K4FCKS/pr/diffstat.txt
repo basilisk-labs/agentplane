@@ -15,5 +15,5 @@
  .../src/cli/run-cli/command-catalog/project.ts     |  20 +
  .../src/cli/run-cli/command-loaders/project.ts     |  23 +
  .../src/commands/hermes/hermes.command.test.ts     | 284 ++++++++
- .../src/commands/hermes/hermes.command.ts          | 731 +++++++++++++++++++++
- 18 files changed, 1955 insertions(+), 1 deletion(-)
+ .../src/commands/hermes/hermes.command.ts          | 745 +++++++++++++++++++++
+ 18 files changed, 1969 insertions(+), 1 deletion(-)
