@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -167,6 +167,8 @@ export async function cmdCleanupMerged(opts: {
   finalize?: boolean;
   fetch: boolean;
   quiet: boolean;
+  preserveDirty?: boolean;
+  report?: string;
   skipUnsafeWorktrees?: boolean;
 }): Promise<number> {
   try {
@@ -238,6 +240,12 @@ export async function cmdCleanupMerged(opts: {
     });
 
     const sortedCandidates = candidates.toSorted((a, b) => a.taskId.localeCompare(b.taskId));
+    const reportRows: string[] = [
+      `cleanup merged report`,
+      `base=${baseBranch}`,
+      `mode=${opts.yes ? "apply" : "dry-run"}`,
+      `candidates=${sortedCandidates.length}`,
+    ];
 
     if (!opts.quiet) {
       const archiveLabel = opts.archive ? " archive=on" : "";
@@ -252,8 +260,18 @@ export async function cmdCleanupMerged(opts: {
         output.line(`- ${item.taskId}: branch=${item.branch} worktree=${item.worktreePath ?? "-"}`);
       }
     }
+    for (const item of sortedCandidates) {
+      reportRows.push(
+        `candidate task=${item.taskId} branch=${item.branch} worktree=${item.worktreePath ?? "-"}`,
+      );
+    }
 
     if (!opts.yes) {
+      await writeCleanupReportIfRequested({
+        gitRoot: resolved.gitRoot,
+        report: opts.report,
+        rows: reportRows,
+      });
       if (!opts.quiet) {
         output.line("Re-run with --yes to delete these branches/worktrees.");
       }
@@ -293,17 +311,27 @@ export async function cmdCleanupMerged(opts: {
         await archivePrArtifacts(taskDir);
       }
 
-      await cleanupMergedLocalBranch({
+      const cleanup = await cleanupMergedLocalBranch({
         gitRoot: resolved.gitRoot,
         branch: item.branch,
         worktreePathHint: worktreePath,
+        preserveDirty: opts.preserveDirty === true,
       });
+      reportRows.push(
+        `deleted task=${item.taskId} branch=${item.branch} worktree=${worktreePath ?? "-"} preserve_dirty=${cleanup.preservedDirtyState ? "yes" : "no"} stash=${cleanup.stashMessage ?? "-"}`,
+      );
       if (opts.deleteRemoteBranches) {
         deletedRemoteBranches += (await deleteRemoteBranchIfPresent(resolved.gitRoot, item.branch))
           ? 1
           : 0;
       }
     }
+
+    await writeCleanupReportIfRequested({
+      gitRoot: resolved.gitRoot,
+      report: opts.report,
+      rows: reportRows,
+    });
 
     if (opts.deleteRemoteBranches) {
       await execFileAsync("git", ["fetch", "--prune", "origin"], {
@@ -328,4 +356,23 @@ export async function cmdCleanupMerged(opts: {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "cleanup merged", root: opts.rootOverride ?? null });
   }
+}
+
+async function writeCleanupReportIfRequested(opts: {
+  gitRoot: string;
+  report?: string;
+  rows: readonly string[];
+}): Promise<void> {
+  const report = opts.report?.trim();
+  if (!report) return;
+  const reportPath = path.resolve(opts.gitRoot, report);
+  if (!isPathWithin(opts.gitRoot, reportPath)) {
+    throw new CliError({
+      exitCode: 5,
+      code: "E_GIT",
+      message: `Refusing to write cleanup report outside repo: ${report}`,
+    });
+  }
+  await mkdir(path.dirname(reportPath), { recursive: true });
+  await writeFile(reportPath, `${opts.rows.join("\n")}\n`, "utf8");
 }

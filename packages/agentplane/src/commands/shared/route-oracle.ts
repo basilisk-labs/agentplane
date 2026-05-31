@@ -57,7 +57,8 @@ function recommendedRoleFor(opts: {
   if (
     opts.nextAction.code === "wait_hosted_checks" ||
     opts.nextAction.code === "open_close_tail" ||
-    opts.nextAction.code === "cleanup"
+    opts.nextAction.code === "cleanup" ||
+    opts.nextAction.code === "reconcile_included_task_closure"
   ) {
     return "INTEGRATOR";
   }
@@ -180,6 +181,12 @@ export function deriveRouteOracle(opts: {
   if (code === "start_or_recover_worktree") {
     return buildOracle(opts, {
       phase: "worktree_needed",
+      authoritativeCheckout: "base_checkout",
+    });
+  }
+  if (code === "reconcile_included_task_closure") {
+    return buildOracle(opts, {
+      phase: "included_task_closure_needed",
       authoritativeCheckout: "base_checkout",
     });
   }

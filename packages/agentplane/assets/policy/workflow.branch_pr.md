@@ -69,12 +69,12 @@ Before manually filling `<slug>` or `<branch>`, use `agentplane task brief <task
 - Task documentation updates MAY be batched within one turn before approval.
 - MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
 - In `branch_pr`, `task start-ready`, `pr open`, `pr update`, and verification commands SHOULD be run from the task worktree created by `work start`.
-- A related task batch MAY reuse one primary task worktree when all included tasks are approved,
-  listed, verified independently, and merged through the primary task PR.
+- A related task batch MAY reuse one primary task worktree when all included tasks are approved, listed, verified independently, and merged through the primary task PR.
 - `pr open` without `--sync-only` SHOULD complete in one pass: sync local artifacts, auto-publish the task branch to `origin` when it has no upstream yet, then create/link the remote GitHub PR.
 - In `branch_pr`, the task GitHub PR is the primary integration mechanism. Local `integrate`
   serializes the lane and drives the provider merge route; it MUST NOT treat GitHub PR merge as an
   exceptional shortcut around local base mutation.
+- Before release recovery mutation, classify the route as implementation, metadata closure, included-task closure, stale branch cleanup, or provider merge; use GitHub truth for PR/merge state and pass Markdown bodies via files or structured APIs, not inline shell text.
 - If protected `main` requires GitHub PR merges, the agent MUST create/update the GitHub PR,
   wait until all hosted checks are complete and stable (including late agent checks that appear
   after the first green rollup), then merge it through GitHub. If auto-merge remains blocked
@@ -95,5 +95,5 @@ Before manually filling `<slug>` or `<branch>`, use `agentplane task brief <task
 - MUST stop and request re-approval on material drift.
 - Planning and closure happen on base checkout.
 - Do not export task snapshots from task branches.
-- After merged closure, remove stale task branches/worktrees via the cleanup route instead of leaving orphaned local state behind.
+- After merged closure, remove stale task branches/worktrees via the cleanup route; preserve/report dirty worktree state instead of leaving orphaned local state behind or deleting it silently.
 <!-- /ap:fragment -->

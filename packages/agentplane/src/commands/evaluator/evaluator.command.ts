@@ -243,6 +243,7 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
           `staged_blocking=${stagedBlocking.length}`,
           `unstaged_blocking=${unstagedBlocking.length}`,
           "Commit or revert tracked changes first, then rerun evaluator run.",
+          "Batch recovery: for related tasks, run evaluator -> finish -> commit for one task subtree before recording the next task review.",
           "Use --no-record only for artifact-generation smoke checks.",
         ].join("\n"),
       });

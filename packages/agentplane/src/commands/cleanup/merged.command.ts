@@ -32,6 +32,8 @@ export type CleanupMergedParsed = {
   finalize: boolean;
   fetch: boolean;
   quiet: boolean;
+  preserveDirty: boolean;
+  report: string | null;
 };
 
 export const cleanupMergedSpec: CommandSpec<CleanupMergedParsed> = {
@@ -67,6 +69,18 @@ export const cleanupMergedSpec: CommandSpec<CleanupMergedParsed> = {
         "Fetch, fast-forward the base branch, then delete merged local and remote task branches/worktrees.",
     },
     { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
+    {
+      kind: "boolean",
+      name: "preserve-dirty",
+      default: false,
+      description: "Stash dirty worktree state before removing merged worktrees.",
+    },
+    {
+      kind: "string",
+      name: "report",
+      valueHint: "<path>",
+      description: "Write a cleanup candidate/result report to a repository-relative path.",
+    },
   ],
   examples: [
     { cmd: "agentplane cleanup merged", why: "List candidates without deleting." },
@@ -101,6 +115,8 @@ export const cleanupMergedSpec: CommandSpec<CleanupMergedParsed> = {
     finalize: raw.opts.finalize === true,
     fetch: raw.opts.fetch === true || raw.opts.finalize === true,
     quiet: raw.opts.quiet === true,
+    preserveDirty: raw.opts["preserve-dirty"] === true,
+    report: typeof raw.opts.report === "string" ? raw.opts.report : null,
   }),
 };
 
@@ -127,6 +143,8 @@ export function makeRunCleanupMergedHandler(getCtx: (cmd: string) => Promise<Com
       finalize: p.finalize,
       fetch: p.fetch,
       quiet: p.quiet,
+      preserveDirty: p.preserveDirty,
+      report: p.report ?? undefined,
     });
   };
 }

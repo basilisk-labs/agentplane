@@ -38,6 +38,8 @@ describe("commands/shared/merged-branch-cleanup", () => {
       removedWorktree: true,
       worktreePath: "/repo/.agentplane/worktrees/task-T1",
       skippedReason: null,
+      preservedDirtyState: false,
+      stashMessage: null,
     });
     expect(mocks.execFileAsync).toHaveBeenNthCalledWith(
       1,
@@ -66,6 +68,8 @@ describe("commands/shared/merged-branch-cleanup", () => {
       removedWorktree: false,
       worktreePath: null,
       skippedReason: null,
+      preservedDirtyState: false,
+      stashMessage: null,
     });
     expect(mocks.execFileAsync).toHaveBeenCalledTimes(1);
     expect(mocks.execFileAsync).toHaveBeenCalledWith(
@@ -90,6 +94,8 @@ describe("commands/shared/merged-branch-cleanup", () => {
       removedWorktree: true,
       worktreePath: "/repo/.agentplane/worktrees/task-T5",
       skippedReason: null,
+      preservedDirtyState: false,
+      stashMessage: null,
     });
     expect(mocks.execFileAsync).toHaveBeenCalledTimes(1);
     expect(mocks.execFileAsync).toHaveBeenCalledWith(
@@ -113,6 +119,8 @@ describe("commands/shared/merged-branch-cleanup", () => {
       removedWorktree: false,
       worktreePath: "/tmp/agentplane-external-worktree",
       skippedReason: "outside_repo",
+      preservedDirtyState: false,
+      stashMessage: null,
     });
     expect(mocks.execFileAsync).not.toHaveBeenCalled();
   });
@@ -131,6 +139,8 @@ describe("commands/shared/merged-branch-cleanup", () => {
       removedWorktree: false,
       worktreePath: "/repo",
       skippedReason: "current_worktree",
+      preservedDirtyState: false,
+      stashMessage: null,
     });
     expect(mocks.execFileAsync).not.toHaveBeenCalled();
   });

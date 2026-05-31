@@ -5,6 +5,32 @@ import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteNextAction } from "./route-decision-types.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { workStartCommand } from "./work-start-command.js";
+import { isRecord } from "../../shared/guards.js";
+
+function verifiedIncludedClosureCandidate(task: TaskData): boolean {
+  if (task.verification?.state !== "ok") return false;
+  if (String(task.status).toUpperCase() !== "DOING") return false;
+  if (task.commit?.hash) return false;
+  const batch = isRecord(task.extensions?.branch_pr_batch) ? task.extensions.branch_pr_batch : null;
+  if (batch?.role === "primary") return false;
+  if (batch?.role === "included") return true;
+  const haystack = [
+    task.title,
+    task.description,
+    typeof task.doc === "string" ? task.doc : "",
+    ...(Array.isArray(task.comments) ? task.comments.map((comment) => comment.body) : []),
+  ]
+    .join("\n")
+    .toLowerCase();
+  return (
+    haystack.includes("included in batch") ||
+    haystack.includes("included in the batch") ||
+    haystack.includes("included task from merged") ||
+    haystack.includes("closed included batch task") ||
+    haystack.includes("batch worktree") ||
+    haystack.includes("included tasks in batch")
+  );
+}
 
 export function deriveNextAction(opts: {
   task: TaskData;
@@ -50,6 +76,15 @@ export function deriveNextAction(opts: {
   }
   if (opts.batchOwnership.role === "included") {
     return opts.batchOwnership.nextOwnerAction;
+  }
+  if (!opts.prFlow?.branch.name && verifiedIncludedClosureCandidate(opts.task)) {
+    return {
+      code: "reconcile_included_task_closure",
+      command: `agentplane release tasks reconcile --task-id ${id}`,
+      summary:
+        "verified included batch task appears landed but lacks closure metadata; reconcile landed evidence before starting a new worktree",
+      requiresApproval: false,
+    };
   }
   if (opts.resume.runner.next_action === "wait") {
     return {

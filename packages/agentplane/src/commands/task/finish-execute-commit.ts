@@ -103,3 +103,12 @@ export async function resolveTaskCommitInfo(opts: {
 
   return taskCommitInfo;
 }
+
+export async function resolveImplementationCommitInfo(opts: {
+  ctx: CommandContext;
+  options: FinishOptions;
+}): Promise<ResolvedCommitInfo | null> {
+  return opts.options.implementationCommit
+    ? await readCommitInfo(opts.ctx.resolvedProject.gitRoot, opts.options.implementationCommit)
+    : null;
+}

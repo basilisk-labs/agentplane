@@ -20,7 +20,7 @@ import { appendFinishStructuredFinding } from "./finish-findings.js";
 import { enforceStatusCommitPolicy } from "./shared.js";
 import type { FinishExecutionPlan, FinishOptions } from "./finish-types.js";
 import { collectIncidentsForLoadedTasks, loadFinishTasks } from "./finish-execute-load.js";
-import { resolveTaskCommitInfo } from "./finish-execute-commit.js";
+import { resolveImplementationCommitInfo, resolveTaskCommitInfo } from "./finish-execute-commit.js";
 import { assertCloseCommitCanMutateTaskState, finalizeCloseTail } from "./finish-execute-close.js";
 
 export async function executeFinishPlan(opts: {
@@ -81,6 +81,7 @@ export async function executeFinishPlan(opts: {
     primaryStatusFrom: loadedState.primaryStatusFrom,
     primaryTag: loadedState.primaryTag,
   });
+  const implementationCommitInfo = await resolveImplementationCommitInfo({ ctx, options });
   await assertQualityReviewBeforeFinish({
     ctx,
     loadedTasks: loadedState.loadedTasks,
@@ -101,6 +102,7 @@ export async function executeFinishPlan(opts: {
     riskLevel: plan.riskLevel,
     breaking: plan.breaking,
     taskCommitInfo,
+    implementationCommitInfo,
   });
 
   await refreshAcrArtifactsForFinishedTasks({
