@@ -6,8 +6,15 @@ import {
 } from "../../cli/group-command.js";
 import { createCliEmitter } from "../../cli/output.js";
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
+import { CliError } from "../../shared/errors.js";
+import { isRecord } from "../../shared/guards.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import { execFile } from "node:child_process";
+import { readFile } from "node:fs/promises";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
 
 export type HermesEnqueueParsed = {
   taskId: string;
@@ -21,6 +28,8 @@ export type HermesEnqueueParsed = {
 export type HermesSuperviseParsed = {
   taskId: string;
   json: boolean;
+  executeStep: boolean;
+  dryRun: boolean;
 };
 
 export type HermesReconcileParsed = {
@@ -28,11 +37,19 @@ export type HermesReconcileParsed = {
   json: boolean;
 };
 
+export type HermesLifecycleParsed = {
+  action: string;
+  body: string | null;
+  json: boolean;
+  dryRun: boolean;
+};
+
 export type HermesDoctorParsed = {
   json: boolean;
 };
 
 const output = createCliEmitter();
+const HERMES_LIFECYCLE_ACTIONS = ["comment", "block", "complete", "heartbeat"] as const;
 
 export const hermesSpec: CommandSpec<GroupCommandParsed> = {
   id: ["hermes"],
@@ -111,6 +128,18 @@ export const hermesSuperviseSpec: CommandSpec<HermesSuperviseParsed> = {
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     { kind: "boolean", name: "json", default: false, description: "Emit machine-readable result." },
+    {
+      kind: "boolean",
+      name: "execute-step",
+      default: false,
+      description: "Execute one allowlisted Agentplane route step for this Hermes claim.",
+    },
+    {
+      kind: "boolean",
+      name: "dry-run",
+      default: false,
+      description: "With --execute-step, return the planned command without executing it.",
+    },
   ],
   examples: [
     {
@@ -118,7 +147,12 @@ export const hermesSuperviseSpec: CommandSpec<HermesSuperviseParsed> = {
       why: "Return a route-gated supervisor packet without executing arbitrary shell text.",
     },
   ],
-  parse: (raw) => ({ taskId: String(raw.args["task-id"]), json: raw.opts.json === true }),
+  parse: (raw) => ({
+    taskId: String(raw.args["task-id"]),
+    json: raw.opts.json === true,
+    executeStep: raw.opts["execute-step"] === true,
+    dryRun: raw.opts["dry-run"] === true,
+  }),
 };
 
 export const hermesReconcileSpec: CommandSpec<HermesReconcileParsed> = {
@@ -143,6 +177,48 @@ export const hermesReconcileSpec: CommandSpec<HermesReconcileParsed> = {
   parse: (raw) => ({
     taskId: typeof raw.opts["task-id"] === "string" ? raw.opts["task-id"] : undefined,
     json: raw.opts.json === true,
+  }),
+};
+
+export const hermesLifecycleSpec: CommandSpec<HermesLifecycleParsed> = {
+  id: ["hermes", "lifecycle"],
+  group: "Integrations",
+  summary: "Emit one Hermes Kanban lifecycle callback through the configured Hermes CLI.",
+  description:
+    "This is the Agentplane-side lifecycle client for Hermes worker lanes. It sends comment, block, " +
+    "complete, or heartbeat callbacks through the Hermes CLI and reads task, board, and run identity " +
+    "from the Hermes worker environment.",
+  args: [{ name: "action", required: true, valueHint: "comment|block|complete|heartbeat" }],
+  options: [
+    {
+      kind: "string",
+      name: "body",
+      valueHint: "<text>",
+      description: "Callback body, reason, or summary. Heartbeat uses a default body when omitted.",
+    },
+    { kind: "boolean", name: "json", default: false, description: "Emit machine-readable result." },
+    {
+      kind: "boolean",
+      name: "dry-run",
+      default: false,
+      description: "Return the Hermes CLI command without executing it.",
+    },
+  ],
+  examples: [
+    {
+      cmd: 'agentplane hermes lifecycle comment --body \'{"agentplane_task_id":"202605311941-K4FCKS"}\' --json',
+      why: "Write a structured projection comment for the current Hermes card.",
+    },
+    {
+      cmd: "agentplane hermes lifecycle complete --body 'Agentplane terminal evidence validated' --json",
+      why: "Complete the current Hermes card after Agentplane terminal gates have passed.",
+    },
+  ],
+  parse: (raw) => ({
+    action: String(raw.args.action),
+    body: typeof raw.opts.body === "string" ? raw.opts.body : null,
+    json: raw.opts.json === true,
+    dryRun: raw.opts["dry-run"] === true,
   }),
 };
 
@@ -190,6 +266,183 @@ function hermesEnvSnapshot() {
     workspace: process.env.HERMES_KANBAN_WORKSPACE ?? null,
     claim_lock_present: Boolean(process.env.HERMES_KANBAN_CLAIM_LOCK),
   };
+}
+
+async function loadLaneRegistry() {
+  const registryPath = process.env.ARKADY_LANE_REGISTRY?.trim() || null;
+  if (!registryPath) {
+    return {
+      path: null,
+      loaded: false,
+      error: null,
+      agentplane_lanes: [] as unknown[],
+    };
+  }
+  try {
+    const parsed = JSON.parse(await readFile(registryPath, "utf8")) as unknown;
+    const lanes = isRecord(parsed) ? parsed.lanes : null;
+    const agentplaneLanes = Array.isArray(lanes)
+      ? lanes.filter((lane) => isRecord(lane) && lane.kind === "agentplane")
+      : [];
+    return {
+      path: registryPath,
+      loaded: true,
+      error: null,
+      agentplane_lanes: agentplaneLanes,
+    };
+  } catch (err) {
+    return {
+      path: registryPath,
+      loaded: false,
+      error: err instanceof Error ? err.message : String(err),
+      agentplane_lanes: [] as unknown[],
+    };
+  }
+}
+
+function currentAgentplaneCommand(): { command: string; argsPrefix: string[] } {
+  const script = process.argv[1];
+  if (script) {
+    return { command: process.execPath, argsPrefix: [script] };
+  }
+  return { command: "agentplane", argsPrefix: [] };
+}
+
+function executableStepFor(packet: Awaited<ReturnType<typeof routePacket>>): {
+  code: string;
+  args: string[] | null;
+  reason: string | null;
+} {
+  const taskId = packet.task.id;
+  const owner = packet.task.owner || "CODER";
+  const slug =
+    packet.task.title
+      .toLowerCase()
+      .replaceAll(/[^a-z0-9]+/g, "-")
+      .replaceAll(/^-+|-+$/g, "")
+      .replaceAll(/-{2,}/g, "-")
+      .slice(0, 48)
+      .replaceAll(/-+$/g, "") || "hermes-work";
+  switch (packet.next_action.code) {
+    case "update_pr_artifacts":
+    case "verify_or_update_pr":
+      return { code: packet.next_action.code, args: ["pr", "update", taskId], reason: null };
+    case "open_pr":
+      return {
+        code: packet.next_action.code,
+        args: ["pr", "open", taskId, "--author", owner, "--sync-only"],
+        reason: null,
+      };
+    case "continue_direct":
+      return {
+        code: packet.next_action.code,
+        args: ["task", "verify-show", taskId],
+        reason: null,
+      };
+    case "approve_plan":
+      return {
+        code: packet.next_action.code,
+        args: null,
+        reason:
+          "plan approval is an orchestration decision and is not executed by Hermes worker lanes",
+      };
+    case "wait_runner":
+    case "wait_hosted_checks":
+    case "merge_close_tail":
+    case "done":
+    case "cleanup":
+      return { code: packet.next_action.code, args: null, reason: packet.next_action.summary };
+    case "start_or_recover_worktree":
+      return {
+        code: packet.next_action.code,
+        args: ["work", "start", taskId, "--agent", owner, "--slug", slug, "--worktree"],
+        reason: null,
+      };
+    default:
+      break;
+  }
+  const command = packet.next_action.command?.trim() ?? "";
+  const safeVerifyShow = new RegExp(
+    `^agentplane task (verify-show|status|brief) ${taskId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\s|$)`,
+  );
+  if (safeVerifyShow.test(command)) {
+    const subcommand = command.includes(" task status ")
+      ? "status"
+      : command.includes(" task brief ")
+        ? "brief"
+        : "verify-show";
+    return { code: packet.next_action.code, args: ["task", subcommand, taskId], reason: null };
+  }
+  return {
+    code: packet.next_action.code,
+    args: null,
+    reason: `unsupported Agentplane Hermes route action: ${packet.next_action.code}`,
+  };
+}
+
+async function runAgentplaneStep(args: string[], root: string, dryRun: boolean) {
+  const command = currentAgentplaneCommand();
+  const fullArgs = [...command.argsPrefix, ...args, "--root", root];
+  if (dryRun) {
+    return {
+      executed: false,
+      dry_run: true,
+      command: [command.command, ...fullArgs],
+      exit_code: null,
+      stdout: "",
+      stderr: "",
+    };
+  }
+  try {
+    const result = await execFileAsync(command.command, fullArgs, {
+      cwd: root,
+      env: process.env,
+      maxBuffer: 1024 * 1024 * 4,
+    });
+    return {
+      executed: true,
+      dry_run: false,
+      command: [command.command, ...fullArgs],
+      exit_code: 0,
+      stdout: result.stdout,
+      stderr: result.stderr,
+    };
+  } catch (err) {
+    const maybe = err as { code?: unknown; stdout?: unknown; stderr?: unknown; message?: string };
+    return {
+      executed: true,
+      dry_run: false,
+      command: [command.command, ...fullArgs],
+      exit_code: typeof maybe.code === "number" ? maybe.code : 1,
+      stdout: typeof maybe.stdout === "string" ? maybe.stdout : "",
+      stderr: typeof maybe.stderr === "string" ? maybe.stderr : (maybe.message ?? String(err)),
+    };
+  }
+}
+
+function hermesCliCommand(): string {
+  return process.env.HERMES_BIN?.trim() || "hermes";
+}
+
+export async function runHermesLifecycle(
+  action: (typeof HERMES_LIFECYCLE_ACTIONS)[number],
+  opts: {
+    board: string | null;
+    taskId: string | null;
+    body: string;
+    dryRun: boolean;
+  },
+) {
+  const args = ["kanban"];
+  if (opts.board) args.push("--board", opts.board);
+  args.push(action === "heartbeat" ? "heartbeat" : action);
+  if (opts.taskId) args.push(opts.taskId);
+  if (action === "comment") args.push("--body", opts.body);
+  if (action === "block") args.push("--reason", opts.body);
+  if (action === "complete") args.push("--summary", opts.body);
+  if (opts.dryRun) return { executed: false, command: [hermesCliCommand(), ...args] };
+  const result = await execFileAsync(hermesCliCommand(), args, { maxBuffer: 1024 * 1024 });
+  return { executed: true, command: [hermesCliCommand(), ...args], stdout: result.stdout };
 }
 
 async function routePacket(opts: {
@@ -302,6 +555,11 @@ export function makeRunHermesSuperviseHandler(
       rootOverride: ctx.rootOverride ?? null,
       taskId: parsed.taskId,
     });
+    const step = executableStepFor(packet);
+    const stepResult =
+      parsed.executeStep && step.args
+        ? await runAgentplaneStep(step.args, commandCtx.resolvedProject.gitRoot, parsed.dryRun)
+        : null;
     const payload = {
       ...packet,
       hermes_run: hermesEnvSnapshot(),
@@ -310,7 +568,21 @@ export function makeRunHermesSuperviseHandler(
         execution_model: "classify_route_action_then_execute_allowlisted_agentplane_command",
         max_route_steps_per_claim: 1,
       },
+      execution: {
+        requested: parsed.executeStep,
+        dry_run: parsed.dryRun,
+        action: step.code,
+        allowed: Boolean(step.args),
+        block_reason: step.reason,
+        result: stepResult,
+      },
     };
+    if (parsed.executeStep && !step.args && !parsed.dryRun) {
+      throw new CliError({
+        code: "E_USAGE",
+        message: step.reason ?? "Hermes supervisor route step is not executable",
+      });
+    }
     if (parsed.json) {
       output.json(payload);
     } else {
@@ -323,6 +595,8 @@ export function makeRunHermesSuperviseHandler(
           label: "hermes_root_complete_allowed",
           value: packet.terminal.hermes_root_complete_allowed,
         },
+        { label: "execute_step", value: parsed.executeStep },
+        { label: "execution_allowed", value: Boolean(step.args) },
       ]);
     }
     return 0;
@@ -362,14 +636,65 @@ export function makeRunHermesReconcileHandler(
   };
 }
 
+export function makeRunHermesLifecycleHandler(): CommandHandler<HermesLifecycleParsed> {
+  return async (_ctx, parsed) => {
+    if (
+      !HERMES_LIFECYCLE_ACTIONS.includes(parsed.action as (typeof HERMES_LIFECYCLE_ACTIONS)[number])
+    ) {
+      throw new CliError({
+        code: "E_USAGE",
+        message: `Unsupported Hermes lifecycle action: ${parsed.action}. Use one of: ${HERMES_LIFECYCLE_ACTIONS.join(", ")}`,
+      });
+    }
+    const action = parsed.action as (typeof HERMES_LIFECYCLE_ACTIONS)[number];
+    const env = hermesEnvSnapshot();
+    const body =
+      parsed.body ??
+      (action === "heartbeat"
+        ? `Agentplane heartbeat for Hermes run ${env.run_id ?? "unknown"}`
+        : null);
+    if (!body) {
+      throw new CliError({
+        code: "E_USAGE",
+        message: `--body is required for Hermes lifecycle action: ${action}`,
+      });
+    }
+    const result = await runHermesLifecycle(action, {
+      board: env.board,
+      taskId: env.task_id,
+      body,
+      dryRun: parsed.dryRun,
+    });
+    const payload = {
+      action,
+      hermes_run: env,
+      result,
+    };
+    if (parsed.json) {
+      output.json(payload);
+    } else {
+      output.report([
+        { label: "action", value: action },
+        { label: "task", value: env.task_id ?? "unknown" },
+        { label: "board", value: env.board ?? "default" },
+        { label: "executed", value: result.executed },
+      ]);
+    }
+    return 0;
+  };
+}
+
 export function makeRunHermesDoctorHandler(
   getCtx: (command: string) => Promise<CommandContext>,
 ): CommandHandler<HermesDoctorParsed> {
   return async (_ctx, parsed) => {
     const commandCtx = await getCtx("hermes doctor");
     const env = hermesEnvSnapshot();
+    const registry = await loadLaneRegistry();
+    const agentplaneBin = process.env.AGENTPLANE_BIN?.trim() || currentAgentplaneCommand().command;
+    const hermesBin = hermesCliCommand();
     const payload = {
-      ok: true,
+      ok: registry.error === null,
       repo: commandCtx.resolvedProject.gitRoot,
       workflow_mode: commandCtx.config.workflow_mode,
       recommended_workflow_for_multi_agent: "branch_pr",
@@ -378,6 +703,17 @@ export function makeRunHermesDoctorHandler(
       missing_hermes_env: Object.entries(env)
         .filter(([key, value]) => key !== "claim_lock_present" && value === null)
         .map(([key]) => key),
+      lane_registry: registry,
+      binaries: {
+        agentplane: agentplaneBin,
+        agentplane_configured: Boolean(process.env.AGENTPLANE_BIN?.trim()),
+        hermes: hermesBin,
+        hermes_configured: Boolean(process.env.HERMES_BIN?.trim()),
+      },
+      lifecycle_client: {
+        command: hermesBin,
+        actions: [...HERMES_LIFECYCLE_ACTIONS],
+      },
       adapter_status: "agentplane_side_ready; hermes_plugin_required_for_live_board_mutation",
     };
     if (parsed.json) {

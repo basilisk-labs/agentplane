@@ -1,0 +1,62 @@
+---
+title: "Hermes Agentplane recipe"
+description: "Use the Hermes Agentplane recipe to keep Hermes worker lanes route-gated and Agentplane-owned."
+---
+
+# Hermes Agentplane recipe
+
+## What does it do?
+
+The Hermes Agentplane recipe adds prompt policy for repositories that dispatch Agentplane work
+through Hermes Kanban worker lanes.
+
+It keeps the boundary explicit:
+
+- Hermes owns dispatch/run lifecycle: queue, assignee, claim, run id, retries, crash detection,
+  comments, dashboard, and human handoff.
+- Agentplane owns engineering task lifecycle: task README/frontmatter, plan approval,
+  branch/worktree, verification, PR/integration, finish, and ACR evidence.
+
+## When should I use it?
+
+- Hermes Kanban is the durable operational board for a repository.
+- Multiple agents or lanes may work against the same repository.
+- `branch_pr` should protect checkout, branch, verification, and integration boundaries.
+- Hermes cards should close only after Agentplane terminal evidence validates.
+
+## When should I not use it?
+
+- The repository does not run Hermes Kanban.
+- The task is a single local direct-mode helper run.
+- The Hermes runtime cannot provide lifecycle callbacks or an external worker lane adapter.
+
+## Command to apply
+
+```bash
+agentplane recipes install hermes-agentplane
+agentplane recipes add hermes-agentplane
+agentplane recipes explain hermes-agentplane
+```
+
+## Expected adapter commands
+
+```bash
+agentplane hermes doctor --json
+agentplane hermes enqueue <task-id> --board <board> --assignee agentplane-coder --json
+agentplane hermes supervise <task-id> --execute-step --json
+agentplane hermes lifecycle comment --body '<structured projection>' --json
+agentplane hermes lifecycle complete --body 'Agentplane terminal evidence validated' --json
+```
+
+## Expected artifacts
+
+```text
+.agentplane/tasks/<task-id>/README.md
+.agentplane/tasks/<task-id>/acr.json
+.agentplane/recipes/packages/hermes-agentplane/
+```
+
+## Safety model
+
+The recipe does not make Hermes a task backend for Agentplane. Hermes board state is a projection.
+Agentplane task state remains canonical and Git-visible.

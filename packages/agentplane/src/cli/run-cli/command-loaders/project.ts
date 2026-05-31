@@ -44,6 +44,10 @@ export const loadHermesReconcileSpec = (deps: RunDeps) =>
   import("../../../commands/hermes/hermes.command.js").then((m) =>
     m.makeRunHermesReconcileHandler(deps.getCtx),
   );
+export const loadHermesLifecycleSpec = () =>
+  import("../../../commands/hermes/hermes.command.js").then((m) =>
+    m.makeRunHermesLifecycleHandler(),
+  );
 export const loadHermesDoctorSpec = (deps: RunDeps) =>
   import("../../../commands/hermes/hermes.command.js").then((m) =>
     m.makeRunHermesDoctorHandler(deps.getCtx),

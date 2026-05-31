@@ -1,15 +1,19 @@
  README.md                                          |   1 +
- docs/user/cli-reference.generated.mdx              | 100 ++++++
- docs/workflow-guides/hermes-kanban.mdx             | 214 +++++++++++
+ agentplane-recipes                                 |   2 +-
+ docs/recipes-inventory.json                        |  34 +
+ docs/recipes/hermes-agentplane.mdx                 |  62 ++
+ docs/recipes/index.mdx                             |   1 +
+ docs/user/cli-reference.generated.mdx              | 135 ++++
+ docs/workflow-guides/hermes-kanban.mdx             | 214 ++++++
  docs/workflow-guides/index.mdx                     |   5 +
- integrations/hermes-agentplane-plugin/README.md    | 104 ++++++
- integrations/hermes-agentplane-plugin/__init__.py  | 228 ++++++++++++
- .../bin/hermes-agentplane-spawn.mjs                |  46 +++
+ integrations/hermes-agentplane-plugin/README.md    | 104 +++
+ integrations/hermes-agentplane-plugin/__init__.py  | 228 +++++++
+ .../bin/hermes-agentplane-spawn.mjs                |  46 ++
  integrations/hermes-agentplane-plugin/package.json |  13 +
  integrations/hermes-agentplane-plugin/plugin.yaml  |   6 +
- .../hermes-agentplane-plugin/src/index.mjs         |  47 +++
- .../src/cli/run-cli/command-catalog/project.ts     |  17 +
- .../src/cli/run-cli/command-loaders/project.ts     |  19 +
- .../src/commands/hermes/hermes.command.test.ts     | 120 +++++++
- .../src/commands/hermes/hermes.command.ts          | 395 +++++++++++++++++++++
- 14 files changed, 1315 insertions(+)
+ .../hermes-agentplane-plugin/src/index.mjs         |  47 ++
+ .../src/cli/run-cli/command-catalog/project.ts     |  20 +
+ .../src/cli/run-cli/command-loaders/project.ts     |  23 +
+ .../src/commands/hermes/hermes.command.test.ts     | 284 ++++++++
+ .../src/commands/hermes/hermes.command.ts          | 731 +++++++++++++++++++++
+ 18 files changed, 1955 insertions(+), 1 deletion(-)
