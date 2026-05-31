@@ -1,10 +1,11 @@
 ---
 id: "202605281707-6MNB2K"
 title: "Runner sibling conflict detection"
-status: "DOING"
+result_summary: "Closed included batch task from merged PR #4197"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,31 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts --config vitest.workspace.ts; Result: pass as part of focused suite. Evidence: result manifests now accept conflict_paths only with blocked_reason and recommended_parent_action. Scope: runner conflict reporting contract."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-31T14:57:54.195Z"
+  updated_by: "EVALUATOR"
+  note: "Included task verified in merged batch PR #4197."
+  evaluated_sha: "c318cabc49a29ffcbf2b8246af76201f5ccbb324"
+  blueprint_digest: "33ab00d113d0a693f5b2299046653be1b2d03cf05cdef9e3e3e8aeaf2aec94a7"
+  evidence_refs:
+    - ".agentplane/tasks/202605281707-6MNB2K/README.md"
+    - ".agentplane/tasks/202605281707-6MNB2K/quality/20260531-145754195-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605281707-6MNB2K/quality/20260531-145754195-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605281707-6MNB2K/quality/20260531-145754195-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605281707-6MNB2K/blueprint/resolved-snapshot.json"
+  findings:
+    - "Task has verification.ok evidence and was included in the 51DD0G route-packet-v2 batch merged to main at 26704abb70798fb4ecca714fa3c21050d3893c18."
+commit:
+  hash: "c318cabc49a29ffcbf2b8246af76201f5ccbb324"
+  message: "Merge pull request #4329 from basilisk-labs/task/202605310706-GV6ECK/verify-ghost-progress"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing runner sibling conflict detection as an included task in the approved v0.6.12 agent-efficiency batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; evaluator review recorded SHA c318cabc49a29ffcbf2b8246af76201f5ccbb324."
 events:
   -
     type: "status"
@@ -43,9 +64,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts --config vitest.workspace.ts; Result: pass as part of focused suite. Evidence: result manifests now accept conflict_paths only with blocked_reason and recommended_parent_action. Scope: runner conflict reporting contract."
+  -
+    type: "status"
+    at: "2026-05-31T14:59:27.675Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: closed included batch task after merged PR #4197 landed implementation commit 26704abb70798fb4ecca714fa3c21050d3893c18; evaluator review recorded SHA c318cabc49a29ffcbf2b8246af76201f5ccbb324."
 doc_version: 3
-doc_updated_at: "2026-05-28T17:22:26.680Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-31T14:59:27.677Z"
+doc_updated_by: "INTEGRATOR"
 description: "Detect likely sibling runner write conflicts before execute-mode mutation and report blocked manifests with affected paths and parent action."
 sections:
   Summary: |-
