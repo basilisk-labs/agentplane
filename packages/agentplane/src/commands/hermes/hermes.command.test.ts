@@ -74,7 +74,17 @@ describe("hermes adapter commands", () => {
         idempotency_key: string;
         board: string;
         assignee: string;
-        metadata: { agentplane: { task_id: string; authority: { status_sync: string } } };
+        metadata: {
+          agentplane: {
+            task_id: string;
+            authority: { status_sync: string };
+            comment_projection: {
+              schema: string;
+              evidence_refs: { runner_status: string; runner_inspect: string };
+            };
+          };
+        };
+        evidence_refs: { runner_event_logs: string };
         sync_field_policies: { status: { authority: string } };
       };
       expect(payload.idempotency_key).toContain(`agentplane:${root}:${taskId}:CODER`);
@@ -82,6 +92,18 @@ describe("hermes adapter commands", () => {
       expect(payload.assignee).toBe("agentplane-coder");
       expect(payload.metadata.agentplane.task_id).toBe(taskId);
       expect(payload.metadata.agentplane.authority.status_sync).toBe("projection_only");
+      expect(payload.metadata.agentplane.comment_projection.schema).toBe(
+        "agentplane.hermes.lifecycle-comment.v1",
+      );
+      expect(payload.metadata.agentplane.comment_projection.evidence_refs.runner_status).toBe(
+        `agentplane task run status ${taskId} --json`,
+      );
+      expect(payload.metadata.agentplane.comment_projection.evidence_refs.runner_inspect).toBe(
+        `agentplane task run inspect ${taskId} --json`,
+      );
+      expect(payload.evidence_refs.runner_event_logs).toBe(
+        `agentplane task run logs ${taskId} --stream events`,
+      );
       expect(payload.sync_field_policies.status.authority).toBe("agentplane");
     } finally {
       io.restore();
@@ -103,6 +125,14 @@ describe("hermes adapter commands", () => {
           execute_raw_shell_from_route: boolean;
           max_route_steps_per_claim: number;
         };
+        runner: {
+          latest_available: boolean;
+          commands: { status: string; inspect: string; event_logs: string };
+        };
+        hermes_comment_projection: {
+          schema: string;
+          evidence_refs: { runner_status: string };
+        };
         terminal: { hermes_root_complete_allowed: boolean };
       };
       expect(payload.task.id).toBe(taskId);
@@ -110,6 +140,18 @@ describe("hermes adapter commands", () => {
       expect(payload.projection_boundary.hermes_authority).toBe("dispatch_run_lifecycle");
       expect(payload.supervisor_policy.execute_raw_shell_from_route).toBe(false);
       expect(payload.supervisor_policy.max_route_steps_per_claim).toBe(1);
+      expect(payload.runner.latest_available).toBe(false);
+      expect(payload.runner.commands.status).toBe(`agentplane task run status ${taskId} --json`);
+      expect(payload.runner.commands.inspect).toBe(`agentplane task run inspect ${taskId} --json`);
+      expect(payload.runner.commands.event_logs).toBe(
+        `agentplane task run logs ${taskId} --stream events`,
+      );
+      expect(payload.hermes_comment_projection.schema).toBe(
+        "agentplane.hermes.lifecycle-comment.v1",
+      );
+      expect(payload.hermes_comment_projection.evidence_refs.runner_status).toBe(
+        payload.runner.commands.status,
+      );
       expect(payload.terminal.hermes_root_complete_allowed).toBe(false);
     } finally {
       io.restore();
@@ -211,7 +253,7 @@ describe("hermes adapter commands", () => {
     }
   });
 
-  it("doctor reports Arkady lane registry state when configured", async () => {
+  it("doctor reports the Agentplane Hermes lane registry state when configured", async () => {
     const root = await mkGitRepoRoot();
     await runCliSilent(["init", "--yes", "--root", root]);
     const registryPath = path.join(root, "registry", "lane-registry.json");
@@ -233,8 +275,8 @@ describe("hermes adapter commands", () => {
       ),
     );
 
-    const previous = process.env.ARKADY_LANE_REGISTRY;
-    process.env.ARKADY_LANE_REGISTRY = registryPath;
+    const previous = process.env.AGENTPLANE_HERMES_LANE_REGISTRY;
+    process.env.AGENTPLANE_HERMES_LANE_REGISTRY = registryPath;
     const io = captureStdIO();
     try {
       const code = await runCli(["hermes", "doctor", "--json", "--root", root]);
@@ -253,10 +295,49 @@ describe("hermes adapter commands", () => {
     } finally {
       io.restore();
       if (previous === undefined) {
-        delete process.env.ARKADY_LANE_REGISTRY;
+        delete process.env.AGENTPLANE_HERMES_LANE_REGISTRY;
       } else {
-        process.env.ARKADY_LANE_REGISTRY = previous;
+        process.env.AGENTPLANE_HERMES_LANE_REGISTRY = previous;
       }
+    }
+  });
+
+  it("reconcile includes the local Agentplane projection when task id is provided", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createApprovedTask(root);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "hermes",
+        "reconcile",
+        "--task-id",
+        taskId,
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        mode: string;
+        local_projection: {
+          task: { id: string };
+          hermes_comment_projection: {
+            agentplane_task_id: string;
+            evidence_refs: { runner_status: string };
+          };
+        };
+        plugin_contract: { remote_board_reads_required: boolean };
+      };
+      expect(payload.mode).toBe("read_only");
+      expect(payload.local_projection.task.id).toBe(taskId);
+      expect(payload.local_projection.hermes_comment_projection.agentplane_task_id).toBe(taskId);
+      expect(payload.local_projection.hermes_comment_projection.evidence_refs.runner_status).toBe(
+        `agentplane task run status ${taskId} --json`,
+      );
+      expect(payload.plugin_contract.remote_board_reads_required).toBe(true);
+    } finally {
+      io.restore();
     }
   });
 

@@ -4,6 +4,9 @@ import { promisify } from "node:util";
 
 import { isRecord } from "../../shared/guards.js";
 import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
+import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
+import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -24,6 +27,15 @@ export type HermesRoutePacketForExecution = {
   };
 };
 
+export function taskTerminalForHermesComplete(task: {
+  status: string;
+  verification: string | null;
+}): boolean {
+  const statusDone = task.status.trim().toUpperCase() === "DONE";
+  const verificationState = task.verification?.trim().toLowerCase() ?? "";
+  return statusDone && verificationState === "ok";
+}
+
 export function hermesEnvSnapshot() {
   return {
     task_id: process.env.HERMES_KANBAN_TASK ?? null,
@@ -36,7 +48,7 @@ export function hermesEnvSnapshot() {
 }
 
 export async function loadLaneRegistry() {
-  const rawRegistryPath = process.env.ARKADY_LANE_REGISTRY?.trim();
+  const rawRegistryPath = process.env.AGENTPLANE_HERMES_LANE_REGISTRY?.trim();
   const registryPath = rawRegistryPath && rawRegistryPath.length > 0 ? rawRegistryPath : null;
   if (!registryPath) {
     return {
@@ -73,6 +85,138 @@ export function currentAgentplaneCommand(): { command: string; argsPrefix: strin
   const command =
     rawAgentplaneBin && rawAgentplaneBin.length > 0 ? rawAgentplaneBin : resolveAgentplaneBinPath();
   return { command, argsPrefix: [] };
+}
+
+export async function runnerVisibilityPacket(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride: string | null;
+  taskId: string;
+}) {
+  const statusCommand = `agentplane task run status ${opts.taskId} --json`;
+  const inspectCommand = `agentplane task run inspect ${opts.taskId} --json`;
+  const eventLogsCommand = `agentplane task run logs ${opts.taskId} --stream events`;
+  try {
+    const inspection = await loadTaskRunnerInspection({
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      task_id: opts.taskId,
+    });
+    return {
+      latest_available: true,
+      commands: {
+        status: statusCommand,
+        inspect: inspectCommand,
+        event_logs: eventLogsCommand,
+      },
+      latest: {
+        run_id: inspection.run_id,
+        selection: inspection.selection,
+        status: inspection.state.status,
+        mode: inspection.state.mode,
+        adapter_id: inspection.state.adapter_id,
+        target: inspection.state.target,
+        updated_at: inspection.state.updated_at,
+        exit_code: inspection.state.result?.exit_code ?? null,
+        summary: inspection.state.result?.summary ?? null,
+        paths: {
+          run_dir: inspection.paths.run_dir,
+          events: inspection.paths.events_path,
+          trace: inspection.paths.trace_path,
+          stderr: inspection.paths.stderr_path,
+          result: inspection.paths.result_path,
+          state: inspection.paths.state_path,
+        },
+      },
+    };
+  } catch (err) {
+    return {
+      latest_available: false,
+      commands: {
+        status: statusCommand,
+        inspect: inspectCommand,
+        event_logs: eventLogsCommand,
+      },
+      latest: null,
+      unavailable_reason: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
+export async function routePacket(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride: string | null;
+  taskId: string;
+  includeRemote: boolean;
+}) {
+  const fullTask = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
+  const decision = await buildTaskRouteDecision({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    taskId: opts.taskId,
+    includeRemote: opts.includeRemote,
+  });
+  const runner = await runnerVisibilityPacket({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    taskId: opts.taskId,
+  });
+  const terminal = {
+    hermes_root_complete_allowed: taskTerminalForHermesComplete(decision.task),
+    required_gate:
+      "Agentplane DONE + verification ok + branch_pr finish/integration evidence + ACR validation",
+  };
+  const projectionBoundary = {
+    hermes_authority: "dispatch_run_lifecycle",
+    agentplane_authority: "engineering_task_lifecycle",
+    status_sync: "projection_only",
+  };
+  return {
+    task: {
+      id: decision.task.id,
+      title: decision.task.title,
+      status: decision.task.status,
+      owner: decision.task.owner,
+      revision: fullTask.revision ?? null,
+      verification_state: decision.task.verification,
+    },
+    route_oracle: decision.oracle,
+    next_action: decision.nextAction,
+    execution_packet: decision.executionPacket,
+    blockers: decision.blockers,
+    runner,
+    terminal,
+    projection_boundary: projectionBoundary,
+    hermes_comment_projection: {
+      schema: "agentplane.hermes.lifecycle-comment.v1",
+      agentplane_task_id: decision.task.id,
+      task_revision: fullTask.revision ?? null,
+      title: decision.task.title,
+      status: decision.task.status,
+      verification_state: decision.task.verification,
+      route: {
+        phase: decision.oracle.phase,
+        next_action: decision.nextAction.code,
+        next_summary: decision.nextAction.summary,
+        safe_to_mutate: decision.executionPacket.safeToMutate,
+        blockers: decision.blockers,
+      },
+      runner,
+      evidence_refs: {
+        task_readme: `.agentplane/tasks/${decision.task.id}/README.md`,
+        acr: `.agentplane/tasks/${decision.task.id}/acr.json`,
+        runner_status: runner.commands.status,
+        runner_inspect: runner.commands.inspect,
+        runner_event_logs: runner.commands.event_logs,
+      },
+      terminal,
+      authority: projectionBoundary,
+    },
+  };
 }
 
 export function executableStepFor(packet: HermesRoutePacketForExecution): {

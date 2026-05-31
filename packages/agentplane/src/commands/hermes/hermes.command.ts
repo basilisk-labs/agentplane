@@ -7,8 +7,7 @@ import {
 import { createCliEmitter } from "../../cli/output.js";
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
-import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
-import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import type { CommandContext } from "../shared/task-backend.js";
 import {
   executableStepFor,
   currentAgentplaneCommand,
@@ -16,6 +15,7 @@ import {
   hermesCliCommand,
   hermesEnvSnapshot,
   loadLaneRegistry,
+  routePacket,
   runAgentplaneStep,
   runHermesLifecycle,
   type HermesLifecycleAction,
@@ -252,56 +252,6 @@ export async function runHermesGroup(_ctx: CommandCtx, p: GroupCommandParsed): P
   });
 }
 
-function taskTerminalForHermesComplete(task: {
-  status: string;
-  verification: string | null;
-}): boolean {
-  const statusDone = task.status.trim().toUpperCase() === "DONE";
-  const verificationState = task.verification?.trim().toLowerCase() ?? "";
-  return statusDone && verificationState === "ok";
-}
-
-async function routePacket(opts: {
-  ctx: CommandContext;
-  cwd: string;
-  rootOverride: string | null;
-  taskId: string;
-  includeRemote: boolean;
-}) {
-  const fullTask = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
-  const decision = await buildTaskRouteDecision({
-    ctx: opts.ctx,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride,
-    taskId: opts.taskId,
-    includeRemote: opts.includeRemote,
-  });
-  return {
-    task: {
-      id: decision.task.id,
-      title: decision.task.title,
-      status: decision.task.status,
-      owner: decision.task.owner,
-      revision: fullTask.revision ?? null,
-      verification_state: decision.task.verification,
-    },
-    route_oracle: decision.oracle,
-    next_action: decision.nextAction,
-    execution_packet: decision.executionPacket,
-    blockers: decision.blockers,
-    terminal: {
-      hermes_root_complete_allowed: taskTerminalForHermesComplete(decision.task),
-      required_gate:
-        "Agentplane DONE + verification ok + branch_pr finish/integration evidence + ACR validation",
-    },
-    projection_boundary: {
-      hermes_authority: "dispatch_run_lifecycle",
-      agentplane_authority: "engineering_task_lifecycle",
-      status_sync: "projection_only",
-    },
-  };
-}
-
 export function makeRunHermesEnqueueHandler(
   getCtx: (command: string) => Promise<CommandContext>,
 ): CommandHandler<HermesEnqueueParsed> {
@@ -332,8 +282,10 @@ export function makeRunHermesEnqueueHandler(
           workflow_mode: commandCtx.config.workflow_mode,
           role: parsed.role,
           authority: packet.projection_boundary,
+          comment_projection: packet.hermes_comment_projection,
         },
       },
+      evidence_refs: packet.hermes_comment_projection.evidence_refs,
       sync_field_policies: {
         status: {
           authority: "agentplane",
@@ -382,6 +334,7 @@ export function makeRunHermesSuperviseHandler(
     const payload = {
       ...packet,
       hermes_run: hermesEnvSnapshot(),
+      hermes_comment_projection: packet.hermes_comment_projection,
       supervisor_policy: {
         execute_raw_shell_from_route: false,
         execution_model: "classify_route_action_then_execute_allowlisted_agentplane_command",
@@ -435,6 +388,15 @@ export function makeRunHermesReconcileHandler(
       repo: commandCtx.resolvedProject.gitRoot,
       task_id: parsed.taskId ?? null,
       hermes_run: hermesEnvSnapshot(),
+      local_projection: parsed.taskId
+        ? await routePacket({
+            ctx: commandCtx,
+            cwd: ctx.cwd,
+            rootOverride: ctx.rootOverride ?? null,
+            taskId: parsed.taskId,
+            includeRemote: false,
+          })
+        : null,
       checks: [
         "Hermes done but Agentplane not DONE",
         "Agentplane DONE but Hermes root card not complete",
@@ -443,6 +405,11 @@ export function makeRunHermesReconcileHandler(
         "wrong lane for current Agentplane route phase",
       ],
       note: "This scaffold defines the reconcile contract. A Hermes plugin supplies remote board reads; Agentplane task truth remains local.",
+      plugin_contract: {
+        remote_board_reads_required: true,
+        remote_board_writes_allowed: "through Hermes lifecycle API or CLI only",
+        agentplane_truth: "local task README/frontmatter, verification, PR artifacts, and ACR",
+      },
     };
     if (parsed.json) {
       output.json(payload);

@@ -48,6 +48,34 @@ agentplane hermes lifecycle comment --body '<structured projection>' --json
 agentplane hermes lifecycle complete --body 'Agentplane terminal evidence validated' --json
 ```
 
+## Runtime environment
+
+Hermes worker lanes must pass these variables to Agentplane-side commands:
+
+```bash
+AGENTPLANE_HERMES_LANE_REGISTRY=/opt/agentplane/lane-registry.json
+HERMES_KANBAN_TASK=<hermes-card-id>
+HERMES_KANBAN_BOARD=<board>
+HERMES_KANBAN_RUN_ID=<run-id>
+HERMES_KANBAN_WORKSPACE=<repo-workspace>
+HERMES_KANBAN_CLAIM_LOCK=<claim-lock>
+```
+
+`agentplane hermes doctor --json` reports missing Hermes environment values and lane-registry
+state. The Agentplane side uses `AGENTPLANE_HERMES_LANE_REGISTRY` as the registry input.
+
+## Visibility contract
+
+`agentplane hermes enqueue` and `agentplane hermes supervise` return a
+`hermes_comment_projection` packet. Hermes plugins should post that packet before block or
+complete transitions. The packet includes:
+
+- Agentplane task id, revision, status, verification state, and current route phase.
+- Route blockers and the next typed action.
+- Runner visibility commands: `agentplane task run status`, `inspect`, and event `logs`.
+- Evidence references for the task README, ACR, and runner artifacts.
+- The authority boundary that keeps Hermes status projection-only.
+
 ## Expected artifacts
 
 ```text

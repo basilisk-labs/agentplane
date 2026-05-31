@@ -37,10 +37,10 @@ format checks passed.
  README.md                                          |   1 +
  agentplane-recipes                                 |   2 +-
  docs/recipes-inventory.json                        |  34 ++
- docs/recipes/hermes-agentplane.mdx                 |  62 +++
+ docs/recipes/hermes-agentplane.mdx                 |  90 ++++
  docs/recipes/index.mdx                             |   1 +
- docs/user/cli-reference.generated.mdx              | 135 +++++
- docs/workflow-guides/hermes-kanban.mdx             | 214 ++++++++
+ docs/user/cli-reference.generated.mdx              | 135 ++++++
+ docs/workflow-guides/hermes-kanban.mdx             | 214 +++++++++
  docs/workflow-guides/index.mdx                     |   5 +
  integrations/hermes-agentplane-plugin/README.md    | 104 ++++
  integrations/hermes-agentplane-plugin/__init__.py  | 228 +++++++++
@@ -50,10 +50,10 @@ format checks passed.
  .../hermes-agentplane-plugin/src/index.mjs         |  47 ++
  .../src/cli/run-cli/command-catalog/project.ts     |  20 +
  .../src/cli/run-cli/command-loaders/project.ts     |  23 +
- .../src/commands/hermes/hermes-runtime.ts          | 217 ++++++++
- .../src/commands/hermes/hermes.command.test.ts     | 284 +++++++++++
- .../src/commands/hermes/hermes.command.ts          | 554 +++++++++++++++++++++
- 19 files changed, 1995 insertions(+), 1 deletion(-)
+ .../src/commands/hermes/hermes-runtime.ts          | 364 ++++++++++++++
+ .../src/commands/hermes/hermes.command.test.ts     | 401 ++++++++++++++++
+ .../src/commands/hermes/hermes.command.ts          | 527 +++++++++++++++++++++
+ 19 files changed, 2260 insertions(+), 1 deletion(-)
 ```
 
 </details>
