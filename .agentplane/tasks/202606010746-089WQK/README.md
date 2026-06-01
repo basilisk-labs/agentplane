@@ -4,7 +4,7 @@ title: "Refresh Hermes docs social images for patch release"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-01T07:51:16.255Z"
-  updated_by: "DOCS"
-  note: "Command: bun run docs:social:generate -> pass, generated 2 docs social images and left 204 unchanged. Command: bun run docs:social:check -> pass, checked 206 docs social images. Command: bun run release:check -> pass, release incident, ACR example, social image, package build, tarball policy, and blueprint release gates passed. Command: bun run release:parity -> pass, package versions remain 0.6.13. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: ap doctor -> pass with two pre-existing warnings for old DONE tasks missing implementation hashes. Command: bun run release:tasks:check -> expected pre-finish blocker because this task is DOING; rerun after integration/finish before release candidate."
+  updated_at: "2026-06-01T07:59:34.879Z"
+  updated_by: "EVALUATOR"
+  note: "PR artifact freshness recheck: hosted checks passed on PR #4354 after final evaluator evidence commit; refreshing verification so last_verified_diffstat_sha256 can match the current PR diffstat digest before integration."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-01T07:59:34.879Z"
+  updated_by: "EVALUATOR"
+  note: "PR artifact freshness recheck: hosted checks passed on PR #4354 after final evaluator evidence commit; refreshing verification so last_verified_diffstat_sha256 can match the current PR diffstat digest before integration."
+  evaluated_sha: "bd164865ffd89a3b64867cdfb157cdb92bb6160d"
+  blueprint_digest: "4a6bf7c22bd64f26a418b0c6e4118aa5d1244d0a23aade3872b8f51194d22b16"
+  evidence_refs:
+    - ".agentplane/tasks/202606010746-089WQK/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606010746-089WQK-refresh-hermes-docs-social-images-for-patch-rele/.agentplane/tasks/202606010746-089WQK/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -42,8 +53,14 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: bun run docs:social:generate -> pass, generated 2 docs social images and left 204 unchanged. Command: bun run docs:social:check -> pass, checked 206 docs social images. Command: bun run release:check -> pass, release incident, ACR example, social image, package build, tarball policy, and blueprint release gates passed. Command: bun run release:parity -> pass, package versions remain 0.6.13. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: ap doctor -> pass with two pre-existing warnings for old DONE tasks missing implementation hashes. Command: bun run release:tasks:check -> expected pre-finish blocker because this task is DOING; rerun after integration/finish before release candidate."
+  -
+    type: "verify"
+    at: "2026-06-01T07:59:34.879Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "PR artifact freshness recheck: hosted checks passed on PR #4354 after final evaluator evidence commit; refreshing verification so last_verified_diffstat_sha256 can match the current PR diffstat digest before integration."
 doc_version: 3
-doc_updated_at: "2026-06-01T07:51:16.298Z"
+doc_updated_at: "2026-06-01T07:59:34.910Z"
 doc_updated_by: "DOCS"
 description: "Regenerate checked-in docs social images and manifest so release:check passes before preparing the next patch release."
 sections:
@@ -71,6 +88,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T07:47:42.967Z, excerpt_hash=sha256:d1769d94b0d8251393ddc7137f81da6bd59a39618803664e1b10cedf231f8730
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606010746-089WQK-refresh-hermes-docs-social-images-for-patch-rele/.agentplane/tasks/202606010746-089WQK/blueprint/resolved-snapshot.json
+    - old_digest: 4a6bf7c22bd64f26a418b0c6e4118aa5d1244d0a23aade3872b8f51194d22b16
+    - current_digest: 4a6bf7c22bd64f26a418b0c6e4118aa5d1244d0a23aade3872b8f51194d22b16
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606010746-089WQK
+
+    ### 2026-06-01T07:59:34.879Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: PR artifact freshness recheck: hosted checks passed on PR #4354 after final evaluator evidence commit; refreshing verification so last_verified_diffstat_sha256 can match the current PR diffstat digest before integration.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T07:51:16.298Z, excerpt_hash=sha256:d1769d94b0d8251393ddc7137f81da6bd59a39618803664e1b10cedf231f8730
 
     Details:
 
@@ -126,6 +162,25 @@ Note: Command: bun run docs:social:generate -> pass, generated 2 docs social ima
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T07:47:42.967Z, excerpt_hash=sha256:d1769d94b0d8251393ddc7137f81da6bd59a39618803664e1b10cedf231f8730
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606010746-089WQK-refresh-hermes-docs-social-images-for-patch-rele/.agentplane/tasks/202606010746-089WQK/blueprint/resolved-snapshot.json
+- old_digest: 4a6bf7c22bd64f26a418b0c6e4118aa5d1244d0a23aade3872b8f51194d22b16
+- current_digest: 4a6bf7c22bd64f26a418b0c6e4118aa5d1244d0a23aade3872b8f51194d22b16
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606010746-089WQK
+
+### 2026-06-01T07:59:34.879Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: PR artifact freshness recheck: hosted checks passed on PR #4354 after final evaluator evidence commit; refreshing verification so last_verified_diffstat_sha256 can match the current PR diffstat digest before integration.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T07:51:16.298Z, excerpt_hash=sha256:d1769d94b0d8251393ddc7137f81da6bd59a39618803664e1b10cedf231f8730
 
 Details:
 
