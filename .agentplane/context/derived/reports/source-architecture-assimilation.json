@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "generated_by": "source-architecture-assimilation",
+  "task_id": "202606012037-W0QJJ2",
+  "source": {
+    "files": 1576,
+    "lines": 283688,
+    "bytes": 9706304,
+    "packages": 8,
+    "layers": 20,
+    "command_groups": 26,
+    "test_files": 472,
+    "schema_files": 28,
+    "policy_files": 17,
+    "check_workflow_files": 57,
+    "local_import_edges_total": 12,
+    "local_import_edges_captured": 12
+  },
+  "assimilation": {
+    "wiki_pages": 6,
+    "sgr_items": 12997,
+    "graph_entities": 1647,
+    "graph_edges": 9762,
+    "facts": 12,
+    "coverage_items": 1576,
+    "coverage_rows": 1576,
+    "coverage_degree": 1,
+    "granularity": "package -> layer -> command group -> workflow/contract concept -> source file -> local import/test/check coverage row"
+  },
+  "packages": [
+    {
+      "Package": ".agentplane",
+      "Files": 17,
+      "Lines": 852,
+      "Bytes": 39122,
+      "Tests": 0
+    },
+    {
+      "Package": ".github",
+      "Files": 9,
+      "Lines": 2285,
+      "Bytes": 94855,
+      "Tests": 0
+    },
+    {
+      "Package": "packages/agentplane",
+      "Files": 1294,
+      "Lines": 232657,
+      "Bytes": 8042574,
+      "Tests": 443
+    },
+    {
+      "Package": "packages/core",
+      "Files": 86,
+      "Lines": 17879,
+      "Bytes": 564685,
+      "Tests": 23
+    },
+    {
+      "Package": "packages/recipes",
+      "Files": 19,
+      "Lines": 2574,
+      "Bytes": 82801,
+      "Tests": 3
+    },
+    {
+      "Package": "packages/spec",
+      "Files": 21,
+      "Lines": 5068,
+      "Bytes": 149806,
+      "Tests": 0
+    },
+    {
+      "Package": "packages/testkit",
+      "Files": 27,
+      "Lines": 3240,
+      "Bytes": 105527,
+      "Tests": 3
+    },
+    {
+      "Package": "scripts",
+      "Files": 103,
+      "Lines": 19133,
+      "Bytes": 626934,
+      "Tests": 0
+    }
+  ],
+  "layers": [
+    {
+      "Layer": "blueprints",
+      "Files": 34,
+      "Lines": 5848,
+      "Tests": 6
+    },
+    {
+      "Layer": "checks",
+      "Files": 48,
+      "Lines": 7093,
+      "Tests": 0
+    },
+    {
+      "Layer": "cli-runtime",
+      "Files": 256,
+      "Lines": 67875,
+      "Tests": 162
+    },
+    {
+      "Layer": "commands",
+      "Files": 663,
+      "Lines": 111692,
+      "Tests": 191
+    },
+    {
+      "Layer": "context-engine",
+      "Files": 22,
+      "Lines": 4519,
+      "Tests": 0
+    },
+    {
+      "Layer": "generators",
+      "Files": 17,
+      "Lines": 3468,
+      "Tests": 0
+    },
+    {
+      "Layer": "github-workflows",
+      "Files": 9,
+      "Lines": 2285,
+      "Tests": 0
+    },
+    {
+      "Layer": "other-source",
+      "Files": 115,
+      "Lines": 16072,
+      "Tests": 35
+    },
+    {
+      "Layer": "policy-engine",
+      "Files": 16,
+      "Lines": 1395,
+      "Tests": 3
+    },
+    {
+      "Layer": "recipes",
+      "Files": 19,
+      "Lines": 2574,
+      "Tests": 3
+    },
+    {
+      "Layer": "release-scripts",
+      "Files": 29,
+      "Lines": 6199,
+      "Tests": 0
+    },
+    {
+      "Layer": "repo-policy",
+      "Files": 17,
+      "Lines": 852,
+      "Tests": 0
+    },
+    {
+      "Layer": "runner",
+      "Files": 79,
+      "Lines": 12780,
+      "Tests": 18
+    },
+    {
+      "Layer": "runtime",
+      "Files": 86,
+      "Lines": 12012,
+      "Tests": 19
+    },
+    {
+      "Layer": "schemas",
+      "Files": 28,
+      "Lines": 9358,
+      "Tests": 0
+    },
+    {
+      "Layer": "shared-core",
+      "Files": 30,
+      "Lines": 2624,
+      "Tests": 11
+    },
+    {
+      "Layer": "task-backends",
+      "Files": 50,
+      "Lines": 8814,
+      "Tests": 14
+    },
+    {
+      "Layer": "testkit",
+      "Files": 27,
+      "Lines": 3240,
+      "Tests": 3
+    },
+    {
+      "Layer": "workflow-runtime",
+      "Files": 22,
+      "Lines": 2615,
+      "Tests": 7
+    },
+    {
+      "Layer": "workflow-scripts",
+      "Files": 9,
+      "Lines": 2373,
+      "Tests": 0
+    }
+  ],
+  "command_groups": [
+    {
+      "Command": "acr",
+      "Files": 9,
+      "Tests": 1,
+      "Lines": 1742
+    },
+    {
+      "Command": "backend",
+      "Files": 1,
+      "Tests": 0,
+      "Lines": 261
+    },
+    {
+      "Command": "blueprint",
+      "Files": 7,
+      "Tests": 2,
+      "Lines": 1383
+    },
+    {
+      "Command": "blueprints",
+      "Files": 5,
+      "Tests": 1,
+      "Lines": 1054
+    },
+    {
+      "Command": "branch",
+      "Files": 19,
+      "Tests": 2,
+      "Lines": 1858
+    },
+    {
+      "Command": "cleanup",
+      "Files": 1,
+      "Tests": 0,
+      "Lines": 151
+    },
+    {
+      "Command": "codex",
+      "Files": 2,
+      "Tests": 1,
+      "Lines": 423
+    },
+    {
+      "Command": "context",
+      "Files": 47,
+      "Tests": 13,
+      "Lines": 8233
+    },
+    {
+      "Command": "docs",
+      "Files": 1,
+      "Tests": 0,
+      "Lines": 62
+    },
+    {
+      "Command": "doctor",
+      "Files": 12,
+      "Tests": 1,
+      "Lines": 1835
+    },
+    {
+      "Command": "evaluator",
+      "Files": 4,
+      "Tests": 2,
+      "Lines": 877
+    },
+    {
+      "Command": "evidence",
+      "Files": 3,
+      "Tests": 1,
+      "Lines": 699
+    },
+    {
+      "Command": "flow",
+      "Files": 2,
+      "Tests": 0,
+      "Lines": 238
+    },
+    {
+      "Command": "guard",
+      "Files": 33,
+      "Tests": 10,
+      "Lines": 6138
+    },
+    {
+      "Command": "hermes",
+      "Files": 3,
+      "Tests": 1,
+      "Lines": 1419
+    },
+    {
+      "Command": "hooks",
+      "Files": 18,
+      "Tests": 2,
+      "Lines": 1682
+    },
+    {
+      "Command": "incidents",
+      "Files": 5,
+      "Tests": 1,
+      "Lines": 807
+    },
+    {
+      "Command": "insights",
+      "Files": 7,
+      "Tests": 2,
+      "Lines": 1226
+    },
+    {
+      "Command": "pr",
+      "Files": 61,
+      "Tests": 17,
+      "Lines": 11690
+    },
+    {
+      "Command": "recipes",
+      "Files": 56,
+      "Tests": 6,
+      "Lines": 5167
+    },
+    {
+      "Command": "release",
+      "Files": 54,
+      "Tests": 35,
+      "Lines": 10710
+    },
+    {
+      "Command": "root",
+      "Files": 66,
+      "Tests": 39,
+      "Lines": 14016
+    },
+    {
+      "Command": "scenario",
+      "Files": 7,
+      "Tests": 1,
+      "Lines": 574
+    },
+    {
+      "Command": "shared",
+      "Files": 57,
+      "Tests": 14,
+      "Lines": 8367
+    },
+    {
+      "Command": "task",
+      "Files": 175,
+      "Tests": 39,
+      "Lines": 29553
+    },
+    {
+      "Command": "upgrade",
+      "Files": 8,
+      "Tests": 0,
+      "Lines": 1527
+    }
+  ]
+}

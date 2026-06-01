@@ -31,6 +31,7 @@ Project-specific AgentPlane context wiki entrypoint. Keep the initial hierarchy 
 - [Proposals](proposals/index.md)
 - [Release Docs](release-docs/index.md)
 - [Reports](reports/index.md)
+- [Source Architecture](source-architecture/index.md)
 - [Task Harvest](task-harvest/index.md)
 - [Context glossary](glossary.md)
 <!-- agentplane-context-wiki-index:end -->

@@ -1,0 +1,16 @@
+ .agentplane/context/derived/facts/facts.jsonl      |     12 +
+ .agentplane/context/derived/graph/edges.jsonl      |   9827 +
+ .agentplane/context/derived/graph/entities.jsonl   |   1712 +
+ .../context/derived/graph/provenance_edges.jsonl   |  12987 +
+ .agentplane/context/derived/reports/coverage.jsonl |   1576 +
+ .../reports/source-architecture-assimilation.json  |    758 +
+ .../source-architecture-assimilation.sgr.json      | 564674 ++++++++++++++++++
+ .../source-architecture-coverage-detail.jsonl      |   1576 +
+ context/wiki/index.md                              |      1 +
+ .../wiki/source-architecture/command-surface.md    |    286 +
+ context/wiki/source-architecture/index.md          |    121 +
+ context/wiki/source-architecture/packages.md       |    120 +
+ .../source-architecture/schemas-policies-checks.md |    112 +
+ context/wiki/source-architecture/test-coverage.md  |    119 +
+ .../source-architecture/workflow-state-machines.md |    117 +
+ 15 files changed, 593998 insertions(+)

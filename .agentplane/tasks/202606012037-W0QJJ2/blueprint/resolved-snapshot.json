@@ -1,0 +1,565 @@
+{
+  "schemaVersion": 1,
+  "artifactKind": "agentplane.blueprint.resolved_snapshot",
+  "resolverInput": {
+    "taskId": "202606012037-W0QJJ2",
+    "title": "Assimilate source architecture and command graph",
+    "description": "Assimilate AgentPlane source code into local context without copying implementation bodies: package/module graph, command surface, workflow/state-machine links, schema/policy/test/CI coverage, and metrics for code corpus size and granularity.",
+    "tags": [
+      "architecture",
+      "assimilation",
+      "code",
+      "context"
+    ],
+    "owner": "CURATOR",
+    "taskKind": "context",
+    "workflowMode": "branch_pr",
+    "workflowGitCapabilities": {
+      "workflowMode": "branch_pr",
+      "implementationCommitLocation": "task_worktree",
+      "finishCommitSource": "explicit_hash",
+      "closeTailRequired": true,
+      "lifecycleCommentCommitLocation": "task_worktree",
+      "finishCommitFromComment": false
+    },
+    "mutation": "context",
+    "mutationScope": "context",
+    "touchedPaths": [],
+    "recipeHints": [],
+    "riskFlags": [],
+    "blueprintRequest": "context.maximum_assimilation"
+  },
+  "selectedBlueprint": {
+    "id": "context.maximum_assimilation",
+    "version": 1,
+    "title": "Maximum context assimilation",
+    "taskKinds": [
+      "context"
+    ],
+    "workflowModes": [
+      "direct",
+      "branch_pr"
+    ]
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "blueprintId": "context.maximum_assimilation",
+    "blueprintVersion": 1,
+    "title": "Maximum context assimilation",
+    "taskId": "202606012037-W0QJJ2",
+    "workflowMode": "branch_pr",
+    "workflowGitCapabilities": {
+      "workflowMode": "branch_pr",
+      "implementationCommitLocation": "task_worktree",
+      "finishCommitSource": "explicit_hash",
+      "closeTailRequired": true,
+      "lifecycleCommentCommitLocation": "task_worktree",
+      "finishCommitFromComment": false
+    },
+    "taskIntent": {
+      "taskKind": "context",
+      "mutationScope": "context",
+      "blueprintRequest": "context.maximum_assimilation"
+    },
+    "whySelected": [
+      "explicit blueprint requested: context.maximum_assimilation",
+      "task intent kind: context",
+      "workflow mode: branch_pr",
+      "task intent mutation scope: context"
+    ],
+    "states": [
+      {
+        "id": "intake",
+        "kind": "intake",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "sources"
+        ]
+      },
+      {
+        "id": "scope",
+        "kind": "scope",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "assumptions"
+        ]
+      },
+      {
+        "id": "context_resolve",
+        "kind": "context_resolve",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [
+          ".agentplane/policy/security.must.md",
+          ".agentplane/policy/dod.core.md",
+          ".agentplane/policy/context.must.md"
+        ],
+        "evidenceKinds": [
+          "context_manifest",
+          "sources"
+        ]
+      },
+      {
+        "id": "work_unit",
+        "kind": "work_unit",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "changed_paths",
+          "artifact",
+          "weak_links"
+        ]
+      },
+      {
+        "id": "deterministic_check",
+        "kind": "deterministic_check",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [
+          "agentplane context reindex --include-raw",
+          "agentplane context wiki lint context/wiki",
+          "agentplane context wiki index context/wiki",
+          "agentplane context verify-task <task-id>",
+          "agentplane context doctor",
+          "agentplane context graph validate",
+          "agentplane context search <query> --format json",
+          "agentplane acr check <task-id>"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result"
+        ]
+      },
+      {
+        "id": "artifact_write",
+        "kind": "artifact_write",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "artifact"
+        ]
+      },
+      {
+        "id": "verify_record",
+        "kind": "verify_record",
+        "mode": "record",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result",
+          "weak_links"
+        ]
+      },
+      {
+        "id": "quality_gate",
+        "kind": "quality_gate",
+        "mode": "agentic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "quality_report"
+        ]
+      },
+      {
+        "id": "finish",
+        "kind": "finish",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "commit"
+        ]
+      }
+    ],
+    "requiredEvidence": [
+      {
+        "id": "context_max.sources",
+        "kind": "sources",
+        "producedBy": "intake",
+        "required": true,
+        "description": "Selected source set and hashes."
+      },
+      {
+        "id": "context_max.coverage",
+        "kind": "artifact",
+        "producedBy": "artifact_write",
+        "required": true,
+        "description": "Coverage map proving every significant source span was semantically assimilated, intentionally omitted, duplicated, or redacted."
+      },
+      {
+        "id": "context_max.addressing",
+        "kind": "context_manifest",
+        "producedBy": "context_resolve",
+        "required": true,
+        "description": "Source registry with original hashes, availability state, and line-addressed provenance refs for extracted claims, entities, relations, and articles."
+      },
+      {
+        "id": "context_max.graph_first",
+        "kind": "artifact",
+        "producedBy": "work_unit",
+        "required": true,
+        "description": "Entity, alias, relation, conflict, and open-question extraction completed before narrative wiki synthesis."
+      },
+      {
+        "id": "context_max.topology",
+        "kind": "artifact",
+        "producedBy": "artifact_write",
+        "required": true,
+        "description": "Source-shaped topology decision recorded before page-family creation, including source type, canonical families, page-vs-heading granularity, aliases, unresolved identities, and source-backed evidence for every new family."
+      },
+      {
+        "id": "context_max.glossary",
+        "kind": "artifact",
+        "producedBy": "artifact_write",
+        "required": true,
+        "description": "Root wiki glossary file `context/wiki/glossary.md` created or updated for canonical term normalization and alias preservation; semantic wiki links use source-shaped topology with case-stable Obsidian targets."
+      },
+      {
+        "id": "context_max.obsidian",
+        "kind": "artifact",
+        "producedBy": "artifact_write",
+        "required": true,
+        "description": "Wiki pages include Obsidian properties for aliases/tags/cssclasses and use numeric source notes that point to raw-data links in each page's Sources section."
+      },
+      {
+        "id": "context_max.changed_paths",
+        "kind": "changed_paths",
+        "producedBy": "work_unit",
+        "required": true,
+        "description": "Wiki, derived, glossary, report, task, and ACR paths changed by maximum assimilation."
+      },
+      {
+        "id": "context_max.verification",
+        "kind": "check_result",
+        "producedBy": "deterministic_check",
+        "required": true,
+        "description": "reindex, wiki lint, graph validation, context verify-task, doctor, smoke search, and ACR check results."
+      },
+      {
+        "id": "context_max.recovery",
+        "kind": "weak_links",
+        "producedBy": "verify_record",
+        "required": true,
+        "description": "Coverage gaps, unresolved identities, conflicts, sensitive-source redactions, or handoff status."
+      },
+      {
+        "id": "context_max.quality",
+        "kind": "quality_report",
+        "producedBy": "quality_gate",
+        "required": true,
+        "description": "EVALUATOR quality verdict."
+      },
+      {
+        "id": "context_max.commit",
+        "kind": "commit",
+        "producedBy": "finish",
+        "required": true,
+        "description": "Close or integration commit."
+      }
+    ],
+    "policyModules": [
+      ".agentplane/policy/context.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/security.must.md"
+    ],
+    "allowedCommands": [
+      "agentplane acr check <task-id>",
+      "agentplane acr generate <task-id> --write",
+      "agentplane context doctor",
+      "agentplane context graph validate",
+      "agentplane context learn changes",
+      "agentplane context learn files <path>",
+      "agentplane context reindex --include-raw",
+      "agentplane context search <query> --format json",
+      "agentplane context verify-task <task-id>",
+      "agentplane context wiki index context/wiki",
+      "agentplane context wiki lint context/wiki",
+      "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
+      "agentplane task resume-context <task-id>"
+    ],
+    "contextBudget": {
+      "maxPolicyModules": 3,
+      "maxPromptBlocks": 16,
+      "rationale": "Maximum assimilation keeps the normal context policy set but reserves prompt budget for coverage, glossary, entity/relation extraction, and raw-deletion resilience checks."
+    },
+    "contextManifest": [],
+    "acceptedRecipeExtensions": [],
+    "rejectedRecipeExtensions": [],
+    "stopReasons": []
+  },
+  "nodes": [
+    {
+      "id": "intake",
+      "kind": "intake",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "sources"
+      ]
+    },
+    {
+      "id": "scope",
+      "kind": "scope",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "assumptions"
+      ]
+    },
+    {
+      "id": "context_resolve",
+      "kind": "context_resolve",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [
+        ".agentplane/policy/security.must.md",
+        ".agentplane/policy/dod.core.md",
+        ".agentplane/policy/context.must.md"
+      ],
+      "evidenceKinds": [
+        "context_manifest",
+        "sources"
+      ]
+    },
+    {
+      "id": "work_unit",
+      "kind": "work_unit",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "changed_paths",
+        "artifact",
+        "weak_links"
+      ]
+    },
+    {
+      "id": "deterministic_check",
+      "kind": "deterministic_check",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [
+        "agentplane context reindex --include-raw",
+        "agentplane context wiki lint context/wiki",
+        "agentplane context wiki index context/wiki",
+        "agentplane context verify-task <task-id>",
+        "agentplane context doctor",
+        "agentplane context graph validate",
+        "agentplane context search <query> --format json",
+        "agentplane acr check <task-id>"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result"
+      ]
+    },
+    {
+      "id": "artifact_write",
+      "kind": "artifact_write",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "artifact"
+      ]
+    },
+    {
+      "id": "verify_record",
+      "kind": "verify_record",
+      "mode": "record",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result",
+        "weak_links"
+      ]
+    },
+    {
+      "id": "quality_gate",
+      "kind": "quality_gate",
+      "mode": "agentic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "quality_report"
+      ]
+    },
+    {
+      "id": "finish",
+      "kind": "finish",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "commit"
+      ]
+    }
+  ],
+  "requiredEvidence": [
+    {
+      "id": "context_max.sources",
+      "kind": "sources",
+      "producedBy": "intake",
+      "required": true,
+      "description": "Selected source set and hashes."
+    },
+    {
+      "id": "context_max.coverage",
+      "kind": "artifact",
+      "producedBy": "artifact_write",
+      "required": true,
+      "description": "Coverage map proving every significant source span was semantically assimilated, intentionally omitted, duplicated, or redacted."
+    },
+    {
+      "id": "context_max.addressing",
+      "kind": "context_manifest",
+      "producedBy": "context_resolve",
+      "required": true,
+      "description": "Source registry with original hashes, availability state, and line-addressed provenance refs for extracted claims, entities, relations, and articles."
+    },
+    {
+      "id": "context_max.graph_first",
+      "kind": "artifact",
+      "producedBy": "work_unit",
+      "required": true,
+      "description": "Entity, alias, relation, conflict, and open-question extraction completed before narrative wiki synthesis."
+    },
+    {
+      "id": "context_max.topology",
+      "kind": "artifact",
+      "producedBy": "artifact_write",
+      "required": true,
+      "description": "Source-shaped topology decision recorded before page-family creation, including source type, canonical families, page-vs-heading granularity, aliases, unresolved identities, and source-backed evidence for every new family."
+    },
+    {
+      "id": "context_max.glossary",
+      "kind": "artifact",
+      "producedBy": "artifact_write",
+      "required": true,
+      "description": "Root wiki glossary file `context/wiki/glossary.md` created or updated for canonical term normalization and alias preservation; semantic wiki links use source-shaped topology with case-stable Obsidian targets."
+    },
+    {
+      "id": "context_max.obsidian",
+      "kind": "artifact",
+      "producedBy": "artifact_write",
+      "required": true,
+      "description": "Wiki pages include Obsidian properties for aliases/tags/cssclasses and use numeric source notes that point to raw-data links in each page's Sources section."
+    },
+    {
+      "id": "context_max.changed_paths",
+      "kind": "changed_paths",
+      "producedBy": "work_unit",
+      "required": true,
+      "description": "Wiki, derived, glossary, report, task, and ACR paths changed by maximum assimilation."
+    },
+    {
+      "id": "context_max.verification",
+      "kind": "check_result",
+      "producedBy": "deterministic_check",
+      "required": true,
+      "description": "reindex, wiki lint, graph validation, context verify-task, doctor, smoke search, and ACR check results."
+    },
+    {
+      "id": "context_max.recovery",
+      "kind": "weak_links",
+      "producedBy": "verify_record",
+      "required": true,
+      "description": "Coverage gaps, unresolved identities, conflicts, sensitive-source redactions, or handoff status."
+    },
+    {
+      "id": "context_max.quality",
+      "kind": "quality_report",
+      "producedBy": "quality_gate",
+      "required": true,
+      "description": "EVALUATOR quality verdict."
+    },
+    {
+      "id": "context_max.commit",
+      "kind": "commit",
+      "producedBy": "finish",
+      "required": true,
+      "description": "Close or integration commit."
+    }
+  ],
+  "policyModules": [
+    ".agentplane/policy/context.must.md",
+    ".agentplane/policy/dod.core.md",
+    ".agentplane/policy/security.must.md"
+  ],
+  "allowedCommands": [
+    "agentplane acr check <task-id>",
+    "agentplane acr generate <task-id> --write",
+    "agentplane context doctor",
+    "agentplane context graph validate",
+    "agentplane context learn changes",
+    "agentplane context learn files <path>",
+    "agentplane context reindex --include-raw",
+    "agentplane context search <query> --format json",
+    "agentplane context verify-task <task-id>",
+    "agentplane context wiki index context/wiki",
+    "agentplane context wiki lint context/wiki",
+    "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
+    "agentplane task resume-context <task-id>"
+  ],
+  "contextBudget": {
+    "maxPolicyModules": 3,
+    "maxPromptBlocks": 16,
+    "rationale": "Maximum assimilation keeps the normal context policy set but reserves prompt budget for coverage, glossary, entity/relation extraction, and raw-deletion resilience checks."
+  },
+  "contextManifest": [],
+  "acceptedRecipeExtensions": [],
+  "rejectedRecipeExtensions": [],
+  "stopReasons": [],
+  "selectionReasons": [
+    "explicit blueprint requested: context.maximum_assimilation",
+    "task intent kind: context",
+    "workflow mode: branch_pr",
+    "task intent mutation scope: context"
+  ],
+  "digest": {
+    "algorithm": "sha256",
+    "value": "09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f"
+  }
+}
