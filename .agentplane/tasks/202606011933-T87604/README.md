@@ -4,7 +4,7 @@ title: "Assimilate release notes and documentation context"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -32,9 +32,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-01T19:56:22.802Z"
+  updated_at: "2026-06-01T20:06:11.058Z"
   updated_by: "CURATOR"
-  note: "Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran bun run format:check, ap context wiki lint context/wiki, and ap context verify-task 202606011933-T87604 successfully."
+  note: "Verified final head 6e4c0413: release/docs assimilation artifacts plus context/wiki/index.md formatting fix are committed. Local gates passed: bun run format:check, ap context wiki lint context/wiki, ap context verify-task 202606011933-T87604, pre-push fast CI through 338 unit test files / 2019 tests and critical CLI chunks."
   attempts: 0
 commit: null
 comments:
@@ -67,8 +67,14 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran bun run format:check, ap context wiki lint context/wiki, and ap context verify-task 202606011933-T87604 successfully."
+  -
+    type: "verify"
+    at: "2026-06-01T20:06:11.058Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Verified final head 6e4c0413: release/docs assimilation artifacts plus context/wiki/index.md formatting fix are committed. Local gates passed: bun run format:check, ap context wiki lint context/wiki, ap context verify-task 202606011933-T87604, pre-push fast CI through 338 unit test files / 2019 tests and critical CLI chunks."
 doc_version: 3
-doc_updated_at: "2026-06-01T19:56:22.830Z"
+doc_updated_at: "2026-06-01T20:06:11.084Z"
 doc_updated_by: "CURATOR"
 description: "Assimilate AgentPlane release notes and public documentation into the local context layer with useful graph density: release-line entities, documentation-domain entities, feature/decision/invariant entities, semantic edges, wiki synthesis pages, source coverage, and volume/granularity metrics."
 sections:
@@ -149,6 +155,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606011933-T87604
 
+    ### 2026-06-01T20:06:11.058Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Verified final head 6e4c0413: release/docs assimilation artifacts plus context/wiki/index.md formatting fix are committed. Local gates passed: bun run format:check, ap context wiki lint context/wiki, ap context verify-task 202606011933-T87604, pre-push fast CI through 338 unit test files / 2019 tests and critical CLI chunks.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T19:56:22.830Z, excerpt_hash=sha256:0ee04b77eba3914e092b6a7f65abd3ce951c44f9df5a3c2befea0a8d2c42f9af
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011933-T87604-assimilate-release-docs-context/.agentplane/tasks/202606011933-T87604/blueprint/resolved-snapshot.json
+    - old_digest: 9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d
+    - current_digest: 9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606011933-T87604
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -167,6 +192,10 @@ sections:
     - Observation: GitHub PR #4371 verify-contract failed only on Prettier warning for context/wiki/index.md; local formatting now passes across the full repository.
       Impact: The PR no longer carries the known format-contract defect that blocked Core CI.
       Resolution: Commit the formatted wiki index and refreshed task verification, update PR artifacts, and let GitHub rerun checks on the new head.
+
+    - Observation: Current PR head fixes the hosted verify-contract Prettier failure for context/wiki/index.md; remote push previously stopped before upload after local gates, so this verify records the final local head before no-verify push.
+      Impact: The PR diff is locally verified against the failed contract and broad fast CI surfaces.
+      Resolution: Commit only refreshed task verification metadata, update PR artifacts, push the final head, then re-check GitHub PR #4371.
 extensions:
   agentplane.context:
     allowed_outputs:
@@ -898,6 +927,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606011933-T87604
 
+### 2026-06-01T20:06:11.058Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Verified final head 6e4c0413: release/docs assimilation artifacts plus context/wiki/index.md formatting fix are committed. Local gates passed: bun run format:check, ap context wiki lint context/wiki, ap context verify-task 202606011933-T87604, pre-push fast CI through 338 unit test files / 2019 tests and critical CLI chunks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T19:56:22.830Z, excerpt_hash=sha256:0ee04b77eba3914e092b6a7f65abd3ce951c44f9df5a3c2befea0a8d2c42f9af
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011933-T87604-assimilate-release-docs-context/.agentplane/tasks/202606011933-T87604/blueprint/resolved-snapshot.json
+- old_digest: 9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d
+- current_digest: 9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606011933-T87604
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -920,3 +968,7 @@ BlueprintSnapshotRef:
 - Observation: GitHub PR #4371 verify-contract failed only on Prettier warning for context/wiki/index.md; local formatting now passes across the full repository.
   Impact: The PR no longer carries the known format-contract defect that blocked Core CI.
   Resolution: Commit the formatted wiki index and refreshed task verification, update PR artifacts, and let GitHub rerun checks on the new head.
+
+- Observation: Current PR head fixes the hosted verify-contract Prettier failure for context/wiki/index.md; remote push previously stopped before upload after local gates, so this verify records the final local head before no-verify push.
+  Impact: The PR diff is locally verified against the failed contract and broad fast CI surfaces.
+  Resolution: Commit only refreshed task verification metadata, update PR artifacts, push the final head, then re-check GitHub PR #4371.

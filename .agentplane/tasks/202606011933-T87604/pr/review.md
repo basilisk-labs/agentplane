@@ -13,7 +13,7 @@ Created: 2026-06-01T19:37:03.754Z
 ## Verification
 
 - State: ok
-- Note: Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran bun run format:check, ap context wiki lint context/wiki, and ap context verify-task 202606011933-T87604 successfully.
+- Note: Verified final head 6e4c0413: release/docs assimilation artifacts plus context/wiki/index.md formatting fix are committed. Local gates passed: bun run format:check, ap context wiki lint context/wiki, ap context verify-task 202606011933-T87604, pre-push fast CI through 338 unit test files / 2019 tests and critical CLI chunks.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
