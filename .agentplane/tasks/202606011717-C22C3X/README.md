@@ -4,7 +4,7 @@ title: "Initialize maximum assimilation context layer"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -31,6 +31,24 @@ verification:
   updated_by: "CURATOR"
   note: "Command: ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: maximum-assimilation gates passed with source_set, glossary, topology, coverage, line-addressed graph refs, Obsidian wiki links, and changed_paths accepted. Scope: task-bound context artifacts for the first ten completed task-history records. Command: ap context doctor. Result: pass. Evidence: context doctor: ok after reindex. Scope: local context registry/projection health. Command: ap context graph validate. Result: pass. Evidence: context graph valid. Scope: derived graph entities, edges, and provenance. Command: bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts packages/agentplane/src/commands/context/verify-task.maximum-assimilation.test.ts. Result: pass. Evidence: 13 pass, 0 fail. Scope: harvest generator compatibility and maximum-assimilation verification gates."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-01T17:37:35.092Z"
+  updated_by: "EVALUATOR"
+  note: "Maximum-assimilation context layer initialized and first ten task-history records assimilated with deterministic evidence."
+  evaluated_sha: "4ce923c61c85687296f75bd92386009bb76c93b8"
+  blueprint_digest: "8b442ecdda6d1ecde0dd7d9b8e2bce4e74ef98e2e6ca94f0014a5032e182b39a"
+  evidence_refs:
+    - ".agentplane/tasks/202606011717-C22C3X/README.md"
+    - ".agentplane/tasks/202606011717-C22C3X/quality/20260601-173735092-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606011717-C22C3X/quality/20260601-173735092-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606011717-C22C3X/quality/20260601-173735092-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606011717-C22C3X/blueprint/resolved-snapshot.json"
+    - ".agentplane/context/derived/reports/coverage.jsonl"
+    - "context/wiki/task-harvest/done-all-tags.md"
+    - "packages/agentplane/src/context/harvest-tasks-builders.ts"
+  findings:
+    - "Quality check: source_set includes the ten selected task README files with hashes; derived facts/graph/provenance use line-addressed refs; glossary, topology, coverage, Obsidian-linked wiki pages, reindex, context verify-task, graph validate, context check, and doctor passed. Residual risk: raw task evidence JSON files are supporting source snapshots, not runner changed_paths, because context/raw remains forbidden as verified output."
 runner:
   run_id: "manual-context-assimilation-20260601T172500Z"
   status: "success"

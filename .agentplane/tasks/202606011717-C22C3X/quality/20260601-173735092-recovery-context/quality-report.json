@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606011717-C22C3X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-01T17:37:35.092Z",
+  "verdict": "pass",
+  "summary": "Maximum-assimilation context layer initialized and first ten task-history records assimilated with deterministic evidence.",
+  "evaluated_sha": "4ce923c61c85687296f75bd92386009bb76c93b8",
+  "blueprint_digest": "8b442ecdda6d1ecde0dd7d9b8e2bce4e74ef98e2e6ca94f0014a5032e182b39a",
+  "findings": [
+    "Quality check: source_set includes the ten selected task README files with hashes; derived facts/graph/provenance use line-addressed refs; glossary, topology, coverage, Obsidian-linked wiki pages, reindex, context verify-task, graph validate, context check, and doctor passed. Residual risk: raw task evidence JSON files are supporting source snapshots, not runner changed_paths, because context/raw remains forbidden as verified output."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606011717-C22C3X/README.md",
+    ".agentplane/context/derived/reports/coverage.jsonl",
+    "context/wiki/task-harvest/done-all-tags.md",
+    "packages/agentplane/src/context/harvest-tasks-builders.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
