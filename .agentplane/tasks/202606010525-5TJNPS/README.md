@@ -1,10 +1,11 @@
 ---
 id: "202606010525-5TJNPS"
 title: "Add Hermes task-run launch path"
-status: "DOING"
+result_summary: "Merged via PR #4348."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "PR #4348 hosted checks pass; local checks recorded in task verification"
   findings:
     - "Reviewed typed route gating for same-task agentplane task run, Hermes runner adapter/init config, schema and CLI docs updates, and local plus hosted check evidence."
-commit: null
+commit:
+  hash: "1e71198eb64409c7935a5193174901c8b933ac40"
+  message: "Merge pull request #4348 from basilisk-labs/task/202606010525-5TJNPS/add-hermes-task-run-launch-path"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing issue #4347 by adding a typed Hermes task-run supervise action and first-class Hermes runner/init profile, with no Codex fallback or legacy compatibility path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4348 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -65,9 +71,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Addressed PR review thread by updating the init execution fixture with runnerAdapter. Rechecked: bun run typecheck; bun run format:changed; bun x vitest run packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts."
+  -
+    type: "status"
+    at: "2026-06-01T06:13:18.718Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4348 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-01T05:45:22.398Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-01T06:13:18.724Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub issue #4347. Allow Hermes supervise to execute same-task agentplane task run route steps through typed allowlisting, and add a first-class Hermes init/runner profile without Codex fallback or backwards compatibility aliases."
 sections:
   Summary: |-
