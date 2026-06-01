@@ -12,8 +12,8 @@ Created: 2026-06-01T10:06:49.376Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Release candidate payload prepared for v0.6.14. ap release candidate completed release:prepublish:fast and release:ci-check gates through release-critical tests, then failed only on staging generated task artifacts before commit; payload was committed manually with the release candidate message. release:parity and release state now read 0.6.14.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,17 @@ Created: 2026-06-01T10:06:49.376Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/WORKFLOW.md                            |   3 +-
+ .agentplane/workflows/last-known-good.md           |   6 +-
+ docs/reference/generated-reference.mdx             |   6 +-
+ packages/agentplane/package.json                   |   6 +-
+ .../run-cli.core.help-snap.test.ts.snap            | 402 +++++++++++++++++++--
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/spec/examples/acr.json                    |  22 +-
+ packages/testkit/package.json                      |   2 +-
+ 10 files changed, 412 insertions(+), 41 deletions(-)
 ```
 
 </details>
