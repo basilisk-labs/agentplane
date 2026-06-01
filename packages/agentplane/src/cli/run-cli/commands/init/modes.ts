@@ -32,7 +32,7 @@ export function resolveToolDefaults(tool: InitTool | undefined): {
   if (tool === "claude") return { policyGateway: "claude", ide: "codex" };
   if (tool === "cursor") return { policyGateway: "codex", ide: "cursor" };
   if (tool === "windsurf") return { policyGateway: "codex", ide: "windsurf" };
-  if (tool === "hermes") return { policyGateway: "codex", ide: "codex", runnerProfile: "hermes" };
+  if (tool === "hermes") return { policyGateway: "codex", ide: "none", runnerProfile: "hermes" };
   return { policyGateway: "codex", ide: "codex" };
 }
 

@@ -6,6 +6,7 @@ import type { RunnerAdapterCapabilities, RunnerContextBundle, RunnerInvocation }
 import { buildRecipeRunnerEnv, readRecipeRunProfile } from "./recipe-run-profile.js";
 
 const CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES = ["workspace-write"];
+export type CustomRunnerAdapterId = "custom" | "hermes";
 
 function normalizeCustomEnforcement(config: RunnerCustomConfig | undefined): {
   mode: NonNullable<RunnerCustomConfig["enforcement"]>["mode"];
@@ -19,13 +20,14 @@ function normalizeCustomEnforcement(config: RunnerCustomConfig | undefined): {
 
 export function buildCustomCapabilities(
   config: RunnerCustomConfig | undefined,
+  adapterId: CustomRunnerAdapterId = "custom",
 ): RunnerAdapterCapabilities {
   const enforcement = normalizeCustomEnforcement(config);
   const configuredModeNote =
     `Configured via runner.custom.enforcement.mode=${JSON.stringify(enforcement.mode)} ` +
     `(platform=${JSON.stringify(enforcement.platform)}).`;
   return {
-    adapter_id: "custom",
+    adapter_id: adapterId,
     fields: {
       sandbox:
         enforcement.mode === "codex_sandbox_full_auto"
@@ -175,7 +177,7 @@ function normalizeCustomCommand(value: RunnerCustomConfig["command"] | undefined
 }
 
 export function buildCustomInvocation(opts: {
-  adapterId: "custom";
+  adapterId: CustomRunnerAdapterId;
   config: RunnerCustomConfig | undefined;
   bundle: RunnerContextBundle;
 }): RunnerInvocation {

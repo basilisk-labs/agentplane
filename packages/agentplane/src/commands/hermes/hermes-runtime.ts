@@ -280,9 +280,19 @@ export function executableStepFor(packet: HermesRoutePacketForExecution): {
     }
   }
   const command = packet.next_action.command?.trim() ?? "";
-  const commandParts = command.split(/\s+/u);
+  const commandParts = command.length > 0 ? command.split(/\s+/u) : [];
   const subcommand = commandParts[2];
   if (
+    commandParts.length === 4 &&
+    commandParts[0] === "agentplane" &&
+    commandParts[1] === "task" &&
+    subcommand === "run" &&
+    commandParts[3] === taskId
+  ) {
+    return { code: packet.next_action.code, args: ["task", "run", taskId], reason: null };
+  }
+  if (
+    commandParts.length === 4 &&
     commandParts[0] === "agentplane" &&
     commandParts[1] === "task" &&
     (subcommand === "run" ||

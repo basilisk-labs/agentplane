@@ -96,7 +96,7 @@ function initWriteEffects(opts: { paths: ResolvedInitPaths; answers: InitAnswers
       risk: "medium",
     });
   }
-  if (opts.answers.ide !== "codex") {
+  if (opts.answers.ide !== "codex" && opts.answers.ide !== "none") {
     effects.push({
       kind: "sync_ide",
       summary: `Sync ${opts.answers.ide} rules`,

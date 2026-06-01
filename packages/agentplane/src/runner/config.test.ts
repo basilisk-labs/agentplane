@@ -33,6 +33,19 @@ describe("runner config", () => {
     expect(resolveRunnerAdapterId(config)).toBe("custom");
   });
 
+  it("reads an explicit Hermes adapter selection from config", () => {
+    const raw = defaultConfig() as unknown as Record<string, unknown>;
+    raw.runner = {
+      default_adapter: "hermes",
+      custom: {
+        command: ["hermes", "agentplane", "run"],
+      },
+    };
+    const config = validateConfig(raw);
+    expect(resolveRunnerAdapterId(config)).toBe("hermes");
+    expect(config.runner.custom?.command).toEqual(["hermes", "agentplane", "run"]);
+  });
+
   it("validates custom runner command and env settings", () => {
     const raw = defaultConfig() as unknown as Record<string, unknown>;
     raw.runner = {

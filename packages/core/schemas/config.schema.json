@@ -231,7 +231,7 @@
         "default_adapter": {
           "default": "codex",
           "type": "string",
-          "enum": ["codex", "custom"]
+          "enum": ["codex", "custom", "hermes"]
         },
         "trace": {
           "default": {

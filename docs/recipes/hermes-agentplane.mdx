@@ -51,12 +51,18 @@ the `custom` runner adapter with `runner.custom.command=["hermes","agentplane","
 ## Expected adapter commands
 
 ```bash
+agentplane init --tool hermes --workflow branch_pr --yes
 agentplane hermes doctor --json
 agentplane hermes enqueue <task-id> --board <board> --assignee agentplane-coder --json
 agentplane hermes supervise <task-id> --execute-step --json
+agentplane task run <task-id>
 agentplane hermes lifecycle comment --body '<structured projection>' --json
 agentplane hermes lifecycle complete --body 'Agentplane terminal evidence validated' --json
 ```
+
+`--tool hermes` configures `runner.default_adapter=hermes`, disables IDE-specific sync, and writes
+`runner.custom.command=["hermes","agentplane","run"]`. The Hermes runtime image must provide that
+command; Agentplane does not fall back to Codex for Hermes task execution.
 
 ## Runtime environment
 

@@ -3,7 +3,7 @@ import type { ExecutionProfile } from "@agentplaneorg/core/config";
 import type { WorkflowMode } from "../../../../agents/agents-template.js";
 import type { PolicyGatewayFlavor } from "../../../../shared/policy-gateway.js";
 
-export type InitIde = "codex" | "cursor" | "windsurf";
+export type InitIde = "none" | "codex" | "cursor" | "windsurf";
 
 export type SetupProfilePreset = "light" | "normal" | "full-harness";
 export type InitMode = "quick" | "guided" | "advanced" | "ci";

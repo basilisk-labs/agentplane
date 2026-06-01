@@ -172,6 +172,22 @@ describe("config", () => {
     });
   });
 
+  it("validateConfig accepts the Hermes runner adapter", () => {
+    const raw = defaultConfig() as unknown as Record<string, unknown>;
+    raw.runner = {
+      ...raw.runner,
+      default_adapter: "hermes",
+      custom: {
+        command: ["hermes", "agentplane", "run"],
+      },
+    };
+
+    const validated = validateConfig(raw);
+
+    expect(validated.runner.default_adapter).toBe("hermes");
+    expect(validated.runner.custom?.command).toEqual(["hermes", "agentplane", "run"]);
+  });
+
   it("setByDottedKey sets nested fields and preserves object shape", () => {
     const cfg = defaultConfig() as unknown as Record<string, unknown>;
     setByDottedKey(cfg, "workflow_mode", "branch_pr");

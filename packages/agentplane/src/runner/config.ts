@@ -5,7 +5,7 @@ import type {
   RunnerTraceConfig,
 } from "@agentplaneorg/core/config";
 
-export const KNOWN_RUNNER_ADAPTER_IDS: RunnerAdapterId[] = ["codex", "custom"];
+export const KNOWN_RUNNER_ADAPTER_IDS: RunnerAdapterId[] = ["codex", "custom", "hermes"];
 
 export function resolveRunnerAdapterId(config: Pick<AgentplaneConfig, "runner">): RunnerAdapterId {
   return config.runner.default_adapter;

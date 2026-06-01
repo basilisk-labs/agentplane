@@ -19,14 +19,22 @@ import { buildRunnerExecutionArtifacts, durationMs } from "./runtime-shared.js";
 import { exitCodeForSignal } from "../process-supervision/signals.js";
 import type { readRunnerResultManifest } from "../result-manifest.js";
 import { assertAdapterBundle, assertAdapterInvocation } from "./base.js";
-import { buildCustomCapabilities, buildCustomInvocation } from "./custom-preparation.js";
+import {
+  buildCustomCapabilities,
+  buildCustomInvocation,
+  type CustomRunnerAdapterId,
+} from "./custom-preparation.js";
 import {
   executeSupervisedRunnerAdapter,
   type SupervisedRunnerArtifactInput,
 } from "./execute-supervised.js";
 
-function assertCustomBundle(bundle: RunnerContextBundle): void {
-  assertAdapterBundle({ adapterId: "custom", label: "Custom", bundle });
+function customAdapterLabel(adapterId: CustomRunnerAdapterId): string {
+  return adapterId === "hermes" ? "Hermes" : "Custom";
+}
+
+function assertCustomBundle(bundle: RunnerContextBundle, adapterId: CustomRunnerAdapterId): void {
+  assertAdapterBundle({ adapterId, label: customAdapterLabel(adapterId), bundle });
 }
 
 function buildCustomArtifacts(
@@ -87,16 +95,21 @@ function applyCustomRunnerResultManifest(opts: {
 }
 
 export class CustomRunnerAdapter implements RunnerAdapter {
-  readonly id = "custom" as const;
+  readonly id: CustomRunnerAdapterId;
 
-  constructor(private readonly config: RunnerCustomConfig | undefined) {}
+  constructor(
+    private readonly config: RunnerCustomConfig | undefined,
+    adapterId: CustomRunnerAdapterId = "custom",
+  ) {
+    this.id = adapterId;
+  }
 
   describeCapabilities(_bundle: RunnerContextBundle): RunnerAdapterCapabilities {
-    return structuredClone(buildCustomCapabilities(this.config));
+    return structuredClone(buildCustomCapabilities(this.config, this.id));
   }
 
   prepare(bundle: RunnerContextBundle): Promise<RunnerInvocation> {
-    assertCustomBundle(bundle);
+    assertCustomBundle(bundle, this.id);
     return Promise.resolve(
       buildCustomInvocation({
         adapterId: this.id,
@@ -110,18 +123,22 @@ export class CustomRunnerAdapter implements RunnerAdapter {
     return executeSupervisedRunnerAdapter({
       invocation,
       assertInvocation: (input) =>
-        assertAdapterInvocation({ adapterId: "custom", label: "Custom", invocation: input }),
+        assertAdapterInvocation({
+          adapterId: this.id,
+          label: customAdapterLabel(this.id),
+          invocation: input,
+        }),
       readStdinText: async (input) =>
         input.bootstrap_path ? await readFile(input.bootstrap_path, "utf8") : "",
-      startMessage: "custom runner started",
+      startMessage: `${this.id} runner started`,
       buildArtifacts: buildCustomArtifacts,
       preserveSourceManifestOnSuccess: (manifest) => manifest !== null,
-      capabilitiesUsed: (input) => [`custom:${input.argv[0] ?? "runner"}`],
+      capabilitiesUsed: (input) => [`${this.id}:${input.argv[0] ?? "runner"}`],
       applyManifest: applyCustomRunnerResultManifest,
-      successEventMessage: (result) => `custom runner finished with status=${result.status}`,
-      failureSummary: "Custom runner execution failed before producing a valid result manifest.",
+      successEventMessage: (result) => `${this.id} runner finished with status=${result.status}`,
+      failureSummary: `${customAdapterLabel(this.id)} runner execution failed before producing a valid result manifest.`,
       failureEventType: "runner_execute_finish",
-      failureEventMessage: (result) => `custom runner failed with status=${result.status}`,
+      failureEventMessage: (result) => `${this.id} runner failed with status=${result.status}`,
       buildBaseResult: ({ processResult, artifacts, output_paths }) => {
         const success = processResult.exit_code === 0;
         const ended_at = processResult.ended_at;
@@ -188,7 +205,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
         return {
           ...baseResult,
           artifacts,
-          capabilities_used: [`custom:${invocation.argv[0] ?? "runner"}`],
+          capabilities_used: [`${this.id}:${invocation.argv[0] ?? "runner"}`],
         };
       },
     });

@@ -66,8 +66,8 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       kind: "string",
       name: "ide",
-      valueHint: "<codex|cursor|windsurf>",
-      choices: ["codex", "cursor", "windsurf"],
+      valueHint: "<none|codex|cursor|windsurf>",
+      choices: ["none", "codex", "cursor", "windsurf"],
       coerce: (raw) => raw.trim().toLowerCase(),
       description: "IDE rules integration target (default: codex).",
     },

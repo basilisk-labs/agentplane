@@ -78,19 +78,15 @@ export async function writeInitConfig(opts: {
   setByDottedKey(rawConfig, "framework.cli.expected_version", getVersion());
   setByDottedKey(rawConfig, "execution", JSON.stringify(opts.execution));
   if (opts.runnerProfile === "hermes") {
-    setByDottedKey(rawConfig, "runner.default_adapter", "custom");
+    setByDottedKey(rawConfig, "runner.default_adapter", "hermes");
     setByDottedKey(
       rawConfig,
-      "runner.custom",
-      JSON.stringify({
-        command: ["hermes", "agentplane", "run"],
-        env: {},
-        enforcement: {
-          mode: "none",
-          platform: "auto",
-        },
-      }),
+      "runner.custom.command",
+      JSON.stringify(["hermes", "agentplane", "run"]),
     );
+    setByDottedKey(rawConfig, "runner.custom.env", JSON.stringify({}));
+    setByDottedKey(rawConfig, "runner.custom.enforcement.mode", "none");
+    setByDottedKey(rawConfig, "runner.custom.enforcement.platform", "auto");
   }
   await saveConfig(opts.agentplaneDir, rawConfig);
 }

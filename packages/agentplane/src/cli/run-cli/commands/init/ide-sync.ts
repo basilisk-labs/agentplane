@@ -8,9 +8,10 @@ import type { RunDeps } from "../../command-catalog/kernel.js";
 export async function maybeSyncIde(opts: {
   cwd: string;
   rootOverride?: string;
-  ide: "codex" | "cursor" | "windsurf";
+  ide: "none" | "codex" | "cursor" | "windsurf";
   gitRoot: string;
 }): Promise<{ installPaths: string[] }> {
+  if (opts.ide === "none") return { installPaths: [] };
   if (opts.ide === "codex") return { installPaths: [] };
 
   const deps: RunDeps = {

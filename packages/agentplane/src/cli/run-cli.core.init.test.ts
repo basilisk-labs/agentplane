@@ -807,7 +807,7 @@ describe("runCli", () => {
     expect(await pathExists(path.join(root, ".agentplane"))).toBe(false);
   });
 
-  it("init --quick --tool hermes configures the Hermes custom runner profile", async () => {
+  it("init --quick --tool hermes configures the native Hermes runner profile without IDE sync", async () => {
     const root = await mkTempDir();
     const io = captureStdIO();
     try {
@@ -827,7 +827,7 @@ describe("runCli", () => {
     }
 
     const loaded = await loadConfig(path.join(root, ".agentplane"));
-    expect(loaded.config.runner.default_adapter).toBe("custom");
+    expect(loaded.config.runner.default_adapter).toBe("hermes");
     expect(loaded.config.runner.custom).toMatchObject({
       command: ["hermes", "agentplane", "run"],
       env: {},
@@ -836,6 +836,8 @@ describe("runCli", () => {
         platform: "auto",
       },
     });
+    expect(await pathExists(path.join(root, ".cursor"))).toBe(false);
+    expect(await pathExists(path.join(root, ".windsurf"))).toBe(false);
   });
 
   it("init plan records explicit GitHub issue feedback opt-in", async () => {

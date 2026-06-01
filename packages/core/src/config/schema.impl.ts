@@ -290,7 +290,7 @@ export const AgentplaneConfigSchema = z
       }),
     runner: z
       .object({
-        default_adapter: z.enum(["codex", "custom"]).default("codex"),
+        default_adapter: z.enum(["codex", "custom", "hermes"]).default("codex"),
         trace: RUNNER_TRACE_SCHEMA,
         timeouts: RUNNER_TIMEOUTS_SCHEMA,
         custom: RUNNER_CUSTOM_SCHEMA.optional(),

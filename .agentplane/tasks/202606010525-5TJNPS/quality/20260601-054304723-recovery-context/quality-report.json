@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202606010525-5TJNPS",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-01T05:43:04.723Z",
+  "verdict": "pass",
+  "summary": "Hermes task-run launch path and Hermes runner init profile match issue #4347 acceptance criteria.",
+  "evaluated_sha": "4ebe738185ef4670975048c1b3258cf66195cc5d",
+  "blueprint_digest": "94162ba4c475107cd70bf1c3284ddef3120e0814703024345182adeae1cb6dc1",
+  "findings": [
+    "Reviewed typed route gating for same-task agentplane task run, Hermes runner adapter/init config, schema and CLI docs updates, and local plus hosted check evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606010525-5TJNPS/README.md",
+    "PR #4348 hosted checks pass; local checks recorded in task verification"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
