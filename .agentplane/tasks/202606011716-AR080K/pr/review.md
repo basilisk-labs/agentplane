@@ -13,7 +13,7 @@ Created: 2026-06-01T17:17:02.350Z
 ## Verification
 
 - State: ok
-- Note: Verified: implemented read-only context dashboard command and typed whole-knowledge graph snapshot. Commands passed: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/context/dashboard.unit.test.ts; bun run --filter=agentplane typecheck; targeted eslint for changed files; bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; bun run --filter=agentplane build; ap context dashboard --dump-json; ap context graph validate; node .agentplane/policy/check-routing.mjs; git diff --check.
+- Note: Verified final PR HEAD 6667e0663: GitHub PR #4364 required checks passed after CI recovery review; local dashboard unit tests, typecheck, build, docs CLI freshness, Knip baseline, hotspot threshold, dump-json smoke, and context graph validation passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -4,7 +4,7 @@ title: "Add fast context knowledge dashboard"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,34 +20,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-01T17:33:37.538Z"
-  updated_by: "CODER"
-  note: "Verified: implemented read-only context dashboard command and typed whole-knowledge graph snapshot. Commands passed: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/context/dashboard.unit.test.ts; bun run --filter=agentplane typecheck; targeted eslint for changed files; bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; bun run --filter=agentplane build; ap context dashboard --dump-json; ap context graph validate; node .agentplane/policy/check-routing.mjs; git diff --check."
+  updated_at: "2026-06-01T18:31:53.247Z"
+  updated_by: "EVALUATOR"
+  note: "Verified final PR HEAD 6667e0663: GitHub PR #4364 required checks passed after CI recovery review; local dashboard unit tests, typecheck, build, docs CLI freshness, Knip baseline, hotspot threshold, dump-json smoke, and context graph validation passed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-01T18:23:56.376Z"
+  updated_at: "2026-06-01T18:31:53.247Z"
   updated_by: "EVALUATOR"
-  note: "Dashboard implementation and CI fix satisfy the approved graph-dashboard scope at HEAD 81c6203ff."
-  evaluated_sha: "a4c926b47cc6b6a2cdf6882df97213145126bd4b"
+  note: "Verified final PR HEAD 6667e0663: GitHub PR #4364 required checks passed after CI recovery review; local dashboard unit tests, typecheck, build, docs CLI freshness, Knip baseline, hotspot threshold, dump-json smoke, and context graph validation passed."
+  evaluated_sha: "b77bb6bd3c7f95e97478c1abf227c78281ecd5a1"
   blueprint_digest: "3d3b913516511d5acbb765ecb78369fa6b7c55ab815c7eac9cd5d6370120bb16"
   evidence_refs:
     - ".agentplane/tasks/202606011716-AR080K/README.md"
-    - ".agentplane/tasks/202606011716-AR080K/quality/20260601-182356376-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606011716-AR080K/quality/20260601-182356376-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606011716-AR080K/quality/20260601-182356376-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202606011716-AR080K/blueprint/resolved-snapshot.json"
-    - "github-pr-4364-checks:success"
-    - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/context/dashboard.unit.test.ts"
-    - "bun run --filter=agentplane typecheck"
-    - "bun run --filter=agentplane build"
-    - "bun run docs:cli:check"
-    - "node scripts/checks/check-knip-baseline.mjs"
-    - "bun run hotspots:check"
-    - "ap context dashboard --dump-json"
-    - "ap context graph validate"
-  findings:
-    - "Verified local targeted dashboard tests, typecheck, build, docs CLI freshness, Knip baseline, hotspot threshold, graph validation, dump-json smoke, and GitHub PR #4364 required checks."
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011716-AR080K-add-fast-context-knowledge-dashboard/.agentplane/tasks/202606011716-AR080K/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -67,8 +54,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: implemented read-only context dashboard command and typed whole-knowledge graph snapshot. Commands passed: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/context/dashboard.unit.test.ts; bun run --filter=agentplane typecheck; targeted eslint for changed files; bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; bun run --filter=agentplane build; ap context dashboard --dump-json; ap context graph validate; node .agentplane/policy/check-routing.mjs; git diff --check."
+  -
+    type: "verify"
+    at: "2026-06-01T18:31:53.247Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Verified final PR HEAD 6667e0663: GitHub PR #4364 required checks passed after CI recovery review; local dashboard unit tests, typecheck, build, docs CLI freshness, Knip baseline, hotspot threshold, dump-json smoke, and context graph validation passed."
 doc_version: 3
-doc_updated_at: "2026-06-01T17:33:37.577Z"
+doc_updated_at: "2026-06-01T18:31:53.330Z"
 doc_updated_by: "CODER"
 description: "Implement a read-only context dashboard command that serves a whole knowledge graph across wiki pages, links, entities, claims, sources, capabilities, and task evidence, optimized for large task-history-to-LLM-wiki datasets using the existing context projection where possible."
 sections:
@@ -97,6 +90,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T17:30:11.179Z, excerpt_hash=sha256:429d6048969b5f32d453491bd466855f165a7acfb7437687876ecb6816a0bc7b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011716-AR080K-add-fast-context-knowledge-dashboard/.agentplane/tasks/202606011716-AR080K/blueprint/resolved-snapshot.json
+    - old_digest: 3d3b913516511d5acbb765ecb78369fa6b7c55ab815c7eac9cd5d6370120bb16
+    - current_digest: 3d3b913516511d5acbb765ecb78369fa6b7c55ab815c7eac9cd5d6370120bb16
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606011716-AR080K
+
+    ### 2026-06-01T18:31:53.247Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Verified final PR HEAD 6667e0663: GitHub PR #4364 required checks passed after CI recovery review; local dashboard unit tests, typecheck, build, docs CLI freshness, Knip baseline, hotspot threshold, dump-json smoke, and context graph validation passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T17:33:37.577Z, excerpt_hash=sha256:429d6048969b5f32d453491bd466855f165a7acfb7437687876ecb6816a0bc7b
 
     Details:
 
@@ -150,6 +162,25 @@ Note: Verified: implemented read-only context dashboard command and typed whole-
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T17:30:11.179Z, excerpt_hash=sha256:429d6048969b5f32d453491bd466855f165a7acfb7437687876ecb6816a0bc7b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011716-AR080K-add-fast-context-knowledge-dashboard/.agentplane/tasks/202606011716-AR080K/blueprint/resolved-snapshot.json
+- old_digest: 3d3b913516511d5acbb765ecb78369fa6b7c55ab815c7eac9cd5d6370120bb16
+- current_digest: 3d3b913516511d5acbb765ecb78369fa6b7c55ab815c7eac9cd5d6370120bb16
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606011716-AR080K
+
+### 2026-06-01T18:31:53.247Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Verified final PR HEAD 6667e0663: GitHub PR #4364 required checks passed after CI recovery review; local dashboard unit tests, typecheck, build, docs CLI freshness, Knip baseline, hotspot threshold, dump-json smoke, and context graph validation passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T17:33:37.577Z, excerpt_hash=sha256:429d6048969b5f32d453491bd466855f165a7acfb7437687876ecb6816a0bc7b
 
 Details:
 
