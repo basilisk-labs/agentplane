@@ -57,6 +57,34 @@ function normalizeSlashes(value: string): string {
 
 installRunCliIntegrationHarness();
 
+async function writeCloudBackendProject(root: string): Promise<void> {
+  const config = defaultConfig();
+  config.tasks_backend.config_path = ".agentplane/backends/cloud/backend.json";
+  config.agents.approvals.require_network = false;
+  await writeConfig(root, config);
+  const backendDir = path.join(root, ".agentplane", "backends", "cloud");
+  await mkdir(backendDir, { recursive: true });
+  await writeFile(
+    path.join(backendDir, "backend.json"),
+    `${JSON.stringify(
+      {
+        id: "cloud",
+        version: 1,
+        settings: {
+          endpoint: "https://cloud.example",
+          token: "token",
+          project_id: "project-1",
+          cache_dir: ".agentplane/tasks",
+          stale_after_seconds: 1,
+        },
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+}
+
 describe("runCli", () => {
   it("backend rejects unknown subcommands", async () => {
     const root = await mkGitRepoRoot();
@@ -549,6 +577,80 @@ describe("runCli", () => {
     } finally {
       io.restore();
       spy.mockRestore();
+    }
+  });
+
+  it("backend sync cloud exits nonzero when the cloud push endpoint returns E_BACKEND", async () => {
+    const root = await mkGitRepoRoot();
+    await writeCloudBackendProject(root);
+    const cache = new taskBackend.LocalBackend({
+      dir: path.join(root, ".agentplane", "tasks"),
+    });
+    await cache.writeTask({
+      id: "202605311957-A1B2C3",
+      title: "Cloud task",
+      description: "Push this task",
+      status: "TODO",
+      priority: "med",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["cloud"],
+      verify: [],
+    });
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(Response.json({ error: "upstream unavailable" }, { status: 502 }));
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "backend",
+        "sync",
+        "cloud",
+        "--direction",
+        "push",
+        "--conflict",
+        "fail",
+        "--yes",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(6);
+      expect(io.stderr).toContain("error [E_BACKEND]");
+      expect(io.stderr).toContain("Cloud backend request failed: HTTP 502");
+    } finally {
+      io.restore();
+      fetchSpy.mockRestore();
+    }
+  });
+
+  it("task show exits nonzero when cloud read autosync fails before a response", async () => {
+    const root = await mkGitRepoRoot();
+    await writeCloudBackendProject(root);
+    await mkdir(path.join(root, ".agentplane", "backends", "cloud"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "backends", "cloud", "state.json"),
+      `${JSON.stringify({ last_checked_at: "2026-05-01T00:00:00.000Z" }, null, 2)}\n`,
+      "utf8",
+    );
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockImplementation((input) => {
+      const href =
+        typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      if (href.endsWith("/sync/state")) {
+        return Promise.resolve(Response.json({ error: "sync state unavailable" }, { status: 502 }));
+      }
+      return Promise.reject(new TypeError("fetch failed"));
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "show", "202605311957-A1B2C3", "--root", root]);
+      expect(code).toBe(7);
+      expect(io.stderr).toContain("error [E_NETWORK]");
+      expect(io.stderr).toContain("Cloud backend request failed before a response was received");
+    } finally {
+      io.restore();
+      fetchSpy.mockRestore();
     }
   });
 
