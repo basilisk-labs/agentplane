@@ -1349,6 +1349,14 @@
       "svgSha256": "bf7625b55146a3f40db3f6a6411fb5902156c5b9f53525dbc6f3db39f3c5e0cd"
     },
     {
+      "route": "/docs/releases/v0.6.14",
+      "output": "static/img/social/docs/releases/v0.6.14.png",
+      "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "V0.6.14",
+      "svgSha256": "366d3ab82eb8fbe9a930d4d5f5a97f4d28537c4b1f66e21889ee247e34f76232"
+    },
+    {
       "route": "/docs/releases/v0.6.2",
       "output": "static/img/social/docs/releases/v0.6.2.png",
       "section": "Releases",
