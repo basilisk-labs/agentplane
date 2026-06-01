@@ -13,7 +13,7 @@ Created: 2026-06-01T05:26:11.714Z
 ## Verification
 
 - State: ok
-- Note: Verified Hermes task-run supervise and Hermes runner init profile. Checks: bun x vitest run packages/agentplane/src/commands/hermes/hermes.command.test.ts packages/agentplane/src/runner/config.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts packages/core/src/config/config.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts; bun run typecheck; bun run format:changed; bun run schemas:check; bun run docs:cli:check; bun run docs:recipes:check; node .agentplane/policy/check-routing.mjs.
+- Note: Addressed PR review thread by updating the init execution fixture with runnerAdapter. Rechecked: bun run typecheck; bun run format:changed; bun x vitest run packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -34,6 +34,7 @@ Created: 2026-06-01T05:26:11.714Z
  docs/workflow-guides/hermes-kanban.mdx             | 27 +++++++-
  .../agentplane/src/cli/run-cli.core.init.test.ts   | 18 ++++++
  .../src/cli/run-cli/commands/init/answers.ts       |  3 +
+ .../cli/run-cli/commands/init/execution.test.ts    |  1 +
  .../src/cli/run-cli/commands/init/execution.ts     |  1 +
  .../src/cli/run-cli/commands/init/ide-sync.ts      |  3 +-
  .../src/cli/run-cli/commands/init/init-plan.ts     |  3 +-
@@ -55,7 +56,7 @@ Created: 2026-06-01T05:26:11.714Z
  packages/core/src/config/schema.impl.ts            |  2 +-
  packages/spec/schemas/config.schema.json           |  2 +-
  schemas/config.schema.json                         |  2 +-
- 26 files changed, 244 insertions(+), 38 deletions(-)
+ 27 files changed, 245 insertions(+), 38 deletions(-)
 ```
 
 </details>
