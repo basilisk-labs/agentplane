@@ -1,10 +1,11 @@
 ---
 id: "202606012037-W0QJJ2"
 title: "Assimilate source architecture and command graph"
-status: "DOING"
+result_summary: "Merged via PR #4372."
+status: "DONE"
 priority: "med"
 owner: "CURATOR"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -55,11 +56,16 @@ quality_review:
     - ".agentplane/tasks/202606012037-W0QJJ2/pr/meta.json"
   findings:
     - "Evidence: PR #4372 at head cc84afde6f7a passes CodeQL, PR verification, plan, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow, verify-cli-critical, and test-windows. Local context gates passed except broad context doctor/check, which reproducibly hung on the large projection and is recorded as residual risk."
-commit: null
+commit:
+  hash: "a2a5a3857c36f328080119af0583eb6ff96f0d4d"
+  message: "Merge pull request #4372 from basilisk-labs/task/202606012037-W0QJJ2/assimilate-source-architecture"
 comments:
   -
     author: "CURATOR"
     body: "Start: assimilating source architecture and command graph from the dedicated task worktree. Scope is context-only outputs: source architecture reports, graph/facts/coverage rows via context extraction, and wiki pages under context/wiki/source-architecture."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4372 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -110,9 +116,16 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Verified PR #4372 review fixes: root-level command files now map to the root command group, generated source-architecture wiki pages always emit aliases: [], and source links are generated relative to each wiki page. Regenerated source architecture assimilation and reran targeted link/frontmatter assertions, context reindex, wiki lint, graph validate, context verify-task, source search smoke, policy routing, and full format check."
+  -
+    type: "status"
+    at: "2026-06-01T21:40:46.400Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4372 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-01T21:28:14.898Z"
-doc_updated_by: "CURATOR"
+doc_updated_at: "2026-06-01T21:40:46.590Z"
+doc_updated_by: "INTEGRATOR"
 description: "Assimilate AgentPlane source code into local context without copying implementation bodies: package/module graph, command surface, workflow/state-machine links, schema/policy/test/CI coverage, and metrics for code corpus size and granularity."
 sections:
   Summary: |-
