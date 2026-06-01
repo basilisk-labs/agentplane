@@ -29,6 +29,7 @@ agentplane_context:
   conflicts: []
   updated_by: CURATOR
 ---
+
 # Task history version assimilation report
 
 The task history corpus is assimilated through version-level pre-extraction packets rather than one semantic pass over every task. [[Task history version pre-extraction packets]] is the compact source for future semantic extraction; [[Task history coverage]] remains the audit pattern for task-level coverage.

@@ -23,9 +23,11 @@ agentplane_context:
   conflicts: []
   updated_by: CURATOR
 ---
+
 # Reports
 
 <!-- agentplane-context-wiki-index:start -->
+
 - [Task history coverage](coverage.md)
 - [Task history pre-extraction topology](task-history-preextract-topology.md)
 - [Task history version assimilation report](task-history-version-assimilation.md)

@@ -38,16 +38,16 @@ Created: 2026-06-01T18:15:03.313Z
  .../task-history-version-extraction.sgr.json       | 62050 +++++++++++++++++++
  .../reports/task-history-version-preextract.json   | 12316 ++++
  .agentplane/tasks/202606011809-VCQPP7/README.md    |   115 +
- context/wiki/index.md                              |     7 +
- context/wiki/proposals/index.md                    |    30 +
- context/wiki/proposals/task-harvest/index.md       |    30 +
- context/wiki/reports/index.md                      |    35 +
- .../reports/task-history-preextract-topology.md    |    46 +
- .../reports/task-history-version-assimilation.md   |    64 +
- .../wiki/reports/task-history-version-coverage.md  |   112 +
- .../wiki/reports/task-history-version-packets.md   |  1040 +
- context/wiki/task-harvest/index.md                 |    30 +
- 18 files changed, 81779 insertions(+)
+ context/wiki/index.md                              |     8 +
+ context/wiki/proposals/index.md                    |    32 +
+ context/wiki/proposals/task-harvest/index.md       |    32 +
+ context/wiki/reports/index.md                      |    37 +
+ .../reports/task-history-preextract-topology.md    |    47 +
+ .../reports/task-history-version-assimilation.md   |    65 +
+ .../wiki/reports/task-history-version-coverage.md  |   113 +
+ .../wiki/reports/task-history-version-packets.md   |  1041 +
+ context/wiki/task-harvest/index.md                 |    32 +
+ 18 files changed, 81792 insertions(+)
 ```
 
 </details>

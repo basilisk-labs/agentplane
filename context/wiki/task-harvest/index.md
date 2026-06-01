@@ -23,8 +23,10 @@ agentplane_context:
   conflicts: []
   updated_by: CURATOR
 ---
+
 # Task Harvest
 
 <!-- agentplane-context-wiki-index:start -->
+
 - [Completed task history harvest](done-all-tags.md)
 <!-- agentplane-context-wiki-index:end -->

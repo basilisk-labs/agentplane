@@ -23,8 +23,10 @@ agentplane_context:
   conflicts: []
   updated_by: CURATOR
 ---
+
 # Proposals
 
 <!-- agentplane-context-wiki-index:start -->
+
 - [Task Harvest](task-harvest/index.md)
 <!-- agentplane-context-wiki-index:end -->

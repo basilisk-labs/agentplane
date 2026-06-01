@@ -29,6 +29,7 @@ agentplane_context:
   conflicts: []
   updated_by: CURATOR
 ---
+
 # Task history pre-extraction topology
 
 - source_shape: task history plus PR/ACR support artifacts.

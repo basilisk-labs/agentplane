@@ -29,6 +29,7 @@ agentplane_context:
   conflicts: []
   updated_by: CURATOR
 ---
+
 # Task history version coverage
 
 coverage: 2945 task README sources assigned to 66 version buckets.

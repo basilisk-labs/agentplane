@@ -29,6 +29,7 @@ agentplane_context:
   conflicts: []
   updated_by: CURATOR
 ---
+
 # Task history version pre-extraction packets
 
 These packets compress task history into release/version windows before semantic extraction. They preserve task-level coverage through derived coverage rows while exposing only high-signal version and theme summaries to future agents. See [[Task history version assimilation report]] and [[Task history pre-extraction topology]].
