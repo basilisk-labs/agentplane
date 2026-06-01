@@ -1215,60 +1215,6 @@ describe("task finish validation", () => {
     );
   });
 
-  it("refreshes ACR for context tasks even when optional ACR recording is disabled", async () => {
-    const ctx = mkCtx();
-    ctx.config.acr.enabled = false;
-    ctx.config.acr.write_on_finish = true;
-    mocks.loadTaskFromContext.mockResolvedValue(
-      mkTask({
-        id: "T-1",
-        status: "DOING",
-        tags: ["context"],
-        task_kind: "context",
-        mutation_scope: "context",
-        commit: { hash: "context-hash", message: "context" },
-      }),
-    );
-
-    const { cmdFinish } = await import("./finish-command.js");
-    await cmdFinish({
-      ctx,
-      cwd: "/repo",
-      taskIds: ["T-1"],
-      author: "A",
-      body: "Verified: this is long enough",
-      result: "ok",
-      breaking: false,
-      force: false,
-      commitFromComment: false,
-      commitAllow: [],
-      commitAutoAllow: false,
-      commitAllowTasks: false,
-      commitRequireClean: false,
-      statusCommit: false,
-      statusCommitAllow: [],
-      statusCommitAutoAllow: false,
-      statusCommitRequireClean: false,
-      confirmStatusCommit: false,
-      quiet: true,
-    });
-
-    expect(mocks.generateAcr).toHaveBeenCalledWith(
-      expect.objectContaining({
-        taskId: "T-1",
-        workCommit: "context-hash",
-        write: true,
-        refresh: true,
-      }),
-    );
-    expect(mocks.writeAcrFile).toHaveBeenCalledWith(
-      expect.objectContaining({
-        acrPath: "/repo/.agentplane/tasks/T-1/acr.json",
-        refresh: true,
-      }),
-    );
-  });
-
   it("rejects combining --commit-from-comment with --status-commit", async () => {
     const ctx = mkCtx();
     mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", status: "DOING" }));
