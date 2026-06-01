@@ -16,21 +16,7 @@ Commit the missing task-local acr.json for completed maximum-assimilation task 2
 ## Verification
 
 - State: ok
-- Note:
-
-```bash
-ap acr generate 202606011717-C22C3X --work-commit de5393f63a390a1c42f41766922a1b43c19758fd --write \
-  --refresh --json. Result: pass. Evidence: wrote .agentplane/tasks/202606011717-C22C3X/acr.json \
-  with extensions.agentplane.context.schema_version=1. Command: ap acr validate 202606011717-C22C3X. \
-  Result: pass. Evidence: acr validate acr.json. Command: ap context verify-task \
-  202606011717-C22C3X. Result: pass. Evidence: context verify-task ok for completed \
-  maximum-assimilation task. Command: bunx vitest run focused ACR, finish, and maximum-assimilation \
-  tests. Result: pass. Evidence: 3 files, 37 tests passed. Command: bun run typecheck; bun run \
-  format:check; git diff --check; ap context reindex --include-raw --include-tasks --reset; ap \
-  context check; ap context doctor; ap context graph validate; node \
-  .agentplane/policy/check-routing.mjs. Result: pass. Evidence: typecheck passed, formatting clean, \
-  reindex rows=45665 files=9390, context check/doctor ok, graph valid, policy routing OK.
-```
+- Note: Review fix verified: disabled optional ACR refresh now filters mixed finish batches to context tasks only.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -44,9 +30,9 @@ ap acr generate 202606011717-C22C3X --work-commit de5393f63a390a1c42f41766922a1b
  .agentplane/tasks/202606011717-C22C3X/acr.json     | 344 +++++++++++++++++++++
  .../src/commands/acr/acr.command.test.ts           |  25 ++
  .../src/commands/acr/generate-extensions.ts        |   1 +
- .../agentplane/src/commands/task/finish-shared.ts  |   6 +-
- .../commands/task/finish.validation.unit.test.ts   |  54 ++++
- 5 files changed, 429 insertions(+), 1 deletion(-)
+ .../commands/task/finish-acr-refresh.unit.test.ts  | 120 +++++++
+ .../agentplane/src/commands/task/finish-shared.ts  |   9 +-
+ 5 files changed, 497 insertions(+), 2 deletions(-)
 ```
 
 </details>

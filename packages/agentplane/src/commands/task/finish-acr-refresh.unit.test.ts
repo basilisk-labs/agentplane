@@ -73,4 +73,48 @@ describe("refreshAcrArtifactsForFinishedTasks", () => {
     );
     expect(invalidateStatus).toHaveBeenCalled();
   });
+
+  it("does not write ACRs for non-context tasks when optional ACR recording is disabled", async () => {
+    const { ctx, invalidateStatus } = mkCtx();
+
+    await refreshAcrArtifactsForFinishedTasks({
+      ctx,
+      cwd: "/repo",
+      loadedTasks: [
+        {
+          taskId: "T-CTX",
+          task: {
+            id: "T-CTX",
+            task_kind: "context",
+            commit: { hash: "context-hash", message: "context" },
+          },
+        },
+        {
+          taskId: "T-CODE",
+          task: {
+            id: "T-CODE",
+            task_kind: "standard",
+            commit: { hash: "code-hash", message: "code" },
+          },
+        },
+      ] as Parameters<typeof refreshAcrArtifactsForFinishedTasks>[0]["loadedTasks"],
+      taskCommitInfo: null,
+      author: "CURATOR",
+    });
+
+    expect(mocks.generateAcr).toHaveBeenCalledTimes(1);
+    expect(mocks.generateAcr).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-CTX",
+        workCommit: "context-hash",
+      }),
+    );
+    expect(mocks.generateAcr).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-CODE",
+      }),
+    );
+    expect(mocks.writeAcrFile).toHaveBeenCalledTimes(1);
+    expect(invalidateStatus).toHaveBeenCalled();
+  });
 });

@@ -4,7 +4,7 @@ title: "Restore maximum assimilation task ACR artifact"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-01T18:15:34.172Z"
+  updated_at: "2026-06-01T18:51:58.961Z"
   updated_by: "CURATOR"
-  note: "Command: ap acr generate 202606011717-C22C3X --work-commit de5393f63a390a1c42f41766922a1b43c19758fd --write --refresh --json. Result: pass. Evidence: wrote .agentplane/tasks/202606011717-C22C3X/acr.json with extensions.agentplane.context.schema_version=1. Command: ap acr validate 202606011717-C22C3X. Result: pass. Evidence: acr validate acr.json. Command: ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: context verify-task ok for completed maximum-assimilation task. Command: bunx vitest run focused ACR, finish, and maximum-assimilation tests. Result: pass. Evidence: 3 files, 37 tests passed. Command: bun run typecheck; bun run format:check; git diff --check; ap context reindex --include-raw --include-tasks --reset; ap context check; ap context doctor; ap context graph validate; node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: typecheck passed, formatting clean, reindex rows=45665 files=9390, context check/doctor ok, graph valid, policy routing OK."
+  note: "Review fix verified: disabled optional ACR refresh now filters mixed finish batches to context tasks only."
   attempts: 0
 quality_review:
   state: "pass"
@@ -61,8 +61,14 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Command: ap acr generate 202606011717-C22C3X --work-commit de5393f63a390a1c42f41766922a1b43c19758fd --write --refresh --json. Result: pass. Evidence: wrote .agentplane/tasks/202606011717-C22C3X/acr.json with extensions.agentplane.context.schema_version=1. Command: ap acr validate 202606011717-C22C3X. Result: pass. Evidence: acr validate acr.json. Command: ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: context verify-task ok for completed maximum-assimilation task. Command: bunx vitest run focused ACR, finish, and maximum-assimilation tests. Result: pass. Evidence: 3 files, 37 tests passed. Command: bun run typecheck; bun run format:check; git diff --check; ap context reindex --include-raw --include-tasks --reset; ap context check; ap context doctor; ap context graph validate; node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: typecheck passed, formatting clean, reindex rows=45665 files=9390, context check/doctor ok, graph valid, policy routing OK."
+  -
+    type: "verify"
+    at: "2026-06-01T18:51:58.961Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Review fix verified: disabled optional ACR refresh now filters mixed finish batches to context tasks only."
 doc_version: 3
-doc_updated_at: "2026-06-01T18:15:34.437Z"
+doc_updated_at: "2026-06-01T18:51:59.038Z"
 doc_updated_by: "CURATOR"
 description: "Commit the missing task-local acr.json for completed maximum-assimilation task 202606011717-C22C3X and verify context verify-task passes on main state. Scope is limited to deterministic ACR repair and task traceability for the post-merge validation gap."
 sections:
@@ -101,11 +107,33 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606011757-927CG5
 
+    ### 2026-06-01T18:51:58.961Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Review fix verified: disabled optional ACR refresh now filters mixed finish batches to context tasks only.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T18:15:34.437Z, excerpt_hash=sha256:f5c6a41d1e2b515d99da038aa6f4d92307ffd6093ded4485a472d9706312ea6c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011757-927CG5-restore-maximum-assimilation-task-acr-artifact/.agentplane/tasks/202606011757-927CG5/blueprint/resolved-snapshot.json
+    - old_digest: fe437674bfd846ddd6598526d880907e374e8a9246fe3f81de70111518054e7a
+    - current_digest: fe437674bfd846ddd6598526d880907e374e8a9246fe3f81de70111518054e7a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606011757-927CG5
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Focused tests, eslint, typecheck, format, diff whitespace, and hotspot gates pass after addressing PR review thread.
+      Impact: Prevents task finish from writing non-context ACR files when acr.enabled=false but a context task is finished in the same batch.
+      Resolution: Refresh candidate set is filtered before generation; regression coverage added for mixed context/non-context batch.
 id_source: "generated"
 ---
 ## Summary
@@ -153,6 +181,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606011757-927CG5
 
+### 2026-06-01T18:51:58.961Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Review fix verified: disabled optional ACR refresh now filters mixed finish batches to context tasks only.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T18:15:34.437Z, excerpt_hash=sha256:f5c6a41d1e2b515d99da038aa6f4d92307ffd6093ded4485a472d9706312ea6c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011757-927CG5-restore-maximum-assimilation-task-acr-artifact/.agentplane/tasks/202606011757-927CG5/blueprint/resolved-snapshot.json
+- old_digest: fe437674bfd846ddd6598526d880907e374e8a9246fe3f81de70111518054e7a
+- current_digest: fe437674bfd846ddd6598526d880907e374e8a9246fe3f81de70111518054e7a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606011757-927CG5
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -161,3 +208,7 @@ BlueprintSnapshotRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Focused tests, eslint, typecheck, format, diff whitespace, and hotspot gates pass after addressing PR review thread.
+  Impact: Prevents task finish from writing non-context ACR files when acr.enabled=false but a context task is finished in the same batch.
+  Resolution: Refresh candidate set is filtered before generation; regression coverage added for mixed context/non-context batch.
