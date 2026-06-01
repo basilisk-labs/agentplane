@@ -1,0 +1,4 @@
+ .../img/social/docs/recipes/hermes-agentplane.png       | Bin 0 -> 61944 bytes
+ .../img/social/docs/workflow-guides/hermes-kanban.png   | Bin 0 -> 61420 bytes
+ website/static/img/social/manifest.json                 |  16 ++++++++++++++++
+ 3 files changed, 16 insertions(+)

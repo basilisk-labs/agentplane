@@ -613,6 +613,14 @@
       "svgSha256": "fdfa02b4dd560e4e6ce843fdd26bcc72311f1a18d93c05f76cf118010af222b7"
     },
     {
+      "route": "/docs/recipes/hermes-agentplane",
+      "output": "static/img/social/docs/recipes/hermes-agentplane.png",
+      "section": "Recipes",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "Hermes Agentplane recipe",
+      "svgSha256": "6285c51f6104bb17443616b987f0e3063e882753f6c24c4717b6f85088d4c47f"
+    },
+    {
       "route": "/docs/recipes",
       "output": "static/img/social/docs/recipes.png",
       "section": "Recipes",
@@ -1627,6 +1635,14 @@
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "GitHub Actions gate",
       "svgSha256": "d981c568703ac20e58bb818541be5721151e16e4e871c403ea71ea7c7634990a"
+    },
+    {
+      "route": "/docs/workflow-guides/hermes-kanban",
+      "output": "static/img/social/docs/workflow-guides/hermes-kanban.png",
+      "section": "Workflow Guides",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "Agentplane + Hermes Kanban",
+      "svgSha256": "11cf106e11c79c03f6810e33fdf35c3ef599e7cde2881bc22f111643eebe0dfa"
     },
     {
       "route": "/docs/workflow-guides",
