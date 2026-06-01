@@ -1,0 +1,249 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605311941-K4FCKS",
+  "created_at": "2026-05-31T21:51:05.060Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.13"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "827ab20ade616914ee5b4c220a586b26927c7488",
+    "work_ref": "main",
+    "work_commit": "827ab20ade616914ee5b4c220a586b26927c7488"
+  },
+  "task": {
+    "task_id": "202605311941-K4FCKS",
+    "title": "Design and scaffold Hermes adapter",
+    "intent": "Document the target Hermes Agentplane adapter architecture and add an initial repo-local scaffold for Agentplane-owned Hermes supervision commands without creating an external repository.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "CODER",
+    "name": "CODER",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "openai",
+      "name": "gpt-5-codex",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.6.13"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605311941-K4FCKS/README.md",
+      "sha256": "sha256:e14dc279755b4a4031a2e803d4adf9a8faccbf66530b41143f1e73a035814f4e"
+    },
+    "approved_at": "2026-05-31T20:39:33.128Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #4340.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "other",
+        "command": "ap doctor",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-2",
+        "type": "test",
+        "command": "bunx vitest run packages/agentplane/src/commands/hermes",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-3",
+        "type": "other",
+        "command": "node .agentplane/policy/check-routing.mjs",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605311941-K4FCKS_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-31T20:39:33.128Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605311941-K4FCKS/README.md",
+      "sha256": "sha256:e14dc279755b4a4031a2e803d4adf9a8faccbf66530b41143f1e73a035814f4e"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605311941-K4FCKS/README.md",
+      "sha256": "sha256:e14dc279755b4a4031a2e803d4adf9a8faccbf66530b41143f1e73a035814f4e"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605311941-K4FCKS/README.md",
+      "sha256": "sha256:e14dc279755b4a4031a2e803d4adf9a8faccbf66530b41143f1e73a035814f4e"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:087d154b1bff4a600058a6b2905d122e3aac7e4e954261e4cf875e9f43ca4bc3"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 827ab20ade616914ee5b4c220a586b26927c7488 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:b631fff67ff5effee532c436674e7e5194a91740a1e1c05305f05fa2974e3d34",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "quality_gate",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.verify",
+          "kind": "check_result",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "code_pr.quality",
+          "kind": "quality_report",
+          "produced_by": "quality_gate",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605311941-K4FCKS/blueprint/resolved-snapshot.json",
+        "digest": "d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306",
+        "current_digest": "d8d874faab06b06f8a8617d021f8f519d8d6a3329c16aa740e57a351cf92b306",
+        "route_changed": false,
+        "artifact_sha256": "sha256:087d154b1bff4a600058a6b2905d122e3aac7e4e954261e4cf875e9f43ca4bc3",
+        "safe_command": "agentplane blueprint snapshot 202605311941-K4FCKS"
+      }
+    }
+  }
+}
