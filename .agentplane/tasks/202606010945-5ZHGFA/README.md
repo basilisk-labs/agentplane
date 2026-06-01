@@ -4,7 +4,7 @@ title: "Prepare v0.6.14 patch release documentation"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,23 @@ verification:
   updated_by: "DOCS"
   note: "Docs release-prep checks passed: docs:site:generate:check, docs:bootstrap:check, docs:cli:check, docs:recipes:check, docs:scripts:check, release:parity, check-routing, ap doctor, registry availability for 0.6.14, and release-notes coverage for all 41 planned commits. release:tasks:check is deferred until after this DOING release-prep task merges and closes because the gate correctly blocks active release tasks."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-01T09:53:11.752Z"
+  updated_by: "EVALUATOR"
+  note: "v0.6.14 release documentation is scoped to docs/generated docs freshness and matches the generated release plan."
+  evaluated_sha: "16067e9de7f3c8e2afa1f23cb91dfef07c1ff6d3"
+  blueprint_digest: "dc21264009c6b987c716fc5e5486a871e4f1346f45832dadfb529bee4208565b"
+  evidence_refs:
+    - ".agentplane/tasks/202606010945-5ZHGFA/README.md"
+    - ".agentplane/tasks/202606010945-5ZHGFA/quality/20260601-095311752-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606010945-5ZHGFA/quality/20260601-095311752-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606010945-5ZHGFA/quality/20260601-095311752-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606010945-5ZHGFA/blueprint/resolved-snapshot.json"
+    - "docs/releases/v0.6.14.md"
+    - "website/static/llms-full.txt"
+  findings:
+    - "Release notes cover all 41 commits from the v0.6.14 plan; generated llms-full now matches source docs; local docs and release-adjacent gates passed; release readiness checks that require no active DOING release task are explicitly deferred to clean main after closure."
 commit: null
 comments:
   -
