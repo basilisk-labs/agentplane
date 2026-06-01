@@ -23,6 +23,7 @@ import { introLogo, section } from "./ui.js";
 import {
   resolveIdeFromFlags,
   resolvePolicyGatewayFromFlags,
+  resolveRunnerProfileFromFlags,
   resolveToolDefaults,
 } from "./modes.js";
 
@@ -31,7 +32,6 @@ export type InitAnswers = {
   setupProfileDescription: string;
   policyGateway: PolicyGatewayFlavor;
   ide: InitIde;
-  runnerAdapter: "codex" | "hermes";
   workflow: WorkflowMode;
   directCloseDirtyPolicy: NonNullable<InitFlags["directCloseDirtyPolicy"]>;
   backend: NonNullable<InitFlags["backend"]>;
@@ -45,6 +45,7 @@ export type InitAnswers = {
   executionProfile: ExecutionProfile;
   strictUnsafeConfirm: boolean;
   blueprints: string[];
+  runnerProfile: "codex" | "hermes";
 };
 
 export function assertConfirmed(clack: InitClackPrompts, value: boolean | symbol): boolean {
@@ -63,7 +64,6 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
     setupProfileDescription: preset.description,
     policyGateway: resolvePolicyGatewayFromFlags(flags, INIT_DEFAULTS.policyGateway),
     ide: resolveIdeFromFlags(flags, INIT_DEFAULTS.ide),
-    runnerAdapter: flags.tool === "hermes" ? "hermes" : "codex",
     workflow: flags.workflow ?? INIT_DEFAULTS.workflow,
     directCloseDirtyPolicy: flags.directCloseDirtyPolicy ?? INIT_DEFAULTS.directCloseDirtyPolicy,
     backend: flags.backend ?? INIT_DEFAULTS.backend,
@@ -77,6 +77,7 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
     executionProfile: flags.executionProfile ?? preset.defaultExecutionProfile,
     strictUnsafeConfirm: flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm,
     blueprints: flags.blueprints ?? INIT_DEFAULTS.blueprints,
+    runnerProfile: resolveRunnerProfileFromFlags(flags, "codex"),
   };
 }
 
@@ -139,7 +140,6 @@ export async function promptInteractiveAnswers(opts: {
     setupProfileDescription: selectedPreset.description,
     policyGateway: policy.policyGateway,
     ide: ide.ide,
-    runnerAdapter: opts.flags.tool === "hermes" ? "hermes" : "codex",
     workflow: workflow.workflow,
     directCloseDirtyPolicy: workflow.directCloseDirtyPolicy,
     backend: backend.backend,
@@ -153,5 +153,6 @@ export async function promptInteractiveAnswers(opts: {
     executionProfile: advanced.executionProfile,
     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
     blueprints: blueprintSelection.blueprints,
+    runnerProfile: toolDefaults.runnerProfile ?? "codex",
   };
 }

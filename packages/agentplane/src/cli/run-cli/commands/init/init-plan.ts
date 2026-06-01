@@ -192,7 +192,6 @@ export function buildInitPlan(opts: {
     answers: {
       policyGateway: opts.answers.policyGateway,
       ide: opts.answers.ide,
-      runnerAdapter: opts.answers.runnerAdapter,
       workflow: opts.answers.workflow,
       backend: opts.answers.backend,
       hooks: opts.answers.hooks,
@@ -205,6 +204,7 @@ export function buildInitPlan(opts: {
       strictUnsafeConfirm: opts.answers.strictUnsafeConfirm,
       recipes: [...opts.answers.recipes],
       blueprints: [...opts.answers.blueprints],
+      runnerProfile: opts.answers.runnerProfile,
     },
     context: {
       gitRootExisted: opts.paths.gitRootExisted,

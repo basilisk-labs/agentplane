@@ -216,6 +216,9 @@ export function buildCustomInvocation(opts: {
       AGENTPLANE_RUNNER_MODE: execution.mode,
       AGENTPLANE_RUNNER_API_VERSION: opts.bundle.runner_api_version,
       AGENTPLANE_RUNNER_TARGET: opts.bundle.target.kind,
+      ...(opts.bundle.target.kind === "task"
+        ? { AGENTPLANE_RUNNER_TASK_ID: opts.bundle.target.task_id }
+        : {}),
       AGENTPLANE_RUNNER_BUNDLE_PATH: execution.artifact_paths.bundle_path,
       AGENTPLANE_RUNNER_RUN_DIR: execution.artifact_paths.run_dir,
       AGENTPLANE_RUNNER_BOOTSTRAP_PATH: execution.artifact_paths.bootstrap_path,

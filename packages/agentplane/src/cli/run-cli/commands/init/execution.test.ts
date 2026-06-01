@@ -8,7 +8,6 @@ const answers = {
   setupProfileDescription: "team",
   policyGateway: "codex",
   ide: "codex",
-  runnerAdapter: "codex",
   workflow: "branch_pr",
   directCloseDirtyPolicy: "allow_other_task_readmes",
   backend: "local",

@@ -17,7 +17,7 @@ export type InitTool =
   | "multiple"
   | "manual";
 export type InitBackend = "local" | "cloud";
-export type InitRunnerAdapter = "codex" | "hermes";
+export type InitRunnerProfile = "codex" | "hermes";
 
 export type InitFlags = {
   initMode?: InitMode;
@@ -63,6 +63,7 @@ export type InitDefaults = {
   executionProfile: ExecutionProfile;
   strictUnsafeConfirm: boolean;
   blueprints: string[];
+  runnerProfile: InitRunnerProfile;
 };
 
 export type InitEffectKind =
@@ -100,7 +101,6 @@ export type InitPlan = {
   answers: {
     policyGateway: PolicyGatewayFlavor;
     ide: InitIde;
-    runnerAdapter: InitRunnerAdapter;
     workflow: WorkflowMode;
     backend: InitBackend;
     hooks: boolean;
@@ -113,6 +113,7 @@ export type InitPlan = {
     strictUnsafeConfirm: boolean;
     recipes: string[];
     blueprints: string[];
+    runnerProfile: InitRunnerProfile;
   };
   context: {
     gitRootExisted: boolean;

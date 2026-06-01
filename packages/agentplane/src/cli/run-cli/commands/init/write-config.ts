@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { writeJsonStableIfChanged } from "../../../../shared/write-if-changed.js";
 import { getVersion } from "../../../../meta/version.js";
-import type { InitBackend, InitRunnerAdapter } from "./model.js";
+import type { InitBackend, InitRunnerProfile } from "./model.js";
 
 type InitExecutionConfig = {
   profile: "conservative" | "balanced" | "aggressive";
@@ -43,8 +43,8 @@ export async function writeInitConfig(opts: {
   requireVerifyApproval: boolean;
   feedbackGithubIssues: boolean;
   feedbackAnonymousCloud: boolean;
-  runnerAdapter: InitRunnerAdapter;
   execution: InitExecutionConfig;
+  runnerProfile: InitRunnerProfile;
 }): Promise<void> {
   const rawConfig = defaultConfig() as unknown as Record<string, unknown>;
   setByDottedKey(rawConfig, "workflow_mode", opts.workflow);
@@ -77,7 +77,7 @@ export async function writeInitConfig(opts: {
   );
   setByDottedKey(rawConfig, "framework.cli.expected_version", getVersion());
   setByDottedKey(rawConfig, "execution", JSON.stringify(opts.execution));
-  if (opts.runnerAdapter === "hermes") {
+  if (opts.runnerProfile === "hermes") {
     setByDottedKey(rawConfig, "runner.default_adapter", "hermes");
     setByDottedKey(
       rawConfig,

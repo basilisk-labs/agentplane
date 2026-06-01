@@ -116,6 +116,7 @@ describe("CustomRunnerAdapter", () => {
       AGENTPLANE_RUNNER_ADAPTER: "custom",
       AGENTPLANE_RUNNER_MODE: "dry_run",
       AGENTPLANE_RUNNER_TARGET: "task",
+      AGENTPLANE_RUNNER_TASK_ID: "202603231410-XYZ789",
       AGENTPLANE_RUNNER_BUNDLE_PATH:
         "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/bundle.json",
       AGENTPLANE_RUNNER_BOOTSTRAP_PATH:

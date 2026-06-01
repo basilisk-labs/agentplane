@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-01T05:54:57Z",
+  "base": "main",
+  "branch": "task/202606010530-BEYQXA/fix-hermes-task-launch",
+  "created_at": "2026-06-01T05:31:21.158Z",
+  "diffstat_sha256": "sha256:496ffd01c78d62c7b00c83afb7061125671bdf8bc5007c7bd04f8df298221cba",
+  "last_verified_at": "2026-06-01T05:39:04.298Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "7f0518beb1db29a92d90102be397c723a85b3679",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-01T05:54:57Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202606010530-BEYQXA",
+  "updated_at": "2026-06-01T05:54:57Z",
+  "verify": {
+    "status": "pass"
+  }
+}
