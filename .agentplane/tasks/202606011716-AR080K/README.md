@@ -4,7 +4,7 @@ title: "Add fast context knowledge dashboard"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,23 @@ verification:
   updated_by: "CODER"
   note: "Verified: implemented read-only context dashboard command and typed whole-knowledge graph snapshot. Commands passed: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/context/dashboard.unit.test.ts; bun run --filter=agentplane typecheck; targeted eslint for changed files; bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; bun run --filter=agentplane build; ap context dashboard --dump-json; ap context graph validate; node .agentplane/policy/check-routing.mjs; git diff --check."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-01T17:37:05.298Z"
+  updated_by: "EVALUATOR"
+  note: "Dashboard command implementation passed targeted unit, CLI help, typecheck, build, dump-json smoke, graph validation, lint, diff check, and policy routing checks."
+  evaluated_sha: "ae0c71d97f19a329bdac0ea95996e2080b34e451"
+  blueprint_digest: "3d3b913516511d5acbb765ecb78369fa6b7c55ab815c7eac9cd5d6370120bb16"
+  evidence_refs:
+    - ".agentplane/tasks/202606011716-AR080K/README.md"
+    - ".agentplane/tasks/202606011716-AR080K/quality/20260601-173705298-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606011716-AR080K/quality/20260601-173705298-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606011716-AR080K/quality/20260601-173705298-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606011716-AR080K/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/context/dashboard.unit.test.ts"
+    - "packages/agentplane/src/commands/context/dashboard.ts"
+  findings:
+    - "No blocking findings. Snapshot currently reports the local worktree wiki as two isolated starter pages because this checkout has not reindexed or populated the LLM wiki yet."
 commit: null
 comments:
   -

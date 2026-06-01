@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202606011716-AR080K",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-01T17:37:05.298Z",
+  "verdict": "pass",
+  "summary": "Dashboard command implementation passed targeted unit, CLI help, typecheck, build, dump-json smoke, graph validation, lint, diff check, and policy routing checks.",
+  "evaluated_sha": "ae0c71d97f19a329bdac0ea95996e2080b34e451",
+  "blueprint_digest": "3d3b913516511d5acbb765ecb78369fa6b7c55ab815c7eac9cd5d6370120bb16",
+  "findings": [
+    "No blocking findings. Snapshot currently reports the local worktree wiki as two isolated starter pages because this checkout has not reindexed or populated the LLM wiki yet."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606011716-AR080K/README.md",
+    "packages/agentplane/src/commands/context/dashboard.unit.test.ts",
+    "packages/agentplane/src/commands/context/dashboard.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
