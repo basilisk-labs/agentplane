@@ -4,7 +4,7 @@ title: "Fix Hermes task launch profile gaps"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,25 @@ verification:
   updated_by: "CODER"
   note: "Verified: Hermes supervise now allowlists same-task task run through typed args, init --tool hermes seeds the custom Hermes runner profile, and targeted tests/type/docs/routing checks pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-01T05:46:00.860Z"
+  updated_by: "EVALUATOR"
+  note: "Hermes task launch gaps are fixed within approved scope: supervise executes same-task task-run route steps through typed Agentplane args, init --tool hermes configures runner.custom, and docs/tests cover the behavior."
+  evaluated_sha: "1ce894445022d85e090d8faf19d54e92a678ab79"
+  blueprint_digest: "c22d3c6d19bcfb3ffe8a337ea69c6026f3c836dd54ad89af4b2ecba4fbfdef40"
+  evidence_refs:
+    - ".agentplane/tasks/202606010530-BEYQXA/README.md"
+    - ".agentplane/tasks/202606010530-BEYQXA/quality/20260601-054600860-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606010530-BEYQXA/quality/20260601-054600860-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606010530-BEYQXA/quality/20260601-054600860-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606010530-BEYQXA/blueprint/resolved-snapshot.json"
+    - "bunx vitest run packages/agentplane/src/commands/hermes/hermes.command.test.ts packages/agentplane/src/runner/config.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts packages/core/src/config/config.test.ts"
+    - "bun run --filter=agentplane typecheck"
+    - "bun run docs:cli:check"
+    - "node .agentplane/policy/check-routing.mjs"
+  findings:
+    - "No rework required. Residual risk is limited to the external Hermes CLI/plugin implementing the documented hermes agentplane run entrypoint."
 commit: null
 comments:
   -
