@@ -4,7 +4,7 @@ title: "Fix cloud backend failure exit semantics"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-06-01T05:14:32.755Z"
+  updated_by: "CODER"
+  note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts. Result: pass, 19 tests. Evidence: regression coverage now asserts cloud push HTTP 502 exits with E_BACKEND/6 and cloud read autosync fetch failure exits with E_NETWORK/7, covering GitHub issues #4343 and #4339. Command: bun run format:changed. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Investigating cloud/backend command failure propagation for issues #4343 and #4339, adding regression coverage, and keeping the fix limited to nonzero exit semantics without compatibility fallbacks."
+  -
+    type: "verify"
+    at: "2026-06-01T05:14:32.755Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts. Result: pass, 19 tests. Evidence: regression coverage now asserts cloud push HTTP 502 exits with E_BACKEND/6 and cloud read autosync fetch failure exits with E_NETWORK/7, covering GitHub issues #4343 and #4339. Command: bun run format:changed. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass."
 doc_version: 3
-doc_updated_at: "2026-06-01T05:09:45.879Z"
+doc_updated_at: "2026-06-01T05:14:32.777Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issues #4343 and #4339. Ensure backend/cloud commands that surface E_BACKEND or E_NETWORK failures return nonzero exit codes and expose deterministic tests. No fallback or backwards-compatible aliases."
 sections:
@@ -62,6 +68,25 @@ sections:
     3. Run routing/policy checks for the touched implementation. Expected: no policy, formatting, or command-contract regressions.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-06-01T05:14:32.755Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts. Result: pass, 19 tests. Evidence: regression coverage now asserts cloud push HTTP 502 exits with E_BACKEND/6 and cloud read autosync fetch failure exits with E_NETWORK/7, covering GitHub issues #4343 and #4339. Command: bun run format:changed. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T05:09:45.879Z, excerpt_hash=sha256:b84f3ece872b461cb297841026814e13e3db4a371bf723128635edbb1761f025
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606010508-88AVPY-fix-cloud-backend-failure-exit-semantics/.agentplane/tasks/202606010508-88AVPY/blueprint/resolved-snapshot.json
+    - old_digest: 72148b189d649d301cbc3cdd91492ac9e86fb4de0b7db97e72034ea9e3136e70
+    - current_digest: 72148b189d649d301cbc3cdd91492ac9e86fb4de0b7db97e72034ea9e3136e70
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606010508-88AVPY
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -98,6 +123,25 @@ Plan:
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-06-01T05:14:32.755Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts. Result: pass, 19 tests. Evidence: regression coverage now asserts cloud push HTTP 502 exits with E_BACKEND/6 and cloud read autosync fetch failure exits with E_NETWORK/7, covering GitHub issues #4343 and #4339. Command: bun run format:changed. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T05:09:45.879Z, excerpt_hash=sha256:b84f3ece872b461cb297841026814e13e3db4a371bf723128635edbb1761f025
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606010508-88AVPY-fix-cloud-backend-failure-exit-semantics/.agentplane/tasks/202606010508-88AVPY/blueprint/resolved-snapshot.json
+- old_digest: 72148b189d649d301cbc3cdd91492ac9e86fb4de0b7db97e72034ea9e3136e70
+- current_digest: 72148b189d649d301cbc3cdd91492ac9e86fb4de0b7db97e72034ea9e3136e70
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606010508-88AVPY
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
