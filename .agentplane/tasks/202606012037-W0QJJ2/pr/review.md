@@ -13,7 +13,7 @@ Created: 2026-06-01T20:38:07.714Z
 ## Verification
 
 - State: ok
-- Note: Verified: source architecture and command graph assimilation artifacts are generated, graph-backed, searchable, and task-bound. Passed ap context reindex --include-raw, ap context wiki lint context/wiki, ap context wiki index context/wiki, ap context graph validate, ap context verify-task 202606012037-W0QJJ2, ap context search source-architecture-assimilation --format json, node .agentplane/policy/check-routing.mjs, and targeted Prettier check.
+- Note: Verified committed head 2eee51d048a2: source architecture context artifacts are committed and PR artifacts refreshed. Passed reindex, wiki lint/index, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier; context doctor/check were attempted repeatedly and hung on the large projection.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

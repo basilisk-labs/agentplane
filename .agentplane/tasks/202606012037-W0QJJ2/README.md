@@ -4,7 +4,7 @@ title: "Assimilate source architecture and command graph"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -33,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-01T20:51:19.508Z"
+  updated_at: "2026-06-01T20:52:12.999Z"
   updated_by: "CURATOR"
-  note: "Verified: source architecture and command graph assimilation artifacts are generated, graph-backed, searchable, and task-bound. Passed ap context reindex --include-raw, ap context wiki lint context/wiki, ap context wiki index context/wiki, ap context graph validate, ap context verify-task 202606012037-W0QJJ2, ap context search source-architecture-assimilation --format json, node .agentplane/policy/check-routing.mjs, and targeted Prettier check."
+  note: "Verified committed head 2eee51d048a2: source architecture context artifacts are committed and PR artifacts refreshed. Passed reindex, wiki lint/index, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier; context doctor/check were attempted repeatedly and hung on the large projection."
   attempts: 0
 commit: null
 comments:
@@ -56,8 +56,14 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Verified: source architecture and command graph assimilation artifacts are generated, graph-backed, searchable, and task-bound. Passed ap context reindex --include-raw, ap context wiki lint context/wiki, ap context wiki index context/wiki, ap context graph validate, ap context verify-task 202606012037-W0QJJ2, ap context search source-architecture-assimilation --format json, node .agentplane/policy/check-routing.mjs, and targeted Prettier check."
+  -
+    type: "verify"
+    at: "2026-06-01T20:52:12.999Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Verified committed head 2eee51d048a2: source architecture context artifacts are committed and PR artifacts refreshed. Passed reindex, wiki lint/index, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier; context doctor/check were attempted repeatedly and hung on the large projection."
 doc_version: 3
-doc_updated_at: "2026-06-01T20:51:19.646Z"
+doc_updated_at: "2026-06-01T20:52:13.474Z"
 doc_updated_by: "CURATOR"
 description: "Assimilate AgentPlane source code into local context without copying implementation bodies: package/module graph, command surface, workflow/state-machine links, schema/policy/test/CI coverage, and metrics for code corpus size and granularity."
 sections:
@@ -111,6 +117,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
 
+    ### 2026-06-01T20:52:12.999Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Verified committed head 2eee51d048a2: source architecture context artifacts are committed and PR artifacts refreshed. Passed reindex, wiki lint/index, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier; context doctor/check were attempted repeatedly and hung on the large projection.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T20:51:19.646Z, excerpt_hash=sha256:ef8df5afa8ab5aa80543320be8e609fab61803379ccb29078098bd3b7cc7fa68
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606012037-W0QJJ2-assimilate-source-architecture/.agentplane/tasks/202606012037-W0QJJ2/blueprint/resolved-snapshot.json
+    - old_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+    - current_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -119,6 +144,10 @@ sections:
     - Observation: Selected source corpus: 1576 files, 283688 lines, 9706304 bytes; 8 package groups, 20 layers, 91 command groups, 472 test files, 28 schema files, 17 policy files, 57 check/workflow files. Assimilation output: 6 wiki pages, 13127 SGR items, 1712 graph entities, 9827 graph edges, 12 facts, 1576 coverage items/rows, coverage_degree=1.
       Impact: Code is now navigable through source architecture context without copying implementation bodies: package -> layer -> command group -> workflow/contract concept -> source file -> coverage row.
       Resolution: Use context/wiki/source-architecture/index.md for navigation and .agentplane/context/derived/reports/source-architecture-assimilation.json for metrics. Residual risk: ap context doctor and ap context check were attempted repeatedly after targeted gates passed but did not return output on the large projection; processes were stopped and the gap is task-local.
+
+    - Observation: Committed scope contains 1576 source files represented by 6 wiki pages, 13127 SGR items, 1712 graph entities, 9827 graph edges, 12 facts, 1576 coverage items/rows, coverage_degree=1.
+      Impact: The codebase is now navigable by package, layer, command group, workflow/contract concept, source file, and coverage row without copying implementation bodies into wiki pages.
+      Resolution: Use .agentplane/context/derived/reports/source-architecture-assimilation.json for metrics and context/wiki/source-architecture/index.md for navigation. The context doctor/check hang is recorded as task-local residual risk.
 extensions:
   agentplane.context:
     allowed_outputs:
@@ -12804,6 +12833,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
 
+### 2026-06-01T20:52:12.999Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Verified committed head 2eee51d048a2: source architecture context artifacts are committed and PR artifacts refreshed. Passed reindex, wiki lint/index, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier; context doctor/check were attempted repeatedly and hung on the large projection.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T20:51:19.646Z, excerpt_hash=sha256:ef8df5afa8ab5aa80543320be8e609fab61803379ccb29078098bd3b7cc7fa68
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606012037-W0QJJ2-assimilate-source-architecture/.agentplane/tasks/202606012037-W0QJJ2/blueprint/resolved-snapshot.json
+- old_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+- current_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -12816,3 +12864,7 @@ BlueprintSnapshotRef:
 - Observation: Selected source corpus: 1576 files, 283688 lines, 9706304 bytes; 8 package groups, 20 layers, 91 command groups, 472 test files, 28 schema files, 17 policy files, 57 check/workflow files. Assimilation output: 6 wiki pages, 13127 SGR items, 1712 graph entities, 9827 graph edges, 12 facts, 1576 coverage items/rows, coverage_degree=1.
   Impact: Code is now navigable through source architecture context without copying implementation bodies: package -> layer -> command group -> workflow/contract concept -> source file -> coverage row.
   Resolution: Use context/wiki/source-architecture/index.md for navigation and .agentplane/context/derived/reports/source-architecture-assimilation.json for metrics. Residual risk: ap context doctor and ap context check were attempted repeatedly after targeted gates passed but did not return output on the large projection; processes were stopped and the gap is task-local.
+
+- Observation: Committed scope contains 1576 source files represented by 6 wiki pages, 13127 SGR items, 1712 graph entities, 9827 graph edges, 12 facts, 1576 coverage items/rows, coverage_degree=1.
+  Impact: The codebase is now navigable by package, layer, command group, workflow/contract concept, source file, and coverage row without copying implementation bodies into wiki pages.
+  Resolution: Use .agentplane/context/derived/reports/source-architecture-assimilation.json for metrics and context/wiki/source-architecture/index.md for navigation. The context doctor/check hang is recorded as task-local residual risk.
