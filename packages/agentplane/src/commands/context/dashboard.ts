@@ -6,83 +6,15 @@ import path from "node:path";
 import { parse as parseYaml } from "yaml";
 
 import { dashboardHtml } from "./dashboard-html.js";
+import type {
+  DashboardEdge,
+  DashboardMetrics,
+  DashboardNode,
+  DashboardSnapshot,
+} from "./dashboard-types.js";
 import { readContextProjection } from "./reindex.js";
 import { collectWikiFiles, extractFrontmatter } from "./wiki-lint.js";
 import { fileExists, parseJsonlLines, readText, toPosix } from "./context-utils.js";
-
-type DashboardNodeType =
-  | "wiki_page"
-  | "wiki_section"
-  | "entity"
-  | "edge_record"
-  | "claim"
-  | "source"
-  | "task"
-  | "capability"
-  | "conflict";
-
-type DashboardEdgeType =
-  | "wikilink"
-  | "markdown_link"
-  | "source_ref"
-  | "graph_ref"
-  | "claims"
-  | "conflict"
-  | "contains"
-  | "entity_relation"
-  | "provenance"
-  | "projection";
-
-type DashboardNode = {
-  id: string;
-  type: DashboardNodeType;
-  label: string;
-  path?: string;
-  stale?: boolean;
-  meta?: Record<string, unknown>;
-};
-
-type DashboardEdge = {
-  id: string;
-  from: string;
-  to: string;
-  type: DashboardEdgeType;
-  label?: string;
-  meta?: Record<string, unknown>;
-};
-
-type DashboardSnapshot = {
-  generated_at: string;
-  projection: {
-    adapter: "sqlite" | "filesystem";
-    available: boolean;
-    generated_at: string | null;
-    rows: number;
-    include_tasks: boolean;
-    include_raw: boolean;
-  };
-  nodes: DashboardNode[];
-  edges: DashboardEdge[];
-  metrics: DashboardMetrics;
-  warnings: string[];
-};
-
-type DashboardMetrics = {
-  nodes: number;
-  edges: number;
-  by_type: Record<string, number>;
-  by_edge_type: Record<string, number>;
-  components: number;
-  largest_component: number;
-  isolated_nodes: number;
-  wiki_pages: number;
-  wiki_orphans: number;
-  wiki_without_source_refs: number;
-  broken_wikilinks: number;
-  provenance_edges: number;
-  claim_nodes: number;
-  source_nodes: number;
-};
 
 type DashboardParsed = {
   host: string;
@@ -157,7 +89,18 @@ function nodeIdForTask(ref: string): string | null {
 }
 
 function addNode(graph: MutableGraph, node: DashboardNode): void {
-  if (!graph.nodes.has(node.id)) graph.nodes.set(node.id, node);
+  const existing = graph.nodes.get(node.id);
+  if (!existing) {
+    graph.nodes.set(node.id, node);
+    return;
+  }
+  graph.nodes.set(node.id, {
+    ...existing,
+    label: node.meta ? node.label : existing.label,
+    path: node.path ?? existing.path,
+    stale: node.stale ?? existing.stale,
+    meta: existing.meta || node.meta ? { ...existing.meta, ...node.meta } : undefined,
+  });
 }
 
 function addEdge(graph: MutableGraph, edge: Omit<DashboardEdge, "id">): void {
@@ -277,6 +220,7 @@ async function loadWikiPages(root: string): Promise<WikiPageInfo[]> {
 async function addProjectionRows(
   graph: MutableGraph,
   root: string,
+  catalog: Map<string, string>,
 ): Promise<DashboardSnapshot["projection"]> {
   const projection = await readContextProjection(root);
   if (!projection) {
@@ -292,10 +236,12 @@ async function addProjectionRows(
   for (const row of projection.rows) {
     if (row.kind === "markdown-section" && row.path.startsWith("context/wiki/")) {
       const [pageRel, section = ""] = row.path.split("#section=");
-      const pageId = `wiki.${(pageRel ?? "")
-        .replace(/^context\/wiki\//u, "")
-        .replace(/\.md$/u, "")
-        .replaceAll("/", ".")}`;
+      const pageId =
+        catalog.get(normalizeTarget(pageRel ?? "").toLowerCase()) ??
+        `wiki.${(pageRel ?? "")
+          .replace(/^context\/wiki\//u, "")
+          .replace(/\.md$/u, "")
+          .replaceAll("/", ".")}`;
       const id = `section:${row.path}`;
       addNode(graph, { id, type: "wiki_section", label: section || row.path, path: row.path });
       addEdge(graph, { from: pageId, to: id, type: "contains" });
@@ -397,8 +343,11 @@ async function addFactsAndCapabilities(graph: MutableGraph, root: string): Promi
   }
 }
 
-function addWikiLayer(graph: MutableGraph, pages: WikiPageInfo[]): void {
-  const catalog = buildWikiCatalog(pages);
+function addWikiLayer(
+  graph: MutableGraph,
+  pages: WikiPageInfo[],
+  catalog = buildWikiCatalog(pages),
+): void {
   for (const page of pages) {
     addNode(graph, {
       id: page.id,
@@ -512,9 +461,10 @@ function computeMetrics(
 
 export async function buildContextDashboardSnapshot(root: string): Promise<DashboardSnapshot> {
   const graph: MutableGraph = { nodes: new Map(), edges: new Map(), warnings: [] };
-  const projection = await addProjectionRows(graph, root);
   const pages = await loadWikiPages(root);
-  addWikiLayer(graph, pages);
+  const catalog = buildWikiCatalog(pages);
+  const projection = await addProjectionRows(graph, root, catalog);
+  addWikiLayer(graph, pages, catalog);
   await addDerivedGraph(graph, root);
   await addFactsAndCapabilities(graph, root);
   const nodes = [...graph.nodes.values()].toSorted((a, b) => a.id.localeCompare(b.id));

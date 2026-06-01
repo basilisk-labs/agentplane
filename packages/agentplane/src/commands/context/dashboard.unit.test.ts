@@ -98,6 +98,15 @@ describe("context dashboard graph snapshot", () => {
     );
     await write(
       root,
+      "context/wiki/foo/bar.md",
+      wikiPage({
+        id: "wiki.foo-bar",
+        title: "Nested Canonical Page",
+        body: "Nested details.",
+      }),
+    );
+    await write(
+      root,
       ".agentplane/context/derived/graph/entities.jsonl",
       JSON.stringify({ id: "product.alpha", kind: "concept", label: "Alpha Product" }) + "\n",
     );
@@ -138,12 +147,24 @@ describe("context dashboard graph snapshot", () => {
       expect.arrayContaining([
         "wiki.index",
         "wiki.alpha",
+        "wiki.foo-bar",
         "entity:product.alpha",
         "claim:fact.alpha",
         "source:context/raw/a.md",
         "task:202606010000-ALPHA",
       ]),
     );
+    const alphaNode = snapshot.nodes.find((node) => node.id === "entity:product.alpha");
+    expect(alphaNode?.label).toBe("Alpha Product");
+    expect(alphaNode?.meta?.kind).toBe("concept");
+    expect(
+      snapshot.edges.find(
+        (edge) =>
+          edge.from === "wiki.foo-bar" &&
+          edge.type === "contains" &&
+          edge.to.startsWith("section:context/wiki/foo/bar.md#section="),
+      ),
+    ).toBeDefined();
     expect(snapshot.edges.map((edge) => edge.type)).toEqual(
       expect.arrayContaining([
         "wikilink",
@@ -153,7 +174,7 @@ describe("context dashboard graph snapshot", () => {
         "provenance",
       ]),
     );
-    expect(snapshot.metrics.wiki_pages).toBe(2);
+    expect(snapshot.metrics.wiki_pages).toBe(3);
     expect(snapshot.metrics.broken_wikilinks).toBe(0);
   });
 
