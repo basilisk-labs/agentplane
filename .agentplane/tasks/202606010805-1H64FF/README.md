@@ -1,10 +1,11 @@
 ---
 id: "202606010805-1H64FF"
 title: "Close commits must include all task artifacts"
-status: "DOING"
+result_summary: "Merged via PR #4357."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "packages/agentplane/src/commands/guard/impl/commit-stage.ts"
   findings:
     - "Regression coverage includes non-README task artifacts in both unit close staging and CLI wrapper close commit output."
-commit: null
+commit:
+  hash: "138da157b37fad9a6d304486190277441c07ce1b"
+  message: "✨ 1H64FF task: record close artifact quality evidence"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved closeout artifact regression fix with focused lifecycle coverage and no scope expansion beyond deterministic task artifact commits."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4357 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts => pass, 12 tests; Command: bun vitest --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.close.test.ts => pass, 5 tests; Command: bun vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts => pass, 13 tests; Command: bun run docs:cli:check => pass; Command: node .agentplane/policy/check-routing.mjs => policy routing OK; Command: git diff --check => pass; Command: git status --short --untracked-files=all => only intentional task implementation and task evidence changes remain."
+  -
+    type: "status"
+    at: "2026-06-01T09:07:15.683Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4357 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-01T08:22:02.372Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-01T09:07:15.689Z"
+doc_updated_by: "INTEGRATOR"
 description: "Regression fix: when task artifacts are generated or left untracked during recovery/closeout, deterministic close commits must include the active task artifact scope or block before marking closure complete."
 sections:
   Summary: |-
