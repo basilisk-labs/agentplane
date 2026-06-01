@@ -18,15 +18,10 @@ Regenerate checked-in docs social images and manifest so release:check passes be
 - State: ok
 - Note:
 
-```bash
-bun run docs:social:generate -> pass, generated 2 docs social images and left 204 unchanged. \
-  Command: bun run docs:social:check -> pass, checked 206 docs social images. Command: bun run \
-  release:check -> pass, release incident, ACR example, social image, package build, tarball policy, \
-  and blueprint release gates passed. Command: bun run release:parity -> pass, package versions \
-  remain 0.6.13. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: ap doctor -> \
-  pass with two pre-existing warnings for old DONE tasks missing implementation hashes. Command: bun \
-  run release:tasks:check -> expected pre-finish blocker because this task is DOING; rerun after \
-  integration/finish before release candidate.
+```text
+PR artifact freshness recheck: hosted checks passed on PR #4354 after final evaluator evidence
+commit; refreshing verification so last_verified_diffstat_sha256 can match the current PR diffstat
+digest before integration.
 ```
 - Canonical workflow state lives in the task README.
 

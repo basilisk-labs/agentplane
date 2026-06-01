@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202606010746-089WQK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-01T07:55:01.893Z",
+  "verdict": "pass",
+  "summary": "Hermes docs social image release blocker fixed and PR checks passed.",
+  "evaluated_sha": "69adceb350111daad3cece67e834d0123de7f1c0",
+  "blueprint_digest": "4a6bf7c22bd64f26a418b0c6e4118aa5d1244d0a23aade3872b8f51194d22b16",
+  "findings": [
+    "Local release:check passed after regenerating manifest and two Hermes social PNG assets; hosted Docs CI, Core CI plan/PR verification, and CodeQL checks passed on PR #4354."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606010746-089WQK/README.md",
+    ".agentplane/tasks/202606010746-089WQK/pr/meta.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
