@@ -1,0 +1,28 @@
+{
+  "blueprint_request": null,
+  "commit": {
+    "hash": "13721c623fd186abbaee48456aa242f7e4561119",
+    "message": "Legacy completion (backfill)"
+  },
+  "excerpts": [
+    "Document repository structure in README",
+    "Add a quick-start tour of key files and directories so contributors know where to work.",
+    "<!-- BEGIN VERIFICATION RESULTS -->",
+    "<!-- END VERIFICATION RESULTS -->",
+    "Legacy completion (backfill)"
+  ],
+  "extracted_at": "2026-06-01T17:19:12.959Z",
+  "id": "202601041253-00008",
+  "mutation_scope": null,
+  "owner": "CODER",
+  "priority": "normal",
+  "source_refs": [
+    ".agentplane/tasks/202601041253-00008/README.md",
+    "commit:13721c623fd186abbaee48456aa242f7e4561119"
+  ],
+  "status": "DONE",
+  "tags": ["readme", "docs"],
+  "task_kind": null,
+  "text_digest": "sha256:a28845d80e96781fe3cd8c0b881231b544d83b22956b787386670d67b22f54fe",
+  "title": "Document repository structure in README"
+}

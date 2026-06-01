@@ -1,0 +1,28 @@
+{
+  "blueprint_request": null,
+  "commit": {
+    "hash": "13721c623fd186abbaee48456aa242f7e4561119",
+    "message": "Legacy completion (backfill)"
+  },
+  "excerpts": [
+    "Add Agent Creator workflow",
+    "Describe how new specialist agents are proposed, reviewed, and added to the registry.",
+    "<!-- BEGIN VERIFICATION RESULTS -->",
+    "<!-- END VERIFICATION RESULTS -->",
+    "Legacy completion (backfill)"
+  ],
+  "extracted_at": "2026-06-01T17:19:12.959Z",
+  "id": "202601041253-00006",
+  "mutation_scope": null,
+  "owner": "CODER",
+  "priority": "normal",
+  "source_refs": [
+    ".agentplane/tasks/202601041253-00006/README.md",
+    "commit:13721c623fd186abbaee48456aa242f7e4561119"
+  ],
+  "status": "DONE",
+  "tags": ["agents", "workflow"],
+  "task_kind": null,
+  "text_digest": "sha256:122d52c0916cbe7472a3f4621c15a09502eec6eff8b9b27658bb230d0ee2e5cd",
+  "title": "Add Agent Creator workflow"
+}

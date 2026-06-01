@@ -1,0 +1,28 @@
+{
+  "blueprint_request": null,
+  "commit": {
+    "hash": "0b4a14ca3a4c48f4c19dee823103cb927dcae2f1",
+    "message": "Legacy completion (backfill)"
+  },
+  "excerpts": [
+    "Automate agent registry updates",
+    "Explain how the orchestrator scans .AGENTS/*.json dynamically instead of relying on a manual list.",
+    "<!-- BEGIN VERIFICATION RESULTS -->",
+    "<!-- END VERIFICATION RESULTS -->",
+    "Legacy completion (backfill)"
+  ],
+  "extracted_at": "2026-06-01T17:19:12.959Z",
+  "id": "202601041253-0000A",
+  "mutation_scope": null,
+  "owner": "CODER",
+  "priority": "normal",
+  "source_refs": [
+    ".agentplane/tasks/202601041253-0000A/README.md",
+    "commit:0b4a14ca3a4c48f4c19dee823103cb927dcae2f1"
+  ],
+  "status": "DONE",
+  "tags": ["agents", "automation"],
+  "task_kind": null,
+  "text_digest": "sha256:36c151e85317c638b03d936391179b90d8cb640990ab45d4125f5849987b7c4f",
+  "title": "Automate agent registry updates"
+}

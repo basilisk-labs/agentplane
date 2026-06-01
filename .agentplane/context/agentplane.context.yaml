@@ -4,7 +4,7 @@ project:
   root: "."
 workspace:
   namespace: local.project
-  mode: adaptive
+  mode: maximum-assimilation
   layout_strategy: adaptive
   page_granularity: topic_artifact
   claim_granularity: atomic
@@ -52,15 +52,16 @@ wiki:
       - file_paths
       - code_identifiers
     translation_note_required: true
-  maintenance_mode: adaptive
-  raw_deletion_resilience_required: false
-  entity_relation_first: false
+  maintenance_mode: maximum_assimilation
+  raw_deletion_resilience_required: true
+  entity_relation_first: true
   glossary:
-    canonical_required: false
-    alias_normalization_required: false
+    canonical_required: true
+    alias_normalization_required: true
+    canonical_path: context/wiki/glossary.md
   source_addressing:
     original_hash_required: true
-    line_refs_required: false
+    line_refs_required: true
   modalities:
     - factual_claim
     - observation
@@ -84,5 +85,5 @@ service:
     fts: true
     cache_task_readmes: true
     cache_acr_summaries: true
-generated_at: "2026-05-18T12:56:57.610Z"
+generated_at: "2026-06-01T17:18:20.637Z"
 remotes: []

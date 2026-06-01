@@ -160,6 +160,14 @@ describe("context harvest tasks", () => {
       path.join(root, ".agentplane/context/derived/graph/entities.jsonl"),
       "utf8",
     );
+    const edges = await readFile(
+      path.join(root, ".agentplane/context/derived/graph/edges.jsonl"),
+      "utf8",
+    );
+    const provenance = await readFile(
+      path.join(root, ".agentplane/context/derived/graph/provenance_edges.jsonl"),
+      "utf8",
+    );
     const proposal = await readFile(
       path.join(root, "context/wiki/proposals/task-harvest/done-release.md"),
       "utf8",
@@ -167,9 +175,19 @@ describe("context harvest tasks", () => {
     expect(evidence).toContain("202604010900-REL001");
     expect(facts).toContain('"generated_by":"context.harvest.tasks"');
     expect(facts).toContain('"source_refs"');
+    expect(facts).toContain(".agentplane/tasks/202604010900-REL001/README.md#lines=1-80");
+    expect(facts).not.toContain("commit:");
     expect(graph).toContain('"task:202604010900-REL001"');
+    expect(graph).toContain('"kind":"task"');
+    expect(graph).not.toContain('"type":"task"');
+    expect(edges).toContain('"relation":"mentions"');
+    expect(provenance).toContain(
+      '"source":".agentplane/tasks/202604010900-REL001/README.md#lines=1-80"',
+    );
     expect(proposal).toContain("promotion_state: proposal");
+    expect(proposal).toContain("agentplane_context:");
     expect(proposal).toContain("source_refs:");
+    expect(proposal).toContain("[[Context glossary]]");
     expect(tasks[0]?.extensions?.context_harvest).toMatchObject({
       pipeline: "context.harvest.tasks",
       state: "ingested",
