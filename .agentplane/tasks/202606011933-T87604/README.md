@@ -1,10 +1,11 @@
 ---
 id: "202606011933-T87604"
 title: "Assimilate release notes and documentation context"
-status: "DOING"
+result_summary: "Merged via PR #4371."
+status: "DONE"
 priority: "med"
 owner: "CURATOR"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -54,11 +55,16 @@ quality_review:
     - ".agentplane/tasks/202606011933-T87604/pr/meta.json"
   findings:
     - "Evidence: https://github.com/basilisk-labs/agentplane/pull/4371 at head 97c192e459beb7d5a534f4f30f6ea8bbedc2c61a; hosted checks pass including CodeQL, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow, verify-cli-critical, test-windows, and PR verification."
-commit: null
+commit:
+  hash: "36ca2f805d616d97d685cd2801a651aff126503b"
+  message: "Merge pull request #4371 from basilisk-labs/task/202606011933-T87604/assimilate-release-docs-context"
 comments:
   -
     author: "CURATOR"
     body: "Start: assimilate canonical release notes and public documentation into graph-backed local context artifacts with source coverage, wiki synthesis, and volume/granularity metrics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4371 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -97,9 +103,16 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Verified review-thread fixes for PR #4371: generated source links now resolve relative to each wiki page and release-line latest sources are selected by parsed semver order. Re-ran reindex, wiki lint, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier."
+  -
+    type: "status"
+    at: "2026-06-01T21:21:22.573Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4371 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-01T21:14:57.087Z"
-doc_updated_by: "CURATOR"
+doc_updated_at: "2026-06-01T21:21:22.590Z"
+doc_updated_by: "INTEGRATOR"
 description: "Assimilate AgentPlane release notes and public documentation into the local context layer with useful graph density: release-line entities, documentation-domain entities, feature/decision/invariant entities, semantic edges, wiki synthesis pages, source coverage, and volume/granularity metrics."
 sections:
   Summary: |-
