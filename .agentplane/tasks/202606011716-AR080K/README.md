@@ -4,7 +4,7 @@ title: "Add fast context knowledge dashboard"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -26,21 +26,28 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-01T17:37:05.298Z"
+  updated_at: "2026-06-01T18:23:56.376Z"
   updated_by: "EVALUATOR"
-  note: "Dashboard command implementation passed targeted unit, CLI help, typecheck, build, dump-json smoke, graph validation, lint, diff check, and policy routing checks."
-  evaluated_sha: "ae0c71d97f19a329bdac0ea95996e2080b34e451"
+  note: "Dashboard implementation and CI fix satisfy the approved graph-dashboard scope at HEAD 81c6203ff."
+  evaluated_sha: "a4c926b47cc6b6a2cdf6882df97213145126bd4b"
   blueprint_digest: "3d3b913516511d5acbb765ecb78369fa6b7c55ab815c7eac9cd5d6370120bb16"
   evidence_refs:
     - ".agentplane/tasks/202606011716-AR080K/README.md"
-    - ".agentplane/tasks/202606011716-AR080K/quality/20260601-173705298-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606011716-AR080K/quality/20260601-173705298-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606011716-AR080K/quality/20260601-173705298-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606011716-AR080K/quality/20260601-182356376-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606011716-AR080K/quality/20260601-182356376-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606011716-AR080K/quality/20260601-182356376-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606011716-AR080K/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/context/dashboard.unit.test.ts"
-    - "packages/agentplane/src/commands/context/dashboard.ts"
+    - "github-pr-4364-checks:success"
+    - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/context/dashboard.unit.test.ts"
+    - "bun run --filter=agentplane typecheck"
+    - "bun run --filter=agentplane build"
+    - "bun run docs:cli:check"
+    - "node scripts/checks/check-knip-baseline.mjs"
+    - "bun run hotspots:check"
+    - "ap context dashboard --dump-json"
+    - "ap context graph validate"
   findings:
-    - "No blocking findings. Snapshot currently reports the local worktree wiki as two isolated starter pages because this checkout has not reindexed or populated the LLM wiki yet."
+    - "Verified local targeted dashboard tests, typecheck, build, docs CLI freshness, Knip baseline, hotspot threshold, graph validation, dump-json smoke, and GitHub PR #4364 required checks."
 commit: null
 comments:
   -
