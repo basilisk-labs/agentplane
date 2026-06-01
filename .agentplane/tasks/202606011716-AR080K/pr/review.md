@@ -29,13 +29,14 @@ Created: 2026-06-01T17:17:02.350Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/cli-reference.generated.mdx              |  20 +
  .../run-cli.core.help-snap.test.ts.snap            |  98 ++--
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
  .../src/commands/context/context-runner.ts         |  13 +
  .../src/commands/context/context.spec.ts           |  47 ++
  .../agentplane/src/commands/context/dashboard.ts   | 635 +++++++++++++++++++++
  .../src/commands/context/dashboard.unit.test.ts    | 203 +++++++
- 6 files changed, 953 insertions(+), 45 deletions(-)
+ 7 files changed, 973 insertions(+), 45 deletions(-)
 ```
 
 </details>
