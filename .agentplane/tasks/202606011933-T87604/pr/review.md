@@ -1,0 +1,112 @@
+# PR Review
+
+Created: 2026-06-01T19:37:03.754Z
+
+## Task
+
+- Task: `202606011933-T87604`
+- Title: Assimilate release notes and documentation context
+- Status: DOING
+- Branch: `task/202606011933-T87604/assimilate-release-docs-context`
+- Canonical task record: `.agentplane/tasks/202606011933-T87604/README.md`
+
+## Verification
+
+- State: ok
+- Note: Verified review-thread fixes for PR #4371: generated source links now resolve relative to each wiki page and release-line latest sources are selected by parsed semver order. Re-ran reindex, wiki lint, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-06-01T19:37:03.754Z
+- Branch: task/202606011933-T87604/assimilate-release-docs-context
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .agentplane/context/derived/facts/facts.jsonl      |    55 +
+ .agentplane/context/derived/graph/edges.jsonl      |  1711 +
+ .agentplane/context/derived/graph/entities.jsonl   |   352 +
+ .../context/derived/graph/provenance_edges.jsonl   |  3007 +
+ .agentplane/context/derived/reports/coverage.jsonl |   210 +
+ .../derived/reports/release-docs-assimilation.json |  7459 +++
+ .../reports/release-docs-assimilation.sgr.json     | 54587 +++++++++++++++++++
+ .../reports/release-docs-coverage-detail.jsonl     |   210 +
+ context/wiki/index.md                              |     9 +
+ context/wiki/proposals/index.md                    |    29 +
+ context/wiki/proposals/task-harvest/index.md       |    29 +
+ context/wiki/release-docs/concepts.md              |   132 +
+ context/wiki/release-docs/concepts/acr.md          |   113 +
+ context/wiki/release-docs/concepts/agents.md       |   113 +
+ context/wiki/release-docs/concepts/architecture.md |   113 +
+ context/wiki/release-docs/concepts/blueprints.md   |    95 +
+ context/wiki/release-docs/concepts/cli.md          |   113 +
+ context/wiki/release-docs/concepts/cloud-sync.md   |   113 +
+ .../release-docs/concepts/commands-reference.md    |   113 +
+ .../wiki/release-docs/concepts/configuration.md    |   113 +
+ context/wiki/release-docs/concepts/context.md      |   113 +
+ context/wiki/release-docs/concepts/dashboard.md    |    45 +
+ .../wiki/release-docs/concepts/documentation.md    |   113 +
+ context/wiki/release-docs/concepts/github-pr.md    |   113 +
+ context/wiki/release-docs/concepts/hermes.md       |    54 +
+ context/wiki/release-docs/concepts/hooks.md        |   113 +
+ context/wiki/release-docs/concepts/incidents.md    |   113 +
+ context/wiki/release-docs/concepts/index.md        |    60 +
+ .../wiki/release-docs/concepts/local-context.md    |    94 +
+ context/wiki/release-docs/concepts/migration.md    |   113 +
+ context/wiki/release-docs/concepts/performance.md  |   113 +
+ context/wiki/release-docs/concepts/policy.md       |   113 +
+ .../release-docs/concepts/provider-integration.md  |   101 +
+ context/wiki/release-docs/concepts/quality.md      |   113 +
+ context/wiki/release-docs/concepts/recipes.md      |   113 +
+ context/wiki/release-docs/concepts/release.md      |   113 +
+ context/wiki/release-docs/concepts/schemas.md      |   113 +
+ context/wiki/release-docs/concepts/security.md     |   107 +
+ context/wiki/release-docs/concepts/task-backend.md |   113 +
+ context/wiki/release-docs/concepts/task-runner.md  |   113 +
+ context/wiki/release-docs/concepts/testing.md      |   113 +
+ context/wiki/release-docs/concepts/verification.md |   113 +
+ context/wiki/release-docs/concepts/website.md      |   113 +
+ context/wiki/release-docs/concepts/workflow.md     |   113 +
+ context/wiki/release-docs/concepts/worktrees.md    |   113 +
+ context/wiki/release-docs/coverage.md              |    75 +
+ context/wiki/release-docs/docs-domains.md          |   102 +
+ context/wiki/release-docs/domains/adr.md           |    75 +
+ context/wiki/release-docs/domains/archive-v0-3.md  |    39 +
+ context/wiki/release-docs/domains/concepts.md      |    45 +
+ context/wiki/release-docs/domains/context.md       |    57 +
+ context/wiki/release-docs/domains/contributing.md  |    36 +
+ context/wiki/release-docs/domains/developer.md     |   104 +
+ context/wiki/release-docs/domains/examples.md      |    39 +
+ context/wiki/release-docs/domains/help.md          |    48 +
+ context/wiki/release-docs/domains/index.md         |    45 +
+ context/wiki/release-docs/domains/internal.md      |    36 +
+ context/wiki/release-docs/domains/launch.md        |    45 +
+ context/wiki/release-docs/domains/recipes.md       |    48 +
+ context/wiki/release-docs/domains/reference.md     |    60 +
+ context/wiki/release-docs/domains/releases.md      |   162 +
+ context/wiki/release-docs/domains/root.md          |    51 +
+ context/wiki/release-docs/domains/start.md         |    42 +
+ context/wiki/release-docs/domains/user.md          |    87 +
+ .../wiki/release-docs/domains/workflow-guides.md   |    57 +
+ context/wiki/release-docs/index.md                 |    54 +
+ context/wiki/release-docs/release-lines.md         |    80 +
+ context/wiki/release-docs/release-lines/index.md   |    34 +
+ context/wiki/release-docs/release-lines/v0-1.md    |    61 +
+ context/wiki/release-docs/release-lines/v0-2.md    |   137 +
+ context/wiki/release-docs/release-lines/v0-3.md    |   143 +
+ context/wiki/release-docs/release-lines/v0-4.md    |    53 +
+ context/wiki/release-docs/release-lines/v0-5.md    |    41 +
+ context/wiki/release-docs/release-lines/v0-6.md    |    93 +
+ context/wiki/reports/index.md                      |    30 +
+ context/wiki/task-harvest/index.md                 |    29 +
+ 76 files changed, 73292 insertions(+)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->
