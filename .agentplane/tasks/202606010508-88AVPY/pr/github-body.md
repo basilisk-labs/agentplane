@@ -8,6 +8,9 @@ Fix cloud backend failure exit semantics
 
 Fix GitHub issues #4343 and #4339. Ensure backend/cloud commands that surface E_BACKEND or E_NETWORK failures return nonzero exit codes and expose deterministic tests. No fallback or backwards-compatible aliases.
 
+Fixes #4343.
+Fixes #4339.
+
 ## Scope
 
 - In scope: Fix GitHub issues #4343 and #4339. Ensure backend/cloud commands that surface E_BACKEND or E_NETWORK failures return nonzero exit codes and expose deterministic tests. No fallback or backwards-compatible aliases.
