@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606010805-1H64FF/close-commits-must-include-all-task-artifacts",
+  "created_at": "2026-06-01T08:22:02.401Z",
+  "diffstat_sha256": "sha256:e15a8197902243caeb082f94ae6c2e0306f95f538676738798765d879437d8c3",
+  "last_verified_at": "2026-06-01T08:22:02.358Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202606010805-1H64FF",
+  "updated_at": "2026-06-01T08:22:02.401Z",
+  "verify": {
+    "status": "pass"
+  }
+}

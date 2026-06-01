@@ -1,0 +1,8 @@
+ docs/user/cli-reference.generated.mdx              | 10 ++---
+ packages/agentplane/src/cli/reason-codes.ts        |  2 +-
+ ...run-cli.core.guard.commit-wrapper.close.test.ts | 10 +++--
+ packages/agentplane/src/commands/commit.spec.ts    |  6 +--
+ packages/agentplane/src/commands/finish.spec.ts    |  4 +-
+ .../guard/impl/commands.commit-close.unit.test.ts  | 46 ++++++++++++++++++++++
+ .../src/commands/guard/impl/commit-stage.ts        | 14 ++++++-
+ 7 files changed, 77 insertions(+), 15 deletions(-)

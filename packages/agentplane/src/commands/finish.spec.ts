@@ -174,7 +174,7 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       name: "close-commit",
       default: false,
       description:
-        "After finishing, run a deterministic close commit for the task README (single-task only).",
+        "After finishing, run a deterministic close commit for the active task artifact scope (single-task only).",
     },
     {
       kind: "boolean",
@@ -195,7 +195,7 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       name: "close-unstage-others",
       default: false,
       description:
-        "With --close-commit: unstage any currently staged paths before staging the task README.",
+        "With --close-commit: unstage any currently staged paths before staging the active task artifact scope.",
     },
     {
       kind: "string",

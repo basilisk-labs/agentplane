@@ -66,8 +66,20 @@ export async function stageCloseCommitPaths(opts: {
   allowPolicy: boolean;
 }): Promise<void> {
   const stagePaths = new Set<string>([opts.readmeRel]);
+  const changedPaths = await opts.ctx.git.statusChangedPaths();
+  for (const relPath of changedPaths) {
+    if (
+      isTaskLocalAdvancePath({
+        workflowDir: opts.ctx.config.paths.workflow_dir,
+        taskId: opts.taskId,
+        tasksPath: opts.ctx.config.paths.tasks_path,
+        relPath,
+      })
+    ) {
+      stagePaths.add(relPath);
+    }
+  }
   if (opts.allowPolicy) {
-    const changedPaths = await opts.ctx.git.statusChangedPaths();
     for (const relPath of changedPaths) {
       if (
         protectedPathKindForFile({

@@ -176,6 +176,52 @@ describe("guard command implementations: commit close", () => {
     expect(mocks.ensureReconciledBeforeMutation).not.toHaveBeenCalled();
   });
 
+  it("cmdCommit close stages non-README artifacts from the active task scope by default", async () => {
+    const { cmdCommit } = await import("./commit.js");
+    const ctx = mkCtx();
+    ctx.git.statusChangedPaths.mockResolvedValue([
+      ".agentplane/tasks/T-2/README.md",
+      ".agentplane/tasks/T-2/evaluator-opinion.md",
+      ".agentplane/tasks/T-2/blueprint/resolved-snapshot.json",
+      ".agentplane/tasks/T-99/README.md",
+      "src/outside.ts",
+    ]);
+    mocks.loadTaskFromContext.mockResolvedValue({ id: "T-2" });
+    mocks.buildCloseCommitMessage.mockResolvedValue({
+      subject: "✅ ABC123 close: done",
+      body: "body",
+    });
+    mocks.taskReadmePathForTask.mockReturnValue("/repo/.agentplane/tasks/T-2/README.md");
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-2" });
+
+    const rc = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-2",
+      message: "",
+      close: true,
+      allow: [],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+      closeCheckOnly: false,
+      closeUnstageOthers: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(ctx.git.stage).toHaveBeenCalledWith([
+      ".agentplane/tasks/T-2/blueprint/resolved-snapshot.json",
+      ".agentplane/tasks/T-2/evaluator-opinion.md",
+      ".agentplane/tasks/T-2/README.md",
+    ]);
+  });
+
   it("cmdCommit close rejects a dirty index unless --unstage-others is set", async () => {
     const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
