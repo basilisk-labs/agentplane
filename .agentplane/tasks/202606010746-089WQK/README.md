@@ -4,7 +4,7 @@ title: "Refresh Hermes docs social images for patch release"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,15 +25,20 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-01T07:59:34.879Z"
+  updated_at: "2026-06-01T08:16:19.881Z"
   updated_by: "EVALUATOR"
-  note: "PR artifact freshness recheck: hosted checks passed on PR #4354 after final evaluator evidence commit; refreshing verification so last_verified_diffstat_sha256 can match the current PR diffstat digest before integration."
-  evaluated_sha: "bd164865ffd89a3b64867cdfb157cdb92bb6160d"
+  note: "Final PR artifact freshness and hosted checks are current for PR #4354."
+  evaluated_sha: "69adceb350111daad3cece67e834d0123de7f1c0"
   blueprint_digest: "4a6bf7c22bd64f26a418b0c6e4118aa5d1244d0a23aade3872b8f51194d22b16"
   evidence_refs:
     - ".agentplane/tasks/202606010746-089WQK/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606010746-089WQK-refresh-hermes-docs-social-images-for-patch-rele/.agentplane/tasks/202606010746-089WQK/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202606010746-089WQK/quality/20260601-081619881-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606010746-089WQK/quality/20260601-081619881-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606010746-089WQK/quality/20260601-081619881-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606010746-089WQK/blueprint/resolved-snapshot.json"
+    - ".agentplane/tasks/202606010746-089WQK/pr/meta.json"
+  findings:
+    - "After refreshing verification metadata, pr/meta.json records matching diffstat_sha256 and last_verified_diffstat_sha256; PR #4354 head afd84468e has Docs CI, Core CI plan/PR verification, and CodeQL checks passing, and the review thread was resolved."
 commit: null
 comments:
   -
