@@ -13,7 +13,7 @@ Created: 2026-06-01T20:38:07.714Z
 ## Verification
 
 - State: ok
-- Note: Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran full bun run format:check successfully. Previous source architecture context gates remain valid: reindex, wiki lint, graph validate, context verify-task, search smoke, policy routing, and targeted Prettier.
+- Note: Verified final format-fix head 1582bf91: context/wiki/index.md formatting fix is committed and full bun run format:check passed locally; source architecture context gates were already green on the same artifact set.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

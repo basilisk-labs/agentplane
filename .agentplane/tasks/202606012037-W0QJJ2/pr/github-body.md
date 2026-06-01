@@ -19,9 +19,9 @@ Assimilate AgentPlane source code into local context without copying implementat
 - Note:
 
 ```text
-Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran full
-bun run format:check successfully. Previous source architecture context gates remain valid: reindex,
-wiki lint, graph validate, context verify-task, search smoke, policy routing, and targeted Prettier.
+Verified final format-fix head 1582bf91: context/wiki/index.md formatting fix is committed and full
+bun run format:check passed locally; source architecture context gates were already green on the
+same artifact set.
 ```
 - Canonical workflow state lives in the task README.
 
