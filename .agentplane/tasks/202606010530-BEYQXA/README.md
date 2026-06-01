@@ -1,10 +1,11 @@
 ---
 id: "202606010530-BEYQXA"
 title: "Fix Hermes task launch profile gaps"
-status: "DOING"
+result_summary: "Merged via PR #4349."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -44,11 +45,16 @@ quality_review:
     - "node .agentplane/policy/check-routing.mjs"
   findings:
     - "No rework required. Residual risk is limited to the external Hermes CLI/plugin implementing the documented hermes agentplane run entrypoint."
-commit: null
+commit:
+  hash: "7f0518beb1db29a92d90102be397c723a85b3679"
+  message: "🚧 BEYQXA task: record Hermes quality review"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved Hermes launch fixes for issue #4347 in the task worktree, then run targeted Hermes, runner, init, schema, and routing checks before PR handoff."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4349 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: Hermes supervise now allowlists same-task task run through typed args, init --tool hermes seeds the custom Hermes runner profile, and targeted tests/type/docs/routing checks pass."
+  -
+    type: "status"
+    at: "2026-06-01T05:55:39.510Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4349 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-01T05:39:04.313Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-01T05:55:39.516Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve GitHub issue #4347 by allowing hermes supervise to execute the same-task task-run route step safely and by adding a first-class Hermes init/runner profile path."
 sections:
   Summary: |-
