@@ -1,10 +1,11 @@
 ---
 id: "202606011757-927CG5"
 title: "Restore maximum assimilation task ACR artifact"
-status: "DOING"
+result_summary: "Merged via PR #4367."
+status: "DONE"
 priority: "med"
 owner: "CURATOR"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "packages/agentplane/src/commands/task/finish-shared.ts"
   findings:
     - "Generated C22C3X ACR now validates with context schema_version=1; context verify-task passes; finish refresh now writes ACR for context tasks even when optional global ACR recording is disabled."
-commit: null
+commit:
+  hash: "a47cce7a21ddf855ced66bf122ffbb60cafe4b31"
+  message: "✅ 927CG5 task: restrict context ACR refresh"
 comments:
   -
     author: "CURATOR"
     body: "Start: restore missing ACR artifact for completed maximum-assimilation task C22C3X and verify post-merge context gates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4367 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -67,9 +73,16 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Review fix verified: disabled optional ACR refresh now filters mixed finish batches to context tasks only."
+  -
+    type: "status"
+    at: "2026-06-01T19:28:33.538Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4367 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-01T18:51:59.038Z"
-doc_updated_by: "CURATOR"
+doc_updated_at: "2026-06-01T19:28:33.544Z"
+doc_updated_by: "INTEGRATOR"
 description: "Commit the missing task-local acr.json for completed maximum-assimilation task 202606011717-C22C3X and verify context verify-task passes on main state. Scope is limited to deterministic ACR repair and task traceability for the post-merge validation gap."
 sections:
   Summary: |-
