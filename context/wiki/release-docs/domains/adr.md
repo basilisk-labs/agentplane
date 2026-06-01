@@ -38,20 +38,20 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/adr/0001-zod-config-parity.md`](../../docs/adr/0001-zod-config-parity.md)
-2. [`docs/adr/0002-adr-process.md`](../../docs/adr/0002-adr-process.md)
-3. [`docs/adr/0003-refactor-sequencing.md`](../../docs/adr/0003-refactor-sequencing.md)
-4. [`docs/adr/0004-keep-custom-cli-stack.md`](../../docs/adr/0004-keep-custom-cli-stack.md)
-5. [`docs/adr/0005-defer-biome-migration.md`](../../docs/adr/0005-defer-biome-migration.md)
-6. [`docs/adr/0006-no-effect-fp-ts-migration.md`](../../docs/adr/0006-no-effect-fp-ts-migration.md)
-7. [`docs/adr/0007-freeze-yaml-parser-stack.md`](../../docs/adr/0007-freeze-yaml-parser-stack.md)
-8. [`docs/adr/0008-keep-yauzl-for-zip-validation.md`](../../docs/adr/0008-keep-yauzl-for-zip-validation.md)
-9. [`docs/adr/0009-recipes-index-signing-algorithm-policy.md`](../../docs/adr/0009-recipes-index-signing-algorithm-policy.md)
-10. [`docs/adr/0010-core-root-export-compatibility.md`](../../docs/adr/0010-core-root-export-compatibility.md)
-11. [`docs/adr/0011-v0.3-surface-freeze.md`](../../docs/adr/0011-v0.3-surface-freeze.md)
-12. [`docs/adr/0012-v0.4-surface-transition.md`](../../docs/adr/0012-v0.4-surface-transition.md)
-13. [`docs/adr/0013-zod-contract-ssot.md`](../../docs/adr/0013-zod-contract-ssot.md)
-14. [`docs/adr/README.md`](../../docs/adr/README.md)
+1. [`docs/adr/0001-zod-config-parity.md`](../../../../docs/adr/0001-zod-config-parity.md)
+2. [`docs/adr/0002-adr-process.md`](../../../../docs/adr/0002-adr-process.md)
+3. [`docs/adr/0003-refactor-sequencing.md`](../../../../docs/adr/0003-refactor-sequencing.md)
+4. [`docs/adr/0004-keep-custom-cli-stack.md`](../../../../docs/adr/0004-keep-custom-cli-stack.md)
+5. [`docs/adr/0005-defer-biome-migration.md`](../../../../docs/adr/0005-defer-biome-migration.md)
+6. [`docs/adr/0006-no-effect-fp-ts-migration.md`](../../../../docs/adr/0006-no-effect-fp-ts-migration.md)
+7. [`docs/adr/0007-freeze-yaml-parser-stack.md`](../../../../docs/adr/0007-freeze-yaml-parser-stack.md)
+8. [`docs/adr/0008-keep-yauzl-for-zip-validation.md`](../../../../docs/adr/0008-keep-yauzl-for-zip-validation.md)
+9. [`docs/adr/0009-recipes-index-signing-algorithm-policy.md`](../../../../docs/adr/0009-recipes-index-signing-algorithm-policy.md)
+10. [`docs/adr/0010-core-root-export-compatibility.md`](../../../../docs/adr/0010-core-root-export-compatibility.md)
+11. [`docs/adr/0011-v0.3-surface-freeze.md`](../../../../docs/adr/0011-v0.3-surface-freeze.md)
+12. [`docs/adr/0012-v0.4-surface-transition.md`](../../../../docs/adr/0012-v0.4-surface-transition.md)
+13. [`docs/adr/0013-zod-contract-ssot.md`](../../../../docs/adr/0013-zod-contract-ssot.md)
+14. [`docs/adr/README.md`](../../../../docs/adr/README.md)
 
 # adr documentation domain
 

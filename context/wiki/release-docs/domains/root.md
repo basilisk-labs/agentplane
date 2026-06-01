@@ -30,12 +30,12 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/compare.mdx`](../../docs/compare.mdx)
-2. [`docs/index.mdx`](../../docs/index.mdx)
-3. [`docs/listing.md`](../../docs/listing.md)
-4. [`docs/manifesto.mdx`](../../docs/manifesto.mdx)
-5. [`docs/README.md`](../../docs/README.md)
-6. [`docs/showcase.mdx`](../../docs/showcase.mdx)
+1. [`docs/compare.mdx`](../../../../docs/compare.mdx)
+2. [`docs/index.mdx`](../../../../docs/index.mdx)
+3. [`docs/listing.md`](../../../../docs/listing.md)
+4. [`docs/manifesto.mdx`](../../../../docs/manifesto.mdx)
+5. [`docs/README.md`](../../../../docs/README.md)
+6. [`docs/showcase.mdx`](../../../../docs/showcase.mdx)
 
 # root documentation domain
 

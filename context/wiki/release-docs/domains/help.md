@@ -29,11 +29,11 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/help/broken-workflow-runbook.mdx`](../../docs/help/broken-workflow-runbook.mdx)
-2. [`docs/help/glossary.mdx`](../../docs/help/glossary.mdx)
-3. [`docs/help/legacy-upgrade-recovery.mdx`](../../docs/help/legacy-upgrade-recovery.mdx)
-4. [`docs/help/troubleshooting-by-symptom.mdx`](../../docs/help/troubleshooting-by-symptom.mdx)
-5. [`docs/help/troubleshooting.mdx`](../../docs/help/troubleshooting.mdx)
+1. [`docs/help/broken-workflow-runbook.mdx`](../../../../docs/help/broken-workflow-runbook.mdx)
+2. [`docs/help/glossary.mdx`](../../../../docs/help/glossary.mdx)
+3. [`docs/help/legacy-upgrade-recovery.mdx`](../../../../docs/help/legacy-upgrade-recovery.mdx)
+4. [`docs/help/troubleshooting-by-symptom.mdx`](../../../../docs/help/troubleshooting-by-symptom.mdx)
+5. [`docs/help/troubleshooting.mdx`](../../../../docs/help/troubleshooting.mdx)
 
 # help documentation domain
 

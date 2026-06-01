@@ -26,8 +26,8 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/archive/v0-3/cli-bug-ledger-v0-3-x.mdx`](../../docs/archive/v0-3/cli-bug-ledger-v0-3-x.mdx)
-2. [`docs/archive/v0-3/framework-refactor-program.mdx`](../../docs/archive/v0-3/framework-refactor-program.mdx)
+1. [`docs/archive/v0-3/cli-bug-ledger-v0-3-x.mdx`](../../../../docs/archive/v0-3/cli-bug-ledger-v0-3-x.mdx)
+2. [`docs/archive/v0-3/framework-refactor-program.mdx`](../../../../docs/archive/v0-3/framework-refactor-program.mdx)
 
 # archive-v0-3 documentation domain
 

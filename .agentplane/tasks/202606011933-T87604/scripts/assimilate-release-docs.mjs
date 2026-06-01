@@ -92,7 +92,12 @@ function sourceRef(file) {
   return { path: file.rel, sha256: file.sha256, lines: "1-80" };
 }
 
-function wikiFrontmatter({ canonicalId, title, refs = [], entities = [], edges = [], aliases = [] }) {
+function sourceMarkdownLink(pageRel, ref) {
+  const target = path.posix.relative(path.posix.dirname(pageRel), ref);
+  return target.startsWith(".") ? target : `./${target}`;
+}
+
+function wikiFrontmatter({ canonicalId, title, pageRel, refs = [], entities = [], edges = [], aliases = [] }) {
   const cleanRefs = refs.filter((ref) => typeof ref === "string" && ref.trim());
   const frontmatter = [
     "---",
@@ -130,7 +135,9 @@ function wikiFrontmatter({ canonicalId, title, refs = [], entities = [], edges =
     "## Sources",
     "",
     ...(cleanRefs.length
-      ? cleanRefs.slice(0, 25).map((ref, index) => `${index + 1}. [\`${ref}\`](../../${ref})`)
+      ? cleanRefs
+          .slice(0, 25)
+          .map((ref, index) => `${index + 1}. [\`${ref}\`](${sourceMarkdownLink(pageRel, ref)})`)
       : ["- no-source: generated navigation page over sourced child pages."]),
     "",
   ].join("\n");
@@ -140,6 +147,12 @@ function wikiFrontmatter({ canonicalId, title, refs = [], entities = [], edges =
 function write(file, text) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, text);
+}
+
+function compareReleaseFiles(a, b) {
+  const ak = [Number(a.release?.version.match(/^v(\d+)\.(\d+)(?:\.(\d+))?/)?.[1] ?? 0), Number(a.release?.version.match(/^v(\d+)\.(\d+)(?:\.(\d+))?/)?.[2] ?? 0), Number(a.release?.version.match(/^v(\d+)\.(\d+)(?:\.(\d+))?/)?.[3] ?? 0)];
+  const bk = [Number(b.release?.version.match(/^v(\d+)\.(\d+)(?:\.(\d+))?/)?.[1] ?? 0), Number(b.release?.version.match(/^v(\d+)\.(\d+)(?:\.(\d+))?/)?.[2] ?? 0), Number(b.release?.version.match(/^v(\d+)\.(\d+)(?:\.(\d+))?/)?.[3] ?? 0)];
+  return ak[0] - bk[0] || ak[1] - bk[1] || ak[2] - bk[2] || a.rel.localeCompare(b.rel);
 }
 
 const docFiles = walk(path.join(root, "docs"))
@@ -386,6 +399,7 @@ write(
   wikiFrontmatter({
     canonicalId: "wiki.release_docs.index",
     title: "Release notes and documentation assimilation",
+    pageRel: "context/wiki/release-docs/index.md",
     refs: ["docs/releases/README.md", "docs/README.md"],
     entities: ["entity.release_docs_corpus"],
   }) +
@@ -422,6 +436,7 @@ write(
   wikiFrontmatter({
     canonicalId: "wiki.release_docs.release_lines",
     title: "Release documentation lines",
+    pageRel: "context/wiki/release-docs/release-lines.md",
     refs: releaseFiles.slice(0, 20).map((f) => f.rel),
     entities: [...releaseLines.keys()].map((line) => `entity.release_line.${slug(line)}`),
   }) +
@@ -429,8 +444,10 @@ write(
       "# Release documentation lines",
       "",
       ...[...releaseLines.entries()].toSorted().map(
-        ([line, files]) =>
-          `- [[${line} release line]]: ${files.length} release notes; latest source: \`${files.at(-1)?.rel}\`.`,
+        ([line, files]) => {
+          const latest = files.toSorted(compareReleaseFiles).at(-1);
+          return `- [[${line} release line]]: ${files.length} release notes; latest source: \`${latest?.rel}\`.`;
+        },
       ),
       "",
     ].join("\n"),
@@ -441,6 +458,7 @@ write(
   wikiFrontmatter({
     canonicalId: "wiki.release_docs.docs_domains",
     title: "Documentation domains",
+    pageRel: "context/wiki/release-docs/docs-domains.md",
     refs: docFiles.slice(0, 20).map((f) => f.rel),
     entities: [...domains.keys()].map((domain) => `entity.docs_domain.${slug(domain)}`),
   }) +
@@ -459,6 +477,7 @@ write(
   wikiFrontmatter({
     canonicalId: "wiki.release_docs.concepts",
     title: "Release and documentation concepts",
+    pageRel: "context/wiki/release-docs/concepts.md",
     refs: topConcepts.slice(0, 20).flatMap(([, files]) => files.slice(0, 1).map((f) => f.rel)),
     entities: topConcepts.map(([concept]) => `entity.concept.${slug(concept)}`),
   }) +
@@ -475,6 +494,7 @@ write(
   wikiFrontmatter({
     canonicalId: "wiki.release_docs.coverage",
     title: "Release docs coverage",
+    pageRel: "context/wiki/release-docs/coverage.md",
     refs: docFiles.slice(0, 20).map((f) => f.rel),
     entities: ["entity.release_docs_corpus"],
   }) +
@@ -497,6 +517,7 @@ for (const [line, files] of [...releaseLines.entries()].toSorted()) {
     wikiFrontmatter({
       canonicalId: `wiki.release_docs.release_line.${slug(line)}`,
       title: `${line} release line`,
+      pageRel: `context/wiki/release-docs/release-lines/${slug(line)}.md`,
       refs: files.map((f) => f.rel),
       entities: [`entity.release_line.${slug(line)}`, ...files.map((f) => `entity.release.${slug(f.release.version)}`)],
     }) +
@@ -519,6 +540,7 @@ for (const [domain, files] of [...domains.entries()].toSorted()) {
     wikiFrontmatter({
       canonicalId: `wiki.release_docs.domain.${slug(domain)}`,
       title: `${domain} documentation domain`,
+      pageRel: `context/wiki/release-docs/domains/${slug(domain)}.md`,
       refs: files.slice(0, 20).map((f) => f.rel),
       entities: [`entity.docs_domain.${slug(domain)}`],
     }) +
@@ -541,6 +563,7 @@ for (const [concept, files] of topConcepts) {
     wikiFrontmatter({
       canonicalId: `wiki.release_docs.concept.${slug(concept)}`,
       title: `${concept} concept`,
+      pageRel: `context/wiki/release-docs/concepts/${slug(concept)}.md`,
       refs: files.slice(0, 20).map((f) => f.rel),
       entities: [`entity.concept.${slug(concept)}`],
     }) +

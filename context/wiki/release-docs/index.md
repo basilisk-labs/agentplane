@@ -26,8 +26,8 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/releases/README.md`](../../docs/releases/README.md)
-2. [`docs/README.md`](../../docs/README.md)
+1. [`docs/releases/README.md`](../../../docs/releases/README.md)
+2. [`docs/README.md`](../../../docs/README.md)
 
 # Release notes and documentation assimilation
 

@@ -25,7 +25,7 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/internal/git-mutation-model.mdx`](../../docs/internal/git-mutation-model.mdx)
+1. [`docs/internal/git-mutation-model.mdx`](../../../../docs/internal/git-mutation-model.mdx)
 
 # internal documentation domain
 

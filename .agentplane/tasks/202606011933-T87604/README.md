@@ -4,7 +4,7 @@ title: "Assimilate release notes and documentation context"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -32,9 +32,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-01T20:06:11.058Z"
+  updated_at: "2026-06-01T21:14:57.054Z"
   updated_by: "CURATOR"
-  note: "Verified final head 6e4c0413: release/docs assimilation artifacts plus context/wiki/index.md formatting fix are committed. Local gates passed: bun run format:check, ap context wiki lint context/wiki, ap context verify-task 202606011933-T87604, pre-push fast CI through 338 unit test files / 2019 tests and critical CLI chunks."
+  note: "Verified review-thread fixes for PR #4371: generated source links now resolve relative to each wiki page and release-line latest sources are selected by parsed semver order. Re-ran reindex, wiki lint, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier."
   attempts: 0
 quality_review:
   state: "pass"
@@ -91,8 +91,14 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Verified final head 6e4c0413: release/docs assimilation artifacts plus context/wiki/index.md formatting fix are committed. Local gates passed: bun run format:check, ap context wiki lint context/wiki, ap context verify-task 202606011933-T87604, pre-push fast CI through 338 unit test files / 2019 tests and critical CLI chunks."
+  -
+    type: "verify"
+    at: "2026-06-01T21:14:57.054Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Verified review-thread fixes for PR #4371: generated source links now resolve relative to each wiki page and release-line latest sources are selected by parsed semver order. Re-ran reindex, wiki lint, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier."
 doc_version: 3
-doc_updated_at: "2026-06-01T20:06:11.084Z"
+doc_updated_at: "2026-06-01T21:14:57.087Z"
 doc_updated_by: "CURATOR"
 description: "Assimilate AgentPlane release notes and public documentation into the local context layer with useful graph density: release-line entities, documentation-domain entities, feature/decision/invariant entities, semantic edges, wiki synthesis pages, source coverage, and volume/granularity metrics."
 sections:
@@ -192,6 +198,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606011933-T87604
 
+    ### 2026-06-01T21:14:57.054Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Verified review-thread fixes for PR #4371: generated source links now resolve relative to each wiki page and release-line latest sources are selected by parsed semver order. Re-ran reindex, wiki lint, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T20:06:11.084Z, excerpt_hash=sha256:0ee04b77eba3914e092b6a7f65abd3ce951c44f9df5a3c2befea0a8d2c42f9af
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011933-T87604-assimilate-release-docs-context/.agentplane/tasks/202606011933-T87604/blueprint/resolved-snapshot.json
+    - old_digest: 9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d
+    - current_digest: 9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606011933-T87604
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -214,6 +239,10 @@ sections:
     - Observation: Current PR head fixes the hosted verify-contract Prettier failure for context/wiki/index.md; remote push previously stopped before upload after local gates, so this verify records the final local head before no-verify push.
       Impact: The PR diff is locally verified against the failed contract and broad fast CI surfaces.
       Resolution: Commit only refreshed task verification metadata, update PR artifacts, push the final head, then re-check GitHub PR #4371.
+
+    - Observation: Fixed Codex review findings on dead source links and lexicographic latest-release selection; checked sample links resolve and release-lines now point to v0.2.26, v0.3.29, and v0.6.14 where appropriate.
+      Impact: PR #4371 no longer has the unresolved correctness issues that blocked merge.
+      Resolution: Commit and push regenerated release/docs artifacts, then resolve the two GitHub review threads and merge after hosted checks are green.
 extensions:
   agentplane.context:
     allowed_outputs:
@@ -964,6 +993,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606011933-T87604
 
+### 2026-06-01T21:14:57.054Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Verified review-thread fixes for PR #4371: generated source links now resolve relative to each wiki page and release-line latest sources are selected by parsed semver order. Re-ran reindex, wiki lint, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T20:06:11.084Z, excerpt_hash=sha256:0ee04b77eba3914e092b6a7f65abd3ce951c44f9df5a3c2befea0a8d2c42f9af
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011933-T87604-assimilate-release-docs-context/.agentplane/tasks/202606011933-T87604/blueprint/resolved-snapshot.json
+- old_digest: 9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d
+- current_digest: 9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606011933-T87604
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -990,3 +1038,7 @@ BlueprintSnapshotRef:
 - Observation: Current PR head fixes the hosted verify-contract Prettier failure for context/wiki/index.md; remote push previously stopped before upload after local gates, so this verify records the final local head before no-verify push.
   Impact: The PR diff is locally verified against the failed contract and broad fast CI surfaces.
   Resolution: Commit only refreshed task verification metadata, update PR artifacts, push the final head, then re-check GitHub PR #4371.
+
+- Observation: Fixed Codex review findings on dead source links and lexicographic latest-release selection; checked sample links resolve and release-lines now point to v0.2.26, v0.3.29, and v0.6.14 where appropriate.
+  Impact: PR #4371 no longer has the unresolved correctness issues that blocked merge.
+  Resolution: Commit and push regenerated release/docs artifacts, then resolve the two GitHub review threads and merge after hosted checks are green.

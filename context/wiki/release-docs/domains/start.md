@@ -27,9 +27,9 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/start/first-local-run.mdx`](../../docs/start/first-local-run.mdx)
-2. [`docs/start/quickstart.mdx`](../../docs/start/quickstart.mdx)
-3. [`docs/start/what-agentplane-writes.mdx`](../../docs/start/what-agentplane-writes.mdx)
+1. [`docs/start/first-local-run.mdx`](../../../../docs/start/first-local-run.mdx)
+2. [`docs/start/quickstart.mdx`](../../../../docs/start/quickstart.mdx)
+3. [`docs/start/what-agentplane-writes.mdx`](../../../../docs/start/what-agentplane-writes.mdx)
 
 # start documentation domain
 

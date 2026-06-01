@@ -26,8 +26,8 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/examples/debug-agent-run-with-traces.mdx`](../../docs/examples/debug-agent-run-with-traces.mdx)
-2. [`docs/examples/export-traces.mdx`](../../docs/examples/export-traces.mdx)
+1. [`docs/examples/debug-agent-run-with-traces.mdx`](../../../../docs/examples/debug-agent-run-with-traces.mdx)
+2. [`docs/examples/export-traces.mdx`](../../../../docs/examples/export-traces.mdx)
 
 # examples documentation domain
 

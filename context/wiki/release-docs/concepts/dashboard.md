@@ -28,10 +28,10 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/compare.mdx`](../../docs/compare.mdx)
-2. [`docs/recipes/hermes-agentplane.mdx`](../../docs/recipes/hermes-agentplane.mdx)
-3. [`docs/user/cli-reference.generated.mdx`](../../docs/user/cli-reference.generated.mdx)
-4. [`docs/workflow-guides/hermes-kanban.mdx`](../../docs/workflow-guides/hermes-kanban.mdx)
+1. [`docs/compare.mdx`](../../../../docs/compare.mdx)
+2. [`docs/recipes/hermes-agentplane.mdx`](../../../../docs/recipes/hermes-agentplane.mdx)
+3. [`docs/user/cli-reference.generated.mdx`](../../../../docs/user/cli-reference.generated.mdx)
+4. [`docs/workflow-guides/hermes-kanban.mdx`](../../../../docs/workflow-guides/hermes-kanban.mdx)
 
 # dashboard concept
 

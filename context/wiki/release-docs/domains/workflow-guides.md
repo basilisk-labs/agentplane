@@ -32,14 +32,14 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/workflow-guides/aider.mdx`](../../docs/workflow-guides/aider.mdx)
-2. [`docs/workflow-guides/branch-pr.mdx`](../../docs/workflow-guides/branch-pr.mdx)
-3. [`docs/workflow-guides/claude-code.mdx`](../../docs/workflow-guides/claude-code.mdx)
-4. [`docs/workflow-guides/codex.mdx`](../../docs/workflow-guides/codex.mdx)
-5. [`docs/workflow-guides/cursor.mdx`](../../docs/workflow-guides/cursor.mdx)
-6. [`docs/workflow-guides/github-actions.mdx`](../../docs/workflow-guides/github-actions.mdx)
-7. [`docs/workflow-guides/hermes-kanban.mdx`](../../docs/workflow-guides/hermes-kanban.mdx)
-8. [`docs/workflow-guides/index.mdx`](../../docs/workflow-guides/index.mdx)
+1. [`docs/workflow-guides/aider.mdx`](../../../../docs/workflow-guides/aider.mdx)
+2. [`docs/workflow-guides/branch-pr.mdx`](../../../../docs/workflow-guides/branch-pr.mdx)
+3. [`docs/workflow-guides/claude-code.mdx`](../../../../docs/workflow-guides/claude-code.mdx)
+4. [`docs/workflow-guides/codex.mdx`](../../../../docs/workflow-guides/codex.mdx)
+5. [`docs/workflow-guides/cursor.mdx`](../../../../docs/workflow-guides/cursor.mdx)
+6. [`docs/workflow-guides/github-actions.mdx`](../../../../docs/workflow-guides/github-actions.mdx)
+7. [`docs/workflow-guides/hermes-kanban.mdx`](../../../../docs/workflow-guides/hermes-kanban.mdx)
+8. [`docs/workflow-guides/index.mdx`](../../../../docs/workflow-guides/index.mdx)
 
 # workflow-guides documentation domain
 

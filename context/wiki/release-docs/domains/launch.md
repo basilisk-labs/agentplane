@@ -28,10 +28,10 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/launch/checklist.md`](../../docs/launch/checklist.md)
-2. [`docs/launch/hn.md`](../../docs/launch/hn.md)
-3. [`docs/launch/reddit.md`](../../docs/launch/reddit.md)
-4. [`docs/launch/twitter.md`](../../docs/launch/twitter.md)
+1. [`docs/launch/checklist.md`](../../../../docs/launch/checklist.md)
+2. [`docs/launch/hn.md`](../../../../docs/launch/hn.md)
+3. [`docs/launch/reddit.md`](../../../../docs/launch/reddit.md)
+4. [`docs/launch/twitter.md`](../../../../docs/launch/twitter.md)
 
 # launch documentation domain
 

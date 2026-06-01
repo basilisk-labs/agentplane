@@ -25,7 +25,7 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/contributing/citation-guidelines.mdx`](../../docs/contributing/citation-guidelines.mdx)
+1. [`docs/contributing/citation-guidelines.mdx`](../../../../docs/contributing/citation-guidelines.mdx)
 
 # contributing documentation domain
 

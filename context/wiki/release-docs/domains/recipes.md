@@ -29,11 +29,11 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/recipes/docs-update.mdx`](../../docs/recipes/docs-update.mdx)
-2. [`docs/recipes/hermes-agentplane.mdx`](../../docs/recipes/hermes-agentplane.mdx)
-3. [`docs/recipes/index.mdx`](../../docs/recipes/index.mdx)
-4. [`docs/recipes/security-review.mdx`](../../docs/recipes/security-review.mdx)
-5. [`docs/recipes/tdd.mdx`](../../docs/recipes/tdd.mdx)
+1. [`docs/recipes/docs-update.mdx`](../../../../docs/recipes/docs-update.mdx)
+2. [`docs/recipes/hermes-agentplane.mdx`](../../../../docs/recipes/hermes-agentplane.mdx)
+3. [`docs/recipes/index.mdx`](../../../../docs/recipes/index.mdx)
+4. [`docs/recipes/security-review.mdx`](../../../../docs/recipes/security-review.mdx)
+5. [`docs/recipes/tdd.mdx`](../../../../docs/recipes/tdd.mdx)
 
 # recipes documentation domain
 

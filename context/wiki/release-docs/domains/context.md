@@ -32,14 +32,14 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/context/agent-guide.mdx`](../../docs/context/agent-guide.mdx)
-2. [`docs/context/files.mdx`](../../docs/context/files.mdx)
-3. [`docs/context/index.mdx`](../../docs/context/index.mdx)
-4. [`docs/context/ingest.mdx`](../../docs/context/ingest.mdx)
-5. [`docs/context/modes.mdx`](../../docs/context/modes.mdx)
-6. [`docs/context/quickstart.mdx`](../../docs/context/quickstart.mdx)
-7. [`docs/context/review.mdx`](../../docs/context/review.mdx)
-8. [`docs/context/troubleshooting.mdx`](../../docs/context/troubleshooting.mdx)
+1. [`docs/context/agent-guide.mdx`](../../../../docs/context/agent-guide.mdx)
+2. [`docs/context/files.mdx`](../../../../docs/context/files.mdx)
+3. [`docs/context/index.mdx`](../../../../docs/context/index.mdx)
+4. [`docs/context/ingest.mdx`](../../../../docs/context/ingest.mdx)
+5. [`docs/context/modes.mdx`](../../../../docs/context/modes.mdx)
+6. [`docs/context/quickstart.mdx`](../../../../docs/context/quickstart.mdx)
+7. [`docs/context/review.mdx`](../../../../docs/context/review.mdx)
+8. [`docs/context/troubleshooting.mdx`](../../../../docs/context/troubleshooting.mdx)
 
 # context documentation domain
 

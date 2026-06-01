@@ -28,10 +28,10 @@ agentplane_context:
 
 ## Sources
 
-1. [`docs/concepts/agent-workflows.mdx`](../../docs/concepts/agent-workflows.mdx)
-2. [`docs/concepts/context-engineering.mdx`](../../docs/concepts/context-engineering.mdx)
-3. [`docs/concepts/harness-engineering.mdx`](../../docs/concepts/harness-engineering.mdx)
-4. [`docs/concepts/traces.mdx`](../../docs/concepts/traces.mdx)
+1. [`docs/concepts/agent-workflows.mdx`](../../../../docs/concepts/agent-workflows.mdx)
+2. [`docs/concepts/context-engineering.mdx`](../../../../docs/concepts/context-engineering.mdx)
+3. [`docs/concepts/harness-engineering.mdx`](../../../../docs/concepts/harness-engineering.mdx)
+4. [`docs/concepts/traces.mdx`](../../../../docs/concepts/traces.mdx)
 
 # concepts documentation domain
 
