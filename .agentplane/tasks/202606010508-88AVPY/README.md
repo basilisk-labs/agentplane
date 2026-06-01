@@ -4,7 +4,7 @@ title: "Fix cloud backend failure exit semantics"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,22 @@ verification:
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts. Result: pass, 19 tests. Evidence: regression coverage now asserts cloud push HTTP 502 exits with E_BACKEND/6 and cloud read autosync fetch failure exits with E_NETWORK/7, covering GitHub issues #4343 and #4339. Command: bun run format:changed. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-01T05:14:57.307Z"
+  updated_by: "EVALUATOR"
+  note: "Regression tests now cover cloud backend E_BACKEND/E_NETWORK nonzero exit semantics for GitHub issues #4343 and #4339."
+  evaluated_sha: "5986865edd175765da4c56bad02debb20de4cf01"
+  blueprint_digest: "72148b189d649d301cbc3cdd91492ac9e86fb4de0b7db97e72034ea9e3136e70"
+  evidence_refs:
+    - ".agentplane/tasks/202606010508-88AVPY/README.md"
+    - ".agentplane/tasks/202606010508-88AVPY/quality/20260601-051457307-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606010508-88AVPY/quality/20260601-051457307-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606010508-88AVPY/quality/20260601-051457307-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606010508-88AVPY/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts"
+  findings:
+    - "Covered backend sync cloud HTTP 502 -> E_BACKEND/6 and task show cloud autosync fetch failure -> E_NETWORK/7 in runCli."
 commit: null
 comments:
   -
