@@ -12,8 +12,8 @@ Created: 2026-06-01T05:09:45.941Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts. Result: pass, 19 tests. Evidence: regression coverage now asserts cloud push HTTP 502 exits with E_BACKEND/6 and cloud read autosync fetch failure exits with E_NETWORK/7, covering GitHub issues #4343 and #4339. Command: bun run format:changed. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,8 @@ Created: 2026-06-01T05:09:45.941Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/cli/run-cli.core.backend-sync.test.ts      | 102 +++++++++++++++++++++
+ 1 file changed, 102 insertions(+)
 ```
 
 </details>
