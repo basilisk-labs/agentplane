@@ -13,7 +13,7 @@ Created: 2026-06-01T19:37:03.754Z
 ## Verification
 
 - State: ok
-- Note: Verified after implementation commit 96f97b7e: release/docs context assimilation artifacts are committed and PR artifacts refreshed. Re-ran required context checks before commit: reindex, wiki lint/index, graph validate, verify-task, context doctor, search smoke, policy routing, and targeted Prettier check.
+- Note: Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran bun run format:check, ap context wiki lint context/wiki, and ap context verify-task 202606011933-T87604 successfully.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -37,7 +37,7 @@ Created: 2026-06-01T19:37:03.754Z
  .../derived/reports/release-docs-assimilation.json |  7459 +++
  .../reports/release-docs-assimilation.sgr.json     | 54587 +++++++++++++++++++
  .../reports/release-docs-coverage-detail.jsonl     |   210 +
- context/wiki/index.md                              |     8 +
+ context/wiki/index.md                              |     9 +
  context/wiki/proposals/index.md                    |    29 +
  context/wiki/proposals/task-harvest/index.md       |    29 +
  context/wiki/release-docs/concepts.md              |   132 +
@@ -105,7 +105,7 @@ Created: 2026-06-01T19:37:03.754Z
  context/wiki/release-docs/release-lines/v0-6.md    |    93 +
  context/wiki/reports/index.md                      |    30 +
  context/wiki/task-harvest/index.md                 |    29 +
- 76 files changed, 73291 insertions(+)
+ 76 files changed, 73292 insertions(+)
 ```
 
 </details>

@@ -4,7 +4,7 @@ title: "Assimilate release notes and documentation context"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -32,9 +32,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-01T19:49:11.088Z"
+  updated_at: "2026-06-01T19:56:22.802Z"
   updated_by: "CURATOR"
-  note: "Verified after implementation commit 96f97b7e: release/docs context assimilation artifacts are committed and PR artifacts refreshed. Re-ran required context checks before commit: reindex, wiki lint/index, graph validate, verify-task, context doctor, search smoke, policy routing, and targeted Prettier check."
+  note: "Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran bun run format:check, ap context wiki lint context/wiki, and ap context verify-task 202606011933-T87604 successfully."
   attempts: 0
 commit: null
 comments:
@@ -61,8 +61,14 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Verified after implementation commit 96f97b7e: release/docs context assimilation artifacts are committed and PR artifacts refreshed. Re-ran required context checks before commit: reindex, wiki lint/index, graph validate, verify-task, context doctor, search smoke, policy routing, and targeted Prettier check."
+  -
+    type: "verify"
+    at: "2026-06-01T19:56:22.802Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran bun run format:check, ap context wiki lint context/wiki, and ap context verify-task 202606011933-T87604 successfully."
 doc_version: 3
-doc_updated_at: "2026-06-01T19:49:11.352Z"
+doc_updated_at: "2026-06-01T19:56:22.830Z"
 doc_updated_by: "CURATOR"
 description: "Assimilate AgentPlane release notes and public documentation into the local context layer with useful graph density: release-line entities, documentation-domain entities, feature/decision/invariant entities, semantic edges, wiki synthesis pages, source coverage, and volume/granularity metrics."
 sections:
@@ -124,6 +130,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606011933-T87604
 
+    ### 2026-06-01T19:56:22.802Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran bun run format:check, ap context wiki lint context/wiki, and ap context verify-task 202606011933-T87604 successfully.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T19:49:11.352Z, excerpt_hash=sha256:0ee04b77eba3914e092b6a7f65abd3ce951c44f9df5a3c2befea0a8d2c42f9af
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011933-T87604-assimilate-release-docs-context/.agentplane/tasks/202606011933-T87604/blueprint/resolved-snapshot.json
+    - old_digest: 9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d
+    - current_digest: 9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606011933-T87604
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -138,6 +163,10 @@ sections:
     - Observation: Committed scope contains 210 docs sources including 86 release notes; 63 wiki pages; 352 new/updated graph entities; 1,711 graph edges; 55 facts; 210 coverage rows; source bytes 1,364,762; coverage_degree=1.
       Impact: The documentation and release-note corpus is now represented at release-line, release-note, docs-domain, docs-page, and recurring-concept granularity.
       Resolution: Use PR artifacts plus .agentplane/context/derived/reports/release-docs-assimilation.json for review metrics; derived graph/facts/coverage and context/wiki/release-docs/** are the assimilated surfaces.
+
+    - Observation: GitHub PR #4371 verify-contract failed only on Prettier warning for context/wiki/index.md; local formatting now passes across the full repository.
+      Impact: The PR no longer carries the known format-contract defect that blocked Core CI.
+      Resolution: Commit the formatted wiki index and refreshed task verification, update PR artifacts, and let GitHub rerun checks on the new head.
 extensions:
   agentplane.context:
     allowed_outputs:
@@ -850,6 +879,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606011933-T87604
 
+### 2026-06-01T19:56:22.802Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran bun run format:check, ap context wiki lint context/wiki, and ap context verify-task 202606011933-T87604 successfully.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T19:49:11.352Z, excerpt_hash=sha256:0ee04b77eba3914e092b6a7f65abd3ce951c44f9df5a3c2befea0a8d2c42f9af
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011933-T87604-assimilate-release-docs-context/.agentplane/tasks/202606011933-T87604/blueprint/resolved-snapshot.json
+- old_digest: 9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d
+- current_digest: 9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606011933-T87604
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -868,3 +916,7 @@ BlueprintSnapshotRef:
 - Observation: Committed scope contains 210 docs sources including 86 release notes; 63 wiki pages; 352 new/updated graph entities; 1,711 graph edges; 55 facts; 210 coverage rows; source bytes 1,364,762; coverage_degree=1.
   Impact: The documentation and release-note corpus is now represented at release-line, release-note, docs-domain, docs-page, and recurring-concept granularity.
   Resolution: Use PR artifacts plus .agentplane/context/derived/reports/release-docs-assimilation.json for review metrics; derived graph/facts/coverage and context/wiki/release-docs/** are the assimilated surfaces.
+
+- Observation: GitHub PR #4371 verify-contract failed only on Prettier warning for context/wiki/index.md; local formatting now passes across the full repository.
+  Impact: The PR no longer carries the known format-contract defect that blocked Core CI.
+  Resolution: Commit the formatted wiki index and refreshed task verification, update PR artifacts, and let GitHub rerun checks on the new head.
