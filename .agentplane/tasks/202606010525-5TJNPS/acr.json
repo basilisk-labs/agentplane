@@ -1,0 +1,232 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202606010525-5TJNPS",
+  "created_at": "2026-06-01T06:17:18.383Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.13"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "1e71198eb64409c7935a5193174901c8b933ac40",
+    "work_ref": "codex/post-merge-hermes-launch-acr",
+    "work_commit": "1e71198eb64409c7935a5193174901c8b933ac40"
+  },
+  "task": {
+    "task_id": "202606010525-5TJNPS",
+    "title": "Add Hermes task-run launch path",
+    "intent": "Fix GitHub issue #4347. Allow Hermes supervise to execute same-task agentplane task run route steps through typed allowlisting, and add a first-class Hermes init/runner profile without Codex fallback or backwards compatibility aliases.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "CODER",
+    "name": "CODER",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "openai",
+      "name": "gpt-5-codex",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.6.13"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202606010525-5TJNPS/README.md",
+      "sha256": "sha256:0ac01040799d351fb8699bb55149c781c129ebefd46fe91c1640262700c869e9"
+    },
+    "approved_at": "2026-06-01T05:25:56.834Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #4348.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202606010525-5TJNPS_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-06-01T05:25:56.834Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202606010525-5TJNPS/README.md",
+      "sha256": "sha256:0ac01040799d351fb8699bb55149c781c129ebefd46fe91c1640262700c869e9"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202606010525-5TJNPS/README.md",
+      "sha256": "sha256:0ac01040799d351fb8699bb55149c781c129ebefd46fe91c1640262700c869e9"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202606010525-5TJNPS/README.md",
+      "sha256": "sha256:0ac01040799d351fb8699bb55149c781c129ebefd46fe91c1640262700c869e9"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202606010525-5TJNPS/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:a7b2f5b8b627b91b66041a3fc5e50bb1097f940ee4897735b5d3db7b702e62f1"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 1e71198eb64409c7935a5193174901c8b933ac40 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:13e7bd3eff3b875a3474832ac38f3cd14a7e6a4cfedcca29ad4c911a6a5ef405",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "quality_gate",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.verify",
+          "kind": "check_result",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "code_pr.quality",
+          "kind": "quality_report",
+          "produced_by": "quality_gate",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202606010525-5TJNPS/blueprint/resolved-snapshot.json",
+        "digest": "94162ba4c475107cd70bf1c3284ddef3120e0814703024345182adeae1cb6dc1",
+        "current_digest": "94162ba4c475107cd70bf1c3284ddef3120e0814703024345182adeae1cb6dc1",
+        "route_changed": false,
+        "artifact_sha256": "sha256:a7b2f5b8b627b91b66041a3fc5e50bb1097f940ee4897735b5d3db7b702e62f1",
+        "safe_command": "agentplane blueprint snapshot 202606010525-5TJNPS"
+      }
+    }
+  }
+}
