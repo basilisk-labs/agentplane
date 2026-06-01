@@ -1,6 +1,7 @@
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import { cmdContextIngest, type ContextIngestParsed } from "./ingest.js";
 import { cmdContextReindex } from "./reindex.js";
+import { cmdContextDashboard } from "./dashboard.js";
 import { cmdContextSearch } from "./search.js";
 import { cmdContextShow } from "./show.js";
 import { cmdContextDoctor } from "./doctor.js";
@@ -128,6 +129,17 @@ export async function runContextSearch(
   p: Parameters<typeof cmdContextSearch>[0]["parsed"],
 ): Promise<number> {
   return await cmdContextSearch({
+    cwd: _ctx.cwd,
+    rootOverride: _ctx.rootOverride,
+    parsed: p,
+  });
+}
+
+export async function runContextDashboard(
+  _ctx: CommandCtx,
+  p: Parameters<typeof cmdContextDashboard>[0]["parsed"],
+): Promise<number> {
+  return await cmdContextDashboard({
     cwd: _ctx.cwd,
     rootOverride: _ctx.rootOverride,
     parsed: p,
@@ -311,6 +323,7 @@ export {
   contextCapabilityDiscoverSpec,
   contextCapabilitySearchSpec,
   contextCapabilityValidateSpec,
+  contextDashboardSpec,
   contextDoctorSpec,
   contextExtractionApplySpec,
   contextGraphExportSpec,

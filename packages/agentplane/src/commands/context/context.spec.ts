@@ -167,6 +167,53 @@ export const contextSearchSpec: CommandSpec<{
   }),
 };
 
+export const contextDashboardSpec: CommandSpec<{
+  host: string;
+  port: string;
+  open: boolean;
+  dumpJson: boolean;
+}> = {
+  id: ["context", "dashboard"],
+  group: "Context",
+  summary: "Serve a read-only local dashboard for the full context knowledge graph.",
+  description:
+    "Builds a typed knowledge graph across wiki pages, wikilinks, entities, facts, sources, capabilities, and task evidence. Uses the existing SQLite context projection when available and serves an in-memory read-only snapshot for fast dashboard access.",
+  options: [
+    {
+      kind: "string",
+      name: "host",
+      default: "127.0.0.1",
+      valueHint: "<host>",
+      description: "Host interface for the local read-only HTTP server.",
+    },
+    {
+      kind: "string",
+      name: "port",
+      default: "0",
+      valueHint: "<port>",
+      description: "Port for the local server. Use 0 to choose a free port.",
+    },
+    {
+      kind: "boolean",
+      name: "open",
+      default: false,
+      description: "Open the dashboard URL in the system browser when supported.",
+    },
+    {
+      kind: "boolean",
+      name: "dump-json",
+      default: false,
+      description: "Print the dashboard graph snapshot as JSON and exit without serving HTTP.",
+    },
+  ],
+  parse: (raw) => ({
+    host: typeof raw.opts.host === "string" ? raw.opts.host : "127.0.0.1",
+    port: typeof raw.opts.port === "string" ? raw.opts.port : "0",
+    open: raw.opts.open === true,
+    dumpJson: raw.opts["dump-json"] === true,
+  }),
+};
+
 export const contextShowSpec: CommandSpec<{ ref: string }> = {
   id: ["context", "show"],
   group: "Context",
