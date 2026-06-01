@@ -306,7 +306,11 @@ export async function refreshAcrArtifactsForFinishedTasks(opts: {
   noWriteAcr?: boolean;
 }): Promise<string[]> {
   if (opts.noWriteAcr === true) return [];
-  if (opts.ctx.config.acr.enabled !== true || opts.ctx.config.acr.write_on_finish !== true) {
+  const hasContextTask = opts.loadedTasks.some(({ task }) => task.task_kind === "context");
+  if (
+    opts.ctx.config.acr.write_on_finish !== true ||
+    (opts.ctx.config.acr.enabled !== true && !hasContextTask)
+  ) {
     return [];
   }
 

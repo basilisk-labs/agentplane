@@ -12,6 +12,7 @@ import {
   assertAcrCiSemantics,
   makeRunAcrSchemaHandler,
 } from "./acr.command.js";
+import { buildAcrContextExtension } from "./generate-extensions.js";
 import { CliError } from "../../shared/errors.js";
 import { getVersion } from "../../meta/version.js";
 import { readDiagnosticContext } from "../shared/diagnostics.js";
@@ -234,6 +235,30 @@ describe("acr command specs", () => {
 
     expect(record.producer.version).toBe(getVersion());
     expect(record.agent.toolchain).toContainEqual({ name: "agentplane", version: getVersion() });
+  });
+
+  it("adds the context ACR extension schema version while preserving context evidence", () => {
+    const extension = buildAcrContextExtension({
+      id: "T-CTX",
+      task_kind: "context",
+      mutation_scope: "context",
+      blueprint_request: "context.maximum_assimilation",
+      extensions: {
+        "agentplane.context": {
+          mode: "maximum_assimilation",
+          source_set: { files: [{ path: "context/raw/source.md", sha256: "sha256:abc" }] },
+        },
+      },
+    } as Parameters<typeof buildAcrContextExtension>[0]);
+
+    expect(extension["agentplane.context"]).toMatchObject({
+      schema_version: 1,
+      task_id: "T-CTX",
+      task_kind: "context",
+      mutation_scope: "context",
+      blueprint_request: "context.maximum_assimilation",
+      source_set: { files: [{ path: "context/raw/source.md", sha256: "sha256:abc" }] },
+    });
   });
 
   it("parses acr validate against an example path", () => {
