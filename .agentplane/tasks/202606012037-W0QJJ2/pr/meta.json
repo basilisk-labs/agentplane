@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606012037-W0QJJ2/assimilate-source-architecture",
+  "created_at": "2026-06-01T20:38:07.714Z",
+  "diffstat_sha256": "sha256:8550d78aa7fda19ad2255d271e014e2968df2ddb7c5940662230ac207b36976b",
+  "last_verified_at": "2026-06-01T20:51:19.508Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202606012037-W0QJJ2",
+  "updated_at": "2026-06-01T20:38:07.714Z",
+  "verify": {
+    "status": "pass"
+  }
+}
