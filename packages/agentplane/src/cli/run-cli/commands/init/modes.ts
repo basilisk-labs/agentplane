@@ -3,6 +3,7 @@ import type {
   InitIde,
   InitMode,
   InitParsed,
+  InitRunnerProfile,
   InitTool,
   SetupProfilePreset,
   UserFacingProfile,
@@ -25,12 +26,21 @@ export function setupProfileToUserFacingProfile(profile: SetupProfilePreset): Us
 export function resolveToolDefaults(tool: InitTool | undefined): {
   policyGateway?: PolicyGatewayFlavor;
   ide?: InitIde;
+  runnerProfile?: InitRunnerProfile;
 } {
   if (!tool || tool === "multiple" || tool === "manual") return {};
   if (tool === "claude") return { policyGateway: "claude", ide: "codex" };
   if (tool === "cursor") return { policyGateway: "codex", ide: "cursor" };
   if (tool === "windsurf") return { policyGateway: "codex", ide: "windsurf" };
+  if (tool === "hermes") return { policyGateway: "codex", ide: "codex", runnerProfile: "hermes" };
   return { policyGateway: "codex", ide: "codex" };
+}
+
+export function resolveRunnerProfileFromFlags(
+  flags: Pick<InitFlags, "tool">,
+  fallback: InitRunnerProfile,
+): InitRunnerProfile {
+  return resolveToolDefaults(flags.tool).runnerProfile ?? fallback;
 }
 
 export function resolvePolicyGatewayFromFlags(

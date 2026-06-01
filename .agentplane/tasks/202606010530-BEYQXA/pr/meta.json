@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606010530-BEYQXA/fix-hermes-task-launch",
+  "created_at": "2026-06-01T05:31:21.158Z",
+  "diffstat_sha256": "sha256:496ffd01c78d62c7b00c83afb7061125671bdf8bc5007c7bd04f8df298221cba",
+  "last_verified_at": "2026-06-01T05:39:04.298Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202606010530-BEYQXA",
+  "updated_at": "2026-06-01T05:31:21.158Z",
+  "verify": {
+    "status": "pass"
+  }
+}

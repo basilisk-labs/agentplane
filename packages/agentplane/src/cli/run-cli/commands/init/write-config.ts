@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { writeJsonStableIfChanged } from "../../../../shared/write-if-changed.js";
 import { getVersion } from "../../../../meta/version.js";
-import type { InitBackend } from "./model.js";
+import type { InitBackend, InitRunnerProfile } from "./model.js";
 
 type InitExecutionConfig = {
   profile: "conservative" | "balanced" | "aggressive";
@@ -44,6 +44,7 @@ export async function writeInitConfig(opts: {
   feedbackGithubIssues: boolean;
   feedbackAnonymousCloud: boolean;
   execution: InitExecutionConfig;
+  runnerProfile: InitRunnerProfile;
 }): Promise<void> {
   const rawConfig = defaultConfig() as unknown as Record<string, unknown>;
   setByDottedKey(rawConfig, "workflow_mode", opts.workflow);
@@ -76,6 +77,21 @@ export async function writeInitConfig(opts: {
   );
   setByDottedKey(rawConfig, "framework.cli.expected_version", getVersion());
   setByDottedKey(rawConfig, "execution", JSON.stringify(opts.execution));
+  if (opts.runnerProfile === "hermes") {
+    setByDottedKey(rawConfig, "runner.default_adapter", "custom");
+    setByDottedKey(
+      rawConfig,
+      "runner.custom",
+      JSON.stringify({
+        command: ["hermes", "agentplane", "run"],
+        env: {},
+        enforcement: {
+          mode: "none",
+          platform: "auto",
+        },
+      }),
+    );
+  }
   await saveConfig(opts.agentplaneDir, rawConfig);
 }
 

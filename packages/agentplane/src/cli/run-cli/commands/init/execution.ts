@@ -47,6 +47,7 @@ export async function maybeConfirmInteractiveApply(opts: {
     { label: "Profile", value: opts.answers.setupProfileDescription },
     { label: "Gateway", value: opts.answers.policyGateway },
     { label: "Workflow", value: opts.answers.workflow },
+    { label: "Runner", value: opts.answers.runnerProfile },
     { label: "Backend", value: opts.answers.backend },
     { label: "Hooks", value: opts.answers.hooks },
     { label: "Feedback issues", value: opts.answers.feedbackGithubIssues },
@@ -144,6 +145,7 @@ export async function applyInitPlan(opts: {
           execution: buildExecutionProfile(opts.answers.executionProfile, {
             strictUnsafeConfirm: opts.answers.strictUnsafeConfirm,
           }),
+          runnerProfile: opts.answers.runnerProfile,
         });
         await writeBackendStubs({
           backend: opts.answers.backend,

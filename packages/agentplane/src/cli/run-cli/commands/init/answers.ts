@@ -23,6 +23,7 @@ import { introLogo, section } from "./ui.js";
 import {
   resolveIdeFromFlags,
   resolvePolicyGatewayFromFlags,
+  resolveRunnerProfileFromFlags,
   resolveToolDefaults,
 } from "./modes.js";
 
@@ -44,6 +45,7 @@ export type InitAnswers = {
   executionProfile: ExecutionProfile;
   strictUnsafeConfirm: boolean;
   blueprints: string[];
+  runnerProfile: "codex" | "hermes";
 };
 
 export function assertConfirmed(clack: InitClackPrompts, value: boolean | symbol): boolean {
@@ -75,6 +77,7 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
     executionProfile: flags.executionProfile ?? preset.defaultExecutionProfile,
     strictUnsafeConfirm: flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm,
     blueprints: flags.blueprints ?? INIT_DEFAULTS.blueprints,
+    runnerProfile: resolveRunnerProfileFromFlags(flags, "codex"),
   };
 }
 
@@ -150,5 +153,6 @@ export async function promptInteractiveAnswers(opts: {
     executionProfile: advanced.executionProfile,
     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
     blueprints: blueprintSelection.blueprints,
+    runnerProfile: toolDefaults.runnerProfile ?? "codex",
   };
 }

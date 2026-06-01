@@ -204,6 +204,7 @@ export function buildInitPlan(opts: {
       strictUnsafeConfirm: opts.answers.strictUnsafeConfirm,
       recipes: [...opts.answers.recipes],
       blueprints: [...opts.answers.blueprints],
+      runnerProfile: opts.answers.runnerProfile,
     },
     context: {
       gitRootExisted: opts.paths.gitRootExisted,
