@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "../../cli/run-cli.js";
+import { executableStepFor } from "./hermes-runtime.js";
 import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
 import { chmod, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -192,6 +193,45 @@ describe("hermes adapter commands", () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("classifies same-task task run route steps as executable without raw shell", () => {
+    const step = executableStepFor({
+      task: {
+        id: "202606010530-BEYQXA",
+        title: "Hermes task launch",
+        owner: "CODER",
+      },
+      next_action: {
+        code: "run",
+        command: "agentplane task run 202606010530-BEYQXA",
+        summary: "launch the Agentplane task runner",
+      },
+    });
+
+    expect(step).toEqual({
+      code: "run",
+      args: ["task", "run", "202606010530-BEYQXA"],
+      reason: null,
+    });
+  });
+
+  it("rejects task run route steps for a different task id", () => {
+    const step = executableStepFor({
+      task: {
+        id: "202606010530-BEYQXA",
+        title: "Hermes task launch",
+        owner: "CODER",
+      },
+      next_action: {
+        code: "run",
+        command: "agentplane task run 202606010531-OTHER1",
+        summary: "launch another task runner",
+      },
+    });
+
+    expect(step.args).toBeNull();
+    expect(step.reason).toContain("unsupported Agentplane Hermes route action");
   });
 
   it("supervise returns the child Agentplane command failure code", async () => {

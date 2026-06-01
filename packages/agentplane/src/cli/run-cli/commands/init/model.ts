@@ -8,8 +8,16 @@ export type InitIde = "codex" | "cursor" | "windsurf";
 export type SetupProfilePreset = "light" | "normal" | "full-harness";
 export type InitMode = "quick" | "guided" | "advanced" | "ci";
 export type UserFacingProfile = "solo" | "team" | "strict" | "custom";
-export type InitTool = "codex" | "claude" | "cursor" | "windsurf" | "multiple" | "manual";
+export type InitTool =
+  | "codex"
+  | "claude"
+  | "cursor"
+  | "windsurf"
+  | "hermes"
+  | "multiple"
+  | "manual";
 export type InitBackend = "local" | "cloud";
+export type InitRunnerProfile = "codex" | "hermes";
 
 export type InitFlags = {
   initMode?: InitMode;
@@ -55,6 +63,7 @@ export type InitDefaults = {
   executionProfile: ExecutionProfile;
   strictUnsafeConfirm: boolean;
   blueprints: string[];
+  runnerProfile: InitRunnerProfile;
 };
 
 export type InitEffectKind =
@@ -104,6 +113,7 @@ export type InitPlan = {
     strictUnsafeConfirm: boolean;
     recipes: string[];
     blueprints: string[];
+    runnerProfile: InitRunnerProfile;
   };
   context: {
     gitRootExisted: boolean;

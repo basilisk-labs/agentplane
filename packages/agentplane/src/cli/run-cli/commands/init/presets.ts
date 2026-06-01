@@ -16,6 +16,7 @@ export const INIT_DEFAULTS: InitDefaults = {
   executionProfile: "balanced",
   strictUnsafeConfirm: false,
   blueprints: [],
+  runnerProfile: "codex",
 };
 
 export const setupProfilePresets: Record<

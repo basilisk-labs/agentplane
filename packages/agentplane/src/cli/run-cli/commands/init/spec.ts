@@ -42,8 +42,8 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       kind: "string",
       name: "tool",
-      valueHint: "<codex|claude|cursor|windsurf|multiple|manual>",
-      choices: ["codex", "claude", "cursor", "windsurf", "multiple", "manual"],
+      valueHint: "<codex|claude|cursor|windsurf|hermes|multiple|manual>",
+      choices: ["codex", "claude", "cursor", "windsurf", "hermes", "multiple", "manual"],
       coerce: (raw) => raw.trim().toLowerCase(),
       description:
         "AI surface that should read project instructions. Granular --policy-gateway/--ide flags override this mapping.",
@@ -237,6 +237,10 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       cmd: "agentplane init --quick --tool cursor",
       why: "Use the quick first-run route and install AGENTS.md plus Cursor rules.",
+    },
+    {
+      cmd: "agentplane init --quick --tool hermes",
+      why: "Use the quick first-run route and configure task runs through the Hermes custom runner profile.",
     },
   ],
   validateRaw: (raw) => {

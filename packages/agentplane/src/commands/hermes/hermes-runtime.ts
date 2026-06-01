@@ -285,7 +285,10 @@ export function executableStepFor(packet: HermesRoutePacketForExecution): {
   if (
     commandParts[0] === "agentplane" &&
     commandParts[1] === "task" &&
-    (subcommand === "verify-show" || subcommand === "status" || subcommand === "brief") &&
+    (subcommand === "run" ||
+      subcommand === "verify-show" ||
+      subcommand === "status" ||
+      subcommand === "brief") &&
     commandParts[3] === taskId
   ) {
     return { code: packet.next_action.code, args: ["task", subcommand, taskId], reason: null };

@@ -38,6 +38,16 @@ agentplane recipes add hermes-agentplane
 agentplane recipes explain hermes-agentplane
 ```
 
+For new repositories that should avoid Codex as the default task runner, initialize with the Hermes
+tool profile:
+
+```bash
+agentplane init --quick --tool hermes
+```
+
+That profile keeps the normal Agentplane policy gateway and configures `agentplane task run` through
+the `custom` runner adapter with `runner.custom.command=["hermes","agentplane","run"]`.
+
 ## Expected adapter commands
 
 ```bash
@@ -63,6 +73,8 @@ HERMES_KANBAN_CLAIM_LOCK=<claim-lock>
 
 `agentplane hermes doctor --json` reports missing Hermes environment values and lane-registry
 state. The Agentplane side uses `AGENTPLANE_HERMES_LANE_REGISTRY` as the registry input.
+Task-runner invocations also export `AGENTPLANE_RUNNER_TASK_ID` when the run target is an Agentplane
+task, so Hermes launchers can bind the external worker run back to the canonical task id.
 
 ## Visibility contract
 

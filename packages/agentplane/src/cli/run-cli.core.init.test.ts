@@ -807,6 +807,37 @@ describe("runCli", () => {
     expect(await pathExists(path.join(root, ".agentplane"))).toBe(false);
   });
 
+  it("init --quick --tool hermes configures the Hermes custom runner profile", async () => {
+    const root = await mkTempDir();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "init",
+        "--yes",
+        "--quick",
+        "--tool",
+        "hermes",
+        "--root",
+        root,
+        "--gitignore-agents",
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const loaded = await loadConfig(path.join(root, ".agentplane"));
+    expect(loaded.config.runner.default_adapter).toBe("custom");
+    expect(loaded.config.runner.custom).toMatchObject({
+      command: ["hermes", "agentplane", "run"],
+      env: {},
+      enforcement: {
+        mode: "none",
+        platform: "auto",
+      },
+    });
+  });
+
   it("init plan records explicit GitHub issue feedback opt-in", async () => {
     const root = await mkTempDir();
     const io = captureStdIO();

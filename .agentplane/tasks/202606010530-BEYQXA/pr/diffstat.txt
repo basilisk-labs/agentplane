@@ -1,0 +1,18 @@
+ docs/recipes/hermes-agentplane.mdx                 | 12 +++++++
+ docs/user/cli-reference.generated.mdx              |  8 ++++-
+ docs/user/configuration.mdx                        |  5 ++-
+ .../agentplane/src/cli/run-cli.core.init.test.ts   | 31 +++++++++++++++++
+ .../src/cli/run-cli/commands/init/answers.ts       |  4 +++
+ .../src/cli/run-cli/commands/init/execution.ts     |  2 ++
+ .../src/cli/run-cli/commands/init/init-plan.ts     |  1 +
+ .../src/cli/run-cli/commands/init/model.ts         | 12 ++++++-
+ .../src/cli/run-cli/commands/init/modes.ts         | 10 ++++++
+ .../src/cli/run-cli/commands/init/orchestrate.ts   |  1 +
+ .../src/cli/run-cli/commands/init/presets.ts       |  1 +
+ .../src/cli/run-cli/commands/init/spec.ts          |  8 +++--
+ .../src/cli/run-cli/commands/init/write-config.ts  | 18 +++++++++-
+ .../src/commands/hermes/hermes-runtime.ts          |  5 ++-
+ .../src/commands/hermes/hermes.command.test.ts     | 40 ++++++++++++++++++++++
+ .../src/runner/adapters/custom-preparation.ts      |  3 ++
+ .../agentplane/src/runner/adapters/custom.test.ts  |  1 +
+ 17 files changed, 155 insertions(+), 7 deletions(-)

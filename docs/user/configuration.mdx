@@ -116,7 +116,10 @@ the prompt with `/goal ...`. Runner state, events, trace, and stderr artifacts a
 
 ### runner.custom
 
-Custom runner configuration controls the `custom` adapter command and enforcement settings.
+Custom runner configuration controls the `custom` adapter command and enforcement settings. `init
+--tool hermes` selects the custom adapter and seeds `runner.custom.command` as `["hermes",
+"agentplane", "run"]`; the custom adapter also exports `AGENTPLANE_RUNNER_TASK_ID` for task-targeted
+Hermes launchers.
 
 ### feedback
 
