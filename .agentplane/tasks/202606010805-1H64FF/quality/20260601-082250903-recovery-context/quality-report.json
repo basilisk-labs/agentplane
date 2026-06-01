@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606010805-1H64FF",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-01T08:22:50.903Z",
+  "verdict": "pass",
+  "summary": "Close commit regression fixed: deterministic close staging now includes active task-local artifacts, and CLI/help wording no longer claims README-only behavior.",
+  "evaluated_sha": "5e6a96489ea336c749a60c5faf53b7ab0c0cb1da",
+  "blueprint_digest": "a7888ca1aacbc0f7564dd2b53435b003bd648a9dfb9697fa8950bdbadd2ea095",
+  "findings": [
+    "Regression coverage includes non-README task artifacts in both unit close staging and CLI wrapper close commit output."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606010805-1H64FF/README.md",
+    "packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.close.test.ts",
+    "packages/agentplane/src/commands/guard/impl/commit-stage.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
