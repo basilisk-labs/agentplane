@@ -8,7 +8,7 @@
     "bytes": 9706304,
     "packages": 8,
     "layers": 20,
-    "command_groups": 91,
+    "command_groups": 26,
     "test_files": 472,
     "schema_files": 28,
     "policy_files": 17,
@@ -18,9 +18,9 @@
   },
   "assimilation": {
     "wiki_pages": 6,
-    "sgr_items": 13127,
-    "graph_entities": 1712,
-    "graph_edges": 9827,
+    "sgr_items": 12997,
+    "graph_entities": 1647,
+    "graph_edges": 9762,
     "facts": 12,
     "coverage_items": 1576,
     "coverage_rows": 1576,
@@ -221,36 +221,6 @@
       "Lines": 261
     },
     {
-      "Command": "backend-connect.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 141
-    },
-    {
-      "Command": "backend.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 48
-    },
-    {
-      "Command": "backend.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 353
-    },
-    {
-      "Command": "block.run.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 36
-    },
-    {
-      "Command": "block.spec.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 183
-    },
-    {
       "Command": "blueprint",
       "Files": 7,
       "Tests": 2,
@@ -281,18 +251,6 @@
       "Lines": 423
     },
     {
-      "Command": "commit.command.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 33
-    },
-    {
-      "Command": "commit.spec.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 214
-    },
-    {
       "Command": "context",
       "Files": 47,
       "Tests": 13,
@@ -311,60 +269,6 @@
       "Lines": 1835
     },
     {
-      "Command": "doctor-git-locks.run.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 48
-    },
-    {
-      "Command": "doctor-git-locks.spec.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 26
-    },
-    {
-      "Command": "doctor.branch-pr.memo.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 55
-    },
-    {
-      "Command": "doctor.command.open-pr.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 1097
-    },
-    {
-      "Command": "doctor.command.runtime.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 1037
-    },
-    {
-      "Command": "doctor.command.task-docs.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 683
-    },
-    {
-      "Command": "doctor.fast.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 322
-    },
-    {
-      "Command": "doctor.run.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 115
-    },
-    {
-      "Command": "doctor.spec.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 56
-    },
-    {
       "Command": "evaluator",
       "Files": 4,
       "Tests": 2,
@@ -375,24 +279,6 @@
       "Files": 3,
       "Tests": 1,
       "Lines": 699
-    },
-    {
-      "Command": "finish.run.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 78
-    },
-    {
-      "Command": "finish.spec.shared.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 281
-    },
-    {
-      "Command": "finish.spec.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 227
     },
     {
       "Command": "flow",
@@ -431,76 +317,10 @@
       "Lines": 1226
     },
     {
-      "Command": "integrate-queue-doctor-command.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 93
-    },
-    {
-      "Command": "integrate-queue-doctor.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 38
-    },
-    {
-      "Command": "integrate-queue-lane.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 194
-    },
-    {
-      "Command": "integrate-queue-recovery.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 161
-    },
-    {
-      "Command": "integrate-queue-recovery.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 65
-    },
-    {
-      "Command": "integrate-queue.command.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 349
-    },
-    {
-      "Command": "integrate-queue.spec.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 115
-    },
-    {
-      "Command": "integrate-queue.spec.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 307
-    },
-    {
-      "Command": "integrate.command.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 22
-    },
-    {
-      "Command": "integrate.spec.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 58
-    },
-    {
       "Command": "pr",
       "Files": 61,
       "Tests": 17,
       "Lines": 11690
-    },
-    {
-      "Command": "ready.command.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 36
     },
     {
       "Command": "recipes",
@@ -509,58 +329,16 @@
       "Lines": 5167
     },
     {
-      "Command": "recipes.cache.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 158
-    },
-    {
-      "Command": "recipes.catalog-install.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 399
-    },
-    {
-      "Command": "recipes.list.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 306
-    },
-    {
-      "Command": "recipes.scenario.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 489
-    },
-    {
-      "Command": "recipes.transaction.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 366
-    },
-    {
       "Command": "release",
       "Files": 54,
       "Tests": 35,
       "Lines": 10710
     },
     {
-      "Command": "runtime.command.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 329
-    },
-    {
-      "Command": "runtime.command.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 275
-    },
-    {
-      "Command": "runtime.spec.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 43
+      "Command": "root",
+      "Files": 66,
+      "Tests": 39,
+      "Lines": 14016
     },
     {
       "Command": "scenario",
@@ -569,34 +347,10 @@
       "Lines": 574
     },
     {
-      "Command": "scenario.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 6
-    },
-    {
       "Command": "shared",
       "Files": 57,
       "Tests": 14,
       "Lines": 8367
-    },
-    {
-      "Command": "start.run.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 36
-    },
-    {
-      "Command": "start.spec.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 183
-    },
-    {
-      "Command": "sync.command.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 70
     },
     {
       "Command": "task",
@@ -609,150 +363,6 @@
       "Files": 8,
       "Tests": 0,
       "Lines": 1527
-    },
-    {
-      "Command": "upgrade.agent-mode.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 143
-    },
-    {
-      "Command": "upgrade.cleanup.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 76
-    },
-    {
-      "Command": "upgrade.command.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 9
-    },
-    {
-      "Command": "upgrade.json-merge.stability.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 72
-    },
-    {
-      "Command": "upgrade.merge.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 639
-    },
-    {
-      "Command": "upgrade.release-assets.unit.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 37
-    },
-    {
-      "Command": "upgrade.safety.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 295
-    },
-    {
-      "Command": "upgrade.spec-parse.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 108
-    },
-    {
-      "Command": "upgrade.spec.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 192
-    },
-    {
-      "Command": "upgrade.tarball-url.unit.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 34
-    },
-    {
-      "Command": "upgrade.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 400
-    },
-    {
-      "Command": "upgrade.unit.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 35
-    },
-    {
-      "Command": "verify.run.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 37
-    },
-    {
-      "Command": "verify.spec.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 134
-    },
-    {
-      "Command": "workflow-build.command.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 143
-    },
-    {
-      "Command": "workflow-playbook.command.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 211
-    },
-    {
-      "Command": "workflow-playbook.spec.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 28
-    },
-    {
-      "Command": "workflow-restore.command.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 51
-    },
-    {
-      "Command": "workflow.command.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 28
-    },
-    {
-      "Command": "workflow.maintenance.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 433
-    },
-    {
-      "Command": "workflow.task-doc.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 370
-    },
-    {
-      "Command": "workflow.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 924
-    },
-    {
-      "Command": "workflow.ts",
-      "Files": 1,
-      "Tests": 0,
-      "Lines": 36
-    },
-    {
-      "Command": "workflow.verify-hooks.test.ts",
-      "Files": 1,
-      "Tests": 1,
-      "Lines": 450
     }
   ]
 }

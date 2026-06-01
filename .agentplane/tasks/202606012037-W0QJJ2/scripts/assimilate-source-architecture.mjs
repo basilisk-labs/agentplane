@@ -110,7 +110,7 @@ function layerOf(rel) {
 function commandGroupOf(rel) {
   const parts = rel.split("/");
   if (parts[0] === "packages" && parts[1] === "agentplane" && parts[2] === "src" && parts[3] === "commands") {
-    return parts[4] ?? "root";
+    return parts.length === 5 ? "root" : (parts[4] ?? "root");
   }
   return null;
 }
@@ -167,11 +167,16 @@ function write(file, text) {
   fs.writeFileSync(file, text);
 }
 
-function wikiFrontmatter({ canonicalId, title, refs = [], entities = [], edges = [], aliases = [] }) {
+function sourceMarkdownLink(pageRel, ref) {
+  const relative = path.posix.relative(path.posix.dirname(pageRel), ref);
+  return relative.startsWith(".") ? relative : `./${relative}`;
+}
+
+function wikiFrontmatter({ pageRel, canonicalId, title, refs = [], entities = [], edges = [], aliases = [] }) {
   const cleanRefs = refs.filter((ref) => typeof ref === "string" && ref.trim());
   const lines = [
     "---",
-    ...(aliases.length ? ["aliases:", ...aliases.map((a) => `  - "${a}"`)] : []),
+    ...(aliases.length ? ["aliases:", ...aliases.map((a) => `  - "${a}"`)] : ["aliases: []"]),
     "tags:",
     "  - agentplane/context",
     "  - agentplane/source-architecture-assimilation",
@@ -200,7 +205,7 @@ function wikiFrontmatter({ canonicalId, title, refs = [], entities = [], edges =
     "## Sources",
     "",
     ...(cleanRefs.length
-      ? cleanRefs.slice(0, 35).map((ref, index) => `${index + 1}. [\`${ref}\`](../../${ref})`)
+      ? cleanRefs.slice(0, 35).map((ref, index) => `${index + 1}. [\`${ref}\`](${sourceMarkdownLink(pageRel, ref)})`)
       : ["- no-source: generated navigation page over sourced child pages."]),
     "",
   ];
@@ -461,6 +466,7 @@ const refsFor = (items) => items.slice(0, 35).map((file) => file.rel);
 write(
   "context/wiki/source-architecture/index.md",
   `${wikiFrontmatter({
+    pageRel: "context/wiki/source-architecture/index.md",
     canonicalId: "wiki.source_architecture.index",
     title: "Source Architecture Assimilation",
     refs: refsFor(files),
@@ -495,6 +501,7 @@ The assimilation is graph-first: file-level coverage is stored in graph entities
 write(
   "context/wiki/source-architecture/packages.md",
   `${wikiFrontmatter({
+    pageRel: "context/wiki/source-architecture/packages.md",
     canonicalId: "wiki.source_architecture.packages",
     title: "Source Packages",
     refs: refsFor(files),
@@ -512,6 +519,7 @@ The package map is a compact ownership surface. It separates runtime implementat
 write(
   "context/wiki/source-architecture/command-surface.md",
   `${wikiFrontmatter({
+    pageRel: "context/wiki/source-architecture/command-surface.md",
     canonicalId: "wiki.source_architecture.command_surface",
     title: "Command Surface",
     refs: refsFor(commandFiles),
@@ -529,6 +537,7 @@ Command groups are the primary operational interface of AgentPlane. The graph li
 write(
   "context/wiki/source-architecture/workflow-state-machines.md",
   `${wikiFrontmatter({
+    pageRel: "context/wiki/source-architecture/workflow-state-machines.md",
     canonicalId: "wiki.source_architecture.workflow_state_machines",
     title: "Workflow and State Machines",
     refs: refsFor(files.filter((file) => ["workflow-runtime", "workflow-scripts", "policy-engine", "repo-policy"].includes(file.layer))),
@@ -548,6 +557,7 @@ Use this page when a task asks why a command is blocked, what route owns a mutat
 write(
   "context/wiki/source-architecture/schemas-policies-checks.md",
   `${wikiFrontmatter({
+    pageRel: "context/wiki/source-architecture/schemas-policies-checks.md",
     canonicalId: "wiki.source_architecture.schemas_policies_checks",
     title: "Schemas Policies Checks",
     refs: refsFor([...schemaFiles, ...policyFiles, ...checkFiles]),
@@ -571,6 +581,7 @@ Use this page when a behavior may be governed by a schema, policy route, CI chec
 write(
   "context/wiki/source-architecture/test-coverage.md",
   `${wikiFrontmatter({
+    pageRel: "context/wiki/source-architecture/test-coverage.md",
     canonicalId: "wiki.source_architecture.test_coverage",
     title: "Test Coverage Map",
     refs: refsFor(testFiles),
