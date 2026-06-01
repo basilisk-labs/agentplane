@@ -4,7 +4,7 @@ title: "Assimilate release notes and documentation context"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -36,6 +36,24 @@ verification:
   updated_by: "CURATOR"
   note: "Verified final head 6e4c0413: release/docs assimilation artifacts plus context/wiki/index.md formatting fix are committed. Local gates passed: bun run format:check, ap context wiki lint context/wiki, ap context verify-task 202606011933-T87604, pre-push fast CI through 338 unit test files / 2019 tests and critical CLI chunks."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-01T20:11:56.905Z"
+  updated_by: "EVALUATOR"
+  note: "Release notes and documentation were assimilated into graph-backed context and wiki artifacts with recorded coverage metrics. PR #4371 is green after fixing the hosted verify-contract formatting failure."
+  evaluated_sha: "6e4c0413e84785efde9b625b997dadfa1a3b6c42"
+  blueprint_digest: "9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d"
+  evidence_refs:
+    - ".agentplane/tasks/202606011933-T87604/README.md"
+    - ".agentplane/tasks/202606011933-T87604/quality/20260601-201156905-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606011933-T87604/quality/20260601-201156905-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606011933-T87604/quality/20260601-201156905-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606011933-T87604/blueprint/resolved-snapshot.json"
+    - ".agentplane/context/derived/reports/release-docs-assimilation.json"
+    - "context/wiki/release-docs/index.md"
+    - ".agentplane/tasks/202606011933-T87604/pr/meta.json"
+  findings:
+    - "Evidence: https://github.com/basilisk-labs/agentplane/pull/4371 at head 97c192e459beb7d5a534f4f30f6ea8bbedc2c61a; hosted checks pass including CodeQL, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow, verify-cli-critical, test-windows, and PR verification."
 commit: null
 comments:
   -
