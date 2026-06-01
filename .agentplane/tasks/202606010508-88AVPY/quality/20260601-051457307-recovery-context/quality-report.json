@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202606010508-88AVPY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-01T05:14:57.307Z",
+  "verdict": "pass",
+  "summary": "Regression tests now cover cloud backend E_BACKEND/E_NETWORK nonzero exit semantics for GitHub issues #4343 and #4339.",
+  "evaluated_sha": "5986865edd175765da4c56bad02debb20de4cf01",
+  "blueprint_digest": "72148b189d649d301cbc3cdd91492ac9e86fb4de0b7db97e72034ea9e3136e70",
+  "findings": [
+    "Covered backend sync cloud HTTP 502 -> E_BACKEND/6 and task show cloud autosync fetch failure -> E_NETWORK/7 in runCli."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606010508-88AVPY/README.md",
+    "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
