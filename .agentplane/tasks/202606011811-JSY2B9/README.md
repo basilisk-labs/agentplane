@@ -4,7 +4,7 @@ title: "Assimilate task history by version summaries"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -30,9 +30,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-01T18:32:41.326Z"
+  updated_at: "2026-06-01T18:50:09.965Z"
   updated_by: "CURATOR"
-  note: "Verified: built version-level task-history pre-extraction packets, applied context extraction into derived facts/graph/coverage, and ran reindex, wiki lint/index, graph validate, context verify-task, context doctor, smoke search, policy routing, and agentplane doctor. Doctor reports pre-existing/mistaken no-op task archive warnings but no errors."
+  note: "Verified: addressed hosted verify-contract formatting failure by running Prettier on context wiki markdown. Re-ran bun run format:check, context wiki lint, context graph validate, context reindex, and context verify-task successfully."
   attempts: 0
 commit: null
 comments:
@@ -53,8 +53,20 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Verified: built version-level task-history pre-extraction packets, applied context extraction into derived facts/graph/coverage, and ran reindex, wiki lint/index, graph validate, context verify-task, context doctor, smoke search, policy routing, and agentplane doctor. Doctor reports pre-existing/mistaken no-op task archive warnings but no errors."
+  -
+    type: "verify"
+    at: "2026-06-01T18:40:45.853Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Verified: final commit 474e09715 contains version-level task-history pre-extraction packets, context wiki reports, derived facts/graph/coverage rows, and task artifacts. Re-ran context reindex, wiki lint/index, graph validate, context verify-task, context doctor, smoke search, and policy routing after PR artifact refresh."
+  -
+    type: "verify"
+    at: "2026-06-01T18:50:09.965Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Verified: addressed hosted verify-contract formatting failure by running Prettier on context wiki markdown. Re-ran bun run format:check, context wiki lint, context graph validate, context reindex, and context verify-task successfully."
 doc_version: 3
-doc_updated_at: "2026-06-01T18:32:41.436Z"
+doc_updated_at: "2026-06-01T18:50:10.111Z"
 doc_updated_by: "CURATOR"
 description: "Prepare context-window-aware pre-extraction packets for historical AgentPlane task history, collapse older low-importance tasks into version-level summaries with coverage markers, assimilate the summaries into context wiki/report artifacts, and report original versus assimilated volume, assimilation degree, and granularity."
 sections:
@@ -102,6 +114,44 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606011811-JSY2B9
 
+    ### 2026-06-01T18:40:45.853Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Verified: final commit 474e09715 contains version-level task-history pre-extraction packets, context wiki reports, derived facts/graph/coverage rows, and task artifacts. Re-ran context reindex, wiki lint/index, graph validate, context verify-task, context doctor, smoke search, and policy routing after PR artifact refresh.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T18:32:41.436Z, excerpt_hash=sha256:1ee1a183c61d810de6974bb38945e5787e9e0963590b40d636506f5c8d3a9921
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011811-JSY2B9-assimilate-task-history-by-version-summaries/.agentplane/tasks/202606011811-JSY2B9/blueprint/resolved-snapshot.json
+    - old_digest: c1a287c192fc5edaac90b9ed4f38510fa39f6777571f6382bf32127dc6f1878b
+    - current_digest: c1a287c192fc5edaac90b9ed4f38510fa39f6777571f6382bf32127dc6f1878b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606011811-JSY2B9
+
+    ### 2026-06-01T18:50:09.965Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Verified: addressed hosted verify-contract formatting failure by running Prettier on context wiki markdown. Re-ran bun run format:check, context wiki lint, context graph validate, context reindex, and context verify-task successfully.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T18:40:45.907Z, excerpt_hash=sha256:1ee1a183c61d810de6974bb38945e5787e9e0963590b40d636506f5c8d3a9921
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011811-JSY2B9-assimilate-task-history-by-version-summaries/.agentplane/tasks/202606011811-JSY2B9/blueprint/resolved-snapshot.json
+    - old_digest: c1a287c192fc5edaac90b9ed4f38510fa39f6777571f6382bf32127dc6f1878b
+    - current_digest: c1a287c192fc5edaac90b9ed4f38510fa39f6777571f6382bf32127dc6f1878b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606011811-JSY2B9
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -110,6 +160,14 @@ sections:
     - Observation: Original counted source volume: 2945 task READMEs, 18,995,698 README bytes, 236 ACR files, 1,388,085 ACR bytes, and 5,377 PR artifact files. Assimilated output: 66 version buckets, 71,792-byte version packet, 81,848 bytes of wiki report artifacts, 2,959 coverage rows, 12 facts, 19 graph entities, and 21 graph edges.
       Impact: Coverage degree is 100% at task README level through version buckets and coverage rows; semantic granularity is version -> topic -> important task -> task coverage row. Current importance scorer marks 1,492 deep-extract candidates and collapses 152 low-importance tasks as boilerplate.
       Resolution: Future deep assimilation should focus on score 5 clusters for release, branch_pr, context, runner, and policy surfaces instead of loading the full raw task history.
+
+    - Observation: Original counted source volume: 2,945 task READMEs / 18,995,698 bytes plus 236 ACR files / 1,388,085 bytes. Assimilated artifacts: 66 version buckets, 71,792 bytes of version packets, 81,848 bytes of assimilated wiki pages, 2 facts, 2 graph entities, 1 graph edge, 5 provenance rows, and 2,949 coverage rows. Coverage degree: 1.0; source-to-packet ratio: 283.93:1; source-to-wiki ratio: 249.04:1; granularity: version -> topic -> important task -> coverage row.
+      Impact: The task history can now be loaded through compact version packets and graph-backed facts instead of repeatedly ingesting every historical task README into the model context.
+      Resolution: Use context/wiki/reports/task-history-version-packets.md for context-window packets, task-history-version-assimilation.md for the method and metrics, task-history-version-coverage.md plus derived coverage JSONL for per-task traceability, and task-history-version-preextract.json for machine-readable volume metrics.
+
+    - Observation: Hosted failure was format:check on 9 context/wiki markdown files. Local format:check now reports all matched files use Prettier code style.
+      Impact: PR contract gate should no longer fail on markdown formatting for the generated assimilation wiki pages.
+      Resolution: Formatted context/wiki generated reports and indexes with Prettier, then refreshed local context verification.
 extensions:
   agentplane.context:
     allowed_outputs:
@@ -214,6 +272,44 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606011811-JSY2B9
 
+### 2026-06-01T18:40:45.853Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Verified: final commit 474e09715 contains version-level task-history pre-extraction packets, context wiki reports, derived facts/graph/coverage rows, and task artifacts. Re-ran context reindex, wiki lint/index, graph validate, context verify-task, context doctor, smoke search, and policy routing after PR artifact refresh.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T18:32:41.436Z, excerpt_hash=sha256:1ee1a183c61d810de6974bb38945e5787e9e0963590b40d636506f5c8d3a9921
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011811-JSY2B9-assimilate-task-history-by-version-summaries/.agentplane/tasks/202606011811-JSY2B9/blueprint/resolved-snapshot.json
+- old_digest: c1a287c192fc5edaac90b9ed4f38510fa39f6777571f6382bf32127dc6f1878b
+- current_digest: c1a287c192fc5edaac90b9ed4f38510fa39f6777571f6382bf32127dc6f1878b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606011811-JSY2B9
+
+### 2026-06-01T18:50:09.965Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Verified: addressed hosted verify-contract formatting failure by running Prettier on context wiki markdown. Re-ran bun run format:check, context wiki lint, context graph validate, context reindex, and context verify-task successfully.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T18:40:45.907Z, excerpt_hash=sha256:1ee1a183c61d810de6974bb38945e5787e9e0963590b40d636506f5c8d3a9921
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011811-JSY2B9-assimilate-task-history-by-version-summaries/.agentplane/tasks/202606011811-JSY2B9/blueprint/resolved-snapshot.json
+- old_digest: c1a287c192fc5edaac90b9ed4f38510fa39f6777571f6382bf32127dc6f1878b
+- current_digest: c1a287c192fc5edaac90b9ed4f38510fa39f6777571f6382bf32127dc6f1878b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606011811-JSY2B9
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -226,3 +322,11 @@ BlueprintSnapshotRef:
 - Observation: Original counted source volume: 2945 task READMEs, 18,995,698 README bytes, 236 ACR files, 1,388,085 ACR bytes, and 5,377 PR artifact files. Assimilated output: 66 version buckets, 71,792-byte version packet, 81,848 bytes of wiki report artifacts, 2,959 coverage rows, 12 facts, 19 graph entities, and 21 graph edges.
   Impact: Coverage degree is 100% at task README level through version buckets and coverage rows; semantic granularity is version -> topic -> important task -> task coverage row. Current importance scorer marks 1,492 deep-extract candidates and collapses 152 low-importance tasks as boilerplate.
   Resolution: Future deep assimilation should focus on score 5 clusters for release, branch_pr, context, runner, and policy surfaces instead of loading the full raw task history.
+
+- Observation: Original counted source volume: 2,945 task READMEs / 18,995,698 bytes plus 236 ACR files / 1,388,085 bytes. Assimilated artifacts: 66 version buckets, 71,792 bytes of version packets, 81,848 bytes of assimilated wiki pages, 2 facts, 2 graph entities, 1 graph edge, 5 provenance rows, and 2,949 coverage rows. Coverage degree: 1.0; source-to-packet ratio: 283.93:1; source-to-wiki ratio: 249.04:1; granularity: version -> topic -> important task -> coverage row.
+  Impact: The task history can now be loaded through compact version packets and graph-backed facts instead of repeatedly ingesting every historical task README into the model context.
+  Resolution: Use context/wiki/reports/task-history-version-packets.md for context-window packets, task-history-version-assimilation.md for the method and metrics, task-history-version-coverage.md plus derived coverage JSONL for per-task traceability, and task-history-version-preextract.json for machine-readable volume metrics.
+
+- Observation: Hosted failure was format:check on 9 context/wiki markdown files. Local format:check now reports all matched files use Prettier code style.
+  Impact: PR contract gate should no longer fail on markdown formatting for the generated assimilation wiki pages.
+  Resolution: Formatted context/wiki generated reports and indexes with Prettier, then refreshed local context verification.

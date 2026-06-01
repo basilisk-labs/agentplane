@@ -13,7 +13,7 @@ Created: 2026-06-01T18:15:03.313Z
 ## Verification
 
 - State: ok
-- Note: Verified: built version-level task-history pre-extraction packets, applied context extraction into derived facts/graph/coverage, and ran reindex, wiki lint/index, graph validate, context verify-task, context doctor, smoke search, policy routing, and agentplane doctor. Doctor reports pre-existing/mistaken no-op task archive warnings but no errors.
+- Note: Verified: addressed hosted verify-contract formatting failure by running Prettier on context wiki markdown. Re-ran bun run format:check, context wiki lint, context graph validate, context reindex, and context verify-task successfully.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
