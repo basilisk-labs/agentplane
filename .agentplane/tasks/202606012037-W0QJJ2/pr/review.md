@@ -13,7 +13,7 @@ Created: 2026-06-01T20:38:07.714Z
 ## Verification
 
 - State: ok
-- Note: Verified final format-fix head 1582bf91: context/wiki/index.md formatting fix is committed and full bun run format:check passed locally; source architecture context gates were already green on the same artifact set.
+- Note: Verified PR #4372 review fixes: root-level command files now map to the root command group, generated source-architecture wiki pages always emit aliases: [], and source links are generated relative to each wiki page. Regenerated source architecture assimilation and reran targeted link/frontmatter assertions, context reindex, wiki lint, graph validate, context verify-task, source search smoke, policy routing, and full format check.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -37,18 +37,14 @@ Created: 2026-06-01T20:38:07.714Z
  .../reports/source-architecture-assimilation.json  |    758 +
  .../source-architecture-assimilation.sgr.json      | 564674 ++++++++++++++++++
  .../source-architecture-coverage-detail.jsonl      |   1576 +
- context/wiki/index.md                              |      9 +
- context/wiki/proposals/index.md                    |     27 +
- context/wiki/proposals/task-harvest/index.md       |     27 +
- context/wiki/reports/index.md                      |     28 +
+ context/wiki/index.md                              |      1 +
  .../wiki/source-architecture/command-surface.md    |    286 +
  context/wiki/source-architecture/index.md          |    121 +
  context/wiki/source-architecture/packages.md       |    120 +
  .../source-architecture/schemas-policies-checks.md |    112 +
  context/wiki/source-architecture/test-coverage.md  |    119 +
  .../source-architecture/workflow-state-machines.md |    117 +
- context/wiki/task-harvest/index.md                 |     27 +
- 19 files changed, 594115 insertions(+)
+ 15 files changed, 593998 insertions(+)
 ```
 
 </details>

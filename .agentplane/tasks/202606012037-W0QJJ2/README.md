@@ -4,7 +4,7 @@ title: "Assimilate source architecture and command graph"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 9
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -33,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-01T20:58:51.310Z"
+  updated_at: "2026-06-01T21:28:14.754Z"
   updated_by: "CURATOR"
-  note: "Verified final format-fix head 1582bf91: context/wiki/index.md formatting fix is committed and full bun run format:check passed locally; source architecture context gates were already green on the same artifact set."
+  note: "Verified PR #4372 review fixes: root-level command files now map to the root command group, generated source-architecture wiki pages always emit aliases: [], and source links are generated relative to each wiki page. Regenerated source architecture assimilation and reran targeted link/frontmatter assertions, context reindex, wiki lint, graph validate, context verify-task, source search smoke, policy routing, and full format check."
   attempts: 0
 quality_review:
   state: "pass"
@@ -92,8 +92,26 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Verified final format-fix head 1582bf91: context/wiki/index.md formatting fix is committed and full bun run format:check passed locally; source architecture context gates were already green on the same artifact set."
+  -
+    type: "verify"
+    at: "2026-06-01T21:23:27.273Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Verified source architecture assimilation after merging PR #4371 into the task branch. Conflict resolution preserved both release-docs and source-architecture context surfaces. Re-ran context reindex, wiki lint, graph validate, context verify-task, source-architecture search smoke, policy routing, and full format check."
+  -
+    type: "verify"
+    at: "2026-06-01T21:24:48.277Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Verified source architecture assimilation at head d02c8c49 after merging current main. Checks rerun after conflict resolution: context reindex, wiki lint, graph validate, context verify-task, source-architecture search smoke, policy routing, and full format check."
+  -
+    type: "verify"
+    at: "2026-06-01T21:28:14.754Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Verified PR #4372 review fixes: root-level command files now map to the root command group, generated source-architecture wiki pages always emit aliases: [], and source links are generated relative to each wiki page. Regenerated source architecture assimilation and reran targeted link/frontmatter assertions, context reindex, wiki lint, graph validate, context verify-task, source search smoke, policy routing, and full format check."
 doc_version: 3
-doc_updated_at: "2026-06-01T20:58:51.499Z"
+doc_updated_at: "2026-06-01T21:28:14.898Z"
 doc_updated_by: "CURATOR"
 description: "Assimilate AgentPlane source code into local context without copying implementation bodies: package/module graph, command surface, workflow/state-machine links, schema/policy/test/CI coverage, and metrics for code corpus size and granularity."
 sections:
@@ -204,6 +222,63 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
 
+    ### 2026-06-01T21:23:27.273Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Verified source architecture assimilation after merging PR #4371 into the task branch. Conflict resolution preserved both release-docs and source-architecture context surfaces. Re-ran context reindex, wiki lint, graph validate, context verify-task, source-architecture search smoke, policy routing, and full format check.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T20:58:51.499Z, excerpt_hash=sha256:ef8df5afa8ab5aa80543320be8e609fab61803379ccb29078098bd3b7cc7fa68
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606012037-W0QJJ2-assimilate-source-architecture/.agentplane/tasks/202606012037-W0QJJ2/blueprint/resolved-snapshot.json
+    - old_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+    - current_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
+
+    ### 2026-06-01T21:24:48.277Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Verified source architecture assimilation at head d02c8c49 after merging current main. Checks rerun after conflict resolution: context reindex, wiki lint, graph validate, context verify-task, source-architecture search smoke, policy routing, and full format check.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T21:23:27.415Z, excerpt_hash=sha256:ef8df5afa8ab5aa80543320be8e609fab61803379ccb29078098bd3b7cc7fa68
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606012037-W0QJJ2-assimilate-source-architecture/.agentplane/tasks/202606012037-W0QJJ2/blueprint/resolved-snapshot.json
+    - old_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+    - current_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
+
+    ### 2026-06-01T21:28:14.754Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Verified PR #4372 review fixes: root-level command files now map to the root command group, generated source-architecture wiki pages always emit aliases: [], and source links are generated relative to each wiki page. Regenerated source architecture assimilation and reran targeted link/frontmatter assertions, context reindex, wiki lint, graph validate, context verify-task, source search smoke, policy routing, and full format check.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T21:24:48.431Z, excerpt_hash=sha256:ef8df5afa8ab5aa80543320be8e609fab61803379ccb29078098bd3b7cc7fa68
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606012037-W0QJJ2-assimilate-source-architecture/.agentplane/tasks/202606012037-W0QJJ2/blueprint/resolved-snapshot.json
+    - old_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+    - current_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -224,6 +299,18 @@ sections:
     - Observation: Current PR head fixes the hosted verify-contract Prettier failure. Remaining expected action is hosted CI rerun on PR #4372.
       Impact: The PR no longer has the known format-contract blocker.
       Resolution: Commit refreshed verification metadata, push the final head, then wait for hosted checks before integration.
+
+    - Observation: Merged release/docs assimilation into source-architecture branch with union JSONL derived context and combined wiki navigation. Context wiki now has 80 pages; reindex reports 33645 rows across 117 files; graph validate and verify-task pass.
+      Impact: PR #4372 is ready to be refreshed against current main without dropping the already-merged release/docs assimilation.
+      Resolution: Commit the merge resolution, update PR metadata, push, wait for hosted checks, then merge PR #4372.
+
+    - Observation: The task branch now includes merged release/docs context from PR #4371 plus source-architecture assimilation, with combined wiki navigation and union derived graph/facts/coverage JSONL.
+      Impact: Verification is current for PR #4372 head before push and merge.
+      Resolution: Update PR metadata, push the refreshed branch, wait for hosted checks, resolve any review blockers, then merge PR #4372.
+
+    - Observation: Command groups dropped from 91 to 26 after grouping root command files correctly. All six source-architecture wiki pages have aliases: [] and their first 35 generated source links resolve to existing repo files.
+      Impact: The unresolved Codex review findings on PR #4372 are addressed and the generated source architecture context is materially more accurate.
+      Resolution: Commit and push regenerated source-architecture artifacts, resolve the three review threads, wait for hosted checks, then merge PR #4372.
 extensions:
   agentplane.context:
     allowed_outputs:
@@ -12966,6 +13053,63 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
 
+### 2026-06-01T21:23:27.273Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Verified source architecture assimilation after merging PR #4371 into the task branch. Conflict resolution preserved both release-docs and source-architecture context surfaces. Re-ran context reindex, wiki lint, graph validate, context verify-task, source-architecture search smoke, policy routing, and full format check.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T20:58:51.499Z, excerpt_hash=sha256:ef8df5afa8ab5aa80543320be8e609fab61803379ccb29078098bd3b7cc7fa68
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606012037-W0QJJ2-assimilate-source-architecture/.agentplane/tasks/202606012037-W0QJJ2/blueprint/resolved-snapshot.json
+- old_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+- current_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
+
+### 2026-06-01T21:24:48.277Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Verified source architecture assimilation at head d02c8c49 after merging current main. Checks rerun after conflict resolution: context reindex, wiki lint, graph validate, context verify-task, source-architecture search smoke, policy routing, and full format check.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T21:23:27.415Z, excerpt_hash=sha256:ef8df5afa8ab5aa80543320be8e609fab61803379ccb29078098bd3b7cc7fa68
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606012037-W0QJJ2-assimilate-source-architecture/.agentplane/tasks/202606012037-W0QJJ2/blueprint/resolved-snapshot.json
+- old_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+- current_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
+
+### 2026-06-01T21:28:14.754Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Verified PR #4372 review fixes: root-level command files now map to the root command group, generated source-architecture wiki pages always emit aliases: [], and source links are generated relative to each wiki page. Regenerated source architecture assimilation and reran targeted link/frontmatter assertions, context reindex, wiki lint, graph validate, context verify-task, source search smoke, policy routing, and full format check.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T21:24:48.431Z, excerpt_hash=sha256:ef8df5afa8ab5aa80543320be8e609fab61803379ccb29078098bd3b7cc7fa68
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606012037-W0QJJ2-assimilate-source-architecture/.agentplane/tasks/202606012037-W0QJJ2/blueprint/resolved-snapshot.json
+- old_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+- current_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -12990,3 +13134,15 @@ BlueprintSnapshotRef:
 - Observation: Current PR head fixes the hosted verify-contract Prettier failure. Remaining expected action is hosted CI rerun on PR #4372.
   Impact: The PR no longer has the known format-contract blocker.
   Resolution: Commit refreshed verification metadata, push the final head, then wait for hosted checks before integration.
+
+- Observation: Merged release/docs assimilation into source-architecture branch with union JSONL derived context and combined wiki navigation. Context wiki now has 80 pages; reindex reports 33645 rows across 117 files; graph validate and verify-task pass.
+  Impact: PR #4372 is ready to be refreshed against current main without dropping the already-merged release/docs assimilation.
+  Resolution: Commit the merge resolution, update PR metadata, push, wait for hosted checks, then merge PR #4372.
+
+- Observation: The task branch now includes merged release/docs context from PR #4371 plus source-architecture assimilation, with combined wiki navigation and union derived graph/facts/coverage JSONL.
+  Impact: Verification is current for PR #4372 head before push and merge.
+  Resolution: Update PR metadata, push the refreshed branch, wait for hosted checks, resolve any review blockers, then merge PR #4372.
+
+- Observation: Command groups dropped from 91 to 26 after grouping root command files correctly. All six source-architecture wiki pages have aliases: [] and their first 35 generated source links resolve to existing repo files.
+  Impact: The unresolved Codex review findings on PR #4372 are addressed and the generated source architecture context is materially more accurate.
+  Resolution: Commit and push regenerated source-architecture artifacts, resolve the three review threads, wait for hosted checks, then merge PR #4372.
