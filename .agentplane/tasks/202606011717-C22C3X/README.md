@@ -1,10 +1,11 @@
 ---
 id: "202606011717-C22C3X"
 title: "Initialize maximum assimilation context layer"
-status: "DOING"
+result_summary: "Merged via PR #4365."
+status: "DONE"
 priority: "med"
 owner: "CURATOR"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -77,11 +78,16 @@ runner:
       - "context/wiki/reports/coverage.md"
       - "context/wiki/reports/topology.md"
       - "context/wiki/task-harvest/done-all-tags.md"
-commit: null
+commit:
+  hash: "de5393f63a390a1c42f41766922a1b43c19758fd"
+  message: "✅ C22C3X task: refresh verification artifacts"
 comments:
   -
     author: "CURATOR"
     body: "Start: initialize the maximum-assimilation context workspace and harvest the oldest ten completed task-history records into sourced context artifacts for verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4365 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -102,9 +108,16 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Command: ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: context verify-task ok for maximum-assimilation task after implementation commits 4ce923c61 and 2b689b11e. Scope: selected source_set, changed_paths, glossary, topology, coverage, line-addressed graph refs, and Obsidian wiki links. Command: ap context doctor; ap context check; ap context graph validate. Result: pass. Evidence: context doctor: ok, context check: ok, context graph valid. Scope: context registry, projection, and graph integrity. Command: bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts packages/agentplane/src/commands/context/verify-task.maximum-assimilation.test.ts. Result: pass. Evidence: 13 pass, 0 fail. Scope: task-harvest generator and maximum-assimilation verification regressions."
+  -
+    type: "status"
+    at: "2026-06-01T17:46:07.188Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4365 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-01T17:39:04.238Z"
-doc_updated_by: "CURATOR"
+doc_updated_at: "2026-06-01T17:46:07.197Z"
+doc_updated_by: "INTEGRATOR"
 description: "Initialize the AgentPlane context workspace using the maximum-assimilation profile and assimilate the oldest 10 completed task-history records into sourced local context artifacts."
 sections:
   Summary: |-
