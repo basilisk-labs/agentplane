@@ -1,10 +1,11 @@
 ---
 id: "202606010508-88AVPY"
 title: "Fix cloud backend failure exit semantics"
-status: "DOING"
+result_summary: "Merged via PR #4344."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts"
   findings:
     - "Covered backend sync cloud HTTP 502 -> E_BACKEND/6 and task show cloud autosync fetch failure -> E_NETWORK/7 in runCli."
-commit: null
+commit:
+  hash: "3edcc6346f1eeb64b548ee70459699ef597e5e6d"
+  message: "✅ 88AVPY task: link GitHub issues"
 comments:
   -
     author: "CODER"
     body: "Start: Investigating cloud/backend command failure propagation for issues #4343 and #4339, adding regression coverage, and keeping the fix limited to nonzero exit semantics without compatibility fallbacks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4344 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts. Result: pass, 19 tests. Evidence: regression coverage now asserts cloud push HTTP 502 exits with E_BACKEND/6 and cloud read autosync fetch failure exits with E_NETWORK/7, covering GitHub issues #4343 and #4339. Command: bun run format:changed. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass."
+  -
+    type: "status"
+    at: "2026-06-01T05:20:18.298Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4344 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-01T05:14:32.777Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-01T05:20:18.304Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub issues #4343 and #4339. Ensure backend/cloud commands that surface E_BACKEND or E_NETWORK failures return nonzero exit codes and expose deterministic tests. No fallback or backwards-compatible aliases."
 sections:
   Summary: |-
