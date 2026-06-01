@@ -3,6 +3,8 @@
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
  .../src/commands/context/context-runner.ts         |  13 +
  .../src/commands/context/context.spec.ts           |  47 ++
- .../agentplane/src/commands/context/dashboard.ts   | 635 +++++++++++++++++++++
- .../src/commands/context/dashboard.unit.test.ts    | 203 +++++++
- 7 files changed, 973 insertions(+), 45 deletions(-)
+ .../src/commands/context/dashboard-html.ts         |  44 ++
+ .../src/commands/context/dashboard-types.ts        |  69 +++
+ .../agentplane/src/commands/context/dashboard.ts   | 541 +++++++++++++++++++++
+ .../src/commands/context/dashboard.unit.test.ts    | 224 +++++++++
+ 9 files changed, 1013 insertions(+), 45 deletions(-)
