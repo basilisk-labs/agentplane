@@ -1,10 +1,11 @@
 ---
 id: "202606010746-089WQK"
 title: "Refresh Hermes docs social images for patch release"
-status: "DOING"
+result_summary: "Merged via PR #4354."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - ".agentplane/tasks/202606010746-089WQK/pr/meta.json"
   findings:
     - "After refreshing verification metadata, pr/meta.json records matching diffstat_sha256 and last_verified_diffstat_sha256; PR #4354 head afd84468e has Docs CI, Core CI plan/PR verification, and CodeQL checks passing, and the review thread was resolved."
-commit: null
+commit:
+  hash: "fe9c70532275e65000aa9c2d5f6c14f54b964070"
+  message: "🚧 089WQK task: refresh quality review"
 comments:
   -
     author: "DOCS"
     body: "Start: Regenerate the checked-in Hermes docs social preview images and manifest, then rerun the release gates needed before patch target 0.6.14."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4354 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,9 +70,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "PR artifact freshness recheck: hosted checks passed on PR #4354 after final evaluator evidence commit; refreshing verification so last_verified_diffstat_sha256 can match the current PR diffstat digest before integration."
+  -
+    type: "status"
+    at: "2026-06-01T08:19:47.342Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4354 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-01T07:59:34.910Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-06-01T08:19:47.348Z"
+doc_updated_by: "INTEGRATOR"
 description: "Regenerate checked-in docs social images and manifest so release:check passes before preparing the next patch release."
 sections:
   Summary: |-

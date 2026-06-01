@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-01T08:19:03Z",
   "base": "main",
   "branch": "task/202606010746-089WQK/refresh-hermes-docs-social-images-for-patch-rele",
   "created_at": "2026-06-01T07:47:43.061Z",
   "diffstat_sha256": "sha256:dc213a9b0edc3ac5652b65dfa11247d5ec6e13756038d9ef31bb537baafc4009",
   "last_verified_at": "2026-06-01T07:59:34.879Z",
   "last_verified_diffstat_sha256": "sha256:dc213a9b0edc3ac5652b65dfa11247d5ec6e13756038d9ef31bb537baafc4009",
+  "merge_commit": "fe9c70532275e65000aa9c2d5f6c14f54b964070",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-01T08:19:03Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606010746-089WQK",
-  "updated_at": "2026-06-01T07:47:43.061Z",
+  "updated_at": "2026-06-01T08:19:03Z",
   "verify": {
     "status": "pass"
   }
