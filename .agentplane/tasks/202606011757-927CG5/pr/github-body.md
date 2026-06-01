@@ -41,7 +41,12 @@ ap acr generate 202606011717-C22C3X --work-commit de5393f63a390a1c42f41766922a1b
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/tasks/202606011717-C22C3X/acr.json     | 344 +++++++++++++++++++++
+ .../src/commands/acr/acr.command.test.ts           |  25 ++
+ .../src/commands/acr/generate-extensions.ts        |   1 +
+ .../agentplane/src/commands/task/finish-shared.ts  |   6 +-
+ .../commands/task/finish.validation.unit.test.ts   |  54 ++++
+ 5 files changed, 429 insertions(+), 1 deletion(-)
 ```
 
 </details>
