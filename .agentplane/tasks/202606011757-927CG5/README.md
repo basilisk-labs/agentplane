@@ -4,7 +4,7 @@ title: "Restore maximum assimilation task ACR artifact"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CURATOR"
   note: "Command: ap acr generate 202606011717-C22C3X --work-commit de5393f63a390a1c42f41766922a1b43c19758fd --write --refresh --json. Result: pass. Evidence: wrote .agentplane/tasks/202606011717-C22C3X/acr.json with extensions.agentplane.context.schema_version=1. Command: ap acr validate 202606011717-C22C3X. Result: pass. Evidence: acr validate acr.json. Command: ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: context verify-task ok for completed maximum-assimilation task. Command: bunx vitest run focused ACR, finish, and maximum-assimilation tests. Result: pass. Evidence: 3 files, 37 tests passed. Command: bun run typecheck; bun run format:check; git diff --check; ap context reindex --include-raw --include-tasks --reset; ap context check; ap context doctor; ap context graph validate; node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: typecheck passed, formatting clean, reindex rows=45665 files=9390, context check/doctor ok, graph valid, policy routing OK."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-01T18:18:21.273Z"
+  updated_by: "EVALUATOR"
+  note: "Restored context task ACR closure and fixed generation/finish behavior for completed context tasks."
+  evaluated_sha: "aa96808f40bfe0fb094f01b15b0bb6a330ac1799"
+  blueprint_digest: "fe437674bfd846ddd6598526d880907e374e8a9246fe3f81de70111518054e7a"
+  evidence_refs:
+    - ".agentplane/tasks/202606011757-927CG5/README.md"
+    - ".agentplane/tasks/202606011757-927CG5/quality/20260601-181821273-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606011757-927CG5/quality/20260601-181821273-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606011757-927CG5/quality/20260601-181821273-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606011757-927CG5/blueprint/resolved-snapshot.json"
+    - ".agentplane/tasks/202606011717-C22C3X/acr.json"
+    - "packages/agentplane/src/commands/acr/generate-extensions.ts"
+    - "packages/agentplane/src/commands/task/finish-shared.ts"
+  findings:
+    - "Generated C22C3X ACR now validates with context schema_version=1; context verify-task passes; finish refresh now writes ACR for context tasks even when optional global ACR recording is disabled."
 commit: null
 comments:
   -
