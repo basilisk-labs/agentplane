@@ -42,14 +42,14 @@ export const commitSpec: CommandSpec<CommitParsed> = {
       name: "close",
       default: false,
       description:
-        "Generate a deterministic close commit message from task snapshot + verification + recorded implementation commit; stages only the task README.",
+        "Generate a deterministic close commit message from task snapshot + verification + recorded implementation commit; stages the active task artifact scope.",
     },
     {
       kind: "boolean",
       name: "unstage-others",
       default: false,
       description:
-        "With --close: unstage any currently staged paths before staging the task README.",
+        "With --close: unstage any currently staged paths before staging the active task artifact scope.",
     },
     {
       kind: "boolean",
@@ -129,7 +129,7 @@ export const commitSpec: CommandSpec<CommitParsed> = {
     },
     {
       cmd: "agentplane commit 202602030608-F1Q8AB --close",
-      why: "Create a close commit for the task README using a deterministic message builder.",
+      why: "Create a close commit for the task artifacts using a deterministic message builder.",
     },
   ],
   notes: [

@@ -21,7 +21,7 @@ const COMMIT_WRAPPER_SUITE_TIMEOUT_MS = 120_000;
 
 describe("runCli commit wrapper: close", { timeout: COMMIT_WRAPPER_SUITE_TIMEOUT_MS }, () => {
   it(
-    "commit wrapper supports --close and stages only the task README",
+    "commit wrapper supports --close and stages active task artifacts",
     async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
@@ -74,6 +74,7 @@ describe("runCli commit wrapper: close", { timeout: COMMIT_WRAPPER_SUITE_TIMEOUT
         "## Summary\n\nTest task\n",
       );
       await writeFile(path.join(taskDir, "README.md"), readme, "utf8");
+      await writeFile(path.join(taskDir, "evaluator-opinion.md"), "Evaluator evidence\n", "utf8");
 
       const io = captureStdIO();
       try {
@@ -96,7 +97,7 @@ describe("runCli commit wrapper: close", { timeout: COMMIT_WRAPPER_SUITE_TIMEOUT
       expect(body).toContain("Key files:\n- src/app.ts");
       expect(body).toContain("Refs:\n- Agentplane task: R18Y1Q");
 
-      // Close commit should touch only the task README.
+      // Close commit should carry the task-local closure evidence, not just README.md.
       const showRes = await execFileAsync("git", ["show", "--name-only", "--format="], {
         cwd: root,
       });
@@ -104,7 +105,10 @@ describe("runCli commit wrapper: close", { timeout: COMMIT_WRAPPER_SUITE_TIMEOUT
         .split("\n")
         .map((s) => s.trim())
         .filter(Boolean);
-      expect(changed).toEqual([`.agentplane/tasks/${taskId}/README.md`]);
+      expect(changed).toEqual([
+        `.agentplane/tasks/${taskId}/README.md`,
+        `.agentplane/tasks/${taskId}/evaluator-opinion.md`,
+      ]);
     },
     COMMIT_WRAPPER_CLOSE_CHECK_ONLY_TIMEOUT_MS,
   );

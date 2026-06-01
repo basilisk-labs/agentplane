@@ -1180,10 +1180,10 @@ Options:
 - `--status-commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --status-commit). Use minimal prefixes; '.' is rejected. (repeatable)
 - `--status-commit-require-clean`: Require a clean working tree for the status commit (used with --status-commit). (default=false)
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment or --status-commit). (default=false)
-- `--close-commit`: After finishing, run a deterministic close commit for the task README (single-task only). (default=false)
+- `--close-commit`: After finishing, run a deterministic close commit for the active task artifact scope (single-task only). (default=false)
 - `--no-close-commit`: Disable the default deterministic close commit in direct mode (single-task only). (default=false)
 - `--no-write-acr`: Disable automatic ACR refresh for this finish call when acr.write_on_finish is enabled. (default=false)
-- `--close-unstage-others`: With --close-commit: unstage any currently staged paths before staging the task README. (default=false)
+- `--close-unstage-others`: With --close-commit: unstage any currently staged paths before staging the active task artifact scope. (default=false)
 - `--base <branch>`: Optional explicit base branch override for branch_pr finish validation and close-commit reconciliation.
 - `--observation <text>`: Structured finding observation to append with the verification.
 - `--impact <text>`: Structured finding impact to append with the verification.
@@ -3261,8 +3261,8 @@ agentplane commit <task-id> [options]
 Options:
 
 - `-m, --message <message>`: Commit subject (must follow policy). Required unless --close is used.
-- `--close`: Generate a deterministic close commit message from task snapshot + verification + recorded implementation commit; stages only the task README. (default=false)
-- `--unstage-others`: With --close: unstage any currently staged paths before staging the task README. (default=false)
+- `--close`: Generate a deterministic close commit message from task snapshot + verification + recorded implementation commit; stages the active task artifact scope. (default=false)
+- `--unstage-others`: With --close: unstage any currently staged paths before staging the active task artifact scope. (default=false)
 - `--check-only`: With --close: run preflight checks and print the planned close commit subject without creating a commit. (default=false)
 - `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: \`agentplane guard suggest-allow --format args\`). (repeatable)
 - `--allow-tasks`: Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope. (default=false)
@@ -3301,7 +3301,7 @@ agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: update publish workfl
 agentplane commit 202602030608-F1Q8AB --close
 ```
 
-- Create a close commit for the task README using a deterministic message builder.
+- Create a close commit for the task artifacts using a deterministic message builder.
 
 ### guard clean
 

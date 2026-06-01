@@ -79,7 +79,7 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
   git_close_commit_blocked: {
     code: "git_close_commit_blocked",
     category: "git",
-    summary: "deterministic close commit was blocked after staging the task README",
+    summary: "deterministic close commit was blocked after staging task artifacts",
     action: "inspect the staged close payload and fix the blocking hook or policy failure",
   },
   git_close_commit_dirty_index: {
