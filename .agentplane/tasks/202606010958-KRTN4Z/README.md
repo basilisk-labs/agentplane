@@ -4,7 +4,7 @@ title: "Refresh v0.6.14 release social assets"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,23 @@ verification:
   updated_by: "DOCS"
   note: "Social asset checks passed: generated v0.6.14 PNG at 1280x640, updated social manifest, docs:social:check passed, and release parity passed. release:tasks:check is deferred until this DOING social-assets task is merged and closed because the gate correctly blocks active release tasks."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-01T10:01:22.936Z"
+  updated_by: "EVALUATOR"
+  note: "v0.6.14 release social assets are generated and verified."
+  evaluated_sha: "9b55bcf2c7b6e84fb1e21610490025050e56e265"
+  blueprint_digest: "1057a53f0291957c5822fc06d9ddc4029826b3fbe158a4428536c4cb73654af7"
+  evidence_refs:
+    - ".agentplane/tasks/202606010958-KRTN4Z/README.md"
+    - ".agentplane/tasks/202606010958-KRTN4Z/quality/20260601-100122936-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606010958-KRTN4Z/quality/20260601-100122936-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606010958-KRTN4Z/quality/20260601-100122936-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606010958-KRTN4Z/blueprint/resolved-snapshot.json"
+    - "website/static/img/social/docs/releases/v0.6.14.png"
+    - "website/static/img/social/manifest.json"
+  findings:
+    - "The release page now has a generated 1280x640 social PNG and manifest entry; docs:social:check passes and release parity remains clean. Release readiness gates that require no active DOING release tasks are deferred to main after this task closes."
 commit: null
 comments:
   -

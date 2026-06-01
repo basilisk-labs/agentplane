@@ -34,7 +34,9 @@ tasks.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ website/static/img/social/docs/releases/v0.6.14.png | Bin 0 -> 53591 bytes
+ website/static/img/social/manifest.json             |   8 ++++++++
+ 2 files changed, 8 insertions(+)
 ```
 
 </details>

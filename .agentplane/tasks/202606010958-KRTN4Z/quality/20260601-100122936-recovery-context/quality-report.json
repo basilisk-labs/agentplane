@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202606010958-KRTN4Z",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-01T10:01:22.936Z",
+  "verdict": "pass",
+  "summary": "v0.6.14 release social assets are generated and verified.",
+  "evaluated_sha": "9b55bcf2c7b6e84fb1e21610490025050e56e265",
+  "blueprint_digest": "1057a53f0291957c5822fc06d9ddc4029826b3fbe158a4428536c4cb73654af7",
+  "findings": [
+    "The release page now has a generated 1280x640 social PNG and manifest entry; docs:social:check passes and release parity remains clean. Release readiness gates that require no active DOING release tasks are deferred to main after this task closes."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606010958-KRTN4Z/README.md",
+    "website/static/img/social/docs/releases/v0.6.14.png",
+    "website/static/img/social/manifest.json"
+  ],
+  "missing_tests": [
+    "release:tasks:check and release:check intentionally deferred until this task is closed because active DOING release tasks block readiness."
+  ],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
