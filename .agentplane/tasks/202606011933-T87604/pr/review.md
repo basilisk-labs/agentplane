@@ -13,7 +13,7 @@ Created: 2026-06-01T19:37:03.754Z
 ## Verification
 
 - State: ok
-- Note: Verified: assimilated release notes and public documentation into graph-backed context artifacts. Ran context reindex, wiki lint, wiki index, graph validate, context verify-task, context doctor, search smoke test, policy routing, and targeted Prettier check.
+- Note: Verified after implementation commit 96f97b7e: release/docs context assimilation artifacts are committed and PR artifacts refreshed. Re-ran required context checks before commit: reindex, wiki lint/index, graph validate, verify-task, context doctor, search smoke, policy routing, and targeted Prettier check.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
