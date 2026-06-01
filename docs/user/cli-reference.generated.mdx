@@ -139,6 +139,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [ide sync](#ide-sync)
 - Context
   - [context check](#context-check)
+  - [context dashboard](#context-dashboard)
   - [context init](#context-init)
   - [context learn changes](#context-learn-changes)
   - [context learn files](#context-learn-files)
@@ -3563,6 +3564,25 @@ agentplane context check [options]
 Options:
 
 - `--fix`: Repair missing context directories where safe. (default=false)
+
+### context dashboard
+
+Serve a read-only local dashboard for the full context knowledge graph.
+
+Builds a typed knowledge graph across wiki pages, wikilinks, entities, facts, sources, capabilities, and task evidence. Uses the existing SQLite context projection when available and serves an in-memory read-only snapshot for fast dashboard access.
+
+Usage:
+
+```text
+agentplane context dashboard [options]
+```
+
+Options:
+
+- `--host <host>`: Host interface for the local read-only HTTP server. (default=127.0.0.1)
+- `--port <port>`: Port for the local server. Use 0 to choose a free port. (default=0)
+- `--open`: Open the dashboard URL in the system browser when supported. (default=false)
+- `--dump-json`: Print the dashboard graph snapshot as JSON and exit without serving HTTP. (default=false)
 
 ### context init
 
