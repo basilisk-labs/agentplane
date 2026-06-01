@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-01T10:03:27Z",
   "base": "main",
   "branch": "task/202606010958-KRTN4Z/refresh-v0-6-14-social-assets",
   "created_at": "2026-06-01T09:59:31.450Z",
   "diffstat_sha256": "sha256:f7c0a87a8ad8a3d9875ed2d15cb8965f6fd169a335f01a91dd9bc8e103fb2963",
   "last_verified_at": "2026-06-01T10:00:56.255Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "7101c713cb643458657b05d59b6360932346b481",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-01T10:03:27Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606010958-KRTN4Z",
-  "updated_at": "2026-06-01T09:59:31.450Z",
+  "updated_at": "2026-06-01T10:03:27Z",
   "verify": {
     "status": "pass"
   }
