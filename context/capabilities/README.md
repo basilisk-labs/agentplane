@@ -1,5 +1,5 @@
 # Context capabilities
 
-Profile: adaptive
+Profile: maximum-assimilation
 
 Reusable artefacts for prompts, playbooks, templates, checklists and rubrics.

@@ -22,10 +22,7 @@ import {
 
 function buildEvidence(task: HarvestTask, now: string): TaskEvidence {
   const text = taskText(task);
-  const refs = [`.agentplane/tasks/${task.id}/README.md`];
-  if (task.commit && typeof task.commit.hash === "string" && task.commit.hash.trim()) {
-    refs.push(`commit:${task.commit.hash.trim()}`);
-  }
+  const refs = [`.agentplane/tasks/${task.id}/README.md#lines=1-80`];
   return {
     id: task.id,
     title: task.title,
@@ -84,8 +81,9 @@ function buildGraph(evidence: TaskEvidence[], facts: HarvestFact[]) {
   for (const row of evidence) {
     entityRows.set(`task:${row.id}`, {
       id: `task:${row.id}`,
-      type: "task",
+      kind: "task",
       label: row.title,
+      status: "active",
       task_id: row.id,
       source_refs: row.source_refs,
       generated_by: "context.harvest.tasks",
@@ -93,16 +91,18 @@ function buildGraph(evidence: TaskEvidence[], facts: HarvestFact[]) {
     for (const tag of row.tags) {
       entityRows.set(`tag:${tag}`, {
         id: `tag:${tag}`,
-        type: "tag",
+        kind: "concept",
         label: tag,
+        status: "active",
         source_refs: row.source_refs,
         generated_by: "context.harvest.tasks",
       });
       edges.push({
         id: `edge_${stableHash(`${row.id}:tag:${tag}`)}`,
-        type: "task_has_tag",
+        relation: "mentions",
         from: `task:${row.id}`,
         to: `tag:${tag}`,
+        status: "active",
         source_refs: row.source_refs,
         generated_by: "context.harvest.tasks",
       });
@@ -111,8 +111,9 @@ function buildGraph(evidence: TaskEvidence[], facts: HarvestFact[]) {
   for (const fact of facts) {
     provenance.push({
       id: `prov_${stableHash(fact.id)}`,
-      type: "fact_source",
+      relation: "supports",
       target: fact.id,
+      source: fact.source_refs[0] ?? "",
       source_refs: fact.source_refs,
       generated_by: "context.harvest.tasks",
     });
@@ -124,6 +125,29 @@ function buildWikiProposal(evidence: TaskEvidence[], facts: HarvestFact[], repor
   const sourceRefs = [...new Set(evidence.flatMap((row) => row.source_refs))].slice(0, 40);
   const lines = [
     "---",
+    "aliases:",
+    '  - "Completed task history harvest"',
+    "tags:",
+    "  - agentplane/context",
+    "  - agentplane/task-history",
+    "cssclasses:",
+    "  - agentplane-context",
+    "agentplane_context:",
+    "  schema_version: 1",
+    "  artifact_type: wiki_page",
+    `  canonical_id: "wiki.task_harvest.${stableHash(report.promotion_gate.proposal_path)}"`,
+    '  title: "Completed task history harvest"',
+    "  modality: observation",
+    "  epistemic_status: sourced_claim",
+    "  visibility: project",
+    "  source_refs:",
+    ...sourceRefs.map((ref) => `    - ${JSON.stringify(ref)}`),
+    "  claims: []",
+    "  graph_refs:",
+    "    entities: []",
+    "    edges: []",
+    "  conflicts: []",
+    "  updated_by: context.harvest.tasks",
     "generated_by: context.harvest.tasks",
     "promotion_state: proposal",
     "source_refs:",
@@ -135,6 +159,8 @@ function buildWikiProposal(evidence: TaskEvidence[], facts: HarvestFact[], repor
     "This page is a raw proposal scaffold generated from completed task evidence. Semantic wiki,",
     "fact, and graph extraction belongs to CURATOR tasks by default. Promote only after reviewing",
     "the gate report, conflict markers, stale markers, and source references.",
+    "Use [[Context glossary]] for canonical task-history terms when a maximum-assimilation",
+    "workspace provides the glossary page.",
     "",
     "## Promotion gate",
     "",
@@ -162,6 +188,12 @@ function buildWikiProposal(evidence: TaskEvidence[], facts: HarvestFact[], repor
       lines.push("");
     }
   }
+  lines.push(
+    "## Sources",
+    "",
+    ...sourceRefs.map((ref, index) => `${index + 1}. [${ref}](${ref})`),
+    "",
+  );
   return `${lines.join("\n").trim()}\n`;
 }
 

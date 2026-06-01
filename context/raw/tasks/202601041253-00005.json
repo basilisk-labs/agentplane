@@ -1,0 +1,28 @@
+{
+  "blueprint_request": null,
+  "commit": {
+    "hash": "fa8627b7e1cb31047987216d42f6664cd1fe8767",
+    "message": "Legacy completion (backfill)"
+  },
+  "excerpts": [
+    "Document commit workflow in README",
+    "Expand the README with details on emoji commits and atomic task tracking.",
+    "<!-- BEGIN VERIFICATION RESULTS -->",
+    "<!-- END VERIFICATION RESULTS -->",
+    "Legacy completion (backfill)"
+  ],
+  "extracted_at": "2026-06-01T17:19:12.959Z",
+  "id": "202601041253-00005",
+  "mutation_scope": null,
+  "owner": "CODER",
+  "priority": "normal",
+  "source_refs": [
+    ".agentplane/tasks/202601041253-00005/README.md",
+    "commit:fa8627b7e1cb31047987216d42f6664cd1fe8767"
+  ],
+  "status": "DONE",
+  "tags": ["readme", "docs", "workflow"],
+  "task_kind": null,
+  "text_digest": "sha256:6b908f5997b86ada8bedc37f810ec4ca445b16f16e1e6701afda870fc6e6af18",
+  "title": "Document commit workflow in README"
+}
