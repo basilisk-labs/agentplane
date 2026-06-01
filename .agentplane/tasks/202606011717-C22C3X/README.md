@@ -4,7 +4,7 @@ title: "Initialize maximum assimilation context layer"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-01T17:36:17.125Z"
+  updated_at: "2026-06-01T17:39:03.998Z"
   updated_by: "CURATOR"
-  note: "Command: ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: maximum-assimilation gates passed with source_set, glossary, topology, coverage, line-addressed graph refs, Obsidian wiki links, and changed_paths accepted. Scope: task-bound context artifacts for the first ten completed task-history records. Command: ap context doctor. Result: pass. Evidence: context doctor: ok after reindex. Scope: local context registry/projection health. Command: ap context graph validate. Result: pass. Evidence: context graph valid. Scope: derived graph entities, edges, and provenance. Command: bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts packages/agentplane/src/commands/context/verify-task.maximum-assimilation.test.ts. Result: pass. Evidence: 13 pass, 0 fail. Scope: harvest generator compatibility and maximum-assimilation verification gates."
+  note: "Command: ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: context verify-task ok for maximum-assimilation task after implementation commits 4ce923c61 and 2b689b11e. Scope: selected source_set, changed_paths, glossary, topology, coverage, line-addressed graph refs, and Obsidian wiki links. Command: ap context doctor; ap context check; ap context graph validate. Result: pass. Evidence: context doctor: ok, context check: ok, context graph valid. Scope: context registry, projection, and graph integrity. Command: bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts packages/agentplane/src/commands/context/verify-task.maximum-assimilation.test.ts. Result: pass. Evidence: 13 pass, 0 fail. Scope: task-harvest generator and maximum-assimilation verification regressions."
   attempts: 0
 quality_review:
   state: "pass"
@@ -96,8 +96,14 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Command: ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: maximum-assimilation gates passed with source_set, glossary, topology, coverage, line-addressed graph refs, Obsidian wiki links, and changed_paths accepted. Scope: task-bound context artifacts for the first ten completed task-history records. Command: ap context doctor. Result: pass. Evidence: context doctor: ok after reindex. Scope: local context registry/projection health. Command: ap context graph validate. Result: pass. Evidence: context graph valid. Scope: derived graph entities, edges, and provenance. Command: bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts packages/agentplane/src/commands/context/verify-task.maximum-assimilation.test.ts. Result: pass. Evidence: 13 pass, 0 fail. Scope: harvest generator compatibility and maximum-assimilation verification gates."
+  -
+    type: "verify"
+    at: "2026-06-01T17:39:03.998Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Command: ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: context verify-task ok for maximum-assimilation task after implementation commits 4ce923c61 and 2b689b11e. Scope: selected source_set, changed_paths, glossary, topology, coverage, line-addressed graph refs, and Obsidian wiki links. Command: ap context doctor; ap context check; ap context graph validate. Result: pass. Evidence: context doctor: ok, context check: ok, context graph valid. Scope: context registry, projection, and graph integrity. Command: bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts packages/agentplane/src/commands/context/verify-task.maximum-assimilation.test.ts. Result: pass. Evidence: 13 pass, 0 fail. Scope: task-harvest generator and maximum-assimilation verification regressions."
 doc_version: 3
-doc_updated_at: "2026-06-01T17:36:17.183Z"
+doc_updated_at: "2026-06-01T17:39:04.238Z"
 doc_updated_by: "CURATOR"
 description: "Initialize the AgentPlane context workspace using the maximum-assimilation profile and assimilate the oldest 10 completed task-history records into sourced local context artifacts."
 sections:
@@ -130,6 +136,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T17:17:55.975Z, excerpt_hash=sha256:73b08a3afd4ba2d796fe5b6ca5acb002ae2aa66bca4d8d76283e148352cf9de4
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011717-C22C3X-maximum-context-history/.agentplane/tasks/202606011717-C22C3X/blueprint/resolved-snapshot.json
+    - old_digest: 8b442ecdda6d1ecde0dd7d9b8e2bce4e74ef98e2e6ca94f0014a5032e182b39a
+    - current_digest: 8b442ecdda6d1ecde0dd7d9b8e2bce4e74ef98e2e6ca94f0014a5032e182b39a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606011717-C22C3X
+
+    ### 2026-06-01T17:39:03.998Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Command: ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: context verify-task ok for maximum-assimilation task after implementation commits 4ce923c61 and 2b689b11e. Scope: selected source_set, changed_paths, glossary, topology, coverage, line-addressed graph refs, and Obsidian wiki links. Command: ap context doctor; ap context check; ap context graph validate. Result: pass. Evidence: context doctor: ok, context check: ok, context graph valid. Scope: context registry, projection, and graph integrity. Command: bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts packages/agentplane/src/commands/context/verify-task.maximum-assimilation.test.ts. Result: pass. Evidence: 13 pass, 0 fail. Scope: task-harvest generator and maximum-assimilation verification regressions.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T17:36:17.183Z, excerpt_hash=sha256:73b08a3afd4ba2d796fe5b6ca5acb002ae2aa66bca4d8d76283e148352cf9de4
 
     Details:
 
@@ -231,6 +256,25 @@ Note: Command: ap context verify-task 202606011717-C22C3X. Result: pass. Evidenc
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T17:17:55.975Z, excerpt_hash=sha256:73b08a3afd4ba2d796fe5b6ca5acb002ae2aa66bca4d8d76283e148352cf9de4
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011717-C22C3X-maximum-context-history/.agentplane/tasks/202606011717-C22C3X/blueprint/resolved-snapshot.json
+- old_digest: 8b442ecdda6d1ecde0dd7d9b8e2bce4e74ef98e2e6ca94f0014a5032e182b39a
+- current_digest: 8b442ecdda6d1ecde0dd7d9b8e2bce4e74ef98e2e6ca94f0014a5032e182b39a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606011717-C22C3X
+
+### 2026-06-01T17:39:03.998Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Command: ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: context verify-task ok for maximum-assimilation task after implementation commits 4ce923c61 and 2b689b11e. Scope: selected source_set, changed_paths, glossary, topology, coverage, line-addressed graph refs, and Obsidian wiki links. Command: ap context doctor; ap context check; ap context graph validate. Result: pass. Evidence: context doctor: ok, context check: ok, context graph valid. Scope: context registry, projection, and graph integrity. Command: bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts packages/agentplane/src/commands/context/verify-task.maximum-assimilation.test.ts. Result: pass. Evidence: 13 pass, 0 fail. Scope: task-harvest generator and maximum-assimilation verification regressions.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T17:36:17.183Z, excerpt_hash=sha256:73b08a3afd4ba2d796fe5b6ca5acb002ae2aa66bca4d8d76283e148352cf9de4
 
 Details:
 

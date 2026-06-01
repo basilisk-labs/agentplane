@@ -19,16 +19,16 @@ Initialize the AgentPlane context workspace using the maximum-assimilation profi
 - Note:
 
 ```bash
-ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: maximum-assimilation gates \
-  passed with source_set, glossary, topology, coverage, line-addressed graph refs, Obsidian wiki \
-  links, and changed_paths accepted. Scope: task-bound context artifacts for the first ten completed \
-  task-history records. Command: ap context doctor. Result: pass. Evidence: context doctor: ok after \
-  reindex. Scope: local context registry/projection health. Command: ap context graph validate. \
-  Result: pass. Evidence: context graph valid. Scope: derived graph entities, edges, and provenance. \
-  Command: bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts \
+ap context verify-task 202606011717-C22C3X. Result: pass. Evidence: context verify-task ok for \
+  maximum-assimilation task after implementation commits 4ce923c61 and 2b689b11e. Scope: selected \
+  source_set, changed_paths, glossary, topology, coverage, line-addressed graph refs, and Obsidian \
+  wiki links. Command: ap context doctor; ap context check; ap context graph validate. Result: pass. \
+  Evidence: context doctor: ok, context check: ok, context graph valid. Scope: context registry, \
+  projection, and graph integrity. Command: bun test \
+  packages/agentplane/src/commands/context/harvest-tasks.test.ts \
   packages/agentplane/src/commands/context/verify-task.maximum-assimilation.test.ts. Result: pass. \
-  Evidence: 13 pass, 0 fail. Scope: harvest generator compatibility and maximum-assimilation \
-  verification gates.
+  Evidence: 13 pass, 0 fail. Scope: task-harvest generator and maximum-assimilation verification \
+  regressions.
 ```
 - Canonical workflow state lives in the task README.
 
