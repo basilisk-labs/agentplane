@@ -1,0 +1,28 @@
+{
+  "blueprint_request": null,
+  "commit": {
+    "hash": "645a960e59145717d77f4bfab367c2a14234cc03",
+    "message": "Legacy completion (backfill)"
+  },
+  "excerpts": [
+    "Move tasks data into .AGENTS/TASKS.json",
+    "Ensure task state is available in a machine-readable JSON file for Codex automation.",
+    "<!-- BEGIN VERIFICATION RESULTS -->",
+    "<!-- END VERIFICATION RESULTS -->",
+    "Legacy completion (backfill)"
+  ],
+  "extracted_at": "2026-06-01T17:19:12.959Z",
+  "id": "202601041253-00003",
+  "mutation_scope": null,
+  "owner": "REDMINE",
+  "priority": "normal",
+  "source_refs": [
+    ".agentplane/tasks/202601041253-00003/README.md",
+    "commit:645a960e59145717d77f4bfab367c2a14234cc03"
+  ],
+  "status": "DONE",
+  "tags": ["agents", "tasks"],
+  "task_kind": null,
+  "text_digest": "sha256:a51d8eee5e05f311a48669c5c61db71b08c87252fbe13d58bc220657ea6c2ce6",
+  "title": "Move tasks data into .AGENTS/TASKS.json"
+}

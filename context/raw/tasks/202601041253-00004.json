@@ -1,0 +1,28 @@
+{
+  "blueprint_request": null,
+  "commit": {
+    "hash": "fb9f40ff9b294361cf2d6322d4b68d220ebbf1c6",
+    "message": "Legacy completion (backfill)"
+  },
+  "excerpts": [
+    "Enforce per-task git commits in AGENTS spec",
+    "Document the rule that every plan item must end with its own git commit for traceability.",
+    "<!-- BEGIN VERIFICATION RESULTS -->",
+    "<!-- END VERIFICATION RESULTS -->",
+    "Legacy completion (backfill)"
+  ],
+  "extracted_at": "2026-06-01T17:19:12.959Z",
+  "id": "202601041253-00004",
+  "mutation_scope": null,
+  "owner": "REDMINE",
+  "priority": "normal",
+  "source_refs": [
+    ".agentplane/tasks/202601041253-00004/README.md",
+    "commit:fb9f40ff9b294361cf2d6322d4b68d220ebbf1c6"
+  ],
+  "status": "DONE",
+  "tags": ["agents", "git", "workflow"],
+  "task_kind": null,
+  "text_digest": "sha256:ecf47d4b6a0def775364ffdd6b53829d19fda92cccbec8e7b46940e8aafbcb9e",
+  "title": "Enforce per-task git commits in AGENTS spec"
+}

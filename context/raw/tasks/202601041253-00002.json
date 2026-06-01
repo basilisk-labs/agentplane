@@ -1,0 +1,29 @@
+{
+  "blueprint_request": null,
+  "commit": {
+    "hash": "b086a09a601ccc90ba7c91fda3bb1317e3485419",
+    "message": "✅ Y0P8RY verified: Phase 2 migration complete | details: no additional core cleanup changes required at this stage."
+  },
+  "excerpts": [
+    "Restructure agent registry into JSON files",
+    "Split every reusable agent prompt into a dedicated JSON file under .AGENTS for easier maintenance.",
+    "- Confirmed agent registry lives under .agent-plane/agents as JSON.",
+    "- Closed the legacy backfill task to match current state.",
+    "<!-- BEGIN VERIFICATION RESULTS -->",
+    "<!-- END VERIFICATION RESULTS -->"
+  ],
+  "extracted_at": "2026-06-01T17:19:12.959Z",
+  "id": "202601041253-00002",
+  "mutation_scope": null,
+  "owner": "REDMINE",
+  "priority": "normal",
+  "source_refs": [
+    ".agentplane/tasks/202601041253-00002/README.md",
+    "commit:b086a09a601ccc90ba7c91fda3bb1317e3485419"
+  ],
+  "status": "DONE",
+  "tags": ["agents"],
+  "task_kind": null,
+  "text_digest": "sha256:4a5dedde67a90404f0cbb97c45e28c83b5b1545e714ac409c8788840c4256467",
+  "title": "Restructure agent registry into JSON files"
+}

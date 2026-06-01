@@ -1,0 +1,28 @@
+{
+  "blueprint_request": null,
+  "commit": {
+    "hash": "13721c623fd186abbaee48456aa242f7e4561119",
+    "message": "Legacy completion (backfill)"
+  },
+  "excerpts": [
+    "Improve commit message guidance",
+    "Tighten the instructions around writing meaningful, emoji-prefixed commit messages.",
+    "<!-- BEGIN VERIFICATION RESULTS -->",
+    "<!-- END VERIFICATION RESULTS -->",
+    "Legacy completion (backfill)"
+  ],
+  "extracted_at": "2026-06-01T17:19:12.959Z",
+  "id": "202601041253-00007",
+  "mutation_scope": null,
+  "owner": "CODER",
+  "priority": "normal",
+  "source_refs": [
+    ".agentplane/tasks/202601041253-00007/README.md",
+    "commit:13721c623fd186abbaee48456aa242f7e4561119"
+  ],
+  "status": "DONE",
+  "tags": ["git", "workflow"],
+  "task_kind": null,
+  "text_digest": "sha256:1b6d86da74cb7c606a6ef0fbaefe0a122fc6cf933aa5574f1e56b23798facff1",
+  "title": "Improve commit message guidance"
+}

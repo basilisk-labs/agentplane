@@ -1,0 +1,53 @@
+{
+  "counts": {
+    "conflict_candidates": 0,
+    "edges": 20,
+    "entities": 17,
+    "facts": 10,
+    "promotion_blockers": 0,
+    "provenance_edges": 10,
+    "selected_tasks": 10,
+    "stale_candidates": 0
+  },
+  "generated_at": "2026-06-01T17:19:12.959Z",
+  "generated_by": "context.harvest.tasks",
+  "mode": {
+    "after_task": null,
+    "limit": 10,
+    "order": "oldest_first",
+    "since": null,
+    "statuses": [
+      "DONE"
+    ],
+    "tags": [],
+    "tasks": [],
+    "until": null
+  },
+  "promotion_gate": {
+    "blockers": [],
+    "promoted_path": "context/wiki/task-harvest/done-all-tags.md",
+    "proposal_path": "context/wiki/proposals/task-harvest/done-all-tags.md",
+    "state": "promoted",
+    "warnings": []
+  },
+  "schema_version": 1,
+  "source_refs": [
+    ".agentplane/tasks/202601041253-00001/README.md",
+    "commit:76d362097fa5d7237d78e4142d9d4ce7f9511513",
+    ".agentplane/tasks/202601041253-00002/README.md",
+    "commit:b086a09a601ccc90ba7c91fda3bb1317e3485419",
+    ".agentplane/tasks/202601041253-00003/README.md",
+    "commit:645a960e59145717d77f4bfab367c2a14234cc03",
+    ".agentplane/tasks/202601041253-00004/README.md",
+    "commit:fb9f40ff9b294361cf2d6322d4b68d220ebbf1c6",
+    ".agentplane/tasks/202601041253-00005/README.md",
+    "commit:fa8627b7e1cb31047987216d42f6664cd1fe8767",
+    ".agentplane/tasks/202601041253-00006/README.md",
+    "commit:13721c623fd186abbaee48456aa242f7e4561119",
+    ".agentplane/tasks/202601041253-00007/README.md",
+    ".agentplane/tasks/202601041253-00008/README.md",
+    ".agentplane/tasks/202601041253-00009/README.md",
+    ".agentplane/tasks/202601041253-0000A/README.md",
+    "commit:0b4a14ca3a4c48f4c19dee823103cb927dcae2f1"
+  ]
+}
