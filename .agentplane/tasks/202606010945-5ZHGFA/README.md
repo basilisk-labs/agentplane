@@ -1,10 +1,11 @@
 ---
 id: "202606010945-5ZHGFA"
 title: "Prepare v0.6.14 patch release documentation"
-status: "DOING"
+result_summary: "Merged via PR #4359."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "website/static/llms-full.txt"
   findings:
     - "Release notes cover all 41 commits from the v0.6.14 plan; generated llms-full now matches source docs; local docs and release-adjacent gates passed; release readiness checks that require no active DOING release task are explicitly deferred to clean main after closure."
-commit: null
+commit:
+  hash: "62d257ac4df3da07a19ef643c257228be65eabe3"
+  message: "🚧 5ZHGFA task: record release docs quality review"
 comments:
   -
     author: "DOCS"
     body: "Start: prepare v0.6.14 patch release documentation, generated docs freshness, and release gate evidence from the dedicated branch_pr worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4359 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Docs release-prep checks passed: docs:site:generate:check, docs:bootstrap:check, docs:cli:check, docs:recipes:check, docs:scripts:check, release:parity, check-routing, ap doctor, registry availability for 0.6.14, and release-notes coverage for all 41 planned commits. release:tasks:check is deferred until after this DOING release-prep task merges and closes because the gate correctly blocks active release tasks."
+  -
+    type: "status"
+    at: "2026-06-01T09:56:57.598Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4359 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-01T09:49:48.145Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-06-01T09:56:57.603Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare the v0.6.14 patch release candidate documentation and generated docs freshness evidence. Scope: release notes, generated website llms-full output, release preflight evidence, and branch_pr candidate preparation without publishing npm packages or tags."
 sections:
   Summary: |-
