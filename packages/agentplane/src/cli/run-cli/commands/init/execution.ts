@@ -141,6 +141,7 @@ export async function applyInitPlan(opts: {
           requireVerifyApproval: opts.answers.requireVerifyApproval,
           feedbackGithubIssues: opts.answers.feedbackGithubIssues,
           feedbackAnonymousCloud: opts.answers.feedbackAnonymousCloud,
+          runnerAdapter: opts.answers.runnerAdapter,
           execution: buildExecutionProfile(opts.answers.executionProfile, {
             strictUnsafeConfirm: opts.answers.strictUnsafeConfirm,
           }),

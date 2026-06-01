@@ -3,13 +3,21 @@ import type { ExecutionProfile } from "@agentplaneorg/core/config";
 import type { WorkflowMode } from "../../../../agents/agents-template.js";
 import type { PolicyGatewayFlavor } from "../../../../shared/policy-gateway.js";
 
-export type InitIde = "codex" | "cursor" | "windsurf";
+export type InitIde = "none" | "codex" | "cursor" | "windsurf";
 
 export type SetupProfilePreset = "light" | "normal" | "full-harness";
 export type InitMode = "quick" | "guided" | "advanced" | "ci";
 export type UserFacingProfile = "solo" | "team" | "strict" | "custom";
-export type InitTool = "codex" | "claude" | "cursor" | "windsurf" | "multiple" | "manual";
+export type InitTool =
+  | "codex"
+  | "claude"
+  | "cursor"
+  | "windsurf"
+  | "hermes"
+  | "multiple"
+  | "manual";
 export type InitBackend = "local" | "cloud";
+export type InitRunnerAdapter = "codex" | "hermes";
 
 export type InitFlags = {
   initMode?: InitMode;
@@ -92,6 +100,7 @@ export type InitPlan = {
   answers: {
     policyGateway: PolicyGatewayFlavor;
     ide: InitIde;
+    runnerAdapter: InitRunnerAdapter;
     workflow: WorkflowMode;
     backend: InitBackend;
     hooks: boolean;

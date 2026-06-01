@@ -42,8 +42,8 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       kind: "string",
       name: "tool",
-      valueHint: "<codex|claude|cursor|windsurf|multiple|manual>",
-      choices: ["codex", "claude", "cursor", "windsurf", "multiple", "manual"],
+      valueHint: "<codex|claude|cursor|windsurf|hermes|multiple|manual>",
+      choices: ["codex", "claude", "cursor", "windsurf", "hermes", "multiple", "manual"],
       coerce: (raw) => raw.trim().toLowerCase(),
       description:
         "AI surface that should read project instructions. Granular --policy-gateway/--ide flags override this mapping.",
@@ -66,8 +66,8 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       kind: "string",
       name: "ide",
-      valueHint: "<codex|cursor|windsurf>",
-      choices: ["codex", "cursor", "windsurf"],
+      valueHint: "<none|codex|cursor|windsurf>",
+      choices: ["none", "codex", "cursor", "windsurf"],
       coerce: (raw) => raw.trim().toLowerCase(),
       description: "IDE rules integration target (default: codex).",
     },

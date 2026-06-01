@@ -96,7 +96,7 @@ function initWriteEffects(opts: { paths: ResolvedInitPaths; answers: InitAnswers
       risk: "medium",
     });
   }
-  if (opts.answers.ide !== "codex") {
+  if (opts.answers.ide !== "codex" && opts.answers.ide !== "none") {
     effects.push({
       kind: "sync_ide",
       summary: `Sync ${opts.answers.ide} rules`,
@@ -192,6 +192,7 @@ export function buildInitPlan(opts: {
     answers: {
       policyGateway: opts.answers.policyGateway,
       ide: opts.answers.ide,
+      runnerAdapter: opts.answers.runnerAdapter,
       workflow: opts.answers.workflow,
       backend: opts.answers.backend,
       hooks: opts.answers.hooks,

@@ -12,5 +12,8 @@ export function createRunnerAdapter(config: Pick<AgentplaneConfig, "runner">): R
     case "custom": {
       return new CustomRunnerAdapter(config.runner.custom);
     }
+    case "hermes": {
+      return new CustomRunnerAdapter(config.runner.custom, "hermes");
+    }
   }
 }

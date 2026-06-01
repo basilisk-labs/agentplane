@@ -51,21 +51,42 @@ Hermes may block or complete a dispatch run. Hermes must not directly complete a
 
 ## Target components
 
+### Agentplane init profile
+
+New repositories that should launch task execution through Hermes can use the first-class init
+profile:
+
+```bash
+agentplane init --tool hermes --workflow branch_pr --yes
+```
+
+This writes `runner.default_adapter=hermes` and configures `runner.custom.command` as:
+
+```json
+["hermes", "agentplane", "run"]
+```
+
+The Hermes adapter id is distinct from `custom`; Agentplane records runner evidence as Hermes-owned
+execution and does not require Codex IDE sync for this profile. The configured Hermes command must
+exist in the runtime image before `agentplane task run <task-id>` is used.
+
 ### Agentplane commands
 
 The repo-local Agentplane side exposes a small integration surface:
 
 ```bash
 agentplane hermes enqueue <task-id> --json
-agentplane hermes supervise <task-id> --json
+agentplane hermes supervise <task-id> --execute-step --json
 agentplane hermes reconcile [--task-id <task-id>] --json
 agentplane hermes doctor --json
 ```
 
 - `enqueue` renders the provider-safe card projection that a Hermes plugin should create
   idempotently.
-- `supervise` returns the next route-gated Agentplane action packet. It does not blindly execute
-  raw shell text from a route string.
+- `supervise` returns the next route-gated Agentplane action packet. With `--execute-step`, it can
+  execute one allowlisted Agentplane argv step, including the same-task
+  `agentplane task run <task-id>` launch step. It does not blindly execute raw shell text from a
+  route string.
 - `reconcile` is read-only diagnostics for stale, duplicate, or false-complete projections.
 - `doctor` checks the local Agentplane side of the adapter contract.
 

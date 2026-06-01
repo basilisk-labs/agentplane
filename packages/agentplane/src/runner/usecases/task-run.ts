@@ -244,8 +244,7 @@ export async function prepareTaskRunnerExecution(opts: {
     explain: framework_explain,
   });
   const adapter: RunnerAdapter = createRunnerAdapter(executionContext.config);
-  const configured_adapter_id: RunnerExecutionContract["adapter_id"] =
-    adapter.id === "custom" ? "custom" : "codex";
+  const configured_adapter_id: RunnerExecutionContract["adapter_id"] = adapter.id;
   const run_id = opts.run_id ?? createRunnerRunId();
   const artifact_paths = resolveTaskRunnerPaths({
     git_root: taskEnvelope.repository.git_root,

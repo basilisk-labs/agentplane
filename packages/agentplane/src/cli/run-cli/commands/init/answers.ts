@@ -31,6 +31,7 @@ export type InitAnswers = {
   setupProfileDescription: string;
   policyGateway: PolicyGatewayFlavor;
   ide: InitIde;
+  runnerAdapter: "codex" | "hermes";
   workflow: WorkflowMode;
   directCloseDirtyPolicy: NonNullable<InitFlags["directCloseDirtyPolicy"]>;
   backend: NonNullable<InitFlags["backend"]>;
@@ -62,6 +63,7 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
     setupProfileDescription: preset.description,
     policyGateway: resolvePolicyGatewayFromFlags(flags, INIT_DEFAULTS.policyGateway),
     ide: resolveIdeFromFlags(flags, INIT_DEFAULTS.ide),
+    runnerAdapter: flags.tool === "hermes" ? "hermes" : "codex",
     workflow: flags.workflow ?? INIT_DEFAULTS.workflow,
     directCloseDirtyPolicy: flags.directCloseDirtyPolicy ?? INIT_DEFAULTS.directCloseDirtyPolicy,
     backend: flags.backend ?? INIT_DEFAULTS.backend,
@@ -137,6 +139,7 @@ export async function promptInteractiveAnswers(opts: {
     setupProfileDescription: selectedPreset.description,
     policyGateway: policy.policyGateway,
     ide: ide.ide,
+    runnerAdapter: opts.flags.tool === "hermes" ? "hermes" : "codex",
     workflow: workflow.workflow,
     directCloseDirtyPolicy: workflow.directCloseDirtyPolicy,
     backend: backend.backend,

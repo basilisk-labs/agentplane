@@ -5,6 +5,7 @@ import { selectStepValue } from "./prompt-utils.js";
 import type { IdeStepAnswers, InitPromptClack } from "./contracts.js";
 
 const ideOptions: { value: InitIde; label: string; hint: string }[] = [
+  { value: "none", label: "None", hint: "Do not sync IDE-specific rule files." },
   { value: "codex", label: "Codex", hint: "Use Codex-oriented local rules." },
   { value: "cursor", label: "Cursor", hint: "Sync Cursor rules." },
   { value: "windsurf", label: "Windsurf", hint: "Sync Windsurf rules." },

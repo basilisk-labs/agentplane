@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "../../cli/run-cli.js";
+import { executableStepFor, runAgentplaneStep } from "./hermes-runtime.js";
 import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
 import { chmod, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -49,6 +50,77 @@ async function createApprovedTask(root: string): Promise<string> {
 }
 
 describe("hermes adapter commands", () => {
+  it("allowlists same-task Agentplane task run route actions only", () => {
+    const taskId = "202606010525-5TJNPS";
+    const packet = {
+      task: { id: taskId, title: "Hermes task run", owner: "CODER" },
+      next_action: {
+        code: "run_task",
+        command: `agentplane task run ${taskId}`,
+        summary: "Launch the configured task runner.",
+      },
+    };
+
+    expect(executableStepFor(packet).args).toEqual(["task", "run", taskId]);
+    expect(
+      executableStepFor({
+        ...packet,
+        next_action: {
+          ...packet.next_action,
+          command: "agentplane task run 202606010525-OTHER",
+        },
+      }).args,
+    ).toBeNull();
+    expect(
+      executableStepFor({
+        ...packet,
+        next_action: {
+          ...packet.next_action,
+          command: `agentplane task run ${taskId} --unsafe`,
+        },
+      }).args,
+    ).toBeNull();
+  });
+
+  it("dry-runs a typed task run step without invoking a shell", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202606010525-5TJNPS";
+
+    const result = await runAgentplaneStep(["task", "run", taskId], root, true);
+
+    expect(result.executed).toBe(false);
+    expect(result.dry_run).toBe(true);
+    expect(result.exit_code).toBeNull();
+    expect(result.command).toContain("task");
+    expect(result.command).toContain("run");
+    expect(result.command).toContain(taskId);
+    expect(result.command).toContain("--root");
+    expect(result.command).toContain(root);
+  });
+
+  it("propagates child failure codes for typed task run steps", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202606010525-5TJNPS";
+    const fakeBin = path.join(root, "failing-agentplane.sh");
+    await writeFile(fakeBin, "#!/bin/sh\necho task-run-failed >&2\nexit 9\n");
+    await chmod(fakeBin, 0o755);
+
+    const previous = process.env.AGENTPLANE_BIN;
+    process.env.AGENTPLANE_BIN = fakeBin;
+    try {
+      const result = await runAgentplaneStep(["task", "run", taskId], root, false);
+      expect(result.executed).toBe(true);
+      expect(result.exit_code).toBe(9);
+      expect(result.stderr).toContain("task-run-failed");
+    } finally {
+      if (previous === undefined) {
+        delete process.env.AGENTPLANE_BIN;
+      } else {
+        process.env.AGENTPLANE_BIN = previous;
+      }
+    }
+  });
+
   it("renders a provider-safe enqueue projection", async () => {
     const root = await mkGitRepoRoot();
     const taskId = await createApprovedTask(root);
