@@ -4,7 +4,7 @@ title: "Assimilate source architecture and command graph"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -37,6 +37,24 @@ verification:
   updated_by: "CURATOR"
   note: "Verified final format-fix head 1582bf91: context/wiki/index.md formatting fix is committed and full bun run format:check passed locally; source architecture context gates were already green on the same artifact set."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-01T21:05:07.697Z"
+  updated_by: "EVALUATOR"
+  note: "Source architecture and command graph assimilation is graph-backed, source-covered, and searchable. Hosted PR #4372 is green after fixing the format-contract issue."
+  evaluated_sha: "1582bf91ee1bfb0198c13ceff03f96ba3ecb3ab6"
+  blueprint_digest: "09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f"
+  evidence_refs:
+    - ".agentplane/tasks/202606012037-W0QJJ2/README.md"
+    - ".agentplane/tasks/202606012037-W0QJJ2/quality/20260601-210507697-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606012037-W0QJJ2/quality/20260601-210507697-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606012037-W0QJJ2/quality/20260601-210507697-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606012037-W0QJJ2/blueprint/resolved-snapshot.json"
+    - ".agentplane/context/derived/reports/source-architecture-assimilation.json"
+    - "context/wiki/source-architecture/index.md"
+    - ".agentplane/tasks/202606012037-W0QJJ2/pr/meta.json"
+  findings:
+    - "Evidence: PR #4372 at head cc84afde6f7a passes CodeQL, PR verification, plan, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow, verify-cli-critical, and test-windows. Local context gates passed except broad context doctor/check, which reproducibly hung on the large projection and is recorded as residual risk."
 commit: null
 comments:
   -
