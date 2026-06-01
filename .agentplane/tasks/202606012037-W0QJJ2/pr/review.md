@@ -13,7 +13,7 @@ Created: 2026-06-01T20:38:07.714Z
 ## Verification
 
 - State: ok
-- Note: Verified committed head 2eee51d048a2: source architecture context artifacts are committed and PR artifacts refreshed. Passed reindex, wiki lint/index, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier; context doctor/check were attempted repeatedly and hung on the large projection.
+- Note: Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran full bun run format:check successfully. Previous source architecture context gates remain valid: reindex, wiki lint, graph validate, context verify-task, search smoke, policy routing, and targeted Prettier.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -37,7 +37,7 @@ Created: 2026-06-01T20:38:07.714Z
  .../reports/source-architecture-assimilation.json  |    758 +
  .../source-architecture-assimilation.sgr.json      | 564674 ++++++++++++++++++
  .../source-architecture-coverage-detail.jsonl      |   1576 +
- context/wiki/index.md                              |      8 +
+ context/wiki/index.md                              |      9 +
  context/wiki/proposals/index.md                    |     27 +
  context/wiki/proposals/task-harvest/index.md       |     27 +
  context/wiki/reports/index.md                      |     28 +
@@ -48,7 +48,7 @@ Created: 2026-06-01T20:38:07.714Z
  context/wiki/source-architecture/test-coverage.md  |    119 +
  .../source-architecture/workflow-state-machines.md |    117 +
  context/wiki/task-harvest/index.md                 |     27 +
- 19 files changed, 594114 insertions(+)
+ 19 files changed, 594115 insertions(+)
 ```
 
 </details>

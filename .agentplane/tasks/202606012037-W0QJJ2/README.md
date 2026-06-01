@@ -4,7 +4,7 @@ title: "Assimilate source architecture and command graph"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -33,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-01T20:52:12.999Z"
+  updated_at: "2026-06-01T20:57:46.220Z"
   updated_by: "CURATOR"
-  note: "Verified committed head 2eee51d048a2: source architecture context artifacts are committed and PR artifacts refreshed. Passed reindex, wiki lint/index, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier; context doctor/check were attempted repeatedly and hung on the large projection."
+  note: "Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran full bun run format:check successfully. Previous source architecture context gates remain valid: reindex, wiki lint, graph validate, context verify-task, search smoke, policy routing, and targeted Prettier."
   attempts: 0
 commit: null
 comments:
@@ -62,8 +62,14 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Verified committed head 2eee51d048a2: source architecture context artifacts are committed and PR artifacts refreshed. Passed reindex, wiki lint/index, graph validate, context verify-task, context search smoke, policy routing, and targeted Prettier; context doctor/check were attempted repeatedly and hung on the large projection."
+  -
+    type: "verify"
+    at: "2026-06-01T20:57:46.220Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran full bun run format:check successfully. Previous source architecture context gates remain valid: reindex, wiki lint, graph validate, context verify-task, search smoke, policy routing, and targeted Prettier."
 doc_version: 3
-doc_updated_at: "2026-06-01T20:52:13.474Z"
+doc_updated_at: "2026-06-01T20:57:46.470Z"
 doc_updated_by: "CURATOR"
 description: "Assimilate AgentPlane source code into local context without copying implementation bodies: package/module graph, command surface, workflow/state-machine links, schema/policy/test/CI coverage, and metrics for code corpus size and granularity."
 sections:
@@ -136,6 +142,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
 
+    ### 2026-06-01T20:57:46.220Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran full bun run format:check successfully. Previous source architecture context gates remain valid: reindex, wiki lint, graph validate, context verify-task, search smoke, policy routing, and targeted Prettier.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T20:52:13.474Z, excerpt_hash=sha256:ef8df5afa8ab5aa80543320be8e609fab61803379ccb29078098bd3b7cc7fa68
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606012037-W0QJJ2-assimilate-source-architecture/.agentplane/tasks/202606012037-W0QJJ2/blueprint/resolved-snapshot.json
+    - old_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+    - current_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -148,6 +173,10 @@ sections:
     - Observation: Committed scope contains 1576 source files represented by 6 wiki pages, 13127 SGR items, 1712 graph entities, 9827 graph edges, 12 facts, 1576 coverage items/rows, coverage_degree=1.
       Impact: The codebase is now navigable by package, layer, command group, workflow/contract concept, source file, and coverage row without copying implementation bodies into wiki pages.
       Resolution: Use .agentplane/context/derived/reports/source-architecture-assimilation.json for metrics and context/wiki/source-architecture/index.md for navigation. The context doctor/check hang is recorded as task-local residual risk.
+
+    - Observation: GitHub PR #4372 verify-contract failed only on Prettier warning for context/wiki/index.md; local full format:check now passes.
+      Impact: The PR no longer carries the known format-contract defect that blocked Core CI.
+      Resolution: Commit the formatted wiki index and refreshed task verification, update PR artifacts, push the new head, and wait for hosted checks.
 extensions:
   agentplane.context:
     allowed_outputs:
@@ -12852,6 +12881,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
 
+### 2026-06-01T20:57:46.220Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Verified hosted verify-contract format failure fix: formatted context/wiki/index.md and re-ran full bun run format:check successfully. Previous source architecture context gates remain valid: reindex, wiki lint, graph validate, context verify-task, search smoke, policy routing, and targeted Prettier.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-01T20:52:13.474Z, excerpt_hash=sha256:ef8df5afa8ab5aa80543320be8e609fab61803379ccb29078098bd3b7cc7fa68
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606012037-W0QJJ2-assimilate-source-architecture/.agentplane/tasks/202606012037-W0QJJ2/blueprint/resolved-snapshot.json
+- old_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+- current_digest: 09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606012037-W0QJJ2
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -12868,3 +12916,7 @@ BlueprintSnapshotRef:
 - Observation: Committed scope contains 1576 source files represented by 6 wiki pages, 13127 SGR items, 1712 graph entities, 9827 graph edges, 12 facts, 1576 coverage items/rows, coverage_degree=1.
   Impact: The codebase is now navigable by package, layer, command group, workflow/contract concept, source file, and coverage row without copying implementation bodies into wiki pages.
   Resolution: Use .agentplane/context/derived/reports/source-architecture-assimilation.json for metrics and context/wiki/source-architecture/index.md for navigation. The context doctor/check hang is recorded as task-local residual risk.
+
+- Observation: GitHub PR #4372 verify-contract failed only on Prettier warning for context/wiki/index.md; local full format:check now passes.
+  Impact: The PR no longer carries the known format-contract defect that blocked Core CI.
+  Resolution: Commit the formatted wiki index and refreshed task verification, update PR artifacts, push the new head, and wait for hosted checks.
