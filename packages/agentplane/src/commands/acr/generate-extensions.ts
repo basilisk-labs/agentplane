@@ -20,6 +20,7 @@ export function buildAcrContextExtension(task: AcrTask): Record<string, unknown>
   return {
     "agentplane.context": {
       ...structuredClone(context),
+      schema_version: 1,
       task_id: task.id,
       task_kind: task.task_kind,
       mutation_scope: task.mutation_scope ?? null,
