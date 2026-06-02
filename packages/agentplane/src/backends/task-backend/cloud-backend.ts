@@ -12,6 +12,7 @@ import {
 } from "./shared.js";
 import type { LocalBackend } from "./local-backend.js";
 import { cloudPendingPushReason, pendingCloudPushError } from "./cloud-pending-push.js";
+import { ensureCloudProjectionFreshForLocalMutation } from "./cloud-mutation-readiness.js";
 import type { CloudBackendSettings } from "./cloud-backend-settings.js";
 import { cloudBackendCapabilities } from "./cloud-backend-capabilities.js";
 import {
@@ -296,32 +297,20 @@ export class CloudBackend implements TaskBackend {
   }
 
   private async ensureProjectionFreshForLocalMutation(opts: { reason: string }): Promise<void> {
-    let state = await this.readState();
-    if (state.pending_push) {
-      const recovered = await this.tryRecoverPendingPushFromSyncState();
-      if (!recovered) throw pendingCloudPushError(state.pending_push);
-      state = await this.readState();
-    }
-    if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
-
-    if (this.autoSyncEnabled && this.autoSyncPullOnWrite) {
-      await this.maybeAutoPull({ mode: "write", reason: `mutation_preflight:${opts.reason}` });
-      const refreshed = await this.readState();
-      if (refreshed.pending_push) {
-        throw pendingCloudPushError(refreshed.pending_push);
-      }
-      if (!isStale(refreshed.last_checked_at, this.staleAfterSeconds)) return;
-    }
-
-    throw new BackendError(
-      [
-        "Cloud projection is stale; refusing local task mutation.",
-        "Why: the active cloud backend projection may not include recent remote task changes.",
-        "Fix: pull the cloud projection before mutating local task state.",
-        "Safe command: agentplane backend sync cloud --direction pull --yes",
-        "Stop condition: stop if pull reports open conflicts or cannot refresh the projection.",
-      ].join("\n"),
-      "E_BACKEND",
+    await ensureCloudProjectionFreshForLocalMutation(
+      {
+        autoSyncEnabled: this.autoSyncEnabled,
+        autoSyncNetworkAllowed: this.autoSyncNetworkAllowed,
+        autoSyncPullOnWrite: this.autoSyncPullOnWrite,
+        projectId: this.projectId,
+        staleAfterSeconds: this.staleAfterSeconds,
+        missingConfigKeys: this.missingConfigKeys.bind(this),
+        readState: this.readState.bind(this),
+        clearPendingPush: this.clearPendingPush.bind(this),
+        maybeAutoPull: this.maybeAutoPull.bind(this),
+        requestCloudSyncState: this.requestCloudSyncState.bind(this),
+      },
+      opts,
     );
   }
 
@@ -358,25 +347,6 @@ export class CloudBackend implements TaskBackend {
       await this.markPendingPush(error);
       throw error;
     }
-  }
-
-  private async tryRecoverPendingPushFromSyncState(): Promise<boolean> {
-    if (!this.autoSyncEnabled || !this.autoSyncNetworkAllowed) return false;
-    if (this.missingConfigKeys().length > 0) return false;
-    const syncState = await this.requestCloudSyncState(this.projectId, {
-      timeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
-    });
-    if (
-      syncState.unavailable ||
-      syncState.conflicts.length > 0 ||
-      syncState.diagnostics.degraded === true ||
-      syncState.diagnostics.projectionHealth !== "current" ||
-      syncState.diagnostics.activeBlockers !== 0
-    ) {
-      return false;
-    }
-    await this.clearPendingPush();
-    return true;
   }
 
   private async assertNoPendingPushForPull(): Promise<void> {
