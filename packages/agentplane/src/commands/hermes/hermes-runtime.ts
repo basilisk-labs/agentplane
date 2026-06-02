@@ -27,20 +27,6 @@ export type HermesRoutePacketForExecution = {
   };
 };
 
-export type HermesLifecycleRecommendation =
-  | {
-      action: "complete";
-      command: string;
-      reason: string;
-      body: string;
-    }
-  | {
-      action: "comment" | "block" | "heartbeat";
-      command: string;
-      reason: string;
-      body: string;
-    };
-
 function taskTerminalForHermesComplete(task: {
   status: string;
   verification: string | null;
@@ -244,7 +230,7 @@ export function buildHermesLifecycleRecommendation(
       command: `${base} complete --body ${JSON.stringify(body)}`,
       reason: "Agentplane task truth is terminal and verified.",
       body,
-    } satisfies HermesLifecycleRecommendation;
+    };
   }
   if (packet.blockers.length > 0) {
     const blockerSummary = packet.blockers
@@ -257,7 +243,7 @@ export function buildHermesLifecycleRecommendation(
       command: `${base} block --body ${JSON.stringify(body)}`,
       reason: "Agentplane route oracle reports blockers for the current task.",
       body,
-    } satisfies HermesLifecycleRecommendation;
+    };
   }
   const body = JSON.stringify(packet.hermes_comment_projection);
   return {
@@ -265,7 +251,7 @@ export function buildHermesLifecycleRecommendation(
     command: `${base} comment --body ${JSON.stringify(body)}`,
     reason: "Agentplane task is non-terminal; project the latest route and runner evidence.",
     body,
-  } satisfies HermesLifecycleRecommendation;
+  };
 }
 
 export function executableStepFor(packet: HermesRoutePacketForExecution): {

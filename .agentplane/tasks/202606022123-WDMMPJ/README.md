@@ -4,7 +4,7 @@ title: "Tighten Hermes AgentPlane integration"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-02T21:39:09.091Z"
+  updated_at: "2026-06-02T21:50:20.632Z"
   updated_by: "CODER"
-  note: "CI contract lint fix verified."
+  note: "Full contract check passed after CI fix."
   attempts: 0
 commit: null
 comments:
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "CI contract lint fix verified."
+  -
+    type: "verify"
+    at: "2026-06-02T21:50:20.632Z"
+    author: "CODER"
+    state: "ok"
+    note: "Full contract check passed after CI fix."
 doc_version: 3
-doc_updated_at: "2026-06-02T21:39:09.113Z"
+doc_updated_at: "2026-06-02T21:50:20.664Z"
 doc_updated_by: "CODER"
 description: "Add native Hermes lifecycle/reconcile/runner integration and replace stale embedded Hermes plugin guidance with external plugin ownership."
 sections:
@@ -107,6 +113,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606022123-WDMMPJ
 
+    ### 2026-06-02T21:50:20.632Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Full contract check passed after CI fix.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-02T21:39:09.113Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606022123-WDMMPJ-hermes-agentplane-integration/.agentplane/tasks/202606022123-WDMMPJ/blueprint/resolved-snapshot.json
+    - old_digest: b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4
+    - current_digest: b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606022123-WDMMPJ
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -119,6 +144,10 @@ sections:
     - Observation: Command: bun run format:changed && bun run lint:core. Result: pass. Evidence: changed files formatted; eslint completed with no findings. Scope: contract lint failure fix.\nCommand: bun run typecheck && bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/hermes/hermes.command.test.ts packages/agentplane/src/runner/adapters/custom.test.ts. Result: pass. Evidence: tsc -b completed; 2 test files passed, 27 tests passed. Scope: Hermes reconcile/supervise and runner adapter behavior.
       Impact: Hosted verify-contract failure from no-base-to-string is resolved locally.
       Resolution: Normalized Hermes card status only when the snapshot value is a string.
+
+    - Observation: Command: bun run ci:contract. Result: pass. Evidence: format, schemas, docs checks, lifecycle invariants, lint, dependency-cruiser, knip baseline, and coverage threshold guard all passed. Scope: hosted verify-contract equivalent for AgentPlane PR #4388.
+      Impact: The hosted verify-contract failures were reproduced locally and resolved: no-base-to-string lint issue and unused type baseline issue.
+      Resolution: Removed unsafe status stringification and removed the unused exported lifecycle recommendation type.
 id_source: "generated"
 ---
 ## Summary
@@ -185,6 +214,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606022123-WDMMPJ
 
+### 2026-06-02T21:50:20.632Z — VERIFY — ok
+
+By: CODER
+
+Note: Full contract check passed after CI fix.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-02T21:39:09.113Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606022123-WDMMPJ-hermes-agentplane-integration/.agentplane/tasks/202606022123-WDMMPJ/blueprint/resolved-snapshot.json
+- old_digest: b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4
+- current_digest: b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606022123-WDMMPJ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -201,3 +249,7 @@ BlueprintSnapshotRef:
 - Observation: Command: bun run format:changed && bun run lint:core. Result: pass. Evidence: changed files formatted; eslint completed with no findings. Scope: contract lint failure fix.\nCommand: bun run typecheck && bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/hermes/hermes.command.test.ts packages/agentplane/src/runner/adapters/custom.test.ts. Result: pass. Evidence: tsc -b completed; 2 test files passed, 27 tests passed. Scope: Hermes reconcile/supervise and runner adapter behavior.
   Impact: Hosted verify-contract failure from no-base-to-string is resolved locally.
   Resolution: Normalized Hermes card status only when the snapshot value is a string.
+
+- Observation: Command: bun run ci:contract. Result: pass. Evidence: format, schemas, docs checks, lifecycle invariants, lint, dependency-cruiser, knip baseline, and coverage threshold guard all passed. Scope: hosted verify-contract equivalent for AgentPlane PR #4388.
+  Impact: The hosted verify-contract failures were reproduced locally and resolved: no-base-to-string lint issue and unused type baseline issue.
+  Resolution: Removed unsafe status stringification and removed the unused exported lifecycle recommendation type.

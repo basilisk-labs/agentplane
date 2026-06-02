@@ -16,7 +16,7 @@ Add native Hermes lifecycle/reconcile/runner integration and replace stale embed
 ## Verification
 
 - State: ok
-- Note: CI contract lint fix verified.
+- Note: Full contract check passed after CI fix.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -34,13 +34,13 @@ Add native Hermes lifecycle/reconcile/runner integration and replace stale embed
  integrations/hermes-agentplane-plugin/package.json |  13 --
  integrations/hermes-agentplane-plugin/plugin.yaml  |   6 -
  .../hermes-agentplane-plugin/src/index.mjs         |  47 -----
- .../src/commands/hermes/hermes-runtime.ts          | 135 ++++++++++++
+ .../src/commands/hermes/hermes-runtime.ts          | 132 ++++++++++++
  .../src/commands/hermes/hermes.command.test.ts     |  59 ++++++
  .../src/commands/hermes/hermes.command.ts          |  46 ++++-
  .../agentplane/src/runner/adapters/custom.test.ts  |  15 ++
  packages/agentplane/src/runner/adapters/hermes.ts  |   9 +
  packages/agentplane/src/runner/adapters/index.ts   |   3 +-
- 13 files changed, 301 insertions(+), 453 deletions(-)
+ 13 files changed, 298 insertions(+), 453 deletions(-)
 ```
 
 </details>
