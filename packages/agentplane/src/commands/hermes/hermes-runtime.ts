@@ -27,6 +27,20 @@ export type HermesRoutePacketForExecution = {
   };
 };
 
+export type HermesLifecycleRecommendation =
+  | {
+      action: "complete";
+      command: string;
+      reason: string;
+      body: string;
+    }
+  | {
+      action: "comment" | "block" | "heartbeat";
+      command: string;
+      reason: string;
+      body: string;
+    };
+
 function taskTerminalForHermesComplete(task: {
   status: string;
   verification: string | null;
@@ -219,6 +233,41 @@ export async function routePacket(opts: {
   };
 }
 
+export function buildHermesLifecycleRecommendation(
+  packet: Awaited<ReturnType<typeof routePacket>>,
+) {
+  const base = `agentplane hermes lifecycle`;
+  if (packet.terminal.hermes_root_complete_allowed) {
+    const body = `Agentplane task ${packet.task.id} is DONE with verification ok.`;
+    return {
+      action: "complete",
+      command: `${base} complete --body ${JSON.stringify(body)}`,
+      reason: "Agentplane task truth is terminal and verified.",
+      body,
+    } satisfies HermesLifecycleRecommendation;
+  }
+  if (packet.blockers.length > 0) {
+    const blockerSummary = packet.blockers
+      .map((blocker) => blocker.summary)
+      .filter((summary) => summary.trim().length > 0)
+      .join("; ");
+    const body = blockerSummary || `Agentplane task ${packet.task.id} is blocked by route policy.`;
+    return {
+      action: "block",
+      command: `${base} block --body ${JSON.stringify(body)}`,
+      reason: "Agentplane route oracle reports blockers for the current task.",
+      body,
+    } satisfies HermesLifecycleRecommendation;
+  }
+  const body = JSON.stringify(packet.hermes_comment_projection);
+  return {
+    action: "comment",
+    command: `${base} comment --body ${JSON.stringify(body)}`,
+    reason: "Agentplane task is non-terminal; project the latest route and runner evidence.",
+    body,
+  } satisfies HermesLifecycleRecommendation;
+}
+
 export function executableStepFor(packet: HermesRoutePacketForExecution): {
   code: string;
   args: string[] | null;
@@ -374,4 +423,90 @@ export async function runHermesLifecycle(
   if (opts.dryRun) return { executed: false, command: [hermesCliCommand(), ...args] };
   const result = await execFileAsync(hermesCliCommand(), args, { maxBuffer: 1024 * 1024 });
   return { executed: true, command: [hermesCliCommand(), ...args], stdout: result.stdout };
+}
+
+function hermesCardAgentplaneTaskId(card: Record<string, unknown>): string | null {
+  const direct = card.agentplane_task_id ?? card.agentplaneTaskId;
+  if (typeof direct === "string" && direct.trim().length > 0) return direct.trim();
+  const metadata = isRecord(card.metadata) ? card.metadata : null;
+  const agentplane = metadata && isRecord(metadata.agentplane) ? metadata.agentplane : null;
+  for (const key of ["task_id", "taskId", "id"]) {
+    const value = agentplane?.[key];
+    if (typeof value === "string" && value.trim().length > 0) return value.trim();
+  }
+  return null;
+}
+
+export async function loadHermesStateSnapshot(path: string) {
+  const parsed = JSON.parse(await readFile(path, "utf8")) as unknown;
+  if (Array.isArray(parsed)) return parsed.filter(isRecord);
+  if (isRecord(parsed)) {
+    const cards = parsed.cards ?? parsed.tasks ?? parsed.items;
+    if (Array.isArray(cards)) return cards.filter(isRecord);
+    return [parsed];
+  }
+  return [];
+}
+
+export function reconcileHermesState(
+  localProjection: Awaited<ReturnType<typeof routePacket>> | null,
+  cards: Record<string, unknown>[],
+  taskId: string | null,
+) {
+  const relevantCards = taskId
+    ? cards.filter((card) => hermesCardAgentplaneTaskId(card) === taskId)
+    : cards;
+  const findings: { code: string; severity: "info" | "warn"; message: string }[] = [];
+  if (taskId && relevantCards.length === 0) {
+    findings.push({
+      code: "missing_hermes_card",
+      severity: "warn",
+      message: `No Hermes card in state snapshot maps to Agentplane task ${taskId}.`,
+    });
+  }
+  if (relevantCards.length > 1) {
+    findings.push({
+      code: "duplicate_hermes_cards",
+      severity: "warn",
+      message: `${relevantCards.length} Hermes cards map to the same Agentplane task.`,
+    });
+  }
+  const first = relevantCards[0];
+  const status = first
+    ? String(first.status ?? first.state ?? "")
+        .trim()
+        .toLowerCase()
+    : "";
+  if (
+    localProjection?.terminal.hermes_root_complete_allowed === true &&
+    status &&
+    !["done", "complete", "completed"].includes(status)
+  ) {
+    findings.push({
+      code: "agentplane_done_hermes_open",
+      severity: "warn",
+      message: "Agentplane is terminal and verified, but the Hermes card is not complete.",
+    });
+  }
+  if (
+    localProjection?.terminal.hermes_root_complete_allowed === false &&
+    ["done", "complete", "completed"].includes(status)
+  ) {
+    findings.push({
+      code: "hermes_complete_agentplane_open",
+      severity: "warn",
+      message: "Hermes card is complete, but Agentplane task truth is not terminal verified.",
+    });
+  }
+  return {
+    state_card_count: cards.length,
+    matched_card_count: relevantCards.length,
+    matched_cards: relevantCards.map((card) => ({
+      id: typeof card.id === "string" ? card.id : null,
+      status: typeof card.status === "string" ? card.status : (card.state ?? null),
+      assignee: typeof card.assignee === "string" ? card.assignee : null,
+      agentplane_task_id: hermesCardAgentplaneTaskId(card),
+    })),
+    findings,
+  };
 }

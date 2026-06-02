@@ -2,6 +2,7 @@ import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 
 import { CodexRunnerAdapter } from "./codex.js";
 import { CustomRunnerAdapter } from "./custom.js";
+import { HermesRunnerAdapter } from "./hermes.js";
 import type { RunnerAdapter } from "./shared.js";
 
 export function createRunnerAdapter(config: Pick<AgentplaneConfig, "runner">): RunnerAdapter {
@@ -13,7 +14,7 @@ export function createRunnerAdapter(config: Pick<AgentplaneConfig, "runner">): R
       return new CustomRunnerAdapter(config.runner.custom);
     }
     case "hermes": {
-      return new CustomRunnerAdapter(config.runner.custom, "hermes");
+      return new HermesRunnerAdapter(config.runner.custom);
     }
   }
 }

@@ -40,6 +40,21 @@ const customBundleDefaults = {
 };
 
 describe("CustomRunnerAdapter", () => {
+  it("creates an explicit Hermes runner adapter surface", () => {
+    const raw = defaultConfig();
+    raw.runner.default_adapter = "hermes";
+    raw.runner.custom = {
+      command: ["hermes", "agentplane", "run"],
+    };
+    const adapter = createRunnerAdapter(raw);
+    const capabilities = adapter.describeCapabilities(
+      makeRunnerContextBundle({ ...customBundleDefaults, adapterId: "hermes" }),
+    );
+
+    expect(adapter.id).toBe("hermes");
+    expect(capabilities.adapter_id).toBe("hermes");
+  });
+
   it("describes custom-runner capabilities as advisory env propagation", () => {
     const raw = defaultConfig();
     raw.runner.default_adapter = "custom";

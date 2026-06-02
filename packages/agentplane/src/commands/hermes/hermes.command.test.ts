@@ -206,6 +206,7 @@ describe("hermes adapter commands", () => {
           evidence_refs: { runner_status: string };
         };
         terminal: { hermes_root_complete_allowed: boolean };
+        lifecycle_recommendation: { action: string; command: string; reason: string };
       };
       expect(payload.task.id).toBe(taskId);
       expect(payload.projection_boundary.agentplane_authority).toBe("engineering_task_lifecycle");
@@ -225,6 +226,8 @@ describe("hermes adapter commands", () => {
         payload.runner.commands.status,
       );
       expect(payload.terminal.hermes_root_complete_allowed).toBe(false);
+      expect(payload.lifecycle_recommendation.action).toBe("block");
+      expect(payload.lifecycle_recommendation.command).toContain("hermes lifecycle block");
     } finally {
       io.restore();
     }
@@ -447,6 +450,62 @@ describe("hermes adapter commands", () => {
         `agentplane task run status ${taskId} --json`,
       );
       expect(payload.plugin_contract.remote_board_reads_required).toBe(true);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("reconcile compares a Hermes card state snapshot with Agentplane task truth", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createApprovedTask(root);
+    const statePath = path.join(root, "hermes-state.json");
+    await writeFile(
+      statePath,
+      JSON.stringify({
+        cards: [
+          {
+            id: "hk_123",
+            status: "complete",
+            assignee: "agentplane-coder",
+            metadata: { agentplane: { task_id: taskId } },
+          },
+        ],
+      }),
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "hermes",
+        "reconcile",
+        "--task-id",
+        taskId,
+        "--hermes-state",
+        statePath,
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        hermes_state: {
+          path: string;
+          diagnostics: {
+            state_card_count: number;
+            matched_card_count: number;
+            matched_cards: { id: string; agentplane_task_id: string }[];
+            findings: { code: string }[];
+          };
+        };
+      };
+      expect(payload.hermes_state.path).toBe(statePath);
+      expect(payload.hermes_state.diagnostics.state_card_count).toBe(1);
+      expect(payload.hermes_state.diagnostics.matched_card_count).toBe(1);
+      expect(payload.hermes_state.diagnostics.matched_cards[0]?.id).toBe("hk_123");
+      expect(payload.hermes_state.diagnostics.matched_cards[0]?.agentplane_task_id).toBe(taskId);
+      expect(payload.hermes_state.diagnostics.findings.map((finding) => finding.code)).toContain(
+        "hermes_complete_agentplane_open",
+      );
     } finally {
       io.restore();
     }
