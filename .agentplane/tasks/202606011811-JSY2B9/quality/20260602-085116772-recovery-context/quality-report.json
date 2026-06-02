@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202606011811-JSY2B9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-02T08:51:16.772Z",
+  "verdict": "pass",
+  "summary": "Task-history version assimilation is complete after report source links were corrected and context projections were reindexed.",
+  "evaluated_sha": "00c16fa611ee1cf098f1fba5e4f2ace51b67f235",
+  "blueprint_digest": "c1a287c192fc5edaac90b9ed4f38510fa39f6777571f6382bf32127dc6f1878b",
+  "findings": [
+    "Verified source links now escape context/wiki/reports to the repository root before .agentplane, and context reindex/check/verify-task all pass on commit 00c16fa61."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606011811-JSY2B9/README.md",
+    "ap context reindex --include-raw",
+    "ap context wiki lint context/wiki",
+    "ap context check",
+    "ap context verify-task 202606011811-JSY2B9"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

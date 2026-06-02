@@ -26,5 +26,9 @@ agentplane_context:
 <!-- agentplane-context-wiki-index:start -->
 
 - [Task history coverage](coverage.md)
+- [Task history pre-extraction topology](task-history-preextract-topology.md)
 - [Task history topology](topology.md)
+- [Task history version assimilation report](task-history-version-assimilation.md)
+- [Task history version coverage](task-history-version-coverage.md)
+- [Task history version pre-extraction packets](task-history-version-packets.md)
 <!-- agentplane-context-wiki-index:end -->
