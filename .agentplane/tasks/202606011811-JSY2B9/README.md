@@ -1,10 +1,11 @@
 ---
 id: "202606011811-JSY2B9"
 title: "Assimilate task history by version summaries"
-status: "DOING"
+result_summary: "Merged via PR #4368."
+status: "DONE"
 priority: "med"
 owner: "CURATOR"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -53,11 +54,16 @@ quality_review:
     - "ap context verify-task 202606011811-JSY2B9"
   findings:
     - "Verified source links now escape context/wiki/reports to the repository root before .agentplane, and context reindex/check/verify-task all pass on commit 00c16fa61."
-commit: null
+commit:
+  hash: "57a6a61f515a1b75a80d87930a3f7ef99643fca5"
+  message: "Merge pull request #4368 from basilisk-labs/task/202606011811-JSY2B9/assimilate-task-history-by-version-summaries"
 comments:
   -
     author: "CURATOR"
     body: "Start: build a context-window-aware task-history pre-extraction corpus grouped by versions, assimilate the summaries into context artifacts, and verify coverage, volume, and granularity evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4368 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -84,9 +90,16 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Verified: addressed hosted verify-contract formatting failure by running Prettier on context wiki markdown. Re-ran bun run format:check, context wiki lint, context graph validate, context reindex, and context verify-task successfully."
+  -
+    type: "status"
+    at: "2026-06-02T09:03:00.452Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4368 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-01T18:50:10.111Z"
-doc_updated_by: "CURATOR"
+doc_updated_at: "2026-06-02T09:03:00.460Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare context-window-aware pre-extraction packets for historical AgentPlane task history, collapse older low-importance tasks into version-level summaries with coverage markers, assimilate the summaries into context wiki/report artifacts, and report original versus assimilated volume, assimilation degree, and granularity."
 sections:
   Summary: |-
