@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606011933-T87604",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-01T20:11:56.905Z",
+  "verdict": "pass",
+  "summary": "Release notes and documentation were assimilated into graph-backed context and wiki artifacts with recorded coverage metrics. PR #4371 is green after fixing the hosted verify-contract formatting failure.",
+  "evaluated_sha": "6e4c0413e84785efde9b625b997dadfa1a3b6c42",
+  "blueprint_digest": "9dc8ba4e176f1afcd96ea42d7aed450063df67142346f702fdfdb66942c0867d",
+  "findings": [
+    "Evidence: https://github.com/basilisk-labs/agentplane/pull/4371 at head 97c192e459beb7d5a534f4f30f6ea8bbedc2c61a; hosted checks pass including CodeQL, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow, verify-cli-critical, test-windows, and PR verification."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606011933-T87604/README.md",
+    ".agentplane/context/derived/reports/release-docs-assimilation.json",
+    "context/wiki/release-docs/index.md",
+    ".agentplane/tasks/202606011933-T87604/pr/meta.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

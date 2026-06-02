@@ -25,3 +25,13 @@ Project-specific AgentPlane context wiki entrypoint. Keep the initial hierarchy 
 ## Source References
 
 - no-source: generated starter page from `agentplane context init`; add source references before promotion.
+
+<!-- agentplane-context-wiki-index:start -->
+
+- [Proposals](proposals/index.md)
+- [Release Docs](release-docs/index.md)
+- [Reports](reports/index.md)
+- [Source Architecture](source-architecture/index.md)
+- [Task Harvest](task-harvest/index.md)
+- [Context glossary](glossary.md)
+<!-- agentplane-context-wiki-index:end -->

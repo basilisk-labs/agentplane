@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202606011716-AR080K",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-01T18:23:56.376Z",
+  "verdict": "pass",
+  "summary": "Dashboard implementation and CI fix satisfy the approved graph-dashboard scope at HEAD 81c6203ff.",
+  "evaluated_sha": "a4c926b47cc6b6a2cdf6882df97213145126bd4b",
+  "blueprint_digest": "3d3b913516511d5acbb765ecb78369fa6b7c55ab815c7eac9cd5d6370120bb16",
+  "findings": [
+    "Verified local targeted dashboard tests, typecheck, build, docs CLI freshness, Knip baseline, hotspot threshold, graph validation, dump-json smoke, and GitHub PR #4364 required checks."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606011716-AR080K/README.md",
+    "github-pr-4364-checks:success",
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/context/dashboard.unit.test.ts",
+    "bun run --filter=agentplane typecheck",
+    "bun run --filter=agentplane build",
+    "bun run docs:cli:check",
+    "node scripts/checks/check-knip-baseline.mjs",
+    "bun run hotspots:check",
+    "ap context dashboard --dump-json",
+    "ap context graph validate"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The browser UI uses a bounded first-pass renderer for very large graphs; API snapshot remains complete, deeper virtualization can be optimized separately if operator usage demands it."
+  ]
+}

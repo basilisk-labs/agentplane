@@ -1,0 +1,28 @@
+{
+  "blueprint_request": null,
+  "commit": {
+    "hash": "76d362097fa5d7237d78e4142d9d4ce7f9511513",
+    "message": "Legacy completion (backfill)"
+  },
+  "excerpts": [
+    "Document framework in README",
+    "Summarize the overall multi-agent workflow so newcomers can understand the repository quickly.",
+    "<!-- BEGIN VERIFICATION RESULTS -->",
+    "<!-- END VERIFICATION RESULTS -->",
+    "Legacy completion (backfill)"
+  ],
+  "extracted_at": "2026-06-01T17:19:12.959Z",
+  "id": "202601041253-00001",
+  "mutation_scope": null,
+  "owner": "REDMINE",
+  "priority": "normal",
+  "source_refs": [
+    ".agentplane/tasks/202601041253-00001/README.md",
+    "commit:76d362097fa5d7237d78e4142d9d4ce7f9511513"
+  ],
+  "status": "DONE",
+  "tags": ["readme", "docs"],
+  "task_kind": null,
+  "text_digest": "sha256:dd1cadda866bc224052ba9bc6fdd7e7c4857008375657c6100c320073c40f1f0",
+  "title": "Document framework in README"
+}

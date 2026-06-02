@@ -1,0 +1,344 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202606011717-C22C3X",
+  "created_at": "2026-06-01T18:08:44.292Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.13"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "de5393f63a390a1c42f41766922a1b43c19758fd",
+    "work_ref": "task/202606011757-927CG5/restore-maximum-assimilation-task-acr-artifact",
+    "work_commit": "de5393f63a390a1c42f41766922a1b43c19758fd"
+  },
+  "task": {
+    "task_id": "202606011717-C22C3X",
+    "title": "Initialize maximum assimilation context layer",
+    "intent": "Initialize the AgentPlane context workspace using the maximum-assimilation profile and assimilate the oldest 10 completed task-history records into sourced local context artifacts.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "CURATOR",
+    "name": "CURATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.6.13"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202606011717-C22C3X/README.md",
+      "sha256": "sha256:046a05060157642bc71bdba84a87b25888a678e92632a657a58539e8bb580b7e"
+    },
+    "approved_at": "2026-06-01T17:17:17.211Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #4365.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "other",
+        "command": "ap context doctor",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-2",
+        "type": "other",
+        "command": "ap context graph summary",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-3",
+        "type": "other",
+        "command": "ap context graph validate",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-4",
+        "type": "other",
+        "command": "ap context verify-task <task-id>",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202606011717-C22C3X_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-06-01T17:17:17.211Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202606011717-C22C3X/README.md",
+      "sha256": "sha256:046a05060157642bc71bdba84a87b25888a678e92632a657a58539e8bb580b7e"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202606011717-C22C3X/README.md",
+      "sha256": "sha256:046a05060157642bc71bdba84a87b25888a678e92632a657a58539e8bb580b7e"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202606011717-C22C3X/README.md",
+      "sha256": "sha256:046a05060157642bc71bdba84a87b25888a678e92632a657a58539e8bb580b7e"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202606011717-C22C3X/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:5393c5e636503f5a553fcf954d33a7936f848724ad7cf54dc66fa405d0e152e0"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit de5393f63a390a1c42f41766922a1b43c19758fd if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:3bd9c15111837d511b5de2aea62a49d1aafd351749c69d3e16a7d385f95b004f",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "context.maximum_assimilation",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "quality_gate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "context_max.sources",
+          "kind": "sources",
+          "produced_by": "intake",
+          "required": true
+        },
+        {
+          "id": "context_max.coverage",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        },
+        {
+          "id": "context_max.addressing",
+          "kind": "context_manifest",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "context_max.graph_first",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "context_max.topology",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        },
+        {
+          "id": "context_max.glossary",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        },
+        {
+          "id": "context_max.obsidian",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        },
+        {
+          "id": "context_max.changed_paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "context_max.verification",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "context_max.recovery",
+          "kind": "weak_links",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "context_max.quality",
+          "kind": "quality_report",
+          "produced_by": "quality_gate",
+          "required": true
+        },
+        {
+          "id": "context_max.commit",
+          "kind": "commit",
+          "produced_by": "finish",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202606011717-C22C3X/blueprint/resolved-snapshot.json",
+        "digest": "8b442ecdda6d1ecde0dd7d9b8e2bce4e74ef98e2e6ca94f0014a5032e182b39a",
+        "current_digest": "8b442ecdda6d1ecde0dd7d9b8e2bce4e74ef98e2e6ca94f0014a5032e182b39a",
+        "route_changed": false,
+        "artifact_sha256": "sha256:5393c5e636503f5a553fcf954d33a7936f848724ad7cf54dc66fa405d0e152e0",
+        "safe_command": "agentplane blueprint snapshot 202606011717-C22C3X"
+      }
+    },
+    "agentplane.context": {
+      "allowed_outputs": [
+        "context/wiki/**",
+        ".agentplane/context/derived/facts/**",
+        ".agentplane/context/derived/graph/**",
+        ".agentplane/context/derived/ingestion/**",
+        ".agentplane/context/derived/reports/**",
+        ".agentplane/context/agentplane.context.yaml",
+        ".agentplane/tasks/${taskId}/README.md",
+        ".agentplane/tasks/${taskId}/acr.json"
+      ],
+      "mode": "maximum_assimilation",
+      "source_set": {
+        "files": [
+          {
+            "path": ".agentplane/tasks/202601041253-00001/README.md",
+            "sha256": "sha256:e4f3587f225268179dccff852bd7b717ec405ba193e29ea6b0495323ed08f303"
+          },
+          {
+            "path": ".agentplane/tasks/202601041253-00002/README.md",
+            "sha256": "sha256:c7c04f69ae01c9230a4d2cb4f5de484526bc2e31f4beb57cce8ef9f6a41cabd4"
+          },
+          {
+            "path": ".agentplane/tasks/202601041253-00003/README.md",
+            "sha256": "sha256:c5ecbe4ba599f7fa468285e440c7e1f911f9c6a1a33f2a1977470cb09b5c5e4f"
+          },
+          {
+            "path": ".agentplane/tasks/202601041253-00004/README.md",
+            "sha256": "sha256:9e7e7c273846580086f91e5e42ad4871dda1a6ebdffa7c03c5c16e4cbcc4dcf8"
+          },
+          {
+            "path": ".agentplane/tasks/202601041253-00005/README.md",
+            "sha256": "sha256:8af35f45187585d201f7aa7ff448821bd9cdeb39965513764f4221b06f5f7375"
+          },
+          {
+            "path": ".agentplane/tasks/202601041253-00006/README.md",
+            "sha256": "sha256:f421ca3fa646a1ea3d2db7308beb9aa94cb00bdd27f3e9499ca75cd58b4a5c69"
+          },
+          {
+            "path": ".agentplane/tasks/202601041253-00007/README.md",
+            "sha256": "sha256:6f1ba20bcd82a965ebed46c1f4b9663328a24b63c79e2c74baf86dea39aa036e"
+          },
+          {
+            "path": ".agentplane/tasks/202601041253-00008/README.md",
+            "sha256": "sha256:c8bd99031f340d34e404d94ae54d58c355711662afbaebb26388b7f33237da22"
+          },
+          {
+            "path": ".agentplane/tasks/202601041253-00009/README.md",
+            "sha256": "sha256:d245efcbbac7faaa16d2e1929d10401598ae620d0486a2ae29987594458ef86b"
+          },
+          {
+            "path": ".agentplane/tasks/202601041253-0000A/README.md",
+            "sha256": "sha256:ccb201313171c31e12492262376c06e08764c26d34305427f8e2b9c07ced0a11"
+          }
+        ]
+      },
+      "task_type": "context_assimilation",
+      "schema_version": 1,
+      "task_id": "202606011717-C22C3X",
+      "task_kind": "context",
+      "mutation_scope": "context",
+      "blueprint_request": "context.maximum_assimilation"
+    }
+  }
+}
