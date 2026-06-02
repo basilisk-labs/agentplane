@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202606020753-NXRRY2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-02T08:20:25.223Z",
+  "verdict": "pass",
+  "summary": "Website dependabot lockfile tail is resolved: PR #4376 merged after refreshing bun.lock, local frozen install passed, and hosted PR checks passed before merge.",
+  "evaluated_sha": "e6ca482c62a0a9ce4b08c95ad6ca5fc6698b95b5",
+  "blueprint_digest": "1dd66e0d7f1d5c38cc3ed1530b2ed673faf0147aa8957a200e0abba35826d5ac",
+  "findings": [
+    "No remaining lockfile or CI regression risk found for the website dependency update after merge commit 42255696d63e505f1f7cf41b16c67531a2181228."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606020753-NXRRY2/README.md",
+    "PR #4376 checks passed on head b7a3b7b3; merge commit 42255696d63e505f1f7cf41b16c67531a2181228"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
