@@ -472,11 +472,8 @@ export function reconcileHermesState(
     });
   }
   const first = relevantCards[0];
-  const status = first
-    ? String(first.status ?? first.state ?? "")
-        .trim()
-        .toLowerCase()
-    : "";
+  const rawStatus = first?.status ?? first?.state;
+  const status = typeof rawStatus === "string" ? rawStatus.trim().toLowerCase() : "";
   if (
     localProjection?.terminal.hermes_root_complete_allowed === true &&
     status &&

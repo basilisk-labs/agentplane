@@ -4,7 +4,7 @@ title: "Tighten Hermes AgentPlane integration"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-02T21:28:48.126Z"
+  updated_at: "2026-06-02T21:39:09.091Z"
   updated_by: "CODER"
-  note: "Focused Hermes integration checks passed."
+  note: "CI contract lint fix verified."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused Hermes integration checks passed."
+  -
+    type: "verify"
+    at: "2026-06-02T21:39:09.091Z"
+    author: "CODER"
+    state: "ok"
+    note: "CI contract lint fix verified."
 doc_version: 3
-doc_updated_at: "2026-06-02T21:28:48.144Z"
+doc_updated_at: "2026-06-02T21:39:09.113Z"
 doc_updated_by: "CODER"
 description: "Add native Hermes lifecycle/reconcile/runner integration and replace stale embedded Hermes plugin guidance with external plugin ownership."
 sections:
@@ -82,6 +88,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606022123-WDMMPJ
 
+    ### 2026-06-02T21:39:09.091Z — VERIFY — ok
+
+    By: CODER
+
+    Note: CI contract lint fix verified.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-02T21:28:48.144Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606022123-WDMMPJ-hermes-agentplane-integration/.agentplane/tasks/202606022123-WDMMPJ/blueprint/resolved-snapshot.json
+    - old_digest: b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4
+    - current_digest: b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606022123-WDMMPJ
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -90,6 +115,10 @@ sections:
     - Observation: Command: bun run format:changed. Result: pass. Evidence: All matched files use Prettier code style. Scope: changed files.\nCommand: bun run typecheck. Result: pass. Evidence: tsc -b completed successfully. Scope: TypeScript project references.\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/hermes/hermes.command.test.ts packages/agentplane/src/runner/adapters/custom.test.ts. Result: pass. Evidence: 2 files passed, 27 tests passed. Scope: Hermes CLI integration and runner adapter factory/custom path.\nCommand: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: AgentPlane policy routing.
       Impact: Hermes supervise now exposes lifecycle recommendations; reconcile can compare a read-only Hermes state snapshot; runner.default_adapter=hermes has an explicit adapter class; stale embedded plugin execution shim is removed in favor of the external plugin source of truth.
       Resolution: Implemented with focused tests and preserved AgentPlane as the engineering lifecycle authority.
+
+    - Observation: Command: bun run format:changed && bun run lint:core. Result: pass. Evidence: changed files formatted; eslint completed with no findings. Scope: contract lint failure fix.\nCommand: bun run typecheck && bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/hermes/hermes.command.test.ts packages/agentplane/src/runner/adapters/custom.test.ts. Result: pass. Evidence: tsc -b completed; 2 test files passed, 27 tests passed. Scope: Hermes reconcile/supervise and runner adapter behavior.
+      Impact: Hosted verify-contract failure from no-base-to-string is resolved locally.
+      Resolution: Normalized Hermes card status only when the snapshot value is a string.
 id_source: "generated"
 ---
 ## Summary
@@ -137,6 +166,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606022123-WDMMPJ
 
+### 2026-06-02T21:39:09.091Z — VERIFY — ok
+
+By: CODER
+
+Note: CI contract lint fix verified.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-02T21:28:48.144Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606022123-WDMMPJ-hermes-agentplane-integration/.agentplane/tasks/202606022123-WDMMPJ/blueprint/resolved-snapshot.json
+- old_digest: b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4
+- current_digest: b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606022123-WDMMPJ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -149,3 +197,7 @@ BlueprintSnapshotRef:
 - Observation: Command: bun run format:changed. Result: pass. Evidence: All matched files use Prettier code style. Scope: changed files.\nCommand: bun run typecheck. Result: pass. Evidence: tsc -b completed successfully. Scope: TypeScript project references.\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/hermes/hermes.command.test.ts packages/agentplane/src/runner/adapters/custom.test.ts. Result: pass. Evidence: 2 files passed, 27 tests passed. Scope: Hermes CLI integration and runner adapter factory/custom path.\nCommand: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: AgentPlane policy routing.
   Impact: Hermes supervise now exposes lifecycle recommendations; reconcile can compare a read-only Hermes state snapshot; runner.default_adapter=hermes has an explicit adapter class; stale embedded plugin execution shim is removed in favor of the external plugin source of truth.
   Resolution: Implemented with focused tests and preserved AgentPlane as the engineering lifecycle authority.
+
+- Observation: Command: bun run format:changed && bun run lint:core. Result: pass. Evidence: changed files formatted; eslint completed with no findings. Scope: contract lint failure fix.\nCommand: bun run typecheck && bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/hermes/hermes.command.test.ts packages/agentplane/src/runner/adapters/custom.test.ts. Result: pass. Evidence: tsc -b completed; 2 test files passed, 27 tests passed. Scope: Hermes reconcile/supervise and runner adapter behavior.
+  Impact: Hosted verify-contract failure from no-base-to-string is resolved locally.
+  Resolution: Normalized Hermes card status only when the snapshot value is a string.

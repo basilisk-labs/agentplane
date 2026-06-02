@@ -16,7 +16,7 @@ Add native Hermes lifecycle/reconcile/runner integration and replace stale embed
 ## Verification
 
 - State: ok
-- Note: Focused Hermes integration checks passed.
+- Note: CI contract lint fix verified.
 - Canonical workflow state lives in the task README.
 
 <details>
