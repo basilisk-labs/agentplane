@@ -32,6 +32,8 @@ export type CloudSyncStateDiagnostics = {
   unavailable: boolean;
   degraded: boolean | null;
   reason: string | null;
+  projectionHealth: string | null;
+  activeBlockers: number | null;
   failedJobs: number | null;
   queuedJobs: number | null;
   runningJobs: number | null;
@@ -250,6 +252,8 @@ export function unavailableCloudSyncStateDiagnostics(
     unavailable,
     degraded: null,
     reason: null,
+    projectionHealth: null,
+    activeBlockers: null,
     failedJobs: null,
     queuedJobs: null,
     runningJobs: null,
@@ -270,6 +274,16 @@ export function readCloudSyncStateDiagnostics(
     unavailable: false,
     degraded: readBoolean(backoff, "degraded") ?? readBoolean(data, "degraded"),
     reason: readString(backoff, "reason") ?? readString(data, "reason"),
+    projectionHealth:
+      readString(data, "projection_health") ??
+      readString(data, "projectionHealth") ??
+      readString(backoff, "projection_health") ??
+      readString(backoff, "projectionHealth"),
+    activeBlockers:
+      readNumber(data, "active_blockers") ??
+      readNumber(data, "activeBlockers") ??
+      readNumber(backoff, "active_blockers") ??
+      readNumber(backoff, "activeBlockers"),
     failedJobs:
       readNumber(backoff, "failed_jobs") ??
       readNumber(jobs, "failed") ??

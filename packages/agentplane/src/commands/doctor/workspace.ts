@@ -155,13 +155,17 @@ async function checkCloudBackendReadiness(ctx: CommandContext): Promise<string[]
         severity: "WARN",
         state: "cloud backend sync state is degraded",
         likelyCause:
-          "the cloud service reports degraded sync workers or rate limiting, so local projection freshness can expire and block task lifecycle mutations",
+          syncState.reason?.includes("network") || syncState.reason?.includes("gitlab")
+            ? "the cloud service reports a connector network route failure, so the hosted worker may be unable to reach the configured provider even when local provider API access works"
+            : "the cloud service reports degraded sync workers or rate limiting, so local projection freshness can expire and block task lifecycle mutations",
         nextAction: {
           command: "agentplane backend sync cloud --direction pull --conflict=diff",
           reason: "refresh the projection and check for open conflicts before mutating tasks",
         },
         details: [
           `reason=${syncState.reason ?? "unknown"}`,
+          `projection_health=${syncState.projectionHealth ?? "unknown"}`,
+          `active_blockers=${syncState.activeBlockers ?? "unknown"}`,
           `failed_jobs=${syncState.failedJobs ?? "unknown"}`,
           `open_conflicts=${syncState.openConflicts}`,
         ],

@@ -130,6 +130,8 @@ describe("loadTaskBackend", () => {
       Response.json({
         data: {
           backoff: { degraded: true, reason: "failed_jobs", failed_jobs: 2 },
+          projection_health: "retry_backoff",
+          active_blockers: 1,
           jobs: { queued: 0, running: 0, delayed: 0 },
           pull_cursor: "2026-05-08T18:15:41.504Z",
         },
@@ -170,6 +172,8 @@ describe("loadTaskBackend", () => {
         syncState: {
           degraded: true,
           reason: "failed_jobs",
+          projectionHealth: "retry_backoff",
+          activeBlockers: 1,
           failedJobs: 2,
           pullCursor: "2026-05-08T18:15:41.504Z",
         },

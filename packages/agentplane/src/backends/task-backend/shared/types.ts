@@ -158,6 +158,8 @@ export type TaskBackendInspectionResult = {
       unavailable: boolean;
       degraded: boolean | null;
       reason: string | null;
+      projectionHealth: string | null;
+      activeBlockers: number | null;
       failedJobs: number | null;
       queuedJobs: number | null;
       runningJobs: number | null;

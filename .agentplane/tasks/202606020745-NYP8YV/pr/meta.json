@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-02T08:54:56Z",
+  "base": "main",
+  "branch": "task/202606020745-NYP8YV/resolve-cloud-feedback-issues",
+  "created_at": "2026-06-02T07:48:45.955Z",
+  "diffstat_sha256": "sha256:749ec7b1024e9194c176ed86e2cddb43450af0262e13645917342290cdaf20d2",
+  "last_verified_at": "2026-06-02T07:50:07.640Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "141bc4fb610c87e950922d8c29db750e6dc1b07b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-02T08:54:56Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202606020745-NYP8YV",
+  "updated_at": "2026-06-02T08:54:56Z",
+  "verify": {
+    "status": "pass"
+  }
+}
