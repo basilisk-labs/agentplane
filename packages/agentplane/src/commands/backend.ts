@@ -311,11 +311,11 @@ export async function cmdBackendInspectParsed(opts: {
       if (result.connection.syncState) {
         const syncState = result.connection.syncState;
         output.line(
-          `sync_state unavailable=${syncState.unavailable} degraded=${syncState.degraded ?? "unknown"} reason=${syncState.reason ?? "none"} failed_jobs=${syncState.failedJobs ?? "unknown"} queued_jobs=${syncState.queuedJobs ?? "unknown"} running_jobs=${syncState.runningJobs ?? "unknown"} delayed_jobs=${syncState.delayedJobs ?? "unknown"} pull_cursor=${syncState.pullCursor ?? "unset"} open_conflicts=${syncState.openConflicts}`,
+          `sync_state unavailable=${syncState.unavailable} degraded=${syncState.degraded ?? "unknown"} reason=${syncState.reason ?? "none"} projection_health=${syncState.projectionHealth ?? "unknown"} active_blockers=${syncState.activeBlockers ?? "unknown"} failed_jobs=${syncState.failedJobs ?? "unknown"} queued_jobs=${syncState.queuedJobs ?? "unknown"} running_jobs=${syncState.runningJobs ?? "unknown"} delayed_jobs=${syncState.delayedJobs ?? "unknown"} pull_cursor=${syncState.pullCursor ?? "unset"} open_conflicts=${syncState.openConflicts}`,
         );
         if (syncState.degraded === true) {
           output.warn(
-            `cloud sync state degraded: reason=${syncState.reason ?? "unknown"} failed_jobs=${syncState.failedJobs ?? "unknown"}; local task mutations may be blocked when projection freshness expires`,
+            `cloud sync state degraded: reason=${syncState.reason ?? "unknown"} projection_health=${syncState.projectionHealth ?? "unknown"} active_blockers=${syncState.activeBlockers ?? "unknown"} failed_jobs=${syncState.failedJobs ?? "unknown"}; local task mutations may be blocked when projection freshness expires`,
           );
           output.line(
             "safe_command agentplane backend sync cloud --direction pull --conflict=diff",
