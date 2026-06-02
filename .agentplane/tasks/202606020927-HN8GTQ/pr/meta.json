@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606020927-HN8GTQ/split-oversized-branch-pr-lifecycle-test-files",
+  "created_at": "2026-06-02T09:56:20.842Z",
+  "diffstat_sha256": "sha256:bdbbfdb7faf64e5174472622cb6a5a8eccdeefd868d4eb85782b1368a3b3beb8",
+  "last_verified_at": "2026-06-02T10:12:34.882Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202606020927-HN8GTQ",
+  "updated_at": "2026-06-02T09:56:20.842Z",
+  "verify": {
+    "status": "pass"
+  }
+}
