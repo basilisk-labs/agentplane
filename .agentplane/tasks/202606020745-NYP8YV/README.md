@@ -1,10 +1,11 @@
 ---
 id: "202606020745-NYP8YV"
 title: "Resolve cloud backend feedback issues"
-status: "DOING"
+result_summary: "Merged via PR #4377."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Cloud backend feedback fixes verified: targeted backend regression/sync suites passed (50 tests), pending-push state suites passed (5 tests), policy routing OK, and touched files pass Prettier."
   attempts: 0
-commit: null
+commit:
+  hash: "141bc4fb610c87e950922d8c29db750e6dc1b07b"
+  message: "Merge pull request #4377 from basilisk-labs/task/202606020745-NYP8YV/resolve-cloud-feedback-issues"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing cloud backend recovery for stale pending_push after current sync state and adding diagnostics coverage for degraded GitLab connector routes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4377 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Cloud backend feedback fixes verified: targeted backend regression/sync suites passed (50 tests), pending-push state suites passed (5 tests), policy routing OK, and touched files pass Prettier."
+  -
+    type: "status"
+    at: "2026-06-02T08:55:41.025Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4377 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-02T07:50:07.666Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-02T08:55:41.029Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub feedback issues #4353 and #4355 covering sticky pending_push after accepted cloud sync state and degraded GitLab sync diagnostics when hosted service cannot reach enterprise GitLab routes."
 sections:
   Summary: |-
