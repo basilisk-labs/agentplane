@@ -16,7 +16,7 @@ Add native Hermes lifecycle/reconcile/runner integration and replace stale embed
 ## Verification
 
 - State: ok
-- Note: CLI docs contract verified.
+- Note: Review duplicate-card finding fixed.
 - Canonical workflow state lives in the task README.
 
 <details>

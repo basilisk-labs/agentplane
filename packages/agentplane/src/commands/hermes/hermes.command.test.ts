@@ -511,6 +511,105 @@ describe("hermes adapter commands", () => {
     }
   });
 
+  it("reconcile does not flag all-board snapshots with distinct Agentplane task ids as duplicates", async () => {
+    const root = await mkGitRepoRoot();
+    await runCliSilent(["init", "--yes", "--root", root]);
+    const statePath = path.join(root, "hermes-state.json");
+    await writeFile(
+      statePath,
+      JSON.stringify({
+        cards: [
+          {
+            id: "hk_123",
+            status: "running",
+            metadata: { agentplane: { task_id: "202606010001-AAAAAA" } },
+          },
+          {
+            id: "hk_124",
+            status: "running",
+            metadata: { agentplane: { task_id: "202606010002-BBBBBB" } },
+          },
+        ],
+      }),
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "hermes",
+        "reconcile",
+        "--hermes-state",
+        statePath,
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        hermes_state: {
+          diagnostics: {
+            matched_card_count: number;
+            findings: { code: string }[];
+          };
+        };
+      };
+      expect(payload.hermes_state.diagnostics.matched_card_count).toBe(2);
+      expect(
+        payload.hermes_state.diagnostics.findings.map((finding) => finding.code),
+      ).not.toContain("duplicate_hermes_cards");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("reconcile flags duplicate Hermes cards for the same Agentplane task id", async () => {
+    const root = await mkGitRepoRoot();
+    await runCliSilent(["init", "--yes", "--root", root]);
+    const statePath = path.join(root, "hermes-state.json");
+    await writeFile(
+      statePath,
+      JSON.stringify({
+        cards: [
+          {
+            id: "hk_123",
+            metadata: { agentplane: { task_id: "202606010001-AAAAAA" } },
+          },
+          {
+            id: "hk_124",
+            metadata: { agentplane: { task_id: "202606010001-AAAAAA" } },
+          },
+        ],
+      }),
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "hermes",
+        "reconcile",
+        "--hermes-state",
+        statePath,
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        hermes_state: {
+          diagnostics: {
+            findings: { code: string; message: string }[];
+          };
+        };
+      };
+      const duplicate = payload.hermes_state.diagnostics.findings.find(
+        (finding) => finding.code === "duplicate_hermes_cards",
+      );
+      expect(duplicate?.message).toContain("202606010001-AAAAAA");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("renders Hermes lifecycle callbacks without touching Hermes in dry-run mode", async () => {
     const previousTask = process.env.HERMES_KANBAN_TASK;
     const previousBoard = process.env.HERMES_KANBAN_BOARD;

@@ -450,11 +450,18 @@ export function reconcileHermesState(
       message: `No Hermes card in state snapshot maps to Agentplane task ${taskId}.`,
     });
   }
-  if (relevantCards.length > 1) {
+  const duplicateGroups = new Map<string, number>();
+  for (const card of relevantCards) {
+    const cardTaskId = hermesCardAgentplaneTaskId(card);
+    if (!cardTaskId) continue;
+    duplicateGroups.set(cardTaskId, (duplicateGroups.get(cardTaskId) ?? 0) + 1);
+  }
+  for (const [cardTaskId, count] of duplicateGroups) {
+    if (count <= 1) continue;
     findings.push({
       code: "duplicate_hermes_cards",
       severity: "warn",
-      message: `${relevantCards.length} Hermes cards map to the same Agentplane task.`,
+      message: `${count} Hermes cards map to Agentplane task ${cardTaskId}.`,
     });
   }
   const first = relevantCards[0];

@@ -4,7 +4,7 @@ title: "Tighten Hermes AgentPlane integration"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-02T21:55:16.012Z"
+  updated_at: "2026-06-02T22:17:54.967Z"
   updated_by: "CODER"
-  note: "CLI docs contract verified."
+  note: "Review duplicate-card finding fixed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -76,8 +76,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "CLI docs contract verified."
+  -
+    type: "verify"
+    at: "2026-06-02T22:17:54.967Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review duplicate-card finding fixed."
 doc_version: 3
-doc_updated_at: "2026-06-02T21:55:16.029Z"
+doc_updated_at: "2026-06-02T22:17:54.982Z"
 doc_updated_by: "CODER"
 description: "Add native Hermes lifecycle/reconcile/runner integration and replace stale embedded Hermes plugin guidance with external plugin ownership."
 sections:
@@ -173,6 +179,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606022123-WDMMPJ
 
+    ### 2026-06-02T22:17:54.967Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Review duplicate-card finding fixed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-02T21:55:16.029Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606022123-WDMMPJ-hermes-agentplane-integration/.agentplane/tasks/202606022123-WDMMPJ/blueprint/resolved-snapshot.json
+    - old_digest: b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4
+    - current_digest: b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606022123-WDMMPJ
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -193,6 +218,10 @@ sections:
     - Observation: Command: bun run docs:cli:generate && bun run docs:cli:check && bun run ci:contract. Result: pass. Evidence: CLI reference regenerated; docs:cli:check reports up to date; ci:contract completed through knip baseline and coverage threshold guard. Scope: hosted verify-contract failure for AgentPlane PR #4388.
       Impact: The CI-only CLI docs freshness failure is resolved.
       Resolution: Regenerated docs/user/cli-reference.generated.mdx after adding the Hermes reconcile --hermes-state option.
+
+    - Observation: Command: bun run framework:dev:bootstrap && bun run ci:contract. Result: pass. Evidence: framework bootstrap passed; ci:contract completed through lint, dependency-cruiser, knip baseline, and coverage threshold guard.\nCommand: bun run typecheck && bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/hermes/hermes.command.test.ts. Result: pass. Evidence: tsc -b completed; 1 test file passed, 16 tests passed. Scope: Hermes reconcile duplicate-card behavior.
+      Impact: All-board Hermes reconcile no longer reports false duplicate drift for cards mapped to different AgentPlane task ids.
+      Resolution: Duplicate detection now groups cards by AgentPlane task id and tests cover distinct-task and same-task board snapshots.
 id_source: "generated"
 ---
 ## Summary
@@ -297,6 +326,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606022123-WDMMPJ
 
+### 2026-06-02T22:17:54.967Z — VERIFY — ok
+
+By: CODER
+
+Note: Review duplicate-card finding fixed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-02T21:55:16.029Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606022123-WDMMPJ-hermes-agentplane-integration/.agentplane/tasks/202606022123-WDMMPJ/blueprint/resolved-snapshot.json
+- old_digest: b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4
+- current_digest: b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606022123-WDMMPJ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -321,3 +369,7 @@ BlueprintSnapshotRef:
 - Observation: Command: bun run docs:cli:generate && bun run docs:cli:check && bun run ci:contract. Result: pass. Evidence: CLI reference regenerated; docs:cli:check reports up to date; ci:contract completed through knip baseline and coverage threshold guard. Scope: hosted verify-contract failure for AgentPlane PR #4388.
   Impact: The CI-only CLI docs freshness failure is resolved.
   Resolution: Regenerated docs/user/cli-reference.generated.mdx after adding the Hermes reconcile --hermes-state option.
+
+- Observation: Command: bun run framework:dev:bootstrap && bun run ci:contract. Result: pass. Evidence: framework bootstrap passed; ci:contract completed through lint, dependency-cruiser, knip baseline, and coverage threshold guard.\nCommand: bun run typecheck && bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/hermes/hermes.command.test.ts. Result: pass. Evidence: tsc -b completed; 1 test file passed, 16 tests passed. Scope: Hermes reconcile duplicate-card behavior.
+  Impact: All-board Hermes reconcile no longer reports false duplicate drift for cards mapped to different AgentPlane task ids.
+  Resolution: Duplicate detection now groups cards by AgentPlane task id and tests cover distinct-task and same-task board snapshots.
