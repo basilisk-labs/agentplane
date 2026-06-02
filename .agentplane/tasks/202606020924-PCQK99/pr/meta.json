@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-02T10:14:27Z",
+  "base": "main",
+  "branch": "task/202606020924-PCQK99/refactor-release-recovery-state-into-focused-mod",
+  "created_at": "2026-06-02T09:39:34.891Z",
+  "diffstat_sha256": "sha256:7a2d29eb38d0a4f6c7f9d0a7be7301896381314135a6420fa1e01db01bd1ab5e",
+  "last_verified_at": "2026-06-02T09:44:59.318Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "a2f6b2348c010b9063da1afe837ef92ca5e189f3",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-02T10:14:27Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202606020924-PCQK99",
+  "updated_at": "2026-06-02T10:14:27Z",
+  "verify": {
+    "status": "pass"
+  }
+}
