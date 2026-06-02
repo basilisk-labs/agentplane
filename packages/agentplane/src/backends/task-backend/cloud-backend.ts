@@ -298,6 +298,8 @@ export class CloudBackend implements TaskBackend {
   private async ensureProjectionFreshForLocalMutation(opts: { reason: string }): Promise<void> {
     const state = await this.readState();
     if (state.pending_push) {
+      const recovered = await this.tryRecoverPendingPushFromSyncState();
+      if (recovered) return;
       throw pendingCloudPushError(state.pending_push);
     }
     if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
@@ -356,6 +358,25 @@ export class CloudBackend implements TaskBackend {
       await this.markPendingPush(error);
       throw error;
     }
+  }
+
+  private async tryRecoverPendingPushFromSyncState(): Promise<boolean> {
+    if (!this.autoSyncEnabled || !this.autoSyncNetworkAllowed) return false;
+    if (this.missingConfigKeys().length > 0) return false;
+    const syncState = await this.requestCloudSyncState(this.projectId, {
+      timeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
+    });
+    if (
+      syncState.unavailable ||
+      syncState.conflicts.length > 0 ||
+      syncState.diagnostics.degraded === true ||
+      syncState.diagnostics.projectionHealth !== "current" ||
+      syncState.diagnostics.activeBlockers !== 0
+    ) {
+      return false;
+    }
+    await this.clearPendingPush();
+    return true;
   }
 
   private async assertNoPendingPushForPull(): Promise<void> {

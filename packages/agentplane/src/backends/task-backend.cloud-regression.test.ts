@@ -160,6 +160,62 @@ describe("CloudBackend regressions", () => {
     });
   });
 
+  it("clears stale pending auto-push markers when sync state proves the projection is current", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    await writeFile(
+      path.join(stateDir, "state.json"),
+      `${JSON.stringify(
+        {
+          last_checked_at: "2026-06-01T06:00:00.000Z",
+          pending_push: {
+            failed_at: "2026-06-01T06:50:00.000Z",
+            reason: "Cloud backend request failed: HTTP 502",
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    const fetchImpl = vi.fn<typeof fetch>((input) => {
+      const url = requestUrl(input);
+      if (url.endsWith("/sync/state")) {
+        return Promise.resolve(
+          Response.json({
+            data: {
+              projection_health: "current",
+              active_blockers: 0,
+              degraded: false,
+            },
+            open_conflicts: [],
+          }),
+        );
+      }
+      return Promise.reject(new TypeError(`unexpected request ${url}`));
+    });
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example",
+        token: "token",
+        project_id: "project-1",
+        stale_after_seconds: 300,
+      },
+      { root: tempDir, cache, fetchImpl, autoSyncNetworkAllowed: true },
+    );
+
+    await backend.writeTask(makeTask({ id: "202606010651-C1D2E3", title: "Recovered" }));
+
+    await expect(cache.getTask("202606010651-C1D2E3")).resolves.toMatchObject({
+      title: "Recovered",
+    });
+    const state = JSON.parse(await readFile(path.join(stateDir, "state.json"), "utf8")) as {
+      pending_push?: unknown;
+    };
+    expect(state.pending_push).toBeNull();
+  });
+
   it("pull adds remote-only tasks and removes local-only tasks under prefer-remote", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const localTask: TaskData = {
