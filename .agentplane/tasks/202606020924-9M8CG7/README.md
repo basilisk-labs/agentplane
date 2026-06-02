@@ -1,10 +1,11 @@
 ---
 id: "202606020924-9M8CG7"
 title: "Refactor cloud backend mutation freshness checks"
-status: "DOING"
+result_summary: "Merged via PR #4383."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +32,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/backends/task-backend.cloud-regression.test.ts packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/backends/task-backend.cloud-start-refresh.test.ts | Result: pass | Evidence: 34 pass, 0 fail. Command: bun test packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts | Result: pass | Evidence: 19 pass, 0 fail. Command: bun run typecheck | Result: pass. Command: node .agentplane/policy/check-routing.mjs | Result: pass; policy routing OK. Command: bunx prettier --write packages/agentplane/src/backends/task-backend/cloud-backend.ts packages/agentplane/src/backends/task-backend/cloud-backend-state.ts packages/agentplane/src/backends/task-backend/cloud-mutation-readiness.ts | Result: pass; unchanged. Scope: cloud backend mutation readiness extraction; cloud-backend.ts reduced to 401 lines and new helper owns pending_push recovery/stale mutation guard."
   attempts: 0
-commit: null
+commit:
+  hash: "11ee3c2d9a6fb6de153f90efd6c80c465a30bc46"
+  message: "Merge pull request #4383 from basilisk-labs/task/202606020924-9M8CG7/refactor-cloud-backend-mutation-freshness-checks"
 comments:
   -
     author: "CODER"
     body: "Start: Refactor cloud backend mutation freshness checks into focused helpers while preserving pending_push recovery and stale projection behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4383 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/backends/task-backend.cloud-regression.test.ts packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/backends/task-backend.cloud-start-refresh.test.ts | Result: pass | Evidence: 34 pass, 0 fail. Command: bun test packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts | Result: pass | Evidence: 19 pass, 0 fail. Command: bun run typecheck | Result: pass. Command: node .agentplane/policy/check-routing.mjs | Result: pass; policy routing OK. Command: bunx prettier --write packages/agentplane/src/backends/task-backend/cloud-backend.ts packages/agentplane/src/backends/task-backend/cloud-backend-state.ts packages/agentplane/src/backends/task-backend/cloud-mutation-readiness.ts | Result: pass; unchanged. Scope: cloud backend mutation readiness extraction; cloud-backend.ts reduced to 401 lines and new helper owns pending_push recovery/stale mutation guard."
+  -
+    type: "status"
+    at: "2026-06-02T10:20:59.971Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4383 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-02T09:50:08.646Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-02T10:20:59.976Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract the cloud backend pending_push recovery and freshness guard logic into focused helpers so recent GitLab sync fixes are easier to audit before the patch release. Preserve the current remote projection semantics and diagnostics."
 sections:
   Summary: |-
