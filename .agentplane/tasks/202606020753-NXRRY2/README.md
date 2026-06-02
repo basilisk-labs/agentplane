@@ -1,10 +1,11 @@
 ---
 id: "202606020753-NXRRY2"
 title: "Refresh website dependabot lockfile"
-status: "DOING"
+result_summary: "Merged PR #4376 and closed website dependabot lockfile task"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,32 @@ verification:
   updated_by: "CODER"
   note: "PR #4376 lockfile refresh verified: bun install updated bun.lock and frozen install passes with no further changes."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-02T08:20:25.223Z"
+  updated_by: "EVALUATOR"
+  note: "Website dependabot lockfile tail is resolved: PR #4376 merged after refreshing bun.lock, local frozen install passed, and hosted PR checks passed before merge."
+  evaluated_sha: "e6ca482c62a0a9ce4b08c95ad6ca5fc6698b95b5"
+  blueprint_digest: "1dd66e0d7f1d5c38cc3ed1530b2ed673faf0147aa8957a200e0abba35826d5ac"
+  evidence_refs:
+    - ".agentplane/tasks/202606020753-NXRRY2/README.md"
+    - ".agentplane/tasks/202606020753-NXRRY2/quality/20260602-082025223-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606020753-NXRRY2/quality/20260602-082025223-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606020753-NXRRY2/quality/20260602-082025223-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606020753-NXRRY2/blueprint/resolved-snapshot.json"
+    - "PR #4376 checks passed on head b7a3b7b3; merge commit 42255696d63e505f1f7cf41b16c67531a2181228"
+  findings:
+    - "No remaining lockfile or CI regression risk found for the website dependency update after merge commit 42255696d63e505f1f7cf41b16c67531a2181228."
+commit:
+  hash: "e6ca482c62a0a9ce4b08c95ad6ca5fc6698b95b5"
+  message: "Merge pull request #4375 from basilisk-labs/dependabot/bun/root-dependencies-84615692ef"
 comments:
   -
     author: "CODER"
     body: "Start: Refreshing PR #4376 website dependency lockfile so frozen install and Docs CI can pass without changing dependency scope."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4376 merged at 42255696d63e505f1f7cf41b16c67531a2181228 after refreshed website dependency lockfile; local frozen install passed, hosted checks passed on b7a3b7b3, and evaluator pass recorded. Final non-task implementation baseline remains e6ca482c62a0a9ce4b08c95ad6ca5fc6698b95b5 because the merge commit introduced task artifacts only."
 events:
   -
     type: "status"
@@ -43,9 +65,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "PR #4376 lockfile refresh verified: bun install updated bun.lock and frozen install passes with no further changes."
+  -
+    type: "status"
+    at: "2026-06-02T08:22:33.010Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4376 merged at 42255696d63e505f1f7cf41b16c67531a2181228 after refreshed website dependency lockfile; local frozen install passed, hosted checks passed on b7a3b7b3, and evaluator pass recorded. Final non-task implementation baseline remains e6ca482c62a0a9ce4b08c95ad6ca5fc6698b95b5 because the merge commit introduced task artifacts only."
 doc_version: 3
-doc_updated_at: "2026-06-02T07:54:30.162Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-02T08:22:33.013Z"
+doc_updated_by: "INTEGRATOR"
 description: "Repair PR #4376 by refreshing bun.lock after the website dependency update so Docs CI frozen install passes."
 sections:
   Summary: |-
