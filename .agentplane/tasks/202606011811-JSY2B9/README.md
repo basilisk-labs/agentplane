@@ -4,7 +4,7 @@ title: "Assimilate task history by version summaries"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -34,6 +34,25 @@ verification:
   updated_by: "CURATOR"
   note: "Verified: addressed hosted verify-contract formatting failure by running Prettier on context wiki markdown. Re-ran bun run format:check, context wiki lint, context graph validate, context reindex, and context verify-task successfully."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-02T08:51:16.772Z"
+  updated_by: "EVALUATOR"
+  note: "Task-history version assimilation is complete after report source links were corrected and context projections were reindexed."
+  evaluated_sha: "00c16fa611ee1cf098f1fba5e4f2ace51b67f235"
+  blueprint_digest: "c1a287c192fc5edaac90b9ed4f38510fa39f6777571f6382bf32127dc6f1878b"
+  evidence_refs:
+    - ".agentplane/tasks/202606011811-JSY2B9/README.md"
+    - ".agentplane/tasks/202606011811-JSY2B9/quality/20260602-085116772-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606011811-JSY2B9/quality/20260602-085116772-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606011811-JSY2B9/quality/20260602-085116772-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606011811-JSY2B9/blueprint/resolved-snapshot.json"
+    - "ap context reindex --include-raw"
+    - "ap context wiki lint context/wiki"
+    - "ap context check"
+    - "ap context verify-task 202606011811-JSY2B9"
+  findings:
+    - "Verified source links now escape context/wiki/reports to the repository root before .agentplane, and context reindex/check/verify-task all pass on commit 00c16fa61."
 commit: null
 comments:
   -
