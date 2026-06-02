@@ -4,7 +4,7 @@ title: "Tighten Hermes AgentPlane integration"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,22 @@ verification:
   updated_by: "CODER"
   note: "CLI docs contract verified."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-02T22:08:52.497Z"
+  updated_by: "EVALUATOR"
+  note: "Hermes AgentPlane integration PR passed local and hosted verification."
+  evaluated_sha: "ab77b8dabd010c5308b84c96a1de56eb91e65b89"
+  blueprint_digest: "b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4"
+  evidence_refs:
+    - ".agentplane/tasks/202606022123-WDMMPJ/README.md"
+    - ".agentplane/tasks/202606022123-WDMMPJ/quality/20260602-220852497-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606022123-WDMMPJ/quality/20260602-220852497-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606022123-WDMMPJ/quality/20260602-220852497-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606022123-WDMMPJ/blueprint/resolved-snapshot.json"
+    - "https://github.com/basilisk-labs/agentplane/pull/4388"
+  findings:
+    - "GitHub PR #4388 green on CodeQL, docs, plan, verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, and PR verification."
 commit: null
 comments:
   -
