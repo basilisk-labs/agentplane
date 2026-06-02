@@ -1,10 +1,11 @@
 ---
 id: "202606020927-HN8GTQ"
 title: "Split oversized branch_pr lifecycle test files"
-status: "DOING"
+result_summary: "Merged via PR #4384."
+status: "DONE"
 priority: "normal"
 owner: "TESTER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +32,16 @@ verification:
   updated_by: "TESTER"
   note: "Split branch_pr worktree runtime coverage into a focused test file; target tests, hotspot baseline, vitest project routing, and policy routing passed."
   attempts: 0
-commit: null
+commit:
+  hash: "4bda41c60712b33b7db7d0a53a7dc7af803ca93b"
+  message: "Merge pull request #4384 from basilisk-labs/task/202606020927-HN8GTQ/split-oversized-branch-pr-lifecycle-test-files"
 comments:
   -
     author: "TESTER"
     body: "Start: Split oversized finish and branch_pr lifecycle test structure by extracting shared finish validation harness while preserving scenario coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4384 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Split branch_pr worktree runtime coverage into a focused test file; target tests, hotspot baseline, vitest project routing, and policy routing passed."
+  -
+    type: "status"
+    at: "2026-06-02T10:29:53.674Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4384 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-02T10:12:34.911Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-06-02T10:29:53.678Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor the largest branch_pr and finish lifecycle test files into smaller scenario-focused suites without changing production behavior. This lowers review and CI diagnosis cost before the patch release while avoiding feature-surface changes."
 sections:
   Summary: |-
