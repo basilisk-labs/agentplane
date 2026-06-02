@@ -1037,5 +1037,5 @@ These packets compress task history into release/version windows before semantic
 
 ## Sources
 
-1. [.agentplane/tasks](../../.agentplane/tasks)
-2. [.agentplane/context/agentplane.context.yaml](../../.agentplane/context/agentplane.context.yaml)
+1. [.agentplane/tasks](../../../.agentplane/tasks)
+2. [.agentplane/context/agentplane.context.yaml](../../../.agentplane/context/agentplane.context.yaml)

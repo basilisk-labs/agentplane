@@ -110,4 +110,4 @@ coverage: 2945 task README sources assigned to 66 version buckets.
 
 ## Sources
 
-1. [.agentplane/tasks](../../.agentplane/tasks)
+1. [.agentplane/tasks](../../../.agentplane/tasks)
