@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202606011006-MTT6E8",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-01T10:46:21.307Z",
+  "verdict": "pass",
+  "summary": "v0.6.14 release candidate payload is prepared and locally gated.",
+  "evaluated_sha": "ede2be7045fafdd03568187fd93076c8a56640cc",
+  "blueprint_digest": "c5f296a6e61d82d44ef7f30e372d4a880911b941e9cb2d3a7ab3f138d1c46491",
+  "findings": [
+    "The candidate branch is at version 0.6.14 with release parity passing; release candidate execution completed release:prepublish:fast and release:ci-check through release-critical tests, then failed only on generated task artifact staging before commit. The checked payload was committed manually as ede2be704."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606011006-MTT6E8/README.md",
+    "docs/releases/v0.6.14.md",
+    "packages/agentplane/package.json",
+    "packages/core/package.json",
+    "packages/recipes/package.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted PR checks still need to run on the manually committed release candidate branch before merge/publish."
+  ]
+}

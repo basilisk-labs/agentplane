@@ -1,0 +1,11 @@
+ .agentplane/WORKFLOW.md                            |   3 +-
+ .agentplane/workflows/last-known-good.md           |   6 +-
+ docs/reference/generated-reference.mdx             |   6 +-
+ packages/agentplane/package.json                   |   6 +-
+ .../run-cli.core.help-snap.test.ts.snap            | 402 +++++++++++++++++++--
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/spec/examples/acr.json                    |  22 +-
+ packages/testkit/package.json                      |   2 +-
+ 10 files changed, 412 insertions(+), 41 deletions(-)
