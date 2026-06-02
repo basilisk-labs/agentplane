@@ -16,10 +16,6 @@
       "lines": 1100
     },
     {
-      "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
-      "lines": 1260
-    },
-    {
       "file": "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
       "lines": 1014
     },
