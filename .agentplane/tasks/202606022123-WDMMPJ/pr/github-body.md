@@ -27,6 +27,7 @@ Add native Hermes lifecycle/reconcile/runner integration and replace stale embed
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/cli-reference.generated.mdx              |   1 +
  docs/workflow-guides/hermes-kanban.mdx             |  31 +--
  integrations/hermes-agentplane-plugin/README.md    | 116 +++--------
  integrations/hermes-agentplane-plugin/__init__.py  | 228 ---------------------
@@ -40,7 +41,7 @@ Add native Hermes lifecycle/reconcile/runner integration and replace stale embed
  .../agentplane/src/runner/adapters/custom.test.ts  |  15 ++
  packages/agentplane/src/runner/adapters/hermes.ts  |   9 +
  packages/agentplane/src/runner/adapters/index.ts   |   3 +-
- 13 files changed, 284 insertions(+), 453 deletions(-)
+ 14 files changed, 285 insertions(+), 453 deletions(-)
 ```
 
 </details>
