@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-02T09:02:02Z",
   "base": "main",
   "branch": "task/202606011811-JSY2B9/assimilate-task-history-by-version-summaries",
   "created_at": "2026-06-01T18:15:03.313Z",
   "diffstat_sha256": "sha256:bd00e5d799f2c34ebcb0652c0dd47ea2fea9d22293f4049326452b01cf9c5f11",
   "last_verified_at": "2026-06-01T18:50:09.965Z",
   "last_verified_diffstat_sha256": "sha256:f3f0eba780920c129348576844b986db16632b43e37f74e49558e7917621e7de",
+  "merge_commit": "57a6a61f515a1b75a80d87930a3f7ef99643fca5",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-02T09:02:02Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606011811-JSY2B9",
-  "updated_at": "2026-06-01T18:15:03.313Z",
+  "updated_at": "2026-06-02T09:02:02Z",
   "verify": {
     "status": "pass"
   }
