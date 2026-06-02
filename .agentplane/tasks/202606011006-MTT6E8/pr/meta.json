@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-02T09:11:39Z",
   "base": "main",
   "branch": "task/202606011006-MTT6E8/prepare-v0-6-14-release-candidate",
   "created_at": "2026-06-01T10:06:49.376Z",
   "diffstat_sha256": "sha256:5f8d1cd0187112c441088eda9dd2634e1ba84e2676a438086b5c19f8d22e8741",
   "last_verified_at": "2026-06-01T10:46:07.760Z",
   "last_verified_diffstat_sha256": "sha256:5f8d1cd0187112c441088eda9dd2634e1ba84e2676a438086b5c19f8d22e8741",
+  "merge_commit": "9fd7ae49ade2480fce6bf785455b8aa907c1e83e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-02T09:11:39Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606011006-MTT6E8",
-  "updated_at": "2026-06-01T10:06:49.376Z",
+  "updated_at": "2026-06-02T09:11:39Z",
   "verify": {
     "status": "pass"
   }
