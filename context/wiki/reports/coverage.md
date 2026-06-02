@@ -38,5 +38,5 @@ coverage: covered the first ten completed task README sources from `202601041253
 
 ## Sources
 
-1. [.agentplane/tasks/202601041253-00001/README.md](../../.agentplane/tasks/202601041253-00001/README.md#lines=1-80)
-2. [.agentplane/tasks/202601041253-0000A/README.md](../../.agentplane/tasks/202601041253-0000A/README.md#lines=1-80)
+1. [.agentplane/tasks/202601041253-00001/README.md](../../../.agentplane/tasks/202601041253-00001/README.md#lines=1-80)
+2. [.agentplane/tasks/202601041253-0000A/README.md](../../../.agentplane/tasks/202601041253-0000A/README.md#lines=1-80)
