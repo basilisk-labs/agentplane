@@ -296,11 +296,11 @@ export class CloudBackend implements TaskBackend {
   }
 
   private async ensureProjectionFreshForLocalMutation(opts: { reason: string }): Promise<void> {
-    const state = await this.readState();
+    let state = await this.readState();
     if (state.pending_push) {
       const recovered = await this.tryRecoverPendingPushFromSyncState();
-      if (recovered) return;
-      throw pendingCloudPushError(state.pending_push);
+      if (!recovered) throw pendingCloudPushError(state.pending_push);
+      state = await this.readState();
     }
     if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
 

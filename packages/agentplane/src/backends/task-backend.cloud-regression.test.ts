@@ -168,7 +168,7 @@ describe("CloudBackend regressions", () => {
       path.join(stateDir, "state.json"),
       `${JSON.stringify(
         {
-          last_checked_at: "2026-06-01T06:00:00.000Z",
+          last_checked_at: new Date().toISOString(),
           pending_push: {
             failed_at: "2026-06-01T06:50:00.000Z",
             reason: "Cloud backend request failed: HTTP 502",
@@ -214,6 +214,69 @@ describe("CloudBackend regressions", () => {
       pending_push?: unknown;
     };
     expect(state.pending_push).toBeNull();
+  });
+
+  it("continues stale freshness checks after clearing recovered pending push markers", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    await writeFile(
+      path.join(stateDir, "state.json"),
+      `${JSON.stringify(
+        {
+          last_checked_at: "2026-06-01T06:00:00.000Z",
+          pending_push: {
+            failed_at: "2026-06-01T06:50:00.000Z",
+            reason: "Cloud backend request failed: HTTP 502",
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    const fetchImpl = vi.fn<typeof fetch>((input) => {
+      const url = requestUrl(input);
+      if (url.endsWith("/sync/state")) {
+        return Promise.resolve(
+          Response.json({
+            data: {
+              projection_health: "current",
+              active_blockers: 0,
+              degraded: false,
+            },
+            open_conflicts: [],
+          }),
+        );
+      }
+      if (url.endsWith("/sync/pull")) {
+        return Promise.resolve(
+          Response.json({
+            data: { last_checked_at: new Date().toISOString(), tasks: [] },
+          }),
+        );
+      }
+      return Promise.reject(new TypeError(`unexpected request ${url}`));
+    });
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example",
+        token: "token",
+        project_id: "project-1",
+        stale_after_seconds: 300,
+      },
+      { root: tempDir, cache, fetchImpl, autoSyncNetworkAllowed: true },
+    );
+
+    await backend.writeTask(makeTask({ id: "202606010651-S1T2", title: "Recovered stale" }));
+
+    expect(fetchImpl).toHaveBeenCalledWith(
+      "https://cloud.example/v1/projects/project-1/sync/pull",
+      expect.objectContaining({ method: "POST" }),
+    );
+    await expect(cache.getTask("202606010651-S1T2")).resolves.toMatchObject({
+      title: "Recovered stale",
+    });
   });
 
   it("pull adds remote-only tasks and removes local-only tasks under prefer-remote", async () => {
