@@ -306,12 +306,17 @@ export async function refreshAcrArtifactsForFinishedTasks(opts: {
   noWriteAcr?: boolean;
 }): Promise<string[]> {
   if (opts.noWriteAcr === true) return [];
-  if (opts.ctx.config.acr.enabled !== true || opts.ctx.config.acr.write_on_finish !== true) {
+  if (opts.ctx.config.acr.write_on_finish !== true) {
     return [];
   }
+  const refreshTasks =
+    opts.ctx.config.acr.enabled === true
+      ? opts.loadedTasks
+      : opts.loadedTasks.filter(({ task }) => task.task_kind === "context");
+  if (refreshTasks.length === 0) return [];
 
   const writtenPaths: string[] = [];
-  for (const { taskId, task } of opts.loadedTasks) {
+  for (const { taskId, task } of refreshTasks) {
     const workCommit = opts.taskCommitInfo?.hash ?? existingCommitInfo(task)?.hash;
     if (!workCommit) continue;
     try {

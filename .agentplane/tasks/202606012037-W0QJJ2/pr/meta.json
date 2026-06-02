@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-01T21:40:01Z",
+  "base": "main",
+  "branch": "task/202606012037-W0QJJ2/assimilate-source-architecture",
+  "created_at": "2026-06-01T20:38:07.714Z",
+  "diffstat_sha256": "sha256:33e86a5e8172f170c52785d67c5611a5979404a5280960d512aa7c5e50934082",
+  "last_verified_at": "2026-06-01T21:28:14.754Z",
+  "last_verified_diffstat_sha256": "sha256:33e86a5e8172f170c52785d67c5611a5979404a5280960d512aa7c5e50934082",
+  "merge_commit": "a2a5a3857c36f328080119af0583eb6ff96f0d4d",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-01T21:40:01Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202606012037-W0QJJ2",
+  "updated_at": "2026-06-01T21:40:01Z",
+  "verify": {
+    "status": "pass"
+  }
+}

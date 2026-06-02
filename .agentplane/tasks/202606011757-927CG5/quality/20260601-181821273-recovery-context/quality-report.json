@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606011757-927CG5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-01T18:18:21.273Z",
+  "verdict": "pass",
+  "summary": "Restored context task ACR closure and fixed generation/finish behavior for completed context tasks.",
+  "evaluated_sha": "aa96808f40bfe0fb094f01b15b0bb6a330ac1799",
+  "blueprint_digest": "fe437674bfd846ddd6598526d880907e374e8a9246fe3f81de70111518054e7a",
+  "findings": [
+    "Generated C22C3X ACR now validates with context schema_version=1; context verify-task passes; finish refresh now writes ACR for context tasks even when optional global ACR recording is disabled."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606011757-927CG5/README.md",
+    ".agentplane/tasks/202606011717-C22C3X/acr.json",
+    "packages/agentplane/src/commands/acr/generate-extensions.ts",
+    "packages/agentplane/src/commands/task/finish-shared.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

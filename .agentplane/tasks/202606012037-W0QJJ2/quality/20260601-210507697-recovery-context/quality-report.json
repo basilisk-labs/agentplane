@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202606012037-W0QJJ2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-01T21:05:07.697Z",
+  "verdict": "pass",
+  "summary": "Source architecture and command graph assimilation is graph-backed, source-covered, and searchable. Hosted PR #4372 is green after fixing the format-contract issue.",
+  "evaluated_sha": "1582bf91ee1bfb0198c13ceff03f96ba3ecb3ab6",
+  "blueprint_digest": "09ce4d5ea17ed7dbf0dcc836a3a36e059f6aa5c828b1663a013b5bea89ccce7f",
+  "findings": [
+    "Evidence: PR #4372 at head cc84afde6f7a passes CodeQL, PR verification, plan, verify-contract, verify-coverage, verify-static, verify-unit, verify-workflow, verify-cli-critical, and test-windows. Local context gates passed except broad context doctor/check, which reproducibly hung on the large projection and is recorded as residual risk."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606012037-W0QJJ2/README.md",
+    ".agentplane/context/derived/reports/source-architecture-assimilation.json",
+    "context/wiki/source-architecture/index.md",
+    ".agentplane/tasks/202606012037-W0QJJ2/pr/meta.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "ap context doctor and ap context check did not return on the large 27855-row context projection; targeted reindex, wiki lint, graph validate, verify-task, search, routing, Prettier, and hosted CI passed."
+  ]
+}

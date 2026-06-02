@@ -1,0 +1,6 @@
+ .agentplane/tasks/202606011717-C22C3X/acr.json     | 344 +++++++++++++++++++++
+ .../src/commands/acr/acr.command.test.ts           |  25 ++
+ .../src/commands/acr/generate-extensions.ts        |   1 +
+ .../commands/task/finish-acr-refresh.unit.test.ts  | 120 +++++++
+ .../agentplane/src/commands/task/finish-shared.ts  |   9 +-
+ 5 files changed, 497 insertions(+), 2 deletions(-)

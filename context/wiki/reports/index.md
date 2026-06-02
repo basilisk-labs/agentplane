@@ -1,21 +1,18 @@
 ---
-aliases:
-  - "Reports"
 tags:
   - agentplane/context
-  - agentplane/wiki-index
 cssclasses:
   - agentplane-context
 agentplane_context:
   schema_version: 1
   artifact_type: wiki_page
-  canonical_id: "wiki.index.reports"
+  canonical_id: "wiki.reports.index"
   title: "Reports"
-  modality: definition
+  modality: observation
   epistemic_status: sourced_claim
   visibility: project
   source_refs:
-    - "context/wiki/reports/task-history-version-assimilation.md#lines=1-80"
+    - no-source: generated wiki navigation index over sourced child pages
   claims: []
   graph_refs:
     entities: []
@@ -30,8 +27,8 @@ agentplane_context:
 
 - [Task history coverage](coverage.md)
 - [Task history pre-extraction topology](task-history-preextract-topology.md)
+- [Task history topology](topology.md)
 - [Task history version assimilation report](task-history-version-assimilation.md)
 - [Task history version coverage](task-history-version-coverage.md)
 - [Task history version pre-extraction packets](task-history-version-packets.md)
-- [Task history topology](topology.md)
 <!-- agentplane-context-wiki-index:end -->

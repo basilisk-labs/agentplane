@@ -1,21 +1,18 @@
 ---
-aliases:
-  - "Task Harvest Proposals"
 tags:
   - agentplane/context
-  - agentplane/wiki-index
 cssclasses:
   - agentplane-context
 agentplane_context:
   schema_version: 1
   artifact_type: wiki_page
-  canonical_id: "wiki.index.proposals.task_harvest"
-  title: "Task Harvest Proposals"
-  modality: definition
+  canonical_id: "wiki.proposals.task-harvest.index"
+  title: "Task Harvest"
+  modality: observation
   epistemic_status: sourced_claim
   visibility: project
   source_refs:
-    - "context/wiki/reports/task-history-version-assimilation.md#lines=1-80"
+    - no-source: generated wiki navigation index over sourced child pages
   claims: []
   graph_refs:
     entities: []
