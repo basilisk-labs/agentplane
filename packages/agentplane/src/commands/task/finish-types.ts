@@ -29,6 +29,7 @@ export type FinishOptions = {
   confirmStatusCommit: boolean;
   closeCommit?: boolean;
   noCloseCommit?: boolean;
+  preMergeClosure?: boolean;
   noWriteAcr?: boolean;
   closeUnstageOthers?: boolean;
   baseBranchOverride?: string;
@@ -74,5 +75,6 @@ export type FinishExecutionPlan = {
   breaking: boolean;
   finishFinding: FinishStructuredFinding | null;
   shouldCloseCommit: boolean;
+  preMergeClosure: boolean;
   closeAdditionalTaskIds: string[];
 };

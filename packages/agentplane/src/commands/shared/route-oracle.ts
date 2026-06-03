@@ -164,12 +164,6 @@ export function deriveRouteOracle(opts: {
       authoritativeCheckout: "current_checkout",
     });
   }
-  if (opts.task.status === "DONE") {
-    return buildOracle(opts, {
-      phase: "done_pending_cleanup",
-      authoritativeCheckout: "base_checkout",
-    });
-  }
   if (code === "approve_plan") {
     return buildOracle(opts, {
       phase: "needs_plan_approval",
@@ -224,6 +218,12 @@ export function deriveRouteOracle(opts: {
       authoritativeCheckout: "base_checkout",
     });
   }
+  if (code === "inspect_pr") {
+    return buildOracle(opts, {
+      phase: "pr_provider_attention",
+      authoritativeCheckout: "provider",
+    });
+  }
   if (code === "open_close_tail") {
     return buildOracle(opts, {
       phase: "close_tail_needed",
@@ -243,6 +243,12 @@ export function deriveRouteOracle(opts: {
     });
   }
   if (code === "cleanup") {
+    return buildOracle(opts, {
+      phase: "done_pending_cleanup",
+      authoritativeCheckout: "base_checkout",
+    });
+  }
+  if (opts.task.status === "DONE") {
     return buildOracle(opts, {
       phase: "done_pending_cleanup",
       authoritativeCheckout: "base_checkout",

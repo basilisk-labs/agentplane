@@ -111,18 +111,19 @@ agentplane task verify-show <task-id>
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
 agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
+agentplane finish <task-id> --author CODER --body "Verified: ..." --result "<one line>" --commit <implementation-git-rev> --pre-merge-closure
 bun run workflow:wait-remote-checks
 cd <base-checkout>
 agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "<one line>" --commit <implementation-git-rev> --close-commit
 agentplane cleanup merged --finalize
 ```
 
-`finish --commit-from-comment` is intentionally not part of `branch_pr`. Finish runs on the base
-checkout, so it records the explicit implementation commit hash that already exists on the task
-branch. Use comment-driven status commits only where the specific lifecycle command supports them
-from the task worktree.
+`finish --pre-merge-closure` is intentionally part of the task worktree phase. It records the
+explicit implementation commit hash, writes the final task closure packet, and adds a
+`pre_merge_closure` marker to `pr/meta.json` so hosted close can treat the merged PR as already
+closed. `finish --commit-from-comment` is intentionally not part of `branch_pr`; use comment-driven
+status commits only where the specific lifecycle command supports them from the task worktree.
 
 Repository helper for hosted checks:
 
@@ -130,7 +131,7 @@ Repository helper for hosted checks:
 bun run workflow:wait-remote-checks -- --timeout-ms 600000
 ```
 
-Hosted checks are the gate. Do not integrate or finish on base branch until `bun run workflow:wait-remote-checks` returns green.
+Hosted checks are the gate. Do not integrate on the base branch until `bun run workflow:wait-remote-checks` returns green.
 Local `agentplane integrate` defaults to `merge` so task branch commits stay in base history. On
 protected bases, the GitHub PR finalization path prefers rebase merge so task commits remain visible
 without an extra GitHub merge commit. Pass `--merge-strategy squash` only when compacting history is
@@ -140,9 +141,9 @@ Hosted merge shortcut:
 
 1. Keep `.agentplane/tasks/<task-id>/pr/*` current with `agentplane pr open` and `agentplane pr update`.
 2. Merge the hosted GitHub PR after required checks are green.
-3. Let the `Task Hosted Close` workflow push the deterministic closure branch for the task artifacts.
-4. If the organization allows Actions PR creation, the workflow opens the follow-up closure PR automatically. Otherwise use the manual PR URL that the workflow comments onto the merged task PR.
-5. Pull the updated `main` after the closure PR merges; no local finish-only tail commit should remain necessary.
+3. If the PR already contains a `pre_merge_closure` packet, the `Task Hosted Close` workflow exits as a no-op.
+4. If the merged PR did not carry a pre-merge closure packet, `Task Hosted Close` remains the recovery path and may create the deterministic follow-up closure PR.
+5. Pull the updated `main` after the task PR merge or after any fallback closure PR merges.
 
 When GitHub UI shows `Expected — Waiting for status to be reported` for one of the required checks even though
 PR workflow jobs already look green, audit branch protection directly:

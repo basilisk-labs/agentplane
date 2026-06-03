@@ -147,6 +147,33 @@ describe("pr-meta shell invocations", () => {
     ]);
   });
 
+  it("preserves pre-merge closure markers when reopening PR metadata", () => {
+    const nextMeta = buildOpenedPrMeta({
+      taskId: "202601010101-ABCDE",
+      branch: "task/202601010101-ABCDE/example",
+      at: "2026-01-28T00:00:00Z",
+      previousMeta: {
+        schema_version: 1,
+        task_id: "202601010101-ABCDE",
+        branch: "task/202601010101-ABCDE/example",
+        created_at: "2026-01-27T00:00:00Z",
+        updated_at: "2026-01-27T00:00:00Z",
+        verify: { status: "pass" },
+        pre_merge_closure: {
+          state: "closed_before_merge",
+          branch: "task/202601010101-ABCDE/example",
+          basis_commit: "abc1234",
+          recorded_at: "2026-01-27T01:00:00Z",
+        },
+      } as never,
+      base: "main",
+    });
+
+    expect((nextMeta as { pre_merge_closure?: { state?: string } }).pre_merge_closure).toEqual(
+      expect.objectContaining({ state: "closed_before_merge" }),
+    );
+  });
+
   it("hydrates batch metadata from legacy related task ids during updates", () => {
     const nextMeta = buildUpdatedPrMeta({
       meta: {

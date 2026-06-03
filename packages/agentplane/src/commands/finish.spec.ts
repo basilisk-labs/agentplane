@@ -185,6 +185,13 @@ export const finishSpec: CommandSpec<FinishParsed> = {
     },
     {
       kind: "boolean",
+      name: "pre-merge-closure",
+      default: false,
+      description:
+        "In branch_pr, finish from the task worktree and commit the closure packet before the task PR merge.",
+    },
+    {
+      kind: "boolean",
       name: "no-write-acr",
       default: false,
       description:
