@@ -67,6 +67,16 @@ function sameTaskArtifactPrefix(opts: { workflowDir?: string; taskId?: string })
   return normalizeGitPathPrefix(`${workflowDir}/${taskId}`);
 }
 
+function isGeneratedSameTaskArtifact(opts: {
+  filePath: string;
+  sameTaskPrefix: string | null;
+}): boolean {
+  if (opts.sameTaskPrefix === null) return false;
+  return ["blueprint", "quality"].some((dir) =>
+    gitPathIsUnderPrefix(opts.filePath, `${opts.sameTaskPrefix}/${dir}`),
+  );
+}
+
 export function suggestAllowPrefixes(paths: string[]): string[] {
   const out = new Set<string>();
   for (const filePath of paths) {
@@ -215,8 +225,7 @@ export async function stageAllowlist(opts: {
   const staged: string[] = [];
   for (const filePath of changed) {
     const explicitlyAllowedSameTaskArtifact =
-      sameTaskPrefix !== null &&
-      gitPathIsUnderPrefix(filePath, sameTaskPrefix) &&
+      isGeneratedSameTaskArtifact({ filePath, sameTaskPrefix }) &&
       allow.some((prefix) => gitPathIsUnderPrefix(filePath, prefix));
     if (
       denied.some((prefix) => gitPathIsUnderPrefix(filePath, prefix)) &&

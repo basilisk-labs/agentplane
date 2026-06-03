@@ -166,6 +166,26 @@ describe("policy/evaluatePolicy", () => {
     );
   });
 
+  it("keeps non-generated same-task artifacts protected without --allow-tasks", () => {
+    const taskId = "202602071329-TEST01";
+    const res = evaluatePolicy(
+      makeCtx({
+        taskId,
+        git: {
+          stagedPaths: [
+            `.agentplane/tasks/${taskId}/README.md`,
+            `.agentplane/tasks/${taskId}/pr/meta.json`,
+          ],
+        },
+        allow: { prefixes: [`.agentplane/tasks/${taskId}`], allowTasks: false },
+      }),
+    );
+    expect(res.ok).toBe(false);
+    expect(res.errors.map((e) => e.message).join("\n")).toContain(
+      "Staged file is forbidden by default",
+    );
+  });
+
   it("allows task-only commit scope when --allow-tasks is set without explicit prefixes", () => {
     const taskId = "202602071329-TEST01";
     const res = evaluatePolicy(

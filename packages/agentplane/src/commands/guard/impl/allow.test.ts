@@ -293,6 +293,8 @@ describe("guard/impl/allow", () => {
           .mockResolvedValue([
             ".agentplane/tasks/202601010101-ABCDEF/blueprint/resolved-snapshot.json",
             ".agentplane/tasks/202601010101-ABCDEF/quality/20260101-recovery-context/quality-report.json",
+            ".agentplane/tasks/202601010101-ABCDEF/README.md",
+            ".agentplane/tasks/202601010101-ABCDEF/pr/meta.json",
             ".agentplane/tasks/202601010101-OTHER01/quality/quality-report.json",
           ]),
         stage: vi.fn().mockResolvedValue(),
