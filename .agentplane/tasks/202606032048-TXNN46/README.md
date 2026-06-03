@@ -1,10 +1,11 @@
 ---
 id: "202606032048-TXNN46"
 title: "Accept blocked runner result manifests"
-status: "DOING"
+result_summary: "Merged via PR #4420."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -44,11 +45,16 @@ quality_review:
     - "node .agentplane/policy/check-routing.mjs"
   findings:
     - "Regression coverage added for status=blocked in result-manifest parsing; core/spec/root schemas include blocked runner outcome; package typechecks, schema check, routing check, direct parser smoke, and task verify-show passed. Residual: repeated post-build Vitest startups hung before banner, while the initial focused Vitest run passed."
-commit: null
+commit:
+  hash: "0cce82b628e14f616d091e207e196c3f83f3d78b"
+  message: "Merge pull request #4420 from basilisk-labs/task/202606032048-TXNN46/accept-blocked-runner-result-manifests"
 comments:
   -
     author: "CODER"
     body: "Start: Implement runner result manifest handling for GitHub issue #4412 so delegated status=blocked is accepted as an external blocker instead of becoming invalid_result_manifest."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4420 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/result-manifest.test.ts | Result: pass | Evidence: initial focused run passed 1 file / 8 tests, including blocked terminal manifest regression. Command: bun run schemas:check | Result: pass | Evidence: schemas OK after schemas:sync. Command: bun run --filter=@agentplaneorg/core typecheck && bun run --filter=agentplane typecheck | Result: pass | Evidence: both package typechecks exited 0. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: ap task verify-show 202606032048-TXNN46 | Result: pass | Evidence: Verify Steps and blueprint snapshot read back current."
+  -
+    type: "status"
+    at: "2026-06-03T21:48:01.271Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4420 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-03T21:04:52.886Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-03T21:48:01.277Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub issue #4412: delegated Codex runs can produce result manifest status=blocked when an external publication step is blocked, but AgentPlane currently rejects that manifest as invalid and turns the external blocker into E_INTERNAL."
 sections:
   Summary: "Fix GitHub issue #4412 by making runner result manifest handling accept an externally blocked delegated run instead of rejecting it as an internal invalid_result_manifest error."
