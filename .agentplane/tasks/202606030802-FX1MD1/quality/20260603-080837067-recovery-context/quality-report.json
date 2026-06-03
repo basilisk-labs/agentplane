@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202606030802-FX1MD1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-03T08:08:37.067Z",
+  "verdict": "pass",
+  "summary": "Context mode documentation now includes Mermaid diagrams for mode selection and maximum-assimilation flow.",
+  "evaluated_sha": "3b4f3f5d9be6ee093a85a6901ac23ccdff0aacbe",
+  "blueprint_digest": "b7c9600995c5e139096605ac2fed9aaac909c0f05042bbd066a6db1c02993cc3",
+  "findings": [
+    "Verified doc-only diff in docs/context/modes.mdx; routing, doctor, and site-content checks pass. Full website build was attempted but blocked by missing website dependencies in this worktree."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606030802-FX1MD1/README.md",
+    "docs/context/modes.mdx",
+    "node:.agentplane/policy/check-routing.mjs",
+    "node:website/scripts/check-site-content.mjs"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Full Docusaurus build was not completed locally because this worktree lacks website Docusaurus/sharp dependencies; Mermaid support is inferred from existing website Mermaid config and existing Mermaid docs examples."
+  ]
+}

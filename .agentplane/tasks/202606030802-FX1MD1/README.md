@@ -4,7 +4,7 @@ title: "Document context mode diagrams"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,24 @@ verification:
   updated_by: "DOCS"
   note: "Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: docs/context/modes.mdx. Links: docs/context/modes.mdx. Command: ap doctor. Result: pass. Evidence: doctor OK with two pre-existing DONE-task commit-hash warnings unrelated to this docs change. Scope: workspace policy/runtime. Links: docs/context/modes.mdx. Command: node website/scripts/check-site-content.mjs. Result: pass. Evidence: [site-content] ok. Scope: docs/context/modes.mdx. Links: docs/context/modes.mdx. Skipped: full website build. Reason: website worktree lacks installed Docusaurus/sharp dependencies; build:check stops at missing sharp and direct docusaurus binary is unavailable. Risk: Mermaid rendering is covered by existing Docusaurus Mermaid config and existing Mermaid docs examples, but full static build was not completed locally. Approval: not skipped by approval; recorded as environment blocker."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-03T08:08:37.067Z"
+  updated_by: "EVALUATOR"
+  note: "Context mode documentation now includes Mermaid diagrams for mode selection and maximum-assimilation flow."
+  evaluated_sha: "3b4f3f5d9be6ee093a85a6901ac23ccdff0aacbe"
+  blueprint_digest: "b7c9600995c5e139096605ac2fed9aaac909c0f05042bbd066a6db1c02993cc3"
+  evidence_refs:
+    - ".agentplane/tasks/202606030802-FX1MD1/README.md"
+    - ".agentplane/tasks/202606030802-FX1MD1/quality/20260603-080837067-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606030802-FX1MD1/quality/20260603-080837067-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606030802-FX1MD1/quality/20260603-080837067-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606030802-FX1MD1/blueprint/resolved-snapshot.json"
+    - "docs/context/modes.mdx"
+    - "node:.agentplane/policy/check-routing.mjs"
+    - "node:website/scripts/check-site-content.mjs"
+  findings:
+    - "Verified doc-only diff in docs/context/modes.mdx; routing, doctor, and site-content checks pass. Full website build was attempted but blocked by missing website dependencies in this worktree."
 commit: null
 comments:
   -
