@@ -160,8 +160,9 @@ describe("runCli insights report", () => {
       try {
         const code = await runCli(["help", "insights", "--root", root]);
         expect(code).toBe(0);
-        expect(io.stdout).toContain("agentplane insights <report|issue> [options]");
+        expect(io.stdout).toContain("agentplane insights <report|triage|issue> [options]");
         expect(io.stdout).toContain("insights report");
+        expect(io.stdout).toContain("insights triage");
       } finally {
         io.restore();
       }
@@ -176,6 +177,55 @@ describe("runCli insights report", () => {
       } finally {
         io.restore();
       }
+    }
+  });
+
+  it("emits structured startup-routing triage without raw command output", async () => {
+    const root = await mkGitRepoRoot();
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "insights",
+        "triage",
+        "--preset",
+        "startup-routing",
+        "--json",
+        "--error-code",
+        "E_INTERNAL",
+        "--failure-command",
+        "quickstart",
+        "--failure-reason-code",
+        "startup_route_conflict",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        schema?: string;
+        preset?: string;
+        facts?: {
+          workflow_mode?: string;
+          quickstart_configured_route?: string | null;
+          failure_error_code?: string | null;
+        };
+        findings?: { code?: string; confidence?: string; evidence?: string[] }[];
+        agent_required?: { field?: string; instruction?: string };
+      };
+      expect(payload.schema).toBe("agentplane.insights.triage.v1");
+      expect(payload.preset).toBe("startup-routing");
+      expect(payload.facts?.workflow_mode).toBe("direct");
+      expect(payload.facts?.quickstart_configured_route).toBe("branch_pr");
+      expect(payload.facts?.failure_error_code).toBe("E_INTERNAL");
+      expect(payload.findings?.[0]?.code).toBe("CONFIG_QUICKSTART_ROUTE_MISMATCH");
+      expect(payload.findings?.[0]?.confidence).toBe("high");
+      expect(payload.findings?.[0]?.evidence).toContain("runtime workflow_mode=direct");
+      expect(payload.agent_required?.field).toBe("agent_context");
+      expect(payload.agent_required?.instruction).toContain("reporting agent must still provide");
+      expect(io.stdout).not.toContain("agentplane quickstart");
+      expect(io.stdout).not.toContain("/Users/");
+    } finally {
+      io.restore();
     }
   });
 
@@ -241,6 +291,46 @@ describe("runCli insights report", () => {
       expect(payload.body).toContain('"phase": "resolve_context"');
       expect(payload.body).toContain('"dedupe_signature": "sha256:');
       expect(payload.body).toContain("Internal error happened while testing.");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("appends CLI-generated triage while preserving required agent context", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.feedback.github_issues.enabled = true;
+    await writeConfig(root, config);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "insights",
+        "issue",
+        "--dry-run",
+        "--error-code",
+        "E_INTERNAL",
+        "--agent-context",
+        "Agent analysis: config show and quickstart disagreed; raw output omitted.",
+        "--triage",
+        "startup-routing",
+        "--failure-command",
+        "quickstart",
+        "--failure-reason-code",
+        "startup_route_conflict",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as { body?: string };
+      expect(payload.body).toContain("## Agent context");
+      expect(payload.body).toContain(
+        "Agent analysis: config show and quickstart disagreed; raw output omitted.",
+      );
+      expect(payload.body).toContain("## AgentPlane diagnostic triage");
+      expect(payload.body).toContain("CONFIG_QUICKSTART_ROUTE_MISMATCH");
+      expect(payload.body).toContain("### Required agent field");
+      expect(payload.body).toContain("Field: agent_context");
     } finally {
       io.restore();
     }

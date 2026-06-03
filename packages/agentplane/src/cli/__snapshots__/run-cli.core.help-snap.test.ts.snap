@@ -99,6 +99,7 @@ Commands:
     insights  Generate local-only diagnostic insights for support analysis.
     insights issue  Create an opt-in GitHub issue with privacy-bounded Agentplane diagnostics.
     insights report  Print a local-only privacy-bounded Agentplane diagnostic report.
+    insights triage  Print structured privacy-bounded diagnostic findings for support triage.
     runtime  Inspect which agentplane runtime/binary/package sources are active.
     runtime explain  Explain the active binary, runtime mode, and resolved package roots.
   Recipes:
