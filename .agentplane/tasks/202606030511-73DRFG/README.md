@@ -4,7 +4,7 @@ title: "Fix finish quality review target for artifact commits"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-03T05:22:57.790Z"
+  updated_at: "2026-06-03T05:44:18.487Z"
   updated_by: "CODER"
-  note: "Verified: implementation commit 63d2862a5 preserves focused test pass (31 tests across 2 files), policy routing OK, and targeted Prettier check pass after the finish quality-review target change."
+  note: "Verified: added finish auto-resolution for task-artifact --commit without --implementation-commit; focused Vitest suite passed 32 tests across 2 files, policy routing OK, targeted Prettier passed, and task verify-show read back the updated contract."
   attempts: 0
 quality_review:
   state: "pass"
@@ -69,8 +69,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: implementation commit 63d2862a5 preserves focused test pass (31 tests across 2 files), policy routing OK, and targeted Prettier check pass after the finish quality-review target change."
+  -
+    type: "verify"
+    at: "2026-06-03T05:44:18.487Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: added finish auto-resolution for task-artifact --commit without --implementation-commit; focused Vitest suite passed 32 tests across 2 files, policy routing OK, targeted Prettier passed, and task verify-show read back the updated contract."
 doc_version: 3
-doc_updated_at: "2026-06-03T05:22:57.823Z"
+doc_updated_at: "2026-06-03T05:44:18.522Z"
 doc_updated_by: "CODER"
 description: "Fix finish/evaluator lifecycle mismatch where evaluator records the implementation commit while finish expects a task-artifact commit passed via --commit. Ensure --implementation-commit is used as the quality review target so artifact-only closure commits do not force a stale-review loop."
 sections:
@@ -84,10 +90,11 @@ sections:
   Plan: |-
     1. Reproduce the lifecycle mismatch in a focused finish validation test: evaluator quality_review.evaluated_sha points at the implementation commit while --commit points at a later task-artifact-only closure commit.
     2. Update finish quality-review target selection so --implementation-commit takes precedence over --commit for EVALUATOR freshness checks.
-    3. Keep existing behavior when --implementation-commit is absent.
-    4. Verify with focused finish/evaluator tests, routing policy check, and task verify-show/verify evidence.
+    3. Auto-resolve the implementation commit from quality_review.evaluated_sha when --commit is a task-local artifact advance and --implementation-commit is absent.
+    4. Keep existing stale-review behavior when --commit is not a task-local artifact advance.
+    5. Verify with focused finish/evaluator tests, routing policy check, and task verify-show/verify evidence.
   Verify Steps: |-
-    1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts`. Expected: focused finish quality-gate tests pass, including artifact --commit plus implementation --implementation-commit.
+    1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts`. Expected: focused finish quality-gate tests pass, including explicit --implementation-commit and auto-resolved task-artifact --commit scenarios.
     2. Run `node .agentplane/policy/check-routing.mjs`. Expected: routing policy budgets and gateway contracts pass.
     3. Run `agentplane task verify-show 202606030511-73DRFG`. Expected: task verification contract and blueprint evidence are readable and current.
   Verification: |-
@@ -130,6 +137,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606030511-73DRFG
 
+    ### 2026-06-03T05:44:18.487Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: added finish auto-resolution for task-artifact --commit without --implementation-commit; focused Vitest suite passed 32 tests across 2 files, policy routing OK, targeted Prettier passed, and task verify-show read back the updated contract.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T05:22:57.823Z, excerpt_hash=sha256:e21a514301c0787a90ec3c9278f255c326a4f79239b5a2ebc59bc6eda64b877e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606030511-73DRFG-finish-quality-review-target/.agentplane/tasks/202606030511-73DRFG/blueprint/resolved-snapshot.json
+    - old_digest: ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3
+    - current_digest: ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606030511-73DRFG
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -152,12 +178,13 @@ Fix finish/evaluator lifecycle mismatch where evaluator records the implementati
 
 1. Reproduce the lifecycle mismatch in a focused finish validation test: evaluator quality_review.evaluated_sha points at the implementation commit while --commit points at a later task-artifact-only closure commit.
 2. Update finish quality-review target selection so --implementation-commit takes precedence over --commit for EVALUATOR freshness checks.
-3. Keep existing behavior when --implementation-commit is absent.
-4. Verify with focused finish/evaluator tests, routing policy check, and task verify-show/verify evidence.
+3. Auto-resolve the implementation commit from quality_review.evaluated_sha when --commit is a task-local artifact advance and --implementation-commit is absent.
+4. Keep existing stale-review behavior when --commit is not a task-local artifact advance.
+5. Verify with focused finish/evaluator tests, routing policy check, and task verify-show/verify evidence.
 
 ## Verify Steps
 
-1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts`. Expected: focused finish quality-gate tests pass, including artifact --commit plus implementation --implementation-commit.
+1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts`. Expected: focused finish quality-gate tests pass, including explicit --implementation-commit and auto-resolved task-artifact --commit scenarios.
 2. Run `node .agentplane/policy/check-routing.mjs`. Expected: routing policy budgets and gateway contracts pass.
 3. Run `agentplane task verify-show 202606030511-73DRFG`. Expected: task verification contract and blueprint evidence are readable and current.
 
@@ -191,6 +218,25 @@ Note: Verified: implementation commit 63d2862a5 preserves focused test pass (31 
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T05:17:30.208Z, excerpt_hash=sha256:2b1b1c4d71afa61fef8f28529b2a35bb48d3a00e30e166f69d5b702093fb48ed
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606030511-73DRFG-finish-quality-review-target/.agentplane/tasks/202606030511-73DRFG/blueprint/resolved-snapshot.json
+- old_digest: ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3
+- current_digest: ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606030511-73DRFG
+
+### 2026-06-03T05:44:18.487Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: added finish auto-resolution for task-artifact --commit without --implementation-commit; focused Vitest suite passed 32 tests across 2 files, policy routing OK, targeted Prettier passed, and task verify-show read back the updated contract.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T05:22:57.823Z, excerpt_hash=sha256:e21a514301c0787a90ec3c9278f255c326a4f79239b5a2ebc59bc6eda64b877e
 
 Details:
 

@@ -81,7 +81,12 @@ export async function executeFinishPlan(opts: {
     primaryStatusFrom: loadedState.primaryStatusFrom,
     primaryTag: loadedState.primaryTag,
   });
-  const implementationCommitInfo = await resolveImplementationCommitInfo({ ctx, options });
+  const implementationCommitInfo = await resolveImplementationCommitInfo({
+    ctx,
+    options,
+    loadedTasks: loadedState.loadedTasks,
+    taskCommitInfo,
+  });
   await assertQualityReviewBeforeFinish({
     ctx,
     loadedTasks: loadedState.loadedTasks,

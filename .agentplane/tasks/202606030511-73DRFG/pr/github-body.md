@@ -19,8 +19,9 @@ Fix finish/evaluator lifecycle mismatch where evaluator records the implementati
 - Note:
 
 ```text
-Verified: implementation commit 63d2862a5 preserves focused test pass (31 tests across 2 files),
-policy routing OK, and targeted Prettier check pass after the finish quality-review target change.
+Verified: added finish auto-resolution for task-artifact --commit without --implementation-commit;
+focused Vitest suite passed 32 tests across 2 files, policy routing OK, targeted Prettier passed,
+and task verify-show read back the updated contract.
 ```
 - Canonical workflow state lives in the task README.
 

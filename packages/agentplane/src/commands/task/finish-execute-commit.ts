@@ -1,13 +1,14 @@
 import { invalidValueMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { isTaskLocalOnlyAdvance } from "../shared/task-local-freshness.js";
 import {
   defaultCommitEmojiForStatus,
   prepareTaskTransitionComment,
   readCommitInfo,
   runTaskTransitionCommentCommit,
 } from "./shared.js";
-import type { ResolvedCommitInfo } from "./finish-shared.js";
+import type { LoadedFinishTask, ResolvedCommitInfo } from "./finish-shared.js";
 import type { FinishExecutionPlan, FinishOptions } from "./finish-types.js";
 
 export async function resolveTaskCommitInfo(opts: {
@@ -107,8 +108,36 @@ export async function resolveTaskCommitInfo(opts: {
 export async function resolveImplementationCommitInfo(opts: {
   ctx: CommandContext;
   options: FinishOptions;
+  loadedTasks: readonly LoadedFinishTask[];
+  taskCommitInfo: ResolvedCommitInfo | null;
 }): Promise<ResolvedCommitInfo | null> {
-  return opts.options.implementationCommit
-    ? await readCommitInfo(opts.ctx.resolvedProject.gitRoot, opts.options.implementationCommit)
-    : null;
+  if (opts.options.implementationCommit) {
+    return await readCommitInfo(
+      opts.ctx.resolvedProject.gitRoot,
+      opts.options.implementationCommit,
+    );
+  }
+
+  if (opts.loadedTasks.length !== 1 || !opts.taskCommitInfo) return null;
+
+  const loaded = opts.loadedTasks[0];
+  const reviewedSha = loaded?.task.quality_review?.evaluated_sha ?? null;
+  if (!loaded || !reviewedSha) return null;
+  const taskLocalAdvance = await isTaskLocalOnlyAdvance({
+    gitRoot: opts.ctx.resolvedProject.gitRoot,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
+    taskId: loaded.taskId,
+    tasksPath: opts.ctx.config.paths.tasks_path,
+    fromRef: reviewedSha,
+    toRef: opts.taskCommitInfo.hash,
+  }).catch(() => false);
+  if (!taskLocalAdvance) return null;
+
+  const commitInfo = await readCommitInfo(opts.ctx.resolvedProject.gitRoot, reviewedSha);
+  if (!opts.options.quiet) {
+    process.stdout.write(
+      `finish detected task-artifact evidence commit; using quality_review.evaluated_sha=${commitInfo.hash} as implementation commit\n`,
+    );
+  }
+  return commitInfo;
 }
