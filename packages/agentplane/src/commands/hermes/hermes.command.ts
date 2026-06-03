@@ -10,11 +10,14 @@ import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import {
   executableStepFor,
+  buildHermesLifecycleRecommendation,
   currentAgentplaneCommand,
   HERMES_LIFECYCLE_ACTIONS,
   hermesCliCommand,
   hermesEnvSnapshot,
+  loadHermesStateSnapshot,
   loadLaneRegistry,
+  reconcileHermesState,
   routePacket,
   runAgentplaneStep,
   runHermesLifecycle,
@@ -39,6 +42,7 @@ export type HermesSuperviseParsed = {
 
 export type HermesReconcileParsed = {
   taskId?: string;
+  hermesState?: string;
   json: boolean;
 };
 
@@ -170,6 +174,12 @@ export const hermesReconcileSpec: CommandSpec<HermesReconcileParsed> = {
       valueHint: "<task-id>",
       description: "Limit reconcile diagnostics to one Agentplane task id.",
     },
+    {
+      kind: "string",
+      name: "hermes-state",
+      valueHint: "<path>",
+      description: "Read a Hermes card/task JSON snapshot and compare it with Agentplane truth.",
+    },
     { kind: "boolean", name: "json", default: false, description: "Emit machine-readable result." },
   ],
   examples: [
@@ -180,6 +190,8 @@ export const hermesReconcileSpec: CommandSpec<HermesReconcileParsed> = {
   ],
   parse: (raw) => ({
     taskId: typeof raw.opts["task-id"] === "string" ? raw.opts["task-id"] : undefined,
+    hermesState:
+      typeof raw.opts["hermes-state"] === "string" ? raw.opts["hermes-state"] : undefined,
     json: raw.opts.json === true,
   }),
 };
@@ -327,6 +339,7 @@ export function makeRunHermesSuperviseHandler(
       includeRemote: true,
     });
     const step = executableStepFor(packet);
+    const lifecycleRecommendation = buildHermesLifecycleRecommendation(packet);
     const stepResult =
       parsed.executeStep && step.args
         ? await runAgentplaneStep(step.args, commandCtx.resolvedProject.gitRoot, parsed.dryRun)
@@ -340,6 +353,7 @@ export function makeRunHermesSuperviseHandler(
         execution_model: "classify_route_action_then_execute_allowlisted_agentplane_command",
         max_route_steps_per_claim: 1,
       },
+      lifecycle_recommendation: lifecycleRecommendation,
       execution: {
         requested: parsed.executeStep,
         dry_run: parsed.dryRun,
@@ -383,19 +397,34 @@ export function makeRunHermesReconcileHandler(
 ): CommandHandler<HermesReconcileParsed> {
   return async (ctx, parsed) => {
     const commandCtx = await getCtx("hermes reconcile");
+    const localProjection = parsed.taskId
+      ? await routePacket({
+          ctx: commandCtx,
+          cwd: ctx.cwd,
+          rootOverride: ctx.rootOverride ?? null,
+          taskId: parsed.taskId,
+          includeRemote: false,
+        })
+      : null;
+    const hermesStateCards = parsed.hermesState
+      ? await loadHermesStateSnapshot(parsed.hermesState)
+      : null;
     const payload = {
       mode: "read_only",
       repo: commandCtx.resolvedProject.gitRoot,
       task_id: parsed.taskId ?? null,
       hermes_run: hermesEnvSnapshot(),
-      local_projection: parsed.taskId
-        ? await routePacket({
-            ctx: commandCtx,
-            cwd: ctx.cwd,
-            rootOverride: ctx.rootOverride ?? null,
-            taskId: parsed.taskId,
-            includeRemote: false,
-          })
+      local_projection: localProjection,
+      hermes_state: parsed.hermesState
+        ? {
+            path: parsed.hermesState,
+            loaded: true,
+            diagnostics: reconcileHermesState(
+              localProjection,
+              hermesStateCards ?? [],
+              parsed.taskId ?? null,
+            ),
+          }
         : null,
       checks: [
         "Hermes done but Agentplane not DONE",
@@ -418,6 +447,7 @@ export function makeRunHermesReconcileHandler(
         { label: "mode", value: payload.mode },
         { label: "repo", value: payload.repo },
         { label: "task", value: payload.task_id ?? "all" },
+        { label: "hermes_state", value: parsed.hermesState ?? "not provided" },
         { label: "remote_board_reads", value: "plugin_required" },
       ]);
     }
