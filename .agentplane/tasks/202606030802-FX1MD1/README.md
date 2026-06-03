@@ -1,10 +1,11 @@
 ---
 id: "202606030802-FX1MD1"
 title: "Document context mode diagrams"
-status: "DOING"
+result_summary: "Merged via PR #4394."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "node:website/scripts/check-site-content.mjs"
   findings:
     - "Verified doc-only diff in docs/context/modes.mdx; routing, doctor, and site-content checks pass. Full website build was attempted but blocked by missing website dependencies in this worktree."
-commit: null
+commit:
+  hash: "4b820be74fb05493001fe6e7d496b617464b76af"
+  message: "🚧 FX1MD1 task: record evaluator evidence"
 comments:
   -
     author: "DOCS"
     body: "Start: updating the context mode documentation with Mermaid diagrams for profile selection and ingestion flow, scoped to docs/context/modes.mdx plus task verification artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4394 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: docs/context/modes.mdx. Links: docs/context/modes.mdx. Command: ap doctor. Result: pass. Evidence: doctor OK with two pre-existing DONE-task commit-hash warnings unrelated to this docs change. Scope: workspace policy/runtime. Links: docs/context/modes.mdx. Command: node website/scripts/check-site-content.mjs. Result: pass. Evidence: [site-content] ok. Scope: docs/context/modes.mdx. Links: docs/context/modes.mdx. Skipped: full website build. Reason: website worktree lacks installed Docusaurus/sharp dependencies; build:check stops at missing sharp and direct docusaurus binary is unavailable. Risk: Mermaid rendering is covered by existing Docusaurus Mermaid config and existing Mermaid docs examples, but full static build was not completed locally. Approval: not skipped by approval; recorded as environment blocker."
+  -
+    type: "status"
+    at: "2026-06-03T08:13:41.963Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4394 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-03T08:06:14.765Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-06-03T08:13:41.969Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add Mermaid diagrams to the context mode documentation so readers can visualize profile choice and ingestion flow."
 sections:
   Summary: |-

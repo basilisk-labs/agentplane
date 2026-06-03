@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-03T08:12:53Z",
   "base": "main",
   "branch": "task/202606030802-FX1MD1/document-context-mode-diagrams",
   "created_at": "2026-06-03T08:03:12.658Z",
   "diffstat_sha256": "sha256:718e89f6e4bc34142257ae314b97dc110c948e1db063bf74f4e728ae17a84d95",
   "last_verified_at": "2026-06-03T08:06:14.721Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "4b820be74fb05493001fe6e7d496b617464b76af",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-03T08:12:53Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606030802-FX1MD1",
-  "updated_at": "2026-06-03T08:03:12.658Z",
+  "updated_at": "2026-06-03T08:12:53Z",
   "verify": {
     "status": "pass"
   }
