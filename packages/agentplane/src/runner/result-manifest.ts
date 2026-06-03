@@ -220,7 +220,9 @@ function assertRunnerManifestQuality(manifest: RunnerResultManifest, resultPath:
 }
 
 function normalizeStatus(value: unknown): RunnerResultStatus | undefined {
-  return value === "success" || value === "failed" || value === "cancelled" ? value : undefined;
+  return value === "success" || value === "failed" || value === "blocked" || value === "cancelled"
+    ? value
+    : undefined;
 }
 
 function normalizeTimeoutReason(value: unknown): RunnerTimeoutReason | undefined {
@@ -256,7 +258,11 @@ export async function readRunnerResultManifest(
     if (raw.status !== undefined) {
       const status = normalizeStatus(raw.status);
       if (!status) {
-        invalidManifest(resultPath, "status must be success, failed, or cancelled", rawText);
+        invalidManifest(
+          resultPath,
+          "status must be success, failed, blocked, or cancelled",
+          rawText,
+        );
       }
       manifest.status = status;
     }

@@ -1,0 +1,54 @@
+# PR Review
+
+Created: 2026-06-03T20:49:53.044Z
+
+## Task
+
+- Task: `202606032048-TXNN46`
+- Title: Accept blocked runner result manifests
+- Status: DOING
+- Branch: `task/202606032048-TXNN46/accept-blocked-runner-result-manifests`
+- Canonical task record: `.agentplane/tasks/202606032048-TXNN46/README.md`
+
+## Verification
+
+- State: ok
+- Note: Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/result-manifest.test.ts | Result: pass | Evidence: initial focused run passed 1 file / 8 tests, including blocked terminal manifest regression. Command: bun run schemas:check | Result: pass | Evidence: schemas OK after schemas:sync. Command: bun run --filter=@agentplaneorg/core typecheck && bun run --filter=agentplane typecheck | Result: pass | Evidence: both package typechecks exited 0. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: ap task verify-show 202606032048-TXNN46 | Result: pass | Evidence: Verify Steps and blueprint snapshot read back current.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-06-03T20:49:53.044Z
+- Branch: task/202606032048-TXNN46/accept-blocked-runner-result-manifests
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .../agentplane/src/commands/task/run-render.ts     |   7 +-
+ .../agentplane/src/runner/result-manifest.test.ts  |  30 +++
+ packages/agentplane/src/runner/result-manifest.ts  |  10 +-
+ .../agentplane/src/runner/task-state-render.ts     |   4 +
+ packages/agentplane/src/runner/types/invocation.ts |   2 +-
+ packages/core/schemas/task-handoff.schema.json     |   2 +-
+ .../schemas/task-readme-frontmatter.schema.json    |   4 +-
+ packages/core/schemas/tasks-export.schema.json     |   4 +-
+ .../core/src/tasks/task-artifact-schema.handoff.ts |   1 +
+ .../core/src/tasks/task-artifact-schema.task.ts    |   1 +
+ packages/core/src/tasks/task-store.ts              |   8 +-
+ packages/core/src/tasks/tasks-export.ts            |   1 +
+ packages/spec/schemas/task-handoff.schema.json     |   2 +-
+ .../schemas/task-readme-frontmatter.schema.json    |   4 +-
+ packages/spec/schemas/tasks-export.schema.json     |   4 +-
+ schemas/task-handoff.schema.json                   |  42 +++-
+ schemas/task-readme-frontmatter.schema.json        | 215 +++++++++++++++++----
+ schemas/tasks-export.schema.json                   | 208 ++++++++++++++++----
+ 18 files changed, 461 insertions(+), 88 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

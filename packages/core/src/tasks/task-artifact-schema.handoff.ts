@@ -12,6 +12,7 @@ const RUNNER_OUTCOME_STATUS_VALUES = [
   "running",
   "success",
   "failed",
+  "blocked",
   "cancelled",
 ] as const;
 const HANDOFF_ROUTE_KIND_VALUES = ["protected_base_integrate"] as const;
