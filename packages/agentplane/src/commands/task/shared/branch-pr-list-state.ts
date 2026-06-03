@@ -55,9 +55,10 @@ function readDirectListState(task: TaskSummary): DirectVerifiedPendingCloseState
     kind: "verified_pending_closeout",
     status: VERIFIED_PENDING_CLOSEOUT_STATUS,
     label: VERIFIED_PENDING_CLOSEOUT_LABEL,
-    verifiedBy: typeof raw.verifiedBy === "string" && raw.verifiedBy.trim().length > 0
-      ? raw.verifiedBy
-      : null,
+    verifiedBy:
+      typeof raw.verifiedBy === "string" && raw.verifiedBy.trim().length > 0
+        ? raw.verifiedBy
+        : null,
   };
 }
 
@@ -93,10 +94,7 @@ export async function annotateBranchPrTaskListState(opts: {
 }): Promise<TaskSummary[]> {
   if (opts.ctx.config.workflow_mode !== "branch_pr") {
     return opts.tasks.map((task) => {
-      if (
-        normalizeTaskStatus(task.status) === "DOING" &&
-        task.verification?.state === "ok"
-      ) {
+      if (normalizeTaskStatus(task.status) === "DOING" && task.verification?.state === "ok") {
         return withDirectListState(task, {
           kind: "verified_pending_closeout",
           status: VERIFIED_PENDING_CLOSEOUT_STATUS,
