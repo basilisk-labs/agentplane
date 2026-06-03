@@ -672,6 +672,7 @@ describe("runCli route decision commands", () => {
     const statusIo = captureStdIO();
     try {
       const code = await runCli(["task", "status", taskId, "--route", "--json", "--root", root]);
+      if (code !== 0) process.stderr.write(statusIo.stderr);
       expect(code).toBe(0);
       const parsed = JSON.parse(statusIo.stdout) as {
         blockers: { code: string }[];
@@ -680,6 +681,112 @@ describe("runCli route decision commands", () => {
       expect(parsed.blockers).toEqual([]);
       expect(parsed.nextAction.code).toBe("cleanup");
       expect(parsed.nextAction.command).toBe("agentplane cleanup merged");
+    } finally {
+      statusIo.restore();
+    }
+  });
+
+  it("routes stale local branch_pr state to base sync after hosted close is recorded upstream", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise hosted close sync route.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent(["task", "set-status", taskId, "DOING", "--force", "--yes", "--root", root]);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          base: "main",
+          branch: `task/${taskId}/merged-route`,
+          status: "MERGED",
+          merge_commit: "abcdef1234567890abcdef1234567890abcdef12",
+          pr_number: 99,
+          pr_url: "https://github.com/example/repo/pull/99",
+          created_at: "2026-06-03T00:00:00.000Z",
+          updated_at: "2026-06-03T00:01:00.000Z",
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await execFileAsync("git", ["add", path.join(root, ".agentplane", "tasks", taskId)], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", `code: ${taskId} record merged PR metadata`], {
+      cwd: root,
+    });
+    const localBaseRev = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const localBaseCommit = localBaseRev.stdout.trim();
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    const findingsIndex = readme.lastIndexOf("## Findings");
+    expect(findingsIndex).toBeGreaterThan(0);
+    await writeFile(
+      readmePath,
+      `${readme.slice(0, findingsIndex)}## Findings\n\nClose tail landed upstream.\n`,
+      "utf8",
+    );
+    const suffix = taskId.split("-").at(-1);
+    await execFileAsync("git", ["add", readmePath], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["commit", "-m", `code: ${suffix} close: (${taskId}) hosted close`],
+      {
+        cwd: root,
+      },
+    );
+    const remoteBaseRev = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const remoteBaseCommit = remoteBaseRev.stdout.trim();
+    await execFileAsync("git", ["update-ref", "refs/remotes/origin/main", remoteBaseCommit], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["reset", "--hard", localBaseCommit], { cwd: root });
+
+    const statusIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "status", taskId, "--route", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(statusIo.stdout) as {
+        nextAction: { code: string; command: string };
+        oracle: { phase: string; authoritativeCheckout: string };
+        executionPacket: { recommendedRole: string; safeToMutate: boolean };
+      };
+      expect(parsed.nextAction).toMatchObject({
+        code: "sync_hosted_close",
+        command:
+          "git fetch origin main && git merge --ff-only origin/main && agentplane cleanup merged",
+      });
+      expect(parsed.oracle).toMatchObject({
+        phase: "hosted_close_recorded_upstream",
+        authoritativeCheckout: "base_checkout",
+      });
+      expect(parsed.executionPacket).toMatchObject({
+        recommendedRole: "INTEGRATOR",
+        safeToMutate: true,
+      });
     } finally {
       statusIo.restore();
     }

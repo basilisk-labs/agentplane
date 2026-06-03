@@ -381,6 +381,66 @@ describe("runCli route decision batch ownership", () => {
     }
   });
 
+  it("stops prose-only included batch closure until structured batch metadata is restored", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const includedTaskId = await createTask(root);
+    await approveTasks(root, [includedTaskId], "Recover included closure metadata.");
+    await runCliSilent([
+      "task",
+      "set-status",
+      includedTaskId,
+      "DOING",
+      "--force",
+      "--yes",
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "verify",
+      includedTaskId,
+      "--ok",
+      "--by",
+      "CODER",
+      "--note",
+      "Verified: included in batch implementation landed.",
+      "--local-only",
+      "--root",
+      root,
+    ]);
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", includedTaskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        next_action: { code: string; command: string | null; summary: string };
+        blockers: { code: string }[];
+        execution_packet: { evidenceMissing: string[]; actionKind: string };
+      };
+      expect(parsed.next_action).toMatchObject({
+        code: "repair_included_batch_metadata",
+        command: null,
+      });
+      expect(parsed.next_action.summary).toContain(
+        "structured branch_pr batch metadata is missing",
+      );
+      expect(parsed.blockers.map((blocker) => blocker.code)).toContain(
+        "missing_included_batch_metadata",
+      );
+      expect(parsed.execution_packet.evidenceMissing).toContain(
+        "structured_branch_pr_batch_metadata",
+      );
+      expect(parsed.execution_packet.actionKind).toBe("stop");
+    } finally {
+      nextIo.restore();
+    }
+  });
+
   it("keeps plan approval ahead of included batch delegation in the route oracle", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

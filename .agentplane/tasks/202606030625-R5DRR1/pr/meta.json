@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-03T08:05:56Z",
+  "base": "main",
+  "branch": "task/202606030625-R5DRR1/make-route-context-explicit-for-agent-handoffs",
+  "created_at": "2026-06-03T06:26:10.916Z",
+  "diffstat_sha256": "sha256:db6f9116ca842b8a89f8fa111953c0d87a53d73d7354ada2b7e2ebd3a2b55fa5",
+  "last_verified_at": "2026-06-03T06:57:10.181Z",
+  "last_verified_diffstat_sha256": "sha256:5acf3625dcb717fa9f0d66f5aba9d7429243572183337777288bd0244792551e",
+  "merge_commit": "e1004832fef5f7fe89f91668412fb4173cdfab57",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-03T08:05:56Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202606030625-R5DRR1",
+  "updated_at": "2026-06-03T08:05:56Z",
+  "verify": {
+    "status": "pass"
+  }
+}

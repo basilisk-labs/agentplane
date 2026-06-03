@@ -14,6 +14,13 @@ function verifiedIncludedClosureCandidate(task: TaskData): boolean {
   const batch = isRecord(task.extensions?.branch_pr_batch) ? task.extensions.branch_pr_batch : null;
   if (batch?.role === "primary") return false;
   if (batch?.role === "included") return true;
+  return false;
+}
+
+function proseOnlyIncludedClosureCandidate(task: TaskData): boolean {
+  if (task.verification?.state !== "ok") return false;
+  if (String(task.status).toUpperCase() !== "DOING") return false;
+  if (task.commit?.hash) return false;
   const haystack = [
     task.title,
     task.description,
@@ -86,6 +93,15 @@ export function deriveNextAction(opts: {
       requiresApproval: false,
     };
   }
+  if (!opts.prFlow?.branch.name && proseOnlyIncludedClosureCandidate(opts.task)) {
+    return {
+      code: "repair_included_batch_metadata",
+      command: null,
+      summary:
+        "task text mentions included batch closure but structured branch_pr batch metadata is missing; restore extensions.branch_pr_batch or primary PR batch metadata before reconciling",
+      requiresApproval: false,
+    };
+  }
   if (opts.resume.runner.next_action === "wait") {
     return {
       code: "wait_runner",
@@ -132,6 +148,22 @@ export function deriveNextAction(opts: {
       command: null,
       summary: "wait for hosted checks and merge the close-tail PR through the provider",
       requiresApproval: true,
+    };
+  }
+  if (
+    opts.prFlow?.closeTail.state === "merged" ||
+    opts.prFlow?.closeTail.state === "recorded_on_base"
+  ) {
+    const base =
+      opts.prFlow.closeTail.state === "recorded_on_base"
+        ? opts.prFlow.closeTail.base
+        : (opts.prFlow.pr.base ?? "main");
+    return {
+      code: "sync_hosted_close",
+      command: `git fetch origin ${base} && git merge --ff-only origin/${base} && agentplane cleanup merged`,
+      summary:
+        "hosted close-tail already landed upstream; pull the base branch and clean merged task branches/worktrees",
+      requiresApproval: false,
     };
   }
   if (opts.prFlow?.closeTail.state === "not_found") {

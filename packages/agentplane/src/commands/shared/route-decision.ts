@@ -1,4 +1,6 @@
 import { findWorktreeForBranch } from "@agentplaneorg/core/git";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
@@ -17,6 +19,8 @@ import { workStartCommand } from "./work-start-command.js";
 
 import { loadBackendTask, loadCommandContext, type CommandContext } from "./task-backend.js";
 import { buildRouteSourceConfidenceBase } from "./source-confidence.js";
+import { parsePrMeta } from "./pr-meta.js";
+import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
 
 function isCliUsageOrIo(err: unknown): boolean {
   return err instanceof CliError && (err.code === "E_USAGE" || err.code === "E_IO");
@@ -68,7 +72,9 @@ function deriveAmbiguities(opts: {
     opts.decision.workflowMode === "branch_pr" &&
     blockerCodes.has("on_base_checkout") &&
     opts.decision.nextAction.code !== "start_or_recover_worktree" &&
-    opts.decision.nextAction.code !== "merge_close_tail"
+    opts.decision.nextAction.code !== "merge_close_tail" &&
+    opts.decision.nextAction.code !== "sync_hosted_close" &&
+    opts.decision.nextAction.code !== "repair_included_batch_metadata"
   ) {
     ambiguities.push({
       code: "base_checkout_owner_scope",
@@ -187,6 +193,15 @@ function deriveRepairPlan(
         mutates: false,
       });
     }
+    if (blocker.code === "missing_included_batch_metadata") {
+      steps.push({
+        code: "repair_included_batch_metadata",
+        command: null,
+        summary:
+          "restore structured extensions.branch_pr_batch or primary PR batch metadata before reconciling the included task",
+        mutates: false,
+      });
+    }
   }
   if (steps.length === 0) {
     steps.push({
@@ -210,6 +225,70 @@ function hasRemoteProviderEvidence(prFlow: PrFlowStatusReport | null): boolean {
     prFlow.hostedChecks.checked ||
     prFlow.reviewThreads.checked
   );
+}
+
+async function resolveLocalRecordedCloseFlow(opts: {
+  ctx: CommandContext;
+  task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
+}): Promise<PrFlowStatusReport | null> {
+  const metaPath = path.join(
+    opts.ctx.resolvedProject.gitRoot,
+    opts.ctx.config.paths.workflow_dir,
+    opts.task.id,
+    "pr",
+    "meta.json",
+  );
+  try {
+    const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.task.id);
+    const trimmedBase = meta.base?.trim();
+    const base = trimmedBase && trimmedBase.length > 0 ? trimmedBase : "main";
+    if (meta.status !== "MERGED" || !meta.merge_commit) return null;
+    const remoteRecorded = await taskCloseAlreadyRecordedOnBase({
+      gitRoot: opts.ctx.resolvedProject.gitRoot,
+      workflowDir: opts.ctx.config.paths.workflow_dir,
+      taskId: opts.task.id,
+      baseBranch: `origin/${base}`,
+    }).catch(() => false);
+    const recorded = remoteRecorded
+      ? true
+      : await taskCloseAlreadyRecordedOnBase({
+          gitRoot: opts.ctx.resolvedProject.gitRoot,
+          workflowDir: opts.ctx.config.paths.workflow_dir,
+          taskId: opts.task.id,
+          baseBranch: base,
+        }).catch(() => false);
+    if (!recorded) return null;
+    return {
+      task: {
+        id: opts.task.id,
+        status: opts.task.status,
+        verification: opts.task.verification?.state ?? null,
+      },
+      branch: {
+        name: meta.branch ?? null,
+        headSha: null,
+        metaHeadSha: meta.head_sha ?? null,
+      },
+      pr: {
+        provider: "github",
+        state: "MERGED",
+        source: "metadata",
+        prNumber: typeof meta.pr_number === "number" ? meta.pr_number : null,
+        prUrl: meta.pr_url ?? null,
+        base,
+        headSha: meta.head_sha ?? null,
+        mergeCommit: meta.merge_commit,
+      },
+      closeTail: { state: "recorded_on_base", base },
+      hostedChecks: { checked: false, reason: "remote lookup skipped" },
+      reviewThreads: { checked: false, reason: "remote lookup skipped" },
+      queue: { present: false },
+      handoff: { present: false },
+      nextAction: "pull main; task close evidence is already recorded upstream",
+    };
+  } catch {
+    return null;
+  }
 }
 
 function buildRouteSourceConfidence(opts: {
@@ -257,6 +336,8 @@ export async function buildTaskRouteDecision(opts: {
     } catch (err) {
       if (!isCliUsageOrIo(err)) throw err;
     }
+  } else if (ctx.config.workflow_mode === "branch_pr") {
+    prFlow = await resolveLocalRecordedCloseFlow({ ctx, task });
   }
   const batchOwnership =
     ctx.config.workflow_mode === "branch_pr"

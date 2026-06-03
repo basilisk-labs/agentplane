@@ -269,8 +269,11 @@ export function renderIncidentCollectionPlanOutcome(
   const context = opts?.context ?? "generic";
   const taskId =
     typeof opts?.taskId === "string" && opts.taskId.trim().length > 0 ? opts.taskId.trim() : null;
-  const findingsNextStep = taskId
-    ? ` next: agentplane task findings add ${taskId} --observation "<observation>" --impact "<impact>" --resolution "<resolution>" --promote --external`
+  const findingsCommand = taskId
+    ? `agentplane task findings add ${taskId} --observation "<observation>" --impact "<impact>" --resolution "<resolution>" --promote --external`
+    : null;
+  const findingsNextStep = findingsCommand
+    ? ` incident_promotion_next_command=${JSON.stringify(findingsCommand)}`
     : "";
 
   if (promoted > 0 && wrote) {

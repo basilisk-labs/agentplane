@@ -122,6 +122,7 @@ export type PrArtifactTexts = {
 
 export type PrArtifactSnapshot = {
   source: "local" | "branch";
+  sourceBranch: string | null;
   texts: PrArtifactTexts;
   meta: PrMeta | null;
   errors: string[];
@@ -377,6 +378,7 @@ export async function buildBranchSnapshot(opts: {
   });
   return {
     source: "branch",
+    sourceBranch: opts.branchForFreshness,
     texts,
     meta: parsed.meta,
     errors: parsed.errors,

@@ -421,7 +421,7 @@ describe("release recovery script", () => {
           },
         );
         const payload = JSON.parse(stdout) as {
-          summary: { state: string; likelyCause: string; nextAction: string };
+          summary: { state: string; likelyCause: string; nextAction: string; truthLevel: string };
           current: {
             github: {
               releaseSha: string;
@@ -433,6 +433,7 @@ describe("release recovery script", () => {
         };
 
         expect(payload.summary.state).toBe("release_already_published_with_red_core_ci");
+        expect(payload.summary.truthLevel).toBe("github_observed");
         expect(payload.summary.likelyCause).toContain("publish workflow already succeeded");
         expect(payload.summary.nextAction).toContain("Do not rerun publish");
         expect(payload.current.github.releaseSha).toBe("release-sha-123");
@@ -506,7 +507,7 @@ describe("release recovery script", () => {
           },
         );
         const payload = JSON.parse(stdout) as {
-          summary: { state: string; likelyCause: string };
+          summary: { state: string; likelyCause: string; truthLevel: string };
           current: {
             github: {
               publishResult: { state: string; success: boolean | null; reasonCode: string | null };
@@ -516,6 +517,7 @@ describe("release recovery script", () => {
         };
 
         expect(payload.summary.state).toBe("release_already_published_with_red_core_ci");
+        expect(payload.summary.truthLevel).toBe("canonical_artifact");
         expect(payload.summary.likelyCause).toContain(
           "canonical publish-result artifact confirms publish success",
         );
@@ -601,7 +603,7 @@ describe("release recovery script", () => {
           },
         );
         const payload = JSON.parse(stdout) as {
-          summary: { state: string; likelyCause: string; nextAction: string };
+          summary: { state: string; likelyCause: string; nextAction: string; truthLevel: string };
           current: {
             github: {
               publish: { state: string };
@@ -616,6 +618,7 @@ describe("release recovery script", () => {
         expect(payload.current.github.publishResult.success).toBe(false);
         expect(payload.current.github.publishResult.reasonCode).toBe("publish_incomplete");
         expect(payload.summary.state).toBe("release_publish_workflow_failed");
+        expect(payload.summary.truthLevel).toBe("canonical_artifact");
         expect(payload.summary.likelyCause).toContain(
           "canonical publish-result artifact reports an incomplete publish outcome",
         );
@@ -837,6 +840,7 @@ describe("release recovery script", () => {
           "GitHub Core CI (ci.yml): completed_not_success (conclusion=failure)",
         );
         expect(stdout).toContain("GitHub Publish (publish.yml): success");
+        expect(stdout).toContain("Truth level: github_observed");
         expect(stdout).toContain("Next safe action: Do not rerun publish");
       },
     );
