@@ -19,7 +19,6 @@ const mocks = vi.hoisted(() => ({
   nowIso: vi.fn(),
   resolveBaseBranch: vi.fn(),
   execFileAsync: vi.fn(),
-  gitDiffNames: vi.fn(),
   gitBranchExists: vi.fn(),
   gitCurrentBranch: vi.fn(),
   tryLookupExistingGithubPrByBranch: vi.fn(),
@@ -69,7 +68,6 @@ vi.mock("@agentplaneorg/core/git", async () => {
       : {};
   return {
     ...actual,
-    gitDiffNames: mocks.gitDiffNames,
     gitEnv: () => ({}),
     gitRevParse: vi.fn().mockResolvedValue(".git"),
     resolveBaseBranch: mocks.resolveBaseBranch,
@@ -233,7 +231,6 @@ describe("task finish validation", () => {
     mocks.nowIso.mockReset();
     mocks.resolveBaseBranch.mockReset();
     mocks.execFileAsync.mockReset();
-    mocks.gitDiffNames.mockReset();
     mocks.gitBranchExists.mockReset();
     mocks.gitCurrentBranch.mockReset();
     mocks.tryLookupExistingGithubPrByBranch.mockReset();
@@ -253,7 +250,6 @@ describe("task finish validation", () => {
       }
       return Promise.resolve({ stdout: "", stderr: "" });
     });
-    mocks.gitDiffNames.mockResolvedValue(["src/app.ts"]);
     mocks.gitBranchExists.mockResolvedValue(false);
     mocks.gitCurrentBranch.mockResolvedValue("main");
     mocks.tryLookupExistingGithubPrByBranch.mockResolvedValue(null);
@@ -538,135 +534,6 @@ describe("task finish validation", () => {
       ctx,
       command: "finish",
     });
-  });
-
-  it("checks evaluator freshness against --implementation-commit before artifact-only --commit", async () => {
-    const ctx = mkCtx();
-    const task = mkTask({
-      id: "T-1",
-      tags: ["meta"],
-      commit: { hash: "artifact-sha", message: "✅ T-1 close: record task artifacts" },
-      quality_review: {
-        state: "pass",
-        updated_at: "2026-02-09T00:00:00.000Z",
-        updated_by: "EVALUATOR",
-        note: "Quality gate passed",
-        evaluated_sha: "impl-sha",
-        blueprint_digest: "d1",
-        evidence_refs: [
-          ".agentplane/tasks/T-1/README.md",
-          ".agentplane/tasks/T-1/quality/run/quality-report.json",
-        ],
-        findings: ["Reviewed implementation commit, verification evidence, and residual risk."],
-      },
-    });
-    mocks.loadTaskFromContext.mockResolvedValue(task);
-    mocks.readCommitInfo.mockImplementation(async (_gitRoot: string, ref: string) => {
-      if (ref === "impl-sha") return { hash: "impl-sha", message: "feat: implement T-1" };
-      if (ref === "artifact-sha") {
-        return { hash: "artifact-sha", message: "✅ T-1 close: record task artifacts" };
-      }
-      return { hash: ref, message: "commit" };
-    });
-
-    const { cmdFinish } = await import("./finish-command.js");
-    await cmdFinish({
-      ctx,
-      cwd: "/repo",
-      taskIds: ["T-1"],
-      author: "A",
-      body: "Verified: this is long enough",
-      result: "done",
-      commit: "artifact-sha",
-      implementationCommit: "impl-sha",
-      breaking: false,
-      force: false,
-      commitFromComment: false,
-      commitAllow: [],
-      commitAutoAllow: false,
-      commitAllowTasks: false,
-      commitRequireClean: false,
-      statusCommit: false,
-      statusCommitAllow: [],
-      statusCommitAutoAllow: false,
-      statusCommitRequireClean: false,
-      confirmStatusCommit: false,
-      closeCommit: true,
-      closeUnstageOthers: true,
-      quiet: true,
-    });
-
-    expect(mocks.cmdCommit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        taskId: "T-1",
-        close: true,
-      }),
-    );
-  });
-
-  it("auto-resolves implementation commit when --commit is a task-artifact-only advance", async () => {
-    const ctx = mkCtx();
-    const task = mkTask({
-      id: "T-1",
-      tags: ["meta"],
-      commit: { hash: "artifact-sha", message: "✅ T-1 close: record task artifacts" },
-      quality_review: {
-        state: "pass",
-        updated_at: "2026-02-09T00:00:00.000Z",
-        updated_by: "EVALUATOR",
-        note: "Quality gate passed",
-        evaluated_sha: "impl-sha",
-        blueprint_digest: "d1",
-        evidence_refs: [
-          ".agentplane/tasks/T-1/README.md",
-          ".agentplane/tasks/T-1/quality/run/quality-report.json",
-        ],
-        findings: ["Reviewed implementation commit, verification evidence, and residual risk."],
-      },
-    });
-    mocks.loadTaskFromContext.mockResolvedValue(task);
-    mocks.gitDiffNames.mockResolvedValue([".agentplane/tasks/T-1/quality/report.json"]);
-    mocks.readCommitInfo.mockImplementation(async (_gitRoot: string, ref: string) => {
-      if (ref === "impl-sha") return { hash: "impl-sha", message: "feat: implement T-1" };
-      if (ref === "artifact-sha") {
-        return { hash: "artifact-sha", message: "✅ T-1 close: record task artifacts" };
-      }
-      return { hash: ref, message: "commit" };
-    });
-
-    const { cmdFinish } = await import("./finish-command.js");
-    await cmdFinish({
-      ctx,
-      cwd: "/repo",
-      taskIds: ["T-1"],
-      author: "A",
-      body: "Verified: this is long enough",
-      result: "done",
-      commit: "artifact-sha",
-      breaking: false,
-      force: false,
-      commitFromComment: false,
-      commitAllow: [],
-      commitAutoAllow: false,
-      commitAllowTasks: false,
-      commitRequireClean: false,
-      statusCommit: false,
-      statusCommitAllow: [],
-      statusCommitAutoAllow: false,
-      statusCommitRequireClean: false,
-      confirmStatusCommit: false,
-      closeCommit: true,
-      closeUnstageOthers: true,
-      quiet: true,
-    });
-
-    expect(mocks.readCommitInfo).toHaveBeenCalledWith("/repo", "impl-sha");
-    expect(mocks.cmdCommit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        taskId: "T-1",
-        close: true,
-      }),
-    );
   });
 
   it("rejects branch_pr close commit before mutating task state when other tracked files are dirty", async () => {

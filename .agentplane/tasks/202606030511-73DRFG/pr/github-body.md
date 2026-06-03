@@ -19,9 +19,9 @@ Fix finish/evaluator lifecycle mismatch where evaluator records the implementati
 - Note:
 
 ```text
-Verified: current head ef6ae4d33 includes auto-resolved finish implementation commit handling and
-refreshed evaluator evidence; focused Vitest suite passed 32 tests, policy routing OK, targeted
-Prettier passed, and task verify-show read back the updated contract.
+Verified: auto-resolve finish implementation commit handling is covered by focused tests; bunx
+vitest passed 33 tests across 3 files, policy routing OK, hotspot/baseline checks passed after
+moving regression coverage out of finish.validation, and targeted Prettier passed.
 ```
 - Canonical workflow state lives in the task README.
 
