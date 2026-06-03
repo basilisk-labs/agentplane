@@ -158,6 +158,7 @@ describe("init prompt steps", () => {
       feedbackGithubIssues: false,
       feedbackAnonymousCloud: false,
       executionProfile: "aggressive",
+      evaluatorSkepticism: "standard",
       strictUnsafeConfirm: false,
     });
     await expect(
