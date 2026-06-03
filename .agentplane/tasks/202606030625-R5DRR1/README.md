@@ -4,7 +4,7 @@ title: "Make route context explicit for agent handoffs"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,28 @@ verification:
   updated_by: "CODER"
   note: "Review fix verified: local route fallback now checks origin/<base> before local base for hosted close evidence; targeted route, PR validation, recovery, close-tail unit tests, format, lint, and typecheck passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-03T08:00:09.515Z"
+  updated_by: "EVALUATOR"
+  note: "Route-context handoff changes are covered by focused local tests, policy checks, PR checks, and hosted GitHub checks."
+  evaluated_sha: "52e9ef947a163e25e640f34392094f8d52990a29"
+  blueprint_digest: "a9a94162b2886894cc690f61e1918b24d178ab27ac051265570e602c713f99ed"
+  evidence_refs:
+    - ".agentplane/tasks/202606030625-R5DRR1/README.md"
+    - ".agentplane/tasks/202606030625-R5DRR1/quality/20260603-080009515-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606030625-R5DRR1/quality/20260603-080009515-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606030625-R5DRR1/quality/20260603-080009515-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606030625-R5DRR1/blueprint/resolved-snapshot.json"
+    - "bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/release-recovery-script.test.ts"
+    - "bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+    - "bun run typecheck"
+    - "node .agentplane/policy/check-routing.mjs"
+    - "ap doctor"
+    - "ap pr check 202606030625-R5DRR1"
+    - "GitHub PR #4392 required checks passed at head 52e9ef947a163e25e640f34392094f8d52990a29"
+  findings:
+    - "Pass: route decisions now expose explicit sync/repair actions for stale hosted close state, prose-only included-batch metadata, PR artifact source, release recovery truth levels, and incident promotion guidance."
 commit: null
 comments:
   -
