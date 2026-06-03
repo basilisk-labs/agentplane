@@ -7,6 +7,7 @@ import {
 
 import type { TaskData } from "../../../backends/task-backend.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
+import { hasClosedPreMergeClosureMarker } from "../../shared/pr-meta.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { backendUsesLocalTaskStore } from "../../shared/task-backend.js";
 import { readPrMetaIfPresent } from "./pr-meta.js";
@@ -111,12 +112,6 @@ function isStackedBranchAliasDoneTask(opts: {
   return summary.includes(branchTaskId.toLowerCase());
 }
 
-function hasPreMergeClosure(meta: TaskPrMeta): boolean {
-  const marker = (meta as TaskPrMeta & { pre_merge_closure?: unknown }).pre_merge_closure;
-  if (!marker || typeof marker !== "object") return false;
-  return (marker as { state?: unknown }).state === "closed_before_merge";
-}
-
 export async function findLocallyShippedBranchPrTasks(opts: {
   ctx: CommandContext;
   tasks: TaskData[];
@@ -186,7 +181,7 @@ export async function findDoneBranchPrTasksWithOpenPrArtifacts(opts: {
     const prMetaRecord = await readPrMetaIfPresent({ ctx: opts.ctx, taskId: task.id });
     const meta = prMetaRecord?.meta ?? null;
     if (!meta || meta.status === "MERGED") continue;
-    if (hasPreMergeClosure(meta)) continue;
+    if (hasClosedPreMergeClosureMarker(meta)) continue;
 
     const branch = meta.branch?.trim() ?? "";
     if (!branch) continue;
