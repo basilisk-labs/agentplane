@@ -204,6 +204,7 @@ function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry
     status !== "running" &&
     status !== "success" &&
     status !== "failed" &&
+    status !== "blocked" &&
     status !== "cancelled"
   ) {
     return null;
