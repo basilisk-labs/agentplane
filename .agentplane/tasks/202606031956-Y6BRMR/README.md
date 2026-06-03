@@ -4,7 +4,7 @@ title: "Add evaluator skepticism levels to Codex runner init"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,27 @@ verification:
   updated_by: "CODER"
   note: "Implemented evaluator skepticism levels and verified targeted tests/schema/build/routing. Checks: bun test config/init/runner passed (34 tests); Vitest targeted suite passed before formatting (46 tests); schemas:check passed; prettier check passed; core and agentplane package builds passed; policy routing passed. Local framework bootstrap and PR sync commands hit a known /usr/bin/env node hang in this worktree; code checks were run manually and commit used --no-verify after the hook hung."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-03T20:23:32.389Z"
+  updated_by: "EVALUATOR"
+  note: "Reviewed the implementation against the approved scope, schema/init propagation, runner bootstrap rendering, and verification evidence. No unresolved findings remain."
+  evaluated_sha: "e42304bf010d8fdb95f62d0773ef8c7a5276dfbb"
+  blueprint_digest: "fcbfc2177d76b5b53dc09f4b98666382f958455c5f0b026d4c594ad27ae01971"
+  evidence_refs:
+    - ".agentplane/tasks/202606031956-Y6BRMR/README.md"
+    - ".agentplane/tasks/202606031956-Y6BRMR/quality/20260603-202332389-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606031956-Y6BRMR/quality/20260603-202332389-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606031956-Y6BRMR/quality/20260603-202332389-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606031956-Y6BRMR/blueprint/resolved-snapshot.json"
+    - "packages/core/src/config/schema.impl.ts"
+    - "packages/agentplane/src/cli/run-cli/commands/init/spec.ts"
+    - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+    - "packages/core/src/config/config.test.ts"
+    - "packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts"
+    - "schemas/config.schema.json"
+  findings:
+    - "Pass: evaluator skepticism is a typed config field with standard, strict, and paranoid levels; init can set it, workflow/schema surfaces preserve it, and runner bootstrap renders level-specific skeptical audit instructions without widening lifecycle authority."
 commit: null
 comments:
   -
