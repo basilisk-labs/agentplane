@@ -112,18 +112,25 @@ hermes-agentplane-spawn \
   --workspace <workspace-root>
 ```
 
-The reference scaffold lives at `integrations/hermes-agentplane-plugin/`. It is deliberately a
-thin spawn adapter over `agentplane hermes supervise <task-id> --root <repo> --json`; it does not
-write the Hermes database, publish PRs, merge branches, or infer Agentplane task completion from
-Hermes card status.
+The live plugin source of truth is
+[`basilisk-labs/agentplane-hermes-plugin`](https://github.com/basilisk-labs/agentplane-hermes-plugin).
+The repo-local `integrations/hermes-agentplane-plugin/` directory is documentation-only and must not
+ship a second dispatcher shim. The plugin is deliberately a thin native worker-lane adapter over
+`agentplane hermes supervise <task-id> --root <repo> --execute-step --json`; it does not write the
+Hermes database, publish PRs, merge branches, or infer Agentplane task completion from Hermes card
+status.
 
-For production, prefer a Hermes image with a first-class worker-lane registry over a monkeypatch
-shim. The minimum image/runtime changes are: `/opt/hermes/bin` on `PATH`, plugin-visible lane
-registration, plugin-aware dispatch in gateway/CLI/dashboard paths, registered external lanes
-treated as spawnable assignees, supported Kanban lifecycle client calls for plugins, structured
-card metadata access, stale-run guards, an explicit Agentplane binary path, local plugin install
-support, and a dispatcher test that proves an `agentplane-*` assignee reaches the registered
-spawn function.
+For production, use a Hermes image with the first-class worker-lane registry:
+
+```python
+ctx.register_worker_lane(match="agentplane-*", spawn_fn=spawn_fn, profile_exists=True)
+```
+
+The minimum image/runtime contract is: `/opt/hermes/bin` on `PATH`, plugin-aware dispatch in
+gateway/CLI/dashboard paths, registered external lanes treated as spawnable assignees, supported
+Kanban lifecycle client calls for plugins, structured card metadata access, stale-run guards, an
+explicit Agentplane binary path, local plugin install support, and a dispatcher test that proves an
+`agentplane-*` assignee reaches the registered spawn function.
 
 ### Optional MCP wrapper
 

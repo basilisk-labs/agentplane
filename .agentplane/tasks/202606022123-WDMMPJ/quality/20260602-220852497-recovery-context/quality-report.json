@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202606022123-WDMMPJ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-02T22:08:52.497Z",
+  "verdict": "pass",
+  "summary": "Hermes AgentPlane integration PR passed local and hosted verification.",
+  "evaluated_sha": "ab77b8dabd010c5308b84c96a1de56eb91e65b89",
+  "blueprint_digest": "b8ac0b187b11200d9140c2da3b3c78739dda3534d17df3ca0f8cdd9760af64c4",
+  "findings": [
+    "GitHub PR #4388 green on CodeQL, docs, plan, verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, and PR verification."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606022123-WDMMPJ/README.md",
+    "https://github.com/basilisk-labs/agentplane/pull/4388"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
