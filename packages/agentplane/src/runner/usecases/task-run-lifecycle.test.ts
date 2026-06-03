@@ -107,6 +107,44 @@ async function waitForState(
 }
 
 describe("task-run lifecycle usecases", () => {
+  it("surfaces blocked guidance from invalid runner manifests in task runner outcomes", async () => {
+    const root = await mkGitRepoRoot();
+    await configureCustomRunner(root, [
+      "#!/bin/sh",
+      String.raw`printf '{"schema_version":1,"summary":"Runner blocked on sibling-owned paths.","artifacts":[{"path":"reports/out.txt","label":"Bad Label"}],"evidence":{"conflict_paths":["src/runner/conflict.ts"],"blocked_reason":"sibling runner owns the same file","recommended_parent_action":"split task scope before retrying"}}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+      "cat >/dev/null",
+      "exit 0",
+    ]);
+    const taskId = await createDoingTask(root, "Blocked manifest guidance");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const runId = "run-blocked-guidance";
+
+    const executed = await executeTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      run_id: runId,
+    });
+
+    expect(executed.result.status).toBe("failed");
+    expect(executed.result.summary).toBe("Runner blocked on sibling-owned paths.");
+    expect(executed.result.evidence).toEqual({
+      conflict_paths: ["src/runner/conflict.ts"],
+      blocked_reason: "sibling runner owns the same file",
+      recommended_parent_action: "split task scope before retrying",
+    });
+
+    const task = await ctx.taskBackend.getTask(taskId);
+    expect(task?.doc).toContain("Summary: Runner blocked on sibling-owned paths.");
+    expect(task?.doc).toContain("ConflictPaths: src/runner/conflict.ts");
+    expect(task?.doc).toContain("BlockedReason: sibling runner owns the same file");
+    expect(task?.doc).toContain("ParentAction: split task scope before retrying");
+    expect(task?.doc).toContain(
+      "VerificationHint: runner is blocked on a reported conflict; follow ParentAction before retrying.",
+    );
+  });
+
   it("cancel marks a prepared execute-mode run as cancelled and appends an event", async () => {
     const root = await mkGitRepoRoot();
     await configureCustomRunner(root, ["#!/bin/sh", "cat >/dev/null", "exit 0"]);

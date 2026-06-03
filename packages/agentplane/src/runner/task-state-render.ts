@@ -64,12 +64,21 @@ function formatRunnerAdapterLabel(adapterId: string): string {
 function renderTaskRunnerSummary(opts: {
   adapter_id: string;
   status: TaskRunnerHistoryEntry["status"];
+  evidence?: TaskRunnerHistoryEntry["evidence"] | null;
+  runner_summary?: string | null;
 }): string {
   const adapter = formatRunnerAdapterLabel(opts.adapter_id);
   if (opts.status === "prepared") return `${adapter} runner is prepared.`;
   if (opts.status === "running") return `${adapter} runner is running.`;
   if (opts.status === "success") return `${adapter} runner completed successfully.`;
   if (opts.status === "cancelled") return `${adapter} runner was cancelled.`;
+  if (
+    (opts.evidence?.conflict_paths?.length ?? 0) > 0 &&
+    opts.evidence?.blocked_reason &&
+    opts.evidence?.recommended_parent_action
+  ) {
+    return opts.runner_summary?.trim() || `${adapter} runner reported a blocked result.`;
+  }
   return `${adapter} runner failed; inspect run artifacts for details.`;
 }
 
@@ -126,11 +135,21 @@ function renderRunnerMetrics(
   return pairs.length > 0 ? pairs.join(", ") : null;
 }
 
-function renderVerificationHint(status: RunnerRunState["status"]): string {
+function renderVerificationHint(
+  status: RunnerRunState["status"],
+  evidence?: TaskRunnerHistoryEntry["evidence"] | null,
+): string {
   if (status === "success") {
     return "runner completed successfully; human verification and closure remain explicit lifecycle steps.";
   }
   if (status === "failed") {
+    if (
+      (evidence?.conflict_paths?.length ?? 0) > 0 &&
+      evidence?.blocked_reason &&
+      evidence?.recommended_parent_action
+    ) {
+      return "runner is blocked on a reported conflict; follow ParentAction before retrying.";
+    }
     return "runner failed; inspect artifacts before retrying or recording verification evidence.";
   }
   if (status === "cancelled") {
@@ -161,6 +180,15 @@ function renderRunnerEvidence(
   }
   if (evidence.verification_candidates?.length) {
     lines.push(`VerificationCandidates: ${evidence.verification_candidates.join(" | ")}`);
+  }
+  if (evidence.conflict_paths?.length) {
+    lines.push(`ConflictPaths: ${evidence.conflict_paths.join(", ")}`);
+  }
+  if (evidence.blocked_reason) {
+    lines.push(`BlockedReason: ${evidence.blocked_reason}`);
+  }
+  if (evidence.recommended_parent_action) {
+    lines.push(`ParentAction: ${evidence.recommended_parent_action}`);
   }
   return lines;
 }
@@ -228,12 +256,13 @@ function renderRunnerOutcomeEntry(opts: {
   if (evidenceLines.length > 0) {
     lines.push("", ...evidenceLines);
   }
-  lines.push("", `VerificationHint: ${renderVerificationHint(opts.entry.status)}`);
+  lines.push("", `VerificationHint: ${renderVerificationHint(opts.entry.status, entryEvidence)}`);
   return `${lines.join("\n").trimEnd()}\n`;
 }
 
 function buildTaskRunnerHistoryEntry(projection: RunnerOutcomeProjection): TaskRunnerHistoryEntry {
   const { state, result } = projection;
+  const evidence = result?.evidence ? { ...result.evidence } : undefined;
   const outcome: TaskRunnerHistoryEntry = {
     run_id: state.run_id,
     status: state.status,
@@ -248,10 +277,12 @@ function buildTaskRunnerHistoryEntry(projection: RunnerOutcomeProjection): TaskR
   outcome.summary = renderTaskRunnerSummary({
     adapter_id: state.adapter_id,
     status: state.status,
+    evidence,
+    runner_summary: result?.summary,
   });
   if (result?.output_paths?.length) outcome.output_paths = [...result.output_paths];
   if (result?.metrics) outcome.metrics = { ...result.metrics };
-  if (result?.evidence) outcome.evidence = { ...result.evidence };
+  if (evidence) outcome.evidence = evidence;
   return outcome;
 }
 

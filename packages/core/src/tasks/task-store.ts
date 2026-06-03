@@ -92,9 +92,12 @@ export type TaskRunnerExecutionMetrics = {
 export type TaskRunnerEvidence = {
   evidence_paths?: string[];
   changed_paths?: string[];
+  conflict_paths?: string[];
   files_changed_count?: number;
   tests_run?: string[];
   verification_candidates?: string[];
+  blocked_reason?: string;
+  recommended_parent_action?: string;
 };
 
 export type TaskRunnerTarget = {

@@ -57,6 +57,20 @@ function normalizeStringArray(value: unknown): string[] | undefined {
   return entries.length > 0 ? entries : undefined;
 }
 
+function normalizeStringArraySoft(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const entries = value
+    .map((entry) => (typeof entry === "string" ? entry.trim() : ""))
+    .filter((entry) => entry.length > 0);
+  return entries.length > 0 ? entries : undefined;
+}
+
+function normalizeTrimmedStringSoft(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const normalized = value.trim();
+  return normalized.length > 0 ? normalized : undefined;
+}
+
 function normalizeMachineIdentifier(value: unknown, field: string): string {
   if (typeof value !== "string") {
     throw new Error(`${field} must be a non-empty string`);
@@ -366,6 +380,35 @@ export async function preserveRunnerResultManifestSource(
     if (code === "ENOENT") return null;
     throw err;
   }
+}
+
+export function salvageBlockedRunnerResultManifest(
+  rawContent: string,
+): Pick<RunnerResultManifest, "summary" | "evidence"> | null {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rawContent);
+  } catch {
+    return null;
+  }
+  if (!isRecord(parsed) || !isRecord(parsed.evidence)) return null;
+  const conflict_paths = normalizeStringArraySoft(parsed.evidence.conflict_paths);
+  const blocked_reason = normalizeTrimmedStringSoft(parsed.evidence.blocked_reason);
+  const recommended_parent_action = normalizeTrimmedStringSoft(
+    parsed.evidence.recommended_parent_action,
+  );
+  if (!conflict_paths || !blocked_reason || !recommended_parent_action) {
+    return null;
+  }
+  const summary = normalizeTrimmedStringSoft(parsed.summary);
+  return {
+    ...(summary ? { summary } : {}),
+    evidence: {
+      conflict_paths,
+      blocked_reason,
+      recommended_parent_action,
+    },
+  };
 }
 
 export async function writeRunnerResultManifest(opts: {
