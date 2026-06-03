@@ -1,0 +1,5 @@
+ .../src/commands/guard/impl/allow.test.ts          | 40 ++++++++++++++++++++++
+ .../agentplane/src/commands/guard/impl/allow.ts    | 25 +++++++++++++-
+ packages/agentplane/src/policy/evaluate.test.ts    | 32 +++++++++++++++++
+ .../agentplane/src/policy/rules/protected-paths.ts | 36 ++++++++++++++++++-
+ 4 files changed, 131 insertions(+), 2 deletions(-)
