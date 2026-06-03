@@ -1,10 +1,11 @@
 ---
 id: "202606031744-7N0FHQ"
 title: "Support pre-merge branch_pr closure"
-status: "DOING"
+result_summary: "Implemented branch_pr pre-merge closure as the one-PR close path."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Evidence: focused vitest suite passed (3 files, 34 tests), typecheck passed, policy routing passed, docs CLI freshness passed, format:changed passed, git diff --check passed, ap doctor passed with unrelated historical DONE-task warnings."
-commit: null
+commit:
+  hash: "a1d7d6c78f84b22a83ee0014caca49c09cf509c2"
+  message: "🚧 7N0FHQ workflow: support pre-merge closure"
 comments:
   -
     author: "CODER"
     body: "Start: implementing pre-merge branch_pr closure so the task branch can carry the final closure packet before PR merge."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure implementation is verified and ready for the task PR merge."
 events:
   -
     type: "status"
@@ -60,8 +66,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: timeout 180s bunx vitest run packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts --pool=threads --maxWorkers=1 --testTimeout 120000 --hookTimeout 120000. Result: pass, 3 files and 34 tests passed. Command: bun run typecheck. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Command: bun run format:changed. Result: pass. Command: bun run docs:cli:check. Result: pass, cli reference up to date. Command: git diff --check. Result: pass. Command: ap doctor. Result: pass with unrelated historical DONE-task warnings 202605221745-8BHZSX and 202606011809-VCQPP7."
+  -
+    type: "status"
+    at: "2026-06-03T18:13:53.087Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure implementation is verified and ready for the task PR merge."
 doc_version: 3
-doc_updated_at: "2026-06-03T18:09:09.778Z"
+doc_updated_at: "2026-06-03T18:13:53.087Z"
 doc_updated_by: "CODER"
 description: "Implement a branch_pr closure mode where a task PR can carry a complete pre-merge closure packet in the task branch, making hosted close a no-op/recovery fallback instead of the normal second closure PR."
 sections:
