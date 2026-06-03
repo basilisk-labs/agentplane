@@ -102,7 +102,10 @@ describe("hermes adapter commands", () => {
     const root = await mkGitRepoRoot();
     const taskId = "202606010525-5TJNPS";
     const fakeBin = path.join(root, "failing-agentplane.js");
-    await writeFile(fakeBin, "#!/usr/bin/env node\nconsole.error('task-run-failed');\nprocess.exit(9);\n");
+    await writeFile(
+      fakeBin,
+      "#!/usr/bin/env node\nconsole.error('task-run-failed');\nprocess.exit(9);\n",
+    );
     await chmod(fakeBin, 0o755);
 
     const previous = process.env.AGENTPLANE_BIN;
@@ -179,9 +182,9 @@ describe("hermes adapter commands", () => {
       expect(payload.metadata.agentplane.comment_projection.schema).toBe(
         "agentplane.hermes.lifecycle-comment.v1",
       );
-      expect(
-        payload.metadata.agentplane.comment_projection.execution_packet.staleStateCheck,
-      ).toBe(`agentplane task next-action ${taskId} --explain`);
+      expect(payload.metadata.agentplane.comment_projection.execution_packet.staleStateCheck).toBe(
+        `agentplane task next-action ${taskId} --explain`,
+      );
       expect(
         payload.metadata.agentplane.comment_projection.execution_packet.returnControlWhen,
       ).toContain("recompute task next-action");
@@ -343,7 +346,10 @@ describe("hermes adapter commands", () => {
     const root = await mkGitRepoRoot();
     const taskId = await createApprovedTask(root);
     const fakeBin = path.join(root, "failing-agentplane.js");
-    await writeFile(fakeBin, "#!/usr/bin/env node\nconsole.error('child-failed');\nprocess.exit(7);\n");
+    await writeFile(
+      fakeBin,
+      "#!/usr/bin/env node\nconsole.error('child-failed');\nprocess.exit(7);\n",
+    );
     await chmod(fakeBin, 0o755);
 
     const previous = process.env.AGENTPLANE_BIN;

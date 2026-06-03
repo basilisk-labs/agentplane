@@ -349,12 +349,7 @@ describe("runCli route decision commands", () => {
         expect(parsed.route.next_action_code).toBe("verify_or_update_pr");
         expect(parsed.execution_packet.safe_to_mutate).toBe(false);
         expect(parsed.execution_packet.mutation_path_hint).toBe(null);
-        expect(parsed.execution_packet.exact_argv).toEqual([
-          "agentplane",
-          "pr",
-          "update",
-          taskId,
-        ]);
+        expect(parsed.execution_packet.exact_argv).toEqual(["agentplane", "pr", "update", taskId]);
         expect(parsed.execution_packet.must_run_from).toBeNull();
         expect(parsed.execution_packet.return_control_when).toContain("recompute task next-action");
         expect(parsed.execution_packet.stale_state_check).toBe(

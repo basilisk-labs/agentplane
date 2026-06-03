@@ -122,9 +122,7 @@ export function renderTaskRunnerBootstrap(
             routeDecision.oracle?.authoritativeCheckoutPath ??
             "unknown"
           }`,
-          `- route_exact_argv: ${
-            routeDecision.executionPacket?.exactArgv?.join(" ") ?? "none"
-          }`,
+          `- route_exact_argv: ${routeDecision.executionPacket?.exactArgv?.join(" ") ?? "none"}`,
           `- route_return_control_when: ${
             routeDecision.executionPacket?.returnControlWhen ??
             "after this run completes; recompute task next-action"
@@ -155,7 +153,10 @@ export function renderTaskRunnerBootstrap(
     "Return control according to route_return_control_when. Do not continue to a second route step until route_stale_state_check has been recomputed.",
     "When reading bundle.json directly, use camelCase JSON paths: route_decision.oracle.nextCommand, route_decision.oracle.authoritativeCheckout, route_decision.oracle.authoritativeCheckoutPath, route_decision.oracle.mutationPathHint, route_decision.oracle.blocker, and route_decision.oracle.phase.",
     ...(routeDecision?.executionPacket?.mustNot?.length
-      ? ["Route must-not rules:", ...routeDecision.executionPacket.mustNot.map((rule) => `- ${rule}`)]
+      ? [
+          "Route must-not rules:",
+          ...routeDecision.executionPacket.mustNot.map((rule) => `- ${rule}`),
+        ]
       : []),
     "If the requested work cannot be completed without widening lifecycle authority or touching likely sibling-owned files, stop and write a blocked result manifest with the conflict, affected paths, and recommended parent action.",
     ...(stopRules.length > 0
