@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202606032101-EDHW07/fix-upstream-issue-4412-agentplane-internal-erro",
+  "created_at": "2026-06-03T21:04:14.631Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202606032101-EDHW07",
+  "updated_at": "2026-06-03T21:04:14.631Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
