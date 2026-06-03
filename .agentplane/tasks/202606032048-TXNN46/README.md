@@ -4,7 +4,7 @@ title: "Accept blocked runner result manifests"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,26 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/result-manifest.test.ts | Result: pass | Evidence: initial focused run passed 1 file / 8 tests, including blocked terminal manifest regression. Command: bun run schemas:check | Result: pass | Evidence: schemas OK after schemas:sync. Command: bun run --filter=@agentplaneorg/core typecheck && bun run --filter=agentplane typecheck | Result: pass | Evidence: both package typechecks exited 0. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: ap task verify-show 202606032048-TXNN46 | Result: pass | Evidence: Verify Steps and blueprint snapshot read back current."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-03T21:14:06.037Z"
+  updated_by: "EVALUATOR"
+  note: "Runner result manifests now accept blocked as a terminal external-blocker outcome and persisted runner/task schemas render it without invalid_result_manifest."
+  evaluated_sha: "78a66d0417efa3a7be3f78f4b49003ca68606376"
+  blueprint_digest: "59d6014afabefbeacc55abea256563146c09d915447a8cd8713848eb127d25b2"
+  evidence_refs:
+    - ".agentplane/tasks/202606032048-TXNN46/README.md"
+    - ".agentplane/tasks/202606032048-TXNN46/quality/20260603-211406037-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606032048-TXNN46/quality/20260603-211406037-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606032048-TXNN46/quality/20260603-211406037-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606032048-TXNN46/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/runner/result-manifest.test.ts"
+    - "bun run schemas:check"
+    - "bun run --filter=@agentplaneorg/core typecheck"
+    - "bun run --filter=agentplane typecheck"
+    - "node .agentplane/policy/check-routing.mjs"
+  findings:
+    - "Regression coverage added for status=blocked in result-manifest parsing; core/spec/root schemas include blocked runner outcome; package typechecks, schema check, routing check, direct parser smoke, and task verify-show passed. Residual: repeated post-build Vitest startups hung before banner, while the initial focused Vitest run passed."
 commit: null
 comments:
   -
