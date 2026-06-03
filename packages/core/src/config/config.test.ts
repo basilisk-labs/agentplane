@@ -521,8 +521,7 @@ describe("config", () => {
       ],
       [
         "evaluator.skepticism_level",
-        (raw) =>
-          (((raw.evaluator as Record<string, unknown>).skepticism_level = "credulous")),
+        (raw) => ((raw.evaluator as Record<string, unknown>).skepticism_level = "credulous"),
         schemaPath("evaluator.skepticism_level"),
       ],
       ["execution", (raw) => (raw.execution = "nope"), schemaPath("execution")],
