@@ -1,10 +1,11 @@
 ---
 id: "202606030511-73DRFG"
 title: "Fix finish quality review target for artifact commits"
-status: "DOING"
+result_summary: "Merged via PR #4390."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -44,11 +45,16 @@ quality_review:
   findings:
     - "Target-selection tests cover explicit --implementation-commit, auto-resolution from quality_review.evaluated_sha, and the non-task-local stale-review path."
     - "Focused Vitest, policy routing, hotspot/baseline, and targeted formatting checks passed after splitting the oversized finish validation coverage."
-commit: null
+commit:
+  hash: "bb7b508a63db37c167d2a001b4cb16fb225cb56d"
+  message: "Merge PR #4390: fix finish quality review target"
 comments:
   -
     author: "CODER"
     body: "Start: fixing finish quality review freshness so artifact-only task commits do not force evaluator review loops; scope is finish target selection plus focused regression tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4390 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -93,9 +99,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: current head 0199d1d3c keeps finish.validation under oversized baseline by moving target-selection coverage to finish.quality-review-target; focused Vitest passed 33 tests across 3 files, policy routing OK, hotspot/baseline passed, and targeted Prettier passed."
+  -
+    type: "status"
+    at: "2026-06-03T06:09:02.522Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4390 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-03T05:55:26.952Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-03T06:09:02.529Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix finish/evaluator lifecycle mismatch where evaluator records the implementation commit while finish expects a task-artifact commit passed via --commit. Ensure --implementation-commit is used as the quality review target so artifact-only closure commits do not force a stale-review loop."
 sections:
   Summary: |-

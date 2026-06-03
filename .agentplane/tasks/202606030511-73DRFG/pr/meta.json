@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-03T06:08:19Z",
   "base": "main",
   "branch": "task/202606030511-73DRFG/finish-quality-review-target",
   "created_at": "2026-06-03T05:12:38.923Z",
   "diffstat_sha256": "sha256:51a172f490e34ea4e9d3bd7f8631ce9441c6063a08ecc7409ada506046f2c965",
   "last_verified_at": "2026-06-03T05:55:26.904Z",
   "last_verified_diffstat_sha256": "sha256:51a172f490e34ea4e9d3bd7f8631ce9441c6063a08ecc7409ada506046f2c965",
+  "merge_commit": "bb7b508a63db37c167d2a001b4cb16fb225cb56d",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-03T06:08:19Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606030511-73DRFG",
-  "updated_at": "2026-06-03T05:12:38.923Z",
+  "updated_at": "2026-06-03T06:08:19Z",
   "verify": {
     "status": "pass"
   }
