@@ -19,9 +19,9 @@ Fix finish/evaluator lifecycle mismatch where evaluator records the implementati
 - Note:
 
 ```text
-Verified: auto-resolve finish implementation commit handling is covered by focused tests; bunx
-vitest passed 33 tests across 3 files, policy routing OK, hotspot/baseline checks passed after
-moving regression coverage out of finish.validation, and targeted Prettier passed.
+Verified: current head 0199d1d3c keeps finish.validation under oversized baseline by moving
+target-selection coverage to finish.quality-review-target; focused Vitest passed 33 tests across 3
+files, policy routing OK, hotspot/baseline passed, and targeted Prettier passed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -34,10 +34,10 @@ moving regression coverage out of finish.validation, and targeted Prettier passe
 
 ```text
  .../src/commands/task/finish-blueprint-evidence.ts |  11 +-
- .../src/commands/task/finish-execute-commit.ts     |  37 +++++-
+ .../src/commands/task/finish-execute-commit.ts     |  37 ++++++-
  .../agentplane/src/commands/task/finish-execute.ts |   8 +-
- .../commands/task/finish.validation.unit.test.ts   | 133 +++++++++++++++++++++
- 4 files changed, 181 insertions(+), 8 deletions(-)
+ .../task/finish.quality-review-target.unit.test.ts | 117 +++++++++++++++++++++
+ 4 files changed, 165 insertions(+), 8 deletions(-)
 ```
 
 </details>

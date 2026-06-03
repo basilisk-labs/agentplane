@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202606030511-73DRFG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-03T05:55:42.590Z",
+  "verdict": "pass",
+  "summary": "Finish auto-resolves implementation provenance for task-local evidence commits, with regression coverage split into a focused test file to preserve hotspot budgets.",
+  "evaluated_sha": "0199d1d3cb0a4794e5eb91a9b8ec6b38822f55af",
+  "blueprint_digest": "ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3",
+  "findings": [
+    "Target-selection tests cover explicit --implementation-commit, auto-resolution from quality_review.evaluated_sha, and the non-task-local stale-review path.",
+    "Focused Vitest, policy routing, hotspot/baseline, and targeted formatting checks passed after splitting the oversized finish validation coverage."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606030511-73DRFG/README.md",
+    "packages/agentplane/src/commands/task/finish-execute-commit.ts",
+    "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts",
+    "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -4,7 +4,7 @@ title: "Fix finish quality review target for artifact commits"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -20,30 +20,30 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-03T05:53:47.853Z"
+  updated_at: "2026-06-03T05:55:26.904Z"
   updated_by: "CODER"
-  note: "Verified: auto-resolve finish implementation commit handling is covered by focused tests; bunx vitest passed 33 tests across 3 files, policy routing OK, hotspot/baseline checks passed after moving regression coverage out of finish.validation, and targeted Prettier passed."
+  note: "Verified: current head 0199d1d3c keeps finish.validation under oversized baseline by moving target-selection coverage to finish.quality-review-target; focused Vitest passed 33 tests across 3 files, policy routing OK, hotspot/baseline passed, and targeted Prettier passed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-03T05:46:59.027Z"
+  updated_at: "2026-06-03T05:55:42.590Z"
   updated_by: "EVALUATOR"
-  note: "Finish now auto-resolves implementation provenance when --commit points at task-local artifacts and quality_review.evaluated_sha points at the reviewed implementation commit."
-  evaluated_sha: "2f64b05d06691e49384b2d93afe20268aaf449be"
+  note: "Finish auto-resolves implementation provenance for task-local evidence commits, with regression coverage split into a focused test file to preserve hotspot budgets."
+  evaluated_sha: "0199d1d3cb0a4794e5eb91a9b8ec6b38822f55af"
   blueprint_digest: "ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3"
   evidence_refs:
     - ".agentplane/tasks/202606030511-73DRFG/README.md"
-    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-054659027-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-054659027-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-054659027-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-055542590-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-055542590-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-055542590-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606030511-73DRFG/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/task/finish-execute-commit.ts"
-    - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
-    - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
-    - "node .agentplane/policy/check-routing.mjs"
+    - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
+    - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
+    - "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000"
   findings:
-    - "The new regression test covers finish without --implementation-commit when the evidence commit advances only the active task artifact subtree."
-    - "Existing explicit --implementation-commit precedence remains covered, and focused finish/quality-review tests pass."
+    - "Target-selection tests cover explicit --implementation-commit, auto-resolution from quality_review.evaluated_sha, and the non-task-local stale-review path."
+    - "Focused Vitest, policy routing, hotspot/baseline, and targeted formatting checks passed after splitting the oversized finish validation coverage."
 commit: null
 comments:
   -
@@ -87,8 +87,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: auto-resolve finish implementation commit handling is covered by focused tests; bunx vitest passed 33 tests across 3 files, policy routing OK, hotspot/baseline checks passed after moving regression coverage out of finish.validation, and targeted Prettier passed."
+  -
+    type: "verify"
+    at: "2026-06-03T05:55:26.904Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: current head 0199d1d3c keeps finish.validation under oversized baseline by moving target-selection coverage to finish.quality-review-target; focused Vitest passed 33 tests across 3 files, policy routing OK, hotspot/baseline passed, and targeted Prettier passed."
 doc_version: 3
-doc_updated_at: "2026-06-03T05:53:47.960Z"
+doc_updated_at: "2026-06-03T05:55:26.952Z"
 doc_updated_by: "CODER"
 description: "Fix finish/evaluator lifecycle mismatch where evaluator records the implementation commit while finish expects a task-artifact commit passed via --commit. Ensure --implementation-commit is used as the quality review target so artifact-only closure commits do not force a stale-review loop."
 sections:
@@ -195,6 +201,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T05:48:53.900Z, excerpt_hash=sha256:1c2e1f27f615b990da7a16a6a590bb88b3642106021d68d0245722fca38d2003
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606030511-73DRFG-finish-quality-review-target/.agentplane/tasks/202606030511-73DRFG/blueprint/resolved-snapshot.json
+    - old_digest: ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3
+    - current_digest: ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606030511-73DRFG
+
+    ### 2026-06-03T05:55:26.904Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: current head 0199d1d3c keeps finish.validation under oversized baseline by moving target-selection coverage to finish.quality-review-target; focused Vitest passed 33 tests across 3 files, policy routing OK, hotspot/baseline passed, and targeted Prettier passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T05:53:47.960Z, excerpt_hash=sha256:1c2e1f27f615b990da7a16a6a590bb88b3642106021d68d0245722fca38d2003
 
     Details:
 
@@ -325,6 +350,25 @@ Note: Verified: auto-resolve finish implementation commit handling is covered by
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T05:48:53.900Z, excerpt_hash=sha256:1c2e1f27f615b990da7a16a6a590bb88b3642106021d68d0245722fca38d2003
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606030511-73DRFG-finish-quality-review-target/.agentplane/tasks/202606030511-73DRFG/blueprint/resolved-snapshot.json
+- old_digest: ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3
+- current_digest: ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606030511-73DRFG
+
+### 2026-06-03T05:55:26.904Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: current head 0199d1d3c keeps finish.validation under oversized baseline by moving target-selection coverage to finish.quality-review-target; focused Vitest passed 33 tests across 3 files, policy routing OK, hotspot/baseline passed, and targeted Prettier passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T05:53:47.960Z, excerpt_hash=sha256:1c2e1f27f615b990da7a16a6a590bb88b3642106021d68d0245722fca38d2003
 
 Details:
 
