@@ -270,7 +270,7 @@ export function renderIncidentCollectionPlanOutcome(
   const taskId =
     typeof opts?.taskId === "string" && opts.taskId.trim().length > 0 ? opts.taskId.trim() : null;
   const findingsNextStep = taskId
-    ? ` next: agentplane task findings add ${taskId} --observation "<observation>" --impact "<impact>" --resolution "<resolution>" --promote --external`
+    ? ` incident_promotion_next_command="agentplane task findings add ${taskId} --observation \\"<observation>\\" --impact \\"<impact>\\" --resolution \\"<resolution>\\" --promote --external"`
     : "";
 
   if (promoted > 0 && wrote) {

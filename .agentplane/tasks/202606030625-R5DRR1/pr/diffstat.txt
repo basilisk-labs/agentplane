@@ -1,0 +1,13 @@
+ .../src/cli/release-recovery-script.test.ts        | 10 ++-
+ .../cli/run-cli.core.pr-flow.pr-validation.test.ts |  2 +
+ .../cli/run-cli.core.route-decision.batch.test.ts  | 58 +++++++++++++
+ .../src/cli/run-cli.core.route-decision.test.ts    | 96 ++++++++++++++++++++++
+ .../agentplane/src/commands/incidents/shared.ts    |  2 +-
+ packages/agentplane/src/commands/pr/check.ts       | 10 +++
+ .../commands/pr/internal/pr-artifact-snapshot.ts   |  2 +
+ .../src/commands/shared/route-decision-blockers.ts | 39 +++++++++
+ .../commands/shared/route-decision-next-action.ts  | 32 ++++++++
+ .../src/commands/shared/route-decision.ts          | 74 ++++++++++++++++-
+ .../agentplane/src/commands/shared/route-oracle.ts | 16 ++++
+ scripts/lib/release-recovery-report.mjs            | 65 ++++++++-------
+ 12 files changed, 371 insertions(+), 35 deletions(-)
