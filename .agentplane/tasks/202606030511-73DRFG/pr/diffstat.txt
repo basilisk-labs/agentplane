@@ -1,0 +1,5 @@
+ .../src/commands/task/finish-blueprint-evidence.ts |  11 +-
+ .../src/commands/task/finish-execute-commit.ts     |  37 ++++++-
+ .../agentplane/src/commands/task/finish-execute.ts |   8 +-
+ .../task/finish.quality-review-target.unit.test.ts | 117 +++++++++++++++++++++
+ 4 files changed, 165 insertions(+), 8 deletions(-)
