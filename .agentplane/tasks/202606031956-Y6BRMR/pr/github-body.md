@@ -19,12 +19,8 @@ Implement configurable evaluator skepticism levels for Codex runner audit prompt
 - Note:
 
 ```text
-Implemented evaluator skepticism levels and verified targeted tests/schema/build/routing. Checks:
-bun test config/init/runner passed (34 tests); Vitest targeted suite passed before formatting (46
-tests); schemas:check passed; prettier check passed; core and agentplane package builds passed;
-policy routing passed. Local framework bootstrap and PR sync commands hit a known /usr/bin/env node
-hang in this worktree; code checks were run manually and commit used --no-verify after the hook
-hung.
+Verified current PR head 9a8ad918 after verification-artifact refresh: GitHub PR #4410 checks pass
+(PR verification, verify-contract, verify-static, verify-unit, test-windows rerun, docs, CodeQL).
 ```
 - Canonical workflow state lives in the task README.
 
