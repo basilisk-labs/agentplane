@@ -1,10 +1,11 @@
 ---
 id: "202606031915-DKGH15"
 title: "Refactor pre-merge closure metadata helpers"
-status: "DOING"
+result_summary: "Merged via PR #4403."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Focused checks passed: targeted Vitest suite (4 files, 38 tests), bun run typecheck, bun run format:changed, bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and AGENTPLANE_DEV_AUTO_BOOTSTRAP=0 ap doctor. Doctor OK with only existing historical warnings for 202605221745-8BHZSX and 202606011809-VCQPP7. Automatic framework bootstrap could not complete locally because @agentplaneorg/core tsup/esbuild service stopped; core JS was restored via bunx tsc -b packages/core --force for doctor readback."
   attempts: 0
-commit: null
+commit:
+  hash: "9fb28fd2497c4e0cb2baec2c6bfe618ebaf2f724"
+  message: "Merge pull request #4403 from basilisk-labs/task/202606031915-DKGH15/pre-merge-closure-helper-refactor"
 comments:
   -
     author: "CODER"
     body: "Start: centralize pre-merge closure marker parsing and validate PR #4402 metadata normalization before patch release."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4403 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused checks passed: targeted Vitest suite (4 files, 38 tests), bun run typecheck, bun run format:changed, bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and AGENTPLANE_DEV_AUTO_BOOTSTRAP=0 ap doctor. Doctor OK with only existing historical warnings for 202605221745-8BHZSX and 202606011809-VCQPP7. Automatic framework bootstrap could not complete locally because @agentplaneorg/core tsup/esbuild service stopped; core JS was restored via bunx tsc -b packages/core --force for doctor readback."
+  -
+    type: "status"
+    at: "2026-06-03T19:47:07.921Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4403 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-03T19:21:17.383Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-03T19:47:07.926Z"
+doc_updated_by: "INTEGRATOR"
 description: "Small pre-release refactor: centralize pre-merge closure marker parsing/validation, preserve merged task metadata cleanup from PR #4402, verify release readiness, then publish the next patch release."
 sections:
   Summary: |-
