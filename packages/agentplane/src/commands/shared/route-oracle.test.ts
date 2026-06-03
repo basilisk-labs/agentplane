@@ -175,4 +175,53 @@ describe("route oracle execution packet", () => {
       "stale runner pid is no longer alive",
     ]);
   });
+
+  it("stops shell-chain commands until the route is split into argv-safe steps", () => {
+    const task = {
+      id: "202605281713-SHELL1",
+      title: "Route packet shell task",
+      description: "Exercise unsafe shell command classification.",
+      status: "DOING",
+      priority: "med",
+      owner: "INTEGRATOR",
+      depends_on: [],
+      tags: ["code"],
+      verify: [],
+      plan_approval: {
+        state: "approved",
+        approved_by: "ORCHESTRATOR",
+        approved_at: "2026-05-28T00:00:00.000Z",
+      },
+    } satisfies TaskData;
+    const oracle: RouteOracle = {
+      phase: "hosted_close_recorded_upstream",
+      authoritativeCheckout: "base_checkout",
+      authoritativeCheckoutPath: "/repo",
+      mutationPathHint: "/repo",
+      blocker: null,
+      nextCommand: "git fetch origin main && git merge --ff-only origin/main",
+      summary: "sync hosted close back to base",
+    };
+
+    const packet = deriveRouteExecutionPacket({
+      task,
+      blockers: [],
+      oracle,
+      nextAction: {
+        code: "sync_hosted_close",
+        command: oracle.nextCommand,
+        summary: oracle.summary,
+        requiresApproval: false,
+      },
+    });
+
+    expect(packet).toMatchObject({
+      actionKind: "stop",
+      safeToMutate: false,
+      exactArgv: null,
+      stopReason:
+        "next command is not argv-safe; route must be split before an external agent can execute it",
+    });
+    expect(packet.returnControlWhen).toContain("split into argv-safe steps");
+  });
 });

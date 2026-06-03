@@ -839,7 +839,12 @@ describe("runCli route decision commands", () => {
       const parsed = JSON.parse(statusIo.stdout) as {
         nextAction: { code: string; command: string };
         oracle: { phase: string; authoritativeCheckout: string };
-        executionPacket: { recommendedRole: string; safeToMutate: boolean };
+        executionPacket: {
+          actionKind: string;
+          exactArgv: string[] | null;
+          recommendedRole: string;
+          safeToMutate: boolean;
+        };
       };
       expect(parsed.nextAction).toMatchObject({
         code: "sync_hosted_close",
@@ -851,8 +856,10 @@ describe("runCli route decision commands", () => {
         authoritativeCheckout: "base_checkout",
       });
       expect(parsed.executionPacket).toMatchObject({
+        actionKind: "stop",
+        exactArgv: null,
         recommendedRole: "INTEGRATOR",
-        safeToMutate: true,
+        safeToMutate: false,
       });
     } finally {
       statusIo.restore();

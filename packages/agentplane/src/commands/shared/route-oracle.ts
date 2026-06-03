@@ -52,7 +52,8 @@ function actionKindFor(opts: {
   if (opts.task.status === "DONE" && opts.nextAction.command === null) return "stop";
   if (opts.nextAction.requiresApproval) return "provider_action";
   if (!opts.nextAction.command && opts.nextAction.code.startsWith("wait_")) return "wait";
-  return opts.nextAction.command ? "local_command" : "stop";
+  if (!opts.nextAction.command) return "stop";
+  return exactArgvFor(opts.nextAction.command) ? "local_command" : "stop";
 }
 
 function recommendedRoleFor(opts: {
@@ -172,6 +173,9 @@ function returnControlWhenFor(opts: {
   }
   if (opts.actionKind === "wait") {
     return "after the waited condition changes or the parent supervisor grants reclaim/escalation";
+  }
+  if (opts.nextAction.command && exactArgvFor(opts.nextAction.command) === null) {
+    return "after this route is split into argv-safe steps; recompute task next-action before mutating";
   }
   return opts.nextAction.summary;
 }
@@ -357,7 +361,9 @@ export function deriveRouteExecutionPacket(opts: {
   const requiresProviderAction = actionKind === "provider_action";
   const stopReason =
     actionKind === "stop"
-      ? (opts.blockers[0]?.summary ?? opts.nextAction.summary)
+      ? opts.nextAction.command && exactArgvFor(opts.nextAction.command) === null
+        ? "next command is not argv-safe; route must be split before an external agent can execute it"
+        : (opts.blockers[0]?.summary ?? opts.nextAction.summary)
       : actionKind === "wait"
         ? opts.nextAction.summary
         : null;
@@ -365,7 +371,7 @@ export function deriveRouteExecutionPacket(opts: {
   return {
     schemaVersion: 1,
     actionKind,
-    safeToMutate: opts.oracle.mutationPathHint !== null,
+    safeToMutate: actionKind === "local_command" && opts.oracle.mutationPathHint !== null,
     requiresProviderAction,
     recommendedRole: recommendedRoleFor({ nextAction: opts.nextAction, actionKind }),
     authoritativeCheckout: opts.oracle.authoritativeCheckout,

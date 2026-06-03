@@ -17,7 +17,7 @@
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
-      "lines": 1164
+      "lines": 1171
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
