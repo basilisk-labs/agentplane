@@ -5,7 +5,7 @@ import type { InsightsReport } from "./insights-report.js";
 
 export type InsightsTriagePreset = "startup-routing";
 
-export type InsightsTriageFinding = {
+type InsightsTriageFinding = {
   code: string;
   severity: "info" | "warning";
   confidence: "low" | "medium" | "high";

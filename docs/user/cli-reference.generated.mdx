@@ -2404,6 +2404,35 @@ agentplane insights issue --allow-disabled-feedback --error-code E_INTERNAL
 
 - Create one issue from an explicitly opted-out project without changing config.
 
+### insights report
+
+Print a local-only privacy-bounded Agentplane diagnostic report.
+
+Usage:
+
+```text
+agentplane insights report [options]
+```
+
+Options:
+
+- `--json`: Emit the full report as machine-readable JSON. (default=false)
+- `--recent-limit <n>`: Number of recent task ids to include (default: 8, max: 25).
+
+Examples:
+
+```sh
+agentplane insights report
+```
+
+- Print a readable local diagnostic summary.
+
+```sh
+agentplane insights report --json
+```
+
+- Print the full local diagnostic report for support tooling.
+
 ### insights triage
 
 Print structured privacy-bounded diagnostic findings for support triage.
@@ -2439,35 +2468,6 @@ agentplane insights triage --preset startup-routing --json
 ```
 
 - Emit machine-readable triage for support tooling.
-
-### insights report
-
-Print a local-only privacy-bounded Agentplane diagnostic report.
-
-Usage:
-
-```text
-agentplane insights report [options]
-```
-
-Options:
-
-- `--json`: Emit the full report as machine-readable JSON. (default=false)
-- `--recent-limit <n>`: Number of recent task ids to include (default: 8, max: 25).
-
-Examples:
-
-```sh
-agentplane insights report
-```
-
-- Print a readable local diagnostic summary.
-
-```sh
-agentplane insights report --json
-```
-
-- Print the full local diagnostic report for support tooling.
 
 ### runtime explain
 
