@@ -243,12 +243,20 @@ async function resolveLocalRecordedCloseFlow(opts: {
     const trimmedBase = meta.base?.trim();
     const base = trimmedBase && trimmedBase.length > 0 ? trimmedBase : "main";
     if (meta.status !== "MERGED" || !meta.merge_commit) return null;
-    const recorded = await taskCloseAlreadyRecordedOnBase({
+    const remoteRecorded = await taskCloseAlreadyRecordedOnBase({
       gitRoot: opts.ctx.resolvedProject.gitRoot,
       workflowDir: opts.ctx.config.paths.workflow_dir,
       taskId: opts.task.id,
-      baseBranch: base,
-    });
+      baseBranch: `origin/${base}`,
+    }).catch(() => false);
+    const recorded = remoteRecorded
+      ? true
+      : await taskCloseAlreadyRecordedOnBase({
+          gitRoot: opts.ctx.resolvedProject.gitRoot,
+          workflowDir: opts.ctx.config.paths.workflow_dir,
+          taskId: opts.task.id,
+          baseBranch: base,
+        }).catch(() => false);
     if (!recorded) return null;
     return {
       task: {

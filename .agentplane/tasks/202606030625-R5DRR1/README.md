@@ -4,7 +4,7 @@ title: "Make route context explicit for agent handoffs"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-03T06:39:17.474Z"
+  updated_at: "2026-06-03T06:57:10.181Z"
   updated_by: "CODER"
-  note: "Verified: focused route/pr/release regressions passed (52 tests), incident finish/verify Vitest unit coverage passed (33 tests), typecheck passed after framework bootstrap, routing policy passed, doctor passed with only pre-existing DONE-task commit warnings, and pr check passed with explicit artifact_source output."
+  note: "Review fix verified: local route fallback now checks origin/<base> before local base for hosted close evidence; targeted route, PR validation, recovery, close-tail unit tests, format, lint, and typecheck passed."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: focused route/pr/release regressions passed (52 tests), incident finish/verify Vitest unit coverage passed (33 tests), typecheck passed after framework bootstrap, routing policy passed, doctor passed with only pre-existing DONE-task commit warnings, and pr check passed with explicit artifact_source output."
+  -
+    type: "verify"
+    at: "2026-06-03T06:57:10.181Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review fix verified: local route fallback now checks origin/<base> before local base for hosted close evidence; targeted route, PR validation, recovery, close-tail unit tests, format, lint, and typecheck passed."
 doc_version: 3
-doc_updated_at: "2026-06-03T06:39:17.491Z"
+doc_updated_at: "2026-06-03T06:57:10.202Z"
 doc_updated_by: "CODER"
 description: "Replace ambiguous post-merge, PR artifact, included batch, incident, and release recovery guidance with explicit structured context and next actions so agents do not infer lifecycle state from stale artifacts or prose."
 sections:
@@ -86,11 +92,33 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606030625-R5DRR1
 
+    ### 2026-06-03T06:57:10.181Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Review fix verified: local route fallback now checks origin/<base> before local base for hosted close evidence; targeted route, PR validation, recovery, close-tail unit tests, format, lint, and typecheck passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T06:39:17.491Z, excerpt_hash=sha256:7cbcf825b4b9809805fc458e8693cf79f2e068b5128d28a92621b59bd5304add
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606030625-R5DRR1-make-route-context-explicit-for-agent-handoffs/.agentplane/tasks/202606030625-R5DRR1/blueprint/resolved-snapshot.json
+    - old_digest: a9a94162b2886894cc690f61e1918b24d178ab27ac051265570e602c713f99ed
+    - current_digest: a9a94162b2886894cc690f61e1918b24d178ab27ac051265570e602c713f99ed
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606030625-R5DRR1
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: PR review noted that sync_hosted_close must work when hosted close landed on origin/<base> but local base is stale.
+      Impact: Agents no longer miss the sync_hosted_close route in the common stale-local-base state.
+      Resolution: resolveLocalRecordedCloseFlow checks remote-tracking base first and keeps local base as fallback; route-decision test now resets local main behind origin/main.
 id_source: "generated"
 ---
 ## Summary
@@ -141,6 +169,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606030625-R5DRR1
 
+### 2026-06-03T06:57:10.181Z — VERIFY — ok
+
+By: CODER
+
+Note: Review fix verified: local route fallback now checks origin/<base> before local base for hosted close evidence; targeted route, PR validation, recovery, close-tail unit tests, format, lint, and typecheck passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T06:39:17.491Z, excerpt_hash=sha256:7cbcf825b4b9809805fc458e8693cf79f2e068b5128d28a92621b59bd5304add
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606030625-R5DRR1-make-route-context-explicit-for-agent-handoffs/.agentplane/tasks/202606030625-R5DRR1/blueprint/resolved-snapshot.json
+- old_digest: a9a94162b2886894cc690f61e1918b24d178ab27ac051265570e602c713f99ed
+- current_digest: a9a94162b2886894cc690f61e1918b24d178ab27ac051265570e602c713f99ed
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606030625-R5DRR1
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -149,3 +196,7 @@ BlueprintSnapshotRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: PR review noted that sync_hosted_close must work when hosted close landed on origin/<base> but local base is stale.
+  Impact: Agents no longer miss the sync_hosted_close route in the common stale-local-base state.
+  Resolution: resolveLocalRecordedCloseFlow checks remote-tracking base first and keeps local base as fallback; route-decision test now resets local main behind origin/main.
