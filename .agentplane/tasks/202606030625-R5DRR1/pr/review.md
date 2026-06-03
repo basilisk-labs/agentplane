@@ -1,0 +1,36 @@
+# PR Review
+
+Created: 2026-06-03T06:26:10.916Z
+
+## Task
+
+- Task: `202606030625-R5DRR1`
+- Title: Make route context explicit for agent handoffs
+- Status: DOING
+- Branch: `task/202606030625-R5DRR1/make-route-context-explicit-for-agent-handoffs`
+- Canonical task record: `.agentplane/tasks/202606030625-R5DRR1/README.md`
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-06-03T06:26:10.916Z
+- Branch: task/202606030625-R5DRR1/make-route-context-explicit-for-agent-handoffs
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+No changes detected.
+```
+
+</details>
+<!-- END AUTO SUMMARY -->
