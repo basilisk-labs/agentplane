@@ -13,7 +13,7 @@ Created: 2026-06-03T06:26:10.916Z
 ## Verification
 
 - State: ok
-- Note: Verified: focused route/pr/release regressions passed (52 tests), incident finish/verify Vitest unit coverage passed (33 tests), typecheck passed after framework bootstrap, routing policy passed, doctor passed with only pre-existing DONE-task commit warnings, and pr check passed with explicit artifact_source output.
+- Note: Review fix verified: local route fallback now checks origin/<base> before local base for hosted close evidence; targeted route, PR validation, recovery, close-tail unit tests, format, lint, and typecheck passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,19 +29,19 @@ Created: 2026-06-03T06:26:10.916Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/release-recovery-script.test.ts        | 10 ++-
- .../cli/run-cli.core.pr-flow.pr-validation.test.ts |  2 +
- .../cli/run-cli.core.route-decision.batch.test.ts  | 60 ++++++++++++++
- .../src/cli/run-cli.core.route-decision.test.ts    | 92 ++++++++++++++++++++++
- .../agentplane/src/commands/incidents/shared.ts    |  7 +-
- packages/agentplane/src/commands/pr/check.ts       | 10 +++
- .../commands/pr/internal/pr-artifact-snapshot.ts   |  2 +
- .../src/commands/shared/route-decision-blockers.ts | 39 +++++++++
- .../commands/shared/route-decision-next-action.ts  | 32 ++++++++
- .../src/commands/shared/route-decision.ts          | 75 +++++++++++++++++-
- .../agentplane/src/commands/shared/route-oracle.ts | 16 ++++
- scripts/lib/release-recovery-report.mjs            | 65 ++++++++-------
- 12 files changed, 374 insertions(+), 36 deletions(-)
+ .../src/cli/release-recovery-script.test.ts        |  10 +-
+ .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   2 +
+ .../cli/run-cli.core.route-decision.batch.test.ts  |  60 ++++++++++++
+ .../src/cli/run-cli.core.route-decision.test.ts    | 107 +++++++++++++++++++++
+ .../agentplane/src/commands/incidents/shared.ts    |   7 +-
+ packages/agentplane/src/commands/pr/check.ts       |  10 ++
+ .../commands/pr/internal/pr-artifact-snapshot.ts   |   2 +
+ .../src/commands/shared/route-decision-blockers.ts |  39 ++++++++
+ .../commands/shared/route-decision-next-action.ts  |  32 ++++++
+ .../src/commands/shared/route-decision.ts          |  83 +++++++++++++++-
+ .../agentplane/src/commands/shared/route-oracle.ts |  16 +++
+ scripts/lib/release-recovery-report.mjs            |  65 +++++++------
+ 12 files changed, 397 insertions(+), 36 deletions(-)
 ```
 
 </details>

@@ -731,6 +731,15 @@ describe("runCli route decision commands", () => {
       ),
       "utf8",
     );
+    await execFileAsync("git", ["add", path.join(root, ".agentplane", "tasks", taskId)], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", `code: ${taskId} record merged PR metadata`], {
+      cwd: root,
+    });
+    const localBaseRev = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const localBaseCommit = localBaseRev.stdout.trim();
+
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const readme = await readFile(readmePath, "utf8");
     const findingsIndex = readme.lastIndexOf("## Findings");
@@ -741,7 +750,7 @@ describe("runCli route decision commands", () => {
       "utf8",
     );
     const suffix = taskId.split("-").at(-1);
-    await execFileAsync("git", ["add", readmePath, path.join(prDir, "meta.json")], { cwd: root });
+    await execFileAsync("git", ["add", readmePath], { cwd: root });
     await execFileAsync(
       "git",
       ["commit", "-m", `code: ${suffix} close: (${taskId}) hosted close`],
@@ -749,6 +758,12 @@ describe("runCli route decision commands", () => {
         cwd: root,
       },
     );
+    const remoteBaseRev = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const remoteBaseCommit = remoteBaseRev.stdout.trim();
+    await execFileAsync("git", ["update-ref", "refs/remotes/origin/main", remoteBaseCommit], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["reset", "--hard", localBaseCommit], { cwd: root });
 
     const statusIo = captureStdIO();
     try {
