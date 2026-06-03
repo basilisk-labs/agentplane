@@ -125,12 +125,15 @@ export function makeRunTaskCompleteHandler(
     });
 
     if (workflowMode === "branch_pr") {
-      const nextCommand = `agentplane pr open ${p.taskId} --branch task/${p.taskId}/<slug> --author ${p.by}`;
+      const nextCommand = `agentplane task next-action ${p.taskId} --explain`;
+      const prCommand = `agentplane pr open ${p.taskId} --branch task/${p.taskId}/<slug> --author ${p.by}`;
       const payload = {
         task_id: p.taskId,
-        status: "verified",
+        status: "verified_pending_closeout",
+        lifecycle_status: "not_finished",
         workflow_mode: workflowMode,
         next_command: nextCommand,
+        pr_command: prCommand,
       };
       if (p.json) {
         output.json(payload);
@@ -138,9 +141,11 @@ export function makeRunTaskCompleteHandler(
         output.report(
           [
             { label: "task", value: p.taskId },
-            { label: "status", value: "verified" },
+            { label: "status", value: "verified_pending_closeout" },
+            { label: "lifecycle", value: "not_finished" },
             { label: "workflow_mode", value: workflowMode },
             { label: "next", value: nextCommand },
+            { label: "pr", value: prCommand },
           ],
           { header: "task complete" },
         );

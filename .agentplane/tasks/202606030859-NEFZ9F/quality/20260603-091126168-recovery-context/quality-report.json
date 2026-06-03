@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202606030859-NEFZ9F",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-03T09:11:26.168Z",
+  "verdict": "pass",
+  "summary": "CLI behavior now distinguishes branch_pr verification from lifecycle closure and no longer hard-blocks distinct similar task titles on current task branch HEAD.",
+  "evaluated_sha": "519b3c7e9edd2b3088c74bc4367f8e48c11e9579",
+  "blueprint_digest": "01440ed567fcee9c14527365cbbf5411a7d000374b8c3713d0555b7a76106365",
+  "findings": [
+    "task complete in branch_pr returns verified_pending_closeout with lifecycle_status=not_finished and a route-oracle next command.",
+    "task new warns on similar open titles by default, while exact duplicate titles still require --allow-duplicate."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606030859-NEFZ9F/README.md",
+    "packages/agentplane/src/commands/task/complete.command.ts",
+    "packages/agentplane/src/commands/task/new.ts",
+    "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
