@@ -4,7 +4,7 @@ title: "Make route context explicit for agent handoffs"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-06-03T06:39:17.474Z"
+  updated_by: "CODER"
+  note: "Verified: focused route/pr/release regressions passed (52 tests), incident finish/verify Vitest unit coverage passed (33 tests), typecheck passed after framework bootstrap, routing policy passed, doctor passed with only pre-existing DONE-task commit warnings, and pr check passed with explicit artifact_source output."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement explicit route and evidence contracts for post-merge hosted close, PR artifacts, batch closure metadata, incidents, and release recovery so agents receive deterministic next actions instead of inferring state from stale artifacts."
+  -
+    type: "verify"
+    at: "2026-06-03T06:39:17.474Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: focused route/pr/release regressions passed (52 tests), incident finish/verify Vitest unit coverage passed (33 tests), typecheck passed after framework bootstrap, routing policy passed, doctor passed with only pre-existing DONE-task commit warnings, and pr check passed with explicit artifact_source output."
 doc_version: 3
-doc_updated_at: "2026-06-03T06:26:10.814Z"
+doc_updated_at: "2026-06-03T06:39:17.491Z"
 doc_updated_by: "CODER"
 description: "Replace ambiguous post-merge, PR artifact, included batch, incident, and release recovery guidance with explicit structured context and next actions so agents do not infer lifecycle state from stale artifacts or prose."
 sections:
@@ -61,6 +67,25 @@ sections:
     4. After PR artifacts are published, run `ap pr check 202606030625-R5DRR1`. Expected: PR artifacts and verification metadata are fresh.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-06-03T06:39:17.474Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: focused route/pr/release regressions passed (52 tests), incident finish/verify Vitest unit coverage passed (33 tests), typecheck passed after framework bootstrap, routing policy passed, doctor passed with only pre-existing DONE-task commit warnings, and pr check passed with explicit artifact_source output.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T06:26:10.814Z, excerpt_hash=sha256:7cbcf825b4b9809805fc458e8693cf79f2e068b5128d28a92621b59bd5304add
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606030625-R5DRR1-make-route-context-explicit-for-agent-handoffs/.agentplane/tasks/202606030625-R5DRR1/blueprint/resolved-snapshot.json
+    - old_digest: a9a94162b2886894cc690f61e1918b24d178ab27ac051265570e602c713f99ed
+    - current_digest: a9a94162b2886894cc690f61e1918b24d178ab27ac051265570e602c713f99ed
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606030625-R5DRR1
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -97,6 +122,25 @@ Replace ambiguous post-merge, PR artifact, included batch, incident, and release
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-06-03T06:39:17.474Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: focused route/pr/release regressions passed (52 tests), incident finish/verify Vitest unit coverage passed (33 tests), typecheck passed after framework bootstrap, routing policy passed, doctor passed with only pre-existing DONE-task commit warnings, and pr check passed with explicit artifact_source output.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T06:26:10.814Z, excerpt_hash=sha256:7cbcf825b4b9809805fc458e8693cf79f2e068b5128d28a92621b59bd5304add
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606030625-R5DRR1-make-route-context-explicit-for-agent-handoffs/.agentplane/tasks/202606030625-R5DRR1/blueprint/resolved-snapshot.json
+- old_digest: a9a94162b2886894cc690f61e1918b24d178ab27ac051265570e602c713f99ed
+- current_digest: a9a94162b2886894cc690f61e1918b24d178ab27ac051265570e602c713f99ed
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606030625-R5DRR1
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
