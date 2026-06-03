@@ -152,6 +152,7 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
   const command = typeof err.context?.command === "string" ? err.context.command : undefined;
   const reasonCode =
     typeof err.context?.reason_code === "string" ? String(err.context.reason_code) : undefined;
+  const backendMessage = err.message;
   const usage = command ? `agentplane help ${command} --compact` : "agentplane help";
   const withExplicit = (fallback: ErrorGuidance): ErrorGuidance => ({
     state: explicit.state ?? fallback.state,
@@ -303,6 +304,21 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
       });
     }
     case "E_BACKEND": {
+      if (
+        backendMessage.includes("Cloud backend request failed") ||
+        backendMessage.includes("Cloud backend request failed before a response was received.")
+      ) {
+        return withExplicit({
+          hint:
+            "If `.agentplane/tasks` already contains the task READMEs you need, temporarily switch `.agentplane/backends/local/backend.json` to `\"id\": \"local\"` and rerun the task command against repo-local truth.",
+          nextAction: {
+            command: "agentplane config show",
+            reason:
+              "inspect the active backend config before switching to the local fallback or retrying the cloud route",
+            reasonCode: "backend_local_fallback",
+          },
+        });
+      }
       if (command?.includes("sync")) {
         return withExplicit({
           hint: "Check backend config under .agentplane/backends and retry.",

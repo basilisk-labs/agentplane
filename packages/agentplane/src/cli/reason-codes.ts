@@ -125,6 +125,12 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
     summary: "backend configuration is missing or invalid",
     action: "inspect backend config under .agentplane/backends",
   },
+  backend_local_fallback: {
+    code: "backend_local_fallback",
+    category: "backend",
+    summary: "cloud-backed task surface is unavailable and local task files may be the quickest recovery path",
+    action: "inspect backend config, switch to local if repo-local task files are authoritative enough, then rerun the command",
+  },
   validation_preflight: {
     code: "validation_preflight",
     category: "validation",

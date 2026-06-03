@@ -157,8 +157,9 @@ export async function buildPreflightReport(opts: {
       const message = compactError(err);
       taskListLoaded = { ok: false, error: message };
       nextActions.push({
-        command: "agentplane task list",
-        reason: `task backend unavailable (${message})`,
+        command: "agentplane config show",
+        reason:
+          "inspect the active backend config; if cloud is unavailable and `.agentplane/tasks` is usable, switch the backend id to local before rerunning task surfaces",
       });
       harnessHealthReasons.push("task_backend_unavailable");
     }

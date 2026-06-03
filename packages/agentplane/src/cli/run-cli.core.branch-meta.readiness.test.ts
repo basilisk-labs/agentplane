@@ -303,6 +303,55 @@ describe("runCli", () => {
     }
   });
 
+  it("preflight --json points unavailable cloud backends at local fallback config review", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(
+      path.join(root, ".agentplane", "backends", "local", "backend.json"),
+      JSON.stringify({
+        id: "cloud",
+        settings: {
+          endpoint: "https://cloud.example",
+          token: "test-token",
+          project_id: "proj_123",
+          cache_dir: ".agentplane/tasks",
+        },
+      }),
+      "utf8",
+    );
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response("", { status: 502, statusText: "Bad Gateway" }));
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--json", "--mode", "full", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        task_list_loaded?: { ok?: boolean; error?: string };
+        next_actions?: { command?: string; reason?: string }[];
+        harness_health?: { reasons?: string[] };
+      };
+      expect(payload.task_list_loaded?.ok).toBe(false);
+      expect(payload.task_list_loaded?.error).toContain("Cloud backend request failed: HTTP 502");
+      expect(payload.next_actions).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            command: "agentplane config show",
+          }),
+        ]),
+      );
+      expect(
+        (payload.next_actions ?? []).some((action) =>
+          String(action.reason).includes("switch the backend id to local"),
+        ),
+      ).toBe(true);
+      expect(payload.harness_health?.reasons).toContain("task_backend_unavailable");
+    } finally {
+      fetchSpy.mockRestore();
+      io.restore();
+    }
+  });
+
   it("preflight --json uses quick mode by default and skips task backend probe", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
