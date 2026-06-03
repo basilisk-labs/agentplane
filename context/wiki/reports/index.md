@@ -31,4 +31,5 @@ agentplane_context:
 - [Task history version assimilation report](task-history-version-assimilation.md)
 - [Task history version coverage](task-history-version-coverage.md)
 - [Task history version pre-extraction packets](task-history-version-packets.md)
+- [Open PR assimilation 2026-06-03](open-pr-assimilation-2026-06-03.md)
 <!-- agentplane-context-wiki-index:end -->
