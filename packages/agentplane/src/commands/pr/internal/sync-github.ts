@@ -6,6 +6,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   isTransientGhTransportError,
   normalizeGhTransportError,
+  resolveGhCommand,
   withGhTransportRetry,
 } from "../../shared/gh-transport.js";
 import { ghEnv } from "./gh-api.js";
@@ -100,11 +101,12 @@ export async function tryLookupExistingGithubPrByBranch(opts: {
   const baseBranch = opts.baseBranch?.trim() ?? "";
   if (baseBranch) query.set("base", baseBranch);
   const endpoint = `repos/${repo}/pulls?${query.toString()}`;
+  const gh = resolveGhCommand();
 
   try {
     const { stdout } = await withGhTransportRetry(
       () =>
-        execFileAsync("gh", ["api", endpoint], {
+        execFileAsync(gh.command, [...gh.argsPrefix, "api", endpoint], {
           cwd: opts.gitRoot,
           env: ghEnv(),
           maxBuffer: 10 * 1024 * 1024,
@@ -140,11 +142,12 @@ export async function tryLookupExistingGithubPrByBranchPrefix(opts: {
   const endpoint = `repos/${repo}/pulls?${query.toString()}`;
   const branchPrefix = opts.branchPrefix.trim();
   if (!branchPrefix) return null;
+  const gh = resolveGhCommand();
 
   try {
     const { stdout } = await withGhTransportRetry(
       () =>
-        execFileAsync("gh", ["api", endpoint], {
+        execFileAsync(gh.command, [...gh.argsPrefix, "api", endpoint], {
           cwd: opts.gitRoot,
           env: ghEnv(),
           maxBuffer: 10 * 1024 * 1024,
@@ -270,13 +273,18 @@ export async function tryCreateGithubPr(opts: {
       )}\n`,
       "utf8",
     );
+    const gh = resolveGhCommand();
     const { stdout } = await withGhTransportRetry(
       () =>
-        execFileAsync("gh", ["api", `repos/${repo}/pulls`, "-X", "POST", "--input", payloadPath], {
-          cwd: opts.gitRoot,
-          env: ghEnv(),
-          maxBuffer: 10 * 1024 * 1024,
-        }),
+        execFileAsync(
+          gh.command,
+          [...gh.argsPrefix, "api", `repos/${repo}/pulls`, "-X", "POST", "--input", payloadPath],
+          {
+            cwd: opts.gitRoot,
+            env: ghEnv(),
+            maxBuffer: 10 * 1024 * 1024,
+          },
+        ),
       { label: `running gh api repos/${repo}/pulls` },
     );
     return {

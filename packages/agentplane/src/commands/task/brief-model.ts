@@ -90,6 +90,12 @@ export type TaskBrief = {
     authoritative_checkout: string;
     authoritative_checkout_path: string | null;
     mutation_path_hint: string | null;
+    must_run_from: string | null;
+    exact_argv: string[] | null;
+    must_not: string[];
+    return_control_when: string;
+    human_provider_action: string | null;
+    stale_state_check: string;
     evidence_missing: string[];
     verification_candidate: string | null;
     stop_reason: string | null;
@@ -305,6 +311,12 @@ export async function buildTaskBrief(opts: {
       authoritative_checkout: route.executionPacket.authoritativeCheckout,
       authoritative_checkout_path: route.executionPacket.authoritativeCheckoutPath,
       mutation_path_hint: route.executionPacket.mutationPathHint,
+      must_run_from: route.executionPacket.mustRunFrom,
+      exact_argv: route.executionPacket.exactArgv,
+      must_not: route.executionPacket.mustNot,
+      return_control_when: route.executionPacket.returnControlWhen,
+      human_provider_action: route.executionPacket.humanProviderAction,
+      stale_state_check: route.executionPacket.staleStateCheck,
       evidence_missing: route.executionPacket.evidenceMissing,
       verification_candidate: route.executionPacket.verificationCandidate,
       stop_reason: route.executionPacket.stopReason,

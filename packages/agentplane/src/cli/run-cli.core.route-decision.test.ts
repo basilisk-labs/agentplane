@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { chmod, mkdir, readFile, realpath, writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -42,6 +42,28 @@ async function createBranchPrTask(root: string): Promise<string> {
     return taskIo.stdout.trim();
   } finally {
     taskIo.restore();
+  }
+}
+
+async function withFakeGh<T>(
+  root: string,
+  filename: string,
+  source: string,
+  fn: () => Promise<T>,
+): Promise<T> {
+  const fakeGh = path.join(root, filename);
+  await writeFile(fakeGh, source, "utf8");
+  const previousGhBin = process.env.AGENTPLANE_GH_BIN;
+  const previousGhArgs = process.env.AGENTPLANE_GH_ARGS;
+  process.env.AGENTPLANE_GH_BIN = process.execPath;
+  process.env.AGENTPLANE_GH_ARGS = JSON.stringify([fakeGh]);
+  try {
+    return await fn();
+  } finally {
+    if (previousGhBin === undefined) delete process.env.AGENTPLANE_GH_BIN;
+    else process.env.AGENTPLANE_GH_BIN = previousGhBin;
+    if (previousGhArgs === undefined) delete process.env.AGENTPLANE_GH_ARGS;
+    else process.env.AGENTPLANE_GH_ARGS = previousGhArgs;
   }
 }
 
@@ -100,6 +122,10 @@ describe("runCli route decision commands", () => {
           safeToMutate: boolean;
           authoritativeCheckoutPath: string | null;
           mutationPathHint: string | null;
+          mustRunFrom: string | null;
+          exactArgv: string[] | null;
+          returnControlWhen: string;
+          staleStateCheck: string;
           evidenceMissing: string[];
         };
         next_action: { code: string; command: string };
@@ -121,6 +147,22 @@ describe("runCli route decision commands", () => {
         rootRealpath,
       );
       expect(await realpath(parsed.execution_packet.mutationPathHint ?? "")).toBe(rootRealpath);
+      expect(await realpath(parsed.execution_packet.mustRunFrom ?? "")).toBe(rootRealpath);
+      expect(parsed.execution_packet.exactArgv).toEqual([
+        "agentplane",
+        "work",
+        "start",
+        taskId,
+        "--agent",
+        "CODER",
+        "--slug",
+        "route-decision-task",
+        "--worktree",
+      ]);
+      expect(parsed.execution_packet.returnControlWhen).toContain("recompute task next-action");
+      expect(parsed.execution_packet.staleStateCheck).toBe(
+        `agentplane task next-action ${taskId} --explain`,
+      );
       expect(parsed.execution_packet.evidenceMissing).toContain("task_branch");
       expect(parsed.next_action.code).toBe("start_or_recover_worktree");
       expect(parsed.next_action.command).toBe(
@@ -197,219 +239,254 @@ describe("runCli route decision commands", () => {
       "utf8",
     );
 
-    const fakeBin = path.join(root, "fake-bin");
     const marker = path.join(root, "gh-called");
-    await mkdir(fakeBin, { recursive: true });
-    const fakeGh = path.join(fakeBin, "gh");
-    await writeFile(fakeGh, `#!/bin/sh\ntouch "${marker}"\nexit 2\n`, "utf8");
-    await chmod(fakeGh, 0o755);
-    const previousPath = process.env.PATH;
-    process.env.PATH = `${fakeBin}${path.delimiter}${previousPath ?? ""}`;
-    try {
-      const textIo = captureStdIO();
-      try {
-        const code = await runCli(["task", "brief", taskId, "--root", root]);
-        expect(code).toBe(0);
-        expect(textIo.stdout).toContain(`task brief: ${taskId}`);
-        expect(textIo.stdout).toContain("phase:");
-        expect(textIo.stdout).toContain("authoritative_checkout:");
-        expect(textIo.stdout).toContain("next_code:");
-        expect(textIo.stdout).toContain("confidence:");
-        expect(textIo.stdout).toContain("verify_steps:");
-        expect(textIo.stdout).toContain("verify_steps_quality: fallback");
-        expect(textIo.stdout).toContain("blueprint_id:");
-        expect(textIo.stdout).toContain("policy_modules:");
-        expect(textIo.stdout).toContain("snapshot_safe_command:");
-        expect(textIo.stdout).toContain("remote lookup skipped");
-      } finally {
-        textIo.restore();
-      }
+    await withFakeGh(
+      root,
+      "gh-fail-if-called.js",
+      `import { writeFileSync } from "node:fs";\nwriteFileSync(${JSON.stringify(marker)}, "called");\nprocess.exit(2);\n`,
+      async () => {
+        const textIo = captureStdIO();
+        try {
+          const code = await runCli(["task", "brief", taskId, "--root", root]);
+          expect(code).toBe(0);
+          expect(textIo.stdout).toContain(`task brief: ${taskId}`);
+          expect(textIo.stdout).toContain("phase:");
+          expect(textIo.stdout).toContain("authoritative_checkout:");
+          expect(textIo.stdout).toContain("next_code:");
+          expect(textIo.stdout).toContain("recommended_role:");
+          expect(textIo.stdout).toContain("must_run_from:");
+          expect(textIo.stdout).toContain("exact_argv:");
+          expect(textIo.stdout).toContain("return_control_when:");
+          expect(textIo.stdout).toContain("stale_state_check:");
+          expect(textIo.stdout).toContain("must_not:");
+          expect(textIo.stdout).toContain("confidence:");
+          expect(textIo.stdout).toContain("verify_steps:");
+          expect(textIo.stdout).toContain("verify_steps_quality: fallback");
+          expect(textIo.stdout).toContain("blueprint_id:");
+          expect(textIo.stdout).toContain("policy_modules:");
+          expect(textIo.stdout).toContain("snapshot_safe_command:");
+          expect(textIo.stdout).toContain("remote lookup skipped");
+        } finally {
+          textIo.restore();
+        }
 
-      await expect(readFile(marker, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+        await expect(readFile(marker, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
 
-      const statusJsonIo = captureStdIO();
-      try {
-        const code = await runCli(["task", "status", taskId, "--route", "--json", "--root", root]);
-        expect(code).toBe(0);
-        const parsed = JSON.parse(statusJsonIo.stdout) as {
-          source_confidence: Record<
-            string,
-            { source: string; freshness: string; confidence: string; note?: string }
-          >;
-        };
-        expect(parsed.source_confidence.route).toMatchObject({
-          freshness: "computed_local",
-          confidence: "high",
-        });
-        expect(parsed.source_confidence.remote).toMatchObject({
-          freshness: "remote_skipped",
-          confidence: "skipped",
-        });
-      } finally {
-        statusJsonIo.restore();
-      }
-
-      const nextJsonIo = captureStdIO();
-      try {
-        const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
-        expect(code).toBe(0);
-        const parsed = JSON.parse(nextJsonIo.stdout) as {
-          source_confidence: Record<
-            string,
-            { source: string; freshness: string; confidence: string; note?: string }
-          >;
-        };
-        expect(parsed.source_confidence.next_action).toMatchObject({
-          freshness: "computed_local",
-          confidence: "high",
-        });
-        expect(parsed.source_confidence.remote).toMatchObject({
-          freshness: "remote_skipped",
-          confidence: "skipped",
-        });
-      } finally {
-        nextJsonIo.restore();
-      }
-
-      await expect(readFile(marker, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
-
-      const jsonIo = captureStdIO();
-      try {
-        const code = await runCli(["task", "brief", taskId, "--json", "--root", root]);
-        expect(code).toBe(0);
-        const parsed = JSON.parse(jsonIo.stdout) as {
-          contract: { kind: string; version: number };
-          task: { id: string };
-          route: {
-            workflow_mode: string;
-            phase: string;
-            authoritative_checkout: string;
-            authoritative_checkout_path: string | null;
-            mutation_path_hint: string | null;
-            next_action_code: string;
+        const statusJsonIo = captureStdIO();
+        try {
+          const code = await runCli([
+            "task",
+            "status",
+            taskId,
+            "--route",
+            "--json",
+            "--root",
+            root,
+          ]);
+          expect(code).toBe(0);
+          const parsed = JSON.parse(statusJsonIo.stdout) as {
+            source_confidence: Record<
+              string,
+              { source: string; freshness: string; confidence: string; note?: string }
+            >;
           };
-          execution_packet: {
-            safe_to_mutate: boolean;
-            mutation_path_hint: string | null;
+          expect(parsed.source_confidence.route).toMatchObject({
+            freshness: "computed_local",
+            confidence: "high",
+          });
+          expect(parsed.source_confidence.remote).toMatchObject({
+            freshness: "remote_skipped",
+            confidence: "skipped",
+          });
+        } finally {
+          statusJsonIo.restore();
+        }
+
+        const nextJsonIo = captureStdIO();
+        try {
+          const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+          expect(code).toBe(0);
+          const parsed = JSON.parse(nextJsonIo.stdout) as {
+            source_confidence: Record<
+              string,
+              { source: string; freshness: string; confidence: string; note?: string }
+            >;
           };
-          next_action: { code: string; command: string };
-          verify_steps: { text: string; filled: boolean; quality: string };
-          blueprint: { blueprint_id?: string; required_evidence?: string[] };
-          policy_modules: string[];
-          evidence_required: string[];
-          remote: { enabled: boolean };
-          source_confidence: Record<
-            string,
-            { source: string; freshness: string; confidence: string; note?: string }
-          >;
-        };
-        expect(parsed.contract).toEqual({
-          kind: "agentplane.agent_work_context",
-          version: 1,
-        });
-        expect(parsed.task.id).toBe(taskId);
-        expect(parsed.route.workflow_mode).toBe("branch_pr");
-        expect(parsed.route.phase).toBe("verify_or_pr_update");
-        expect(parsed.route.authoritative_checkout).toBe("task_worktree");
-        expect(parsed.route.authoritative_checkout_path).toBe(null);
-        expect(parsed.route.mutation_path_hint).toBe(null);
-        expect(parsed.route.next_action_code).toBe("verify_or_update_pr");
-        expect(parsed.execution_packet.safe_to_mutate).toBe(false);
-        expect(parsed.execution_packet.mutation_path_hint).toBe(null);
-        expect(parsed.next_action.code).toBe("verify_or_update_pr");
-        expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
-        expect(parsed.verify_steps.text).toContain("PLANNER fallback scaffold");
-        expect(parsed.verify_steps.filled).toBe(true);
-        expect(parsed.verify_steps.quality).toBe("fallback");
-        expect(parsed.blueprint.blueprint_id).toBe("code.branch_pr");
-        expect(parsed.blueprint.required_evidence).toContain("code_pr.paths");
-        expect(parsed.policy_modules).toEqual(
-          expect.arrayContaining([
-            ".agentplane/policy/dod.code.md",
-            ".agentplane/policy/dod.core.md",
-            ".agentplane/policy/security.must.md",
-            ".agentplane/policy/workflow.branch_pr.md",
-          ]),
-        );
-        expect(parsed.evidence_required).toContain("code_pr.paths");
-        expect(parsed.remote.enabled).toBe(false);
-        expect(parsed.source_confidence.route).toMatchObject({
-          source: "local_git",
-          freshness: "computed_local",
-          confidence: "high",
-        });
-        expect(parsed.source_confidence.remote).toMatchObject({
-          source: "remote_provider",
-          freshness: "remote_skipped",
-          confidence: "skipped",
-        });
-        expect(parsed.source_confidence.verify_steps).toMatchObject({
-          source: "task_doc",
-          freshness: "live_local",
-          confidence: "medium",
-        });
-      } finally {
-        jsonIo.restore();
-      }
+          expect(parsed.source_confidence.next_action).toMatchObject({
+            freshness: "computed_local",
+            confidence: "high",
+          });
+          expect(parsed.source_confidence.remote).toMatchObject({
+            freshness: "remote_skipped",
+            confidence: "skipped",
+          });
+        } finally {
+          nextJsonIo.restore();
+        }
 
-      const remoteIo = captureStdIO();
-      try {
-        const code = await runCli(["task", "brief", taskId, "--json", "--remote", "--root", root]);
-        expect(code).toBe(0);
-        const parsed = JSON.parse(remoteIo.stdout) as {
-          source_confidence: Record<
-            string,
-            { source: string; freshness: string; confidence: string; note?: string }
-          >;
-        };
-        expect(parsed.source_confidence.route).toMatchObject({
-          freshness: "computed_local",
-          confidence: "medium",
-        });
-        expect(parsed.source_confidence.route.note).toContain("remote lookup was requested");
-        expect(parsed.source_confidence.remote).toMatchObject({
-          source: "remote_provider",
-          freshness: "remote_skipped",
-          confidence: "low",
-        });
-        expect(parsed.source_confidence.remote.note).toContain("fell back to local data");
-      } finally {
-        remoteIo.restore();
-      }
+        await expect(readFile(marker, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
 
-      const remoteStatusIo = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "status",
-          taskId,
-          "--route",
-          "--json",
-          "--remote",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        const parsed = JSON.parse(remoteStatusIo.stdout) as {
-          source_confidence: Record<
-            string,
-            { source: string; freshness: string; confidence: string; note?: string }
-          >;
-        };
-        expect(parsed.source_confidence.route).toMatchObject({
-          freshness: "computed_local",
-          confidence: "medium",
-        });
-        expect(parsed.source_confidence.remote).toMatchObject({
-          freshness: "remote_skipped",
-          confidence: "low",
-        });
-      } finally {
-        remoteStatusIo.restore();
-      }
-    } finally {
-      process.env.PATH = previousPath;
-    }
+        const jsonIo = captureStdIO();
+        try {
+          const code = await runCli(["task", "brief", taskId, "--json", "--root", root]);
+          expect(code).toBe(0);
+          const parsed = JSON.parse(jsonIo.stdout) as {
+            contract: { kind: string; version: number };
+            task: { id: string };
+            route: {
+              workflow_mode: string;
+              phase: string;
+              authoritative_checkout: string;
+              authoritative_checkout_path: string | null;
+              mutation_path_hint: string | null;
+              next_action_code: string;
+            };
+            execution_packet: {
+              safe_to_mutate: boolean;
+              mutation_path_hint: string | null;
+              exact_argv: string[] | null;
+              must_run_from: string | null;
+              return_control_when: string;
+              stale_state_check: string;
+            };
+            next_action: { code: string; command: string };
+            verify_steps: { text: string; filled: boolean; quality: string };
+            blueprint: { blueprint_id?: string; required_evidence?: string[] };
+            policy_modules: string[];
+            evidence_required: string[];
+            remote: { enabled: boolean };
+            source_confidence: Record<
+              string,
+              { source: string; freshness: string; confidence: string; note?: string }
+            >;
+          };
+          expect(parsed.contract).toEqual({
+            kind: "agentplane.agent_work_context",
+            version: 1,
+          });
+          expect(parsed.task.id).toBe(taskId);
+          expect(parsed.route.workflow_mode).toBe("branch_pr");
+          expect(parsed.route.phase).toBe("verify_or_pr_update");
+          expect(parsed.route.authoritative_checkout).toBe("task_worktree");
+          expect(parsed.route.authoritative_checkout_path).toBe(null);
+          expect(parsed.route.mutation_path_hint).toBe(null);
+          expect(parsed.route.next_action_code).toBe("verify_or_update_pr");
+          expect(parsed.execution_packet.safe_to_mutate).toBe(false);
+          expect(parsed.execution_packet.mutation_path_hint).toBe(null);
+          expect(parsed.execution_packet.exact_argv).toEqual([
+            "agentplane",
+            "pr",
+            "update",
+            taskId,
+          ]);
+          expect(parsed.execution_packet.must_run_from).toBeNull();
+          expect(parsed.execution_packet.return_control_when).toContain(
+            "recompute task next-action",
+          );
+          expect(parsed.execution_packet.stale_state_check).toBe(
+            `agentplane task next-action ${taskId} --explain`,
+          );
+          expect(parsed.next_action.code).toBe("verify_or_update_pr");
+          expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
+          expect(parsed.verify_steps.text).toContain("PLANNER fallback scaffold");
+          expect(parsed.verify_steps.filled).toBe(true);
+          expect(parsed.verify_steps.quality).toBe("fallback");
+          expect(parsed.blueprint.blueprint_id).toBe("code.branch_pr");
+          expect(parsed.blueprint.required_evidence).toContain("code_pr.paths");
+          expect(parsed.policy_modules).toEqual(
+            expect.arrayContaining([
+              ".agentplane/policy/dod.code.md",
+              ".agentplane/policy/dod.core.md",
+              ".agentplane/policy/security.must.md",
+              ".agentplane/policy/workflow.branch_pr.md",
+            ]),
+          );
+          expect(parsed.evidence_required).toContain("code_pr.paths");
+          expect(parsed.remote.enabled).toBe(false);
+          expect(parsed.source_confidence.route).toMatchObject({
+            source: "local_git",
+            freshness: "computed_local",
+            confidence: "high",
+          });
+          expect(parsed.source_confidence.remote).toMatchObject({
+            source: "remote_provider",
+            freshness: "remote_skipped",
+            confidence: "skipped",
+          });
+          expect(parsed.source_confidence.verify_steps).toMatchObject({
+            source: "task_doc",
+            freshness: "live_local",
+            confidence: "medium",
+          });
+        } finally {
+          jsonIo.restore();
+        }
+
+        const remoteIo = captureStdIO();
+        try {
+          const code = await runCli([
+            "task",
+            "brief",
+            taskId,
+            "--json",
+            "--remote",
+            "--root",
+            root,
+          ]);
+          expect(code).toBe(0);
+          const parsed = JSON.parse(remoteIo.stdout) as {
+            source_confidence: Record<
+              string,
+              { source: string; freshness: string; confidence: string; note?: string }
+            >;
+          };
+          expect(parsed.source_confidence.route).toMatchObject({
+            freshness: "computed_local",
+            confidence: "medium",
+          });
+          expect(parsed.source_confidence.route.note).toContain("remote lookup was requested");
+          expect(parsed.source_confidence.remote).toMatchObject({
+            source: "remote_provider",
+            freshness: "remote_skipped",
+            confidence: "low",
+          });
+          expect(parsed.source_confidence.remote.note).toContain("fell back to local data");
+        } finally {
+          remoteIo.restore();
+        }
+
+        const remoteStatusIo = captureStdIO();
+        try {
+          const code = await runCli([
+            "task",
+            "status",
+            taskId,
+            "--route",
+            "--json",
+            "--remote",
+            "--root",
+            root,
+          ]);
+          expect(code).toBe(0);
+          const parsed = JSON.parse(remoteStatusIo.stdout) as {
+            source_confidence: Record<
+              string,
+              { source: string; freshness: string; confidence: string; note?: string }
+            >;
+          };
+          expect(parsed.source_confidence.route).toMatchObject({
+            freshness: "computed_local",
+            confidence: "medium",
+          });
+          expect(parsed.source_confidence.remote).toMatchObject({
+            freshness: "remote_skipped",
+            confidence: "low",
+          });
+        } finally {
+          remoteStatusIo.restore();
+        }
+      },
+    );
   });
 
   it("does not block direct route mutation when a running runner pid is dead", async () => {
@@ -528,15 +605,7 @@ describe("runCli route decision commands", () => {
       "utf8",
     );
 
-    const fakeBin = path.join(root, "fake-bin");
-    await mkdir(fakeBin, { recursive: true });
-    const fakeGh = path.join(fakeBin, "gh");
-    await writeFile(fakeGh, "#!/bin/sh\nprintf '[]\\n'\n", "utf8");
-    await chmod(fakeGh, 0o755);
-
-    const previousPath = process.env.PATH;
-    process.env.PATH = `${fakeBin}${path.delimiter}${previousPath ?? ""}`;
-    try {
+    await withFakeGh(root, "gh-empty-response.js", "console.log('[]');\n", async () => {
       const statusIo = captureStdIO();
       try {
         const code = await runCli([
@@ -587,9 +656,7 @@ describe("runCli route decision commands", () => {
       } finally {
         briefIo.restore();
       }
-    } finally {
-      process.env.PATH = previousPath;
-    }
+    });
   });
 
   it("safe-apply skips approval and provider-only repair steps", async () => {
@@ -772,7 +839,12 @@ describe("runCli route decision commands", () => {
       const parsed = JSON.parse(statusIo.stdout) as {
         nextAction: { code: string; command: string };
         oracle: { phase: string; authoritativeCheckout: string };
-        executionPacket: { recommendedRole: string; safeToMutate: boolean };
+        executionPacket: {
+          actionKind: string;
+          exactArgv: string[] | null;
+          recommendedRole: string;
+          safeToMutate: boolean;
+        };
       };
       expect(parsed.nextAction).toMatchObject({
         code: "sync_hosted_close",
@@ -784,8 +856,10 @@ describe("runCli route decision commands", () => {
         authoritativeCheckout: "base_checkout",
       });
       expect(parsed.executionPacket).toMatchObject({
+        actionKind: "stop",
+        exactArgv: null,
         recommendedRole: "INTEGRATOR",
-        safeToMutate: true,
+        safeToMutate: false,
       });
     } finally {
       statusIo.restore();
