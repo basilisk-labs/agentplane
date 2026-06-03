@@ -13,7 +13,7 @@ Created: 2026-06-03T05:12:38.923Z
 ## Verification
 
 - State: ok
-- Note: Verified: added finish auto-resolution for task-artifact --commit without --implementation-commit; focused Vitest suite passed 32 tests across 2 files, policy routing OK, targeted Prettier passed, and task verify-show read back the updated contract.
+- Note: Verified: current head ef6ae4d33 includes auto-resolved finish implementation commit handling and refreshed evaluator evidence; focused Vitest suite passed 32 tests, policy routing OK, targeted Prettier passed, and task verify-show read back the updated contract.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,10 +29,11 @@ Created: 2026-06-03T05:12:38.923Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/finish-blueprint-evidence.ts | 11 +++-
- .../agentplane/src/commands/task/finish-execute.ts |  1 +
- .../commands/task/finish.validation.unit.test.ts   | 64 ++++++++++++++++++++++
- 3 files changed, 73 insertions(+), 3 deletions(-)
+ .../src/commands/task/finish-blueprint-evidence.ts |  11 +-
+ .../src/commands/task/finish-execute-commit.ts     |  37 +++++-
+ .../agentplane/src/commands/task/finish-execute.ts |   8 +-
+ .../commands/task/finish.validation.unit.test.ts   | 133 +++++++++++++++++++++
+ 4 files changed, 181 insertions(+), 8 deletions(-)
 ```
 
 </details>

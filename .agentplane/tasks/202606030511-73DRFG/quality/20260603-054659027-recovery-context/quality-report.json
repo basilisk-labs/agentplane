@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202606030511-73DRFG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-03T05:46:59.027Z",
+  "verdict": "pass",
+  "summary": "Finish now auto-resolves implementation provenance when --commit points at task-local artifacts and quality_review.evaluated_sha points at the reviewed implementation commit.",
+  "evaluated_sha": "2f64b05d06691e49384b2d93afe20268aaf449be",
+  "blueprint_digest": "ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3",
+  "findings": [
+    "The new regression test covers finish without --implementation-commit when the evidence commit advances only the active task artifact subtree.",
+    "Existing explicit --implementation-commit precedence remains covered, and focused finish/quality-review tests pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606030511-73DRFG/README.md",
+    "packages/agentplane/src/commands/task/finish-execute-commit.ts",
+    "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

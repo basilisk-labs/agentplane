@@ -4,7 +4,7 @@ title: "Fix finish quality review target for artifact commits"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -20,30 +20,30 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-03T05:44:18.487Z"
+  updated_at: "2026-06-03T05:48:53.863Z"
   updated_by: "CODER"
-  note: "Verified: added finish auto-resolution for task-artifact --commit without --implementation-commit; focused Vitest suite passed 32 tests across 2 files, policy routing OK, targeted Prettier passed, and task verify-show read back the updated contract."
+  note: "Verified: current head ef6ae4d33 includes auto-resolved finish implementation commit handling and refreshed evaluator evidence; focused Vitest suite passed 32 tests, policy routing OK, targeted Prettier passed, and task verify-show read back the updated contract."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-03T05:23:31.869Z"
+  updated_at: "2026-06-03T05:46:59.027Z"
   updated_by: "EVALUATOR"
-  note: "Finish quality review target now uses --implementation-commit before artifact --commit, preventing artifact-only close commits from forcing stale evaluator loops."
-  evaluated_sha: "462f15bf426c32b26c90f2d9e2ec417a9849bde7"
+  note: "Finish now auto-resolves implementation provenance when --commit points at task-local artifacts and quality_review.evaluated_sha points at the reviewed implementation commit."
+  evaluated_sha: "2f64b05d06691e49384b2d93afe20268aaf449be"
   blueprint_digest: "ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3"
   evidence_refs:
     - ".agentplane/tasks/202606030511-73DRFG/README.md"
-    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-052331869-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-052331869-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-052331869-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-054659027-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-054659027-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-054659027-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606030511-73DRFG/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+    - "packages/agentplane/src/commands/task/finish-execute-commit.ts"
     - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
     - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
     - "node .agentplane/policy/check-routing.mjs"
   findings:
-    - "Regression coverage exercises artifact --commit with implementation --implementation-commit and a quality_review evaluated against the implementation SHA."
-    - "Focused finish and quality-review gate tests passed, routing policy passed, and targeted formatting passed."
+    - "The new regression test covers finish without --implementation-commit when the evidence commit advances only the active task artifact subtree."
+    - "Existing explicit --implementation-commit precedence remains covered, and focused finish/quality-review tests pass."
 commit: null
 comments:
   -
@@ -75,8 +75,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: added finish auto-resolution for task-artifact --commit without --implementation-commit; focused Vitest suite passed 32 tests across 2 files, policy routing OK, targeted Prettier passed, and task verify-show read back the updated contract."
+  -
+    type: "verify"
+    at: "2026-06-03T05:48:53.863Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: current head ef6ae4d33 includes auto-resolved finish implementation commit handling and refreshed evaluator evidence; focused Vitest suite passed 32 tests, policy routing OK, targeted Prettier passed, and task verify-show read back the updated contract."
 doc_version: 3
-doc_updated_at: "2026-06-03T05:44:18.522Z"
+doc_updated_at: "2026-06-03T05:48:53.900Z"
 doc_updated_by: "CODER"
 description: "Fix finish/evaluator lifecycle mismatch where evaluator records the implementation commit while finish expects a task-artifact commit passed via --commit. Ensure --implementation-commit is used as the quality review target so artifact-only closure commits do not force a stale-review loop."
 sections:
@@ -145,6 +151,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T05:22:57.823Z, excerpt_hash=sha256:e21a514301c0787a90ec3c9278f255c326a4f79239b5a2ebc59bc6eda64b877e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606030511-73DRFG-finish-quality-review-target/.agentplane/tasks/202606030511-73DRFG/blueprint/resolved-snapshot.json
+    - old_digest: ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3
+    - current_digest: ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606030511-73DRFG
+
+    ### 2026-06-03T05:48:53.863Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: current head ef6ae4d33 includes auto-resolved finish implementation commit handling and refreshed evaluator evidence; focused Vitest suite passed 32 tests, policy routing OK, targeted Prettier passed, and task verify-show read back the updated contract.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T05:44:18.522Z, excerpt_hash=sha256:e21a514301c0787a90ec3c9278f255c326a4f79239b5a2ebc59bc6eda64b877e
 
     Details:
 
@@ -237,6 +262,25 @@ Note: Verified: added finish auto-resolution for task-artifact --commit without 
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T05:22:57.823Z, excerpt_hash=sha256:e21a514301c0787a90ec3c9278f255c326a4f79239b5a2ebc59bc6eda64b877e
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606030511-73DRFG-finish-quality-review-target/.agentplane/tasks/202606030511-73DRFG/blueprint/resolved-snapshot.json
+- old_digest: ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3
+- current_digest: ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606030511-73DRFG
+
+### 2026-06-03T05:48:53.863Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: current head ef6ae4d33 includes auto-resolved finish implementation commit handling and refreshed evaluator evidence; focused Vitest suite passed 32 tests, policy routing OK, targeted Prettier passed, and task verify-show read back the updated contract.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T05:44:18.522Z, excerpt_hash=sha256:e21a514301c0787a90ec3c9278f255c326a4f79239b5a2ebc59bc6eda64b877e
 
 Details:
 
