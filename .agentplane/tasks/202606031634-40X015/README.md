@@ -4,7 +4,7 @@ title: "Fix task-local artifact commit eligibility after finish"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,23 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts --pool=forks --testTimeout 120000 --hookTimeout 120000. Result: pass, 4 files and 43 tests passed. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Command: ap doctor. Result: pass, doctor OK with unrelated historical DONE-task warnings 202605221745-8BHZSX and 202606011809-VCQPP7. Command: git diff --check HEAD~1..HEAD. Result: pass. Live guard evidence: ap commit without --allow-tasks auto-staged same-task README and blueprint artifacts from explicit .agentplane/tasks/202606031634-40X015 allowlist before pre-commit signal-9 fallback; explicit pre-commit hook then passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-03T16:52:06.731Z"
+  updated_by: "EVALUATOR"
+  note: "Issue #4399 fixed: explicit same-task .agentplane/tasks/<task-id> allowlists now admit generated blueprint/quality artifacts without --allow-tasks while preserving protection for the task index and unrelated task artifacts."
+  evaluated_sha: "e119f14de2f7825bd68c7225aee4cef57edb2dcc"
+  blueprint_digest: "51cf37ca1ccc156fd962076190d2e0dc4e5f9cfc417a4894de0fc5e603b6347c"
+  evidence_refs:
+    - ".agentplane/tasks/202606031634-40X015/README.md"
+    - ".agentplane/tasks/202606031634-40X015/quality/20260603-165206731-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606031634-40X015/quality/20260603-165206731-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606031634-40X015/quality/20260603-165206731-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606031634-40X015/blueprint/resolved-snapshot.json"
+    - "bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts --pool=forks --testTimeout 120000 --hookTimeout 120000"
+    - "gh pr checks 4400 --watch --interval 30"
+  findings:
+    - "Focused guard/policy regressions pass; live ap commit path auto-staged same-task task artifacts from explicit allowlist without --allow-tasks before an unrelated pre-commit signal-9 fallback; hosted PR checks are green."
 commit: null
 comments:
   -
