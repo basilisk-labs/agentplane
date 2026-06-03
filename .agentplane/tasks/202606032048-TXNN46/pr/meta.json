@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202606032048-TXNN46/accept-blocked-runner-result-manifests",
   "created_at": "2026-06-03T20:49:53.044Z",
-  "diffstat_sha256": "sha256:7784648cf42c00f7e79264d5800807d8d1a2c76d7b102f00710f1a387687a0e1",
+  "diffstat_sha256": "sha256:314b5d823e7c7fc9bacfd95cb016efd14fa8106c1f95445ec924f5ad8b377b08",
   "last_verified_at": "2026-06-03T21:04:30.052Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "schema_version": 1,
