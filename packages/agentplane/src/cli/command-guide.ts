@@ -212,6 +212,36 @@ export function renderRole(
 }
 
 export function renderQuickstart(): string {
+  return renderQuickstartForMode();
+}
+
+type QuickstartWorkflowMode = "direct" | "branch_pr" | null;
+
+function renderQuickstartWorkflowNotes(mode: QuickstartWorkflowMode): string[] {
+  const intro =
+    "- Use `agentplane config show` as the route readback and follow only the bullets that match your repository's configured `workflow_mode`.";
+  const shared = [
+    "- After preflight, use `agentplane task active` to pick ready work and `agentplane task brief <task-id>` to load task docs, Verify Steps, route state, blueprint evidence, policy modules, and source confidence before owner-scoped execution.",
+    "- Lifecycle/status commits are task-state checkpoints; they are not implementation commits. In `branch_pr`, `finish --commit-from-comment` is unsupported because finish runs from the base checkout.",
+  ];
+  const branchPr = [
+    `- \`branch_pr\`: base checkout owns plan/approve and merge lane; task worktree owns implementation commits and local PR artifacts; INTEGRATOR runs \`pr check\` and \`integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000\` from base until GitHub PR merge and Task Hosted Close complete.`,
+    "- `branch_pr`: use `agentplane task next-action <task-id> --explain` as the route oracle; follow `next_command`, `authoritative_checkout`, `primary_blocker`, and `phase`.",
+    "- `branch_pr`: agents that inherit the user's GitHub session must treat `gh pr merge`, GitHub UI merge, and auto-merge enablement as user-attributed publication; use them only after the integration queue/handoff route, stable hosted checks, and merge-lane approval are clear.",
+    "- `branch_pr`: post-merge fixes for an already `DONE` task need a new task or an explicit follow-up branch slug (`post-merge-*` or `followup` as a start/end/hyphen-bounded token); generic same-task branches can conflict with hosted close.",
+    "- `branch_pr` GitHub transport: use authenticated `gh`; if unavailable, `integrate` can use explicit `GH_TOKEN`/`GITHUB_TOKEN` API fallback.",
+  ];
+  const direct = [
+    `- \`direct\`: task setup is \`${BOOTSTRAP_TASK_PREP_COMMANDS[0]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[1]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[2]}\`.`,
+    `- \`direct\`: execution is \`${COMMAND_SNIPPETS.core.startTask}\` -> \`${COMMAND_SNIPPETS.core.taskVerifyShow}\` -> \`${COMMAND_SNIPPETS.core.verifyTask}\` -> \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result-file ./result.txt\`.`,
+    "- In `direct`, `finish` creates the deterministic close commit by default; do not assume that route is the repository default when `workflow.mode=branch_pr`.",
+  ];
+  if (mode === "branch_pr") return [intro, ...shared, ...branchPr];
+  if (mode === "direct") return [intro, ...shared, ...direct];
+  return [intro, ...shared, ...branchPr, ...direct];
+}
+
+export function renderQuickstartForMode(mode: QuickstartWorkflowMode = null): string {
   return [
     "# agentplane quickstart",
     "",
@@ -229,18 +259,9 @@ export function renderQuickstart(): string {
     "",
     ...renderQuickstartCommandBlock(BOOTSTRAP_PREFLIGHT_COMMANDS),
     "",
-    "Configured workflow route:",
+    "Workflow route notes:",
     "",
-    `- \`branch_pr\`: base checkout owns plan/approve and merge lane; task worktree owns implementation commits and local PR artifacts; INTEGRATOR runs \`pr check\` and \`integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000\` from base until GitHub PR merge and Task Hosted Close complete.`,
-    "- After preflight, use `agentplane task active` to pick ready work and `agentplane task brief <task-id>` to load task docs, Verify Steps, route state, blueprint evidence, policy modules, and source confidence before owner-scoped execution.",
-    "- `branch_pr`: use `agentplane task next-action <task-id> --explain` as the route oracle; follow `next_command`, `authoritative_checkout`, `primary_blocker`, and `phase`.",
-    "- `branch_pr`: agents that inherit the user's GitHub session must treat `gh pr merge`, GitHub UI merge, and auto-merge enablement as user-attributed publication; use them only after the integration queue/handoff route, stable hosted checks, and merge-lane approval are clear.",
-    "- `branch_pr`: post-merge fixes for an already `DONE` task need a new task or an explicit follow-up branch slug (`post-merge-*` or `followup` as a start/end/hyphen-bounded token); generic same-task branches can conflict with hosted close.",
-    "- `branch_pr` GitHub transport: use authenticated `gh`; if unavailable, `integrate` can use explicit `GH_TOKEN`/`GITHUB_TOKEN` API fallback.",
-    `- \`direct\`: task setup is \`${BOOTSTRAP_TASK_PREP_COMMANDS[0]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[1]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[2]}\`.`,
-    `- \`direct\`: execution is \`${COMMAND_SNIPPETS.core.startTask}\` -> \`${COMMAND_SNIPPETS.core.taskVerifyShow}\` -> \`${COMMAND_SNIPPETS.core.verifyTask}\` -> \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result-file ./result.txt\`.`,
-    "- Lifecycle/status commits are task-state checkpoints; they are not implementation commits. In `branch_pr`, `finish --commit-from-comment` is unsupported because finish runs from the base checkout.",
-    "- In `direct`, `finish` creates the deterministic close commit by default; do not assume that route is the repository default when `workflow.mode=branch_pr`.",
+    ...renderQuickstartWorkflowNotes(mode),
     "",
     "## First visible payoff",
     "",

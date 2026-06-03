@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { renderBootstrapDoc } from "./bootstrap-guide.js";
-import { listRoles, renderQuickstart, renderRole } from "./command-guide.js";
+import { listRoles, renderQuickstart, renderQuickstartForMode, renderRole } from "./command-guide.js";
 
 const listRolesTyped = listRoles as () => string[];
 const renderRoleTyped = renderRole as (
@@ -20,6 +20,9 @@ const renderRoleTyped = renderRole as (
   },
 ) => string | null;
 const renderQuickstartTyped = renderQuickstart as () => string;
+const renderQuickstartForModeTyped = renderQuickstartForMode as (
+  mode?: "direct" | "branch_pr" | null,
+) => string;
 
 describe("command-guide", () => {
   it("lists known roles", () => {
@@ -75,6 +78,8 @@ describe("command-guide", () => {
     const text = renderQuickstartTyped();
     expect(text).toContain("Canonical installed startup surface");
     expect(text).toContain("## First screen");
+    expect(text).toContain("Workflow route notes:");
+    expect(text).toContain("Use `agentplane config show` as the route readback");
     expect(text).toContain("## First visible payoff");
     expect(text).toContain("agentplane demo");
     expect(text).toContain("agentplane acr validate <task-id> --mode local");
@@ -103,6 +108,24 @@ describe("command-guide", () => {
     );
     expect(text).not.toContain("docs/user/agent-bootstrap.generated.mdx");
     expect(text).not.toContain("## Commit message format");
+  });
+
+  it("renders direct quickstart notes without branch_pr-only route guidance", () => {
+    const text = renderQuickstartForModeTyped("direct");
+    expect(text).toContain("Workflow route notes:");
+    expect(text).toContain("`direct`: task setup is");
+    expect(text).toContain("`direct`: execution is");
+    expect(text).not.toContain("`branch_pr`: use `agentplane task next-action <task-id> --explain`");
+    expect(text).not.toContain("`branch_pr` GitHub transport");
+  });
+
+  it("renders branch_pr quickstart notes without direct-only route guidance", () => {
+    const text = renderQuickstartForModeTyped("branch_pr");
+    expect(text).toContain("Workflow route notes:");
+    expect(text).toContain("`branch_pr`: use `agentplane task next-action <task-id> --explain`");
+    expect(text).toContain("`branch_pr` GitHub transport");
+    expect(text).not.toContain("`direct`: task setup is");
+    expect(text).not.toContain("`direct`: execution is");
   });
 
   it("renders the generated bootstrap doc", () => {

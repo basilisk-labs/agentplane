@@ -1,4 +1,7 @@
-import { renderQuickstart } from "../../../command-guide.js";
+import { loadConfig } from "@agentplaneorg/core/config";
+import { resolveProject } from "@agentplaneorg/core/project";
+
+import { renderQuickstartForMode } from "../../../command-guide.js";
 import { createCliEmitter } from "../../../output.js";
 import type { CommandHandler, CommandSpec } from "../../../spec/spec.js";
 
@@ -29,8 +32,13 @@ async function cmdQuickstart(opts: {
   rootOverride?: string;
   json: boolean;
 }): Promise<number> {
-  return wrapCommand({ command: "quickstart", rootOverride: opts.rootOverride }, () => {
-    const text = renderQuickstart();
+  return wrapCommand({ command: "quickstart", rootOverride: opts.rootOverride }, async () => {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    const text = renderQuickstartForMode(loaded.config.workflow_mode);
     if (opts.json) {
       const lines = text
         .split("\n")
