@@ -1,10 +1,11 @@
 ---
 id: "202606030859-NEFZ9F"
 title: "Clarify branch_pr task completion and duplicate task creation"
-status: "DOING"
+result_summary: "Merged via PR #4397."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -44,11 +45,16 @@ quality_review:
   findings:
     - "task complete in branch_pr returns verified_pending_closeout with lifecycle_status=not_finished and a route-oracle next command."
     - "task new warns on similar open titles by default, while exact duplicate titles still require --allow-duplicate."
-commit: null
+commit:
+  hash: "4a67090c2cad965654e38bfde50ef55312c5b18f"
+  message: "🚧 NEFZ9F task: clarify branch_pr completion state"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the approved CLI behavior fixes for branch_pr guided completion messaging and duplicate task creation warnings, then verify with targeted tests and routing policy."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4397 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -75,9 +81,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: targeted tests, format check, routing policy, and repo-local bootstrap passed on commit 95e6dc916."
+  -
+    type: "status"
+    at: "2026-06-03T09:42:17.111Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4397 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-03T09:23:00.229Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-03T09:42:17.117Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix CLI behavior so branch_pr guided completion does not imply lifecycle closure, and so similar open-task titles do not hard-block distinct new tasks."
 sections:
   Summary: |-
