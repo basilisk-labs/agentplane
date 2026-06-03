@@ -448,6 +448,8 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
         const code = await runCli(["pr", "check", taskId, "--root", root]);
         expect(code).toBe(0);
         expect(io.stdout).toContain("✅ pr check");
+        expect(io.stdout).toContain("artifact_source: branch");
+        expect(io.stdout).toContain(`artifact_branch=${branch}`);
       } finally {
         io.restore();
       }

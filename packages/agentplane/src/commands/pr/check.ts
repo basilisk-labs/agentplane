@@ -149,6 +149,7 @@ export async function cmdPrCheck(opts: {
     });
     const localSnapshot: PrArtifactSnapshot = {
       source: "local",
+      sourceBranch: null,
       texts: localTexts,
       meta: localParsed.meta,
       errors: localParsed.errors,
@@ -339,6 +340,15 @@ export async function cmdPrCheck(opts: {
       output.line(`next_action: ${mergeDiagnosticNextAction(mergeDiagnostic)}`);
     }
 
+    output.line(
+      [
+        `artifact_source: ${selectedSnapshot.source}`,
+        `artifact_branch=${selectedSnapshot.sourceBranch ?? branchForFreshness ?? "none"}`,
+        `branch_head=${branchHeadSha ?? "unknown"}`,
+        `meta_head=${selectedSnapshot.meta?.head_sha ?? "unknown"}`,
+        `verify_status=${selectedSnapshot.meta?.verify?.status ?? "unknown"}`,
+      ].join(" "),
+    );
     output.success("pr check", path.relative(resolved.gitRoot, prDir));
     return 0;
   } catch (err) {

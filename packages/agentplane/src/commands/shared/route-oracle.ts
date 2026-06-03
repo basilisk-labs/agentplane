@@ -57,6 +57,7 @@ function recommendedRoleFor(opts: {
   if (
     opts.nextAction.code === "wait_hosted_checks" ||
     opts.nextAction.code === "open_close_tail" ||
+    opts.nextAction.code === "sync_hosted_close" ||
     opts.nextAction.code === "cleanup" ||
     opts.nextAction.code === "reconcile_included_task_closure"
   ) {
@@ -82,6 +83,9 @@ function evidenceMissingFor(opts: {
     if (blocker.code === "pr_meta_stale") missing.add("fresh_pr_artifacts");
     if (blocker.code === "close_tail_missing") missing.add("close_tail_pr");
     if (blocker.code === "runner_alive") missing.add("runner_terminal_state");
+    if (blocker.code === "missing_included_batch_metadata") {
+      missing.add("structured_branch_pr_batch_metadata");
+    }
   }
   return [...missing].toSorted((a, b) => a.localeCompare(b));
 }
@@ -190,6 +194,12 @@ export function deriveRouteOracle(opts: {
       authoritativeCheckout: "base_checkout",
     });
   }
+  if (code === "repair_included_batch_metadata") {
+    return buildOracle(opts, {
+      phase: "included_task_metadata_missing",
+      authoritativeCheckout: "base_checkout",
+    });
+  }
   if (code === "wait_runner") {
     return buildOracle(opts, {
       phase: "runner_wait",
@@ -224,6 +234,12 @@ export function deriveRouteOracle(opts: {
     return buildOracle(opts, {
       phase: "close_tail_provider_lane",
       authoritativeCheckout: "provider",
+    });
+  }
+  if (code === "sync_hosted_close") {
+    return buildOracle(opts, {
+      phase: "hosted_close_recorded_upstream",
+      authoritativeCheckout: "base_checkout",
     });
   }
   if (code === "cleanup") {
