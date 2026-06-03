@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202606031634-40X015",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-03T16:52:06.731Z",
+  "verdict": "pass",
+  "summary": "Issue #4399 fixed: explicit same-task .agentplane/tasks/<task-id> allowlists now admit generated blueprint/quality artifacts without --allow-tasks while preserving protection for the task index and unrelated task artifacts.",
+  "evaluated_sha": "e119f14de2f7825bd68c7225aee4cef57edb2dcc",
+  "blueprint_digest": "51cf37ca1ccc156fd962076190d2e0dc4e5f9cfc417a4894de0fc5e603b6347c",
+  "findings": [
+    "Focused guard/policy regressions pass; live ap commit path auto-staged same-task task artifacts from explicit allowlist without --allow-tasks before an unrelated pre-commit signal-9 fallback; hosted PR checks are green."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606031634-40X015/README.md",
+    "bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts --pool=forks --testTimeout 120000 --hookTimeout 120000",
+    "gh pr checks 4400 --watch --interval 30"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The git commit hook invocation was twice killed by signal 9 after guard validation; explicit .agentplane/bin/agentplane hooks run pre-commit passed, so commits used --no-verify fallback. This appears to be a separate hook invocation/runtime issue, not the #4399 guard policy."
+  ]
+}
