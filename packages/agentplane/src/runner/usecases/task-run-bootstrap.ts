@@ -1,5 +1,9 @@
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
 
+type EvaluatorSkepticismLevel = NonNullable<
+  RunnerContextBundle["execution"]["evaluator_skepticism_level"]
+>;
+
 function compactGoalText(value: string): string {
   return value.replaceAll(/\s+/g, " ").trim();
 }
@@ -25,6 +29,34 @@ function renderCodexGoalLine(bundle: RunnerContextBundle, targetLabel: string): 
   return `/goal ${truncateGoalText(`Execute AgentPlane ${targetLabel}: ${objective}`)}`;
 }
 
+function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string[] {
+  const common = [
+    "Evaluator skepticism contract:",
+    `- evaluator_skepticism_level: ${level}`,
+    "- During evaluator or audit review, reconstruct the intended contract from the task, plan, Verify Steps, route decision, diff, and evidence; do not rely on the implementer's summary.",
+    "- Treat passing technical checks as evidence, not proof. Look for broken invariants, missing negative cases, stale route assumptions, and untested concurrency or lifecycle edges.",
+    "- If the run is evaluator-only, do not fix issues. Return findings, missing tests, hidden assumptions, residual risks, and a concrete rework packet for the parent runner.",
+  ];
+  if (level === "standard") {
+    return [
+      ...common,
+      "- Standard review: focus on explicit scope, declared verification, and obvious missing evidence.",
+    ];
+  }
+  if (level === "strict") {
+    return [
+      ...common,
+      "- Strict review: actively search for counterexamples, happy-path-only tests, stale task/blueprint evidence, and category mismatches between requested behavior and implementation.",
+      "- Use rework when correctness depends on an assumption the implementation did not prove.",
+    ];
+  }
+  return [
+    ...common,
+    "- Paranoid review: assume the implementation is incomplete until each critical claim is backed by direct code, test, runtime, or task-artifact evidence.",
+    "- Prefer rework over pass for ambiguous ownership, unverified negative cases, broad diffs without targeted evidence, or lifecycle state that could be stale.",
+  ];
+}
+
 export function renderTaskRunnerBootstrap(
   bundle: RunnerContextBundle,
   invocation?: RunnerInvocation,
@@ -37,6 +69,8 @@ export function renderTaskRunnerBootstrap(
   const stopRules = bundle.blueprint?.stopReasons ?? [];
   const playbook = bundle.playbook?.selected_playbook;
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
+  const evaluatorSkepticismLevel =
+    bundle.execution.evaluator_skepticism_level ?? ("standard" satisfies EvaluatorSkepticismLevel);
   const routeDecision = bundle.route_decision as
     | {
         oracle?: {
@@ -159,6 +193,8 @@ export function renderTaskRunnerBootstrap(
         ]
       : []),
     "If the requested work cannot be completed without widening lifecycle authority or touching likely sibling-owned files, stop and write a blocked result manifest with the conflict, affected paths, and recommended parent action.",
+    "",
+    ...renderEvaluatorSkepticismLines(evaluatorSkepticismLevel),
     ...(stopRules.length > 0
       ? [
           "",

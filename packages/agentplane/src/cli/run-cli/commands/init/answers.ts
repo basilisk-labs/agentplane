@@ -1,4 +1,4 @@
-import type { ExecutionProfile } from "@agentplaneorg/core/config";
+import type { EvaluatorSkepticismLevel, ExecutionProfile } from "@agentplaneorg/core/config";
 
 import type { WorkflowMode } from "../../../../agents/agents-template.js";
 import { InitAborted } from "./prompts.js";
@@ -43,6 +43,7 @@ export type InitAnswers = {
   feedbackGithubIssues: boolean;
   feedbackAnonymousCloud: boolean;
   executionProfile: ExecutionProfile;
+  evaluatorSkepticism: EvaluatorSkepticismLevel;
   strictUnsafeConfirm: boolean;
   blueprints: string[];
   runnerProfile: "codex" | "hermes";
@@ -75,6 +76,7 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
     feedbackGithubIssues: flags.feedbackGithubIssues ?? preset.defaultFeedbackGithubIssues,
     feedbackAnonymousCloud: flags.feedbackAnonymousCloud ?? preset.defaultFeedbackAnonymousCloud,
     executionProfile: flags.executionProfile ?? preset.defaultExecutionProfile,
+    evaluatorSkepticism: flags.evaluatorSkepticism ?? preset.defaultEvaluatorSkepticism,
     strictUnsafeConfirm: flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm,
     blueprints: flags.blueprints ?? INIT_DEFAULTS.blueprints,
     runnerProfile: resolveRunnerProfileFromFlags(flags, "codex"),
@@ -151,6 +153,7 @@ export async function promptInteractiveAnswers(opts: {
     feedbackGithubIssues: advanced.feedbackGithubIssues,
     feedbackAnonymousCloud: advanced.feedbackAnonymousCloud,
     executionProfile: advanced.executionProfile,
+    evaluatorSkepticism: advanced.evaluatorSkepticism,
     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
     blueprints: blueprintSelection.blueprints,
     runnerProfile: toolDefaults.runnerProfile ?? "codex",

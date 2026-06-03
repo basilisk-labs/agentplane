@@ -1,4 +1,8 @@
-import type { RunnerTraceConfig, RunnerTimeoutConfig } from "@agentplaneorg/core/config";
+import type {
+  EvaluatorSkepticismLevel,
+  RunnerTraceConfig,
+  RunnerTimeoutConfig,
+} from "@agentplaneorg/core/config";
 
 import type { TaskData, TaskEvent } from "../../backends/task-backend.js";
 import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
@@ -101,6 +105,7 @@ export type RunnerExecutionContract = {
   profile_runtime?: ResolvedExecutionProfileRuntime;
   trace_policy: RunnerTracePolicy;
   timeout_policy: RunnerTimeoutPolicy;
+  evaluator_skepticism_level?: EvaluatorSkepticismLevel;
   adapter_capabilities?: RunnerAdapterCapabilities;
   adapter_capability_registry?: AgentplaneCapabilityRegistry;
   policy_decision?: RunnerPolicyDecision;

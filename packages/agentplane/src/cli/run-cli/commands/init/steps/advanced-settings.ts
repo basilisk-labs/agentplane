@@ -1,4 +1,4 @@
-import type { ExecutionProfile } from "@agentplaneorg/core/config";
+import type { EvaluatorSkepticismLevel, ExecutionProfile } from "@agentplaneorg/core/config";
 
 import type { InitFlags, SetupProfilePreset } from "../model.js";
 import { setupProfilePresets } from "../presets.js";
@@ -16,6 +16,20 @@ const executionProfileOptions: { value: ExecutionProfile; label: string; hint: s
   { value: "aggressive", label: "Aggressive", hint: "Higher autonomy and lighter guardrails." },
 ];
 
+const evaluatorSkepticismOptions: {
+  value: EvaluatorSkepticismLevel;
+  label: string;
+  hint: string;
+}[] = [
+  { value: "standard", label: "Standard", hint: "Contract review plus missing checks." },
+  { value: "strict", label: "Strict", hint: "Adversarial invariant and negative-case review." },
+  {
+    value: "paranoid",
+    label: "Paranoid",
+    hint: "Assume pass evidence is incomplete until proven.",
+  },
+];
+
 export async function promptAdvancedSettingsStep(opts: {
   clack: InitPromptClack;
   flags: Pick<
@@ -27,6 +41,7 @@ export async function promptAdvancedSettingsStep(opts: {
     | "feedbackGithubIssues"
     | "feedbackAnonymousCloud"
     | "executionProfile"
+    | "evaluatorSkepticism"
     | "strictUnsafeConfirm"
   >;
   setupProfilePreset: SetupProfilePreset;
@@ -43,6 +58,7 @@ export async function promptAdvancedSettingsStep(opts: {
   let requireNetworkApproval =
     opts.flags.requireNetworkApproval ?? preset.defaultRequireNetworkApproval;
   let executionProfile = opts.flags.executionProfile ?? preset.defaultExecutionProfile;
+  let evaluatorSkepticism = opts.flags.evaluatorSkepticism ?? preset.defaultEvaluatorSkepticism;
   let strictUnsafeConfirm = opts.flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm;
 
   if (opts.setupProfileMode === "full") {
@@ -52,6 +68,14 @@ export async function promptAdvancedSettingsStep(opts: {
         options: executionProfileOptions,
         initialValue: executionProfile,
         cancelMessage: "Execution profile selection cancelled.",
+      });
+    }
+    if (!opts.flags.evaluatorSkepticism) {
+      evaluatorSkepticism = await selectStepValue(opts.clack, {
+        message: "Evaluator skepticism",
+        options: evaluatorSkepticismOptions,
+        initialValue: evaluatorSkepticism,
+        cancelMessage: "Evaluator skepticism selection cancelled.",
       });
     }
     if (opts.flags.strictUnsafeConfirm === undefined) {
@@ -97,6 +121,7 @@ export async function promptAdvancedSettingsStep(opts: {
     feedbackGithubIssues,
     feedbackAnonymousCloud,
     executionProfile,
+    evaluatorSkepticism,
     strictUnsafeConfirm,
   };
 }

@@ -1,4 +1,4 @@
-import type { ExecutionProfile } from "@agentplaneorg/core/config";
+import type { EvaluatorSkepticismLevel, ExecutionProfile } from "@agentplaneorg/core/config";
 
 import type { WorkflowMode } from "../../../../../agents/agents-template.js";
 import type { PolicyGatewayFlavor } from "../../../../../shared/policy-gateway.js";
@@ -58,6 +58,7 @@ export type AdvancedSettingsStepAnswers = {
   feedbackGithubIssues: boolean;
   feedbackAnonymousCloud: boolean;
   executionProfile: ExecutionProfile;
+  evaluatorSkepticism: EvaluatorSkepticismLevel;
   strictUnsafeConfirm: boolean;
 };
 

@@ -272,6 +272,7 @@ export async function prepareTaskRunnerExecution(opts: {
       profile_runtime: executionProfile,
       trace_policy: executionProfile.runner.trace_policy,
       timeout_policy: executionProfile.runner.timeout_policy,
+      evaluator_skepticism_level: executionContext.config.evaluator.skepticism_level,
       approvals: {
         require_plan: executionContext.approvals.require_plan,
         require_verify: executionContext.approvals.require_verify,
