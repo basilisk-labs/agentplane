@@ -138,6 +138,7 @@ export async function materializeRepoLocalInstallLayoutForWorktree(opts: {
     "node_modules",
     path.join("packages", "core", "node_modules"),
     path.join("packages", "agentplane", "node_modules"),
+    path.join("website", "node_modules"),
     "agentplane-recipes",
   ];
   for (const relativePath of linkTargets) {

@@ -39,6 +39,7 @@ async function mkFrameworkRepo() {
   await mkdir(path.join(repoRoot, ".agentplane"), { recursive: true });
   await mkdir(path.join(repoRoot, "packages", "agentplane"), { recursive: true });
   await mkdir(path.join(repoRoot, "packages", "core"), { recursive: true });
+  await mkdir(path.join(repoRoot, "website"), { recursive: true });
   await writeFile(path.join(repoRoot, ".agentplane", "config.json"), "{}\n", "utf8");
   await writeFile(path.join(repoRoot, "package.json"), '{ "name": "agentplane-repo" }\n', "utf8");
   await writeFile(
@@ -51,6 +52,7 @@ async function mkFrameworkRepo() {
     '{ "name": "@agentplaneorg/core" }\n',
     "utf8",
   );
+  await writeFile(path.join(repoRoot, "website", "package.json"), '{ "name": "website" }\n', "utf8");
   return repoRoot;
 }
 
@@ -191,6 +193,7 @@ describe("bootstrap-framework-dev script", () => {
     await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
       recursive: true,
     });
+    await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
     await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
     await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     const calls: string[] = [];
@@ -223,6 +226,7 @@ describe("bootstrap-framework-dev script", () => {
     await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
       recursive: true,
     });
+    await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
     await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
     await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     await writeFile(
@@ -260,6 +264,7 @@ describe("bootstrap-framework-dev script", () => {
     await mkdir(path.join(commonRepoRoot, "packages", "agentplane", "node_modules"), {
       recursive: true,
     });
+    await mkdir(path.join(commonRepoRoot, "website", "node_modules"), { recursive: true });
     await mkdir(path.join(commonRepoRoot, "agentplane-recipes"), { recursive: true });
     await writeFile(path.join(commonRepoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     const calls: string[] = [];
@@ -314,6 +319,7 @@ describe("bootstrap-framework-dev script", () => {
     await mkdir(path.join(commonRepoRoot, "packages", "agentplane", "node_modules"), {
       recursive: true,
     });
+    await mkdir(path.join(commonRepoRoot, "website", "node_modules"), { recursive: true });
     await mkdir(path.join(commonRepoRoot, "agentplane-recipes"), { recursive: true });
     await writeFile(path.join(commonRepoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     await fs.promises.symlink(
@@ -324,6 +330,11 @@ describe("bootstrap-framework-dev script", () => {
     await fs.promises.symlink(
       path.join(commonRepoRoot, "packages", "agentplane", "node_modules"),
       path.join(repoRoot, "packages", "agentplane", "node_modules"),
+      "dir",
+    );
+    await fs.promises.symlink(
+      path.join(commonRepoRoot, "website", "node_modules"),
+      path.join(repoRoot, "website", "node_modules"),
       "dir",
     );
     const calls: string[] = [];
@@ -346,6 +357,7 @@ describe("bootstrap-framework-dev script", () => {
     await expect(
       lstat(path.join(repoRoot, "packages", "agentplane", "node_modules")),
     ).rejects.toThrow();
+    await expect(lstat(path.join(repoRoot, "website", "node_modules"))).rejects.toThrow();
   });
 
   it("repairs legacy lefthook-generated hooks after building the repo-local runtime", async () => {
@@ -356,6 +368,7 @@ describe("bootstrap-framework-dev script", () => {
     await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
       recursive: true,
     });
+    await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
     await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
     await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     await writeFile(
