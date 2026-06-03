@@ -35,6 +35,7 @@ export type FinishParsed = {
   confirmStatusCommit: boolean;
   closeCommit: boolean;
   noCloseCommit: boolean;
+  preMergeClosure: boolean;
   noWriteAcr: boolean;
   closeUnstageOthers: boolean;
   baseBranchOverride?: string;
@@ -172,6 +173,20 @@ export function validateFinishRaw(raw: ParsedRaw, spec: CommandSpec<FinishParsed
       message: "--close-commit and --no-close-commit are mutually exclusive",
     });
   }
+  if (raw.opts["pre-merge-closure"] === true && taskIds.length !== 1) {
+    throw usageError({
+      spec,
+      command: "finish",
+      message: "--pre-merge-closure requires exactly one task id",
+    });
+  }
+  if (raw.opts["pre-merge-closure"] === true && raw.opts["no-close-commit"] === true) {
+    throw usageError({
+      spec,
+      command: "finish",
+      message: "--pre-merge-closure cannot be combined with --no-close-commit",
+    });
+  }
   if (
     (raw.opts["close-commit"] === true || raw.opts["no-close-commit"] === true) &&
     (raw.opts["commit-from-comment"] === true || raw.opts["status-commit"] === true)
@@ -257,6 +272,7 @@ export function parseFinishRaw(raw: ParsedRaw): FinishParsed {
     confirmStatusCommit: raw.opts["confirm-status-commit"] === true,
     closeCommit: raw.opts["close-commit"] === true,
     noCloseCommit: raw.opts["no-close-commit"] === true,
+    preMergeClosure: raw.opts["pre-merge-closure"] === true,
     noWriteAcr: raw.opts["no-write-acr"] === true,
     closeUnstageOthers: raw.opts["close-unstage-others"] === true,
     baseBranchOverride: typeof raw.opts.base === "string" ? raw.opts.base : undefined,

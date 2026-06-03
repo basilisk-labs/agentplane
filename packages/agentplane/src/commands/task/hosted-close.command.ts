@@ -13,6 +13,7 @@ import { cmdEvidenceBundle, defaultEvidenceManifestPath } from "../evidence/evid
 import {
   buildIntegratedPrMeta,
   parsePrMeta,
+  readPreMergeClosureMarker,
   resolvePrBatchIncludedTaskIds,
   type PrMeta,
 } from "../shared/pr-meta.js";
@@ -70,6 +71,42 @@ async function refreshExistingEvidenceBundles(opts: {
 
 function taskIsClosedForMerge(task: TaskData, mergeCommit: string): boolean {
   return normalizeTaskStatus(task.status) === "DONE" && task.commit?.hash === mergeCommit;
+}
+
+export function taskIsClosedByPreMergeClosure(opts: {
+  task: TaskData;
+  meta: PrMeta;
+  branch: string;
+  prNumber: number;
+}): boolean {
+  if (normalizeTaskStatus(opts.task.status) !== "DONE") return false;
+  const marker = readPreMergeClosureMarker(opts.meta);
+  if (!marker) return false;
+  if (marker.branch !== opts.branch) return false;
+  if ((opts.meta.branch?.trim() ?? "") !== opts.branch) return false;
+  return opts.meta.pr_number === opts.prNumber;
+}
+
+async function preMergeClosureBasisIsAncestor(opts: {
+  gitRoot: string;
+  meta: PrMeta;
+  mergedHeadSha: string | null | undefined;
+}): Promise<boolean> {
+  const marker = readPreMergeClosureMarker(opts.meta);
+  const head = opts.mergedHeadSha?.trim() ?? "";
+  if (!marker || head.length === 0) return false;
+  if (marker.basisCommit === head) return true;
+  try {
+    await execFileAsync("git", ["merge-base", "--is-ancestor", marker.basisCommit, head], {
+      cwd: opts.gitRoot,
+      env: process.env,
+    });
+    return true;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1) return false;
+    throw err;
+  }
 }
 
 async function taskIsAlreadyClosedBeforeMerge(opts: {
@@ -217,6 +254,24 @@ async function closeHostedTask(opts: {
         0,
         12,
       )}`,
+    };
+  }
+  if (
+    taskIsClosedByPreMergeClosure({
+      task,
+      meta,
+      branch: target.branch,
+      prNumber: target.mergedPr.number,
+    }) &&
+    (await preMergeClosureBasisIsAncestor({
+      gitRoot,
+      meta,
+      mergedHeadSha: target.mergedPr.headRefOid,
+    }))
+  ) {
+    return {
+      outcome: "noop",
+      detail: `${target.taskId} was closed by the merged PR pre-merge closure packet`,
     };
   }
   assertNoConflictingDoneTask({ task, mergeCommit: mergeCommitOid });

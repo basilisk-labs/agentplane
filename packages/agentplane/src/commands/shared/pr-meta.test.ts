@@ -7,8 +7,10 @@ import {
   buildUpdatedPrMeta,
   buildVerifiedPrMeta,
   derivePrArtifactLifecycleState,
+  hasClosedPreMergeClosureMarker,
   parsePrMetaForwardCompatible,
   parsePrMeta,
+  readPreMergeClosureMarker,
   resolvePrBatchIncludedTaskIds,
   resolveShellInvocation,
   runShellCommand,
@@ -145,6 +147,65 @@ describe("pr-meta shell invocations", () => {
       "202601010102-BBBBB",
       "202601010103-CCCCC",
     ]);
+  });
+
+  it("preserves pre-merge closure markers when reopening PR metadata", () => {
+    const nextMeta = buildOpenedPrMeta({
+      taskId: "202601010101-ABCDE",
+      branch: "task/202601010101-ABCDE/example",
+      at: "2026-01-28T00:00:00Z",
+      previousMeta: {
+        schema_version: 1,
+        task_id: "202601010101-ABCDE",
+        branch: "task/202601010101-ABCDE/example",
+        created_at: "2026-01-27T00:00:00Z",
+        updated_at: "2026-01-27T00:00:00Z",
+        verify: { status: "pass" },
+        pre_merge_closure: {
+          state: "closed_before_merge",
+          branch: "task/202601010101-ABCDE/example",
+          basis_commit: "abc1234",
+          recorded_at: "2026-01-27T01:00:00Z",
+        },
+      } as never,
+      base: "main",
+    });
+
+    expect((nextMeta as { pre_merge_closure?: { state?: string } }).pre_merge_closure).toEqual(
+      expect.objectContaining({ state: "closed_before_merge" }),
+    );
+  });
+
+  it("normalizes typed pre-merge closure markers for PR metadata consumers", () => {
+    const meta = {
+      pre_merge_closure: {
+        state: "closed_before_merge",
+        branch: " task/202601010101-ABCDE/example ",
+        basis_commit: " abc123 ",
+        extra_forward_compatible_field: true,
+      },
+    };
+
+    expect(readPreMergeClosureMarker(meta)).toEqual({
+      state: "closed_before_merge",
+      branch: "task/202601010101-ABCDE/example",
+      basisCommit: "abc123",
+    });
+    expect(hasClosedPreMergeClosureMarker(meta)).toBe(true);
+  });
+
+  it("rejects incomplete pre-merge closure markers", () => {
+    for (const marker of [
+      null,
+      { state: "closed_before_merge", branch: "task/example" },
+      { state: "closed_before_merge", basis_commit: "abc123" },
+      { state: "closed_before_merge", branch: " ", basis_commit: "abc123" },
+      { state: "closed_before_merge", branch: "task/example", basis_commit: " " },
+      { state: "planned", branch: "task/example", basis_commit: "abc123" },
+    ]) {
+      expect(readPreMergeClosureMarker({ pre_merge_closure: marker })).toBeNull();
+      expect(hasClosedPreMergeClosureMarker({ pre_merge_closure: marker })).toBe(false);
+    }
   });
 
   it("hydrates batch metadata from legacy related task ids during updates", () => {

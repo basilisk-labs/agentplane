@@ -1183,6 +1183,7 @@ Options:
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment or --status-commit). (default=false)
 - `--close-commit`: After finishing, run a deterministic close commit for the active task artifact scope (single-task only). (default=false)
 - `--no-close-commit`: Disable the default deterministic close commit in direct mode (single-task only). (default=false)
+- `--pre-merge-closure`: In branch_pr, finish from the task worktree and commit the closure packet before the task PR merge. (default=false)
 - `--no-write-acr`: Disable automatic ACR refresh for this finish call when acr.write_on_finish is enabled. (default=false)
 - `--close-unstage-others`: With --close-commit: unstage any currently staged paths before staging the active task artifact scope. (default=false)
 - `--base <branch>`: Optional explicit base branch override for branch_pr finish validation and close-commit reconciliation.

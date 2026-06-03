@@ -27,6 +27,8 @@ export async function cmdFinish(options: FinishOptions): Promise<number> {
       cwd: options.cwd,
       rootOverride: options.rootOverride,
       baseBranchOverride: options.baseBranchOverride,
+      taskIds: options.taskIds,
+      preMergeClosure: options.preMergeClosure === true,
     });
     if (options.force) {
       await ensureActionApproved({
