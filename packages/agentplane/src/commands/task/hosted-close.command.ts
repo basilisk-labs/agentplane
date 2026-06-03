@@ -13,6 +13,7 @@ import { cmdEvidenceBundle, defaultEvidenceManifestPath } from "../evidence/evid
 import {
   buildIntegratedPrMeta,
   parsePrMeta,
+  readPreMergeClosureMarker,
   resolvePrBatchIncludedTaskIds,
   type PrMeta,
 } from "../shared/pr-meta.js";
@@ -70,24 +71,6 @@ async function refreshExistingEvidenceBundles(opts: {
 
 function taskIsClosedForMerge(task: TaskData, mergeCommit: string): boolean {
   return normalizeTaskStatus(task.status) === "DONE" && task.commit?.hash === mergeCommit;
-}
-
-type PreMergeClosureMarker = {
-  state: "closed_before_merge";
-  branch: string;
-  basisCommit: string;
-};
-
-function readPreMergeClosureMarker(meta: PrMeta): PreMergeClosureMarker | null {
-  const marker = (meta as PrMeta & { pre_merge_closure?: unknown }).pre_merge_closure;
-  if (!marker || typeof marker !== "object") return null;
-  const state = (marker as { state?: unknown }).state;
-  const branch = (marker as { branch?: unknown }).branch;
-  const basisCommit = (marker as { basis_commit?: unknown }).basis_commit;
-  if (state !== "closed_before_merge") return null;
-  if (typeof branch !== "string" || branch.trim().length === 0) return null;
-  if (typeof basisCommit !== "string" || basisCommit.trim().length === 0) return null;
-  return { state, branch: branch.trim(), basisCommit: basisCommit.trim() };
 }
 
 export function taskIsClosedByPreMergeClosure(opts: {

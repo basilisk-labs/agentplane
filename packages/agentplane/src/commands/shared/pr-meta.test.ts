@@ -7,8 +7,10 @@ import {
   buildUpdatedPrMeta,
   buildVerifiedPrMeta,
   derivePrArtifactLifecycleState,
+  hasClosedPreMergeClosureMarker,
   parsePrMetaForwardCompatible,
   parsePrMeta,
+  readPreMergeClosureMarker,
   resolvePrBatchIncludedTaskIds,
   resolveShellInvocation,
   runShellCommand,
@@ -172,6 +174,38 @@ describe("pr-meta shell invocations", () => {
     expect((nextMeta as { pre_merge_closure?: { state?: string } }).pre_merge_closure).toEqual(
       expect.objectContaining({ state: "closed_before_merge" }),
     );
+  });
+
+  it("normalizes typed pre-merge closure markers for PR metadata consumers", () => {
+    const meta = {
+      pre_merge_closure: {
+        state: "closed_before_merge",
+        branch: " task/202601010101-ABCDE/example ",
+        basis_commit: " abc123 ",
+        extra_forward_compatible_field: true,
+      },
+    };
+
+    expect(readPreMergeClosureMarker(meta)).toEqual({
+      state: "closed_before_merge",
+      branch: "task/202601010101-ABCDE/example",
+      basisCommit: "abc123",
+    });
+    expect(hasClosedPreMergeClosureMarker(meta)).toBe(true);
+  });
+
+  it("rejects incomplete pre-merge closure markers", () => {
+    for (const marker of [
+      null,
+      { state: "closed_before_merge", branch: "task/example" },
+      { state: "closed_before_merge", basis_commit: "abc123" },
+      { state: "closed_before_merge", branch: " ", basis_commit: "abc123" },
+      { state: "closed_before_merge", branch: "task/example", basis_commit: " " },
+      { state: "planned", branch: "task/example", basis_commit: "abc123" },
+    ]) {
+      expect(readPreMergeClosureMarker({ pre_merge_closure: marker })).toBeNull();
+      expect(hasClosedPreMergeClosureMarker({ pre_merge_closure: marker })).toBe(false);
+    }
   });
 
   it("hydrates batch metadata from legacy related task ids during updates", () => {

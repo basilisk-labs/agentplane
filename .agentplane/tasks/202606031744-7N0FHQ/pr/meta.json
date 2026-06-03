@@ -3,8 +3,11 @@
   "branch": "task/202606031744-7N0FHQ/support-pre-merge-branch-pr-closure",
   "created_at": "2026-06-03T17:44:58.986Z",
   "diffstat_sha256": "sha256:338b465ef6264d79c59557f8affa25c3139bcc536745d9e2b6e7aec62337199f",
+  "head_sha": "a1d7d6c78f84b22a83ee0014caca49c09cf509c2",
   "last_verified_at": "2026-06-03T18:27:45.931Z",
   "last_verified_diffstat_sha256": "sha256:338b465ef6264d79c59557f8affa25c3139bcc536745d9e2b6e7aec62337199f",
+  "merge_commit": "a1d7d6c78f84b22a83ee0014caca49c09cf509c2",
+  "merged_at": "2026-06-03T19:14:22.833Z",
   "pr_number": 4402,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4402",
   "pre_merge_closure": {
@@ -14,9 +17,9 @@
     "state": "closed_before_merge"
   },
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202606031744-7N0FHQ",
-  "updated_at": "2026-06-03T17:44:58.986Z",
+  "updated_at": "2026-06-03T19:14:22.833Z",
   "verify": {
     "status": "pass"
   }
