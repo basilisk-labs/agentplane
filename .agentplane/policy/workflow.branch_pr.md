@@ -15,7 +15,8 @@ Use this module when `workflow_mode=branch_pr`.
 4. Keep single-writer discipline per task worktree.
 5. Publish/update PR artifacts from the task worktree.
 6. Verify on the task branch.
-7. Finish the task on the task branch with `--pre-merge-closure` so the PR carries the final closure packet before merge.
+7. Finish the task on the task branch with `--pre-merge-closure` so the PR carries the final
+   closure packet before merge.
 8. Queue verified task branches for serialized integration when more than one agent is ready to merge.
 9. CHECKPOINT B: INTEGRATOR runs integration from the base checkout; protected bases finalize through the task GitHub PR merge, not a direct local base mutation.
 10. CHECKPOINT C: hosted close is a no-op when pre-merge closure is present; otherwise it remains the close-tail recovery route.
