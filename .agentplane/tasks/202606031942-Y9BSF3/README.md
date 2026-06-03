@@ -1,10 +1,11 @@
 ---
 id: "202606031942-Y9BSF3"
 title: "Add structured feedback issue triage"
-status: "DOING"
+result_summary: "Implemented insights triage and feedback issue triage integration."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,37 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.insights-report.test.ts. Result: pass, 11 tests. Scope: insights triage and issue dry-run behavior. Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts. Result: pass, 26 tests. Scope: command catalog/help snapshot. Command: bun run docs:cli:check. Result: pass. Scope: CLI docs freshness. Command: bun run typecheck. Result: pass. Scope: TypeScript project build. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Scope: policy routing."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-03T20:02:23.413Z"
+  updated_by: "EVALUATOR"
+  note: "Structured feedback issue triage is implemented and verified."
+  evaluated_sha: "36b4ae5fc0469b1a6a065d4c9bd689279f524ca5"
+  blueprint_digest: "5b43669e50f4928a767f8e1762ecf59e5a6e3786d8e6271a411007a104638bfb"
+  evidence_refs:
+    - ".agentplane/tasks/202606031942-Y9BSF3/README.md"
+    - ".agentplane/tasks/202606031942-Y9BSF3/quality/20260603-200223413-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606031942-Y9BSF3/quality/20260603-200223413-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606031942-Y9BSF3/quality/20260603-200223413-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606031942-Y9BSF3/blueprint/resolved-snapshot.json"
+    - "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.insights-report.test.ts"
+    - "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts"
+    - "bun run docs:cli:check"
+    - "bun run typecheck"
+    - "node .agentplane/policy/check-routing.mjs"
+    - "ap pr check 202606031942-Y9BSF3"
+  findings:
+    - "The issue path preserves required agent-written context while adding CLI-generated privacy-bounded startup-routing triage."
+commit:
+  hash: "9e34182a174134d902dd06649de9a5c889df42e1"
+  message: "🚧 Y9BSF3 task: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: Implement structured feedback issue triage in the dedicated branch_pr worktree, preserving required agent-written context while adding privacy-bounded CLI-generated diagnostic findings."
+  -
+    author: "CODER"
+    body: "Verified: Structured feedback issue triage implemented, issue creation keeps required agent-written context, CLI-generated triage is privacy-bounded, targeted tests/typecheck/docs/routing and evaluator pass are recorded."
 events:
   -
     type: "status"
@@ -41,8 +68,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.insights-report.test.ts. Result: pass, 11 tests. Scope: insights triage and issue dry-run behavior. Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts. Result: pass, 26 tests. Scope: command catalog/help snapshot. Command: bun run docs:cli:check. Result: pass. Scope: CLI docs freshness. Command: bun run typecheck. Result: pass. Scope: TypeScript project build. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Scope: policy routing."
+  -
+    type: "status"
+    at: "2026-06-03T20:03:27.504Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Structured feedback issue triage implemented, issue creation keeps required agent-written context, CLI-generated triage is privacy-bounded, targeted tests/typecheck/docs/routing and evaluator pass are recorded."
 doc_version: 3
-doc_updated_at: "2026-06-03T19:54:27.133Z"
+doc_updated_at: "2026-06-03T20:03:27.505Z"
 doc_updated_by: "CODER"
 description: "Add an AgentPlane insights triage command and integrate it with feedback issue creation so agents can include privacy-bounded diagnostic findings while still providing their own required agent analysis."
 sections:
@@ -86,6 +120,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "36b4ae5fc0469b1a6a065d4c9bd689279f524ca5"
+    message: "🚧 Y9BSF3 task: add structured feedback issue triage"
 id_source: "generated"
 ---
 ## Summary
