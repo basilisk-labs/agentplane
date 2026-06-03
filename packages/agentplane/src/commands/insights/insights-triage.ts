@@ -52,11 +52,12 @@ function extractQuickstartRoutes(text: string): {
 } {
   const lines = text.split("\n");
   const headingIndex = lines.findIndex((line) => line.trim() === "Configured workflow route:");
-  if (headingIndex < 0) return { configuredRoute: null, routeSections: [] };
+  if (headingIndex === -1) return { configuredRoute: null, routeSections: [] };
 
   const routeLines = lines.slice(headingIndex + 1).filter((line) => line.trim().startsWith("- `"));
+  const routePattern = /^- `([^`]+)`:/;
   const routes = routeLines.flatMap((line) => {
-    const match = line.trim().match(/^- `([^`]+)`:/);
+    const match = routePattern.exec(line.trim());
     return match?.[1] ? [match[1]] : [];
   });
   return {

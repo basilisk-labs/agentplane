@@ -88,6 +88,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Diagnostics
   - [insights issue](#insights-issue)
   - [insights report](#insights-report)
+  - [insights triage](#insights-triage)
   - [runtime explain](#runtime-explain)
 - Recipes
   - [recipes active](#recipes-active)
@@ -2370,6 +2371,7 @@ Options:
 - `--title <title>`: Issue title. Defaults to an internal Agentplane error report title.
 - `--body <text>`: Optional short user-visible context to include before diagnostics.
 - `--agent-context <text>`: Sanitized agent-written diagnostic context to include in the public issue body.
+- `--triage <startup-routing>`: Append CLI-generated privacy-bounded diagnostic triage; the agent-written context is still required for real E_INTERNAL issues. (choices=startup-routing)
 - `--agent-context-file <path>`: Read sanitized agent-written diagnostic context from a file before creating the issue.
 - `--allow-missing-agent-context`: Allow creating an E_INTERNAL issue without the recommended agent-written context. (default=false)
 - `--error-code <code>`: Agentplane error code that triggered the report.
@@ -2401,6 +2403,42 @@ agentplane insights issue --allow-disabled-feedback --error-code E_INTERNAL
 ```
 
 - Create one issue from an explicitly opted-out project without changing config.
+
+### insights triage
+
+Print structured privacy-bounded diagnostic findings for support triage.
+
+Usage:
+
+```text
+agentplane insights triage [options]
+```
+
+Options:
+
+- `--json`: Emit the triage result as machine-readable JSON. (default=false)
+- `--preset <startup-routing>`: Diagnostic rule preset to run (default: startup-routing). (choices=startup-routing)
+- `--recent-limit <n>`: Number of recent task ids to include in the backing report (default: 8, max: 25).
+- `--error-code <code>`: Agentplane error code that triggered the report.
+- `--failure-command <command>`: Privacy-safe command id associated with the failure, for example task start-ready.
+- `--failure-phase <phase>`: Privacy-safe lifecycle phase associated with the failure.
+- `--failure-reason-code <code>`: Privacy-safe reason code associated with the failure.
+- `--failure-message-class <class>`: Privacy-safe error message class, not the raw error message.
+- `--failure-argv-shape <token>`: Repeatable sanitized argv shape token; values must not include raw secrets. (repeatable)
+
+Examples:
+
+```sh
+agentplane insights triage --preset startup-routing
+```
+
+- Build structured startup-route diagnostics before filing a feedback issue.
+
+```sh
+agentplane insights triage --preset startup-routing --json
+```
+
+- Emit machine-readable triage for support tooling.
 
 ### insights report
 

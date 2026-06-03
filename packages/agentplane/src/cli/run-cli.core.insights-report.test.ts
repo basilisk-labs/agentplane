@@ -209,7 +209,7 @@ describe("runCli insights report", () => {
           quickstart_configured_route?: string | null;
           failure_error_code?: string | null;
         };
-        findings?: Array<{ code?: string; confidence?: string; evidence?: string[] }>;
+        findings?: { code?: string; confidence?: string; evidence?: string[] }[];
         agent_required?: { field?: string; instruction?: string };
       };
       expect(payload.schema).toBe("agentplane.insights.triage.v1");
