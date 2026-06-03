@@ -4,7 +4,7 @@ title: "Fix finish quality review target for artifact commits"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,26 @@ verification:
   updated_by: "CODER"
   note: "Verified: implementation commit 63d2862a5 preserves focused test pass (31 tests across 2 files), policy routing OK, and targeted Prettier check pass after the finish quality-review target change."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-03T05:23:31.869Z"
+  updated_by: "EVALUATOR"
+  note: "Finish quality review target now uses --implementation-commit before artifact --commit, preventing artifact-only close commits from forcing stale evaluator loops."
+  evaluated_sha: "462f15bf426c32b26c90f2d9e2ec417a9849bde7"
+  blueprint_digest: "ea1faec7231145a279085d65f921226d11b48d2ffcf985f8581eb96f787cfda3"
+  evidence_refs:
+    - ".agentplane/tasks/202606030511-73DRFG/README.md"
+    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-052331869-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-052331869-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606030511-73DRFG/quality/20260603-052331869-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606030511-73DRFG/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+    - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
+    - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
+    - "node .agentplane/policy/check-routing.mjs"
+  findings:
+    - "Regression coverage exercises artifact --commit with implementation --implementation-commit and a quality_review evaluated against the implementation SHA."
+    - "Focused finish and quality-review gate tests passed, routing policy passed, and targeted formatting passed."
 commit: null
 comments:
   -
