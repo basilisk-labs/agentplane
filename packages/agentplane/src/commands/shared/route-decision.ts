@@ -240,7 +240,8 @@ async function resolveLocalRecordedCloseFlow(opts: {
   );
   try {
     const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.task.id);
-    const base = meta.base?.trim() || "main";
+    const trimmedBase = meta.base?.trim();
+    const base = trimmedBase && trimmedBase.length > 0 ? trimmedBase : "main";
     if (meta.status !== "MERGED" || !meta.merge_commit) return null;
     const recorded = await taskCloseAlreadyRecordedOnBase({
       gitRoot: opts.ctx.resolvedProject.gitRoot,

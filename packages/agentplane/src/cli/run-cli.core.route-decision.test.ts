@@ -707,16 +707,7 @@ describe("runCli route decision commands", () => {
       root,
     ]);
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-    await runCliSilent([
-      "task",
-      "set-status",
-      taskId,
-      "DOING",
-      "--force",
-      "--yes",
-      "--root",
-      root,
-    ]);
+    await runCliSilent(["task", "set-status", taskId, "DOING", "--force", "--yes", "--root", root]);
 
     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
     await mkdir(prDir, { recursive: true });
@@ -751,9 +742,13 @@ describe("runCli route decision commands", () => {
     );
     const suffix = taskId.split("-").at(-1);
     await execFileAsync("git", ["add", readmePath, path.join(prDir, "meta.json")], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `code: ${suffix} close: (${taskId}) hosted close`], {
-      cwd: root,
-    });
+    await execFileAsync(
+      "git",
+      ["commit", "-m", `code: ${suffix} close: (${taskId}) hosted close`],
+      {
+        cwd: root,
+      },
+    );
 
     const statusIo = captureStdIO();
     try {
@@ -766,7 +761,8 @@ describe("runCli route decision commands", () => {
       };
       expect(parsed.nextAction).toMatchObject({
         code: "sync_hosted_close",
-        command: "git fetch origin main && git merge --ff-only origin/main && agentplane cleanup merged",
+        command:
+          "git fetch origin main && git merge --ff-only origin/main && agentplane cleanup merged",
       });
       expect(parsed.oracle).toMatchObject({
         phase: "hosted_close_recorded_upstream",

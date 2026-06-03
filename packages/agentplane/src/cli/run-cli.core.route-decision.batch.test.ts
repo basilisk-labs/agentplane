@@ -426,7 +426,9 @@ describe("runCli route decision batch ownership", () => {
         code: "repair_included_batch_metadata",
         command: null,
       });
-      expect(parsed.next_action.summary).toContain("structured branch_pr batch metadata is missing");
+      expect(parsed.next_action.summary).toContain(
+        "structured branch_pr batch metadata is missing",
+      );
       expect(parsed.blockers.map((blocker) => blocker.code)).toContain(
         "missing_included_batch_metadata",
       );
