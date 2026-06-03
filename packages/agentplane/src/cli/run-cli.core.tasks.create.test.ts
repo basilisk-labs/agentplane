@@ -322,7 +322,62 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     }
   });
 
-  it("task new rejects highly similar open task titles unless --allow-duplicate is passed", async () => {
+  it("task new warns but allows highly similar open task titles by default", async () => {
+    const root = await mkGitRepoRoot();
+    const firstIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Sanitize gh env for hosted merge sync lookups",
+        "--description",
+        "Original workflow task",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      firstIo.restore();
+    }
+
+    const io = captureStdIO();
+    let followupId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Sanitize hosted-merge-sync gh lookups",
+        "--description",
+        "Duplicate workflow task",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      followupId = io.stdout.trim();
+      expect(io.stderr).toContain("similar open task detected");
+      expect(io.stderr).toContain("close-duplicate");
+    } finally {
+      io.restore();
+    }
+
+    expect(followupId).toMatch(/^\d{12}-[A-Z0-9]{6}$/);
+  });
+
+  it("task new rejects exact duplicate open task titles unless --allow-duplicate is passed", async () => {
     const root = await mkGitRepoRoot();
     const firstIo = captureStdIO();
     try {
@@ -353,7 +408,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
         "task",
         "new",
         "--title",
-        "Sanitize hosted-merge-sync gh lookups",
+        "Sanitize gh env for hosted merge sync lookups",
         "--description",
         "Duplicate workflow task",
         "--priority",
@@ -366,7 +421,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
         root,
       ]);
       expect(code).toBe(4);
-      expect(io.stderr).toContain("potential duplicate open task detected");
+      expect(io.stderr).toContain("exact duplicate open task detected");
       expect(io.stderr).toContain("--allow-duplicate");
       expect(io.stderr).toContain("close-duplicate");
     } finally {
@@ -421,8 +476,8 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
       ]);
       expect(code).toBe(0);
       duplicateId = io.stdout.trim();
-      expect(io.stderr).toContain("potential duplicate open task detected");
-      expect(io.stderr).toContain("creating a duplicate because --allow-duplicate was passed");
+      expect(io.stderr).toContain("similar open task detected");
+      expect(io.stderr).toContain("creating a new task");
     } finally {
       io.restore();
     }

@@ -52,7 +52,7 @@ export type TaskNewParsed = {
   allowDuplicate: boolean;
 };
 
-const TASK_NEW_DUPLICATE_THRESHOLD = 0.75;
+const TASK_NEW_SIMILAR_TITLE_THRESHOLD = 0.75;
 const TASK_NEW_DUPLICATE_STOPWORDS = new Set([
   "a",
   "an",
@@ -198,25 +198,47 @@ function duplicateSimilarity(left: string, right: string): number {
   return union === 0 ? 0 : intersection / union;
 }
 
+function normalizeDuplicateTitleKey(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, " ")
+    .replaceAll(/\s+/g, " ")
+    .trim();
+}
+
+type DuplicateTaskSeverity = "exact" | "similar";
+
+function duplicateTaskSeverity(taskTitle: string, titleKey: string): DuplicateTaskSeverity {
+  return titleKey.length > 0 && normalizeDuplicateTitleKey(taskTitle) === titleKey
+    ? "exact"
+    : "similar";
+}
+
 function listOpenTaskDuplicates(
   tasks: TaskData[],
   title: string,
-): { task: TaskData; score: number }[] {
+): { task: TaskData; score: number; severity: DuplicateTaskSeverity }[] {
+  const titleKey = normalizeDuplicateTitleKey(title);
   return tasks
     .filter((task) => normalizeTaskStatus(task.status) !== "DONE")
     .map((task) => ({
       task,
       score: duplicateSimilarity(task.title ?? "", title),
+      severity: duplicateTaskSeverity(task.title ?? "", titleKey),
     }))
-    .filter(({ score }) => score >= TASK_NEW_DUPLICATE_THRESHOLD)
+    .filter(
+      ({ score, severity }) => severity === "exact" || score >= TASK_NEW_SIMILAR_TITLE_THRESHOLD,
+    )
     .toSorted(
       (left, right) => right.score - left.score || left.task.id.localeCompare(right.task.id),
     );
 }
 
 function formatDuplicateTaskMessage(
-  duplicates: { task: TaskData; score: number }[],
+  duplicates: { task: TaskData; score: number; severity: "exact" | "similar" }[],
   allowDuplicate: boolean,
+  mode: "blocked" | "warning",
 ): string {
   const summary = duplicates
     .slice(0, 3)
@@ -225,10 +247,16 @@ function formatDuplicateTaskMessage(
         `${task.id} (${Math.round(score * 100)}% title overlap, status=${normalizeTaskStatus(task.status)}): ${task.title}`,
     )
     .join("; ");
-  const tail = allowDuplicate
-    ? "creating a duplicate because --allow-duplicate was passed"
-    : "rerun with --allow-duplicate only when intentional or close the extra task with `agentplane task close-duplicate`";
-  return `potential duplicate open task detected: ${summary}; ${tail}.`;
+  const tail =
+    mode === "warning"
+      ? "creating a new task; use `agentplane task close-duplicate` if this turns out to be the same work"
+      : allowDuplicate
+        ? "creating a duplicate because --allow-duplicate was passed"
+        : "rerun with --allow-duplicate only when intentional or close the extra task with `agentplane task close-duplicate`";
+  const prefix = duplicates.some((match) => match.severity === "exact")
+    ? "exact duplicate open task detected"
+    : "similar open task detected";
+  return `${prefix}: ${summary}; ${tail}.`;
 }
 
 export async function runTaskNewParsed(opts: {
@@ -245,15 +273,18 @@ export async function runTaskNewParsed(opts: {
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     await ctx.taskBackend.assertLocalMutationReady?.();
     const duplicateTasks = listOpenTaskDuplicates(await ctx.taskBackend.listTasks(), p.title);
-    if (duplicateTasks.length > 0 && !p.allowDuplicate) {
+    const exactDuplicateTasks = duplicateTasks.filter((match) => match.severity === "exact");
+    if (exactDuplicateTasks.length > 0 && !p.allowDuplicate) {
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
-        message: formatDuplicateTaskMessage(duplicateTasks, false),
+        message: formatDuplicateTaskMessage(exactDuplicateTasks, false, "blocked"),
       });
     }
-    if (duplicateTasks.length > 0 && p.allowDuplicate) {
-      process.stderr.write(`${warnMessage(formatDuplicateTaskMessage(duplicateTasks, true))}\n`);
+    if (duplicateTasks.length > 0) {
+      process.stderr.write(
+        `${warnMessage(formatDuplicateTaskMessage(duplicateTasks, p.allowDuplicate, "warning"))}\n`,
+      );
     }
     const suffixLength = ctx.config.tasks.id_suffix_length_default;
     if (!ctx.taskBackend.generateTaskId) {

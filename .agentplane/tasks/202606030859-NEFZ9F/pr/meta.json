@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606030859-NEFZ9F/clarify-branch-pr-task-completion-and-duplicate",
+  "created_at": "2026-06-03T09:00:20.340Z",
+  "diffstat_sha256": "sha256:7b36caafeea50f38f05fd965be49b01bc00c688e36aa17bc07383a305229823c",
+  "last_verified_at": "2026-06-03T09:23:00.214Z",
+  "last_verified_diffstat_sha256": "sha256:7b36caafeea50f38f05fd965be49b01bc00c688e36aa17bc07383a305229823c",
+  "schema_version": 1,
+  "task_id": "202606030859-NEFZ9F",
+  "updated_at": "2026-06-03T09:00:20.340Z",
+  "verify": {
+    "status": "pass"
+  }
+}

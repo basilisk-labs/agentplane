@@ -1,0 +1,5 @@
+ .../src/cli/run-cli.core.task-guided.test.ts       |  7 ++-
+ .../src/cli/run-cli.core.tasks.create.test.ts      | 63 ++++++++++++++++++++--
+ .../src/commands/task/complete.command.ts          | 11 ++--
+ packages/agentplane/src/commands/task/new.ts       | 55 ++++++++++++++-----
+ 4 files changed, 115 insertions(+), 21 deletions(-)

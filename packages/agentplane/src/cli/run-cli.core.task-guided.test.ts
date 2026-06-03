@@ -226,7 +226,7 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
     expect(readme).not.toContain("Shortcut should fail before verify");
   });
 
-  it("task complete records branch_pr verification and prints the PR route", async () => {
+  it("task complete records branch_pr verification without implying lifecycle closure", async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -286,7 +286,10 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
       expect(code).toBe(0);
       expect(JSON.parse(io.stdout.trim())).toMatchObject({
         task_id: taskId,
-        status: "verified",
+        status: "verified_pending_closeout",
+        lifecycle_status: "not_finished",
+        next_command: `agentplane task next-action ${taskId} --explain`,
+        pr_command: `agentplane pr open ${taskId} --branch task/${taskId}/<slug> --author CODER`,
       });
     } finally {
       io.restore();
