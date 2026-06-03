@@ -4,7 +4,7 @@ title: "Fix upstream issue #4407: Direct workflow leaves verified tasks active a
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,31 @@ verification:
   updated_by: null
   note: null
   attempts: 0
+runner:
+  run_id: "2026-06-03T20-02-04-185Z"
+  status: "failed"
+  adapter_id: "codex"
+  mode: "execute"
+  updated_at: "2026-06-03T20:02:27.898Z"
+  started_at: "2026-06-03T20:02:04.202Z"
+  ended_at: "2026-06-03T20:02:27.888Z"
+  exit_code: 1
+  target:
+    kind: "task"
+    task_id: "202606031931-MY3BW9"
+  summary: "Codex runner failed; inspect run artifacts for details."
+  output_paths:
+    - "/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/bundle.json"
+    - "/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/bootstrap.md"
+    - "/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/agent-trace.jsonl"
+    - "/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/stderr.log"
+    - "/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/codex-last-message.md"
+    - "/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/result.json"
+  metrics:
+    duration_ms: 23686
+    stdout_bytes: 2703
+    stderr_bytes: 1239
+    output_last_message_bytes: null
 commit: null
 comments:
   -
@@ -36,7 +61,7 @@ events:
     to: "DOING"
     note: "Start: investigating the stale active-task lifecycle in branch_pr mode, reproducing issue #4407, and preparing a bounded fix with focused verification evidence."
 doc_version: 3
-doc_updated_at: "2026-06-03T19:32:40.537Z"
+doc_updated_at: "2026-06-03T20:02:27.917Z"
 doc_updated_by: "CODER"
 description: "Resolve https://github.com/basilisk-labs/agentplane/issues/4407"
 sections:
@@ -60,7 +85,40 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    <!-- BEGIN RUNNER OUTCOME -->
+
+    #### 2026-06-03T20:02:27.898Z — RUNNER — failed
+
+    RunId: 2026-06-03T20-02-04-185Z
+
+    Adapter: codex
+
+    Mode: execute
+
+    Target: task 202606031931-MY3BW9
+
+    UpdatedAt: 2026-06-03T20:02:27.898Z
+
+    RunArtifacts: .agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z
+
+    ExitCode: 1
+
+    StartedAt: 2026-06-03T20:02:04.202Z
+
+    EndedAt: 2026-06-03T20:02:27.888Z
+
+    Summary: Codex runner failed; inspect run artifacts for details.
+
+    Artifacts: bundle=/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/bundle.json, bootstrap=/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/bootstrap.md, raw-trace=/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/agent-trace.jsonl, stderr-log=/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/stderr.log, assistant-last-message=/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/codex-last-message.md, result-manifest=/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/result.json
+
+    Capabilities: codex.exec
+
+    Metrics: duration_ms=23686, stdout_bytes=2703, stderr_bytes=1239, output_last_message_bytes=null
+
+    VerificationHint: runner failed; inspect artifacts before retrying or recording verification evidence.
+
+    <!-- END RUNNER OUTCOME -->
 id_source: "generated"
 ---
 ## Summary
@@ -97,3 +155,37 @@ PLANNER fallback scaffold for "Fix upstream issue #4407: Direct workflow leaves 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+<!-- BEGIN RUNNER OUTCOME -->
+
+#### 2026-06-03T20:02:27.898Z — RUNNER — failed
+
+RunId: 2026-06-03T20-02-04-185Z
+
+Adapter: codex
+
+Mode: execute
+
+Target: task 202606031931-MY3BW9
+
+UpdatedAt: 2026-06-03T20:02:27.898Z
+
+RunArtifacts: .agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z
+
+ExitCode: 1
+
+StartedAt: 2026-06-03T20:02:04.202Z
+
+EndedAt: 2026-06-03T20:02:27.888Z
+
+Summary: Codex runner failed; inspect run artifacts for details.
+
+Artifacts: bundle=/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/bundle.json, bootstrap=/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/bootstrap.md, raw-trace=/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/agent-trace.jsonl, stderr-log=/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/stderr.log, assistant-last-message=/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/codex-last-message.md, result-manifest=/home/deus/workspace/projects/agentplane/repository/worktree/.agentplane/worktrees/202606031931-MY3BW9-fix-upstream-issue-4407-direct-workflow-leaves-v/.agentplane/tasks/202606031931-MY3BW9/runs/2026-06-03T20-02-04-185Z/result.json
+
+Capabilities: codex.exec
+
+Metrics: duration_ms=23686, stdout_bytes=2703, stderr_bytes=1239, output_last_message_bytes=null
+
+VerificationHint: runner failed; inspect artifacts before retrying or recording verification evidence.
+
+<!-- END RUNNER OUTCOME -->
