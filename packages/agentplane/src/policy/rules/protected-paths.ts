@@ -35,11 +35,35 @@ function isHookAllowedTaskArtifact(opts: {
   );
 }
 
+function isExplicitlyAllowedSameTaskArtifact(opts: {
+  filePath: string;
+  prefixes: string[];
+  tasksPath: string;
+  workflowDir: string;
+  taskId: string | undefined;
+}): boolean {
+  if (
+    !isHookAllowedTaskArtifact({
+      filePath: opts.filePath,
+      tasksPath: opts.tasksPath,
+      workflowDir: opts.workflowDir,
+      taskId: opts.taskId,
+    })
+  ) {
+    return false;
+  }
+  const filePath = normalizeGitPathPrefix(opts.filePath);
+  return opts.prefixes
+    .map((prefix) => normalizeGitPathPrefix(prefix))
+    .some((prefix) => gitPathIsUnderPrefix(filePath, prefix));
+}
+
 export function protectedPathsRule(ctx: PolicyContext): PolicyResult {
   const staged = ctx.git.stagedPaths ?? [];
   if (staged.length === 0) return okResult();
 
   const tasksPath = ctx.config.paths.tasks_path;
+  const allowPrefixes = ctx.allow?.prefixes ?? [];
   const allowTasks = ctx.allow?.allowTasks === true;
   const allowPolicy = ctx.allow?.allowPolicy === true;
   const allowConfig = ctx.allow?.allowConfig === true;
@@ -70,7 +94,17 @@ export function protectedPathsRule(ctx: PolicyContext): PolicyResult {
       continue;
     }
 
-    if (kind === "tasks" && !allowTasks) {
+    if (
+      kind === "tasks" &&
+      !allowTasks &&
+      !isExplicitlyAllowedSameTaskArtifact({
+        filePath,
+        prefixes: allowPrefixes,
+        tasksPath,
+        workflowDir: ctx.config.paths.workflow_dir,
+        taskId: ctx.taskId,
+      })
+    ) {
       const override = getProtectedPathOverride(kind);
       errors.push(
         ctx.action === "hook_pre_commit"

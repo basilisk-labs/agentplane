@@ -278,6 +278,46 @@ describe("guard/impl/allow", () => {
     ]);
   });
 
+  it("stageAllowlist admits explicitly allowed same-task generated artifacts without allowTasks", async () => {
+    const { stageAllowlist } = await import("./allow.js");
+    const ctx = {
+      resolvedProject: {
+        gitRoot: repoRoot,
+      },
+      config: {
+        workflow_mode: "branch_pr",
+      },
+      git: {
+        statusChangedPaths: vi
+          .fn()
+          .mockResolvedValue([
+            ".agentplane/tasks/202601010101-ABCDEF/blueprint/resolved-snapshot.json",
+            ".agentplane/tasks/202601010101-ABCDEF/quality/20260101-recovery-context/quality-report.json",
+            ".agentplane/tasks/202601010101-OTHER01/quality/quality-report.json",
+          ]),
+        stage: vi.fn().mockResolvedValue(),
+      },
+    };
+
+    const staged = await stageAllowlist({
+      ctx: ctx as never,
+      allow: [".agentplane/tasks/202601010101-ABCDEF"],
+      allowTasks: false,
+      tasksPath: ".agentplane/tasks.json",
+      workflowDir: ".agentplane/tasks",
+      taskId: "202601010101-ABCDEF",
+    });
+
+    expect(staged).toEqual([
+      ".agentplane/tasks/202601010101-ABCDEF/blueprint/resolved-snapshot.json",
+      ".agentplane/tasks/202601010101-ABCDEF/quality/20260101-recovery-context/quality-report.json",
+    ]);
+    expect(ctx.git.stage).toHaveBeenCalledWith([
+      ".agentplane/tasks/202601010101-ABCDEF/blueprint/resolved-snapshot.json",
+      ".agentplane/tasks/202601010101-ABCDEF/quality/20260101-recovery-context/quality-report.json",
+    ]);
+  });
+
   it("stageAllowlist can admit task-only changes when allowTaskOnly=true", async () => {
     const { stageAllowlist } = await import("./allow.js");
     const ctx = {

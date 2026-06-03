@@ -134,6 +134,38 @@ describe("policy/evaluatePolicy", () => {
     expect(res.ok).toBe(true);
   });
 
+  it("allows explicitly allowlisted same-task generated artifacts without --allow-tasks", () => {
+    const taskId = "202602071329-TEST01";
+    const res = evaluatePolicy(
+      makeCtx({
+        taskId,
+        git: {
+          stagedPaths: [
+            `.agentplane/tasks/${taskId}/blueprint/resolved-snapshot.json`,
+            `.agentplane/tasks/${taskId}/quality/20260101-recovery-context/quality-report.json`,
+          ],
+        },
+        allow: { prefixes: [`.agentplane/tasks/${taskId}`], allowTasks: false },
+      }),
+    );
+    expect(res.ok).toBe(true);
+  });
+
+  it("keeps the task index protected even when explicitly allowlisted without --allow-tasks", () => {
+    const cfg = defaultConfig();
+    const res = evaluatePolicy(
+      makeCtx({
+        config: cfg,
+        git: { stagedPaths: [cfg.paths.tasks_path] },
+        allow: { prefixes: [cfg.paths.tasks_path], allowTasks: false },
+      }),
+    );
+    expect(res.ok).toBe(false);
+    expect(res.errors.map((e) => e.message).join("\n")).toContain(
+      "Staged file is forbidden by default",
+    );
+  });
+
   it("allows task-only commit scope when --allow-tasks is set without explicit prefixes", () => {
     const taskId = "202602071329-TEST01";
     const res = evaluatePolicy(
