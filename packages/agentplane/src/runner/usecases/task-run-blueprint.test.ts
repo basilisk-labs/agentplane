@@ -57,7 +57,23 @@ describe("runner blueprint guards", () => {
         },
         nextCommand: "agentplane work start 202603231410-ABC123 --agent CODER --worktree",
       },
-      executionPacket: { safeToMutate: true },
+      executionPacket: {
+        safeToMutate: true,
+        mustRunFrom: "/repo",
+        exactArgv: [
+          "agentplane",
+          "work",
+          "start",
+          "202603231410-ABC123",
+          "--agent",
+          "CODER",
+          "--worktree",
+        ],
+        returnControlWhen:
+          "after the exact command exits; recompute task next-action before any further step",
+        staleStateCheck: "agentplane task next-action 202603231410-ABC123 --explain",
+        mustNot: ["do not execute raw shell when exactArgv is null"],
+      },
       nextAction: {
         code: "start_or_recover_worktree",
         command: "agentplane work start 202603231410-ABC123 --agent CODER --worktree",
@@ -73,9 +89,20 @@ describe("runner blueprint guards", () => {
     expect(bootstrap).toContain("- route_authoritative_checkout_path: /repo");
     expect(bootstrap).toContain("- route_mutation_path_hint: /repo");
     expect(bootstrap).toContain("- route_safe_to_mutate: true");
+    expect(bootstrap).toContain("- route_must_run_from: /repo");
+    expect(bootstrap).toContain(
+      "- route_exact_argv: agentplane work start 202603231410-ABC123 --agent CODER --worktree",
+    );
+    expect(bootstrap).toContain("- route_return_control_when: after the exact command exits");
+    expect(bootstrap).toContain(
+      "- route_stale_state_check: agentplane task next-action 202603231410-ABC123 --explain",
+    );
     expect(bootstrap).toContain("- route_primary_blocker: missing_pr_branch");
-    expect(bootstrap).toContain("run it from route_authoritative_checkout_path");
+    expect(bootstrap).toContain("follow route_exact_argv when present");
+    expect(bootstrap).toContain("run it from route_must_run_from");
     expect(bootstrap).toContain("use absolute paths under route_mutation_path_hint");
+    expect(bootstrap).toContain("Return control according to route_return_control_when");
+    expect(bootstrap).toContain("Route must-not rules:");
     expect(bootstrap).toContain("route_decision.oracle.nextCommand");
   });
 

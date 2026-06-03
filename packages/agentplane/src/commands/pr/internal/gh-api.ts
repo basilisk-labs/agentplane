@@ -3,7 +3,11 @@ import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 import { isDotEnvLoadedKey } from "../../../shared/env.js";
 import { gitEnv } from "@agentplaneorg/core/git";
-import { normalizeGhTransportError, withGhTransportRetry } from "../../shared/gh-transport.js";
+import {
+  normalizeGhTransportError,
+  resolveGhCommand,
+  withGhTransportRetry,
+} from "../../shared/gh-transport.js";
 
 function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {
   const trimmed = remoteUrl.trim();
@@ -55,11 +59,12 @@ export async function resolveDefaultGithubRepo(cwd: string): Promise<string> {
 }
 
 export async function runGhApiJson<T>(cwd: string, args: string[]): Promise<T> {
+  const gh = resolveGhCommand();
   const { stdout } = await withGhTransportRetry(
     () =>
       runProcess({
-        command: "gh",
-        args: ["api", ...args],
+        command: gh.command,
+        args: [...gh.argsPrefix, "api", ...args],
         cwd,
         env: ghEnv(),
         encoding: "utf8",
@@ -73,11 +78,12 @@ export async function runGhApiJson<T>(cwd: string, args: string[]): Promise<T> {
 }
 
 export async function runGhApiNoOutput(cwd: string, args: string[]): Promise<void> {
+  const gh = resolveGhCommand();
   await withGhTransportRetry(
     () =>
       runProcess({
-        command: "gh",
-        args: ["api", ...args],
+        command: gh.command,
+        args: [...gh.argsPrefix, "api", ...args],
         cwd,
         env: ghEnv(),
         encoding: "utf8",

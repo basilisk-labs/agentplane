@@ -50,9 +50,15 @@ export function renderTaskRunnerBootstrap(
         executionPacket?: {
           actionKind?: string;
           evidenceMissing?: string[];
+          exactArgv?: string[] | null;
+          humanProviderAction?: string | null;
+          mustNot?: string[];
+          mustRunFrom?: string | null;
           recommendedRole?: string;
           requiresProviderAction?: boolean;
+          returnControlWhen?: string;
           safeToMutate?: boolean;
+          staleStateCheck?: string;
           verificationCandidate?: string | null;
         };
         nextAction?: { code?: string; command?: string | null; summary?: string };
@@ -111,9 +117,28 @@ export function renderTaskRunnerBootstrap(
           `- route_recommended_role: ${
             routeDecision.executionPacket?.recommendedRole ?? "unknown"
           }`,
+          `- route_must_run_from: ${
+            routeDecision.executionPacket?.mustRunFrom ??
+            routeDecision.oracle?.authoritativeCheckoutPath ??
+            "unknown"
+          }`,
+          `- route_exact_argv: ${
+            routeDecision.executionPacket?.exactArgv?.join(" ") ?? "none"
+          }`,
+          `- route_return_control_when: ${
+            routeDecision.executionPacket?.returnControlWhen ??
+            "after this run completes; recompute task next-action"
+          }`,
+          `- route_stale_state_check: ${
+            routeDecision.executionPacket?.staleStateCheck ??
+            "agentplane task next-action <task-id> --explain"
+          }`,
           `- route_requires_provider_action: ${String(
             routeDecision.executionPacket?.requiresProviderAction ?? false,
           )}`,
+          `- route_human_provider_action: ${
+            routeDecision.executionPacket?.humanProviderAction ?? "none"
+          }`,
           `- route_evidence_missing: ${
             routeDecision.executionPacket?.evidenceMissing?.join(", ") ?? "none"
           }`,
@@ -125,9 +150,13 @@ export function renderTaskRunnerBootstrap(
     "",
     "Use bundle.json as the complete runner input. Do not reconstruct prompts or route decisions from CLI argv.",
     "Follow route_decision in bundle.json unless local state has changed; if it may be stale, run `agentplane task next-action <task-id> --explain` before mutating.",
-    "Route oracle contract: follow the rendered route_next_command, run it from route_authoritative_checkout_path when present, treat route_primary_blocker as the current stop reason, and use route_phase instead of manually reconstructing branch/worktree/PR state.",
+    "Route oracle contract: follow route_exact_argv when present, run it from route_must_run_from, treat route_primary_blocker as the current stop reason, and use route_phase instead of manually reconstructing branch/worktree/PR state.",
     "For file-edit tools that do not accept cwd/workdir, use absolute paths under route_mutation_path_hint when route_safe_to_mutate is true; otherwise stop before mutating files.",
+    "Return control according to route_return_control_when. Do not continue to a second route step until route_stale_state_check has been recomputed.",
     "When reading bundle.json directly, use camelCase JSON paths: route_decision.oracle.nextCommand, route_decision.oracle.authoritativeCheckout, route_decision.oracle.authoritativeCheckoutPath, route_decision.oracle.mutationPathHint, route_decision.oracle.blocker, and route_decision.oracle.phase.",
+    ...(routeDecision?.executionPacket?.mustNot?.length
+      ? ["Route must-not rules:", ...routeDecision.executionPacket.mustNot.map((rule) => `- ${rule}`)]
+      : []),
     "If the requested work cannot be completed without widening lifecycle authority or touching likely sibling-owned files, stop and write a blocked result manifest with the conflict, affected paths, and recommended parent action.",
     ...(stopRules.length > 0
       ? [

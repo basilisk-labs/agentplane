@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { chmod, mkdir, readFile, realpath, writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -100,6 +100,10 @@ describe("runCli route decision commands", () => {
           safeToMutate: boolean;
           authoritativeCheckoutPath: string | null;
           mutationPathHint: string | null;
+          mustRunFrom: string | null;
+          exactArgv: string[] | null;
+          returnControlWhen: string;
+          staleStateCheck: string;
           evidenceMissing: string[];
         };
         next_action: { code: string; command: string };
@@ -121,6 +125,22 @@ describe("runCli route decision commands", () => {
         rootRealpath,
       );
       expect(await realpath(parsed.execution_packet.mutationPathHint ?? "")).toBe(rootRealpath);
+      expect(await realpath(parsed.execution_packet.mustRunFrom ?? "")).toBe(rootRealpath);
+      expect(parsed.execution_packet.exactArgv).toEqual([
+        "agentplane",
+        "work",
+        "start",
+        taskId,
+        "--agent",
+        "CODER",
+        "--slug",
+        "route-decision-task",
+        "--worktree",
+      ]);
+      expect(parsed.execution_packet.returnControlWhen).toContain("recompute task next-action");
+      expect(parsed.execution_packet.staleStateCheck).toBe(
+        `agentplane task next-action ${taskId} --explain`,
+      );
       expect(parsed.execution_packet.evidenceMissing).toContain("task_branch");
       expect(parsed.next_action.code).toBe("start_or_recover_worktree");
       expect(parsed.next_action.command).toBe(
@@ -197,14 +217,17 @@ describe("runCli route decision commands", () => {
       "utf8",
     );
 
-    const fakeBin = path.join(root, "fake-bin");
     const marker = path.join(root, "gh-called");
-    await mkdir(fakeBin, { recursive: true });
-    const fakeGh = path.join(fakeBin, "gh");
-    await writeFile(fakeGh, `#!/bin/sh\ntouch "${marker}"\nexit 2\n`, "utf8");
-    await chmod(fakeGh, 0o755);
-    const previousPath = process.env.PATH;
-    process.env.PATH = `${fakeBin}${path.delimiter}${previousPath ?? ""}`;
+    const fakeGh = path.join(root, "gh-fail-if-called.js");
+    await writeFile(
+      fakeGh,
+      `import { writeFileSync } from "node:fs";\nwriteFileSync(${JSON.stringify(marker)}, "called");\nprocess.exit(2);\n`,
+      "utf8",
+    );
+    const previousGhBin = process.env.AGENTPLANE_GH_BIN;
+    const previousGhArgs = process.env.AGENTPLANE_GH_ARGS;
+    process.env.AGENTPLANE_GH_BIN = process.execPath;
+    process.env.AGENTPLANE_GH_ARGS = JSON.stringify([fakeGh]);
     try {
       const textIo = captureStdIO();
       try {
@@ -214,6 +237,12 @@ describe("runCli route decision commands", () => {
         expect(textIo.stdout).toContain("phase:");
         expect(textIo.stdout).toContain("authoritative_checkout:");
         expect(textIo.stdout).toContain("next_code:");
+        expect(textIo.stdout).toContain("recommended_role:");
+        expect(textIo.stdout).toContain("must_run_from:");
+        expect(textIo.stdout).toContain("exact_argv:");
+        expect(textIo.stdout).toContain("return_control_when:");
+        expect(textIo.stdout).toContain("stale_state_check:");
+        expect(textIo.stdout).toContain("must_not:");
         expect(textIo.stdout).toContain("confidence:");
         expect(textIo.stdout).toContain("verify_steps:");
         expect(textIo.stdout).toContain("verify_steps_quality: fallback");
@@ -291,6 +320,10 @@ describe("runCli route decision commands", () => {
           execution_packet: {
             safe_to_mutate: boolean;
             mutation_path_hint: string | null;
+            exact_argv: string[] | null;
+            must_run_from: string | null;
+            return_control_when: string;
+            stale_state_check: string;
           };
           next_action: { code: string; command: string };
           verify_steps: { text: string; filled: boolean; quality: string };
@@ -316,6 +349,17 @@ describe("runCli route decision commands", () => {
         expect(parsed.route.next_action_code).toBe("verify_or_update_pr");
         expect(parsed.execution_packet.safe_to_mutate).toBe(false);
         expect(parsed.execution_packet.mutation_path_hint).toBe(null);
+        expect(parsed.execution_packet.exact_argv).toEqual([
+          "agentplane",
+          "pr",
+          "update",
+          taskId,
+        ]);
+        expect(parsed.execution_packet.must_run_from).toBeNull();
+        expect(parsed.execution_packet.return_control_when).toContain("recompute task next-action");
+        expect(parsed.execution_packet.stale_state_check).toBe(
+          `agentplane task next-action ${taskId} --explain`,
+        );
         expect(parsed.next_action.code).toBe("verify_or_update_pr");
         expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
         expect(parsed.verify_steps.text).toContain("PLANNER fallback scaffold");
@@ -408,7 +452,16 @@ describe("runCli route decision commands", () => {
         remoteStatusIo.restore();
       }
     } finally {
-      process.env.PATH = previousPath;
+      if (previousGhBin === undefined) {
+        delete process.env.AGENTPLANE_GH_BIN;
+      } else {
+        process.env.AGENTPLANE_GH_BIN = previousGhBin;
+      }
+      if (previousGhArgs === undefined) {
+        delete process.env.AGENTPLANE_GH_ARGS;
+      } else {
+        process.env.AGENTPLANE_GH_ARGS = previousGhArgs;
+      }
     }
   });
 
@@ -528,14 +581,13 @@ describe("runCli route decision commands", () => {
       "utf8",
     );
 
-    const fakeBin = path.join(root, "fake-bin");
-    await mkdir(fakeBin, { recursive: true });
-    const fakeGh = path.join(fakeBin, "gh");
-    await writeFile(fakeGh, "#!/bin/sh\nprintf '[]\\n'\n", "utf8");
-    await chmod(fakeGh, 0o755);
+    const fakeGh = path.join(root, "gh-empty-response.js");
+    await writeFile(fakeGh, "console.log('[]');\n", "utf8");
 
-    const previousPath = process.env.PATH;
-    process.env.PATH = `${fakeBin}${path.delimiter}${previousPath ?? ""}`;
+    const previousGhBin = process.env.AGENTPLANE_GH_BIN;
+    const previousGhArgs = process.env.AGENTPLANE_GH_ARGS;
+    process.env.AGENTPLANE_GH_BIN = process.execPath;
+    process.env.AGENTPLANE_GH_ARGS = JSON.stringify([fakeGh]);
     try {
       const statusIo = captureStdIO();
       try {
@@ -588,7 +640,16 @@ describe("runCli route decision commands", () => {
         briefIo.restore();
       }
     } finally {
-      process.env.PATH = previousPath;
+      if (previousGhBin === undefined) {
+        delete process.env.AGENTPLANE_GH_BIN;
+      } else {
+        process.env.AGENTPLANE_GH_BIN = previousGhBin;
+      }
+      if (previousGhArgs === undefined) {
+        delete process.env.AGENTPLANE_GH_ARGS;
+      } else {
+        process.env.AGENTPLANE_GH_ARGS = previousGhArgs;
+      }
     }
   });
 

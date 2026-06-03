@@ -1,7 +1,7 @@
 import { runProcess } from "@agentplaneorg/core/process";
 
 import { CliError } from "../../shared/errors.js";
-import { normalizeGhTransportError } from "../shared/gh-transport.js";
+import { normalizeGhTransportError, resolveGhCommand } from "../shared/gh-transport.js";
 import { ghEnv } from "./internal/gh-api.js";
 
 type HostedCheckRow = { name?: string | null; state?: string | null };
@@ -71,10 +71,11 @@ export async function resolveHostedChecksStatus(opts: {
   if (opts.prNumber === null || opts.prNumber <= 0) {
     return { checked: false, reason: "GitHub PR number is not recorded in PR metadata" };
   }
+  const gh = resolveGhCommand();
   try {
     const result = await runProcess({
-      command: "gh",
-      args: ["pr", "checks", String(opts.prNumber), "--json", "name,state"],
+      command: gh.command,
+      args: [...gh.argsPrefix, "pr", "checks", String(opts.prNumber), "--json", "name,state"],
       cwd: opts.gitRoot,
       env: ghEnv(),
       encoding: "utf8",
