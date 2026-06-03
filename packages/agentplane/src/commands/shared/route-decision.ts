@@ -3,7 +3,6 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
-import { isRecord } from "../../shared/guards.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
 import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.shared.js";
 import { resolveBatchOwnership } from "./route-batch-ownership.js";
@@ -20,7 +19,7 @@ import { workStartCommand } from "./work-start-command.js";
 
 import { loadBackendTask, loadCommandContext, type CommandContext } from "./task-backend.js";
 import { buildRouteSourceConfidenceBase } from "./source-confidence.js";
-import { parsePrMeta } from "./pr-meta.js";
+import { hasClosedPreMergeClosureMarker, parsePrMeta } from "./pr-meta.js";
 import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
 
 function isCliUsageOrIo(err: unknown): boolean {
@@ -226,13 +225,6 @@ function hasRemoteProviderEvidence(prFlow: PrFlowStatusReport | null): boolean {
     prFlow.hostedChecks.checked ||
     prFlow.reviewThreads.checked
   );
-}
-
-function hasClosedPreMergeClosureMarker(meta: unknown): boolean {
-  if (!isRecord(meta)) return false;
-  const marker = meta.pre_merge_closure;
-  if (!isRecord(marker)) return false;
-  return marker.state === "closed_before_merge";
 }
 
 async function resolveLocalRecordedCloseFlow(opts: {

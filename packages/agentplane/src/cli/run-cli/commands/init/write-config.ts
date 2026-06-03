@@ -1,4 +1,9 @@
-import { saveConfig, setByDottedKey, defaultConfig } from "@agentplaneorg/core/config";
+import {
+  saveConfig,
+  setByDottedKey,
+  defaultConfig,
+  type EvaluatorSkepticismLevel,
+} from "@agentplaneorg/core/config";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
@@ -44,6 +49,7 @@ export async function writeInitConfig(opts: {
   feedbackGithubIssues: boolean;
   feedbackAnonymousCloud: boolean;
   execution: InitExecutionConfig;
+  evaluatorSkepticism: EvaluatorSkepticismLevel;
   runnerProfile: InitRunnerProfile;
 }): Promise<void> {
   const rawConfig = defaultConfig() as unknown as Record<string, unknown>;
@@ -77,6 +83,7 @@ export async function writeInitConfig(opts: {
   );
   setByDottedKey(rawConfig, "framework.cli.expected_version", getVersion());
   setByDottedKey(rawConfig, "execution", JSON.stringify(opts.execution));
+  setByDottedKey(rawConfig, "evaluator.skepticism_level", opts.evaluatorSkepticism);
   if (opts.runnerProfile === "hermes") {
     setByDottedKey(rawConfig, "runner.default_adapter", "hermes");
     setByDottedKey(

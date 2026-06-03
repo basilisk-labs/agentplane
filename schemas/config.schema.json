@@ -859,7 +859,8 @@
     },
     "evaluator": {
       "default": {
-        "max_rework_attempts": 3
+        "max_rework_attempts": 3,
+        "skepticism_level": "standard"
       },
       "type": "object",
       "properties": {
@@ -868,6 +869,11 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 20
+        },
+        "skepticism_level": {
+          "default": "standard",
+          "type": "string",
+          "enum": ["standard", "strict", "paranoid"]
         }
       },
       "additionalProperties": {}

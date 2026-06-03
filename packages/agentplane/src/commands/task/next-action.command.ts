@@ -86,11 +86,27 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
         { label: "requires_approval", value: decision.nextAction.requiresApproval },
         { label: "next_command", value: decision.oracle.nextCommand ?? "none" },
         { label: "action_kind", value: decision.executionPacket.actionKind },
-        { label: "safe_to_mutate", value: decision.executionPacket.safeToMutate },
         { label: "recommended_role", value: decision.executionPacket.recommendedRole },
+        { label: "must_run_from", value: decision.executionPacket.mustRunFrom ?? "unknown" },
+        {
+          label: "exact_argv",
+          value: decision.executionPacket.exactArgv?.join(" ") ?? "none",
+        },
+        {
+          label: "return_control_when",
+          value: decision.executionPacket.returnControlWhen,
+        },
+        {
+          label: "stale_state_check",
+          value: decision.executionPacket.staleStateCheck,
+        },
         {
           label: "requires_provider_action",
           value: decision.executionPacket.requiresProviderAction,
+        },
+        {
+          label: "human_provider_action",
+          value: decision.executionPacket.humanProviderAction ?? "none",
         },
         {
           label: "primary_blocker",
@@ -121,6 +137,12 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
           label: "blocker",
           value: `${blocker.code}: ${blocker.summary}`,
         })),
+        ...(parsed.explain
+          ? decision.executionPacket.mustNot.map((rule) => ({
+              label: "must_not",
+              value: rule,
+            }))
+          : []),
         ...(parsed.explain
           ? decision.ambiguities.map((ambiguity) => ({
               label: "ambiguity",

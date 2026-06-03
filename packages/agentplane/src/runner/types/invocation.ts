@@ -51,7 +51,7 @@ export type RunnerResultArtifact = {
   label?: string;
 };
 
-export type RunnerResultStatus = "success" | "failed" | "cancelled";
+export type RunnerResultStatus = "success" | "failed" | "blocked" | "cancelled";
 
 export type RunnerResultManifest = {
   schema_version: 1;
