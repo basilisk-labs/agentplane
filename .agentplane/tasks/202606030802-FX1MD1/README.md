@@ -20,10 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-03T08:06:14.721Z"
-  updated_by: "DOCS"
-  note: "Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: docs/context/modes.mdx. Links: docs/context/modes.mdx. Command: ap doctor. Result: pass. Evidence: doctor OK with two pre-existing DONE-task commit-hash warnings unrelated to this docs change. Scope: workspace policy/runtime. Links: docs/context/modes.mdx. Command: node website/scripts/check-site-content.mjs. Result: pass. Evidence: [site-content] ok. Scope: docs/context/modes.mdx. Links: docs/context/modes.mdx. Skipped: full website build. Reason: website worktree lacks installed Docusaurus/sharp dependencies; build:check stops at missing sharp and direct docusaurus binary is unavailable. Risk: Mermaid rendering is covered by existing Docusaurus Mermaid config and existing Mermaid docs examples, but full static build was not completed locally. Approval: not skipped by approval; recorded as environment blocker."
-  attempts: 0
+  updated_at: "2026-06-03T08:47:20.427Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.14."
 quality_review:
   state: "pass"
   updated_at: "2026-06-03T08:08:37.067Z"
@@ -74,8 +73,8 @@ events:
     to: "DONE"
     note: "Verified: PR #4394 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-03T08:13:41.969Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-06-03T08:47:20.427Z"
+doc_updated_by: "DEUS"
 description: "Add Mermaid diagrams to the context mode documentation so readers can visualize profile choice and ingestion flow."
 sections:
   Summary: |-
@@ -98,25 +97,19 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    ### 2026-06-03T08:06:14.721Z — VERIFY — ok
-
-    By: DOCS
-
-    Note: Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: docs/context/modes.mdx. Links: docs/context/modes.mdx. Command: ap doctor. Result: pass. Evidence: doctor OK with two pre-existing DONE-task commit-hash warnings unrelated to this docs change. Scope: workspace policy/runtime. Links: docs/context/modes.mdx. Command: node website/scripts/check-site-content.mjs. Result: pass. Evidence: [site-content] ok. Scope: docs/context/modes.mdx. Links: docs/context/modes.mdx. Skipped: full website build. Reason: website worktree lacks installed Docusaurus/sharp dependencies; build:check stops at missing sharp and direct docusaurus binary is unavailable. Risk: Mermaid rendering is covered by existing Docusaurus Mermaid config and existing Mermaid docs examples, but full static build was not completed locally. Approval: not skipped by approval; recorded as environment blocker.
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T08:03:12.571Z, excerpt_hash=sha256:ab6a33abacddf1470d54e0f93dd984ac7e44ba8010a221d7ad24914323e2a05e
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606030802-FX1MD1-document-context-mode-diagrams/.agentplane/tasks/202606030802-FX1MD1/blueprint/resolved-snapshot.json
-    - old_digest: b7c9600995c5e139096605ac2fed9aaac909c0f05042bbd066a6db1c02993cc3
-    - current_digest: b7c9600995c5e139096605ac2fed9aaac909c0f05042bbd066a6db1c02993cc3
-    - route_changed: no
-    - safe_command: agentplane blueprint snapshot 202606030802-FX1MD1
-
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.14.
+    - Details:
+      - release_sha: ffd5a0094b72a6359e47b80bdd9738c9a1f3bce1
+      - version: 0.6.14
+      - tag: v0.6.14
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.14
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26873704460
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -153,25 +146,19 @@ PLANNER fallback scaffold for "Document context mode diagrams". Replace with tas
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-### 2026-06-03T08:06:14.721Z — VERIFY — ok
-
-By: DOCS
-
-Note: Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: docs/context/modes.mdx. Links: docs/context/modes.mdx. Command: ap doctor. Result: pass. Evidence: doctor OK with two pre-existing DONE-task commit-hash warnings unrelated to this docs change. Scope: workspace policy/runtime. Links: docs/context/modes.mdx. Command: node website/scripts/check-site-content.mjs. Result: pass. Evidence: [site-content] ok. Scope: docs/context/modes.mdx. Links: docs/context/modes.mdx. Skipped: full website build. Reason: website worktree lacks installed Docusaurus/sharp dependencies; build:check stops at missing sharp and direct docusaurus binary is unavailable. Risk: Mermaid rendering is covered by existing Docusaurus Mermaid config and existing Mermaid docs examples, but full static build was not completed locally. Approval: not skipped by approval; recorded as environment blocker.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T08:03:12.571Z, excerpt_hash=sha256:ab6a33abacddf1470d54e0f93dd984ac7e44ba8010a221d7ad24914323e2a05e
-
-Details:
-
-BlueprintSnapshotRef:
-- state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606030802-FX1MD1-document-context-mode-diagrams/.agentplane/tasks/202606030802-FX1MD1/blueprint/resolved-snapshot.json
-- old_digest: b7c9600995c5e139096605ac2fed9aaac909c0f05042bbd066a6db1c02993cc3
-- current_digest: b7c9600995c5e139096605ac2fed9aaac909c0f05042bbd066a6db1c02993cc3
-- route_changed: no
-- safe_command: agentplane blueprint snapshot 202606030802-FX1MD1
-
+- State: ok
+- Note: Hosted publish confirmed for v0.6.14.
+- Details:
+  - release_sha: ffd5a0094b72a6359e47b80bdd9738c9a1f3bce1
+  - version: 0.6.14
+  - tag: v0.6.14
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.14
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/26873704460
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
