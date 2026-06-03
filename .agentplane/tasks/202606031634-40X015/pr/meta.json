@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-03T17:17:59Z",
   "base": "main",
   "branch": "task/202606031634-40X015/fix-task-local-artifact-commit-eligibility-after",
   "created_at": "2026-06-03T16:43:46.319Z",
   "diffstat_sha256": "sha256:a504afe8fe06f9406290a240ac896130580ec3eebc4076d1e928080bfe3af9ef",
   "last_verified_at": "2026-06-03T16:43:46.268Z",
   "last_verified_diffstat_sha256": "sha256:a504afe8fe06f9406290a240ac896130580ec3eebc4076d1e928080bfe3af9ef",
+  "merge_commit": "869ff48ff5cea09cfeceb139fd165ffbd93ff906",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-03T17:17:59Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606031634-40X015",
-  "updated_at": "2026-06-03T16:43:46.319Z",
+  "updated_at": "2026-06-03T17:17:59Z",
   "verify": {
     "status": "pass"
   }

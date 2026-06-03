@@ -1,10 +1,11 @@
 ---
 id: "202606031634-40X015"
 title: "Fix task-local artifact commit eligibility after finish"
-status: "DOING"
+result_summary: "Merged via PR #4400."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "gh pr checks 4400 --watch --interval 30"
   findings:
     - "Focused guard/policy regressions pass; live ap commit path auto-staged same-task task artifacts from explicit allowlist without --allow-tasks before an unrelated pre-commit signal-9 fallback; hosted PR checks are green."
-commit: null
+commit:
+  hash: "869ff48ff5cea09cfeceb139fd165ffbd93ff906"
+  message: "🔒 40X015 cli: narrow artifact exception"
 comments:
   -
     author: "CODER"
     body: "Start: Investigating GitHub issue #4399 in the commit/lifecycle task artifact path, with scope limited to same-task generated artifacts and focused regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4400 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts --pool=forks --testTimeout 120000 --hookTimeout 120000. Result: pass, 4 files and 43 tests passed. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Command: ap doctor. Result: pass, doctor OK with unrelated historical DONE-task warnings 202605221745-8BHZSX and 202606011809-VCQPP7. Command: git diff --check HEAD~1..HEAD. Result: pass. Live guard evidence: ap commit without --allow-tasks auto-staged same-task README and blueprint artifacts from explicit .agentplane/tasks/202606031634-40X015 allowlist before pre-commit signal-9 fallback; explicit pre-commit hook then passed."
+  -
+    type: "status"
+    at: "2026-06-03T17:18:50.968Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4400 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-03T16:43:46.286Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-03T17:18:50.973Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve GitHub issue #4399: task-local generated blueprint/quality artifacts should not force a separate follow-up task or require --allow-tasks when committed for the same task."
 sections:
   Summary: |-
