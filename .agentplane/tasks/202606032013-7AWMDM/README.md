@@ -1,10 +1,11 @@
 ---
 id: "202606032013-7AWMDM"
 title: "Strengthen external agent execution packets"
-status: "DOING"
+result_summary: "Merged via PR #4413."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Focused route/Hermes/bootstrap tests passed: 36 pass, 0 fail; policy routing OK; git diff --check passed. ap doctor incomplete due stale-dist bootstrap hanging in tsc -b."
   attempts: 0
-commit: null
+commit:
+  hash: "1a8dadc6015192f233378362206aacf4a6e367c2"
+  message: "Merge pull request #4413 from basilisk-labs/task/202606032013-7AWMDM/external-agent-packet"
 comments:
   -
     author: "CODER"
     body: "Start: Implement compact external agent execution packet and wait/provider route boundaries in the dedicated branch_pr worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4413 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused route/Hermes/bootstrap tests passed: 36 pass, 0 fail; policy routing OK; git diff --check passed. ap doctor incomplete due stale-dist bootstrap hanging in tsc -b."
+  -
+    type: "status"
+    at: "2026-06-03T21:20:23.778Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4413 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-03T20:45:58.778Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-03T21:20:23.782Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement a compact execution packet and clearer wait/provider boundaries so Hermes, OpenClaw, and custom agents can follow AgentPlane route decisions without reconstructing state from docs."
 sections:
   Summary: |-
