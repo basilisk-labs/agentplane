@@ -45,7 +45,8 @@ typecheck passed.
  .../src/commands/shared/route-decision.ts          |  83 +++++++++++++++-
  .../agentplane/src/commands/shared/route-oracle.ts |  16 +++
  scripts/lib/release-recovery-report.mjs            |  65 +++++++------
- 12 files changed, 397 insertions(+), 36 deletions(-)
+ scripts/oversized-test-baseline.json               |   6 +-
+ 13 files changed, 402 insertions(+), 37 deletions(-)
 ```
 
 </details>

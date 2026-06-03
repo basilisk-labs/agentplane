@@ -13,7 +13,11 @@
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts",
-      "lines": 1100
+      "lines": 1102
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
+      "lines": 1097
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
