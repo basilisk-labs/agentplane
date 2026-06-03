@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202606031931-MY3BW9/fix-upstream-issue-4407-direct-workflow-leaves-v",
   "created_at": "2026-06-03T19:32:40.634Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:8a0aa38762e33a78489153350ff5ad7e150c1c3e8c5359b05c684f9ef0fcf997",
   "last_verified_at": null,
   "schema_version": 1,
   "task_id": "202606031931-MY3BW9",
