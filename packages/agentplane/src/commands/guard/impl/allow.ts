@@ -57,6 +57,16 @@ function normalizeAllowPrefixes(prefixes: string[]): string[] {
   return compact;
 }
 
+function sameTaskArtifactPrefix(opts: { workflowDir?: string; taskId?: string }): string | null {
+  const workflowDir = normalizeGitPathPrefix(opts.workflowDir ?? "");
+  const taskId = (opts.taskId ?? "").trim();
+  if (!workflowDir || !taskId) return null;
+  if (taskId === "." || taskId === ".." || taskId.includes("/") || taskId.includes("\\")) {
+    return null;
+  }
+  return normalizeGitPathPrefix(`${workflowDir}/${taskId}`);
+}
+
 export function suggestAllowPrefixes(paths: string[]): string[] {
   const out = new Set<string>();
   for (const filePath of paths) {
@@ -178,6 +188,10 @@ export async function stageAllowlist(opts: {
     allowCI: opts.allowCI,
   });
   const effectiveAllow = normalizeAllowPrefixes([...allow, ...protectedAllow]);
+  const sameTaskPrefix = sameTaskArtifactPrefix({
+    workflowDir: opts.workflowDir,
+    taskId: opts.taskId,
+  });
   if (
     effectiveAllow.length === 0 ||
     (allow.length === 0 && protectedAllow.length === 0 && opts.allowTaskOnly !== true)
@@ -200,7 +214,16 @@ export async function stageAllowlist(opts: {
 
   const staged: string[] = [];
   for (const filePath of changed) {
-    if (denied.some((prefix) => gitPathIsUnderPrefix(filePath, prefix))) continue;
+    const explicitlyAllowedSameTaskArtifact =
+      sameTaskPrefix !== null &&
+      gitPathIsUnderPrefix(filePath, sameTaskPrefix) &&
+      allow.some((prefix) => gitPathIsUnderPrefix(filePath, prefix));
+    if (
+      denied.some((prefix) => gitPathIsUnderPrefix(filePath, prefix)) &&
+      !explicitlyAllowedSameTaskArtifact
+    ) {
+      continue;
+    }
     if (effectiveAllow.some((prefix) => gitPathIsUnderPrefix(filePath, prefix))) {
       staged.push(filePath);
     }
