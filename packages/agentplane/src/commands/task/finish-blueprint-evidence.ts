@@ -3,7 +3,7 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-import type { LoadedFinishTask } from "./finish-shared.js";
+import type { LoadedFinishTask, ResolvedCommitInfo } from "./finish-shared.js";
 import { assertEvaluatorQualityReviewPassed } from "./quality-review-gate.js";
 
 const BLUEPRINT_SNAPSHOT_REF_MARKER = "BlueprintSnapshotRef:";
@@ -59,7 +59,8 @@ export async function assertBlueprintEvidenceBeforeFinish(opts: {
 export async function assertQualityReviewBeforeFinish(opts: {
   ctx: CommandContext;
   loadedTasks: readonly LoadedFinishTask[];
-  taskCommitInfo: { hash: string; message: string } | null;
+  taskCommitInfo: ResolvedCommitInfo | null;
+  implementationCommitInfo: ResolvedCommitInfo | null;
 }): Promise<void> {
   for (const loaded of opts.loadedTasks) {
     const snapshot = await checkTaskBlueprintSnapshotDrift({
@@ -68,7 +69,11 @@ export async function assertQualityReviewBeforeFinish(opts: {
     });
     assertEvaluatorQualityReviewPassed({
       task: loaded.task,
-      expectedSha: opts.taskCommitInfo?.hash ?? loaded.task.commit?.hash ?? null,
+      expectedSha:
+        opts.implementationCommitInfo?.hash ??
+        opts.taskCommitInfo?.hash ??
+        loaded.task.commit?.hash ??
+        null,
       expectedBlueprintDigest: snapshot.previous.digest ? snapshot.current.digest : null,
       command: "finish",
     });

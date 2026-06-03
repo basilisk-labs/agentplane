@@ -86,6 +86,7 @@ export async function executeFinishPlan(opts: {
     ctx,
     loadedTasks: loadedState.loadedTasks,
     taskCommitInfo,
+    implementationCommitInfo,
   });
 
   await assertCloseCommitCanMutateTaskState({ ctx, options, plan });

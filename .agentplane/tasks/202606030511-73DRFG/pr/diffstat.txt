@@ -1,0 +1,4 @@
+ .../src/commands/task/finish-blueprint-evidence.ts | 11 +++-
+ .../agentplane/src/commands/task/finish-execute.ts |  1 +
+ .../commands/task/finish.validation.unit.test.ts   | 64 ++++++++++++++++++++++
+ 3 files changed, 73 insertions(+), 3 deletions(-)
