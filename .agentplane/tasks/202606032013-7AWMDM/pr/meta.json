@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-03T21:19:34Z",
+  "base": "main",
+  "branch": "task/202606032013-7AWMDM/external-agent-packet",
+  "created_at": "2026-06-03T21:19:34Z",
+  "last_verified_at": null,
+  "merge_commit": "1a8dadc6015192f233378362206aacf4a6e367c2",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-03T21:19:34Z",
+  "pr_number": 4413,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4413",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202606032013-7AWMDM",
+  "updated_at": "2026-06-03T21:19:34Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

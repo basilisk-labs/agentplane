@@ -31,6 +31,22 @@ const GH_PERMANENT_ERROR_PATTERNS = [
   /usage:/i,
 ];
 
+export function resolveGhCommand(): { command: string; argsPrefix: string[] } {
+  const rawCommand = process.env.AGENTPLANE_GH_BIN?.trim();
+  const command = rawCommand && rawCommand.length > 0 ? rawCommand : "gh";
+  const rawArgsPrefix = process.env.AGENTPLANE_GH_ARGS?.trim();
+  if (!rawArgsPrefix) return { command, argsPrefix: [] };
+  try {
+    const parsed = JSON.parse(rawArgsPrefix) as unknown;
+    const argsPrefix = Array.isArray(parsed)
+      ? parsed.map((entry) => String(entry ?? "").trim()).filter(Boolean)
+      : [];
+    return { command, argsPrefix };
+  } catch {
+    return { command, argsPrefix: [] };
+  }
+}
+
 export function normalizeGhTransportError(err: unknown): string {
   if (err instanceof Error) {
     const parts = [err.name, err.message];
