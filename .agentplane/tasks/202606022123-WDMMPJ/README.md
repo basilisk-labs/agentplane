@@ -1,10 +1,11 @@
 ---
 id: "202606022123-WDMMPJ"
 title: "Tighten Hermes AgentPlane integration"
-status: "DOING"
+result_summary: "Merged via PR #4388."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - "https://github.com/basilisk-labs/agentplane/pull/4388"
   findings:
     - "GitHub PR #4388 green on CodeQL, docs, plan, verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, and PR verification."
-commit: null
+commit:
+  hash: "028d211762dfcf1f894bd6834447ce29bd9dde3b"
+  message: "Merge pull request #4388 from basilisk-labs/task/202606022123-WDMMPJ/hermes-agentplane-integration"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved Hermes AgentPlane integration changes in the dedicated branch_pr worktree, covering lifecycle recommendation, reconcile state input, Hermes runner adapter, and embedded plugin drift cleanup."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4388 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -82,9 +88,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review duplicate-card finding fixed."
+  -
+    type: "status"
+    at: "2026-06-03T05:01:34.603Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4388 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-02T22:17:54.982Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-03T05:01:34.609Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add native Hermes lifecycle/reconcile/runner integration and replace stale embedded Hermes plugin guidance with external plugin ownership."
 sections:
   Summary: |-
