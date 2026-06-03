@@ -1,10 +1,11 @@
 ---
 id: "202606030625-R5DRR1"
 title: "Make route context explicit for agent handoffs"
-status: "DOING"
+result_summary: "Merged via PR #4392."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -45,11 +46,16 @@ quality_review:
     - "GitHub PR #4392 required checks passed at head 52e9ef947a163e25e640f34392094f8d52990a29"
   findings:
     - "Pass: route decisions now expose explicit sync/repair actions for stale hosted close state, prose-only included-batch metadata, PR artifact source, release recovery truth levels, and incident promotion guidance."
-commit: null
+commit:
+  hash: "e1004832fef5f7fe89f91668412fb4173cdfab57"
+  message: "code: R5DRR1 task: record quality review"
 comments:
   -
     author: "CODER"
     body: "Start: Implement explicit route and evidence contracts for post-merge hosted close, PR artifacts, batch closure metadata, incidents, and release recovery so agents receive deterministic next actions instead of inferring state from stale artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4392 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review fix verified: local route fallback now checks origin/<base> before local base for hosted close evidence; targeted route, PR validation, recovery, close-tail unit tests, format, lint, and typecheck passed."
+  -
+    type: "status"
+    at: "2026-06-03T08:06:45.931Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4392 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-03T06:57:10.202Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-03T08:06:45.936Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace ambiguous post-merge, PR artifact, included batch, incident, and release recovery guidance with explicit structured context and next actions so agents do not infer lifecycle state from stale artifacts or prose."
 sections:
   Summary: |-
