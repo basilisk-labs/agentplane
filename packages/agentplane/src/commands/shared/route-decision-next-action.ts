@@ -157,7 +157,7 @@ export function deriveNextAction(opts: {
     const base =
       opts.prFlow.closeTail.state === "recorded_on_base"
         ? opts.prFlow.closeTail.base
-        : opts.prFlow.pr.base ?? "main";
+        : (opts.prFlow.pr.base ?? "main");
     return {
       code: "sync_hosted_close",
       command: `git fetch origin ${base} && git merge --ff-only origin/${base} && agentplane cleanup merged`,
