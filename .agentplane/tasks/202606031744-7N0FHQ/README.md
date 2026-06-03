@@ -4,7 +4,7 @@ title: "Support pre-merge branch_pr closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,24 @@ verification:
   updated_by: "CODER"
   note: "Command: timeout 180s bunx vitest run packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts --pool=threads --maxWorkers=1 --testTimeout 120000 --hookTimeout 120000. Result: pass, 3 files and 34 tests passed. Command: bun run typecheck. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Command: bun run format:changed. Result: pass. Command: bun run docs:cli:check. Result: pass, cli reference up to date. Command: git diff --check. Result: pass. Command: ap doctor. Result: pass with unrelated historical DONE-task warnings 202605221745-8BHZSX and 202606011809-VCQPP7."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-03T18:12:57.204Z"
+  updated_by: "EVALUATOR"
+  note: "Implemented branch_pr pre-merge closure: finish can run from the task branch with --pre-merge-closure, writes a pre_merge_closure marker, commits the closure packet in the task PR, and hosted close treats that marker as no-op closure."
+  evaluated_sha: "a1d7d6c78f84b22a83ee0014caca49c09cf509c2"
+  blueprint_digest: "c37e2ecc42e7e2abdb073e1e89923fd79dc61f1ed44ad84cc04ebba1991b5207"
+  evidence_refs:
+    - ".agentplane/tasks/202606031744-7N0FHQ/README.md"
+    - ".agentplane/tasks/202606031744-7N0FHQ/quality/20260603-181257204-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606031744-7N0FHQ/quality/20260603-181257204-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606031744-7N0FHQ/quality/20260603-181257204-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606031744-7N0FHQ/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+    - "packages/agentplane/src/commands/task/hosted-close.command.test.ts"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Evidence: focused vitest suite passed (3 files, 34 tests), typecheck passed, policy routing passed, docs CLI freshness passed, format:changed passed, git diff --check passed, ap doctor passed with unrelated historical DONE-task warnings."
 commit: null
 comments:
   -

@@ -39,7 +39,23 @@ unrelated historical DONE-task warnings 202605221745-8BHZSX and 202606011809-VCQ
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/policy/workflow.branch_pr.md           |  16 ++--
+ docs/user/branching-and-pr-artifacts.mdx           |  19 ++--
+ docs/user/cli-reference.generated.mdx              |   1 +
+ docs/user/task-lifecycle.mdx                       |   6 +-
+ docs/user/workflow.mdx                             |  14 +--
+ packages/agentplane/src/commands/finish.run.ts     |   2 +
+ .../agentplane/src/commands/finish.spec.shared.ts  |  16 ++++
+ packages/agentplane/src/commands/finish.spec.ts    |   7 ++
+ .../agentplane/src/commands/task/finish-close.ts   |  20 ++++
+ .../agentplane/src/commands/task/finish-command.ts |   2 +
+ .../src/commands/task/finish-execute-close.ts      |  48 ++++++++++
+ .../agentplane/src/commands/task/finish-plan.ts    |  23 +++++
+ .../agentplane/src/commands/task/finish-types.ts   |   2 +
+ .../commands/task/finish.close-tail.unit.test.ts   | 106 +++++++++++++++++++++
+ .../src/commands/task/hosted-close.command.test.ts |  37 ++++++-
+ .../src/commands/task/hosted-close.command.ts      |  14 +++
+ 16 files changed, 305 insertions(+), 28 deletions(-)
 ```
 
 </details>
