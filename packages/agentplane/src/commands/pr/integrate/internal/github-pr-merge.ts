@@ -3,7 +3,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 import { isDotEnvLoadedKey } from "../../../../shared/env.js";
-import { normalizeGhTransportError } from "../../../shared/gh-transport.js";
+import { normalizeGhTransportError, resolveGhCommand } from "../../../shared/gh-transport.js";
 import {
   checkGithubUnresolvedReviewThreads,
   throwIfGithubReviewThreadsUnresolved,
@@ -65,8 +65,9 @@ function getGithubToken(): GithubToken | null {
 }
 
 async function checkGithubCli(cwd: string): Promise<{ ok: true } | { ok: false; reason: string }> {
+  const gh = resolveGhCommand();
   try {
-    await execFileAsync("gh", ["--version"], { cwd, env: ghEnv() });
+    await execFileAsync(gh.command, [...gh.argsPrefix, "--version"], { cwd, env: ghEnv() });
   } catch (err) {
     return {
       ok: false,
@@ -74,10 +75,14 @@ async function checkGithubCli(cwd: string): Promise<{ ok: true } | { ok: false; 
     };
   }
   try {
-    await execFileAsync("gh", ["auth", "status", "--hostname", "github.com"], {
-      cwd,
-      env: ghEnv(),
-    });
+    await execFileAsync(
+      gh.command,
+      [...gh.argsPrefix, "auth", "status", "--hostname", "github.com"],
+      {
+        cwd,
+        env: ghEnv(),
+      },
+    );
   } catch (err) {
     return {
       ok: false,
@@ -93,11 +98,12 @@ async function runGhCliMerge(opts: {
 }): Promise<ProtectedBaseGithubMergeResult> {
   const cli = await checkGithubCli(opts.gitRoot);
   if (!cli.ok) throw new Error(cli.reason);
+  const gh = resolveGhCommand();
   let autoRebaseErr: unknown = null;
   try {
     await execFileAsync(
-      "gh",
-      ["pr", "merge", "--auto", "--rebase", "--delete-branch", opts.prTarget],
+      gh.command,
+      [...gh.argsPrefix, "pr", "merge", "--auto", "--rebase", "--delete-branch", opts.prTarget],
       {
         cwd: opts.gitRoot,
         env: ghEnv(),
@@ -113,10 +119,14 @@ async function runGhCliMerge(opts: {
 
   let directRebaseErr: unknown = null;
   try {
-    await execFileAsync("gh", ["pr", "merge", "--rebase", "--delete-branch", opts.prTarget], {
-      cwd: opts.gitRoot,
-      env: ghEnv(),
-    });
+    await execFileAsync(
+      gh.command,
+      [...gh.argsPrefix, "pr", "merge", "--rebase", "--delete-branch", opts.prTarget],
+      {
+        cwd: opts.gitRoot,
+        env: ghEnv(),
+      },
+    );
     return {
       status: "merged",
       detail: `GitHub PR merged with gh --rebase: ${opts.prTarget}`,
@@ -133,8 +143,8 @@ async function runGhCliMerge(opts: {
 
   try {
     await execFileAsync(
-      "gh",
-      ["pr", "merge", "--auto", "--merge", "--delete-branch", opts.prTarget],
+      gh.command,
+      [...gh.argsPrefix, "pr", "merge", "--auto", "--merge", "--delete-branch", opts.prTarget],
       {
         cwd: opts.gitRoot,
         env: ghEnv(),
@@ -146,10 +156,14 @@ async function runGhCliMerge(opts: {
     };
   } catch (autoMergeErr) {
     try {
-      await execFileAsync("gh", ["pr", "merge", "--merge", "--delete-branch", opts.prTarget], {
-        cwd: opts.gitRoot,
-        env: ghEnv(),
-      });
+      await execFileAsync(
+        gh.command,
+        [...gh.argsPrefix, "pr", "merge", "--merge", "--delete-branch", opts.prTarget],
+        {
+          cwd: opts.gitRoot,
+          env: ghEnv(),
+        },
+      );
       return {
         status: "merged",
         detail: `GitHub PR merged with gh --merge fallback: ${opts.prTarget}`,
