@@ -45,6 +45,27 @@ export function resolveFinishExecutionPlan(opts: {
       ].join("\n"),
     });
   }
+  if (options.preMergeClosure === true && ctx.config.workflow_mode !== "branch_pr") {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "finish --pre-merge-closure is only supported in branch_pr.",
+    });
+  }
+  if (options.preMergeClosure === true && options.taskIds.length !== 1) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "--pre-merge-closure requires exactly one task id",
+    });
+  }
+  if (options.preMergeClosure === true && options.noCloseCommit === true) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "--pre-merge-closure cannot be combined with --no-close-commit",
+    });
+  }
   if (
     (options.closeCommit || options.noCloseCommit) &&
     options.taskIds.length !== 1 &&
@@ -133,6 +154,7 @@ export function resolveFinishExecutionPlan(opts: {
     options.taskIds.length === 1 &&
     (options.commitFromComment || statusCommitRequested);
   const shouldCloseCommit =
+    options.preMergeClosure === true ||
     options.closeCommit === true ||
     statusPathRequiresTrackedTaskCommit ||
     (defaultDirectCloseCommit && options.noCloseCommit !== true) ||
@@ -180,6 +202,7 @@ export function resolveFinishExecutionPlan(opts: {
     breaking,
     finishFinding,
     shouldCloseCommit,
+    preMergeClosure: options.preMergeClosure === true,
     closeAdditionalTaskIds,
   };
 }

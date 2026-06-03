@@ -22,8 +22,8 @@ This repository is configured for `branch_pr`, so the normal guarded route is:
 3. Start a dedicated branch/worktree with `agentplane work start ... --worktree`.
 4. Implement changes on the task branch, create the implementation commit there, and keep local PR artifacts current.
 5. Let normal `agentplane pr open` publish/link the hosted PR, then record verification on the task branch.
-6. Wait for required remote checks, then integrate on the base branch only after local verification and remote green.
-7. Finish on the base branch after integration with `--commit <implementation-git-rev> --close-commit`.
+6. Finish on the task branch with `--pre-merge-closure` so the PR carries the final task closure packet.
+7. Wait for required remote checks, then integrate on the base branch only after local verification and remote green.
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
 
@@ -43,10 +43,10 @@ agentplane task verify-show <task-id>
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
 agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
+agentplane finish <task-id> --author CODER --body "Verified: ..." --result "One-line outcome" --commit <implementation-git-rev> --pre-merge-closure
 bun run workflow:wait-remote-checks
 cd <base-checkout>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <implementation-git-rev> --close-commit
 ```
 
 `direct` remains supported, but in this repository it is an explicit alternative rather than the default guarded path.
@@ -54,9 +54,11 @@ Local `agentplane integrate` defaults to `merge` so task branch commits stay in 
 protected bases, the GitHub PR finalization path prefers rebase merge so task commits remain visible
 without an extra GitHub merge commit. Pass `--merge-strategy squash` only when compacting history is
 intentional.
-Lifecycle/status commits are task-state checkpoints. They are not implementation commits, and
-`finish --commit-from-comment` is unsupported in `branch_pr` because finish runs on the base
-checkout.
+Lifecycle/status commits are task-state checkpoints. They are not implementation commits.
+`finish --pre-merge-closure` is the branch_pr one-PR close path: it runs from the task worktree,
+records a `pre_merge_closure` marker in `pr/meta.json`, and commits the closure packet before the PR
+merge. `finish --commit-from-comment` remains unsupported in `branch_pr`; use explicit commit
+metadata for the verified implementation commit.
 
 The default branch contract is `task/<task-id>/<slug>` for implementation branches and
 `task-close/<task-id>/<sha12>` for close-tail branches. Repositories may override only the two

@@ -1,6 +1,9 @@
 import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
+import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
@@ -697,6 +700,109 @@ describe("task finish close-tail", () => {
         closeStageTaskArtifacts: true,
       }),
     );
+  });
+
+  it("commits pre-merge closure on the task branch without materializing a task-close branch", async () => {
+    const tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-pre-merge-close-"));
+    try {
+      const taskId = "T-1";
+      const taskDir = path.join(tempRoot, ".agentplane", "tasks", taskId);
+      const prDir = path.join(taskDir, "pr");
+      await mkdir(prDir, { recursive: true });
+      await writeFile(
+        path.join(prDir, "meta.json"),
+        `${JSON.stringify(
+          {
+            schema_version: 1,
+            task_id: taskId,
+            branch: "task/T-1/pre-merge",
+            created_at: "2026-02-09T00:00:00.000Z",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            status: "OPEN",
+          },
+          null,
+          2,
+        )}\n`,
+      );
+
+      const ctx = mkCtx({
+        resolvedProject: {
+          gitRoot: tempRoot,
+          agentplaneDir: path.join(tempRoot, ".agentplane"),
+        } as unknown as ResolvedProject,
+        git: {
+          statusStagedPaths: vi.fn().mockResolvedValue([]),
+          statusUnstagedTrackedPaths: vi.fn().mockResolvedValue([]),
+          commit: vi.fn().mockResolvedValue(void 0),
+          invalidateStatus: vi.fn(),
+          headCommit: vi.fn().mockResolvedValue("implementation-head"),
+        } as unknown as GitContext,
+      });
+      ctx.config.workflow_mode = "branch_pr";
+      mocks.gitCurrentBranch.mockResolvedValue("task/T-1/pre-merge");
+      mocks.loadTaskFromContext.mockResolvedValue(
+        mkTask({
+          id: taskId,
+          status: "DOING",
+          tags: ["docs"],
+          verification: {
+            state: "ok",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            updated_by: "REVIEWER",
+            note: "ok",
+          },
+        }),
+      );
+
+      const { cmdFinish } = await import("./finish-command.js");
+      const rc = await cmdFinish({
+        ctx,
+        cwd: tempRoot,
+        taskIds: [taskId],
+        author: "CODER",
+        body: "Verified: pre-merge closure packet is ready for the task PR.",
+        result: "pre-merge closure",
+        commit: "implementation-head",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        preMergeClosure: true,
+        quiet: true,
+      });
+
+      expect(rc).toBe(0);
+      expect(mocks.execFileAsync).not.toHaveBeenCalledWith(
+        "git",
+        ["checkout", "-b", expect.stringContaining("task-close")],
+        expect.any(Object),
+      );
+      expect(mocks.cmdCommit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          taskId,
+          close: true,
+          closeStageTaskArtifacts: true,
+        }),
+      );
+      const meta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
+        pre_merge_closure?: { state?: string; basis_commit?: string; branch?: string };
+      };
+      expect(meta.pre_merge_closure).toMatchObject({
+        state: "closed_before_merge",
+        basis_commit: "implementation-head",
+        branch: "task/T-1/pre-merge",
+      });
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
   });
 
   it("includes every finished task directory in a branch_pr batch close-tail commit", async () => {

@@ -72,6 +72,14 @@ function taskIsClosedForMerge(task: TaskData, mergeCommit: string): boolean {
   return normalizeTaskStatus(task.status) === "DONE" && task.commit?.hash === mergeCommit;
 }
 
+export function taskIsClosedByPreMergeClosure(task: TaskData, meta: PrMeta): boolean {
+  if (normalizeTaskStatus(task.status) !== "DONE") return false;
+  const marker = (meta as PrMeta & { pre_merge_closure?: unknown }).pre_merge_closure;
+  if (!marker || typeof marker !== "object") return false;
+  const state = (marker as { state?: unknown }).state;
+  return state === "closed_before_merge";
+}
+
 async function taskIsAlreadyClosedBeforeMerge(opts: {
   gitRoot: string;
   task: TaskData;
@@ -217,6 +225,12 @@ async function closeHostedTask(opts: {
         0,
         12,
       )}`,
+    };
+  }
+  if (taskIsClosedByPreMergeClosure(task, meta)) {
+    return {
+      outcome: "noop",
+      detail: `${target.taskId} was closed by the merged PR pre-merge closure packet`,
     };
   }
   assertNoConflictingDoneTask({ task, mergeCommit: mergeCommitOid });

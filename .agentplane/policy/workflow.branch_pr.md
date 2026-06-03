@@ -15,10 +15,11 @@ Use this module when `workflow_mode=branch_pr`.
 4. Keep single-writer discipline per task worktree.
 5. Publish/update PR artifacts from the task worktree.
 6. Verify on the task branch.
-7. Queue verified task branches for serialized integration when more than one agent is ready to merge.
-8. CHECKPOINT B: INTEGRATOR runs integration from the base checkout; protected bases finalize through the task GitHub PR merge, not a direct local base mutation.
-9. CHECKPOINT C: finish/close-tail evidence lands after the task PR merge and hosted close route complete.
-10. Remove merged task branches/worktrees once the hosted-close/finish route has landed.
+7. Finish the task on the task branch with `--pre-merge-closure` so the PR carries the final closure packet before merge.
+8. Queue verified task branches for serialized integration when more than one agent is ready to merge.
+9. CHECKPOINT B: INTEGRATOR runs integration from the base checkout; protected bases finalize through the task GitHub PR merge, not a direct local base mutation.
+10. CHECKPOINT C: hosted close is a no-op when pre-merge closure is present; otherwise it remains the close-tail recovery route.
+11. Remove merged task branches/worktrees once the hosted-close/finish route has landed.
 
 ## Related task batch worktrees
 
@@ -47,16 +48,13 @@ agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 agentplane pr update <task-id>
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev> --pre-merge-closure
 agentplane integrate queue enqueue <task-id> --branch task/<task-id>/<slug>
 agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
 
-Default branch names are `task/<task-id>/<slug>` for implementation branches and
-`task-close/<task-id>/<sha12>` for close-tail branches. Repositories MAY override only the prefixes
-through `branch.task_prefix` and `branch.task_close_prefix`; task id, slug, and sha positions remain
-fixed.
+Default branch names are `task/<task-id>/<slug>` for implementation branches and `task-close/<task-id>/<sha12>` for close-tail branches. Repositories MAY override only the prefixes through `branch.task_prefix` and `branch.task_close_prefix`; task id, slug, and sha positions remain fixed.
 
 Before manually filling `<slug>` or `<branch>`, use `agentplane task brief <task-id>` or `agentplane task next-action <task-id> --explain` and prefer the emitted concrete command.
 

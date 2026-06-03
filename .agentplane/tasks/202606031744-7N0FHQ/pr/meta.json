@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606031744-7N0FHQ/support-pre-merge-branch-pr-closure",
+  "created_at": "2026-06-03T17:44:58.986Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-06-03T18:09:09.759Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202606031744-7N0FHQ",
+  "updated_at": "2026-06-03T17:44:58.986Z",
+  "verify": {
+    "status": "pass"
+  }
+}
