@@ -74,6 +74,18 @@ export function deriveNextAction(opts: {
     };
   }
   if (opts.workflowMode !== "branch_pr") {
+    if (
+      opts.task.verification?.state === "ok" &&
+      String(opts.task.status).toUpperCase() === "DOING"
+    ) {
+      return {
+        code: "complete_direct",
+        command: `agentplane task complete ${id} --result "<result>" --commit <hash>`,
+        summary:
+          "task is already verified in direct workflow; close it with task complete instead of rerunning execution",
+        requiresApproval: false,
+      };
+    }
     return {
       code: opts.resume.runner.next_action ?? "continue_direct",
       command: opts.resume.runner.next_command ?? `agentplane task verify-show ${id}`,

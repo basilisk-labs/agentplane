@@ -25,6 +25,7 @@ const DEFAULT_ACTIVE_TASK_LIST_STATUSES = [
   "DOING",
   "BLOCKED",
   "MERGED_PENDING_CLOSE",
+  "VERIFIED_PENDING_CLOSEOUT",
 ] as const;
 
 function resolveProjectionStatusesForList(filters: TaskListFilters): string[] | undefined {
@@ -38,6 +39,10 @@ function resolveProjectionStatusesForList(filters: TaskListFilters): string[] | 
       statuses.add("TODO");
       statuses.add("DOING");
       statuses.add("BLOCKED");
+      continue;
+    }
+    if (normalized === "VERIFIED_PENDING_CLOSEOUT") {
+      statuses.add("DOING");
       continue;
     }
     statuses.add(normalized);
