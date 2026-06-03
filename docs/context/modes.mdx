@@ -19,6 +19,23 @@ knowledge.
 | Coverage reports, glossary discipline, and raw-deletion resilience                         | `maximum-assimilation` |
 | A project knowledge base that should be useful even when raw sources are later unavailable | `maximum-assimilation` |
 
+## Mode selection flow
+
+```mermaid
+flowchart TD
+  A[Project needs context] --> B{What must survive?}
+  B -- Repo conventions and small reusable notes --> C[adaptive]
+  B -- Full source meaning as durable memory --> D[maximum-assimilation]
+
+  C --> C1[Small wiki grows from real work]
+  C --> C2[Low review cost]
+  C --> C3[Raw sources remain the main evidence]
+
+  D --> D1[Source-shaped wiki topology]
+  D --> D2[Facts, graph rows, glossary, provenance]
+  D --> D3[Coverage and raw-deletion resilience review]
+```
+
 ## Default
 
 `maximum-assimilation` is the default for `agentplane context init`.
@@ -70,6 +87,26 @@ Maximum-assimilation mode is best when:
 - the agent must choose a source-shaped wiki topology before writing pages;
 - the review needs explicit coverage, conflicts, aliases, and redactions;
 - raw material may not be convenient to keep in the working set forever.
+
+### Maximum assimilation flow
+
+```mermaid
+flowchart LR
+  S[Source set] --> R[Source registry with hashes]
+  R --> T[Topology decision]
+  T --> W[Wiki pages]
+  T --> F[Facts and graph rows]
+  T --> G[Glossary, aliases, conflicts]
+
+  W --> P[Line-addressed provenance]
+  F --> P
+  G --> P
+
+  P --> C[Coverage report]
+  C --> E{Evaluator review}
+  E -- Rework --> T
+  E -- Pass --> M[Durable context memory]
+```
 
 ## Stop rules
 
