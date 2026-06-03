@@ -6,7 +6,7 @@ Created: 2026-06-03T17:44:58.986Z
 
 - Task: `202606031744-7N0FHQ`
 - Title: Support pre-merge branch_pr closure
-- Status: DOING
+- Status: DONE
 - Branch: `task/202606031744-7N0FHQ/support-pre-merge-branch-pr-closure`
 - Canonical task record: `.agentplane/tasks/202606031744-7N0FHQ/README.md`
 

@@ -1,1 +1,1 @@
-🚧 7N0FHQ task: Support pre-merge branch_pr closure [202606031744-7N0FHQ]
+✅ 7N0FHQ task: Support pre-merge branch_pr closure [202606031744-7N0FHQ]
