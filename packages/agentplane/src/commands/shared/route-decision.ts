@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
+import { isRecord } from "../../shared/guards.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
 import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.shared.js";
 import { resolveBatchOwnership } from "./route-batch-ownership.js";
@@ -227,6 +228,13 @@ function hasRemoteProviderEvidence(prFlow: PrFlowStatusReport | null): boolean {
   );
 }
 
+function hasClosedPreMergeClosureMarker(meta: unknown): boolean {
+  if (!isRecord(meta)) return false;
+  const marker = meta.pre_merge_closure;
+  if (!isRecord(marker)) return false;
+  return marker.state === "closed_before_merge";
+}
+
 async function resolveLocalRecordedCloseFlow(opts: {
   ctx: CommandContext;
   task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
@@ -242,6 +250,39 @@ async function resolveLocalRecordedCloseFlow(opts: {
     const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.task.id);
     const trimmedBase = meta.base?.trim();
     const base = trimmedBase && trimmedBase.length > 0 ? trimmedBase : "main";
+    if (meta.status === "OPEN" && hasClosedPreMergeClosureMarker(meta)) {
+      return {
+        task: {
+          id: opts.task.id,
+          status: opts.task.status,
+          verification: opts.task.verification?.state ?? null,
+        },
+        branch: {
+          name: meta.branch ?? null,
+          headSha: null,
+          metaHeadSha: meta.head_sha ?? null,
+        },
+        pr: {
+          provider: "github",
+          state: "OPEN",
+          source: "metadata",
+          prNumber: typeof meta.pr_number === "number" ? meta.pr_number : null,
+          prUrl: meta.pr_url ?? null,
+          base,
+          headSha: meta.head_sha ?? null,
+          mergeCommit: null,
+        },
+        closeTail: {
+          state: "not_applicable",
+          reason: "pre-merge closure records finalization before implementation PR merge",
+        },
+        hostedChecks: { checked: false, reason: "remote lookup skipped" },
+        reviewThreads: { checked: false, reason: "remote lookup skipped" },
+        queue: { present: false },
+        handoff: { present: false },
+        nextAction: `wait hosted checks, then merge remote PR ${meta.pr_number ?? meta.branch ?? opts.task.id} through the configured provider API`,
+      };
+    }
     if (meta.status !== "MERGED" || !meta.merge_commit) return null;
     const remoteRecorded = await taskCloseAlreadyRecordedOnBase({
       gitRoot: opts.ctx.resolvedProject.gitRoot,

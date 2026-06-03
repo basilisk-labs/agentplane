@@ -19,15 +19,9 @@ Implement a branch_pr closure mode where a task PR can carry a complete pre-merg
 - Note:
 
 ```text
-Command: timeout 180s bunx vitest run
-packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts
-packages/agentplane/src/commands/task/hosted-close.command.test.ts
-packages/agentplane/src/commands/shared/pr-meta.test.ts --pool=threads --maxWorkers=1 --testTimeout
-120000 --hookTimeout 120000. Result: pass, 3 files and 34 tests passed. Command: bun run typecheck.
-Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK.
-Command: bun run format:changed. Result: pass. Command: bun run docs:cli:check. Result: pass, cli
-reference up to date. Command: git diff --check. Result: pass. Command: ap doctor. Result: pass with
-unrelated historical DONE-task warnings 202605221745-8BHZSX and 202606011809-VCQPP7.
+Verified pre-merge closure one-PR route: local and remote next-action now keep DONE task in
+pr_open_integration_lane while PR #4402 is open; pr metadata preserves pre_merge_closure markers
+across rebuilds; doctor ignores DONE/open PR artifacts only when pre_merge_closure is recorded.
 ```
 - Canonical workflow state lives in the task README.
 

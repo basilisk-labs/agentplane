@@ -5,7 +5,7 @@ result_summary: "Implemented branch_pr pre-merge closure as the one-PR close pat
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-03T18:09:09.759Z"
+  updated_at: "2026-06-03T18:27:45.931Z"
   updated_by: "CODER"
-  note: "Command: timeout 180s bunx vitest run packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts --pool=threads --maxWorkers=1 --testTimeout 120000 --hookTimeout 120000. Result: pass, 3 files and 34 tests passed. Command: bun run typecheck. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Command: bun run format:changed. Result: pass. Command: bun run docs:cli:check. Result: pass, cli reference up to date. Command: git diff --check. Result: pass. Command: ap doctor. Result: pass with unrelated historical DONE-task warnings 202605221745-8BHZSX and 202606011809-VCQPP7."
+  note: "Verified pre-merge closure one-PR route: local and remote next-action now keep DONE task in pr_open_integration_lane while PR #4402 is open; pr metadata preserves pre_merge_closure markers across rebuilds; doctor ignores DONE/open PR artifacts only when pre_merge_closure is recorded."
   attempts: 0
 quality_review:
   state: "pass"
@@ -73,8 +73,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure implementation is verified and ready for the task PR merge."
+  -
+    type: "verify"
+    at: "2026-06-03T18:27:45.931Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified pre-merge closure one-PR route: local and remote next-action now keep DONE task in pr_open_integration_lane while PR #4402 is open; pr metadata preserves pre_merge_closure markers across rebuilds; doctor ignores DONE/open PR artifacts only when pre_merge_closure is recorded."
 doc_version: 3
-doc_updated_at: "2026-06-03T18:13:53.087Z"
+doc_updated_at: "2026-06-03T18:27:45.955Z"
 doc_updated_by: "CODER"
 description: "Implement a branch_pr closure mode where a task PR can carry a complete pre-merge closure packet in the task branch, making hosted close a no-op/recovery fallback instead of the normal second closure PR."
 sections:
@@ -117,11 +123,33 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606031744-7N0FHQ
 
+    ### 2026-06-03T18:27:45.931Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified pre-merge closure one-PR route: local and remote next-action now keep DONE task in pr_open_integration_lane while PR #4402 is open; pr metadata preserves pre_merge_closure markers across rebuilds; doctor ignores DONE/open PR artifacts only when pre_merge_closure is recorded.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T18:13:53.087Z, excerpt_hash=sha256:234beb9b7ad184a280f0ffc092b5f5a1598a17dc1ee59366c7fe90aede8deae4
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606031744-7N0FHQ-support-pre-merge-branch-pr-closure/.agentplane/tasks/202606031744-7N0FHQ/blueprint/resolved-snapshot.json
+    - old_digest: c37e2ecc42e7e2abdb073e1e89923fd79dc61f1ed44ad84cc04ebba1991b5207
+    - current_digest: c37e2ecc42e7e2abdb073e1e89923fd79dc61f1ed44ad84cc04ebba1991b5207
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606031744-7N0FHQ
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Ran targeted vitest coverage for route decision, doctor open-PR drift, finish close-tail, hosted close, and PR metadata; ran typecheck, formatting, policy routing, CLI docs freshness, diff whitespace check, ap doctor, and local/remote task next-action.
+      Impact: Pre-merge finalization commit can remain inside the task branch and serve as close evidence for one PR without creating a post-merge close-tail PR.
+      Resolution: Added finish --pre-merge-closure, pre_merge_closure metadata, hosted-close no-op, doctor drift guard, PR metadata marker preservation, and route oracle handling for DONE tasks with open pre-merge PRs.
 id_source: "generated"
 ---
 ## Summary
@@ -172,6 +200,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606031744-7N0FHQ
 
+### 2026-06-03T18:27:45.931Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified pre-merge closure one-PR route: local and remote next-action now keep DONE task in pr_open_integration_lane while PR #4402 is open; pr metadata preserves pre_merge_closure markers across rebuilds; doctor ignores DONE/open PR artifacts only when pre_merge_closure is recorded.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T18:13:53.087Z, excerpt_hash=sha256:234beb9b7ad184a280f0ffc092b5f5a1598a17dc1ee59366c7fe90aede8deae4
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606031744-7N0FHQ-support-pre-merge-branch-pr-closure/.agentplane/tasks/202606031744-7N0FHQ/blueprint/resolved-snapshot.json
+- old_digest: c37e2ecc42e7e2abdb073e1e89923fd79dc61f1ed44ad84cc04ebba1991b5207
+- current_digest: c37e2ecc42e7e2abdb073e1e89923fd79dc61f1ed44ad84cc04ebba1991b5207
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606031744-7N0FHQ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -180,3 +227,7 @@ BlueprintSnapshotRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Ran targeted vitest coverage for route decision, doctor open-PR drift, finish close-tail, hosted close, and PR metadata; ran typecheck, formatting, policy routing, CLI docs freshness, diff whitespace check, ap doctor, and local/remote task next-action.
+  Impact: Pre-merge finalization commit can remain inside the task branch and serve as close evidence for one PR without creating a post-merge close-tail PR.
+  Resolution: Added finish --pre-merge-closure, pre_merge_closure metadata, hosted-close no-op, doctor drift guard, PR metadata marker preservation, and route oracle handling for DONE tasks with open pre-merge PRs.

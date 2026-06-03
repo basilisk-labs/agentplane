@@ -111,6 +111,12 @@ function isStackedBranchAliasDoneTask(opts: {
   return summary.includes(branchTaskId.toLowerCase());
 }
 
+function hasPreMergeClosure(meta: TaskPrMeta): boolean {
+  const marker = (meta as TaskPrMeta & { pre_merge_closure?: unknown }).pre_merge_closure;
+  if (!marker || typeof marker !== "object") return false;
+  return (marker as { state?: unknown }).state === "closed_before_merge";
+}
+
 export async function findLocallyShippedBranchPrTasks(opts: {
   ctx: CommandContext;
   tasks: TaskData[];
@@ -180,6 +186,7 @@ export async function findDoneBranchPrTasksWithOpenPrArtifacts(opts: {
     const prMetaRecord = await readPrMetaIfPresent({ ctx: opts.ctx, taskId: task.id });
     const meta = prMetaRecord?.meta ?? null;
     if (!meta || meta.status === "MERGED") continue;
+    if (hasPreMergeClosure(meta)) continue;
 
     const branch = meta.branch?.trim() ?? "";
     if (!branch) continue;
