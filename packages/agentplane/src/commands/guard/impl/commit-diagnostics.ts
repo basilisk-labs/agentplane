@@ -12,7 +12,13 @@ type ExecFileLikeError = Error & {
 };
 
 export type CommitFailurePhase = "task_commit" | "close_commit";
-type CommitFailureSignal = "formatter" | "eslint" | "commit_subject" | "dco" | "hook_wrapper" | null;
+type CommitFailureSignal =
+  | "formatter"
+  | "eslint"
+  | "commit_subject"
+  | "dco"
+  | "hook_wrapper"
+  | null;
 
 const COMMIT_FAILURE_SIGNAL_PATTERNS = [
   /Code style issues found/i,
@@ -160,8 +166,7 @@ function commitFailureDiagnostic(
       hint: "fix the commit subject format before retrying; do not inspect repository context unless the subject is already valid",
       nextAction: {
         command: "git commit --amend -s",
-        reason:
-          "retry with a compliant subject that matches the required task suffix/scope format",
+        reason: "retry with a compliant subject that matches the required task suffix/scope format",
         reasonCode: "git_commit_subject_policy",
       },
     };
