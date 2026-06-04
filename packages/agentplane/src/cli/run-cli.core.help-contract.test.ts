@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { mkdtemp } from "node:fs/promises";
 import os from "node:os";
@@ -204,17 +204,16 @@ describe("cli help contract", () => {
 
   it("normal project dispatch rejects framework-maintainer commands", async () => {
     const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-help-outside-"));
-    const previousCwd = process.cwd();
     const io = captureStdIO();
+    const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(outsideRoot);
     try {
-      process.chdir(outsideRoot);
       const code = await runCli(["release"]);
       expect(code).toBe(2);
       expect(io.stderr).toContain(
         "Framework dev command is only available inside the AgentPlane framework checkout.",
       );
     } finally {
-      process.chdir(previousCwd);
+      cwdSpy.mockRestore();
       io.restore();
     }
   });
