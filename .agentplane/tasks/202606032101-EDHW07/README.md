@@ -27,7 +27,7 @@ quality_review:
   updated_at: "2026-06-04T07:18:09.282Z"
   updated_by: "EVALUATOR"
   note: "EDHW07 is a stale task record for an upstream-closed issue; the task cleanup branch only refreshes PR metadata and records verification without touching code."
-  evaluated_sha: "cc974de8ed5a6dcb09d9ef483a6c07f076b88727"
+  evaluated_sha: "e4b04f85632bcf4d90db1670859149c6c9d0c4fa"
   blueprint_digest: "88fcb9972f330b7e1ffb22037b1f987e4ef218b4cd93973f64f175b5118155c0"
   evidence_refs:
     - ".agentplane/tasks/202606032101-EDHW07/README.md"
