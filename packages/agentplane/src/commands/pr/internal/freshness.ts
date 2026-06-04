@@ -48,6 +48,7 @@ export async function assessPrArtifactFreshness(opts: {
   const metaVerifyPassed = opts.metaVerifyStatus === "pass";
 
   const reviewFresh =
+    metaHeadSha === null ||
     (metaDiffstatDigest !== null &&
       opts.currentDiffstatDigest !== null &&
       metaDiffstatDigest === opts.currentDiffstatDigest) ||

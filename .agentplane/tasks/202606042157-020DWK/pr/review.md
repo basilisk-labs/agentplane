@@ -11,6 +11,7 @@ Created: 2026-06-04T21:58:10.023Z
 - Included: `202606042225-FE57GC`
 - Included: `202606042230-T1RYR8`
 - Included: `202606042236-HJCTGD`
+- Included: `202606042239-5Z9J95`
 
 ## Task
 
@@ -39,15 +40,17 @@ Created: 2026-06-04T21:58:10.023Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202606042204-NX58GD/README.md    | 202 ++++++++
+ .agentplane/tasks/202606042204-NX58GD/README.md    | 203 ++++++++
  .../blueprint/resolved-snapshot.json               | 573 +++++++++++++++++++++
- .agentplane/tasks/202606042214-GEJ627/README.md    | 202 ++++++++
+ .agentplane/tasks/202606042214-GEJ627/README.md    | 203 ++++++++
  .../blueprint/resolved-snapshot.json               | 573 +++++++++++++++++++++
- .agentplane/tasks/202606042225-FE57GC/README.md    | 183 +++++++
+ .agentplane/tasks/202606042225-FE57GC/README.md    | 184 +++++++
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
- .agentplane/tasks/202606042230-T1RYR8/README.md    | 183 +++++++
+ .agentplane/tasks/202606042230-T1RYR8/README.md    | 184 +++++++
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
- .agentplane/tasks/202606042236-HJCTGD/README.md    | 171 ++++++
+ .agentplane/tasks/202606042236-HJCTGD/README.md    | 184 +++++++
+ .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
+ .agentplane/tasks/202606042239-5Z9J95/README.md    | 171 ++++++
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
  .../src/adapters/git/git-context-adapter.ts        |   8 +-
  packages/agentplane/src/cli/reason-codes.ts        |  18 +
@@ -61,6 +64,8 @@ Created: 2026-06-04T21:58:10.023Z
  .../agentplane/src/commands/hooks/run.pre-push.ts  |  22 +
  .../src/commands/pr/internal/auto-commit.test.ts   |  93 ++++
  .../src/commands/pr/internal/auto-commit.ts        |  34 +-
+ .../src/commands/pr/internal/freshness.test.ts     |  25 +
+ .../src/commands/pr/internal/freshness.ts          |   1 +
  packages/agentplane/src/commands/pr/open.ts        |   1 +
  packages/agentplane/src/commands/pr/update.ts      |   1 +
  .../agentplane/src/commands/shared/git-timeouts.ts |  10 +
@@ -71,7 +76,7 @@ Created: 2026-06-04T21:58:10.023Z
  .../src/commands/task/next-action.command.ts       |   4 +
  packages/agentplane/src/ports/git-port.ts          |   8 +-
  packages/core/src/git/git-client.ts                |  21 +-
- 32 files changed, 3732 insertions(+), 13 deletions(-)
+ 36 files changed, 4308 insertions(+), 13 deletions(-)
 ```
 
 </details>
