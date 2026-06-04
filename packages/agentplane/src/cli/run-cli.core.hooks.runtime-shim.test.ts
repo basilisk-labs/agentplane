@@ -130,6 +130,32 @@ describe("runCli hooks runtime shim", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () =>
     });
   });
 
+  it("hooks run pre-push bounds repository-local script hangs with a direct next action", async () => {
+    const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    await writeFile(
+      path.join(root, "scripts", "run-pre-push-hook.mjs"),
+      "setInterval(() => {}, 1000);\n",
+      "utf8",
+    );
+
+    const previousTimeout = process.env.AGENTPLANE_PRE_PUSH_TIMEOUT_MS;
+    process.env.AGENTPLANE_PRE_PUSH_TIMEOUT_MS = "50";
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-push", "--root", root]);
+      expect(code).toBe(1);
+      expect(io.stderr).toContain(
+        "pre-push blocked: repository pre-push runner timed out while waiting for local checks.",
+      );
+      expect(io.stderr).toContain("Next action: run `agentplane doctor`");
+    } finally {
+      io.restore();
+      if (previousTimeout === undefined) delete process.env.AGENTPLANE_PRE_PUSH_TIMEOUT_MS;
+      else process.env.AGENTPLANE_PRE_PUSH_TIMEOUT_MS = previousTimeout;
+    }
+  });
+
   it("hooks run pre-push skips missing project scripts in clean initialized repositories", async () => {
     await withInstalledAgentplaneRuntime(async () => {
       const root = await mkGitRepoRoot();

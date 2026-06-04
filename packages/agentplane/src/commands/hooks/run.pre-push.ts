@@ -27,6 +27,17 @@ import type { HooksRunOptions } from "./run.js";
 const resolveBundledPrePushHookScriptPath = (): string =>
   resolveAgentplaneRepoScriptPath("run-pre-push-hook.mjs");
 
+const DEFAULT_REPO_PRE_PUSH_TIMEOUT_MS = 10 * 60 * 1000;
+
+function resolveRepoPrePushTimeoutMs(env: NodeJS.ProcessEnv): number {
+  const raw = env.AGENTPLANE_PRE_PUSH_TIMEOUT_MS;
+  if (!raw) return DEFAULT_REPO_PRE_PUSH_TIMEOUT_MS;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0
+    ? Math.trunc(parsed)
+    : DEFAULT_REPO_PRE_PUSH_TIMEOUT_MS;
+}
+
 export async function resolvePrePushHookScriptPath(
   gitRoot: string,
   opts: { bundledScriptPath?: string } = {},
@@ -178,7 +189,18 @@ export async function runPrePushHook(opts: HooksRunOptions): Promise<number> {
     stdin: "pipe",
     stdout: "inherit",
     stderr: "inherit",
+    timeoutMs: resolveRepoPrePushTimeoutMs(process.env),
     reject: false,
   });
+  if (result.timedOut) {
+    process.stderr.write(
+      [
+        "\npre-push blocked: repository pre-push runner timed out while waiting for local checks.",
+        "Next action: run `agentplane doctor`, then rerun `agentplane hooks run pre-push` or push with `--no-verify` only after direct validation passed.",
+        "",
+      ].join("\n"),
+    );
+    return 1;
+  }
   return result.exitCode ?? (result.signal ? 1 : 0);
 }
