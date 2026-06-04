@@ -33,6 +33,20 @@ function isTaskPacketPath(opts: { workflowDir: string; taskId: string; relPath: 
   );
 }
 
+function isAnyTaskPacketPath(opts: {
+  workflowDir: string;
+  taskIds: readonly string[];
+  relPath: string;
+}): boolean {
+  return opts.taskIds.some((taskId) =>
+    isTaskPacketPath({
+      workflowDir: opts.workflowDir,
+      taskId,
+      relPath: opts.relPath,
+    }),
+  );
+}
+
 async function readCachedPaths(gitRoot: string): Promise<string[]> {
   const { stdout } = await execFileAsync("git", ["diff", "--cached", "--name-only", "--relative"], {
     cwd: gitRoot,
@@ -121,6 +135,7 @@ async function resolveTaskPrArtifactCommitStrategy(opts: {
 export async function maybeAutoCommitTaskPrArtifacts(opts: {
   ctx: CommandContext;
   taskId: string;
+  relatedTaskIds?: string[];
   branch: string;
   baseBranch?: string | null;
   strategy?: TaskPrArtifactCommitStrategy;
@@ -132,10 +147,11 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
   if (!currentBranch || currentBranch !== opts.branch.trim()) return false;
 
   const changedPaths = await opts.ctx.git.statusChangedPaths();
+  const artifactTaskIds = [opts.taskId, ...(opts.relatedTaskIds ?? [])];
   const taskPacketPaths = changedPaths.filter((relPath) =>
-    isTaskPacketPath({
+    isAnyTaskPacketPath({
       workflowDir: opts.ctx.config.paths.workflow_dir,
-      taskId: opts.taskId,
+      taskIds: artifactTaskIds,
       relPath,
     }),
   );
@@ -145,9 +161,9 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
   if (
     cachedPaths.some(
       (relPath) =>
-        !isTaskPacketPath({
+        !isAnyTaskPacketPath({
           workflowDir: opts.ctx.config.paths.workflow_dir,
-          taskId: opts.taskId,
+          taskIds: artifactTaskIds,
           relPath,
         }),
     )

@@ -210,6 +210,7 @@ export async function cmdPrOpen(opts: {
       await maybeAutoCommitTaskPrArtifacts({
         ctx: commandCtx,
         taskId: opts.taskId,
+        relatedTaskIds: opts.includeTaskIds,
         branch: initialSync.meta.branch,
         baseBranch: initialSync.meta.base ?? null,
         strategy: "auto",

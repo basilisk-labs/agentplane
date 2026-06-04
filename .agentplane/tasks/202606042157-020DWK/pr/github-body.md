@@ -10,6 +10,7 @@ Canonical task record: `.agentplane/tasks/202606042157-020DWK/README.md`
 - Included: `202606042214-GEJ627`
 - Included: `202606042225-FE57GC`
 - Included: `202606042230-T1RYR8`
+- Included: `202606042236-HJCTGD`
 
 ## Summary
 
@@ -49,6 +50,8 @@ text output, and preserves PR check diagnostics.
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
  .agentplane/tasks/202606042230-T1RYR8/README.md    | 183 +++++++
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
+ .agentplane/tasks/202606042236-HJCTGD/README.md    | 171 ++++++
+ .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
  .../src/adapters/git/git-context-adapter.ts        |   8 +-
  packages/agentplane/src/cli/reason-codes.ts        |  18 +
  .../cli/run-cli.core.hooks.runtime-shim.test.ts    |  26 +
@@ -59,8 +62,10 @@ text output, and preserves PR check diagnostics.
  .../src/commands/guard/impl/commit-refresh.ts      |   3 +-
  .../src/commands/guard/impl/commit-runner.ts       |  48 ++
  .../agentplane/src/commands/hooks/run.pre-push.ts  |  22 +
- .../src/commands/pr/internal/auto-commit.test.ts   |  86 ++++
- .../src/commands/pr/internal/auto-commit.ts        |  10 +-
+ .../src/commands/pr/internal/auto-commit.test.ts   |  93 ++++
+ .../src/commands/pr/internal/auto-commit.ts        |  34 +-
+ packages/agentplane/src/commands/pr/open.ts        |   1 +
+ packages/agentplane/src/commands/pr/update.ts      |   1 +
  .../agentplane/src/commands/shared/git-timeouts.ts |  10 +
  .../src/commands/shared/route-guidance.test.ts     |  51 ++
  .../src/commands/shared/route-oracle.test.ts       |  48 ++
@@ -69,7 +74,7 @@ text output, and preserves PR check diagnostics.
  .../src/commands/task/next-action.command.ts       |   4 +
  packages/agentplane/src/ports/git-port.ts          |   8 +-
  packages/core/src/git/git-client.ts                |  21 +-
- 28 files changed, 3170 insertions(+), 9 deletions(-)
+ 32 files changed, 3732 insertions(+), 13 deletions(-)
 ```
 
 </details>

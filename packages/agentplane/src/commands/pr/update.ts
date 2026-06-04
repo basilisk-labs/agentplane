@@ -125,6 +125,7 @@ export async function cmdPrUpdate(opts: {
       await maybeAutoCommitTaskPrArtifacts({
         ctx: commandCtx,
         taskId: opts.taskId,
+        relatedTaskIds: opts.includeTaskIds,
         branch: meta.branch,
         baseBranch: meta.base ?? null,
         strategy: "amend",
