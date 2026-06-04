@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202606040619-JYCTPN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-04T06:44:24.228Z",
+  "verdict": "pass",
+  "summary": "Release candidate v0.6.16 is aligned with the plan and ready for integration once the updated quality record is published.",
+  "evaluated_sha": "382e7a1c3b43755f46b7fde77644ae1056de04b0",
+  "blueprint_digest": "42f783f55b7de28b0ff3d887efe98e122782d7d15dabf7f86588bac46678cf31",
+  "findings": [
+    "No blocking findings; the release note, version bump, social asset, and hosted PR state are all consistent with the candidate head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606040619-JYCTPN/README.md",
+    "docs/releases/v0.6.16.md",
+    "packages/agentplane/package.json",
+    "agentplane doctor",
+    "node .agentplane/policy/check-routing.mjs",
+    "ap pr check 202606040619-JYCTPN --branch task/202606040619-JYCTPN/patch-release --hosted"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

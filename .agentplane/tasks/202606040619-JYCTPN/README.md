@@ -4,7 +4,7 @@ title: "Publish next patch release"
 status: "DOING"
 priority: "med"
 owner: "INTEGRATOR"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -34,15 +34,24 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-04T06:38:49.073Z"
+  updated_at: "2026-06-04T06:44:24.228Z"
   updated_by: "EVALUATOR"
-  note: "Release candidate v0.6.16 is verified at the corrected candidate head."
-  evaluated_sha: "86d1c82f3deb3047d3a666493e7db6fb5c2daf6a"
+  note: "Release candidate v0.6.16 is aligned with the plan and ready for integration once the updated quality record is published."
+  evaluated_sha: "382e7a1c3b43755f46b7fde77644ae1056de04b0"
   blueprint_digest: "42f783f55b7de28b0ff3d887efe98e122782d7d15dabf7f86588bac46678cf31"
   evidence_refs:
     - ".agentplane/tasks/202606040619-JYCTPN/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606040619-JYCTPN-patch-release/.agentplane/tasks/202606040619-JYCTPN/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202606040619-JYCTPN/quality/20260604-064424228-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606040619-JYCTPN/quality/20260604-064424228-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606040619-JYCTPN/quality/20260604-064424228-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606040619-JYCTPN/blueprint/resolved-snapshot.json"
+    - "docs/releases/v0.6.16.md"
+    - "packages/agentplane/package.json"
+    - "agentplane doctor"
+    - "node .agentplane/policy/check-routing.mjs"
+    - "ap pr check 202606040619-JYCTPN --branch task/202606040619-JYCTPN/patch-release --hosted"
+  findings:
+    - "No blocking findings; the release note, version bump, social asset, and hosted PR state are all consistent with the candidate head."
 commit: null
 comments:
   -
