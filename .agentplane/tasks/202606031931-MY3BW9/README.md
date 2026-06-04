@@ -1,10 +1,11 @@
 ---
 id: "202606031931-MY3BW9"
 title: "Fix upstream issue #4417: Stop direct closeout from routing verified tasks back to run"
-status: "DOING"
+result_summary: "Merged via PR #4414."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -92,11 +93,16 @@ runner:
         kind: "task"
         task_id: "202606031931-MY3BW9"
       updated_at: "2026-06-03T20:02:27.898Z"
-commit: null
+commit:
+  hash: "b1ea35882a0725437785efdda2720ef7c213ded3"
+  message: "Merge pull request #4414 from densmirnov/task/202606031931-MY3BW9/fix-upstream-issue-4407-direct-workflow-leaves-v"
 comments:
   -
     author: "CODER"
     body: "Start: investigating the stale active-task lifecycle in branch_pr mode, reproducing issue #4417, and preparing a bounded fix with focused verification evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4414 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -105,9 +111,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: investigating the stale active-task lifecycle in branch_pr mode, reproducing issue #4417, and preparing a bounded fix with focused verification evidence."
+  -
+    type: "status"
+    at: "2026-06-04T05:02:40.021Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4414 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-03T20:32:56.018Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T05:02:40.027Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve https://github.com/basilisk-labs/agentplane/issues/4417"
 sections:
   Summary: |-
