@@ -1,10 +1,11 @@
 ---
 id: "202606032104-H2VM14"
 title: "Fix upstream issue 4406 quickstart direct route"
-status: "DOING"
+result_summary: "Merged via PR #4424."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "b28a36ee99b609b8c98658d57de28efe930dd2da"
+  message: "Merge pull request #4424 from basilisk-labs/task/202606032104-H2VM14/fix-upstream-issue-4406-quickstart-direct-route"
 comments:
   -
     author: "CODER"
     body: "Start: reproducing the direct-workflow quickstart route mismatch in a dedicated task worktree, tracing the route selection path, and preparing the smallest fix plus targeted verification evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4424 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -35,9 +41,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reproducing the direct-workflow quickstart route mismatch in a dedicated task worktree, tracing the route selection path, and preparing the smallest fix plus targeted verification evidence."
+  -
+    type: "status"
+    at: "2026-06-04T04:44:53.531Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4424 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-03T21:10:18.762Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T04:44:53.535Z"
+doc_updated_by: "INTEGRATOR"
 description: "Investigate why quickstart reports a branch_pr route in a direct workflow repo, implement the smallest coherent fix, and verify with targeted CLI checks."
 sections:
   Summary: |-
