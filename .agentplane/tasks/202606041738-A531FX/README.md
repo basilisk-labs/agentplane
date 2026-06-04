@@ -1,10 +1,11 @@
 ---
 id: "202606041738-A531FX"
 title: "Address feedback issues for route and diagnostic clarity"
-status: "DOING"
+result_summary: "Fixed GitHub issues #4404, #4405, #4406, and #4415 diagnostic surfaces: blocked runner manifests preserve blocked semantics, cloud 5xx errors include local fallback guidance, and quickstart/preflight/insights use configured workflow mode."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "bun run ci:local:fast via pre-push"
   findings:
     - "Runner blocked manifests now remain blocked with parent action evidence; cloud 5xx fallback is actionable; configured workflow mode is used for quickstart/preflight/insights route interpretation."
-commit: null
+commit:
+  hash: "1c07c76c8a4628ba546ce7625adf00f55a31e679"
+  message: "202606041738-A531FX Clarify feedback issue diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: addressing GitHub issues #4404, #4405, #4406, and #4415 in the dedicated branch_pr worktree based on origin/main dd57dc3e."
+  -
+    author: "CODER"
+    body: "Verified: local focused tests, typecheck, knip, policy routing, format, pre-push fast CI, hosted PR checks, and evaluator pass completed for #4439."
 events:
   -
     type: "status"
@@ -61,8 +67,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified issue fixes locally: focused runner/cloud/quickstart/insights tests passed (70 tests); typecheck, knip, policy routing, routing script, and changed-file format checks passed."
+  -
+    type: "status"
+    at: "2026-06-04T18:01:26.937Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: local focused tests, typecheck, knip, policy routing, format, pre-push fast CI, hosted PR checks, and evaluator pass completed for #4439."
 doc_version: 3
-doc_updated_at: "2026-06-04T17:45:53.194Z"
+doc_updated_at: "2026-06-04T18:01:26.938Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issues #4404, #4405, #4406, and #4415 by improving route diagnostics, backend fallback guidance, worktree dependency context, and blocked runner manifest handling."
 sections:
