@@ -93,7 +93,7 @@ describe("loadTaskBackend", () => {
       "utf8",
     );
     await expect(loadTaskBackend({ cwd: tempDir })).rejects.toThrow(
-      /direct Redmine task backend has moved to AgentPlane Cloud sync/u,
+      /set `"id": "cloud"` to use AgentPlane Cloud sync, or `"id": "local"` to fall back to repo-local task files/u,
     );
   });
 
@@ -361,7 +361,7 @@ describe("loadTaskBackend", () => {
     );
 
     await expect(loadTaskBackend({ cwd: tempDir })).rejects.toThrow(
-      /Unsupported task backend 'jira'. Supported backends: local, cloud/u,
+      /set `"id": "local"` to use repo-local task files under `.agentplane\/tasks`, or `"id": "cloud"` to use AgentPlane Cloud sync/u,
     );
   });
 

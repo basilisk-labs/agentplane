@@ -84,19 +84,47 @@ const TASK_BACKEND_LOADERS: Record<string, TaskBackendLoader> = {
   cloud: loadCloudTaskBackend,
 };
 
-function resolveTaskBackendLoader(backendId: string): TaskBackendLoader {
-  const loader = TASK_BACKEND_LOADERS[backendId];
+function describeBackendConfigPath(opts: { gitRoot: string; backendConfigPath: string }): string {
+  const relative = path.relative(opts.gitRoot, opts.backendConfigPath).replaceAll("\\", "/");
+  return relative.length > 0 && !relative.startsWith("..") ? relative : opts.backendConfigPath;
+}
+
+function movedRedmineBackendMessage(opts: { gitRoot: string; backendConfigPath: string }): string {
+  const configPath = describeBackendConfigPath(opts);
+  return [
+    "The direct Redmine task backend has moved to AgentPlane Cloud sync.",
+    "Why: Redmine is no longer supported as a direct local backend adapter.",
+    `Fix: edit ${configPath} and set \`"id": "cloud"\` to use AgentPlane Cloud sync, or \`"id": "local"\` to fall back to repo-local task files under \`.agentplane/tasks\`.`,
+    "Safe command: agentplane config show",
+    "Stop condition: stop if another tool manages this backend config and would immediately overwrite the manual change.",
+  ].join("\n");
+}
+
+function unsupportedBackendMessage(opts: {
+  backendId: string;
+  gitRoot: string;
+  backendConfigPath: string;
+}): string {
+  const configPath = describeBackendConfigPath(opts);
+  return [
+    `Unsupported task backend '${opts.backendId}'. Supported backends: local, cloud.`,
+    `Fix: edit ${configPath} and set \`"id": "local"\` to use repo-local task files under \`.agentplane/tasks\`, or \`"id": "cloud"\` to use AgentPlane Cloud sync.`,
+    "Safe command: agentplane config show",
+    "Stop condition: stop if this backend id came from automation you do not intend to replace manually.",
+  ].join("\n");
+}
+
+function resolveTaskBackendLoader(opts: {
+  backendId: string;
+  gitRoot: string;
+  backendConfigPath: string;
+}): TaskBackendLoader {
+  const loader = TASK_BACKEND_LOADERS[opts.backendId];
   if (loader) return loader;
-  if (backendId === "redmine") {
-    throw new BackendError(
-      "The direct Redmine task backend has moved to AgentPlane Cloud sync. Configure backend id 'cloud' and connect Redmine through the cloud service.",
-      "E_BACKEND",
-    );
+  if (opts.backendId === "redmine") {
+    throw new BackendError(movedRedmineBackendMessage(opts), "E_BACKEND");
   }
-  throw new BackendError(
-    `Unsupported task backend '${backendId}'. Supported backends: local, cloud.`,
-    "E_BACKEND",
-  );
+  throw new BackendError(unsupportedBackendMessage(opts), "E_BACKEND");
 }
 
 async function instantiateTaskBackend(opts: {
@@ -114,7 +142,11 @@ async function instantiateTaskBackend(opts: {
   const normalized = normalizeBackendConfig(backendConfig);
   const backendId = normalized.id;
   const settings = normalized.settings;
-  const loaded = await resolveTaskBackendLoader(backendId)({
+  const loaded = await resolveTaskBackendLoader({
+    backendId,
+    gitRoot: opts.resolved.gitRoot,
+    backendConfigPath,
+  })({
     resolved: opts.resolved,
     config: opts.config,
     settings,
