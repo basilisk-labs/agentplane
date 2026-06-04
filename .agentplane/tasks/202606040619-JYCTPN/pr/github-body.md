@@ -22,7 +22,7 @@ Prepare the repository for the next patch release, ensure the worktree is clean,
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-06-04T06:20:57.527Z
+- Updated: 2026-06-04T06:56:51.749Z
 - Branch: task/202606040619-JYCTPN/patch-release
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
