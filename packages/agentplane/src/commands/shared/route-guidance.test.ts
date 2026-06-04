@@ -81,4 +81,55 @@ describe("route operator guidance", () => {
       ],
     });
   });
+
+  it("points hybrid PR update route diagnostics at PR check", () => {
+    const decision = {
+      task: {
+        id: "202606042157-020DWK",
+        title: "Reduce route ambiguity",
+        status: "DOING",
+        owner: "CODER",
+        planApproval: "approved",
+        verification: "pending",
+        commit: null,
+      },
+      nextAction: {
+        code: "verify_or_update_pr",
+        command: "agentplane pr update 202606042157-020DWK",
+        summary: "refresh PR artifacts, verify, then queue integration",
+        requiresApproval: false,
+      },
+      oracle: {
+        phase: "verify_or_pr_update",
+        authoritativeCheckout: "task_worktree",
+        authoritativeCheckoutPath: "/repo/.agentplane/worktrees/task",
+        mutationPathHint: "/repo/.agentplane/worktrees/task",
+        blocker: null,
+        nextCommand: "agentplane pr update 202606042157-020DWK",
+        summary: "refresh PR artifacts, verify, then queue integration",
+      },
+      executionPacket: {
+        actionKind: "local_command",
+        safeToMutate: true,
+        exactArgv: ["agentplane", "pr", "update", "202606042157-020DWK"],
+        stopReason: null,
+        returnControlWhen:
+          "after the exact command exits; recompute task next-action before any further step",
+        staleStateCheck: "agentplane task next-action 202606042157-020DWK --explain",
+        verificationCandidate: "agentplane pr check <task-id>",
+      },
+    } as TaskRouteDecision;
+
+    expect(deriveRouteOperatorGuidance(decision)).toMatchObject({
+      canExecuteNow: true,
+      safeCommand: "agentplane pr update 202606042157-020DWK",
+      diagnosticCommand: "agentplane pr check 202606042157-020DWK",
+      sourceOfTruth: {
+        diagnostic: "pr_check",
+      },
+      repeatPolicy: {
+        allowed: false,
+      },
+    });
+  });
 });

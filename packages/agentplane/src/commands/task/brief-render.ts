@@ -87,6 +87,10 @@ export function reportTaskBriefText(brief: TaskBrief, taskId: string): void {
         label: "stale_state_check",
         value: brief.execution_packet.stale_state_check,
       },
+      {
+        label: "evidence_missing",
+        value: brief.execution_packet.evidence_missing.join(", ") || "none",
+      },
       { label: "requires_approval", value: String(brief.next_action.requires_approval) },
       {
         label: "human_provider_action",

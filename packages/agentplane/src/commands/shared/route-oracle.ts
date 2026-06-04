@@ -63,6 +63,13 @@ function recommendedRoleFor(opts: {
   if (opts.actionKind === "provider_action") return "USER";
   if (opts.nextAction.code === "approve_plan") return "ORCHESTRATOR";
   if (
+    opts.nextAction.code === "open_pr" ||
+    opts.nextAction.code === "update_pr_artifacts" ||
+    opts.nextAction.code === "verify_or_update_pr"
+  ) {
+    return "CODER";
+  }
+  if (
     opts.nextAction.code === "wait_hosted_checks" ||
     opts.nextAction.code === "open_close_tail" ||
     opts.nextAction.code === "sync_hosted_close" ||
@@ -99,6 +106,7 @@ function evidenceMissingFor(opts: {
 }
 
 function verificationCandidateFor(nextAction: RouteBatchNextAction): string | null {
+  if (nextAction.code === "verify_or_update_pr") return "agentplane pr check <task-id>";
   if (nextAction.code.includes("verify")) return nextAction.command;
   if (nextAction.code === "update_pr_artifacts") return "agentplane pr check <task-id>";
   if (nextAction.code === "wait_hosted_checks") return "agentplane pr check <task-id>";
