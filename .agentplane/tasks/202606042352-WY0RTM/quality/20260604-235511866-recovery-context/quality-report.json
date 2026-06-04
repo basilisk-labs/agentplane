@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606042352-WY0RTM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-04T23:55:11.866Z",
+  "verdict": "pass",
+  "summary": "Stale review metadata is rejected again while live-head missing-head artifacts remain supported.",
+  "evaluated_sha": "e3bb2b4b9e0e43db38cf0f18184ea9bccc747a26",
+  "blueprint_digest": "37cdd5ff693d13ee76a8e29183c9c681e2b03f0b4159434a88906a31825ae990",
+  "findings": [
+    "Targeted PR notes and freshness tests passed; typecheck passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606042352-WY0RTM/README.md",
+    "packages/agentplane/src/commands/pr/internal/freshness.ts",
+    "packages/agentplane/src/commands/pr/internal/freshness.test.ts",
+    "pr-notes-verify-freshness-tests"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
