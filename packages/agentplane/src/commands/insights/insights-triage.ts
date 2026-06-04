@@ -1,5 +1,5 @@
 import type { CliReportEntry } from "../../cli/output.js";
-import { renderQuickstart } from "../../cli/command-guide.js";
+import { renderQuickstartForMode } from "../../cli/command-guide.js";
 
 import type { InsightsReport } from "./insights-report.js";
 
@@ -118,7 +118,12 @@ export function buildInsightsTriage(opts: {
   report: InsightsReport;
   preset: InsightsTriagePreset;
 }): InsightsTriage {
-  const quickstartRoutes = extractQuickstartRoutes(renderQuickstart());
+  const workflowMode = opts.report.project.workflow_mode;
+  const quickstartRoutes = extractQuickstartRoutes(
+    renderQuickstartForMode(
+      workflowMode === "direct" || workflowMode === "branch_pr" ? workflowMode : null,
+    ),
+  );
   const findings =
     opts.preset === "startup-routing"
       ? [

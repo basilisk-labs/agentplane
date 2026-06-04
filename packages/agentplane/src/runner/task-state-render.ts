@@ -71,8 +71,6 @@ function renderTaskRunnerSummary(opts: {
   if (opts.status === "prepared") return `${adapter} runner is prepared.`;
   if (opts.status === "running") return `${adapter} runner is running.`;
   if (opts.status === "success") return `${adapter} runner completed successfully.`;
-  if (opts.status === "blocked") return `${adapter} runner is blocked by an external condition.`;
-  if (opts.status === "cancelled") return `${adapter} runner was cancelled.`;
   if (
     (opts.evidence?.conflict_paths?.length ?? 0) > 0 &&
     opts.evidence?.blocked_reason &&
@@ -80,6 +78,8 @@ function renderTaskRunnerSummary(opts: {
   ) {
     return opts.runner_summary?.trim() ?? `${adapter} runner reported a blocked result.`;
   }
+  if (opts.status === "blocked") return `${adapter} runner is blocked by an external condition.`;
+  if (opts.status === "cancelled") return `${adapter} runner was cancelled.`;
   return `${adapter} runner failed; inspect run artifacts for details.`;
 }
 
@@ -143,14 +143,14 @@ function renderVerificationHint(
   if (status === "success") {
     return "runner completed successfully; human verification and closure remain explicit lifecycle steps.";
   }
+  if (
+    (evidence?.conflict_paths?.length ?? 0) > 0 &&
+    evidence?.blocked_reason &&
+    evidence?.recommended_parent_action
+  ) {
+    return "runner is blocked on a reported conflict; follow ParentAction before retrying.";
+  }
   if (status === "failed") {
-    if (
-      (evidence?.conflict_paths?.length ?? 0) > 0 &&
-      evidence?.blocked_reason &&
-      evidence?.recommended_parent_action
-    ) {
-      return "runner is blocked on a reported conflict; follow ParentAction before retrying.";
-    }
     return "runner failed; inspect artifacts before retrying or recording verification evidence.";
   }
   if (status === "blocked") {

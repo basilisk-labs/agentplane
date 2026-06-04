@@ -127,7 +127,7 @@ describe("task-run lifecycle usecases", () => {
       run_id: runId,
     });
 
-    expect(executed.result.status).toBe("failed");
+    expect(executed.result.status).toBe("blocked");
     expect(executed.result.summary).toBe("Runner blocked on sibling-owned paths.");
     expect(executed.result.evidence).toEqual({
       conflict_paths: ["src/runner/conflict.ts"],

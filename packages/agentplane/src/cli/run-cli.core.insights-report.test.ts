@@ -215,10 +215,10 @@ describe("runCli insights report", () => {
       expect(payload.schema).toBe("agentplane.insights.triage.v1");
       expect(payload.preset).toBe("startup-routing");
       expect(payload.facts?.workflow_mode).toBe("direct");
-      expect(payload.facts?.quickstart_configured_route).toBe("branch_pr");
+      expect(payload.facts?.quickstart_configured_route).toBeNull();
       expect(payload.facts?.failure_error_code).toBe("E_INTERNAL");
-      expect(payload.findings?.[0]?.code).toBe("CONFIG_QUICKSTART_ROUTE_MISMATCH");
-      expect(payload.findings?.[0]?.confidence).toBe("high");
+      expect(payload.findings?.[0]?.code).toBe("NO_STARTUP_ROUTING_MISMATCH");
+      expect(payload.findings?.[0]?.confidence).toBe("medium");
       expect(payload.findings?.[0]?.evidence).toContain("runtime workflow_mode=direct");
       expect(payload.agent_required?.field).toBe("agent_context");
       expect(payload.agent_required?.instruction).toContain("reporting agent must still provide");
@@ -328,7 +328,7 @@ describe("runCli insights report", () => {
         "Agent analysis: config show and quickstart disagreed; raw output omitted.",
       );
       expect(payload.body).toContain("## AgentPlane diagnostic triage");
-      expect(payload.body).toContain("CONFIG_QUICKSTART_ROUTE_MISMATCH");
+      expect(payload.body).toContain("NO_STARTUP_ROUTING_MISMATCH");
       expect(payload.body).toContain("### Required agent field");
       expect(payload.body).toContain("Field: agent_context");
     } finally {

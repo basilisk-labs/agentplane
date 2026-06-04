@@ -1,0 +1,10 @@
+ .../src/backends/task-backend.cloud.test.ts         | 21 +++++++++++++++++++++
+ .../backends/task-backend/cloud-backend-utils.ts    | 14 +++++++++++++-
+ .../src/cli/run-cli.core.insights-report.test.ts    |  8 ++++----
+ .../src/cli/run-cli/commands/core.unit.test.ts      |  6 +++---
+ .../cli/run-cli/commands/core/preflight-report.ts   | 16 +++++++++-------
+ .../src/commands/insights/insights-triage.ts        |  9 +++++++--
+ .../src/runner/adapters/execute-supervised.ts       |  1 +
+ packages/agentplane/src/runner/task-state-render.ts | 18 +++++++++---------
+ .../src/runner/usecases/task-run-lifecycle.test.ts  |  2 +-
+ 9 files changed, 68 insertions(+), 27 deletions(-)

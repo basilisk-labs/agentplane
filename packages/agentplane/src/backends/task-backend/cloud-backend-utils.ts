@@ -155,7 +155,19 @@ export async function cloudHttpErrorMessage(res: Response): Promise<string> {
       `Stop condition: ${remediation.whenToStop}`,
     ].join("\n");
   }
-  return `Cloud backend request failed: HTTP ${res.status}`;
+  const serviceSide = res.status >= 500 && res.status <= 599;
+  return [
+    `Cloud backend request failed: HTTP ${res.status}`,
+    serviceSide
+      ? "Why: the configured cloud backend returned a service-side error; repo-local task artifacts may still be usable."
+      : "Why: the configured cloud backend rejected the task request without a structured remediation payload.",
+    serviceSide
+      ? "Fix: inspect backend health; if `.agentplane/tasks` exists and the cloud service remains unavailable, switch to the local backend before rerunning task surfaces."
+      : "Fix: inspect the active backend configuration and retry only after the backend route is clear.",
+    "Safe command: agentplane backend inspect cloud --yes",
+    "Local fallback: .agentplane/tasks with backend id local",
+    "Stop condition: stop if the cloud route keeps returning the same HTTP error after backend inspection.",
+  ].join("\n");
 }
 
 export function normalizePositiveInteger(input: unknown): number | null {
