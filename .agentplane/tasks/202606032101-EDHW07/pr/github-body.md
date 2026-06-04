@@ -15,8 +15,8 @@ Resolve https://github.com/basilisk-labs/agentplane/issues/4412
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Upstream issue #4412 is closed; no local implementation changes were required.
 - Canonical workflow state lives in the task README.
 
 <details>

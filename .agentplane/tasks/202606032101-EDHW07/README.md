@@ -4,7 +4,7 @@ title: "Fix upstream issue #4412: AgentPlane internal error report (E_INTERNAL)"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-06-04T07:02:51.081Z"
+  updated_by: "CODER"
+  note: "Upstream issue #4412 is closed; no local implementation changes were required."
   attempts: 0
 commit: null
 comments:
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: investigating the runner result-manifest status gate behind upstream issue #4412 and keeping the work scoped to truthful blocked publication outcomes."
+  -
+    type: "verify"
+    at: "2026-06-04T07:02:51.081Z"
+    author: "CODER"
+    state: "ok"
+    note: "Upstream issue #4412 is closed; no local implementation changes were required."
 doc_version: 3
-doc_updated_at: "2026-06-03T21:04:14.525Z"
+doc_updated_at: "2026-06-04T07:02:51.097Z"
 doc_updated_by: "CODER"
 description: "Resolve https://github.com/basilisk-labs/agentplane/issues/4412"
 sections:
@@ -56,6 +62,25 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-06-04T07:02:51.081Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Upstream issue #4412 is closed; no local implementation changes were required.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T21:04:14.525Z, excerpt_hash=sha256:8807ef0b1245189d216c9fe12fdf049e14cc0ec0dd237959033b6c54499bf999
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: missing
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606032101-EDHW07/blueprint/resolved-snapshot.json
+    - old_digest: none
+    - current_digest: 88fcb9972f330b7e1ffb22037b1f987e4ef218b4cd93973f64f175b5118155c0
+    - route_changed: unknown
+    - safe_command: agentplane blueprint snapshot 202606032101-EDHW07
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -89,6 +114,25 @@ PLANNER fallback scaffold for "Fix upstream issue #4412: AgentPlane internal err
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-06-04T07:02:51.081Z — VERIFY — ok
+
+By: CODER
+
+Note: Upstream issue #4412 is closed; no local implementation changes were required.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-03T21:04:14.525Z, excerpt_hash=sha256:8807ef0b1245189d216c9fe12fdf049e14cc0ec0dd237959033b6c54499bf999
+
+Details:
+
+BlueprintSnapshotRef:
+- state: missing
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606032101-EDHW07/blueprint/resolved-snapshot.json
+- old_digest: none
+- current_digest: 88fcb9972f330b7e1ffb22037b1f987e4ef218b4cd93973f64f175b5118155c0
+- route_changed: unknown
+- safe_command: agentplane blueprint snapshot 202606032101-EDHW07
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
