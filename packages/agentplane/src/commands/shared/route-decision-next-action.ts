@@ -48,12 +48,29 @@ export function deriveNextAction(opts: {
   batchOwnership: RouteBatchOwnership;
 }): RouteNextAction {
   const id = opts.task.id;
-  if (opts.task.status === "DONE") {
-    if (opts.workflowMode !== "branch_pr") {
+  if (opts.task.status === "DONE" && opts.workflowMode !== "branch_pr") {
+    return {
+      code: "done",
+      command: null,
+      summary: "task is already done; no branch cleanup is required in direct workflow",
+      requiresApproval: false,
+    };
+  }
+  if (opts.task.status === "DONE" && opts.workflowMode === "branch_pr") {
+    if (opts.prFlow?.pr.state === "OPEN") {
       return {
-        code: "done",
+        code: "wait_hosted_checks",
+        command: `agentplane integrate queue enqueue ${id} --branch ${opts.prFlow.branch.name ?? "<branch>"}`,
+        summary: "pre-merge closure is recorded; wait for hosted checks and merge the task PR",
+        requiresApproval: false,
+      };
+    }
+    if (opts.prFlow?.pr.state === "CLOSED") {
+      return {
+        code: "inspect_pr",
         command: null,
-        summary: "task is already done; no branch cleanup is required in direct workflow",
+        summary:
+          "task is done but the implementation PR is closed before merge; inspect or reopen it",
         requiresApproval: false,
       };
     }

@@ -89,6 +89,7 @@ function removeForeignInstallLayouts(repoRoot) {
     path.join(repoRoot, "node_modules"),
     path.join(repoRoot, "packages", "core", "node_modules"),
     path.join(repoRoot, "packages", "agentplane", "node_modules"),
+    path.join(repoRoot, "website", "node_modules"),
   ];
   for (const targetPath of installLayoutPaths) {
     if (!fs.existsSync(targetPath)) continue;
@@ -101,7 +102,11 @@ function hasBootstrapBuildInstallLayout(repoRoot) {
   return (
     hasWorkspaceNodeModules(repoRoot) &&
     pathResolvesWithinRepo(repoRoot, path.join(repoRoot, "packages", "core", "node_modules")) &&
-    pathResolvesWithinRepo(repoRoot, path.join(repoRoot, "packages", "agentplane", "node_modules"))
+    pathResolvesWithinRepo(
+      repoRoot,
+      path.join(repoRoot, "packages", "agentplane", "node_modules"),
+    ) &&
+    pathResolvesWithinRepo(repoRoot, path.join(repoRoot, "website", "node_modules"))
   );
 }
 

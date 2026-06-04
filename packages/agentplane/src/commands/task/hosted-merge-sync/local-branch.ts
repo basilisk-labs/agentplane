@@ -7,6 +7,7 @@ import {
 
 import type { TaskData } from "../../../backends/task-backend.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
+import { hasClosedPreMergeClosureMarker } from "../../shared/pr-meta.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { backendUsesLocalTaskStore } from "../../shared/task-backend.js";
 import { readPrMetaIfPresent } from "./pr-meta.js";
@@ -180,6 +181,7 @@ export async function findDoneBranchPrTasksWithOpenPrArtifacts(opts: {
     const prMetaRecord = await readPrMetaIfPresent({ ctx: opts.ctx, taskId: task.id });
     const meta = prMetaRecord?.meta ?? null;
     if (!meta || meta.status === "MERGED") continue;
+    if (hasClosedPreMergeClosureMarker(meta)) continue;
 
     const branch = meta.branch?.trim() ?? "";
     if (!branch) continue;

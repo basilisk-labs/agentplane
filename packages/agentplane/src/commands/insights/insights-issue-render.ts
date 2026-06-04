@@ -22,6 +22,7 @@ export function renderIssueBody(opts: {
   report: InsightsReport;
   includeInsightsReport: boolean;
   agentContext: string | null;
+  triageMarkdown: string | null;
 }): string {
   const sections = [
     "## Summary",
@@ -40,6 +41,9 @@ export function renderIssueBody(opts: {
     "",
     ...renderAgentContext(opts.agentContext),
   ];
+  if (opts.triageMarkdown) {
+    sections.push("", opts.triageMarkdown);
+  }
   if (opts.includeInsightsReport) {
     sections.push("", "## Insights report", "```json", JSON.stringify(opts.report, null, 2), "```");
   }

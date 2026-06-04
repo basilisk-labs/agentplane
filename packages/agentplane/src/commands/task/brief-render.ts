@@ -43,7 +43,28 @@ export function reportTaskBriefText(brief: TaskBrief, taskId: string): void {
         label: "safe_to_mutate",
         value: String(brief.execution_packet.safe_to_mutate),
       },
+      { label: "recommended_role", value: brief.execution_packet.recommended_role },
+      {
+        label: "must_run_from",
+        value: brief.execution_packet.must_run_from ?? "unknown",
+      },
+      {
+        label: "exact_argv",
+        value: brief.execution_packet.exact_argv?.join(" ") ?? "none",
+      },
+      {
+        label: "return_control_when",
+        value: brief.execution_packet.return_control_when,
+      },
+      {
+        label: "stale_state_check",
+        value: brief.execution_packet.stale_state_check,
+      },
       { label: "requires_approval", value: String(brief.next_action.requires_approval) },
+      {
+        label: "human_provider_action",
+        value: brief.execution_packet.human_provider_action ?? "none",
+      },
       { label: "remote", value: brief.remote.note },
       { label: "confidence", value: formatSourceConfidence(brief.source_confidence) },
     ],
@@ -77,6 +98,9 @@ export function reportTaskBriefText(brief: TaskBrief, taskId: string): void {
   }
   for (const blocker of brief.blockers) {
     output.line(`blocker: ${blocker.code}: ${blocker.summary}`);
+  }
+  for (const rule of brief.execution_packet.must_not) {
+    output.line(`must_not: ${rule}`);
   }
   output.line(`verify_steps_quality: ${brief.verify_steps.quality}`);
   output.line("verify_steps:");

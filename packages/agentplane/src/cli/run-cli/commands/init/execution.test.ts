@@ -15,10 +15,14 @@ const answers = {
   requirePlanApproval: false,
   requireNetworkApproval: false,
   requireVerifyApproval: false,
+  feedbackGithubIssues: false,
+  feedbackAnonymousCloud: false,
   executionProfile: "balanced",
+  evaluatorSkepticism: "strict",
   strictUnsafeConfirm: false,
   recipes: [],
   blueprints: [],
+  runnerProfile: "codex",
 } satisfies InitAnswers;
 
 describe("init execution planning", () => {
@@ -43,6 +47,7 @@ describe("init execution planning", () => {
     });
 
     expect(plan.context.githubCliInstalled).toBe(false);
+    expect(plan.answers.evaluatorSkepticism).toBe("strict");
     expect(plan.warnings).toContain(GITHUB_CLI_INIT_RECOMMENDATION);
     expect(plan.nextSteps[0]).toContain("Install GitHub CLI yourself");
   });

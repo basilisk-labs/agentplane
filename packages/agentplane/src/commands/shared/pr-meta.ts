@@ -13,6 +13,10 @@ export {
 } from "./pr-meta/builders.js";
 export { parsePrMeta, parsePrMetaForwardCompatible } from "./pr-meta/parser.js";
 export {
+  hasClosedPreMergeClosureMarker,
+  readPreMergeClosureMarker,
+} from "./pr-meta/pre-merge-closure.js";
+export {
   appendVerifyLog,
   extractLastVerifiedSha,
   resolveShellInvocation,

@@ -323,7 +323,7 @@
         },
         "status": {
           "type": "string",
-          "enum": ["prepared", "running", "success", "failed", "cancelled"]
+          "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
         },
         "adapter_id": {
           "type": "string",
@@ -474,7 +474,7 @@
               },
               "status": {
                 "type": "string",
-                "enum": ["prepared", "running", "success", "failed", "cancelled"]
+                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
               },
               "adapter_id": {
                 "type": "string",

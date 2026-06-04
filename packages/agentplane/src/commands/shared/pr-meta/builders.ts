@@ -10,6 +10,14 @@ function omitTrackedLiveHead(meta: PrMeta): PrMeta {
   return rest;
 }
 
+function preservePreMergeClosure(nextMeta: PrMeta, previousMeta: PrMeta | null | undefined): void {
+  const marker = (previousMeta as (PrMeta & { pre_merge_closure?: unknown }) | null | undefined)
+    ?.pre_merge_closure;
+  if (marker) {
+    (nextMeta as PrMeta & { pre_merge_closure?: unknown }).pre_merge_closure = marker;
+  }
+}
+
 function setDiffstatDigest(meta: PrMeta, digest: string | null | undefined): void {
   if (digest) {
     meta[DIFFSTAT_DIGEST_FIELD] = digest;
@@ -71,6 +79,7 @@ export function buildOpenedPrMeta(opts: {
     verify: opts.previousMeta?.verify ?? { status: "skipped" },
     base: nextBase,
   };
+  preservePreMergeClosure(nextMeta, opts.previousMeta);
   setDiffstatDigest(nextMeta, opts.diffstatDigest);
   setLastVerifiedDiffstatDigest(nextMeta, opts.previousMeta?.[LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD]);
   return nextMeta;
