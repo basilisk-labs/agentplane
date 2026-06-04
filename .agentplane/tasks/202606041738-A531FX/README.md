@@ -4,7 +4,7 @@ title: "Address feedback issues for route and diagnostic clarity"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Verified issue fixes locally: focused runner/cloud/quickstart/insights tests passed (70 tests); typecheck, knip, policy routing, routing script, and changed-file format checks passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-04T18:00:48.679Z"
+  updated_by: "EVALUATOR"
+  note: "Issue diagnostics are fixed with focused tests and green local/hosted checks."
+  evaluated_sha: "1c07c76c8a4628ba546ce7625adf00f55a31e679"
+  blueprint_digest: "afd26195087a09c310f16bf33452fbc3fd8c47645b02125f1411791e79141c7d"
+  evidence_refs:
+    - ".agentplane/tasks/202606041738-A531FX/README.md"
+    - ".agentplane/tasks/202606041738-A531FX/quality/20260604-180048679-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606041738-A531FX/quality/20260604-180048679-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606041738-A531FX/quality/20260604-180048679-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606041738-A531FX/blueprint/resolved-snapshot.json"
+    - "gh pr checks 4439 --repo basilisk-labs/agentplane"
+    - "bunx vitest run focused issue suites"
+    - "bun run ci:local:fast via pre-push"
+  findings:
+    - "Runner blocked manifests now remain blocked with parent action evidence; cloud 5xx fallback is actionable; configured workflow mode is used for quickstart/preflight/insights route interpretation."
 commit: null
 comments:
   -
