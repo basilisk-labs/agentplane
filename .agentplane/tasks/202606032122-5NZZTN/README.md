@@ -1,10 +1,11 @@
 ---
 id: "202606032122-5NZZTN"
 title: "Add actionable local fallback for unavailable task backends"
-status: "TODO"
+result_summary: "Merged via PR #4425."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -22,12 +23,24 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
-comments: []
-events: []
+commit:
+  hash: "496e62de9f1b314586cc41bc311ca36dc4135786"
+  message: "Merge pull request #4425 from basilisk-labs/task/202606032122-5NZZTN/add-actionable-local-fallback-for-unavailable-ta"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4425 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+events:
+  -
+    type: "status"
+    at: "2026-06-04T05:10:09.672Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #4425 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-03T21:22:52.206Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-06-04T05:10:09.676Z"
+doc_updated_by: "INTEGRATOR"
 description: "Investigate and fix the local recovery path for unavailable or unsupported task backends in AgentPlane. Primary target: issue #4418. Also evaluate whether the same fix subsumes the cloud 502 fallback gap reported in #4405 without widening scope unnecessarily."
 sections:
   Summary: |-
