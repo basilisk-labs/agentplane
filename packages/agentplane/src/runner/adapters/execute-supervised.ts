@@ -149,6 +149,7 @@ export async function executeSupervisedRunnerAdapter(opts: {
         exit_code: err instanceof CliError ? err.exitCode : undefined,
         output_paths,
       }),
+      status: blockedManifestFallback ? "blocked" : "failed",
       artifacts,
       capabilities_used: opts.capabilitiesUsed(invocation),
       evidence: blockedManifestFallback?.evidence,

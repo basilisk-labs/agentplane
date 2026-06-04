@@ -10,7 +10,7 @@ import {
   validateWorkflowAtPath,
   workflowEnforcementEnvHint,
 } from "../../../../workflow-runtime/index.js";
-import { renderQuickstart } from "../../../command-guide.js";
+import { renderQuickstartForMode } from "../../../command-guide.js";
 import {
   detectTaskArtifactDrift,
   emptyTaskArtifactDrift,
@@ -91,7 +91,6 @@ export async function buildPreflightReport(opts: {
 }): Promise<PreflightReport> {
   const nextActions: NextAction[] = [];
   const harnessHealthReasons: string[] = [];
-  const quickstartText = renderQuickstart();
   const role = opts.role?.trim() ?? "";
   if (role) {
     nextActions.push({
@@ -99,11 +98,6 @@ export async function buildPreflightReport(opts: {
       reason: "load role-specific workflow guidance before owner-scoped execution",
     });
   }
-  const quickstartLoaded: Probe = {
-    ok: quickstartText.trim().length > 0,
-    error:
-      quickstartText.trim().length > 0 ? undefined : "quickstart renderer returned empty output",
-  };
 
   let resolved: {
     gitRoot: string;
@@ -135,6 +129,14 @@ export async function buildPreflightReport(opts: {
       harnessHealthReasons.push("config_unavailable");
     }
   }
+
+  const workflowMode = inferWorkflowMode(config);
+  const quickstartText = renderQuickstartForMode(workflowMode === "unknown" ? null : workflowMode);
+  const quickstartLoaded: Probe = {
+    ok: quickstartText.trim().length > 0,
+    error:
+      quickstartText.trim().length > 0 ? undefined : "quickstart renderer returned empty output",
+  };
 
   let taskListLoaded: PreflightReport["task_list_loaded"] = {
     ok: false,

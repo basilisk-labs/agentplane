@@ -10,7 +10,7 @@ const mockFileExists = vi.fn<(p: string) => Promise<boolean>>();
 const mockReaddir = vi.fn<(dir: string) => Promise<string[]>>();
 const mockReadFile = vi.fn<(p: string, enc: string) => Promise<string>>();
 
-const mockRenderQuickstart = vi.fn<() => string>();
+const mockRenderQuickstartForMode = vi.fn<() => string>();
 const mockRenderRole = vi.fn<
   (
     role: string,
@@ -39,7 +39,7 @@ vi.mock("node:fs/promises", () => ({ readdir: mockReaddir, readFile: mockReadFil
 vi.mock("../../command-guide.js", () => ({
   getRoleSupplementLines: mockGetRoleSupplementLines,
   listRoles: mockListRoles,
-  renderQuickstart: mockRenderQuickstart,
+  renderQuickstartForMode: mockRenderQuickstartForMode,
   renderRole: mockRenderRole,
 }));
 
@@ -51,7 +51,7 @@ describe("core commands (unit)", () => {
     mockFileExists.mockReset();
     mockReaddir.mockReset();
     mockReadFile.mockReset();
-    mockRenderQuickstart.mockReset();
+    mockRenderQuickstartForMode.mockReset();
     mockRenderRole.mockReset();
     mockGetRoleSupplementLines.mockReset();
     mockListRoles.mockReset();

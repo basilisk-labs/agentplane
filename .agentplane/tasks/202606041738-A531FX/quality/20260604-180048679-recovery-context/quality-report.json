@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606041738-A531FX",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-04T18:00:48.679Z",
+  "verdict": "pass",
+  "summary": "Issue diagnostics are fixed with focused tests and green local/hosted checks.",
+  "evaluated_sha": "1c07c76c8a4628ba546ce7625adf00f55a31e679",
+  "blueprint_digest": "afd26195087a09c310f16bf33452fbc3fd8c47645b02125f1411791e79141c7d",
+  "findings": [
+    "Runner blocked manifests now remain blocked with parent action evidence; cloud 5xx fallback is actionable; configured workflow mode is used for quickstart/preflight/insights route interpretation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606041738-A531FX/README.md",
+    "gh pr checks 4439 --repo basilisk-labs/agentplane",
+    "bunx vitest run focused issue suites",
+    "bun run ci:local:fast via pre-push"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

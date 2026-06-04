@@ -253,7 +253,7 @@ export function buildRunnerHintCommands(opts: {
       retry_command: null,
     };
   }
-  if (opts.status === "failed" || opts.status === "cancelled") {
+  if (opts.status === "failed" || opts.status === "blocked" || opts.status === "cancelled") {
     return {
       next_action: "retry",
       next_command: runCommand,
