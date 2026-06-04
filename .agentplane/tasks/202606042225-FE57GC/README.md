@@ -101,6 +101,18 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  branch_pr_batch:
+    base: "main"
+    branch: "task/202606042157-020DWK/reduce-agent-cognitive-load-and-publish-next-pat"
+    included_task_ids:
+      - "202606042204-NX58GD"
+      - "202606042214-GEJ627"
+      - "202606042225-FE57GC"
+      - "202606042230-T1RYR8"
+    primary_task_id: "202606042157-020DWK"
+    role: "included"
+    updated_at: "2026-06-04T22:33:14.328Z"
 id_source: "generated"
 ---
 ## Summary
