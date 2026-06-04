@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import { renderBootstrapDoc } from "./bootstrap-guide.js";
-import { listRoles, renderQuickstart, renderQuickstartForMode, renderRole } from "./command-guide.js";
+import {
+  listRoles,
+  renderQuickstart,
+  renderQuickstartForMode,
+  renderRole,
+} from "./command-guide.js";
 
 const listRolesTyped = listRoles as () => string[];
 const renderRoleTyped = renderRole as (
@@ -115,7 +120,9 @@ describe("command-guide", () => {
     expect(text).toContain("Workflow route notes:");
     expect(text).toContain("`direct`: task setup is");
     expect(text).toContain("`direct`: execution is");
-    expect(text).not.toContain("`branch_pr`: use `agentplane task next-action <task-id> --explain`");
+    expect(text).not.toContain(
+      "`branch_pr`: use `agentplane task next-action <task-id> --explain`",
+    );
     expect(text).not.toContain("`branch_pr` GitHub transport");
   });
 

@@ -248,7 +248,9 @@ describe("runCli", () => {
       expect(io.stdout).toContain("agentplane init");
       expect(io.stdout).toContain("Workflow route notes:");
       expect(io.stdout).toContain("`direct`: task setup is");
-      expect(io.stdout).not.toContain("`branch_pr`: use `agentplane task next-action <task-id> --explain`");
+      expect(io.stdout).not.toContain(
+        "`branch_pr`: use `agentplane task next-action <task-id> --explain`",
+      );
     } finally {
       io.restore();
     }
@@ -265,7 +267,9 @@ describe("runCli", () => {
       const code = await runCli(["quickstart", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("Workflow route notes:");
-      expect(io.stdout).toContain("`branch_pr`: use `agentplane task next-action <task-id> --explain`");
+      expect(io.stdout).toContain(
+        "`branch_pr`: use `agentplane task next-action <task-id> --explain`",
+      );
       expect(io.stdout).not.toContain("`direct`: task setup is");
     } finally {
       io.restore();
