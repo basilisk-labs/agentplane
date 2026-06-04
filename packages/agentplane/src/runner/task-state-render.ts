@@ -78,7 +78,7 @@ function renderTaskRunnerSummary(opts: {
     opts.evidence?.blocked_reason &&
     opts.evidence?.recommended_parent_action
   ) {
-    return opts.runner_summary?.trim() || `${adapter} runner reported a blocked result.`;
+    return opts.runner_summary?.trim() ?? `${adapter} runner reported a blocked result.`;
   }
   return `${adapter} runner failed; inspect run artifacts for details.`;
 }
