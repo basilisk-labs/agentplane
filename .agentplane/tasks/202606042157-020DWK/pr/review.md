@@ -40,35 +40,35 @@ Created: 2026-06-04T21:58:10.023Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202606042204-NX58GD/README.md    | 203 ++++++++
+ .agentplane/tasks/202606042204-NX58GD/README.md    | 204 ++++++++
  .../blueprint/resolved-snapshot.json               | 573 +++++++++++++++++++++
- .agentplane/tasks/202606042214-GEJ627/README.md    | 203 ++++++++
+ .agentplane/tasks/202606042214-GEJ627/README.md    | 204 ++++++++
  .../blueprint/resolved-snapshot.json               | 573 +++++++++++++++++++++
- .agentplane/tasks/202606042225-FE57GC/README.md    | 184 +++++++
+ .agentplane/tasks/202606042225-FE57GC/README.md    | 185 +++++++
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
- .agentplane/tasks/202606042230-T1RYR8/README.md    | 184 +++++++
+ .agentplane/tasks/202606042230-T1RYR8/README.md    | 185 +++++++
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
- .agentplane/tasks/202606042236-HJCTGD/README.md    | 184 +++++++
+ .agentplane/tasks/202606042236-HJCTGD/README.md    | 185 +++++++
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
- .agentplane/tasks/202606042239-5Z9J95/README.md    | 171 ++++++
+ .agentplane/tasks/202606042239-5Z9J95/README.md    | 185 +++++++
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
  .../src/adapters/git/git-context-adapter.ts        |   8 +-
  packages/agentplane/src/cli/reason-codes.ts        |  18 +
  .../cli/run-cli.core.hooks.runtime-shim.test.ts    |  26 +
  .../guard/impl/commands.commit-close.unit.test.ts  |   1 +
- .../impl/commands.commit-non-close.unit.test.ts    |  53 ++
- .../src/commands/guard/impl/commit-diagnostics.ts  |  56 +-
+ .../impl/commands.commit-non-close.unit.test.ts    |  51 ++
+ .../src/commands/guard/impl/commit-diagnostics.ts  |  61 ++-
  .../guard/impl/commit-diagnostics.unit.test.ts     |  54 ++
  .../src/commands/guard/impl/commit-refresh.ts      |   3 +-
  .../src/commands/guard/impl/commit-runner.ts       |  48 ++
  .../agentplane/src/commands/hooks/run.pre-push.ts  |  22 +
- .../src/commands/pr/internal/auto-commit.test.ts   |  93 ++++
+ .../src/commands/pr/internal/auto-commit.test.ts   | 100 ++++
  .../src/commands/pr/internal/auto-commit.ts        |  34 +-
  .../src/commands/pr/internal/freshness.test.ts     |  25 +
  .../src/commands/pr/internal/freshness.ts          |   1 +
  packages/agentplane/src/commands/pr/open.ts        |   1 +
  packages/agentplane/src/commands/pr/update.ts      |   1 +
- .../agentplane/src/commands/shared/git-timeouts.ts |  10 +
+ .../agentplane/src/commands/shared/git-timeouts.ts |   8 +
  .../src/commands/shared/route-guidance.test.ts     |  51 ++
  .../src/commands/shared/route-oracle.test.ts       |  48 ++
  .../agentplane/src/commands/shared/route-oracle.ts |   8 +
@@ -76,7 +76,7 @@ Created: 2026-06-04T21:58:10.023Z
  .../src/commands/task/next-action.command.ts       |   4 +
  packages/agentplane/src/ports/git-port.ts          |   8 +-
  packages/core/src/git/git-client.ts                |  21 +-
- 36 files changed, 4308 insertions(+), 13 deletions(-)
+ 36 files changed, 4335 insertions(+), 13 deletions(-)
 ```
 
 </details>

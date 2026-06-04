@@ -134,7 +134,7 @@ describe("guard command implementations: commit non-close", () => {
     expect(ctx.git.commit).toHaveBeenCalledWith({
       message: "✅ ABC123 task: message",
       env: { AGENTPLANE_TASK_ID: "T-1" },
-      timeoutMs: expect.any(Number),
+      timeoutMs: 600_000,
     });
   });
 
@@ -186,7 +186,7 @@ describe("guard command implementations: commit non-close", () => {
     expect(ctx.git.commit).toHaveBeenNthCalledWith(1, {
       message: "🧩 7SRWEX workflow: implementation body",
       env: { AGENTPLANE_TASK_ID: "202604130818-7SRWEX" },
-      timeoutMs: expect.any(Number),
+      timeoutMs: 600_000,
     });
     expect(ctx.git.commit).toHaveBeenCalledTimes(1);
     expect(ctx.git.commitAmendNoEdit).toHaveBeenCalledWith({
@@ -194,7 +194,7 @@ describe("guard command implementations: commit non-close", () => {
         AGENTPLANE_TASK_ID: "202604130818-7SRWEX",
         AGENTPLANE_ALLOW_TASKS: "1",
       },
-      timeoutMs: expect.any(Number),
+      timeoutMs: 600_000,
     });
   });
 
@@ -288,7 +288,7 @@ describe("guard command implementations: commit non-close", () => {
     expect(ctx.git.commit).toHaveBeenCalledWith({
       message: "✅ ABC123 task: message",
       env: { AGENTPLANE_TASK_ID: "T-6" },
-      timeoutMs: expect.any(Number),
+      timeoutMs: 600_000,
     });
   });
 
@@ -468,7 +468,7 @@ describe("guard command implementations: commit non-close", () => {
     expect(ctx.git.commit).toHaveBeenCalledWith({
       message: "✅ ABC123 task: message",
       env: { AGENTPLANE_TASK_ID: "T-CI" },
-      timeoutMs: expect.any(Number),
+      timeoutMs: 600_000,
     });
   });
 
@@ -536,9 +536,7 @@ describe("guard command implementations: commit non-close", () => {
       quiet: true,
     }).catch((error: unknown) => error);
 
-    expect(ctx.git.commit).toHaveBeenCalledWith(
-      expect.objectContaining({ timeoutMs: expect.any(Number) }),
-    );
+    expect(ctx.git.commit).toHaveBeenCalledWith(expect.objectContaining({ timeoutMs: 600_000 }));
     expect(err).toBeInstanceOf(CliError);
     expect((err as CliError).code).toBe("E_GIT");
     expect((err as CliError).context).toMatchObject({

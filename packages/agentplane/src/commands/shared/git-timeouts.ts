@@ -4,7 +4,5 @@ export function resolveGitCommitTimeoutMs(env: NodeJS.ProcessEnv = process.env):
   const raw = env.AGENTPLANE_GIT_COMMIT_TIMEOUT_MS;
   if (!raw) return DEFAULT_GIT_COMMIT_TIMEOUT_MS;
   const parsed = Number(raw);
-  return Number.isFinite(parsed) && parsed > 0
-    ? Math.trunc(parsed)
-    : DEFAULT_GIT_COMMIT_TIMEOUT_MS;
+  return Number.isFinite(parsed) && parsed > 0 ? Math.trunc(parsed) : DEFAULT_GIT_COMMIT_TIMEOUT_MS;
 }

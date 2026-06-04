@@ -15,7 +15,7 @@
   },
   "branch": "task/202606042157-020DWK/reduce-agent-cognitive-load-and-publish-next-pat",
   "created_at": "2026-06-04T21:58:10.023Z",
-  "diffstat_sha256": "sha256:1947746e59cc8767e089f855f7e0bcf21553c4e2b1fe6c9beea7597718071d03",
+  "diffstat_sha256": "sha256:096d910e707b768b2d5082e4a5cb49c5d9e561e237b84a42f46dc0e3abd8fac5",
   "last_verified_at": "2026-06-04T22:02:08.859Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "related_task_ids": [

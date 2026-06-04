@@ -3,15 +3,9 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { maybeAutoCommitTaskPrArtifacts } from "./auto-commit.js";
 
-vi.mock("@agentplaneorg/core/process", async () => {
-  const actual = await vi.importActual<typeof import("@agentplaneorg/core/process")>(
-    "@agentplaneorg/core/process",
-  );
-  return {
-    ...actual,
-    execFileAsync: vi.fn(async () => ({ stdout: "", stderr: "" })),
-  };
-});
+vi.mock("@agentplaneorg/core/process", () => ({
+  execFileAsync: vi.fn(() => Promise.resolve({ stdout: "", stderr: "" })),
+}));
 
 vi.mock("../../guard/impl/dco.js", () => ({
   appendDcoSignoff: vi.fn(() => "Signed-off-by: AgentPlane <agentplane@example.invalid>"),
@@ -19,18 +13,28 @@ vi.mock("../../guard/impl/dco.js", () => ({
 
 vi.mock("../../guard/impl/env.js", () => ({
   buildGitCommitEnv: vi.fn(() => ({ AGENTPLANE_TASK_ID: "202606042225-FE57GC" })),
-  resolveCanonicalGitIdentity: vi.fn(async () => ({
-    name: "AgentPlane",
-    email: "agentplane@example.invalid",
-  })),
+  resolveCanonicalGitIdentity: vi.fn(() =>
+    Promise.resolve({
+      name: "AgentPlane",
+      email: "agentplane@example.invalid",
+    }),
+  ),
 }));
 
 vi.mock("../../shared/git-ops.js", () => ({
-  gitCurrentBranch: vi.fn(async () => "task/202606042157-020DWK/reduce-agent-cognitive-load"),
+  gitCurrentBranch: vi.fn(() =>
+    Promise.resolve("task/202606042157-020DWK/reduce-agent-cognitive-load"),
+  ),
 }));
 
-function mkCtx(): CommandContext {
-  return {
+function mkCtx(): {
+  ctx: CommandContext;
+  stage: ReturnType<typeof vi.fn>;
+  commitAmendNoEdit: ReturnType<typeof vi.fn>;
+} {
+  const stage = vi.fn(() => Promise.resolve());
+  const commitAmendNoEdit = vi.fn(() => Promise.resolve());
+  const ctx = {
     resolvedProject: {
       gitRoot: "/repo",
     },
@@ -41,17 +45,20 @@ function mkCtx(): CommandContext {
       },
     },
     git: {
-      statusChangedPaths: vi.fn(async () => [
-        ".agentplane/tasks/202606042157-020DWK/README.md",
-        ".agentplane/tasks/202606042157-020DWK/pr/meta.json",
-        ".agentplane/tasks/202606042204-NX58GD/README.md",
-      ]),
-      stage: vi.fn(async () => undefined),
-      commitAmendNoEdit: vi.fn(async () => undefined),
-      commit: vi.fn(async () => undefined),
+      statusChangedPaths: vi.fn(() =>
+        Promise.resolve([
+          ".agentplane/tasks/202606042157-020DWK/README.md",
+          ".agentplane/tasks/202606042157-020DWK/pr/meta.json",
+          ".agentplane/tasks/202606042204-NX58GD/README.md",
+        ]),
+      ),
+      stage,
+      commitAmendNoEdit,
+      commit: vi.fn(() => Promise.resolve()),
       invalidateStatus: vi.fn(),
     },
   } as unknown as CommandContext;
+  return { ctx, stage, commitAmendNoEdit };
 }
 
 describe("task PR artifact auto-commit", () => {
@@ -60,7 +67,7 @@ describe("task PR artifact auto-commit", () => {
   });
 
   it("bounds artifact amend commits so hook hangs return control", async () => {
-    const ctx = mkCtx();
+    const { ctx, stage, commitAmendNoEdit } = mkCtx();
     const previousTimeout = process.env.AGENTPLANE_GIT_COMMIT_TIMEOUT_MS;
     process.env.AGENTPLANE_GIT_COMMIT_TIMEOUT_MS = "123";
 
@@ -79,12 +86,12 @@ describe("task PR artifact auto-commit", () => {
       else process.env.AGENTPLANE_GIT_COMMIT_TIMEOUT_MS = previousTimeout;
     }
 
-    expect(ctx.git.commitAmendNoEdit).toHaveBeenCalledWith({
+    expect(commitAmendNoEdit).toHaveBeenCalledWith({
       env: { AGENTPLANE_TASK_ID: "202606042225-FE57GC" },
       skipHooks: true,
       timeoutMs: 123,
     });
-    expect(ctx.git.stage).toHaveBeenCalledWith([
+    expect(stage).toHaveBeenCalledWith([
       ".agentplane/tasks/202606042157-020DWK/README.md",
       ".agentplane/tasks/202606042157-020DWK/pr/meta.json",
       ".agentplane/tasks/202606042204-NX58GD/README.md",
