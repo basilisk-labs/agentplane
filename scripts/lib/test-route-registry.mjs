@@ -575,6 +575,7 @@ const RUNNER_TEST_FILES = [
 ];
 
 const ROUTE_ORACLE_TEST_FILES = [
+  "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
   "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
   "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts",
   "packages/agentplane/src/cli/command-guide.test.ts",
