@@ -76,6 +76,17 @@ function mergeDiagnosticNextAction(diag: GithubMergeDiagnostic): string {
   return "inspect GitHub branch protection or enable auto-merge through the integration route";
 }
 
+function artifactFreshnessLabel(opts: {
+  snapshot: PrArtifactSnapshot;
+  branchHeadSha: string | null;
+  requiresVerify: boolean;
+}): "fresh" | "stale" | "unknown" {
+  if (!opts.snapshot.meta || !opts.branchHeadSha) return "unknown";
+  if (!opts.snapshot.freshnessReviewFresh) return "stale";
+  if (opts.requiresVerify && !opts.snapshot.freshnessVerifySatisfied) return "stale";
+  return "fresh";
+}
+
 export async function cmdPrCheck(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -343,15 +354,26 @@ export async function cmdPrCheck(opts: {
       output.line(`next_action: ${mergeDiagnosticNextAction(mergeDiagnostic)}`);
     }
 
+    const artifactFreshness = artifactFreshnessLabel({
+      snapshot: selectedSnapshot,
+      branchHeadSha,
+      requiresVerify,
+    });
     output.line(
       [
         `artifact_source: ${selectedSnapshot.source}`,
         `artifact_branch=${selectedSnapshot.sourceBranch ?? branchForFreshness ?? "none"}`,
+        `artifact_freshness=${artifactFreshness}`,
         `branch_head=${branchHeadSha ?? "unknown"}`,
         `meta_head=${selectedSnapshot.meta?.head_sha ?? "unknown"}`,
         `verify_status=${selectedSnapshot.meta?.verify?.status ?? "unknown"}`,
       ].join(" "),
     );
+    if (artifactFreshness !== "fresh") {
+      output.line(
+        "route_hint: artifact freshness is not confirmed; if task next-action still loops on PR update after this check passes, inspect hosted PR truth before rerunning mutation",
+      );
+    }
     output.success("pr check", path.relative(resolved.gitRoot, prDir));
     return 0;
   } catch (err) {

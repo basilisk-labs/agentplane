@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606041604-E3EJG8/clarify-confusing-agent-route-diagnostics",
+  "created_at": "2026-06-04T16:17:02.161Z",
+  "diffstat_sha256": "sha256:acc21c71755cd7a7bf665de19950cfe38d0569ef85f590db4529cb6a94eec577",
+  "last_verified_at": "2026-06-04T16:17:02.111Z",
+  "last_verified_diffstat_sha256": "sha256:706346996d25ccb86d3cf270650e0360a90da4e23d729d770adc6aa680b2b6c4",
+  "schema_version": 1,
+  "task_id": "202606041604-E3EJG8",
+  "updated_at": "2026-06-04T16:17:02.161Z",
+  "verify": {
+    "status": "pass"
+  }
+}

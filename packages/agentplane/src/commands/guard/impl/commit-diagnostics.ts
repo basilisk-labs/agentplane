@@ -12,7 +12,7 @@ type ExecFileLikeError = Error & {
 };
 
 export type CommitFailurePhase = "task_commit" | "close_commit";
-type CommitFailureSignal = "formatter" | "eslint" | null;
+type CommitFailureSignal = "formatter" | "eslint" | "hook_wrapper" | null;
 
 const COMMIT_FAILURE_SIGNAL_PATTERNS = [
   /Code style issues found/i,
@@ -28,6 +28,15 @@ const FORMATTER_SIGNAL_PATTERNS = [
   /Run Prettier with --write/i,
 ] as const;
 const ESLINT_SIGNAL_PATTERNS = [/\bESLint\b/i, /\b[0-9]+\s+problems?\b/i] as const;
+const HOOK_WRAPPER_SIGNAL_PATTERNS = [
+  /\bSIGKILL\b/i,
+  /\bsignal\s+9\b/i,
+  /\bkilled\b/i,
+  /\bprepare-commit-msg\b/i,
+  /\bpre-commit\b/i,
+  /\bcommit-msg\b/i,
+  /\bnpm\s+exec\s+agentplane\s+hooks\s+run\b/i,
+] as const;
 
 function readText(value: unknown): string {
   if (typeof value === "string") return value;
@@ -74,6 +83,7 @@ function summarizeOutput(raw: string): string[] {
 function detectCommitFailureSignal(output: string): CommitFailureSignal {
   if (FORMATTER_SIGNAL_PATTERNS.some((pattern) => pattern.test(output))) return "formatter";
   if (ESLINT_SIGNAL_PATTERNS.some((pattern) => pattern.test(output))) return "eslint";
+  if (HOOK_WRAPPER_SIGNAL_PATTERNS.some((pattern) => pattern.test(output))) return "hook_wrapper";
   return null;
 }
 
@@ -121,6 +131,24 @@ function commitFailureDiagnostic(
         command: "bun run lint:core",
         reason: "rerun lint and fix the reported error before retrying the commit flow",
         reasonCode: "git_pre_commit_lint",
+      },
+    };
+  }
+  if (signal === "hook_wrapper") {
+    return {
+      state:
+        phase === "close_commit"
+          ? "git hook wrapper failed during the generated close commit"
+          : "git hook wrapper failed during the task-scoped commit",
+      likelyCause:
+        phase === "close_commit"
+          ? "a git hook process or hook wrapper failed after the close-commit payload was prepared; this is hook infrastructure evidence until direct validation proves otherwise"
+          : "a git hook process or hook wrapper failed after guard validation passed; this is hook infrastructure evidence until direct validation proves otherwise",
+      nextAction: {
+        command: "agentplane doctor",
+        reason:
+          "inspect managed hook readiness and preserve direct validation evidence before retrying the commit flow",
+        reasonCode: "git_hook_wrapper_unstable",
       },
     };
   }

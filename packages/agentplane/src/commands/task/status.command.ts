@@ -2,6 +2,7 @@ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import { deriveRouteOperatorGuidance } from "../shared/route-guidance.js";
 
 export type TaskStatusParsed = {
   taskId: string;
@@ -58,11 +59,16 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
       rootOverride: ctx.rootOverride ?? null,
       taskId: parsed.taskId,
     });
+    const operatorGuidance = deriveRouteOperatorGuidance(decision);
     const output = createCliEmitter();
     if (parsed.json) {
       if (parsed.route) {
         const { sourceConfidence, ...routeDecision } = decision;
-        output.json({ ...routeDecision, source_confidence: sourceConfidence });
+        output.json({
+          ...routeDecision,
+          operator_guidance: operatorGuidance,
+          source_confidence: sourceConfidence,
+        });
       } else {
         output.json(decision.task);
       }
@@ -92,7 +98,10 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
         { label: "next_code", value: decision.nextAction.code },
         { label: "next", value: decision.oracle.nextCommand ?? decision.oracle.summary },
         { label: "action_kind", value: decision.executionPacket.actionKind },
-        { label: "safe_to_mutate", value: String(decision.executionPacket.safeToMutate) },
+        { label: "operator_action", value: operatorGuidance.operatorAction },
+        { label: "can_execute_now", value: String(operatorGuidance.canExecuteNow) },
+        { label: "safe_command", value: operatorGuidance.safeCommand ?? "none" },
+        { label: "diagnostic_command", value: operatorGuidance.diagnosticCommand ?? "none" },
         {
           label: "recommended_role",
           value: decision.executionPacket.recommendedRole,
@@ -139,6 +148,12 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
         entries.push({
           label: "ambiguity",
           value: `${ambiguity.code}: ${ambiguity.summary}; resolution: ${ambiguity.resolution}`,
+        });
+      }
+      for (const risk of operatorGuidance.risks) {
+        entries.push({
+          label: "operator_risk",
+          value: `${risk.code}: ${risk.summary}; mitigation: ${risk.mitigationCommand}; stop: ${risk.stopCondition}`,
         });
       }
     }
