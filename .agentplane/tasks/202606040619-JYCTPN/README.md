@@ -1,10 +1,11 @@
 ---
 id: "202606040619-JYCTPN"
 title: "Publish next patch release"
-status: "DOING"
+result_summary: "Merged via PR #4432."
+status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -52,11 +53,16 @@ quality_review:
     - "ap pr check 202606040619-JYCTPN --branch task/202606040619-JYCTPN/patch-release --hosted"
   findings:
     - "No blocking findings; the release note, version bump, social asset, and hosted PR state are all consistent with the candidate head."
-commit: null
+commit:
+  hash: "ca914e92ea35f53d05b09d91beeff803adfba6cf"
+  message: "Record evaluator pass for v0.6.16"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: I have the release task worktree open; next steps are to generate release notes, validate the release plan, and publish v0.6.16 through the branch_pr route."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4432 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -89,8 +95,15 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Release candidate v0.6.16 is verified at the corrected candidate head."
+  -
+    type: "status"
+    at: "2026-06-04T06:51:00.634Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4432 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T06:38:49.101Z"
+doc_updated_at: "2026-06-04T06:51:00.640Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare the repository for the next patch release, ensure the worktree is clean, run release planning and prepublish checks, then publish through the configured branch_pr release route."
 sections:

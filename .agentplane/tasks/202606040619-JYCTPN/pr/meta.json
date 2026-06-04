@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-04T06:50:14Z",
   "base": "main",
   "branch": "task/202606040619-JYCTPN/patch-release",
   "created_at": "2026-06-04T06:20:57.527Z",
   "diffstat_sha256": "sha256:c1e08eaf744e01d5fafa7e1a3e309dd5ea57ff50a96bb1e4b9da4933e3a1b4af",
   "last_verified_at": "2026-06-04T06:38:49.073Z",
   "last_verified_diffstat_sha256": "sha256:c1e08eaf744e01d5fafa7e1a3e309dd5ea57ff50a96bb1e4b9da4933e3a1b4af",
+  "merge_commit": "ca914e92ea35f53d05b09d91beeff803adfba6cf",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-04T06:50:14Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606040619-JYCTPN",
-  "updated_at": "2026-06-04T06:20:57.527Z",
+  "updated_at": "2026-06-04T06:50:14Z",
   "verify": {
     "status": "pass"
   }
