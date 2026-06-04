@@ -46,6 +46,9 @@ comments:
   -
     author: "CODER"
     body: "Start: investigating the runner result-manifest status gate behind upstream issue #4412 and keeping the work scoped to truthful blocked publication outcomes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4434 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"

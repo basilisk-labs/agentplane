@@ -15,6 +15,7 @@
   "status": "MERGED",
   "task_id": "202606032101-EDHW07",
   "updated_at": "2026-06-04T07:11:52.727Z",
+  "merge_strategy": "merge",
   "verify": {
     "status": "pass"
   }
