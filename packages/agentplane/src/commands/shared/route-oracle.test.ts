@@ -124,6 +124,54 @@ describe("route oracle execution packet", () => {
     );
   });
 
+  it("keeps hybrid verify_or_update_pr packets on the CODER rail", () => {
+    const task = {
+      id: "202606042157-020DWK",
+      title: "Route packet hybrid task",
+      description: "Exercise hybrid PR update and verification guidance.",
+      status: "DOING",
+      priority: "high",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["code"],
+      verify: [],
+      plan_approval: {
+        state: "approved",
+        approved_by: "ORCHESTRATOR",
+        approved_at: "2026-06-04T00:00:00.000Z",
+      },
+    } satisfies TaskData;
+    const oracle: RouteOracle = {
+      phase: "verify_or_pr_update",
+      authoritativeCheckout: "task_worktree",
+      authoritativeCheckoutPath: "/repo/.agentplane/worktrees/task",
+      mutationPathHint: "/repo/.agentplane/worktrees/task",
+      blocker: null,
+      nextCommand: "agentplane pr update 202606042157-020DWK",
+      summary: "refresh PR artifacts, verify, then queue integration",
+    };
+
+    const packet = deriveRouteExecutionPacket({
+      task,
+      blockers: [],
+      oracle,
+      nextAction: {
+        code: "verify_or_update_pr",
+        command: oracle.nextCommand,
+        summary: oracle.summary,
+        requiresApproval: false,
+      },
+    });
+
+    expect(packet).toMatchObject({
+      actionKind: "local_command",
+      recommendedRole: "CODER",
+      exactArgv: ["agentplane", "pr", "update", "202606042157-020DWK"],
+      verificationCandidate: "agentplane pr check <task-id>",
+      evidenceMissing: ["verification_record"],
+    });
+  });
+
   it("keeps quoted command arguments intact in exact argv packets", () => {
     const task = {
       id: "202605281713-QUOTE1",

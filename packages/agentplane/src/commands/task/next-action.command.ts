@@ -135,6 +135,10 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
           value: decision.executionPacket.staleStateCheck,
         },
         {
+          label: "evidence_missing",
+          value: decision.executionPacket.evidenceMissing.join(", ") || "none",
+        },
+        {
           label: "requires_provider_action",
           value: decision.executionPacket.requiresProviderAction,
         },

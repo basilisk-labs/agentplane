@@ -1,0 +1,6 @@
+ .../src/commands/shared/route-guidance.test.ts     | 51 ++++++++++++++++++++++
+ .../src/commands/shared/route-oracle.test.ts       | 48 ++++++++++++++++++++
+ .../agentplane/src/commands/shared/route-oracle.ts |  8 ++++
+ .../agentplane/src/commands/task/brief-render.ts   |  4 ++
+ .../src/commands/task/next-action.command.ts       |  4 ++
+ 5 files changed, 115 insertions(+)
