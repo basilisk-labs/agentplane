@@ -4,7 +4,7 @@ title: "Publish next patch release"
 status: "DOING"
 priority: "med"
 owner: "INTEGRATOR"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -28,16 +28,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-04T06:27:24.290Z"
+  updated_at: "2026-06-04T06:38:49.073Z"
   updated_by: "EVALUATOR"
-  note: "Release checks passed for v0.6.16 at the current branch head."
+  note: "Release candidate v0.6.16 is verified at the corrected candidate head."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-04T06:27:24.290Z"
+  updated_at: "2026-06-04T06:38:49.073Z"
   updated_by: "EVALUATOR"
-  note: "Release checks passed for v0.6.16 at the current branch head."
-  evaluated_sha: "4193cf941c906fb598299a63b90e70cd8409cc11"
+  note: "Release candidate v0.6.16 is verified at the corrected candidate head."
+  evaluated_sha: "86d1c82f3deb3047d3a666493e7db6fb5c2daf6a"
   blueprint_digest: "42f783f55b7de28b0ff3d887efe98e122782d7d15dabf7f86588bac46678cf31"
   evidence_refs:
     - ".agentplane/tasks/202606040619-JYCTPN/README.md"
@@ -68,8 +68,20 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Release checks passed for v0.6.16 at the current branch head."
+  -
+    type: "verify"
+    at: "2026-06-04T06:33:50.475Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Release candidate v0.6.16 is verified at the pushed candidate head."
+  -
+    type: "verify"
+    at: "2026-06-04T06:38:49.073Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Release candidate v0.6.16 is verified at the corrected candidate head."
 doc_version: 3
-doc_updated_at: "2026-06-04T06:27:24.310Z"
+doc_updated_at: "2026-06-04T06:38:49.101Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare the repository for the next patch release, ensure the worktree is clean, run release planning and prepublish checks, then publish through the configured branch_pr release route."
 sections:
@@ -127,6 +139,44 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606040619-JYCTPN
 
+    ### 2026-06-04T06:33:50.475Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Release candidate v0.6.16 is verified at the pushed candidate head.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-04T06:27:24.310Z, excerpt_hash=sha256:c67ec14184532cfad80a7010efc4c6e74c161c00ddde10919b7c0c20c909e36f
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606040619-JYCTPN-patch-release/.agentplane/tasks/202606040619-JYCTPN/blueprint/resolved-snapshot.json
+    - old_digest: 42f783f55b7de28b0ff3d887efe98e122782d7d15dabf7f86588bac46678cf31
+    - current_digest: 42f783f55b7de28b0ff3d887efe98e122782d7d15dabf7f86588bac46678cf31
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606040619-JYCTPN
+
+    ### 2026-06-04T06:38:49.073Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Release candidate v0.6.16 is verified at the corrected candidate head.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-04T06:33:50.499Z, excerpt_hash=sha256:c67ec14184532cfad80a7010efc4c6e74c161c00ddde10919b7c0c20c909e36f
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606040619-JYCTPN-patch-release/.agentplane/tasks/202606040619-JYCTPN/blueprint/resolved-snapshot.json
+    - old_digest: 42f783f55b7de28b0ff3d887efe98e122782d7d15dabf7f86588bac46678cf31
+    - current_digest: 42f783f55b7de28b0ff3d887efe98e122782d7d15dabf7f86588bac46678cf31
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606040619-JYCTPN
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -139,6 +189,14 @@ sections:
     - Observation: agentplane doctor, node .agentplane/policy/check-routing.mjs, and the release-note authoring all passed before opening PR #4432.
       Impact: Verification now matches the amended release commit and current PR head.
       Resolution: Ready for PR artifact refresh and integration gating.
+
+    - Observation: The release commit 98a36485fe1f7be0d6f95a15a5be3e11203edd50 was pushed successfully after the social-image prerequisite commit and the candidate version bump.
+      Impact: PR evidence must now be refreshed against the pushed release-candidate SHA.
+      Resolution: Ready for PR artifact refresh and hosted merge gating.
+
+    - Observation: packages/spec/examples/acr.json now matches the formatter output and the release-candidate head was force-pushed as 86d1c82f3deb3047d3a666493e7db6fb5c2daf6a.
+      Impact: PR evidence must be refreshed for the new candidate SHA.
+      Resolution: Ready for PR artifact refresh and hosted recheck.
 id_source: "generated"
 ---
 ## Summary
@@ -205,6 +263,44 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606040619-JYCTPN
 
+### 2026-06-04T06:33:50.475Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Release candidate v0.6.16 is verified at the pushed candidate head.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-04T06:27:24.310Z, excerpt_hash=sha256:c67ec14184532cfad80a7010efc4c6e74c161c00ddde10919b7c0c20c909e36f
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606040619-JYCTPN-patch-release/.agentplane/tasks/202606040619-JYCTPN/blueprint/resolved-snapshot.json
+- old_digest: 42f783f55b7de28b0ff3d887efe98e122782d7d15dabf7f86588bac46678cf31
+- current_digest: 42f783f55b7de28b0ff3d887efe98e122782d7d15dabf7f86588bac46678cf31
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606040619-JYCTPN
+
+### 2026-06-04T06:38:49.073Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Release candidate v0.6.16 is verified at the corrected candidate head.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-04T06:33:50.499Z, excerpt_hash=sha256:c67ec14184532cfad80a7010efc4c6e74c161c00ddde10919b7c0c20c909e36f
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606040619-JYCTPN-patch-release/.agentplane/tasks/202606040619-JYCTPN/blueprint/resolved-snapshot.json
+- old_digest: 42f783f55b7de28b0ff3d887efe98e122782d7d15dabf7f86588bac46678cf31
+- current_digest: 42f783f55b7de28b0ff3d887efe98e122782d7d15dabf7f86588bac46678cf31
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606040619-JYCTPN
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -221,3 +317,11 @@ BlueprintSnapshotRef:
 - Observation: agentplane doctor, node .agentplane/policy/check-routing.mjs, and the release-note authoring all passed before opening PR #4432.
   Impact: Verification now matches the amended release commit and current PR head.
   Resolution: Ready for PR artifact refresh and integration gating.
+
+- Observation: The release commit 98a36485fe1f7be0d6f95a15a5be3e11203edd50 was pushed successfully after the social-image prerequisite commit and the candidate version bump.
+  Impact: PR evidence must now be refreshed against the pushed release-candidate SHA.
+  Resolution: Ready for PR artifact refresh and hosted merge gating.
+
+- Observation: packages/spec/examples/acr.json now matches the formatter output and the release-candidate head was force-pushed as 86d1c82f3deb3047d3a666493e7db6fb5c2daf6a.
+  Impact: PR evidence must be refreshed for the new candidate SHA.
+  Resolution: Ready for PR artifact refresh and hosted recheck.
