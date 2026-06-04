@@ -4,7 +4,7 @@ title: "Segment dependency cruiser arch check"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Verified: bun run arch:deps passed through segmented dependency-cruiser runner; bun run arch:check passed; node scripts/generate/generate-scripts-readme.mjs --check passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-04T23:41:08.585Z"
+  updated_by: "EVALUATOR"
+  note: "arch:deps now runs dependency-cruiser per package root and passes without SIGKILL."
+  evaluated_sha: "f807284c6409c3e0b15a6ac10653010b767f53d0"
+  blueprint_digest: "ff4f2df4efa673ef9e75ad72b6af4e97d061a61226b01f1ac30321d455ff00ec"
+  evidence_refs:
+    - ".agentplane/tasks/202606042338-YX0GX0/README.md"
+    - ".agentplane/tasks/202606042338-YX0GX0/quality/20260604-234108585-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606042338-YX0GX0/quality/20260604-234108585-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606042338-YX0GX0/quality/20260604-234108585-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606042338-YX0GX0/blueprint/resolved-snapshot.json"
+    - "scripts/checks/run-depcruise-arch.mjs"
+    - "package.json"
+    - "arch-check"
+  findings:
+    - "The segmented runner preserves the same dependency-cruiser config while reducing peak memory; bun run arch:deps and bun run arch:check both passed."
 commit: null
 comments:
   -
