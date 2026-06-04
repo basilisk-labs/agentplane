@@ -4,7 +4,7 @@ title: "Clarify release candidate missing plan diagnostic"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Verified: bunx vitest run packages/agentplane/src/commands/release/apply.preflight.test.ts passed; npm run typecheck passed in packages/agentplane; rebuilt agentplane; ap release candidate now reports E_VALIDATION with next_action agentplane release plan --patch instead of E_INTERNAL."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-04T23:28:43.401Z"
+  updated_by: "EVALUATOR"
+  note: "Missing release plan now produces actionable release candidate guidance instead of an internal error."
+  evaluated_sha: "b1dec8d6dd38f5d4a1fc36e4b6508194814a3529"
+  blueprint_digest: "7c58465ba42afce3feff453716db4379731448b1eef3f2d9b8c59d589c87340d"
+  evidence_refs:
+    - ".agentplane/tasks/202606042326-M1JYRV/README.md"
+    - ".agentplane/tasks/202606042326-M1JYRV/quality/20260604-232843401-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606042326-M1JYRV/quality/20260604-232843401-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606042326-M1JYRV/quality/20260604-232843401-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606042326-M1JYRV/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/release/apply.preflight.test.ts"
+    - "packages/agentplane/src/commands/release/apply.preflight.plan.ts"
+    - "release-candidate-missing-plan-smoke"
+  findings:
+    - "Regression coverage passes and the CLI smoke returns E_VALIDATION with next_action=agentplane release plan --patch."
 commit: null
 comments:
   -

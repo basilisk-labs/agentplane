@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606042326-M1JYRV",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-04T23:28:43.401Z",
+  "verdict": "pass",
+  "summary": "Missing release plan now produces actionable release candidate guidance instead of an internal error.",
+  "evaluated_sha": "b1dec8d6dd38f5d4a1fc36e4b6508194814a3529",
+  "blueprint_digest": "7c58465ba42afce3feff453716db4379731448b1eef3f2d9b8c59d589c87340d",
+  "findings": [
+    "Regression coverage passes and the CLI smoke returns E_VALIDATION with next_action=agentplane release plan --patch."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606042326-M1JYRV/README.md",
+    "packages/agentplane/src/commands/release/apply.preflight.test.ts",
+    "packages/agentplane/src/commands/release/apply.preflight.plan.ts",
+    "release-candidate-missing-plan-smoke"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
