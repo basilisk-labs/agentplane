@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-04T17:32:37Z",
   "base": "main",
   "branch": "task/202606041604-E3EJG8/clarify-confusing-agent-route-diagnostics",
   "created_at": "2026-06-04T16:17:02.161Z",
   "diffstat_sha256": "sha256:4de4afaf8b4140f756fa32d6db102df744dc08bb104ad0718a3e428403f493a7",
   "last_verified_at": "2026-06-04T17:27:19.593Z",
   "last_verified_diffstat_sha256": "sha256:4de4afaf8b4140f756fa32d6db102df744dc08bb104ad0718a3e428403f493a7",
+  "merge_commit": "815d53d7420c9049df142c0fce3d2fd0aeaa8700",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-04T17:32:37Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606041604-E3EJG8",
-  "updated_at": "2026-06-04T16:17:02.161Z",
+  "updated_at": "2026-06-04T17:32:37Z",
   "verify": {
     "status": "pass"
   }

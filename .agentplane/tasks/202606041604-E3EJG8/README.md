@@ -1,10 +1,11 @@
 ---
 id: "202606041604-E3EJG8"
 title: "Clarify confusing agent route diagnostics"
-status: "DOING"
+result_summary: "Merged via PR #4437."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "CI verify-static rework fixed; knip baseline, TypeScript, and focused regression tests pass locally."
   attempts: 0
-commit: null
+commit:
+  hash: "815d53d7420c9049df142c0fce3d2fd0aeaa8700"
+  message: "Merge PR #4437: Clarify confusing agent route diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: Improve route and lifecycle diagnostics so agents can distinguish actionable next commands from stale artifacts, hook risk, and stop conditions."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4437 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -55,9 +61,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "CI verify-static rework fixed; knip baseline, TypeScript, and focused regression tests pass locally."
+  -
+    type: "status"
+    at: "2026-06-04T17:33:19.707Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4437 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T17:27:19.694Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T17:33:19.713Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make additional AgentPlane route and lifecycle diagnostics less ambiguous for agents: surface PR artifact freshness loops, hook-related local command risk, and actionable next commands in machine-readable CLI output."
 sections:
   Summary: |-
