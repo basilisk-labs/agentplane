@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606042338-YX0GX0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-04T23:41:08.585Z",
+  "verdict": "pass",
+  "summary": "arch:deps now runs dependency-cruiser per package root and passes without SIGKILL.",
+  "evaluated_sha": "f807284c6409c3e0b15a6ac10653010b767f53d0",
+  "blueprint_digest": "ff4f2df4efa673ef9e75ad72b6af4e97d061a61226b01f1ac30321d455ff00ec",
+  "findings": [
+    "The segmented runner preserves the same dependency-cruiser config while reducing peak memory; bun run arch:deps and bun run arch:check both passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606042338-YX0GX0/README.md",
+    "scripts/checks/run-depcruise-arch.mjs",
+    "package.json",
+    "arch-check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
