@@ -1,10 +1,21 @@
 {
   "base": "main",
+  "batch": {
+    "closure_policy": "all_or_fail",
+    "included_task_ids": [
+      "202606042204-NX58GD"
+    ],
+    "primary_task_id": "202606042157-020DWK",
+    "schema_version": 1
+  },
   "branch": "task/202606042157-020DWK/reduce-agent-cognitive-load-and-publish-next-pat",
   "created_at": "2026-06-04T21:58:10.023Z",
-  "diffstat_sha256": "sha256:2db198c7c7b33369d42dcb822db4fd44dbd232b4d6166a8f43b314f0e488de5c",
+  "diffstat_sha256": "sha256:893ff839fa5d1cd2cd5d2d0aca4b388be076d40b1ccb84579186d88a6c36bf59",
   "last_verified_at": "2026-06-04T22:02:08.859Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "related_task_ids": [
+    "202606042204-NX58GD"
+  ],
   "schema_version": 1,
   "task_id": "202606042157-020DWK",
   "updated_at": "2026-06-04T21:58:10.023Z",

@@ -114,6 +114,15 @@ sections:
     - Observation: Command: bunx vitest run packages/agentplane/src/commands/shared/route-oracle.test.ts packages/agentplane/src/commands/shared/route-guidance.test.ts. Result: pass. Evidence: 2 files, 7 tests passed. Scope: route execution packet and operator guidance.\nCommand: npm run build in packages/agentplane. Result: pass. Evidence: tsc -b --force and tsup bundle success. Scope: CLI declarations and dist.\nCommand: npm run typecheck in packages/agentplane. Result: pass. Evidence: tsc -b completed. Scope: agentplane TypeScript.\nCommand: ap task next-action 202606042157-020DWK --explain and ap task brief 202606042157-020DWK. Result: pass. Evidence: text output includes recommended_role=CODER, diagnostic_command=agentplane pr check 202606042157-020DWK, evidence_missing=verification_record, exact_argv, return_control_when, and stale_state_check. Scope: live CLI route readback.\nCommand: node .agentplane/policy/check-routing.mjs and git diff --check. Result: pass. Evidence: policy routing OK and no whitespace errors. Scope: policy routing and diff hygiene.
       Impact: Agents no longer need to infer that verify_or_update_pr is still a CODER-owned PR artifact step, and missing verification evidence is visible in the plain-text route packet.
       Resolution: Special-cased hybrid PR artifact routes before generic verify role inference, changed the hybrid verification candidate to pr check, and rendered evidence_missing in task brief and next-action output.
+extensions:
+  branch_pr_batch:
+    base: "main"
+    branch: "task/202606042157-020DWK/reduce-agent-cognitive-load-and-publish-next-pat"
+    included_task_ids:
+      - "202606042204-NX58GD"
+    primary_task_id: "202606042157-020DWK"
+    role: "primary"
+    updated_at: "2026-06-04T22:11:29.062Z"
 id_source: "generated"
 ---
 ## Summary
