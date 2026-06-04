@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606042309-YWKRCD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-04T23:13:27.016Z",
+  "verdict": "pass",
+  "summary": "Release notes cover the frozen v0.6.17 plan and the docs-only PR checks are green.",
+  "evaluated_sha": "6ff0b835d22a58a24a84352aacf0b799f8324661",
+  "blueprint_digest": "a57bdfbbe382f5ba70ff1597934616666574c7fddd7bc90e254a9f99aae6fe65",
+  "findings": [
+    "No release-note coverage gaps found; local diff check passed and GitHub PR #4444 checks passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606042309-YWKRCD/README.md",
+    "docs/releases/v0.6.17.md",
+    "git-diff-check",
+    "https://github.com/basilisk-labs/agentplane/pull/4444"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

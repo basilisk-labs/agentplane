@@ -4,7 +4,7 @@ title: "Write v0.6.17 release notes"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,24 @@ verification:
   updated_by: "CODER"
   note: "Verified: docs/releases/v0.6.17.md covers the frozen v0.6.17 release plan; git diff --check passed; Cyrillic scan returned no matches."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-04T23:13:27.016Z"
+  updated_by: "EVALUATOR"
+  note: "Release notes cover the frozen v0.6.17 plan and the docs-only PR checks are green."
+  evaluated_sha: "6ff0b835d22a58a24a84352aacf0b799f8324661"
+  blueprint_digest: "a57bdfbbe382f5ba70ff1597934616666574c7fddd7bc90e254a9f99aae6fe65"
+  evidence_refs:
+    - ".agentplane/tasks/202606042309-YWKRCD/README.md"
+    - ".agentplane/tasks/202606042309-YWKRCD/quality/20260604-231327016-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606042309-YWKRCD/quality/20260604-231327016-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606042309-YWKRCD/quality/20260604-231327016-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606042309-YWKRCD/blueprint/resolved-snapshot.json"
+    - "docs/releases/v0.6.17.md"
+    - "git-diff-check"
+    - "https://github.com/basilisk-labs/agentplane/pull/4444"
+  findings:
+    - "No release-note coverage gaps found; local diff check passed and GitHub PR #4444 checks passed."
 commit: null
 comments:
   -
