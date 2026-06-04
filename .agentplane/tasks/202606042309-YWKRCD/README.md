@@ -118,6 +118,15 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  branch_pr_batch:
+    base: "main"
+    branch: "task/202606042309-YWKRCD/write-v0-6-17-release-notes"
+    included_task_ids:
+      - "202606042316-XH5D0B"
+    primary_task_id: "202606042309-YWKRCD"
+    role: "primary"
+    updated_at: "2026-06-04T23:18:36.283Z"
 id_source: "generated"
 ---
 ## Summary

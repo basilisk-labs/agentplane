@@ -4,7 +4,7 @@ title: "Generate v0.6.17 release social assets"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Verified: bun run docs:social:generate created the v0.6.17 social preview asset and bun run docs:social:check checked 210 docs social images."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-04T23:18:23.987Z"
+  updated_by: "EVALUATOR"
+  note: "v0.6.17 release page social asset and manifest entry are generated and docs social checks pass."
+  evaluated_sha: "87b120baf0ae9753a866ab5f0d76906933ab2b85"
+  blueprint_digest: "497ae564dc032d9a7d729a5c059c457894bf3366f5a3c05248aa99b08ee50b24"
+  evidence_refs:
+    - ".agentplane/tasks/202606042316-XH5D0B/README.md"
+    - ".agentplane/tasks/202606042316-XH5D0B/quality/20260604-231823987-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606042316-XH5D0B/quality/20260604-231823987-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606042316-XH5D0B/quality/20260604-231823987-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606042316-XH5D0B/blueprint/resolved-snapshot.json"
+    - "website/static/img/social/docs/releases/v0.6.17.png"
+    - "website/static/img/social/manifest.json"
+    - "docs-social-check"
+  findings:
+    - "The review blocker is addressed by website/static/img/social/docs/releases/v0.6.17.png plus manifest.json; bun run docs:social:check passed."
 commit: null
 comments:
   -
@@ -101,6 +119,15 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  branch_pr_batch:
+    base: "main"
+    branch: "task/202606042309-YWKRCD/write-v0-6-17-release-notes"
+    included_task_ids:
+      - "202606042316-XH5D0B"
+    primary_task_id: "202606042309-YWKRCD"
+    role: "included"
+    updated_at: "2026-06-04T23:18:36.283Z"
 id_source: "generated"
 ---
 ## Summary

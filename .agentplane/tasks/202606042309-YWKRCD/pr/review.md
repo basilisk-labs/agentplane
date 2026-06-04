@@ -2,6 +2,12 @@
 
 Created: 2026-06-04T23:09:56.021Z
 
+## Batch Tasks
+
+- Primary: `202606042309-YWKRCD`
+- Closure policy: `all_or_fail`
+- Included: `202606042316-XH5D0B`
+
 ## Task
 
 - Task: `202606042309-YWKRCD`
@@ -29,8 +35,15 @@ Created: 2026-06-04T23:09:56.021Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/releases/v0.6.17.md | 58 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 58 insertions(+)
+ .agentplane/tasks/202606042316-XH5D0B/README.md    | 189 +++++++++
+ .../blueprint/resolved-snapshot.json               | 455 +++++++++++++++++++++
+ .../evaluator-opinion.md                           |  21 +
+ .../evaluator-prompt.md                            |  74 ++++
+ .../quality-report.json                            |  23 ++
+ docs/releases/v0.6.17.md                           |  58 +++
+ .../static/img/social/docs/releases/v0.6.17.png    | Bin 0 -> 53567 bytes
+ website/static/img/social/manifest.json            |   8 +
+ 8 files changed, 828 insertions(+)
 ```
 
 </details>
