@@ -1,0 +1,13 @@
+ .../impl/commands.commit-non-close.unit.test.ts    |  45 ++++
+ .../src/commands/guard/impl/commit-diagnostics.ts  |  36 +++-
+ packages/agentplane/src/commands/pr/check.ts       |  32 +++
+ .../src/commands/shared/route-guidance.test.ts     |  84 ++++++++
+ .../src/commands/shared/route-guidance.ts          | 232 +++++++++++++++++++++
+ .../agentplane/src/commands/task/brief-model.ts    |   7 +
+ .../agentplane/src/commands/task/brief-render.ts   |  32 +++
+ .../src/commands/task/next-action.command.ts       |  40 ++++
+ .../agentplane/src/commands/task/status.command.ts |  39 +++-
+ .../src/commands/task/verify-record-execute.ts     |  55 ++++-
+ .../src/runner/usecases/task-run-blueprint.test.ts |   7 +
+ .../src/runner/usecases/task-run-bootstrap.ts      |  42 ++++
+ 12 files changed, 647 insertions(+), 4 deletions(-)

@@ -12,7 +12,7 @@ type ExecFileLikeError = Error & {
 };
 
 export type CommitFailurePhase = "task_commit" | "close_commit";
-type CommitFailureSignal = "formatter" | "eslint" | null;
+type CommitFailureSignal = "formatter" | "eslint" | "hook_wrapper" | null;
 
 const COMMIT_FAILURE_SIGNAL_PATTERNS = [
   /Code style issues found/i,
@@ -28,6 +28,15 @@ const FORMATTER_SIGNAL_PATTERNS = [
   /Run Prettier with --write/i,
 ] as const;
 const ESLINT_SIGNAL_PATTERNS = [/\bESLint\b/i, /\b[0-9]+\s+problems?\b/i] as const;
+const HOOK_WRAPPER_SIGNAL_PATTERNS = [
+  /\bSIGKILL\b/i,
+  /\bsignal\s+9\b/i,
+  /\bkilled\b/i,
+  /\bprepare-commit-msg\b/i,
+  /\bpre-commit\b/i,
+  /\bcommit-msg\b/i,
+  /\bnpm\s+exec\s+agentplane\s+hooks\s+run\b/i,
+] as const;
 
 function readText(value: unknown): string {
   if (typeof value === "string") return value;
@@ -74,6 +83,7 @@ function summarizeOutput(raw: string): string[] {
 function detectCommitFailureSignal(output: string): CommitFailureSignal {
   if (FORMATTER_SIGNAL_PATTERNS.some((pattern) => pattern.test(output))) return "formatter";
   if (ESLINT_SIGNAL_PATTERNS.some((pattern) => pattern.test(output))) return "eslint";
+  if (HOOK_WRAPPER_SIGNAL_PATTERNS.some((pattern) => pattern.test(output))) return "hook_wrapper";
   return null;
 }
 
@@ -83,6 +93,7 @@ function commitFailureDiagnostic(
 ): {
   state: string;
   likelyCause: string;
+  hint?: string;
   nextAction?: {
     command: string;
     reason: string;
@@ -100,6 +111,7 @@ function commitFailureDiagnostic(
         phase === "close_commit"
           ? "a formatting check in the pre-commit path rejected the deterministic close commit after the task README was staged"
           : "a formatting check in the pre-commit path rejected the staged task-scoped commit",
+      hint: "treat this as source formatting evidence; fix formatting before retrying the commit",
       nextAction: {
         command: "bun run format",
         reason: "apply formatter fixes before retrying the commit flow",
@@ -117,10 +129,30 @@ function commitFailureDiagnostic(
         phase === "close_commit"
           ? "a lint check in the pre-commit path rejected the deterministic close commit after the task README was staged"
           : "a lint check in the pre-commit path rejected the staged task-scoped commit",
+      hint: "treat this as source lint evidence; fix lint output before retrying the commit",
       nextAction: {
         command: "bun run lint:core",
         reason: "rerun lint and fix the reported error before retrying the commit flow",
         reasonCode: "git_pre_commit_lint",
+      },
+    };
+  }
+  if (signal === "hook_wrapper") {
+    return {
+      state:
+        phase === "close_commit"
+          ? "git hook wrapper failed during the generated close commit"
+          : "git hook wrapper failed during the task-scoped commit",
+      likelyCause:
+        phase === "close_commit"
+          ? "a git hook process or hook wrapper failed after the close-commit payload was prepared; this is hook infrastructure evidence until direct validation proves otherwise"
+          : "a git hook process or hook wrapper failed after guard validation passed; this is hook infrastructure evidence until direct validation proves otherwise",
+      hint: "do not mark task verification failed from hook-wrapper failure alone; compare with direct validation output first",
+      nextAction: {
+        command: "agentplane doctor",
+        reason:
+          "inspect managed hook readiness and preserve direct validation evidence before retrying the commit flow",
+        reasonCode: "git_hook_wrapper_unstable",
       },
     };
   }
@@ -129,6 +161,7 @@ function commitFailureDiagnostic(
       state: "git rejected the generated close commit",
       likelyCause:
         "a hook or commit policy blocked the deterministic task close commit after the task README was staged",
+      hint: "classify the hook output before retrying; policy failure and wrapper failure require different recovery",
       nextAction: {
         command: "git status --short --untracked-files=no",
         reason: "inspect the staged close-commit payload before fixing the hook or policy failure",
@@ -139,6 +172,7 @@ function commitFailureDiagnostic(
   return {
     state: "git rejected the requested task-scoped commit",
     likelyCause: "a hook or commit policy blocked the staged changes after guard validation passed",
+    hint: "classify the hook output before retrying; policy failure and wrapper failure require different recovery",
     nextAction: {
       command: "git status --short --untracked-files=no",
       reason: "inspect the staged task-scoped payload before fixing the hook or policy failure",

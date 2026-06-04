@@ -57,6 +57,40 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
   ];
 }
 
+function runnerDecisionContext(routeDecision: {
+  oracle?: { nextCommand?: string | null; phase?: string };
+  executionPacket?: { actionKind?: string; safeToMutate?: boolean; returnControlWhen?: string };
+  nextAction?: { code?: string };
+}): {
+  runnerIsRequired: boolean;
+  runnerIsAllowedNow: boolean;
+  localWorkAllowedIfRunnerFails: boolean;
+  runnerFailureMeans: string;
+  returnControlWhen: string;
+} {
+  const command = routeDecision.oracle?.nextCommand ?? "";
+  const runnerIsAllowedNow =
+    routeDecision.executionPacket?.actionKind === "local_command" &&
+    routeDecision.executionPacket.safeToMutate === true &&
+    /\b(agentplane|ap)\s+task\s+run\b/.test(command);
+  const runnerIsRequired =
+    runnerIsAllowedNow ||
+    routeDecision.nextAction?.code === "wait_runner" ||
+    routeDecision.oracle?.phase === "runner_wait";
+  return {
+    runnerIsRequired,
+    runnerIsAllowedNow,
+    localWorkAllowedIfRunnerFails:
+      runnerIsRequired === false && routeDecision.executionPacket?.safeToMutate === true,
+    runnerFailureMeans: runnerIsRequired
+      ? "runner failure is run evidence; inspect artifacts before marking task verification"
+      : "not a runner route; do not introduce task run unless bundle explicitly delegates it",
+    returnControlWhen:
+      routeDecision.executionPacket?.returnControlWhen ??
+      "after this run completes; recompute task next-action",
+  };
+}
+
 export function renderTaskRunnerBootstrap(
   bundle: RunnerContextBundle,
   invocation?: RunnerInvocation,
@@ -100,6 +134,7 @@ export function renderTaskRunnerBootstrap(
         approval?: { effectiveMutationApprovalRequired?: boolean };
       }
     | undefined;
+  const runnerContext = routeDecision ? runnerDecisionContext(routeDecision) : null;
   return [
     ...(codexGoalLine ? [codexGoalLine, ""] : []),
     "# agentplane runner bootstrap",
@@ -177,6 +212,12 @@ export function renderTaskRunnerBootstrap(
           `- route_verification_candidate: ${
             routeDecision.executionPacket?.verificationCandidate ?? "none"
           }`,
+          `- runner_is_required: ${String(runnerContext?.runnerIsRequired ?? false)}`,
+          `- runner_is_allowed_now: ${String(runnerContext?.runnerIsAllowedNow ?? false)}`,
+          `- local_work_allowed_if_runner_fails: ${String(
+            runnerContext?.localWorkAllowedIfRunnerFails ?? false,
+          )}`,
+          `- runner_failure_means: ${runnerContext?.runnerFailureMeans ?? "unknown"}`,
         ]
       : []),
     "",
@@ -185,6 +226,7 @@ export function renderTaskRunnerBootstrap(
     "Route oracle contract: follow route_exact_argv when present, run it from route_must_run_from, treat route_primary_blocker as the current stop reason, and use route_phase instead of manually reconstructing branch/worktree/PR state.",
     "For file-edit tools that do not accept cwd/workdir, use absolute paths under route_mutation_path_hint when route_safe_to_mutate is true; otherwise stop before mutating files.",
     "Return control according to route_return_control_when. Do not continue to a second route step until route_stale_state_check has been recomputed.",
+    "Runner rail contract: only think about runner execution when runner_is_required or runner_is_allowed_now is true; otherwise treat runner failures from earlier attempts as diagnostic evidence, not as the current route.",
     "When reading bundle.json directly, use camelCase JSON paths: route_decision.oracle.nextCommand, route_decision.oracle.authoritativeCheckout, route_decision.oracle.authoritativeCheckoutPath, route_decision.oracle.mutationPathHint, route_decision.oracle.blocker, and route_decision.oracle.phase.",
     ...(routeDecision?.executionPacket?.mustNot?.length
       ? [

@@ -98,10 +98,17 @@ describe("runner blueprint guards", () => {
       "- route_stale_state_check: agentplane task next-action 202603231410-ABC123 --explain",
     );
     expect(bootstrap).toContain("- route_primary_blocker: missing_pr_branch");
+    expect(bootstrap).toContain("- runner_is_required: false");
+    expect(bootstrap).toContain("- runner_is_allowed_now: false");
+    expect(bootstrap).toContain("- local_work_allowed_if_runner_fails: true");
+    expect(bootstrap).toContain(
+      "- runner_failure_means: not a runner route; do not introduce task run unless bundle explicitly delegates it",
+    );
     expect(bootstrap).toContain("follow route_exact_argv when present");
     expect(bootstrap).toContain("run it from route_must_run_from");
     expect(bootstrap).toContain("use absolute paths under route_mutation_path_hint");
     expect(bootstrap).toContain("Return control according to route_return_control_when");
+    expect(bootstrap).toContain("Runner rail contract:");
     expect(bootstrap).toContain("Route must-not rules:");
     expect(bootstrap).toContain("route_decision.oracle.nextCommand");
   });

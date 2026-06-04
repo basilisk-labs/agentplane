@@ -605,6 +605,51 @@ describe("guard command implementations: commit non-close", () => {
     });
   });
 
+  it("cmdCommit identifies killed git hook wrappers separately from policy failures", async () => {
+    const { cmdCommit } = await import("./commit.js");
+    const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    ctx.git.commit.mockRejectedValue(
+      Object.assign(new Error("Command failed with exit code 1: git commit -m task"), {
+        shortMessage: "Command failed with exit code 1: git commit -m task",
+        code: 1,
+        stderr: [
+          "npm exec agentplane hooks run pre-commit",
+          "prepare-commit-msg hook failed",
+          "process exited with signal SIGKILL",
+        ].join("\n"),
+      }),
+    );
+
+    const err = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-9",
+      message: "task",
+      close: false,
+      allow: ["src"],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+    }).catch((error: unknown) => error);
+
+    expect(err).toBeInstanceOf(CliError);
+    expect((err as CliError).message).toContain("process exited with signal SIGKILL");
+    expect(readDiagnosticContext((err as CliError).context)).toMatchObject({
+      state: "git hook wrapper failed during the task-scoped commit",
+      nextAction: {
+        command: "agentplane doctor",
+        reasonCode: "git_hook_wrapper_unstable",
+      },
+    });
+  });
+
   it("cmdCommit non-close auto-allow rejects when ctx is absent", async () => {
     const { cmdCommit } = await import("./commit.js");
     mocks.loadCommandContext.mockResolvedValue(mkCtx());

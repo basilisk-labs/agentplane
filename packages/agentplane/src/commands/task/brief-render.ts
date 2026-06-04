@@ -39,6 +39,33 @@ export function reportTaskBriefText(brief: TaskBrief, taskId: string): void {
       { label: "pr_branch", value: brief.workflow.pr_branch ?? "missing" },
       { label: "next_code", value: brief.next_action.code },
       { label: "next", value: brief.next_action.command ?? brief.next_action.summary },
+      { label: "operator_action", value: brief.decision_context.operatorAction },
+      { label: "can_execute_now", value: String(brief.decision_context.canExecuteNow) },
+      { label: "safe_command", value: brief.decision_context.safeCommand ?? "none" },
+      {
+        label: "diagnostic_command",
+        value: brief.decision_context.diagnosticCommand ?? "none",
+      },
+      {
+        label: "source_of_truth",
+        value:
+          `route=${brief.decision_context.sourceOfTruth.route} ` +
+          `diagnostic=${brief.decision_context.sourceOfTruth.diagnostic} ` +
+          `remote=${brief.decision_context.sourceOfTruth.remote}`,
+      },
+      {
+        label: "repeat_policy",
+        value:
+          `allowed=${String(brief.decision_context.repeatPolicy.allowed)} ` +
+          `recompute=${brief.decision_context.repeatPolicy.recomputeCommand}`,
+      },
+      {
+        label: "runner_context",
+        value:
+          `required=${String(brief.decision_context.runnerContext.runnerIsRequired)} ` +
+          `allowed_now=${String(brief.decision_context.runnerContext.runnerIsAllowedNow)} ` +
+          `failure_means=${brief.decision_context.runnerContext.runnerFailureMeans}`,
+      },
       {
         label: "safe_to_mutate",
         value: String(brief.execution_packet.safe_to_mutate),
@@ -101,6 +128,11 @@ export function reportTaskBriefText(brief: TaskBrief, taskId: string): void {
   }
   for (const rule of brief.execution_packet.must_not) {
     output.line(`must_not: ${rule}`);
+  }
+  for (const risk of brief.decision_context.risks) {
+    output.line(
+      `decision_risk: ${risk.code}: ${risk.summary}; mitigation: ${risk.mitigationCommand}; stop: ${risk.stopCondition}`,
+    );
   }
   output.line(`verify_steps_quality: ${brief.verify_steps.quality}`);
   output.line("verify_steps:");

@@ -2,6 +2,7 @@ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import { deriveRouteOperatorGuidance } from "../shared/route-guidance.js";
 
 export type TaskNextActionParsed = {
   taskId: string;
@@ -54,12 +55,14 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
       rootOverride: ctx.rootOverride ?? null,
       taskId: parsed.taskId,
     });
+    const operatorGuidance = deriveRouteOperatorGuidance(decision);
     const output = createCliEmitter();
     if (parsed.json) {
       output.json({
         task: decision.task,
         route_oracle: decision.oracle,
         execution_packet: decision.executionPacket,
+        operator_guidance: operatorGuidance,
         next_action: decision.nextAction,
         blockers: decision.blockers,
         source_confidence: {
@@ -81,10 +84,41 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
         },
         { label: "mutation_path_hint", value: decision.oracle.mutationPathHint ?? "none" },
         { label: "safe_to_mutate", value: decision.executionPacket.safeToMutate },
+        { label: "operator_action", value: operatorGuidance.operatorAction },
+        { label: "can_execute_now", value: operatorGuidance.canExecuteNow },
+        {
+          label: "source_of_truth",
+          value:
+            `route=${operatorGuidance.sourceOfTruth.route} ` +
+            `diagnostic=${operatorGuidance.sourceOfTruth.diagnostic} ` +
+            `remote=${operatorGuidance.sourceOfTruth.remote}`,
+        },
+        {
+          label: "repeat_policy",
+          value:
+            `allowed=${String(operatorGuidance.repeatPolicy.allowed)} ` +
+            `recompute=${operatorGuidance.repeatPolicy.recomputeCommand}`,
+        },
+        {
+          label: "fallback",
+          value:
+            operatorGuidance.fallback.allowed && operatorGuidance.fallback.command
+              ? `${operatorGuidance.fallback.command}: ${operatorGuidance.fallback.reason ?? ""}`
+              : "none",
+        },
+        {
+          label: "runner_context",
+          value:
+            `required=${String(operatorGuidance.runnerContext.runnerIsRequired)} ` +
+            `allowed_now=${String(operatorGuidance.runnerContext.runnerIsAllowedNow)} ` +
+            `failure_means=${operatorGuidance.runnerContext.runnerFailureMeans}`,
+        },
         { label: "code", value: decision.nextAction.code },
         { label: "summary", value: decision.nextAction.summary },
         { label: "requires_approval", value: decision.nextAction.requiresApproval },
         { label: "next_command", value: decision.oracle.nextCommand ?? "none" },
+        { label: "safe_command", value: operatorGuidance.safeCommand ?? "none" },
+        { label: "diagnostic_command", value: operatorGuidance.diagnosticCommand ?? "none" },
         { label: "action_kind", value: decision.executionPacket.actionKind },
         { label: "recommended_role", value: decision.executionPacket.recommendedRole },
         { label: "must_run_from", value: decision.executionPacket.mustRunFrom ?? "unknown" },
@@ -147,6 +181,12 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
           ? decision.ambiguities.map((ambiguity) => ({
               label: "ambiguity",
               value: `${ambiguity.code}: ${ambiguity.summary}; resolution: ${ambiguity.resolution}`,
+            }))
+          : []),
+        ...(parsed.explain
+          ? operatorGuidance.risks.map((risk) => ({
+              label: "operator_risk",
+              value: `${risk.code}: ${risk.summary}; mitigation: ${risk.mitigationCommand}; stop: ${risk.stopCondition}`,
             }))
           : []),
       ],
