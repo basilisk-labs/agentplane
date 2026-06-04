@@ -4,7 +4,7 @@ title: "Restore stale review metadata PR check"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Verified: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/commands/pr/internal/freshness.test.ts passed; npm run typecheck passed in packages/agentplane."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-04T23:55:11.866Z"
+  updated_by: "EVALUATOR"
+  note: "Stale review metadata is rejected again while live-head missing-head artifacts remain supported."
+  evaluated_sha: "e3bb2b4b9e0e43db38cf0f18184ea9bccc747a26"
+  blueprint_digest: "37cdd5ff693d13ee76a8e29183c9c681e2b03f0b4159434a88906a31825ae990"
+  evidence_refs:
+    - ".agentplane/tasks/202606042352-WY0RTM/README.md"
+    - ".agentplane/tasks/202606042352-WY0RTM/quality/20260604-235511866-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606042352-WY0RTM/quality/20260604-235511866-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606042352-WY0RTM/quality/20260604-235511866-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606042352-WY0RTM/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/pr/internal/freshness.ts"
+    - "packages/agentplane/src/commands/pr/internal/freshness.test.ts"
+    - "pr-notes-verify-freshness-tests"
+  findings:
+    - "Targeted PR notes and freshness tests passed; typecheck passed."
 commit: null
 comments:
   -
