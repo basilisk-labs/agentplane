@@ -123,11 +123,11 @@ Implementation layout: canonical script implementations live under `scripts/chec
 
 ## Architecture
 
-| Script          | Command                                                    | Purpose                      |
-| --------------- | ---------------------------------------------------------- | ---------------------------- |
-| `arch:baseline` | `node scripts/checks/check-depcruise-known-violations.mjs` | Run arch workflow: baseline. |
-| `arch:check`    | `bun run arch:baseline && bun run arch:deps`               | Run arch workflow: check.    |
-| `arch:deps`     | `node scripts/checks/run-depcruise-arch.mjs`               | Run arch workflow: deps.     |
+| Script          | Command                                                           | Purpose                      |
+| --------------- | ----------------------------------------------------------------- | ---------------------------- |
+| `arch:baseline` | `node scripts/checks/check-depcruise-known-violations.mjs`        | Run arch workflow: baseline. |
+| `arch:check`    | `bun run arch:baseline && bun run arch:deps`                      | Run arch workflow: check.    |
+| `arch:deps`     | `node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs` | Run arch workflow: deps.     |
 
 ## Bench
 

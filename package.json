@@ -28,7 +28,7 @@
     "coverage:thresholds:check": "node scripts/checks/check-coverage-thresholds.mjs",
     "coverage": "vitest run --coverage",
     "arch:baseline": "node scripts/checks/check-depcruise-known-violations.mjs",
-    "arch:deps": "node scripts/checks/run-depcruise-arch.mjs",
+    "arch:deps": "node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs",
     "arch:check": "bun run arch:baseline && bun run arch:deps",
     "knip:check": "node scripts/checks/check-knip-baseline.mjs",
     "knip:report": "knip --config knip.json --no-exit-code",
