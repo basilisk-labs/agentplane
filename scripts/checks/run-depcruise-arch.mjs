@@ -1,6 +1,10 @@
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 
+import depcruiseConfig from "../../depcruise.config.cjs";
+
+void depcruiseConfig;
+
 const PACKAGE_ROOTS = [
   "packages/agentplane/src",
   "packages/core/src",
@@ -8,9 +12,11 @@ const PACKAGE_ROOTS = [
   "packages/testkit/src",
 ];
 
+const configPath = process.argv[2] ?? "depcruise.config.cjs";
+
 const BASE_ARGS = [
   "--config",
-  "depcruise.config.cjs",
+  configPath,
   "--ignore-known",
   ".dependency-cruiser-known-violations.json",
   "--include-only",
