@@ -13,7 +13,7 @@ Created: 2026-06-04T16:17:02.161Z
 ## Verification
 
 - State: ok
-- Note: Decision-context surfaces verified with focused tests, TypeScript, formatting, policy routing, and CLI smoke on route/brief/status/pr-check outputs.
+- Note: CI verify-static rework fixed; knip baseline, TypeScript, and focused regression tests pass locally.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

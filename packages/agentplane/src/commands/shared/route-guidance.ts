@@ -18,40 +18,40 @@ export type RouteOperatorGuidance = {
   risks: RouteOperatorRisk[];
 };
 
-export type RouteOperatorRisk = {
+type RouteOperatorRisk = {
   code: "pr_artifact_freshness_loop" | "git_hook_side_effect" | "runner_rail_confusion";
   summary: string;
   mitigationCommand: string;
   stopCondition: string;
 };
 
-export type RouteSourceOfTruth = {
+type RouteSourceOfTruth = {
   route: "task_next_action";
   state: "local_task_backend";
   remote: "remote_provider" | "not_checked";
   diagnostic: "task_next_action" | "pr_check" | "provider" | "runner_status";
 };
 
-export type RouteFreshnessContext = {
+type RouteFreshnessContext = {
   route: string;
   remote: string;
   staleStateCheck: string;
 };
 
-export type RouteRepeatPolicy = {
+type RouteRepeatPolicy = {
   allowed: boolean;
   maxAttemptsBeforeRecompute: number;
   recomputeCommand: string;
   stopCondition: string;
 };
 
-export type RouteFallbackContext = {
+type RouteFallbackContext = {
   allowed: boolean;
   command: string | null;
   reason: string | null;
 };
 
-export type RouteRunnerContext = {
+type RouteRunnerContext = {
   runnerIsRequired: boolean;
   runnerIsAllowedNow: boolean;
   localWorkAllowedIfRunnerFails: boolean;

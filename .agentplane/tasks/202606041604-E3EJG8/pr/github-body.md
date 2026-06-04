@@ -16,12 +16,7 @@ Make additional AgentPlane route and lifecycle diagnostics less ambiguous for ag
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Decision-context surfaces verified with focused tests, TypeScript, formatting, policy routing, and
-CLI smoke on route/brief/status/pr-check outputs.
-```
+- Note: CI verify-static rework fixed; knip baseline, TypeScript, and focused regression tests pass locally.
 - Canonical workflow state lives in the task README.
 
 <details>
