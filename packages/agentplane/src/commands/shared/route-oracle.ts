@@ -251,7 +251,12 @@ export function deriveRouteOracle(opts: {
   const code = opts.nextAction.code;
   if (opts.workflowMode !== "branch_pr") {
     return buildOracle(opts, {
-      phase: opts.task.status === "DONE" ? "done" : "direct_execution",
+      phase:
+        opts.task.status === "DONE"
+          ? "done"
+          : code === "complete_direct"
+            ? "direct_verified_pending_closeout"
+            : "direct_execution",
       authoritativeCheckout: "current_checkout",
     });
   }

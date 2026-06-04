@@ -299,6 +299,14 @@ export function executableStepFor(packet: HermesRoutePacketForExecution): {
         reason: null,
       };
     }
+    case "complete_direct": {
+      return {
+        code: packet.next_action.code,
+        args: null,
+        reason:
+          "direct closeout needs operator-supplied --result and --commit values; do not rerun task execution",
+      };
+    }
     case "approve_plan": {
       return {
         code: packet.next_action.code,
