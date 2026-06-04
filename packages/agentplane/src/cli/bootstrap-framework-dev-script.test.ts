@@ -52,7 +52,11 @@ async function mkFrameworkRepo() {
     '{ "name": "@agentplaneorg/core" }\n',
     "utf8",
   );
-  await writeFile(path.join(repoRoot, "website", "package.json"), '{ "name": "website" }\n', "utf8");
+  await writeFile(
+    path.join(repoRoot, "website", "package.json"),
+    '{ "name": "website" }\n',
+    "utf8",
+  );
   return repoRoot;
 }
 

@@ -102,7 +102,10 @@ function hasBootstrapBuildInstallLayout(repoRoot) {
   return (
     hasWorkspaceNodeModules(repoRoot) &&
     pathResolvesWithinRepo(repoRoot, path.join(repoRoot, "packages", "core", "node_modules")) &&
-    pathResolvesWithinRepo(repoRoot, path.join(repoRoot, "packages", "agentplane", "node_modules")) &&
+    pathResolvesWithinRepo(
+      repoRoot,
+      path.join(repoRoot, "packages", "agentplane", "node_modules"),
+    ) &&
     pathResolvesWithinRepo(repoRoot, path.join(repoRoot, "website", "node_modules"))
   );
 }
