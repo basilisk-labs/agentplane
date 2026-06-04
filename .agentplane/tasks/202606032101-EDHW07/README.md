@@ -4,7 +4,7 @@ title: "Fix upstream issue #4412: AgentPlane internal error report (E_INTERNAL)"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,24 +24,24 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-04T07:08:55.697Z"
+  updated_at: "2026-06-04T07:18:09.282Z"
   updated_by: "EVALUATOR"
   note: "EDHW07 is a stale task record for an upstream-closed issue; the task cleanup branch only refreshes PR metadata and records verification without touching code."
   evaluated_sha: "cc974de8ed5a6dcb09d9ef483a6c07f076b88727"
   blueprint_digest: "88fcb9972f330b7e1ffb22037b1f987e4ef218b4cd93973f64f175b5118155c0"
   evidence_refs:
     - ".agentplane/tasks/202606032101-EDHW07/README.md"
-    - ".agentplane/tasks/202606032101-EDHW07/quality/20260604-070855697-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606032101-EDHW07/quality/20260604-070855697-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606032101-EDHW07/quality/20260604-070855697-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606032101-EDHW07/quality/20260604-071809282-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606032101-EDHW07/quality/20260604-071809282-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606032101-EDHW07/quality/20260604-071809282-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606032101-EDHW07/blueprint/resolved-snapshot.json"
     - ".agentplane/tasks/202606032101-EDHW07/pr/meta.json"
     - "gh issue view 4412 --json state,closedAt"
   findings:
     - "No blocking findings; the issue is closed upstream and the branch contains only task-record maintenance."
 commit:
-  hash: "a7cb64e8c"
-  message: "Refresh EDHW07 PR artifacts"
+  hash: "60a24c3d7c831e5c652ce0409b917f18401ddd5c"
+  message: "Merge pull request #4434 from basilisk-labs/task/202606032101-EDHW07/fix-upstream-issue-4412-agentplane-internal-erro"
 comments:
   -
     author: "CODER"
