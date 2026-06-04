@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606042316-XH5D0B",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-04T23:18:23.987Z",
+  "verdict": "pass",
+  "summary": "v0.6.17 release page social asset and manifest entry are generated and docs social checks pass.",
+  "evaluated_sha": "87b120baf0ae9753a866ab5f0d76906933ab2b85",
+  "blueprint_digest": "497ae564dc032d9a7d729a5c059c457894bf3366f5a3c05248aa99b08ee50b24",
+  "findings": [
+    "The review blocker is addressed by website/static/img/social/docs/releases/v0.6.17.png plus manifest.json; bun run docs:social:check passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606042316-XH5D0B/README.md",
+    "website/static/img/social/docs/releases/v0.6.17.png",
+    "website/static/img/social/manifest.json",
+    "docs-social-check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
