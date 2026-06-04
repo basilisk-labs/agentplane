@@ -1,6 +1,6 @@
 {
   "artifact_state": "merged",
-  "artifact_state_updated_at": "2026-06-04T07:09:26Z",
+  "artifact_state_updated_at": "2026-06-04T07:11:52.727Z",
   "base": "main",
   "branch": "task/202606032101-EDHW07/fix-upstream-issue-4412-agentplane-internal-erro",
   "created_at": "2026-06-03T21:04:14.631Z",
@@ -8,12 +8,14 @@
   "last_verified_at": "2026-06-04T07:02:51.081Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "merge_commit": "60a24c3d7c831e5c652ce0409b917f18401ddd5c",
-  "merge_strategy": "merge",
   "merged_at": "2026-06-04T07:09:26Z",
+  "pr_number": 4434,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4434",
   "schema_version": 1,
   "status": "MERGED",
   "task_id": "202606032101-EDHW07",
-  "updated_at": "2026-06-04T07:09:26Z",
+  "updated_at": "2026-06-04T07:11:52.727Z",
+  "merge_strategy": "merge",
   "verify": {
     "status": "pass"
   }

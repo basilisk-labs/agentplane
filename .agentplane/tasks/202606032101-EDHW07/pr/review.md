@@ -6,7 +6,7 @@ Created: 2026-06-03T21:04:14.631Z
 
 - Task: `202606032101-EDHW07`
 - Title: Fix upstream issue #4412: AgentPlane internal error report (E_INTERNAL)
-- Status: DOING
+- Status: DONE
 - Branch: `task/202606032101-EDHW07/fix-upstream-issue-4412-agentplane-internal-erro`
 - Canonical task record: `.agentplane/tasks/202606032101-EDHW07/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-06-03T21:04:14.631Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-06-03T21:04:14.631Z
+- Updated: 2026-06-04T07:11:52.727Z
 - Branch: task/202606032101-EDHW07/fix-upstream-issue-4412-agentplane-internal-erro
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

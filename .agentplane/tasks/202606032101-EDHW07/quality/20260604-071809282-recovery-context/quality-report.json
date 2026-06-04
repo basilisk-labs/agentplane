@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202606032101-EDHW07",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-04T07:18:09.282Z",
+  "verdict": "pass",
+  "summary": "EDHW07 is a stale task record for an upstream-closed issue; the task cleanup branch only refreshes PR metadata and records verification without touching code.",
+  "evaluated_sha": "cc974de8ed5a6dcb09d9ef483a6c07f076b88727",
+  "blueprint_digest": "88fcb9972f330b7e1ffb22037b1f987e4ef218b4cd93973f64f175b5118155c0",
+  "findings": [
+    "No blocking findings; the issue is closed upstream and the branch contains only task-record maintenance."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606032101-EDHW07/README.md",
+    ".agentplane/tasks/202606032101-EDHW07/pr/meta.json",
+    "gh issue view 4412 --json state,closedAt"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
