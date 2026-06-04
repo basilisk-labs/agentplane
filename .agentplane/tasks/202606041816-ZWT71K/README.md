@@ -1,10 +1,11 @@
 ---
 id: "202606041816-ZWT71K"
 title: "Make hosted-close tolerate pre-merge closed tasks"
-status: "DOING"
+result_summary: "Merged via PR #4440."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Verified hosted-close pre-merge closure idempotency: targeted hosted-close.command unit test passed (5 tests), format:changed passed, typecheck passed, policy routing checks passed, hotspots check passed, agentplane package build passed, and synthetic PR #4439 hosted-close event exited 0 without creating a commit."
   attempts: 0
-commit: null
+commit:
+  hash: "7dacf7a4b98185d652633669a05469b02ac6d3c6"
+  message: "Merge pull request #4440 from basilisk-labs/task/202606041816-ZWT71K/post-merge-hosted-close-preclosed"
 comments:
   -
     author: "CODER"
     body: "Start: make hosted-close idempotent for tasks closed inside the merged PR before the GitHub merge commit."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4440 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified hosted-close pre-merge closure idempotency: targeted hosted-close.command unit test passed (5 tests), format:changed passed, typecheck passed, policy routing checks passed, hotspots check passed, agentplane package build passed, and synthetic PR #4439 hosted-close event exited 0 without creating a commit."
+  -
+    type: "status"
+    at: "2026-06-04T18:25:09.864Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4440 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T18:21:01.790Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T18:25:09.869Z"
+doc_updated_by: "INTEGRATOR"
 description: "Post-merge hosted-close failed after PR #4439 because the task was already DONE in the merged PR with a close commit that is an ancestor of the GitHub merge commit. Treat that state as an idempotent noop when the PR metadata matches the merged task branch/number and the recorded DONE commit is reachable from the merge commit."
 sections:
   Summary: |-
