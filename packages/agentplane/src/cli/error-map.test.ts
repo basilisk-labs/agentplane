@@ -134,6 +134,33 @@ describe("core error mapping", () => {
     expect(payload.error?.reason_decode?.code).toBe("usage_help");
   });
 
+  it("suggests the local task fallback when cloud-backed task surfaces are unavailable", () => {
+    let stderr = "";
+    const spy = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      stderr += String(chunk);
+      return true;
+    });
+
+    try {
+      writeError(
+        new BackendCliError({
+          message: "Cloud backend request failed: HTTP 502",
+          context: { command: "task list" },
+        }),
+        false,
+      );
+    } finally {
+      spy.mockRestore();
+    }
+
+    expect(stderr).toContain("error [E_BACKEND]: Cloud backend request failed: HTTP 502");
+    expect(stderr).toContain("temporarily switch `.agentplane/backends/local/backend.json`");
+    expect(stderr).toContain(
+      "next_action: agentplane config show (inspect the active backend config before switching to the local fallback or retrying the cloud route)",
+    );
+    expect(stderr).toContain("reason_code: backend_local_fallback");
+  });
+
   it("suggests the opt-in feedback issue path for internal errors", () => {
     let stderr = "";
     const spy = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
