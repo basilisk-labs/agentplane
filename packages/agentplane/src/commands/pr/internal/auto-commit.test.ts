@@ -44,6 +44,7 @@ function mkCtx(): CommandContext {
       statusChangedPaths: vi.fn(async () => [
         ".agentplane/tasks/202606042157-020DWK/README.md",
         ".agentplane/tasks/202606042157-020DWK/pr/meta.json",
+        ".agentplane/tasks/202606042204-NX58GD/README.md",
       ]),
       stage: vi.fn(async () => undefined),
       commitAmendNoEdit: vi.fn(async () => undefined),
@@ -68,6 +69,7 @@ describe("task PR artifact auto-commit", () => {
         maybeAutoCommitTaskPrArtifacts({
           ctx,
           taskId: "202606042157-020DWK",
+          relatedTaskIds: ["202606042204-NX58GD"],
           branch: "task/202606042157-020DWK/reduce-agent-cognitive-load",
           strategy: "amend",
         }),
@@ -82,5 +84,10 @@ describe("task PR artifact auto-commit", () => {
       skipHooks: true,
       timeoutMs: 123,
     });
+    expect(ctx.git.stage).toHaveBeenCalledWith([
+      ".agentplane/tasks/202606042157-020DWK/README.md",
+      ".agentplane/tasks/202606042157-020DWK/pr/meta.json",
+      ".agentplane/tasks/202606042204-NX58GD/README.md",
+    ]);
   });
 });

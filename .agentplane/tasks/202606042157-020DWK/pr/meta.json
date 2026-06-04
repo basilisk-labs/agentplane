@@ -6,21 +6,23 @@
       "202606042204-NX58GD",
       "202606042214-GEJ627",
       "202606042225-FE57GC",
-      "202606042230-T1RYR8"
+      "202606042230-T1RYR8",
+      "202606042236-HJCTGD"
     ],
     "primary_task_id": "202606042157-020DWK",
     "schema_version": 1
   },
   "branch": "task/202606042157-020DWK/reduce-agent-cognitive-load-and-publish-next-pat",
   "created_at": "2026-06-04T21:58:10.023Z",
-  "diffstat_sha256": "sha256:42d5258447d83cd9b97ec54a798216488f8f78c799d9a4d652e1afb447cce4fc",
+  "diffstat_sha256": "sha256:1df0b24df4030190b583f1e9abfd3067863298cbf75ea83fdd39af4134b58a18",
   "last_verified_at": "2026-06-04T22:02:08.859Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "related_task_ids": [
     "202606042204-NX58GD",
     "202606042214-GEJ627",
     "202606042225-FE57GC",
-    "202606042230-T1RYR8"
+    "202606042230-T1RYR8",
+    "202606042236-HJCTGD"
   ],
   "schema_version": 1,
   "task_id": "202606042157-020DWK",
