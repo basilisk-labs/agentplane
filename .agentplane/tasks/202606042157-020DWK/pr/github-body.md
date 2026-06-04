@@ -2,6 +2,12 @@ Task: `202606042157-020DWK`
 Title: Reduce agent cognitive load and publish next patch
 Canonical task record: `.agentplane/tasks/202606042157-020DWK/README.md`
 
+## Batch Tasks
+
+- Primary: `202606042157-020DWK`
+- Closure policy: `all_or_fail`
+- Included: `202606042204-NX58GD`
+
 ## Summary
 
 Reduce agent cognitive load and publish next patch
@@ -32,12 +38,17 @@ text output, and preserves PR check diagnostics.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/shared/route-guidance.test.ts     | 51 ++++++++++++++++++++++
- .../src/commands/shared/route-oracle.test.ts       | 48 ++++++++++++++++++++
- .../agentplane/src/commands/shared/route-oracle.ts |  8 ++++
- .../agentplane/src/commands/task/brief-render.ts   |  4 ++
- .../src/commands/task/next-action.command.ts       |  4 ++
- 5 files changed, 115 insertions(+)
+ .agentplane/tasks/202606042204-NX58GD/README.md    | 190 +++++++
+ .../blueprint/resolved-snapshot.json               | 573 +++++++++++++++++++++
+ packages/agentplane/src/cli/reason-codes.ts        |  12 +
+ .../src/commands/guard/impl/commit-diagnostics.ts  |  56 +-
+ .../guard/impl/commit-diagnostics.unit.test.ts     |  54 ++
+ .../src/commands/shared/route-guidance.test.ts     |  51 ++
+ .../src/commands/shared/route-oracle.test.ts       |  48 ++
+ .../agentplane/src/commands/shared/route-oracle.ts |   8 +
+ .../agentplane/src/commands/task/brief-render.ts   |   4 +
+ .../src/commands/task/next-action.command.ts       |   4 +
+ 10 files changed, 998 insertions(+), 2 deletions(-)
 ```
 
 </details>

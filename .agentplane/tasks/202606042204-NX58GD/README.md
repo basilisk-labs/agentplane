@@ -111,6 +111,15 @@ sections:
     - Observation: Command: bunx vitest run packages/agentplane/src/commands/guard/impl/commit-diagnostics.unit.test.ts packages/agentplane/src/cli/error-map.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts. Result: pass. Evidence: 3 files, 27 tests passed. Scope: commit diagnostic classification and error rendering compatibility.\nCommand: npm run typecheck in packages/agentplane. Result: pass. Evidence: tsc -b completed. Scope: agentplane TypeScript.\nCommand: git diff --check. Result: pass. Evidence: no whitespace errors. Scope: changed diagnostics diff.
       Impact: Agents no longer get generic git_context guidance for subject-format or DCO failures and can retry the exact corrected commit path.
       Resolution: Added commit_subject and dco signals, mapped them to git_commit_subject_policy and git_commit_dco_missing reason codes, and covered both with focused unit tests.
+extensions:
+  branch_pr_batch:
+    base: "main"
+    branch: "task/202606042157-020DWK/reduce-agent-cognitive-load-and-publish-next-pat"
+    included_task_ids:
+      - "202606042204-NX58GD"
+    primary_task_id: "202606042157-020DWK"
+    role: "included"
+    updated_at: "2026-06-04T22:11:29.062Z"
 id_source: "generated"
 ---
 ## Summary
