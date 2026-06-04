@@ -246,6 +246,31 @@ describe("runCli", () => {
       expect(code).toBe(0);
       expect(io.stdout).toContain("agentplane quickstart");
       expect(io.stdout).toContain("agentplane init");
+      expect(io.stdout).toContain("Workflow route notes:");
+      expect(io.stdout).toContain("`direct`: task setup is");
+      expect(io.stdout).not.toContain(
+        "`branch_pr`: use `agentplane task next-action <task-id> --explain`",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("quickstart prints branch_pr-specific route output when configured", async () => {
+    const root = await mkGitRepoRoot();
+    await writeConfig(root, {
+      ...defaultConfig(),
+      workflow_mode: "branch_pr",
+    });
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["quickstart", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Workflow route notes:");
+      expect(io.stdout).toContain(
+        "`branch_pr`: use `agentplane task next-action <task-id> --explain`",
+      );
+      expect(io.stdout).not.toContain("`direct`: task setup is");
     } finally {
       io.restore();
     }
