@@ -345,6 +345,7 @@ describe("guard command implementations: commit close", () => {
         message: "✅ ABC123 close: done",
         body: "body",
         env: { AGENTPLANE_TASK_ID: "T-2" },
+        timeoutMs: expect.any(Number),
       });
       expect(mocks.buildGitCommitEnv).toHaveBeenCalledWith(
         expect.objectContaining({

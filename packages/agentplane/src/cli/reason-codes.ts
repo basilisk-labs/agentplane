@@ -112,6 +112,12 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
     summary: "commit-msg policy rejected the commit because DCO sign-off is missing",
     action: "retry the commit with -s or add a valid Signed-off-by trailer",
   },
+  git_commit_timeout: {
+    code: "git_commit_timeout",
+    category: "git",
+    summary: "git commit timed out while waiting for hooks or finalization",
+    action: "inspect hook readiness and active git processes before retrying the commit",
+  },
   protected_base_integrate_handoff: {
     code: "protected_base_integrate_handoff",
     category: "handoff",
