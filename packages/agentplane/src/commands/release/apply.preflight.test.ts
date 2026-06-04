@@ -66,6 +66,34 @@ describeWhenNotHook(
       await expect(packageDependencyExists(pkgPath, "agentplane")).resolves.toBe(false);
     });
 
+    it("fails with a direct next action when release candidate has no release plan directory", async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await writeDefaultConfig(root);
+      await writeWorkflowMode(root, "branch_pr");
+      await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", "main"], {
+        cwd: root,
+      });
+      await execFileAsync("git", ["checkout", "-b", "task/202604130750-E2J835/release"], {
+        cwd: root,
+      });
+
+      await expect(
+        withDryRunReleaseMode(async () =>
+          runReleaseCandidate(
+            { cwd: root, rootOverride: root },
+            { plan: undefined, yes: false, push: false, remote: "origin" },
+          ),
+        ),
+      ).rejects.toMatchObject({
+        code: "E_VALIDATION",
+        context: {
+          diagnostic_state: "release candidate cannot find a prepared release plan",
+          diagnostic_next_action_command: "agentplane release plan --patch",
+          diagnostic_next_action_reason_code: "release_candidate_missing_plan",
+        },
+      });
+    });
+
     it("rejects release notes that still contain template placeholder text", async () => {
       const root = await mkGitRepoRoot();
       const notesPath = path.join(root, "docs", "releases", "v0.2.7.md");
