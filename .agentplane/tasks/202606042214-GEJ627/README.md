@@ -1,10 +1,10 @@
 ---
 id: "202606042214-GEJ627"
 title: "Bound git commit hook hangs"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: repository-managed git commit operations now use a bounded timeout and emit action-specific timeout diagnostics."
   attempts: 0
-commit: null
+commit:
+  hash: "fce858fa6d0944172febda622fca66299f4e6b29"
+  message: "🚧 020DWK task: record evaluator review"
 comments:
   -
     author: "CODER"
     body: "Start: bounding git commit hook hangs observed during PR artifact and included-task commits in this batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: repository-managed git commit operations now use a bounded timeout and emit action-specific timeout diagnostics."
+  -
+    type: "status"
+    at: "2026-06-04T23:06:35.872Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T22:16:44.237Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T23:06:35.874Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a bounded timeout and actionable diagnostics around repository-managed git commit operations so hook finalization hangs do not leave agents without a next step."
 sections:
   Summary: |-
