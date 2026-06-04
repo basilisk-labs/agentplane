@@ -4,7 +4,7 @@ title: "Reduce agent cognitive load and publish next patch"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,22 @@ verification:
   updated_by: "CODER"
   note: "Verified: route packet refactor keeps hybrid PR update on CODER rail, surfaces evidence_missing in text output, and preserves PR check diagnostics."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-04T23:00:11.445Z"
+  updated_by: "EVALUATOR"
+  note: "CLI route context now gives direct next actions for verification, hook failures, PR artifact refresh, and included batch ownership; hosted PR checks are green on 36f1aa260."
+  evaluated_sha: "36f1aa2604a3d0960871b0aa74dcd9e5f1c592d1"
+  blueprint_digest: "7db1b6be80078bbe5d85a8782e00954e42f74591a72616ad1a7db755f05bb18c"
+  evidence_refs:
+    - ".agentplane/tasks/202606042157-020DWK/README.md"
+    - ".agentplane/tasks/202606042157-020DWK/quality/20260604-230011445-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606042157-020DWK/quality/20260604-230011445-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606042157-020DWK/quality/20260604-230011445-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606042157-020DWK/blueprint/resolved-snapshot.json"
+    - "PR #4442 checks success; local checks: format:check, lint:core, arch:check, knip:check, test:fast"
+  findings:
+    - "Verified batch includes primary 202606042157-020DWK plus follow-ups NX58GD, GEJ627, FE57GC, T1RYR8, HJCTGD, 5Z9J95; ap pr check reports fresh artifacts and GitHub status checks succeeded."
 commit: null
 comments:
   -
@@ -127,7 +143,7 @@ extensions:
       - "202606042239-5Z9J95"
     primary_task_id: "202606042157-020DWK"
     role: "primary"
-    updated_at: "2026-06-04T22:52:49.935Z"
+    updated_at: "2026-06-04T23:00:20.671Z"
 id_source: "generated"
 ---
 ## Summary

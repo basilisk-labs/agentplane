@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202606042157-020DWK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-04T23:00:11.445Z",
+  "verdict": "pass",
+  "summary": "CLI route context now gives direct next actions for verification, hook failures, PR artifact refresh, and included batch ownership; hosted PR checks are green on 36f1aa260.",
+  "evaluated_sha": "36f1aa2604a3d0960871b0aa74dcd9e5f1c592d1",
+  "blueprint_digest": "7db1b6be80078bbe5d85a8782e00954e42f74591a72616ad1a7db755f05bb18c",
+  "findings": [
+    "Verified batch includes primary 202606042157-020DWK plus follow-ups NX58GD, GEJ627, FE57GC, T1RYR8, HJCTGD, 5Z9J95; ap pr check reports fresh artifacts and GitHub status checks succeeded."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606042157-020DWK/README.md",
+    "PR #4442 checks success; local checks: format:check, lint:core, arch:check, knip:check, test:fast"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
