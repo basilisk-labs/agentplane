@@ -22,7 +22,7 @@ Resolve https://github.com/basilisk-labs/agentplane/issues/4412
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-06-03T21:04:14.631Z
+- Updated: 2026-06-04T07:11:52.727Z
 - Branch: task/202606032101-EDHW07/fix-upstream-issue-4412-agentplane-internal-erro
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
