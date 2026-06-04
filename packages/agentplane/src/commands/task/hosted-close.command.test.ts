@@ -44,26 +44,28 @@ describe("isExplicitHostedCloseFollowupBranch", () => {
 
 describe("taskIsClosedByPreMergeClosure", () => {
   it("accepts DONE tasks with an explicit pre-merge closure packet", () => {
-    expect(
-      taskIsClosedByPreMergeClosure({
-        task: { id: "T-1", status: "DONE", commit: { hash: "head", message: "done" } } as never,
-        meta: {
-          schema_version: 1,
-          task_id: "T-1",
-          branch: "task/T-1/pre-merge",
-          pr_number: 4402,
-          created_at: "2026-02-09T00:00:00.000Z",
-          updated_at: "2026-02-09T00:00:00.000Z",
-          pre_merge_closure: {
-            state: "closed_before_merge",
+    for (const prNumber of [4402, undefined]) {
+      expect(
+        taskIsClosedByPreMergeClosure({
+          task: { id: "T-1", status: "DONE", commit: { hash: "head", message: "done" } } as never,
+          meta: {
+            schema_version: 1,
+            task_id: "T-1",
             branch: "task/T-1/pre-merge",
-            basis_commit: "abc123",
-          },
-        } as never,
-        branch: "task/T-1/pre-merge",
-        prNumber: 4402,
-      }),
-    ).toBe(true);
+            ...(prNumber == null ? {} : { pr_number: prNumber }),
+            created_at: "2026-02-09T00:00:00.000Z",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            pre_merge_closure: {
+              state: "closed_before_merge",
+              branch: "task/T-1/pre-merge",
+              basis_commit: "abc123",
+            },
+          } as never,
+          branch: "task/T-1/pre-merge",
+          prNumber: 4402,
+        }),
+      ).toBe(true);
+    }
   });
 
   it("rejects non-DONE tasks and unrelated marker shapes", () => {

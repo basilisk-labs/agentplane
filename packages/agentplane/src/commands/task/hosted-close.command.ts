@@ -84,7 +84,18 @@ export function taskIsClosedByPreMergeClosure(opts: {
   if (!marker) return false;
   if (marker.branch !== opts.branch) return false;
   if ((opts.meta.branch?.trim() ?? "") !== opts.branch) return false;
-  return opts.meta.pr_number === opts.prNumber;
+  return opts.meta.pr_number == null || opts.meta.pr_number === opts.prNumber;
+}
+
+export function isExplicitHostedCloseFollowupBranch(opts: {
+  branch: string;
+  taskBranchPrefix: string;
+  task: TaskData;
+}): boolean {
+  const expectedPrefix = `${opts.taskBranchPrefix}/${opts.task.id}/`;
+  if (!opts.branch.startsWith(expectedPrefix)) return false;
+  const slug = opts.branch.slice(expectedPrefix.length).trim().toLowerCase();
+  return slug.startsWith("post-merge-") || /(?:^|-)followup(?:-|$)/u.test(slug);
 }
 
 async function preMergeClosureBasisIsAncestor(opts: {
@@ -134,17 +145,6 @@ async function taskIsAlreadyClosedBeforeMerge(opts: {
     if (code === 1) return false;
     throw err;
   }
-}
-
-export function isExplicitHostedCloseFollowupBranch(opts: {
-  branch: string;
-  taskBranchPrefix: string;
-  task: TaskData;
-}): boolean {
-  const expectedPrefix = `${opts.taskBranchPrefix}/${opts.task.id}/`;
-  if (!opts.branch.startsWith(expectedPrefix)) return false;
-  const slug = opts.branch.slice(expectedPrefix.length).trim().toLowerCase();
-  return slug.startsWith("post-merge-") || /(?:^|-)followup(?:-|$)/u.test(slug);
 }
 
 function assertNoConflictingDoneTask(opts: { task: TaskData; mergeCommit: string }): void {
