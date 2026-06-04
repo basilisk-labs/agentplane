@@ -8,6 +8,7 @@ import {
   type GitMutationKind,
 } from "../../../shared/git-mutation.js";
 import type { CommandContext } from "../../shared/task-backend.js";
+import { resolveGitCommitTimeoutMs } from "../../shared/git-timeouts.js";
 import { asCommitFailure } from "./commit-diagnostics.js";
 
 const GIT_COMMIT_LOCK_REMEDIATION =
@@ -16,8 +17,6 @@ const GIT_COMMIT_PERMISSION_REMEDIATION =
   "Check repository permissions (uid/gid and write access for .git/*), fix ownership, then retry.";
 const GIT_COMMIT_RACE_REMEDIATION =
   "A conflicting git writer was detected. Retry when merge/rebase/commit operations are not running.";
-const GIT_COMMIT_TIMEOUT_MS = 600_000;
-
 function isTimeoutError(err: unknown): boolean {
   if (!(err instanceof Error)) return false;
   const record = err as Error & { timedOut?: unknown; code?: unknown; shortMessage?: unknown };
@@ -87,12 +86,13 @@ export async function runCommitWithLock(opts: {
       taskId: opts.taskId,
     },
     async () => {
+      const gitCommitTimeoutMs = resolveGitCommitTimeoutMs();
       try {
         await opts.ctx.git.commit({
           message: opts.message,
           body: opts.body,
           env: opts.env,
-          timeoutMs: GIT_COMMIT_TIMEOUT_MS,
+          timeoutMs: gitCommitTimeoutMs,
         });
       } catch (err) {
         if (isTimeoutError(err)) {
@@ -110,12 +110,12 @@ export async function runCommitWithLock(opts: {
           throw new CliError({
             exitCode: exitCodeForError("E_GIT"),
             code: "E_GIT",
-            message: `git commit timed out after ${GIT_COMMIT_TIMEOUT_MS}ms`,
+            message: `git commit timed out after ${gitCommitTimeoutMs}ms`,
             context: withDiagnosticContext(
               {
                 ...failureContext,
                 reason_code: "git_commit_timeout",
-                git_commit_timeout_ms: GIT_COMMIT_TIMEOUT_MS,
+                git_commit_timeout_ms: gitCommitTimeoutMs,
               },
               {
                 state: "git commit timed out while waiting for hooks or commit finalization",

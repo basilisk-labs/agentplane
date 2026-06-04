@@ -194,6 +194,7 @@ describe("guard command implementations: commit non-close", () => {
         AGENTPLANE_TASK_ID: "202604130818-7SRWEX",
         AGENTPLANE_ALLOW_TASKS: "1",
       },
+      timeoutMs: expect.any(Number),
     });
   });
 

@@ -12,5 +12,6 @@ export type GitPort = {
     body?: string;
     env?: NodeJS.ProcessEnv;
     timeoutMs?: number;
+    skipHooks?: boolean;
   }): Promise<void>;
 };

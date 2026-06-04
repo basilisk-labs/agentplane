@@ -11,6 +11,7 @@ import { appendDcoSignoff } from "../../guard/impl/dco.js";
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "../../guard/impl/env.js";
 import { toGitPath, gitEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
+import { resolveGitCommitTimeoutMs } from "../../shared/git-timeouts.js";
 import { gitCurrentBranch } from "../../shared/git-ops.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 
@@ -172,12 +173,19 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
     allowCI: false,
     gitIdentity: await resolveCanonicalGitIdentity(),
   });
+  const timeoutMs = resolveGitCommitTimeoutMs();
   await (strategy === "amend"
-    ? opts.ctx.git.commitAmendNoEdit({ env })
+    ? opts.ctx.git.commitAmendNoEdit({
+        env,
+        timeoutMs,
+        skipHooks: true,
+      })
     : opts.ctx.git.commit({
         message: buildTaskArtifactRefreshCommitSubject({ taskId: opts.taskId }),
         body: appendDcoSignoff({ config: opts.ctx.config }),
         env,
+        timeoutMs,
+        skipHooks: true,
       }));
   opts.ctx.git.invalidateStatus();
   return true;
