@@ -10,6 +10,7 @@ import {
   invalidRunnerResultManifestPath,
   preserveInvalidRunnerResultManifest,
   readRunnerResultManifest,
+  salvageBlockedRunnerResultManifest,
 } from "./result-manifest.js";
 
 describe("runner result manifest", () => {
@@ -188,6 +189,30 @@ describe("runner result manifest", () => {
     });
     expect(invalidPath).toBe(invalidRunnerResultManifestPath(resultPath));
     expect(await readFile(invalidPath, "utf8")).toBe(rawManifest);
+  });
+
+  it("salvages blocked guidance from otherwise invalid manifests", () => {
+    const salvaged = salvageBlockedRunnerResultManifest(
+      JSON.stringify({
+        schema_version: 1,
+        summary: "Runner blocked on sibling-owned paths.",
+        artifacts: [{ path: "reports/out.txt", label: "Bad Label" }],
+        evidence: {
+          conflict_paths: ["src/runner/conflict.ts"],
+          blocked_reason: "sibling runner owns the same file",
+          recommended_parent_action: "split task scope before retrying",
+        },
+      }),
+    );
+
+    expect(salvaged).toEqual({
+      summary: "Runner blocked on sibling-owned paths.",
+      evidence: {
+        conflict_paths: ["src/runner/conflict.ts"],
+        blocked_reason: "sibling runner owns the same file",
+        recommended_parent_action: "split task scope before retrying",
+      },
+    });
   });
 
   it("serializes machine summaries and labeled artifacts from runner results", () => {

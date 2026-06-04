@@ -84,10 +84,21 @@ function normalizeRunnerEvidence(value: unknown): TaskRunnerEvidence | undefined
   if (evidencePaths) evidence.evidence_paths = evidencePaths;
   const changedPaths = normalizeStringArray(value.changed_paths);
   if (changedPaths) evidence.changed_paths = changedPaths;
+  const conflictPaths = normalizeStringArray(value.conflict_paths);
+  if (conflictPaths) evidence.conflict_paths = conflictPaths;
   const testsRun = normalizeStringArray(value.tests_run);
   if (testsRun) evidence.tests_run = testsRun;
   const verificationCandidates = normalizeStringArray(value.verification_candidates);
   if (verificationCandidates) evidence.verification_candidates = verificationCandidates;
+  if (typeof value.blocked_reason === "string" && value.blocked_reason.trim().length > 0) {
+    evidence.blocked_reason = value.blocked_reason.trim();
+  }
+  if (
+    typeof value.recommended_parent_action === "string" &&
+    value.recommended_parent_action.trim().length > 0
+  ) {
+    evidence.recommended_parent_action = value.recommended_parent_action.trim();
+  }
   if (
     typeof value.files_changed_count === "number" &&
     Number.isInteger(value.files_changed_count) &&

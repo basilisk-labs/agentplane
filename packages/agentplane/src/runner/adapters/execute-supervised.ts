@@ -6,6 +6,7 @@ import {
   preserveInvalidRunnerResultManifest,
   preserveRunnerResultManifestSource,
   readRunnerResultManifest,
+  salvageBlockedRunnerResultManifest,
   writeRunnerResultManifest,
 } from "../result-manifest.js";
 import {
@@ -125,6 +126,10 @@ export async function executeSupervisedRunnerAdapter(opts: {
             error: err,
           })
         : null;
+    const blockedManifestFallback =
+      err instanceof InvalidRunnerResultManifestError
+        ? salvageBlockedRunnerResultManifest(err.raw_content)
+        : null;
     const artifacts = opts.buildArtifacts({
       invocation,
       processResult,
@@ -132,21 +137,25 @@ export async function executeSupervisedRunnerAdapter(opts: {
       invalid_manifest_path: invalidManifestPath,
     });
     const output_paths = artifacts.map((artifact) => artifact.path);
-    const result = runnerAdapterFailureResult({
-      err,
-      summary: opts.failureSummary,
-      started_at,
-      ended_at,
-      exit_code: err instanceof CliError ? err.exitCode : undefined,
-      output_paths,
-    });
+    const result: RunnerResult = {
+      ...runnerAdapterFailureResult({
+        err,
+        summary:
+          blockedManifestFallback?.summary ??
+          blockedManifestFallback?.evidence?.blocked_reason ??
+          opts.failureSummary,
+        started_at,
+        ended_at,
+        exit_code: err instanceof CliError ? err.exitCode : undefined,
+        output_paths,
+      }),
+      artifacts,
+      capabilities_used: opts.capabilitiesUsed(invocation),
+      evidence: blockedManifestFallback?.evidence,
+    };
     await writeRunnerResultManifest({
       result_path: invocation.result_path,
-      manifest: manifestFromRunnerResult({
-        ...result,
-        artifacts,
-        capabilities_used: opts.capabilitiesUsed(invocation),
-      }),
+      manifest: manifestFromRunnerResult(result),
     });
     const repository = RunnerRunRepository.fromInvocation(invocation);
     await writeRunnerResultState({ repository, result });
