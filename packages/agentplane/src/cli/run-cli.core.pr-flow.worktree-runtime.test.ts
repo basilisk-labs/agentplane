@@ -98,6 +98,14 @@ async function seedRepoLocalNodeModules(root: string): Promise<void> {
   );
 }
 
+async function seedRepoLocalWebsiteNodeModules(root: string): Promise<void> {
+  const target = path.join(root, "website", "node_modules");
+  await mkdir(path.dirname(target), { recursive: true });
+  await writeFile(path.join(root, "website", "package.json"), '{ "name": "website" }\n', "utf8");
+  await mkdir(target, { recursive: true });
+  await writeFile(path.join(target, ".agentplane-worktree-test"), "website deps\n", "utf8");
+}
+
 async function seedRepoLocalCorePackage(root: string): Promise<void> {
   const packageDir = path.join(root, "packages", "agentplane", "node_modules", "@agentplaneorg");
   await mkdir(packageDir, { recursive: true });
@@ -255,6 +263,7 @@ describe(
         await seedRepoLocalBinArtifacts(root);
         await seedRepoLocalDistArtifacts(root);
         await seedRepoLocalNodeModules(root);
+        await seedRepoLocalWebsiteNodeModules(root);
         await seedRepoLocalCorePackage(root);
         await mkdir(path.join(root, "agentplane-recipes"), { recursive: true });
         await writeFile(
@@ -319,6 +328,7 @@ describe(
         expect(
           await pathExists(path.join(worktreePath, "packages", "agentplane", "node_modules")),
         ).toBe(true);
+        expect(await pathExists(path.join(worktreePath, "website", "node_modules"))).toBe(true);
         expect(await pathExists(path.join(worktreePath, "agentplane-recipes", "index.json"))).toBe(
           true,
         );
@@ -447,6 +457,7 @@ describe(
         expect(
           await pathExists(path.join(worktreePath, "packages", "agentplane", "node_modules")),
         ).toBe(true);
+        expect(await pathExists(path.join(worktreePath, "website", "node_modules"))).toBe(true);
 
         const runtime = await execFileAsync(
           process.execPath,
