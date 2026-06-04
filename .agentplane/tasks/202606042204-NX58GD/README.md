@@ -117,9 +117,10 @@ extensions:
     branch: "task/202606042157-020DWK/reduce-agent-cognitive-load-and-publish-next-pat"
     included_task_ids:
       - "202606042204-NX58GD"
+      - "202606042214-GEJ627"
     primary_task_id: "202606042157-020DWK"
     role: "included"
-    updated_at: "2026-06-04T22:11:29.062Z"
+    updated_at: "2026-06-04T22:17:13.237Z"
 id_source: "generated"
 ---
 ## Summary

@@ -111,6 +111,16 @@ sections:
     - Observation: Command: bunx vitest run packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts packages/agentplane/src/commands/guard/impl/commit-diagnostics.unit.test.ts. Result: pass. Evidence: 3 files, 29 tests passed. Scope: commit runner timeout and commit diagnostic compatibility.\nCommand: npm run typecheck in packages/agentplane. Result: pass. Evidence: tsc -b completed. Scope: agentplane TypeScript.\nCommand: npm run typecheck in packages/core. Result: pass. Evidence: tsc -b completed. Scope: core GitContext timeout option.\nCommand: git diff --check. Result: pass. Evidence: no whitespace errors. Scope: changed timeout diff.
       Impact: Agents no longer wait indefinitely when git commit hooks or commit finalization stop making progress; timeout output points to hook readiness and active git-process inspection.
       Resolution: Added timeoutMs support to GitContext/GitPort commit calls, applied a 600000ms managed commit timeout, mapped timeout failures to git_commit_timeout, and added focused tests.
+extensions:
+  branch_pr_batch:
+    base: "main"
+    branch: "task/202606042157-020DWK/reduce-agent-cognitive-load-and-publish-next-pat"
+    included_task_ids:
+      - "202606042204-NX58GD"
+      - "202606042214-GEJ627"
+    primary_task_id: "202606042157-020DWK"
+    role: "included"
+    updated_at: "2026-06-04T22:17:13.237Z"
 id_source: "generated"
 ---
 ## Summary
