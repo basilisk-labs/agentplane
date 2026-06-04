@@ -39,7 +39,9 @@ quality_review:
     - "gh issue view 4412 --json state,closedAt"
   findings:
     - "No blocking findings; the issue is closed upstream and the branch contains only task-record maintenance."
-commit: "a7cb64e8c"
+commit:
+  hash: "a7cb64e8c"
+  message: "Refresh EDHW07 PR artifacts"
 comments:
   -
     author: "CODER"
