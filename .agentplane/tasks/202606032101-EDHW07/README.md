@@ -1,10 +1,11 @@
 ---
 id: "202606032101-EDHW07"
 title: "Fix upstream issue #4412: AgentPlane internal error report (E_INTERNAL)"
-status: "DOING"
+result_summary: "Merged via PR #4434."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Upstream issue #4412 is closed; no local implementation changes were required."
   attempts: 0
-commit: null
+commit:
+  hash: "60a24c3d7c831e5c652ce0409b917f18401ddd5c"
+  message: "Merge pull request #4434 from basilisk-labs/task/202606032101-EDHW07/fix-upstream-issue-4412-agentplane-internal-erro"
 comments:
   -
     author: "CODER"
     body: "Start: investigating the runner result-manifest status gate behind upstream issue #4412 and keeping the work scoped to truthful blocked publication outcomes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4434 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Upstream issue #4412 is closed; no local implementation changes were required."
+  -
+    type: "status"
+    at: "2026-06-04T07:10:13.616Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4434 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T07:02:51.097Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T07:10:13.621Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve https://github.com/basilisk-labs/agentplane/issues/4412"
 sections:
   Summary: |-
