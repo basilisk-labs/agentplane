@@ -374,6 +374,16 @@ export async function cmdPrCheck(opts: {
         "route_hint: artifact freshness is not confirmed; if task next-action still loops on PR update after this check passes, inspect hosted PR truth before rerunning mutation",
       );
     }
+    output.line(
+      [
+        "decision_context:",
+        "source_of_truth=pr_check",
+        `artifact_freshness=${artifactFreshness}`,
+        `remote_checked=${String(prNumber !== null || opts.hosted === true)}`,
+        "repeat_policy=do_not_repeat_pr_update_blindly",
+        `safe_diagnostic=agentplane pr check ${task.id}`,
+      ].join(" "),
+    );
     output.success("pr check", path.relative(resolved.gitRoot, prDir));
     return 0;
   } catch (err) {

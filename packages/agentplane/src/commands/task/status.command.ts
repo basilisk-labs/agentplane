@@ -100,6 +100,26 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
         { label: "action_kind", value: decision.executionPacket.actionKind },
         { label: "operator_action", value: operatorGuidance.operatorAction },
         { label: "can_execute_now", value: String(operatorGuidance.canExecuteNow) },
+        {
+          label: "source_of_truth",
+          value:
+            `route=${operatorGuidance.sourceOfTruth.route} ` +
+            `diagnostic=${operatorGuidance.sourceOfTruth.diagnostic} ` +
+            `remote=${operatorGuidance.sourceOfTruth.remote}`,
+        },
+        {
+          label: "repeat_policy",
+          value:
+            `allowed=${String(operatorGuidance.repeatPolicy.allowed)} ` +
+            `recompute=${operatorGuidance.repeatPolicy.recomputeCommand}`,
+        },
+        {
+          label: "runner_context",
+          value:
+            `required=${String(operatorGuidance.runnerContext.runnerIsRequired)} ` +
+            `allowed_now=${String(operatorGuidance.runnerContext.runnerIsAllowedNow)} ` +
+            `failure_means=${operatorGuidance.runnerContext.runnerFailureMeans}`,
+        },
         { label: "safe_command", value: operatorGuidance.safeCommand ?? "none" },
         { label: "diagnostic_command", value: operatorGuidance.diagnosticCommand ?? "none" },
         {

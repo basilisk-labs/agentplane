@@ -86,6 +86,33 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
         { label: "safe_to_mutate", value: decision.executionPacket.safeToMutate },
         { label: "operator_action", value: operatorGuidance.operatorAction },
         { label: "can_execute_now", value: operatorGuidance.canExecuteNow },
+        {
+          label: "source_of_truth",
+          value:
+            `route=${operatorGuidance.sourceOfTruth.route} ` +
+            `diagnostic=${operatorGuidance.sourceOfTruth.diagnostic} ` +
+            `remote=${operatorGuidance.sourceOfTruth.remote}`,
+        },
+        {
+          label: "repeat_policy",
+          value:
+            `allowed=${String(operatorGuidance.repeatPolicy.allowed)} ` +
+            `recompute=${operatorGuidance.repeatPolicy.recomputeCommand}`,
+        },
+        {
+          label: "fallback",
+          value:
+            operatorGuidance.fallback.allowed && operatorGuidance.fallback.command
+              ? `${operatorGuidance.fallback.command}: ${operatorGuidance.fallback.reason ?? ""}`
+              : "none",
+        },
+        {
+          label: "runner_context",
+          value:
+            `required=${String(operatorGuidance.runnerContext.runnerIsRequired)} ` +
+            `allowed_now=${String(operatorGuidance.runnerContext.runnerIsAllowedNow)} ` +
+            `failure_means=${operatorGuidance.runnerContext.runnerFailureMeans}`,
+        },
         { label: "code", value: decision.nextAction.code },
         { label: "summary", value: decision.nextAction.summary },
         { label: "requires_approval", value: decision.nextAction.requiresApproval },

@@ -4,7 +4,7 @@ title: "Clarify confusing agent route diagnostics"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-04T16:17:02.111Z"
+  updated_at: "2026-06-04T17:09:41.773Z"
   updated_by: "CODER"
-  note: "Local verification passed for typecheck, formatting, policy routing, and CLI smoke; focused vitest/build wrappers timed out without assertion or compiler failure output."
+  note: "Decision-context surfaces verified with focused tests, TypeScript, formatting, policy routing, and CLI smoke on route/brief/status/pr-check outputs."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local verification passed for typecheck, formatting, policy routing, and CLI smoke; focused vitest/build wrappers timed out without assertion or compiler failure output."
+  -
+    type: "verify"
+    at: "2026-06-04T17:09:41.773Z"
+    author: "CODER"
+    state: "ok"
+    note: "Decision-context surfaces verified with focused tests, TypeScript, formatting, policy routing, and CLI smoke on route/brief/status/pr-check outputs."
 doc_version: 3
-doc_updated_at: "2026-06-04T16:17:02.129Z"
+doc_updated_at: "2026-06-04T17:09:41.891Z"
 doc_updated_by: "CODER"
 description: "Make additional AgentPlane route and lifecycle diagnostics less ambiguous for agents: surface PR artifact freshness loops, hook-related local command risk, and actionable next commands in machine-readable CLI output."
 sections:
@@ -55,31 +61,32 @@ sections:
   Scope: |-
     - In scope: Make additional AgentPlane route and lifecycle diagnostics less ambiguous for agents: surface PR artifact freshness loops, hook-related local command risk, and actionable next commands in machine-readable CLI output.
     - Out of scope: unrelated refactors not required for "Clarify confusing agent route diagnostics".
-  Plan: "Improve confusing agent-facing diagnostics without changing lifecycle semantics: inspect route/pr/hook surfaces, add explicit machine-readable hints for repeated pr-update loops or hook-sensitive local commands, update human output to name the safe command and stop condition, and add focused regression tests for the new fields/messages."
+  Plan: "Extend agent-facing decision context on the existing diagnostics branch without changing lifecycle semantics: keep operator_guidance, add source/freshness/repeat/fallback/runner fields, surface them in task brief/status/next-action/pr check/runner bootstrap/verification details/errors, and cover the behavior with focused tests and CLI smoke checks."
   Verify Steps: |-
     1. Run TypeScript compile for agentplane source. Expected: no type errors.
-    2. Run formatting and diff safety checks on touched files. Expected: no formatting or whitespace errors.
-    3. Run CLI smoke for task next-action/status JSON. Expected: operator_guidance appears with safe_command, canExecuteNow, stopReason, and risks fields.
-    4. Run focused vitest/build where available. Expected: pass, or record runner/toolchain timeout separately from source validation.
+    2. Run focused regression tests for route guidance, runner bootstrap, and commit diagnostics. Expected: all selected tests pass.
+    3. Run formatting, diff, and policy routing checks. Expected: no formatting, whitespace, or policy routing errors.
+    4. Run CLI smoke for task next-action, task status --route, task brief, and pr check. Expected: decision context exposes source_of_truth, repeat_policy, runner_context, safe_command, and diagnostic_command without stale or contradictory fields.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    - PASS: timeout 60s bunx tsc -p packages/agentplane/tsconfig.json --noEmit
-    - PASS: timeout 120s bun run format --check <touched files>
+    - PASS: timeout 90s bunx tsc -p packages/agentplane/tsconfig.json --noEmit
+    - PASS: timeout 120s ./node_modules/.bin/vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-guidance.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts --reporter verbose
+    - PASS: timeout 60s ./node_modules/.bin/prettier --check <touched files>
     - PASS: timeout 60s git diff --check
     - PASS: timeout 60s node .agentplane/policy/check-routing.mjs
-    - PASS: timeout 60s bun packages/agentplane/src/cli.ts task next-action 202606041604-E3EJG8 --explain --json | rg operator_guidance
+    - PASS: timeout 60s bun packages/agentplane/src/cli.ts task next-action 202606041604-E3EJG8 --explain | rg source_of_truth/repeat_policy/runner_context/diagnostic_command
     - PASS: timeout 60s bun packages/agentplane/src/cli.ts task status 202606041604-E3EJG8 --route --json
-    - BLOCKED: focused vitest commands timed out without output at 90-120s; no failing assertion was emitted.
-    - BLOCKED: bun run --filter=agentplane build reached tsup and timed out at 180s without error output.
+    - PASS: timeout 60s bun packages/agentplane/src/cli.ts task brief 202606041604-E3EJG8 --json
+    - PASS: timeout 90s bun packages/agentplane/src/cli.ts pr check 202606041604-E3EJG8
 
-    ### 2026-06-04T16:17:02.111Z — VERIFY — ok
+    ### 2026-06-04T17:09:41.773Z — VERIFY — ok
 
     By: CODER
 
-    Note: Local verification passed for typecheck, formatting, policy routing, and CLI smoke; focused vitest/build wrappers timed out without assertion or compiler failure output.
+    Note: Decision-context surfaces verified with focused tests, TypeScript, formatting, policy routing, and CLI smoke on route/brief/status/pr-check outputs.
     Attempts: 0
 
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-04T16:16:12.559Z, excerpt_hash=sha256:962a1d4a028951a3dc2e4b47d282b569122737a6ae848661c321f63c84b5847a
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-04T17:09:21.676Z, excerpt_hash=sha256:8587e0d575abbdb632203d919a815872f3a6bafa154268671c0be26bdb915502
 
     Details:
 
@@ -91,14 +98,31 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202606041604-E3EJG8
 
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606041604-E3EJG8
+    - diagnostic_command: agentplane pr check 202606041604-E3EJG8
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - runner_required: false
+    - runner_failure_means: not_runner_route
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: |-
-    - Observation: operator_guidance appears in task next-action/status JSON; pr check prints artifact_freshness; commit diagnostics classify hook wrapper SIGKILL as git_hook_wrapper_unstable.
-      Impact: Agents get explicit execute/diagnose/stop signals for PR artifact loops and hook-wrapper failures instead of inferring from raw route or commit output.
-      Resolution: Recorded residual risk from timed-out vitest/build wrapper separately from passed direct source validation.
+    - Observation: Agent-facing route, brief, PR-check, runner-bootstrap, verification, and commit-error surfaces now expose typed decision context for source of truth, freshness, repeat policy, fallback, and runner rail state.
+      Impact: Agents have explicit execute/diagnose/wait/stop context and should be less likely to repeat stale PR updates, confuse hook-wrapper failures with source failures, or introduce runner execution when the route does not require it.
+      Resolution: Added shared route guidance derivation, surfaced it in CLI outputs, and covered the behavior with focused tests plus CLI smoke checks.
+
+    - Observation: Route guidance now exposes source of truth, freshness, repeat policy, fallback, and runner rail context across task next-action, task status --route, task brief, pr check, runner bootstrap, verification records, and commit diagnostics.
+      Impact: Agents have explicit execute/diagnose/wait/stop context and should be less likely to repeat stale PR updates, confuse hook wrapper failures with source failures, or introduce runner execution outside the active route.
+      Resolution: Added shared derived decision context and regression tests; PR check remains the diagnostic command when route asks for PR artifact updates.
 id_source: "generated"
 ---
 ## Summary
@@ -114,35 +138,36 @@ Make additional AgentPlane route and lifecycle diagnostics less ambiguous for ag
 
 ## Plan
 
-Improve confusing agent-facing diagnostics without changing lifecycle semantics: inspect route/pr/hook surfaces, add explicit machine-readable hints for repeated pr-update loops or hook-sensitive local commands, update human output to name the safe command and stop condition, and add focused regression tests for the new fields/messages.
+Extend agent-facing decision context on the existing diagnostics branch without changing lifecycle semantics: keep operator_guidance, add source/freshness/repeat/fallback/runner fields, surface them in task brief/status/next-action/pr check/runner bootstrap/verification details/errors, and cover the behavior with focused tests and CLI smoke checks.
 
 ## Verify Steps
 
 1. Run TypeScript compile for agentplane source. Expected: no type errors.
-2. Run formatting and diff safety checks on touched files. Expected: no formatting or whitespace errors.
-3. Run CLI smoke for task next-action/status JSON. Expected: operator_guidance appears with safe_command, canExecuteNow, stopReason, and risks fields.
-4. Run focused vitest/build where available. Expected: pass, or record runner/toolchain timeout separately from source validation.
+2. Run focused regression tests for route guidance, runner bootstrap, and commit diagnostics. Expected: all selected tests pass.
+3. Run formatting, diff, and policy routing checks. Expected: no formatting, whitespace, or policy routing errors.
+4. Run CLI smoke for task next-action, task status --route, task brief, and pr check. Expected: decision context exposes source_of_truth, repeat_policy, runner_context, safe_command, and diagnostic_command without stale or contradictory fields.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-- PASS: timeout 60s bunx tsc -p packages/agentplane/tsconfig.json --noEmit
-- PASS: timeout 120s bun run format --check <touched files>
+- PASS: timeout 90s bunx tsc -p packages/agentplane/tsconfig.json --noEmit
+- PASS: timeout 120s ./node_modules/.bin/vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-guidance.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts --reporter verbose
+- PASS: timeout 60s ./node_modules/.bin/prettier --check <touched files>
 - PASS: timeout 60s git diff --check
 - PASS: timeout 60s node .agentplane/policy/check-routing.mjs
-- PASS: timeout 60s bun packages/agentplane/src/cli.ts task next-action 202606041604-E3EJG8 --explain --json | rg operator_guidance
+- PASS: timeout 60s bun packages/agentplane/src/cli.ts task next-action 202606041604-E3EJG8 --explain | rg source_of_truth/repeat_policy/runner_context/diagnostic_command
 - PASS: timeout 60s bun packages/agentplane/src/cli.ts task status 202606041604-E3EJG8 --route --json
-- BLOCKED: focused vitest commands timed out without output at 90-120s; no failing assertion was emitted.
-- BLOCKED: bun run --filter=agentplane build reached tsup and timed out at 180s without error output.
+- PASS: timeout 60s bun packages/agentplane/src/cli.ts task brief 202606041604-E3EJG8 --json
+- PASS: timeout 90s bun packages/agentplane/src/cli.ts pr check 202606041604-E3EJG8
 
-### 2026-06-04T16:17:02.111Z — VERIFY — ok
+### 2026-06-04T17:09:41.773Z — VERIFY — ok
 
 By: CODER
 
-Note: Local verification passed for typecheck, formatting, policy routing, and CLI smoke; focused vitest/build wrappers timed out without assertion or compiler failure output.
+Note: Decision-context surfaces verified with focused tests, TypeScript, formatting, policy routing, and CLI smoke on route/brief/status/pr-check outputs.
 Attempts: 0
 
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-04T16:16:12.559Z, excerpt_hash=sha256:962a1d4a028951a3dc2e4b47d282b569122737a6ae848661c321f63c84b5847a
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-04T17:09:21.676Z, excerpt_hash=sha256:8587e0d575abbdb632203d919a815872f3a6bafa154268671c0be26bdb915502
 
 Details:
 
@@ -154,6 +179,19 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202606041604-E3EJG8
 
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606041604-E3EJG8
+- diagnostic_command: agentplane pr check 202606041604-E3EJG8
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- runner_required: false
+- runner_failure_means: not_runner_route
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -163,6 +201,10 @@ BlueprintSnapshotRef:
 
 ## Findings
 
-- Observation: operator_guidance appears in task next-action/status JSON; pr check prints artifact_freshness; commit diagnostics classify hook wrapper SIGKILL as git_hook_wrapper_unstable.
-  Impact: Agents get explicit execute/diagnose/stop signals for PR artifact loops and hook-wrapper failures instead of inferring from raw route or commit output.
-  Resolution: Recorded residual risk from timed-out vitest/build wrapper separately from passed direct source validation.
+- Observation: Agent-facing route, brief, PR-check, runner-bootstrap, verification, and commit-error surfaces now expose typed decision context for source of truth, freshness, repeat policy, fallback, and runner rail state.
+  Impact: Agents have explicit execute/diagnose/wait/stop context and should be less likely to repeat stale PR updates, confuse hook-wrapper failures with source failures, or introduce runner execution when the route does not require it.
+  Resolution: Added shared route guidance derivation, surfaced it in CLI outputs, and covered the behavior with focused tests plus CLI smoke checks.
+
+- Observation: Route guidance now exposes source of truth, freshness, repeat policy, fallback, and runner rail context across task next-action, task status --route, task brief, pr check, runner bootstrap, verification records, and commit diagnostics.
+  Impact: Agents have explicit execute/diagnose/wait/stop context and should be less likely to repeat stale PR updates, confuse hook wrapper failures with source failures, or introduce runner execution outside the active route.
+  Resolution: Added shared derived decision context and regression tests; PR check remains the diagnostic command when route asks for PR artifact updates.

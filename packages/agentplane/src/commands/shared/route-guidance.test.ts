@@ -48,6 +48,27 @@ describe("route operator guidance", () => {
       operatorAction: "run_exact_argv",
       safeCommand: "agentplane pr update 202606041604-E3EJG8",
       diagnosticCommand: "agentplane pr check 202606041604-E3EJG8",
+      sourceOfTruth: {
+        route: "task_next_action",
+        state: "local_task_backend",
+        remote: "not_checked",
+        diagnostic: "pr_check",
+      },
+      repeatPolicy: {
+        allowed: false,
+        maxAttemptsBeforeRecompute: 1,
+        recomputeCommand: "agentplane task next-action 202606041604-E3EJG8 --explain",
+      },
+      fallback: {
+        allowed: true,
+        command: "agentplane doctor",
+      },
+      runnerContext: {
+        runnerIsRequired: false,
+        runnerIsAllowedNow: false,
+        localWorkAllowedIfRunnerFails: true,
+        runnerFailureMeans: "not_runner_route",
+      },
       risks: [
         {
           code: "pr_artifact_freshness_loop",

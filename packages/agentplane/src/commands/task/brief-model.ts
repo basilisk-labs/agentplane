@@ -1,5 +1,9 @@
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import {
+  deriveRouteOperatorGuidance,
+  type RouteOperatorGuidance,
+} from "../shared/route-guidance.js";
 import { buildRouteSourceConfidenceBase } from "../shared/source-confidence.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import {
@@ -100,6 +104,7 @@ export type TaskBrief = {
     verification_candidate: string | null;
     stop_reason: string | null;
   };
+  decision_context: RouteOperatorGuidance;
   verify_steps: {
     filled: boolean;
     quality: "missing" | "fallback" | "specific";
@@ -237,6 +242,7 @@ export async function buildTaskBrief(opts: {
     rootOverride: opts.rootOverride ?? null,
     taskId: opts.parsed.taskId,
   });
+  const decisionContext = deriveRouteOperatorGuidance(route);
   const blueprint = await resolveTaskBlueprintLifecycleSummary({
     task,
     config: opts.commandCtx.config,
@@ -321,6 +327,7 @@ export async function buildTaskBrief(opts: {
       verification_candidate: route.executionPacket.verificationCandidate,
       stop_reason: route.executionPacket.stopReason,
     },
+    decision_context: decisionContext,
     verify_steps: {
       filled: isVerifyStepsFilled(verifySteps),
       quality: verifyQuality,

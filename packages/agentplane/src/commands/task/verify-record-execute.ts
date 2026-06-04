@@ -12,6 +12,8 @@ import {
 } from "../incidents/shared.js";
 import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
+import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import { deriveRouteOperatorGuidance } from "../shared/route-guidance.js";
 import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { gitRevParse } from "../shared/git-ops.js";
@@ -76,6 +78,49 @@ async function appendBlueprintSnapshotReference(
   }
 }
 
+async function appendDecisionContextReference(
+  details: string | null | undefined,
+  opts: {
+    ctx: CommandContext;
+    cwd: string;
+    rootOverride?: string;
+    taskId: string;
+  },
+): Promise<string> {
+  try {
+    const decision = await buildTaskRouteDecision({
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      includeRemote: false,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+    });
+    const guidance = deriveRouteOperatorGuidance(decision);
+    return appendDetailsBlock(details, [
+      "DecisionContextRef:",
+      `- operator_action: ${guidance.operatorAction}`,
+      `- can_execute_now: ${String(guidance.canExecuteNow)}`,
+      `- safe_command: ${guidance.safeCommand ?? "none"}`,
+      `- diagnostic_command: ${guidance.diagnosticCommand ?? "none"}`,
+      `- source_of_truth: route=${guidance.sourceOfTruth.route} diagnostic=${guidance.sourceOfTruth.diagnostic} remote=${guidance.sourceOfTruth.remote}`,
+      `- freshness: route=${guidance.freshness.route} remote=${guidance.freshness.remote}`,
+      `- repeat_allowed: ${String(guidance.repeatPolicy.allowed)}`,
+      `- repeat_stop_condition: ${guidance.repeatPolicy.stopCondition}`,
+      `- runner_required: ${String(guidance.runnerContext.runnerIsRequired)}`,
+      `- runner_failure_means: ${guidance.runnerContext.runnerFailureMeans}`,
+      `- risks: ${guidance.risks.map((risk) => risk.code).join(", ") || "none"}`,
+    ]);
+  } catch (err) {
+    const message = err instanceof Error && err.message.trim() ? err.message.trim() : String(err);
+    return appendDetailsBlock(details, [
+      "DecisionContextRef:",
+      "- state: unavailable",
+      `- error: ${message}`,
+      `- safe_command: agentplane task next-action ${opts.taskId} --explain`,
+    ]);
+  }
+}
+
 async function recordVerificationResult(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -127,7 +172,15 @@ async function recordVerificationResult(opts: {
         by: opts.by,
         note: opts.note,
         state: opts.state,
-        details: await appendBlueprintSnapshotReference(opts.details, { ctx, task: current }),
+        details: await appendDecisionContextReference(
+          await appendBlueprintSnapshotReference(opts.details, { ctx, task: current }),
+          {
+            ctx,
+            cwd: opts.cwd,
+            rootOverride: opts.rootOverride,
+            taskId: current.id,
+          },
+        ),
         doc,
         requiredSections: config.tasks.doc.required_sections,
         maxReworkAttempts: config.evaluator?.max_rework_attempts,

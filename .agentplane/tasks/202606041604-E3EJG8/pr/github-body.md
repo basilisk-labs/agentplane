@@ -19,8 +19,8 @@ Make additional AgentPlane route and lifecycle diagnostics less ambiguous for ag
 - Note:
 
 ```text
-Local verification passed for typecheck, formatting, policy routing, and CLI smoke; focused
-vitest/build wrappers timed out without assertion or compiler failure output.
+Decision-context surfaces verified with focused tests, TypeScript, formatting, policy routing, and
+CLI smoke on route/brief/status/pr-check outputs.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,14 +32,19 @@ vitest/build wrappers timed out without assertion or compiler failure output.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../impl/commands.commit-non-close.unit.test.ts    |  45 +++++++++
- .../src/commands/guard/impl/commit-diagnostics.ts  |  30 +++++-
- packages/agentplane/src/commands/pr/check.ts       |  22 +++++
- .../src/commands/shared/route-guidance.test.ts     |  63 +++++++++++++
- .../src/commands/shared/route-guidance.ts          | 103 +++++++++++++++++++++
- .../src/commands/task/next-action.command.ts       |  13 +++
- .../agentplane/src/commands/task/status.command.ts |  19 +++-
- 7 files changed, 292 insertions(+), 3 deletions(-)
+ .../impl/commands.commit-non-close.unit.test.ts    |  45 ++++
+ .../src/commands/guard/impl/commit-diagnostics.ts  |  36 +++-
+ packages/agentplane/src/commands/pr/check.ts       |  32 +++
+ .../src/commands/shared/route-guidance.test.ts     |  84 ++++++++
+ .../src/commands/shared/route-guidance.ts          | 232 +++++++++++++++++++++
+ .../agentplane/src/commands/task/brief-model.ts    |   7 +
+ .../agentplane/src/commands/task/brief-render.ts   |  32 +++
+ .../src/commands/task/next-action.command.ts       |  40 ++++
+ .../agentplane/src/commands/task/status.command.ts |  39 +++-
+ .../src/commands/task/verify-record-execute.ts     |  55 ++++-
+ .../src/runner/usecases/task-run-blueprint.test.ts |   7 +
+ .../src/runner/usecases/task-run-bootstrap.ts      |  42 ++++
+ 12 files changed, 647 insertions(+), 4 deletions(-)
 ```
 
 </details>
