@@ -81,6 +81,10 @@ function assertFile(filePath, label) {
   if (!stat.isFile()) throw new Error(`Expected ${label} to be a file: ${filePath}`);
 }
 
+function initSmokeGitRepo(cwd) {
+  run("git", ["init"], { cwd });
+}
+
 function inferTarget(artifactPath) {
   const name = path.basename(artifactPath);
   const target = TARGETS.find((candidate) =>
@@ -125,6 +129,7 @@ function smokeBunArchive(args) {
     if (versionOutput !== version) {
       throw new Error(`Expected Bun archive version ${version}, got ${versionOutput}`);
     }
+    initSmokeGitRepo(extractDir);
     const quickstartOutput = run(executable, ["quickstart"], { cwd: extractDir });
     assertIncludes(quickstartOutput, "agentplane quickstart", "quickstart");
     return {
@@ -169,6 +174,7 @@ function smokeBunCompiledCli(args, repoRoot) {
       throw new Error(`Expected compiled version ${version}, got ${versionOutput}`);
     }
 
+    initSmokeGitRepo(tempDir);
     const quickstartOutput = run(executable, ["quickstart"], { cwd: tempDir });
     assertIncludes(quickstartOutput, "agentplane quickstart", "quickstart");
 
