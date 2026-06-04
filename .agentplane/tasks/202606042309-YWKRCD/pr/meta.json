@@ -2,12 +2,13 @@
   "base": "main",
   "branch": "task/202606042309-YWKRCD/write-v0-6-17-release-notes",
   "created_at": "2026-06-04T23:09:56.021Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:8a1baf58f37c4e534d9485be94c8fcc8911d92b40602d8b994793ac7855dc154",
+  "last_verified_at": "2026-06-04T23:11:09.483Z",
+  "last_verified_diffstat_sha256": "sha256:8a1baf58f37c4e534d9485be94c8fcc8911d92b40602d8b994793ac7855dc154",
   "schema_version": 1,
   "task_id": "202606042309-YWKRCD",
   "updated_at": "2026-06-04T23:09:56.021Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
