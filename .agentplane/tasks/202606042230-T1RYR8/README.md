@@ -1,10 +1,10 @@
 ---
 id: "202606042230-T1RYR8"
 title: "Bound PR artifact amend hook hangs"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: git commit --amend no-edit now accepts timeoutMs, PR artifact auto-commit and close-refresh pass bounded amend timeouts, and focused tests cover timeout propagation. Checks: bunx vitest run packages/agentplane/src/commands/pr/internal/auto-commit.test.ts packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts; npm run typecheck in packages/agentplane; npm run typecheck in packages/core."
   attempts: 0
-commit: null
+commit:
+  hash: "fce858fa6d0944172febda622fca66299f4e6b29"
+  message: "🚧 020DWK task: record evaluator review"
 comments:
   -
     author: "CODER"
     body: "Start: bound PR artifact update amend hangs discovered during batch PR artifact refresh."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: git commit --amend no-edit now accepts timeoutMs, PR artifact auto-commit and close-refresh pass bounded amend timeouts, and focused tests cover timeout propagation. Checks: bunx vitest run packages/agentplane/src/commands/pr/internal/auto-commit.test.ts packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts; npm run typecheck in packages/agentplane; npm run typecheck in packages/core."
+  -
+    type: "status"
+    at: "2026-06-04T23:06:35.882Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T22:30:32.046Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T23:06:35.885Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent PR artifact update from hanging indefinitely when git commit --amend waits on local hooks after artifacts were refreshed."
 sections:
   Summary: |-

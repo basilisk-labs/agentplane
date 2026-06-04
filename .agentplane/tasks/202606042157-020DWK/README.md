@@ -1,10 +1,11 @@
 ---
 id: "202606042157-020DWK"
 title: "Reduce agent cognitive load and publish next patch"
-status: "DOING"
+result_summary: "Merged via PR #4442."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "PR #4442 checks success; local checks: format:check, lint:core, arch:check, knip:check, test:fast"
   findings:
     - "Verified batch includes primary 202606042157-020DWK plus follow-ups NX58GD, GEJ627, FE57GC, T1RYR8, HJCTGD, 5Z9J95; ap pr check reports fresh artifacts and GitHub status checks succeeded."
-commit: null
+commit:
+  hash: "fce858fa6d0944172febda622fca66299f4e6b29"
+  message: "🚧 020DWK task: record evaluator review"
 comments:
   -
     author: "CODER"
     body: "Start: implementing approved CLI context refactor and patch release preparation from the dedicated branch_pr worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: route packet refactor keeps hybrid PR update on CODER rail, surfaces evidence_missing in text output, and preserves PR check diagnostics."
+  -
+    type: "status"
+    at: "2026-06-04T23:06:35.851Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T22:02:08.956Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T23:06:35.856Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor current CLI context surfaces so agents receive direct next-step guidance, verify route/brief/diagnostic output, then prepare and publish the next patch release."
 sections:
   Summary: |-

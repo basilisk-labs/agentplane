@@ -1,10 +1,10 @@
 ---
 id: "202606042225-FE57GC"
 title: "Bound repository pre-push runner hangs"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: bounded repository-local pre-push runner hangs with a timeout diagnostic and direct next action. Checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts; npm run typecheck in packages/agentplane; npm run build in packages/agentplane; git diff --check."
   attempts: 0
-commit: null
+commit:
+  hash: "fce858fa6d0944172febda622fca66299f4e6b29"
+  message: "🚧 020DWK task: record evaluator review"
 comments:
   -
     author: "CODER"
     body: "Start: bound repo-local pre-push runner hangs discovered during PR publication."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bounded repository-local pre-push runner hangs with a timeout diagnostic and direct next action. Checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts; npm run typecheck in packages/agentplane; npm run build in packages/agentplane; git diff --check."
+  -
+    type: "status"
+    at: "2026-06-04T23:06:35.877Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T22:26:26.571Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T23:06:35.879Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent repository-local pre-push hook scripts from leaving git push without a clear next action when the script stops making progress."
 sections:
   Summary: |-

@@ -1,10 +1,10 @@
 ---
 id: "202606042236-HJCTGD"
 title: "Commit included batch ownership artifacts"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: PR artifact auto-commit now includes related included task packets changed by syncPrArtifacts. Checks: bunx vitest run packages/agentplane/src/commands/pr/internal/auto-commit.test.ts; npm run typecheck in packages/agentplane; npm run build in packages/agentplane."
   attempts: 0
-commit: null
+commit:
+  hash: "fce858fa6d0944172febda622fca66299f4e6b29"
+  message: "🚧 020DWK task: record evaluator review"
 comments:
   -
     author: "CODER"
     body: "Start: include batch ownership README changes in PR artifact auto-commit to avoid dirty-tree stale-head loops."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: PR artifact auto-commit now includes related included task packets changed by syncPrArtifacts. Checks: bunx vitest run packages/agentplane/src/commands/pr/internal/auto-commit.test.ts; npm run typecheck in packages/agentplane; npm run build in packages/agentplane."
+  -
+    type: "status"
+    at: "2026-06-04T23:06:35.888Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T22:38:11.344Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T23:06:35.890Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure PR artifact updates commit included task batch ownership README changes together with primary PR artifacts, avoiding dirty-tree and stale-head loops."
 sections:
   Summary: |-

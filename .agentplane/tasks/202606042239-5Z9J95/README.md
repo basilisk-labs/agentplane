@@ -1,10 +1,10 @@
 ---
 id: "202606042239-5Z9J95"
 title: "Align PR check with live-head artifacts"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: PR freshness treats missing meta.head_sha as live-head artifacts instead of stale, aligning pr check with route oracle. Checks: bunx vitest run packages/agentplane/src/commands/pr/internal/freshness.test.ts packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts; npm run typecheck in packages/agentplane; npm run build in packages/agentplane."
   attempts: 0
-commit: null
+commit:
+  hash: "fce858fa6d0944172febda622fca66299f4e6b29"
+  message: "🚧 020DWK task: record evaluator review"
 comments:
   -
     author: "CODER"
     body: "Start: align pr check with route oracle for live-head PR artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: PR freshness treats missing meta.head_sha as live-head artifacts instead of stale, aligning pr check with route oracle. Checks: bunx vitest run packages/agentplane/src/commands/pr/internal/freshness.test.ts packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts; npm run typecheck in packages/agentplane; npm run build in packages/agentplane."
+  -
+    type: "status"
+    at: "2026-06-04T23:06:35.893Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T22:40:25.371Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T23:06:35.895Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make pr check treat live-head PR artifacts consistently with route oracle instead of failing with recorded_head=<live> when local artifacts are otherwise fresh."
 sections:
   Summary: |-

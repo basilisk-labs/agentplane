@@ -1,10 +1,10 @@
 ---
 id: "202606042204-NX58GD"
 title: "Make commit hook failures action-specific"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: commit hook diagnostics now classify subject policy and DCO failures with action-specific reason codes and next actions."
   attempts: 0
-commit: null
+commit:
+  hash: "fce858fa6d0944172febda622fca66299f4e6b29"
+  message: "🚧 020DWK task: record evaluator review"
 comments:
   -
     author: "CODER"
     body: "Start: improving commit hook diagnostics discovered while committing task 202606042157-020DWK, within the same PR batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: commit hook diagnostics now classify subject policy and DCO failures with action-specific reason codes and next actions."
+  -
+    type: "status"
+    at: "2026-06-04T23:06:35.866Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4442 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T22:06:49.050Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T23:06:35.869Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor commit hook diagnostics so commit subject and DCO failures return action-specific reason codes and next actions instead of generic git_context guidance."
 sections:
   Summary: |-
