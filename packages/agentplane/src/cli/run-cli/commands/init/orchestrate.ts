@@ -54,6 +54,7 @@ function renderDryRunPlanText(plan: ReturnType<typeof buildInitPlan>): string {
     `Profile: ${plan.profile} (${plan.internalSetupProfile})`,
     `Workflow: ${plan.answers.workflow}`,
     `Runner: ${plan.answers.runnerProfile}`,
+    `Evaluator skepticism: ${plan.answers.evaluatorSkepticism}`,
     `Backend: ${plan.answers.backend}`,
     `Git init: ${String(!plan.context.gitRootExisted)}`,
     `Parent Git: ${plan.context.parentGitRoot ?? "none"}`,

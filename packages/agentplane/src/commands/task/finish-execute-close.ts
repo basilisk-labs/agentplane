@@ -1,4 +1,6 @@
 import { exitCodeForError } from "../../cli/exit-codes.js";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { CliError } from "../../shared/errors.js";
 import {
   gitMutationDiagnosticContext,
@@ -6,6 +8,9 @@ import {
 } from "../../shared/git-mutation.js";
 import { resolveIgnoredDirectCloseDirtyPaths } from "../guard/impl/close-dirt.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { gitCurrentBranch } from "../shared/git-ops.js";
+import { parsePrMeta } from "../shared/pr-meta.js";
+import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { createTaskCloseCommit } from "./finish-shared.js";
 import { materializeBranchPrCloseTail } from "./finish-close.js";
 import type { FinishExecutionPlan, FinishOptions } from "./finish-types.js";
@@ -105,6 +110,26 @@ export async function finalizeCloseTail(opts: {
   }
   const closeUnstageOthers = options.closeCommit === true && options.closeUnstageOthers === true;
   if (ctx.config.workflow_mode === "branch_pr") {
+    if (plan.preMergeClosure) {
+      await markPreMergeClosure({ ctx, taskId: primaryTaskId });
+      await createTaskCloseCommit({
+        ctx,
+        cwd: options.cwd,
+        rootOverride: options.rootOverride,
+        taskId: primaryTaskId,
+        baseBranchOverride: options.baseBranchOverride,
+        quiet: options.quiet,
+        closeUnstageOthers,
+        allowPolicy: promotedIncidents > 0,
+        additionalTaskIds: plan.closeAdditionalTaskIds,
+      });
+      if (!options.quiet) {
+        process.stdout.write(
+          "branch_pr pre-merge closure committed on the task branch; merge the task PR after hosted checks pass.\n",
+        );
+      }
+      return;
+    }
     const closeBranch = await materializeBranchPrCloseTail({
       ctx,
       cwd: options.cwd,
@@ -140,4 +165,27 @@ export async function finalizeCloseTail(opts: {
     allowPolicy: promotedIncidents > 0,
     additionalTaskIds: plan.closeAdditionalTaskIds,
   });
+}
+
+async function markPreMergeClosure(opts: { ctx: CommandContext; taskId: string }): Promise<void> {
+  const metaPath = path.join(
+    opts.ctx.resolvedProject.gitRoot,
+    opts.ctx.config.paths.workflow_dir,
+    opts.taskId,
+    "pr",
+    "meta.json",
+  );
+  const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
+  const branch = await gitCurrentBranch(opts.ctx.resolvedProject.gitRoot);
+  const basisCommit = await opts.ctx.git.headCommit();
+  await writeJsonStableIfChanged(metaPath, {
+    ...meta,
+    pre_merge_closure: {
+      state: "closed_before_merge",
+      branch,
+      basis_commit: basisCommit,
+      recorded_at: new Date().toISOString(),
+    },
+  });
+  opts.ctx.git.invalidateStatus();
 }

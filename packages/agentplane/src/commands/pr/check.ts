@@ -1,5 +1,6 @@
 import path from "node:path";
 import { execFileAsync } from "@agentplaneorg/core/process";
+import { resolveGhCommand } from "../shared/gh-transport.js";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
@@ -44,10 +45,12 @@ async function lookupGithubMergeDiagnostic(opts: {
   prNumber: number | null;
 }): Promise<GithubMergeDiagnostic | null> {
   if (opts.prNumber === null) return null;
+  const gh = resolveGhCommand();
   try {
     const { stdout } = await execFileAsync(
-      "gh",
+      gh.command,
       [
+        ...gh.argsPrefix,
         "pr",
         "view",
         String(opts.prNumber),

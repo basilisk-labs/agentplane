@@ -142,6 +142,14 @@ export const initSpec: CommandSpec<InitParsed> = {
     },
     {
       kind: "string",
+      name: "evaluator-skepticism",
+      valueHint: "<standard|strict|paranoid>",
+      choices: ["standard", "strict", "paranoid"],
+      coerce: (raw) => raw.trim().toLowerCase(),
+      description: "Evaluator audit skepticism level for Codex runner review prompts.",
+    },
+    {
+      kind: "string",
       name: "strict-unsafe-confirm",
       valueHint: "<true|false>",
       description: "Require strict explicit confirmations for additional unsafe actions.",
@@ -314,6 +322,7 @@ export const initSpec: CommandSpec<InitParsed> = {
               feedbackAnonymousCloudRaw,
             ),
       executionProfile: raw.opts["execution-profile"] as InitFlags["executionProfile"],
+      evaluatorSkepticism: raw.opts["evaluator-skepticism"] as InitFlags["evaluatorSkepticism"],
       strictUnsafeConfirm:
         (raw.opts["strict-unsafe-confirm"] as string | undefined) === undefined
           ? undefined

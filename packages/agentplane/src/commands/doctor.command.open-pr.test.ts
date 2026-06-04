@@ -726,6 +726,33 @@ describe(
         "agentplane task normalize --sync-branch-pr-state --task-id <task-id>",
       );
       expect(findings[0]).toContain(taskId);
+
+      await writeFile(
+        path.join(taskDir, "pr", "meta.json"),
+        JSON.stringify(
+          {
+            schema_version: 1,
+            task_id: taskId,
+            branch: branchName,
+            base: "main",
+            created_at: "2026-04-05T09:00:00.000Z",
+            updated_at: "2026-04-05T09:00:00.000Z",
+            last_verified_sha: null,
+            last_verified_at: null,
+            verify: { status: "skipped" },
+            pre_merge_closure: {
+              state: "closed_before_merge",
+              branch: branchName,
+              basis_commit: shippedHash,
+              recorded_at: "2026-04-05T09:12:00.000Z",
+            },
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+      await expect(checkBranchPrDoneTaskOpenPrDrift(ctx)).resolves.toEqual([]);
     });
 
     it("ignores DONE branch_pr PR artifacts when the task branch was already deleted", async () => {

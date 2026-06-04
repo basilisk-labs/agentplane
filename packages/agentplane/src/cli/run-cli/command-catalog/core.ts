@@ -5,6 +5,7 @@ import {
   insightsIssueSpec,
   insightsReportSpec,
   insightsSpec,
+  insightsTriageSpec,
 } from "../../../commands/insights/insights.spec.js";
 import { upgradeSpec } from "../../../commands/upgrade.spec.js";
 import { workflowBuildSpec } from "../../../commands/workflow-build.command.js";
@@ -71,6 +72,7 @@ import {
   loadIdeSyncSpec,
   loadInsightsIssueSpec,
   loadInsightsReportSpec,
+  loadInsightsTriageSpec,
   loadDemoSpec,
   loadReleaseTasksReconcileSpec,
 } from "../command-loaders/core.js";
@@ -141,6 +143,10 @@ export const CORE_COMMANDS = [
   fromCommandsInsightsCommand(insightsSpec, "runInsights", { needs: "none" }),
   declareCommand(insightsReportSpec, {
     load: loadInsightsReportSpec,
+    needs: "project+config",
+  }),
+  declareCommand(insightsTriageSpec, {
+    load: loadInsightsTriageSpec,
     needs: "project+config",
   }),
   declareCommand(insightsIssueSpec, {

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202606031942-Y9BSF3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-03T20:02:23.413Z",
+  "verdict": "pass",
+  "summary": "Structured feedback issue triage is implemented and verified.",
+  "evaluated_sha": "36b4ae5fc0469b1a6a065d4c9bd689279f524ca5",
+  "blueprint_digest": "5b43669e50f4928a767f8e1762ecf59e5a6e3786d8e6271a411007a104638bfb",
+  "findings": [
+    "The issue path preserves required agent-written context while adding CLI-generated privacy-bounded startup-routing triage."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606031942-Y9BSF3/README.md",
+    "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.insights-report.test.ts",
+    "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts",
+    "bun run docs:cli:check",
+    "bun run typecheck",
+    "node .agentplane/policy/check-routing.mjs",
+    "ap pr check 202606031942-Y9BSF3"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

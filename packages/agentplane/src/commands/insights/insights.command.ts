@@ -14,6 +14,7 @@ import {
   insightsSpec,
   type InsightsIssueParsed,
   type InsightsReportParsed,
+  type InsightsTriageParsed,
 } from "./insights.spec.js";
 import { resolveAgentContext } from "./insights-issue-context.js";
 import { renderIssueBody, sanitizeIssueTitle, trimOptional } from "./insights-issue-render.js";
@@ -24,8 +25,18 @@ import {
   type FeedbackGithubIssuesSettings,
 } from "./insights-issue-publish.js";
 import { buildInsightsReport, renderInsightsReport } from "./insights-report.js";
+import {
+  buildInsightsTriage,
+  renderInsightsTriageMarkdown,
+  renderInsightsTriageReport,
+} from "./insights-triage.js";
 
-export { insightsIssueSpec, insightsReportSpec, insightsSpec } from "./insights.spec.js";
+export {
+  insightsIssueSpec,
+  insightsReportSpec,
+  insightsSpec,
+  insightsTriageSpec,
+} from "./insights.spec.js";
 export type { InsightsReport } from "./insights-report.js";
 
 const output = createCliEmitter();
@@ -49,6 +60,33 @@ export function makeRunInsightsReportHandler(deps: RunDeps): CommandHandler<Insi
       } else {
         output.report(renderInsightsReport(report), {
           header: infoMessage("insights report: local diagnostic summary"),
+        });
+      }
+      return 0;
+    });
+}
+
+export function makeRunInsightsTriageHandler(deps: RunDeps): CommandHandler<InsightsTriageParsed> {
+  return async (ctx, parsed) =>
+    wrapCommand({ command: "insights triage", rootOverride: ctx.rootOverride }, async () => {
+      const report = await buildInsightsReport({
+        deps,
+        recentLimit: parsed.recentLimit,
+        failure: {
+          errorCode: parsed.errorCode,
+          commandId: parsed.failureCommand,
+          phase: parsed.failurePhase,
+          reasonCode: parsed.failureReasonCode,
+          messageClass: parsed.failureMessageClass,
+          argvShape: parsed.failureArgvShape,
+        },
+      });
+      const triage = buildInsightsTriage({ report, preset: parsed.preset });
+      if (parsed.json) {
+        output.json(triage);
+      } else {
+        output.report(renderInsightsTriageReport(triage), {
+          header: infoMessage("insights triage: structured diagnostic findings"),
         });
       }
       return 0;
@@ -115,6 +153,7 @@ export function makeRunInsightsIssueHandler(deps: RunDeps): CommandHandler<Insig
           argvShape: parsed.failureArgvShape,
         },
       });
+      const triage = parsed.triage ? buildInsightsTriage({ report, preset: parsed.triage }) : null;
       const title = sanitizeIssueTitle(parsed.title, parsed.errorCode);
       const body = renderIssueBody({
         body: parsed.body,
@@ -122,6 +161,7 @@ export function makeRunInsightsIssueHandler(deps: RunDeps): CommandHandler<Insig
         report,
         includeInsightsReport: settings.include_insights_report,
         agentContext,
+        triageMarkdown: triage ? renderInsightsTriageMarkdown(triage) : null,
       });
       const payload = {
         repository: settings.repository,

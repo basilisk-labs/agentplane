@@ -122,6 +122,8 @@ const TASK_DOC_REQUIRED_SECTIONS_DEFAULT = [
   "Rollback Plan",
 ] as string[];
 
+const EVALUATOR_SKEPTICISM_LEVELS = ["standard", "strict", "paranoid"] as const;
+
 const ARTIFACTS_LANGUAGE = z.enum(["any", "en"]).default("any");
 
 const COMMENT_POLICY_SCHEMA = z
@@ -474,10 +476,12 @@ export const AgentplaneConfigSchema = z
     evaluator: z
       .object({
         max_rework_attempts: z.number().int().min(1).max(20).default(3),
+        skepticism_level: z.enum(EVALUATOR_SKEPTICISM_LEVELS).default("standard"),
       })
       .passthrough()
       .default({
         max_rework_attempts: 3,
+        skepticism_level: "standard",
       }),
     commit: z
       .object({

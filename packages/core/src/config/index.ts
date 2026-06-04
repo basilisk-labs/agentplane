@@ -6,6 +6,7 @@ export {
   validateConfig,
   type AgentplaneConfig,
   type CommitAutomation,
+  type EvaluatorSkepticismLevel,
   type ExecutionProfile,
   type LoadedConfig,
   type ReasoningEffort,
