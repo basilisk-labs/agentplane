@@ -22,4 +22,24 @@ describe("PR artifact freshness", () => {
 
     expect(freshness.reviewFresh).toBe(true);
   });
+
+  it("treats missing meta head as stale when current diffstat has no matching digest", async () => {
+    const freshness = await assessPrArtifactFreshness({
+      gitRoot: "/repo",
+      workflowDir: ".agentplane/tasks",
+      taskId: "202606042352-WY0RTM",
+      branchHeadSha: "abc123",
+      metaHeadSha: null,
+      metaLastVerifiedSha: null,
+      metaDiffstatDigest: null,
+      metaLastVerifiedDiffstatDigest: null,
+      currentDiffstatDigest: "sha256:current",
+      metaVerifyStatus: "pass",
+      taskVerificationState: "ok",
+      verifyLogText: null,
+      requiresVerify: false,
+    });
+
+    expect(freshness.reviewFresh).toBe(false);
+  });
 });
