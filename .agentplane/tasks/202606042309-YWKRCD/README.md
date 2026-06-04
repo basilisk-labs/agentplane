@@ -1,10 +1,11 @@
 ---
 id: "202606042309-YWKRCD"
 title: "Write v0.6.17 release notes"
-status: "DOING"
+result_summary: "Merged via PR #4444."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "https://github.com/basilisk-labs/agentplane/pull/4444"
   findings:
     - "No release-note coverage gaps found; local diff check passed and GitHub PR #4444 checks passed."
-commit: null
+commit:
+  hash: "a955e5cf8baaccfc89325f7d3f7277571cccb8c9"
+  message: "🧪 202606042316-XH5D0B task: record social asset review"
 comments:
   -
     author: "CODER"
     body: "Start: write v0.6.17 release notes from the frozen release plan."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4444 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: docs/releases/v0.6.17.md covers the frozen v0.6.17 release plan; git diff --check passed; Cyrillic scan returned no matches."
+  -
+    type: "status"
+    at: "2026-06-04T23:21:44.752Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4444 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T23:11:09.571Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T23:21:44.758Z"
+doc_updated_by: "INTEGRATOR"
 description: "Write release notes required for the v0.6.17 patch release candidate."
 sections:
   Summary: |-

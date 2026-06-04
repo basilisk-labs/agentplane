@@ -1,10 +1,10 @@
 ---
 id: "202606042316-XH5D0B"
 title: "Generate v0.6.17 release social assets"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +42,16 @@ quality_review:
     - "docs-social-check"
   findings:
     - "The review blocker is addressed by website/static/img/social/docs/releases/v0.6.17.png plus manifest.json; bun run docs:social:check passed."
-commit: null
+commit:
+  hash: "a955e5cf8baaccfc89325f7d3f7277571cccb8c9"
+  message: "🧪 202606042316-XH5D0B task: record social asset review"
 comments:
   -
     author: "CODER"
     body: "Start: generate v0.6.17 docs social preview asset required by release checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4444 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -61,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun run docs:social:generate created the v0.6.17 social preview asset and bun run docs:social:check checked 210 docs social images."
+  -
+    type: "status"
+    at: "2026-06-04T23:21:44.766Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4444 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-04T23:18:05.897Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-04T23:21:44.770Z"
+doc_updated_by: "INTEGRATOR"
 description: "Generate the social preview image and manifest entry required by docs social checks for docs/releases/v0.6.17.md."
 sections:
   Summary: |-
