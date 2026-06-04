@@ -27,11 +27,10 @@ function runForRoot(root) {
   });
 
   if (result.signal) {
-    process.stderr.write(`dependency-cruiser terminated for ${root}: signal=${result.signal}\n`);
-    process.exit(128);
+    throw new Error(`dependency-cruiser terminated for ${root}: signal=${result.signal}`);
   }
   if (result.status !== 0) {
-    process.exit(result.status ?? 1);
+    throw new Error(`dependency-cruiser failed for ${root}: exit=${result.status ?? 1}`);
   }
 }
 
