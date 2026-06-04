@@ -4,6 +4,7 @@ import path from "node:path";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import { readJsonFile } from "../../shared/json-io.js";
+import { withDiagnosticContext } from "../shared/diagnostics.js";
 
 import type { PlanChange, ReleaseVersionPlan } from "./apply.types.js";
 
@@ -55,7 +56,31 @@ export function parseVersionPlan(raw: unknown): ReleaseVersionPlan {
 
 export async function findLatestPlanDir(gitRoot: string): Promise<string> {
   const base = path.join(gitRoot, ".agentplane", ".release", "plan");
-  const runNames = await readdir(base);
+  let runNames: string[];
+  try {
+    runNames = await readdir(base);
+  } catch {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        "No release plan runs found under .agentplane/.release/plan/. Run `agentplane release plan --patch` first.",
+      context: withDiagnosticContext(
+        { command: "release candidate" },
+        {
+          state: "release candidate cannot find a prepared release plan",
+          likelyCause:
+            "the release plan directory has not been generated in this checkout or was not copied into the release-candidate worktree",
+          nextAction: {
+            command: "agentplane release plan --patch",
+            reason:
+              "generate the release plan artifacts before preparing the release candidate",
+            reasonCode: "release_candidate_missing_plan",
+          },
+        },
+      ),
+    });
+  }
   const runs = runNames
     .map((s) => s.trim())
     .filter(Boolean)
@@ -63,10 +88,24 @@ export async function findLatestPlanDir(gitRoot: string): Promise<string> {
   const latest = runs.at(-1);
   if (!latest) {
     throw new CliError({
-      exitCode: exitCodeForError("E_IO"),
-      code: "E_IO",
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
       message:
-        "No release plan runs found under .agentplane/.release/plan/. Run `agentplane release plan` first.",
+        "No release plan runs found under .agentplane/.release/plan/. Run `agentplane release plan --patch` first.",
+      context: withDiagnosticContext(
+        { command: "release candidate" },
+        {
+          state: "release candidate cannot find a prepared release plan",
+          likelyCause:
+            "the release plan directory exists but contains no release plan runs",
+          nextAction: {
+            command: "agentplane release plan --patch",
+            reason:
+              "generate the release plan artifacts before preparing the release candidate",
+            reasonCode: "release_candidate_missing_plan",
+          },
+        },
+      ),
     });
   }
   return path.join(base, latest);
