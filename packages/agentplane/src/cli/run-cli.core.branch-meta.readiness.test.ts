@@ -305,7 +305,10 @@ describe("runCli", () => {
 
   it("preflight --json points unavailable cloud backends at local fallback config review", async () => {
     const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
+    const config = defaultConfig();
+    config.agents.approvals.require_network = false;
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "backends", "local"), { recursive: true });
     await writeFile(
       path.join(root, ".agentplane", "backends", "local", "backend.json"),
       JSON.stringify({

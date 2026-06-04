@@ -309,8 +309,7 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
         backendMessage.includes("Cloud backend request failed before a response was received.")
       ) {
         return withExplicit({
-          hint:
-            "If `.agentplane/tasks` already contains the task READMEs you need, temporarily switch `.agentplane/backends/local/backend.json` to `\"id\": \"local\"` and rerun the task command against repo-local truth.",
+          hint: 'If `.agentplane/tasks` already contains the task READMEs you need, temporarily switch `.agentplane/backends/local/backend.json` to `"id": "local"` and rerun the task command against repo-local truth.',
           nextAction: {
             command: "agentplane config show",
             reason:
