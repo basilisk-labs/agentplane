@@ -73,8 +73,7 @@ export async function findLatestPlanDir(gitRoot: string): Promise<string> {
             "the release plan directory has not been generated in this checkout or was not copied into the release-candidate worktree",
           nextAction: {
             command: "agentplane release plan --patch",
-            reason:
-              "generate the release plan artifacts before preparing the release candidate",
+            reason: "generate the release plan artifacts before preparing the release candidate",
             reasonCode: "release_candidate_missing_plan",
           },
         },
@@ -96,12 +95,10 @@ export async function findLatestPlanDir(gitRoot: string): Promise<string> {
         { command: "release candidate" },
         {
           state: "release candidate cannot find a prepared release plan",
-          likelyCause:
-            "the release plan directory exists but contains no release plan runs",
+          likelyCause: "the release plan directory exists but contains no release plan runs",
           nextAction: {
             command: "agentplane release plan --patch",
-            reason:
-              "generate the release plan artifacts before preparing the release candidate",
+            reason: "generate the release plan artifacts before preparing the release candidate",
             reasonCode: "release_candidate_missing_plan",
           },
         },
