@@ -8,6 +8,7 @@ import { resolveTaskIndexPath } from "../../../backends/task-index.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commit-pr-artifacts.js";
 import { isTaskLocalAdvancePath } from "../../shared/task-local-freshness.js";
 import { type CommandContext } from "../../shared/task-backend.js";
+import { resolveGitCommitTimeoutMs } from "../../shared/git-timeouts.js";
 import { stageAllowlist } from "./allow.js";
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "./env.js";
 import { guardCommitCheck } from "./policy.js";
@@ -113,7 +114,7 @@ export async function commitRefreshedTaskArtifacts(opts: {
     allowCI: false,
     gitIdentity: await resolveCanonicalGitIdentity(),
   });
-  await opts.ctx.git.commitAmendNoEdit({ env });
+  await opts.ctx.git.commitAmendNoEdit({ env, timeoutMs: resolveGitCommitTimeoutMs() });
   return await opts.ctx.git.headHashSubject();
 }
 

@@ -335,8 +335,10 @@ export class GitContext {
     body?: string;
     env?: NodeJS.ProcessEnv;
     timeoutMs?: number;
+    skipHooks?: boolean;
   }): Promise<void> {
     const args = ["commit", "-m", opts.message];
+    if (opts.skipHooks) args.push("--no-verify");
     if (opts.body) args.push("-m", opts.body);
     await execFileAsync("git", args, {
       cwd: this.gitRoot,
@@ -348,11 +350,18 @@ export class GitContext {
     this.memo.headCommit = undefined;
   }
 
-  async commitAmendNoEdit(opts?: { env?: NodeJS.ProcessEnv }): Promise<void> {
-    await execFileAsync("git", ["commit", "--amend", "--no-edit"], {
+  async commitAmendNoEdit(opts?: {
+    env?: NodeJS.ProcessEnv;
+    timeoutMs?: number;
+    skipHooks?: boolean;
+  }): Promise<void> {
+    const args = ["commit", "--amend", "--no-edit"];
+    if (opts?.skipHooks) args.push("--no-verify");
+    await execFileAsync("git", args, {
       cwd: this.gitRoot,
       env: opts?.env ?? gitEnv(),
       maxBuffer: 50 * 1024 * 1024,
+      ...(opts?.timeoutMs === undefined ? {} : { timeout: opts.timeoutMs }),
     });
     this.memo.status = undefined;
     this.memo.headCommit = undefined;
