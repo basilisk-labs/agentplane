@@ -201,6 +201,7 @@ export function buildInitPlan(opts: {
       feedbackGithubIssues: opts.answers.feedbackGithubIssues,
       feedbackAnonymousCloud: opts.answers.feedbackAnonymousCloud,
       executionProfile: opts.answers.executionProfile,
+      evaluatorSkepticism: opts.answers.evaluatorSkepticism,
       strictUnsafeConfirm: opts.answers.strictUnsafeConfirm,
       recipes: [...opts.answers.recipes],
       blueprints: [...opts.answers.blueprints],

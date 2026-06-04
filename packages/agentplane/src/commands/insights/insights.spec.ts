@@ -6,6 +6,18 @@ export type InsightsReportParsed = {
   recentLimit: number;
 };
 
+export type InsightsTriageParsed = {
+  json: boolean;
+  preset: "startup-routing";
+  recentLimit: number;
+  errorCode?: string;
+  failureCommand?: string;
+  failurePhase?: string;
+  failureReasonCode?: string;
+  failureMessageClass?: string;
+  failureArgvShape: string[];
+};
+
 export type InsightsIssueParsed = {
   title?: string;
   body?: string;
@@ -13,6 +25,7 @@ export type InsightsIssueParsed = {
   agentContext?: string;
   agentContextFile?: string;
   allowMissingAgentContext: boolean;
+  triage?: "startup-routing";
   failureCommand?: string;
   failurePhase?: string;
   failureReasonCode?: string;
@@ -27,12 +40,16 @@ export const insightsSpec: CommandSpec<GroupCommandParsed> = {
   id: ["insights"],
   group: "Diagnostics",
   summary: "Generate local-only diagnostic insights for support analysis.",
-  synopsis: ["agentplane insights <report|issue> [options]"],
+  synopsis: ["agentplane insights <report|triage|issue> [options]"],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
     {
       cmd: "agentplane insights report",
       why: "Print a local diagnostic summary that can be shared manually.",
+    },
+    {
+      cmd: "agentplane insights triage --preset startup-routing",
+      why: "Print structured diagnostic findings for agent-written feedback issues.",
     },
     {
       cmd: "agentplane insights issue --error-code E_INTERNAL",
@@ -82,6 +99,101 @@ export const insightsReportSpec: CommandSpec<InsightsReportParsed> = {
   },
 };
 
+export const insightsTriageSpec: CommandSpec<InsightsTriageParsed> = {
+  id: ["insights", "triage"],
+  group: "Diagnostics",
+  summary: "Print structured privacy-bounded diagnostic findings for support triage.",
+  options: [
+    {
+      kind: "boolean",
+      name: "json",
+      default: false,
+      description: "Emit the triage result as machine-readable JSON.",
+    },
+    {
+      kind: "string",
+      name: "preset",
+      valueHint: "<startup-routing>",
+      choices: ["startup-routing"],
+      description: "Diagnostic rule preset to run (default: startup-routing).",
+    },
+    {
+      kind: "string",
+      name: "recent-limit",
+      valueHint: "<n>",
+      description:
+        "Number of recent task ids to include in the backing report (default: 8, max: 25).",
+    },
+    {
+      kind: "string",
+      name: "error-code",
+      valueHint: "<code>",
+      description: "Agentplane error code that triggered the report.",
+    },
+    {
+      kind: "string",
+      name: "failure-command",
+      valueHint: "<command>",
+      description:
+        "Privacy-safe command id associated with the failure, for example task start-ready.",
+    },
+    {
+      kind: "string",
+      name: "failure-phase",
+      valueHint: "<phase>",
+      description: "Privacy-safe lifecycle phase associated with the failure.",
+    },
+    {
+      kind: "string",
+      name: "failure-reason-code",
+      valueHint: "<code>",
+      description: "Privacy-safe reason code associated with the failure.",
+    },
+    {
+      kind: "string",
+      name: "failure-message-class",
+      valueHint: "<class>",
+      description: "Privacy-safe error message class, not the raw error message.",
+    },
+    {
+      kind: "string",
+      name: "failure-argv-shape",
+      valueHint: "<token>",
+      repeatable: true,
+      description: "Repeatable sanitized argv shape token; values must not include raw secrets.",
+    },
+  ],
+  examples: [
+    {
+      cmd: "agentplane insights triage --preset startup-routing",
+      why: "Build structured startup-route diagnostics before filing a feedback issue.",
+    },
+    {
+      cmd: "agentplane insights triage --preset startup-routing --json",
+      why: "Emit machine-readable triage for support tooling.",
+    },
+  ],
+  parse: (raw) => {
+    const rawLimit = raw.opts["recent-limit"];
+    const parsedLimit =
+      typeof rawLimit === "string" && rawLimit.trim() !== "" ? Number.parseInt(rawLimit, 10) : 8;
+    const recentLimit = Number.isFinite(parsedLimit) ? Math.max(0, Math.min(25, parsedLimit)) : 8;
+    return {
+      json: raw.opts.json === true,
+      preset: (raw.opts.preset as "startup-routing" | undefined) ?? "startup-routing",
+      recentLimit,
+      errorCode: raw.opts["error-code"] as string | undefined,
+      failureCommand: raw.opts["failure-command"] as string | undefined,
+      failurePhase: raw.opts["failure-phase"] as string | undefined,
+      failureReasonCode: raw.opts["failure-reason-code"] as string | undefined,
+      failureMessageClass: raw.opts["failure-message-class"] as string | undefined,
+      failureArgvShape: Array.isArray(raw.opts["failure-argv-shape"])
+        ? (raw.opts["failure-argv-shape"] as string[])
+        : [],
+    };
+  },
+};
+
 export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
   id: ["insights", "issue"],
   group: "Diagnostics",
@@ -105,6 +217,14 @@ export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
       valueHint: "<text>",
       description:
         "Sanitized agent-written diagnostic context to include in the public issue body.",
+    },
+    {
+      kind: "string",
+      name: "triage",
+      valueHint: "<startup-routing>",
+      choices: ["startup-routing"],
+      description:
+        "Append CLI-generated privacy-bounded diagnostic triage; the agent-written context is still required for real E_INTERNAL issues.",
     },
     {
       kind: "string",
@@ -200,6 +320,7 @@ export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
     agentContext: raw.opts["agent-context"] as string | undefined,
     agentContextFile: raw.opts["agent-context-file"] as string | undefined,
     allowMissingAgentContext: raw.opts["allow-missing-agent-context"] === true,
+    triage: raw.opts.triage as InsightsIssueParsed["triage"],
     errorCode: raw.opts["error-code"] as string | undefined,
     failureCommand: raw.opts["failure-command"] as string | undefined,
     failurePhase: raw.opts["failure-phase"] as string | undefined,

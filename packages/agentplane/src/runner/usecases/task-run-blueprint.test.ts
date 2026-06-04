@@ -106,6 +106,21 @@ describe("runner blueprint guards", () => {
     expect(bootstrap).toContain("route_decision.oracle.nextCommand");
   });
 
+  it("renders configured evaluator skepticism into the runner bootstrap", () => {
+    const bundle = makeRunnerContextBundle({
+      execution: { evaluator_skepticism_level: "paranoid" },
+    });
+
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+
+    expect(bootstrap).toContain("Evaluator skepticism contract:");
+    expect(bootstrap).toContain("- evaluator_skepticism_level: paranoid");
+    expect(bootstrap).toContain(
+      "assume the implementation is incomplete until each critical claim is backed by direct code",
+    );
+    expect(bootstrap).toContain("Prefer rework over pass for ambiguous ownership");
+  });
+
   it("rejects bundle policy modules that exceed the resolved blueprint budget", () => {
     const bundle = makeRunnerContextBundle();
     bundle.blueprint = {

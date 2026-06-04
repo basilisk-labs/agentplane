@@ -162,6 +162,7 @@ export function configRawToWorkflowFrontMatter(
     },
     evaluator: config.evaluator ?? {
       verdicts: ["pass", "rework", "blocked_external", "human_review", "infra_failed", "no_change"],
+      skepticism_level: "standard",
       required_checks: ["agentplane doctor", "node .agentplane/policy/check-routing.mjs"],
     },
     observability: config.observability ?? {

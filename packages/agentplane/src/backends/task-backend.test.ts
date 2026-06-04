@@ -175,6 +175,40 @@ describe("task-backend helpers", () => {
     expect(data.depends_on).toEqual([]);
   });
 
+  it("taskRecordToData preserves blocked runner outcomes", () => {
+    const record = {
+      id: "202601300000-BLOCK",
+      frontmatter: {
+        id: "202601300000-BLOCK",
+        title: "Task",
+        description: "Desc",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+        runner: {
+          run_id: "run-blocked",
+          status: "blocked",
+          adapter_id: "codex",
+          mode: "execute",
+          updated_at: "2026-01-30T00:00:00.000Z",
+          exit_code: null,
+          target: { kind: "task", task_id: "202601300000-BLOCK" },
+          evidence: {
+            evidence_paths: ["artifacts/result.json"],
+            verification_candidates: ["blocked on provider quota"],
+          },
+        },
+      },
+      body: "## Summary\n\nDoc text\n",
+    } as unknown as TaskRecord;
+
+    const data = taskRecordToData(record);
+
+    expect(data.runner?.status).toBe("blocked");
+    expect(data.runner?.run_id).toBe("run-blocked");
+    expect(data.runner?.evidence?.evidence_paths).toEqual(["artifacts/result.json"]);
+  });
+
   it("taskRecordToData preserves specialized blueprint requests", () => {
     const record = {
       id: "202601300000-BENCH",
