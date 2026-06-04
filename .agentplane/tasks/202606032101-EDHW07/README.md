@@ -1,10 +1,10 @@
 ---
 id: "202606032101-EDHW07"
 title: "Fix upstream issue #4412: AgentPlane internal error report (E_INTERNAL)"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,7 +22,24 @@ verification:
   updated_by: "CODER"
   note: "Upstream issue #4412 is closed; no local implementation changes were required."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-04T07:08:55.697Z"
+  updated_by: "EVALUATOR"
+  note: "EDHW07 is a stale task record for an upstream-closed issue; the task cleanup branch only refreshes PR metadata and records verification without touching code."
+  evaluated_sha: "cc974de8ed5a6dcb09d9ef483a6c07f076b88727"
+  blueprint_digest: "88fcb9972f330b7e1ffb22037b1f987e4ef218b4cd93973f64f175b5118155c0"
+  evidence_refs:
+    - ".agentplane/tasks/202606032101-EDHW07/README.md"
+    - ".agentplane/tasks/202606032101-EDHW07/quality/20260604-070855697-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606032101-EDHW07/quality/20260604-070855697-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606032101-EDHW07/quality/20260604-070855697-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606032101-EDHW07/blueprint/resolved-snapshot.json"
+    - ".agentplane/tasks/202606032101-EDHW07/pr/meta.json"
+    - "gh issue view 4412 --json state,closedAt"
+  findings:
+    - "No blocking findings; the issue is closed upstream and the branch contains only task-record maintenance."
+commit: "a7cb64e8c"
 comments:
   -
     author: "CODER"
@@ -41,8 +58,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Upstream issue #4412 is closed; no local implementation changes were required."
+  -
+    type: "status"
+    at: "2026-06-04T07:09:45.000Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Upstream issue #4412 is closed and the cleanup branch now records the final done state."
 doc_version: 3
-doc_updated_at: "2026-06-04T07:02:51.097Z"
+doc_updated_at: "2026-06-04T07:09:45.000Z"
 doc_updated_by: "CODER"
 description: "Resolve https://github.com/basilisk-labs/agentplane/issues/4412"
 sections:
