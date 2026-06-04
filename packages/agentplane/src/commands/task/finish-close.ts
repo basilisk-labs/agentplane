@@ -37,6 +37,8 @@ export async function ensureFinishRunsOnBaseBranch(opts: {
   cwd: string;
   rootOverride?: string;
   baseBranchOverride?: string;
+  taskIds: string[];
+  preMergeClosure?: boolean;
 }): Promise<void> {
   if (opts.ctx.config.workflow_mode !== "branch_pr") return;
 
@@ -55,6 +57,24 @@ export async function ensureFinishRunsOnBaseBranch(opts: {
   }
 
   const currentBranch = await gitCurrentBranch(opts.ctx.resolvedProject.gitRoot);
+  if (opts.preMergeClosure === true) {
+    const taskId = opts.taskIds[0] ?? "";
+    const expectedPrefix = `${opts.ctx.config.branch.task_prefix}/${taskId}/`;
+    if (
+      opts.taskIds.length === 1 &&
+      currentBranch !== baseBranch &&
+      currentBranch.startsWith(expectedPrefix)
+    ) {
+      return;
+    }
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message:
+        `finish --pre-merge-closure must run from the task branch ${expectedPrefix}<slug> ` +
+        `(current: ${currentBranch}, base: ${baseBranch}).`,
+    });
+  }
   if (currentBranch === baseBranch) return;
 
   throw new CliError({

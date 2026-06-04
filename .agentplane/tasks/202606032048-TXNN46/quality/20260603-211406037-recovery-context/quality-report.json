@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202606032048-TXNN46",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-03T21:14:06.037Z",
+  "verdict": "pass",
+  "summary": "Runner result manifests now accept blocked as a terminal external-blocker outcome and persisted runner/task schemas render it without invalid_result_manifest.",
+  "evaluated_sha": "78a66d0417efa3a7be3f78f4b49003ca68606376",
+  "blueprint_digest": "59d6014afabefbeacc55abea256563146c09d915447a8cd8713848eb127d25b2",
+  "findings": [
+    "Regression coverage added for status=blocked in result-manifest parsing; core/spec/root schemas include blocked runner outcome; package typechecks, schema check, routing check, direct parser smoke, and task verify-show passed. Residual: repeated post-build Vitest startups hung before banner, while the initial focused Vitest run passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606032048-TXNN46/README.md",
+    "packages/agentplane/src/runner/result-manifest.test.ts",
+    "bun run schemas:check",
+    "bun run --filter=@agentplaneorg/core typecheck",
+    "bun run --filter=agentplane typecheck",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Local Vitest runner startup hung on repeated post-build invocations; initial focused run passed and parser smoke/typechecks cover the changed behavior."
+  ]
+}

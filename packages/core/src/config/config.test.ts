@@ -146,6 +146,18 @@ describe("config", () => {
     expect(loaded.config.runner.default_adapter).toBe("codex");
   });
 
+  it("defaults evaluator skepticism to standard and accepts stricter levels", () => {
+    expect(defaultConfig().evaluator.skepticism_level).toBe("standard");
+
+    const raw = defaultConfig() as unknown as Record<string, unknown>;
+    raw.evaluator = {
+      ...(raw.evaluator as Record<string, unknown>),
+      skepticism_level: "paranoid",
+    };
+
+    expect(validateConfig(raw).evaluator.skepticism_level).toBe("paranoid");
+  });
+
   it("validateConfig accepts custom runner enforcement settings", () => {
     const raw = defaultConfig() as unknown as Record<string, unknown>;
     raw.runner = {
@@ -506,6 +518,11 @@ describe("config", () => {
             (raw.runner as Record<string, unknown>).timeouts as Record<string, unknown>
           ).terminate_grace_ms = -1),
         schemaPath("runner.timeouts.terminate_grace_ms"),
+      ],
+      [
+        "evaluator.skepticism_level",
+        (raw) => ((raw.evaluator as Record<string, unknown>).skepticism_level = "credulous"),
+        schemaPath("evaluator.skepticism_level"),
       ],
       ["execution", (raw) => (raw.execution = "nope"), schemaPath("execution")],
       [

@@ -112,7 +112,7 @@
           "anyOf": [
             {
               "type": "string",
-              "enum": ["prepared", "running", "success", "failed", "cancelled"]
+              "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
             },
             {
               "type": "null"

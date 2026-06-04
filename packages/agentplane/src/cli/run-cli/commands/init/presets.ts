@@ -14,6 +14,7 @@ export const INIT_DEFAULTS: InitDefaults = {
   feedbackGithubIssues: false,
   feedbackAnonymousCloud: false,
   executionProfile: "balanced",
+  evaluatorSkepticism: "standard",
   strictUnsafeConfirm: false,
   blueprints: [],
   runnerProfile: "codex",
@@ -32,6 +33,7 @@ export const setupProfilePresets: Record<
     defaultFeedbackGithubIssues: boolean;
     defaultFeedbackAnonymousCloud: boolean;
     defaultExecutionProfile: InitDefaults["executionProfile"];
+    defaultEvaluatorSkepticism: InitDefaults["evaluatorSkepticism"];
     defaultRecipes: string[];
   }
 > = {
@@ -46,6 +48,7 @@ export const setupProfilePresets: Record<
     defaultFeedbackGithubIssues: false,
     defaultFeedbackAnonymousCloud: false,
     defaultExecutionProfile: "aggressive",
+    defaultEvaluatorSkepticism: "standard",
     defaultRecipes: [],
   },
   normal: {
@@ -60,6 +63,7 @@ export const setupProfilePresets: Record<
     defaultFeedbackGithubIssues: false,
     defaultFeedbackAnonymousCloud: false,
     defaultExecutionProfile: "balanced",
+    defaultEvaluatorSkepticism: "standard",
     defaultRecipes: [],
   },
   "full-harness": {
@@ -74,6 +78,7 @@ export const setupProfilePresets: Record<
     defaultFeedbackGithubIssues: false,
     defaultFeedbackAnonymousCloud: false,
     defaultExecutionProfile: "conservative",
+    defaultEvaluatorSkepticism: "strict",
     defaultRecipes: [],
   },
 };

@@ -2,12 +2,10 @@ import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { GitContext } from "@agentplaneorg/core/git";
 import type { TaskStorePatch } from "../shared/task-store.js";
-
 const mocks = vi.hoisted(() => ({
   commitFromComment: vi.fn(),
   cmdCommit: vi.fn(),
@@ -25,7 +23,6 @@ const mocks = vi.hoisted(() => ({
   tryLookupExistingGithubPrByBranch: vi.fn(),
   tryLookupExistingGithubPrByBranchPrefix: vi.fn(),
 }));
-
 vi.mock("../guard/impl/comment-commit.js", () => ({
   commitFromComment: mocks.commitFromComment,
 }));
