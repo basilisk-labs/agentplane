@@ -15,8 +15,13 @@ Write release notes required for the v0.6.17 patch release candidate.
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified: docs/releases/v0.6.17.md covers the frozen v0.6.17 release plan; git diff --check passed;
+Cyrillic scan returned no matches.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +32,8 @@ Write release notes required for the v0.6.17 patch release candidate.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ docs/releases/v0.6.17.md | 58 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
 ```
 
 </details>

@@ -12,8 +12,8 @@ Created: 2026-06-04T23:09:56.021Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: docs/releases/v0.6.17.md covers the frozen v0.6.17 release plan; git diff --check passed; Cyrillic scan returned no matches.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,8 @@ Created: 2026-06-04T23:09:56.021Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ docs/releases/v0.6.17.md | 58 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
 ```
 
 </details>
