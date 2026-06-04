@@ -123,11 +123,11 @@ Implementation layout: canonical script implementations live under `scripts/chec
 
 ## Architecture
 
-| Script          | Command                                                                                                                                                                                                                                                                                            | Purpose                      |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
-| `arch:baseline` | `node scripts/checks/check-depcruise-known-violations.mjs`                                                                                                                                                                                                                                         | Run arch workflow: baseline. |
-| `arch:check`    | `bun run arch:baseline && bun run arch:deps`                                                                                                                                                                                                                                                       | Run arch workflow: check.    |
-| `arch:deps`     | `depcruise --config depcruise.config.cjs --ignore-known .dependency-cruiser-known-violations.json --include-only '^packages/(agentplane\|core\|recipes\|testkit)/src' --exclude '(^\|/)(dist\|node_modules)/' packages/agentplane/src packages/core/src packages/recipes/src packages/testkit/src` | Run arch workflow: deps.     |
+| Script          | Command                                                    | Purpose                      |
+| --------------- | ---------------------------------------------------------- | ---------------------------- |
+| `arch:baseline` | `node scripts/checks/check-depcruise-known-violations.mjs` | Run arch workflow: baseline. |
+| `arch:check`    | `bun run arch:baseline && bun run arch:deps`               | Run arch workflow: check.    |
+| `arch:deps`     | `node scripts/checks/run-depcruise-arch.mjs`               | Run arch workflow: deps.     |
 
 ## Bench
 
