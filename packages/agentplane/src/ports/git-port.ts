@@ -7,5 +7,10 @@ export type GitPort = {
   headCommit(): Promise<string>;
   headHashSubject(): Promise<GitHead>;
   stage(paths: string[]): Promise<void>;
-  commit(opts: { message: string; body?: string; env?: NodeJS.ProcessEnv }): Promise<void>;
+  commit(opts: {
+    message: string;
+    body?: string;
+    env?: NodeJS.ProcessEnv;
+    timeoutMs?: number;
+  }): Promise<void>;
 };

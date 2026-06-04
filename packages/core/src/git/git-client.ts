@@ -330,13 +330,19 @@ export class GitContext {
     this.invalidateStatus();
   }
 
-  async commit(opts: { message: string; body?: string; env?: NodeJS.ProcessEnv }): Promise<void> {
+  async commit(opts: {
+    message: string;
+    body?: string;
+    env?: NodeJS.ProcessEnv;
+    timeoutMs?: number;
+  }): Promise<void> {
     const args = ["commit", "-m", opts.message];
     if (opts.body) args.push("-m", opts.body);
     await execFileAsync("git", args, {
       cwd: this.gitRoot,
       env: opts.env ?? gitEnv(),
       maxBuffer: 50 * 1024 * 1024,
+      ...(opts.timeoutMs === undefined ? {} : { timeout: opts.timeoutMs }),
     });
     this.memo.status = undefined;
     this.memo.headCommit = undefined;

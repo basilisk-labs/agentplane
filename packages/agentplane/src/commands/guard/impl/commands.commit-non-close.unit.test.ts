@@ -134,6 +134,7 @@ describe("guard command implementations: commit non-close", () => {
     expect(ctx.git.commit).toHaveBeenCalledWith({
       message: "✅ ABC123 task: message",
       env: { AGENTPLANE_TASK_ID: "T-1" },
+      timeoutMs: expect.any(Number),
     });
   });
 
@@ -185,6 +186,7 @@ describe("guard command implementations: commit non-close", () => {
     expect(ctx.git.commit).toHaveBeenNthCalledWith(1, {
       message: "🧩 7SRWEX workflow: implementation body",
       env: { AGENTPLANE_TASK_ID: "202604130818-7SRWEX" },
+      timeoutMs: expect.any(Number),
     });
     expect(ctx.git.commit).toHaveBeenCalledTimes(1);
     expect(ctx.git.commitAmendNoEdit).toHaveBeenCalledWith({
@@ -285,6 +287,7 @@ describe("guard command implementations: commit non-close", () => {
     expect(ctx.git.commit).toHaveBeenCalledWith({
       message: "✅ ABC123 task: message",
       env: { AGENTPLANE_TASK_ID: "T-6" },
+      timeoutMs: expect.any(Number),
     });
   });
 
@@ -464,6 +467,7 @@ describe("guard command implementations: commit non-close", () => {
     expect(ctx.git.commit).toHaveBeenCalledWith({
       message: "✅ ABC123 task: message",
       env: { AGENTPLANE_TASK_ID: "T-CI" },
+      timeoutMs: expect.any(Number),
     });
   });
 
@@ -500,6 +504,54 @@ describe("guard command implementations: commit non-close", () => {
         quiet: true,
       }),
     ).rejects.toMatchObject(errorMatcher);
+  });
+
+  it("cmdCommit maps git commit timeouts to hook finalization diagnostics", async () => {
+    const { cmdCommit } = await import("./commit.js");
+    const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    ctx.git.commit.mockRejectedValue(
+      Object.assign(new Error("Command timed out: git commit"), {
+        cmd: "git commit -m ✅ ABC123 task: message",
+        timedOut: true,
+      }),
+    );
+
+    const err = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-10",
+      message: "✅ ABC123 task: message",
+      close: false,
+      allow: ["src"],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+    }).catch((error: unknown) => error);
+
+    expect(ctx.git.commit).toHaveBeenCalledWith(
+      expect.objectContaining({ timeoutMs: expect.any(Number) }),
+    );
+    expect(err).toBeInstanceOf(CliError);
+    expect((err as CliError).code).toBe("E_GIT");
+    expect((err as CliError).context).toMatchObject({
+      reason_code: "git_commit_timeout",
+      diagnostic_next_action_command: "agentplane doctor",
+      diagnostic_next_action_reason_code: "git_commit_timeout",
+    });
+    expect(readDiagnosticContext((err as CliError).context)).toMatchObject({
+      state: "git commit timed out while waiting for hooks or commit finalization",
+      nextAction: {
+        command: "agentplane doctor",
+        reasonCode: "git_commit_timeout",
+      },
+    });
   });
 
   it("cmdCommit preserves salient linter failure lines in git-commit-shaped errors", async () => {
