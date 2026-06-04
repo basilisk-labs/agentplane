@@ -100,6 +100,18 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
     summary: "a lint check in the pre-commit path blocked the commit",
     action: "run lint, fix the reported errors, and retry the commit",
   },
+  git_commit_subject_policy: {
+    code: "git_commit_subject_policy",
+    category: "git",
+    summary: "commit-msg policy rejected the commit subject",
+    action: "retry with a compliant task suffix/scope commit subject",
+  },
+  git_commit_dco_missing: {
+    code: "git_commit_dco_missing",
+    category: "git",
+    summary: "commit-msg policy rejected the commit because DCO sign-off is missing",
+    action: "retry the commit with -s or add a valid Signed-off-by trailer",
+  },
   protected_base_integrate_handoff: {
     code: "protected_base_integrate_handoff",
     category: "handoff",
