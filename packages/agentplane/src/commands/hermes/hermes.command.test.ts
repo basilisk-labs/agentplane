@@ -101,12 +101,17 @@ describe("hermes adapter commands", () => {
   it("propagates child failure codes for typed task run steps", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202606010525-5TJNPS";
-    const fakeBin = path.join(root, "failing-agentplane.sh");
-    await writeFile(fakeBin, "#!/bin/sh\necho task-run-failed >&2\nexit 9\n");
+    const fakeBin = path.join(root, "failing-agentplane.js");
+    await writeFile(
+      fakeBin,
+      "#!/usr/bin/env node\nconsole.error('task-run-failed');\nprocess.exit(9);\n",
+    );
     await chmod(fakeBin, 0o755);
 
     const previous = process.env.AGENTPLANE_BIN;
-    process.env.AGENTPLANE_BIN = fakeBin;
+    const previousArgs = process.env.AGENTPLANE_BIN_ARGS;
+    process.env.AGENTPLANE_BIN = process.execPath;
+    process.env.AGENTPLANE_BIN_ARGS = JSON.stringify([fakeBin]);
     try {
       const result = await runAgentplaneStep(["task", "run", taskId], root, false);
       expect(result.executed).toBe(true);
@@ -117,6 +122,11 @@ describe("hermes adapter commands", () => {
         delete process.env.AGENTPLANE_BIN;
       } else {
         process.env.AGENTPLANE_BIN = previous;
+      }
+      if (previousArgs === undefined) {
+        delete process.env.AGENTPLANE_BIN_ARGS;
+      } else {
+        process.env.AGENTPLANE_BIN_ARGS = previousArgs;
       }
     }
   });
@@ -152,6 +162,11 @@ describe("hermes adapter commands", () => {
             authority: { status_sync: string };
             comment_projection: {
               schema: string;
+              execution_packet: {
+                staleStateCheck: string;
+                returnControlWhen: string;
+                mustNot: string[];
+              };
               evidence_refs: { runner_status: string; runner_inspect: string };
             };
           };
@@ -166,6 +181,15 @@ describe("hermes adapter commands", () => {
       expect(payload.metadata.agentplane.authority.status_sync).toBe("projection_only");
       expect(payload.metadata.agentplane.comment_projection.schema).toBe(
         "agentplane.hermes.lifecycle-comment.v1",
+      );
+      expect(payload.metadata.agentplane.comment_projection.execution_packet.staleStateCheck).toBe(
+        `agentplane task next-action ${taskId} --explain`,
+      );
+      expect(
+        payload.metadata.agentplane.comment_projection.execution_packet.returnControlWhen,
+      ).toContain("recompute task next-action");
+      expect(payload.metadata.agentplane.comment_projection.execution_packet.mustNot).toContain(
+        "do not reconstruct branch/worktree/PR state from prose",
       );
       expect(payload.metadata.agentplane.comment_projection.evidence_refs.runner_status).toBe(
         `agentplane task run status ${taskId} --json`,
@@ -203,6 +227,10 @@ describe("hermes adapter commands", () => {
         };
         hermes_comment_projection: {
           schema: string;
+          execution_packet: {
+            staleStateCheck: string;
+            returnControlWhen: string;
+          };
           evidence_refs: { runner_status: string };
         };
         terminal: { hermes_root_complete_allowed: boolean };
@@ -221,6 +249,12 @@ describe("hermes adapter commands", () => {
       );
       expect(payload.hermes_comment_projection.schema).toBe(
         "agentplane.hermes.lifecycle-comment.v1",
+      );
+      expect(payload.hermes_comment_projection.execution_packet.staleStateCheck).toBe(
+        `agentplane task next-action ${taskId} --explain`,
+      );
+      expect(payload.hermes_comment_projection.execution_packet.returnControlWhen).toContain(
+        "after the provider or human action completes",
       );
       expect(payload.hermes_comment_projection.evidence_refs.runner_status).toBe(
         payload.runner.commands.status,
@@ -311,12 +345,17 @@ describe("hermes adapter commands", () => {
   it("supervise returns the child Agentplane command failure code", async () => {
     const root = await mkGitRepoRoot();
     const taskId = await createApprovedTask(root);
-    const fakeBin = path.join(root, "failing-agentplane.sh");
-    await writeFile(fakeBin, "#!/bin/sh\necho child-failed >&2\nexit 7\n");
+    const fakeBin = path.join(root, "failing-agentplane.js");
+    await writeFile(
+      fakeBin,
+      "#!/usr/bin/env node\nconsole.error('child-failed');\nprocess.exit(7);\n",
+    );
     await chmod(fakeBin, 0o755);
 
     const previous = process.env.AGENTPLANE_BIN;
-    process.env.AGENTPLANE_BIN = fakeBin;
+    const previousArgs = process.env.AGENTPLANE_BIN_ARGS;
+    process.env.AGENTPLANE_BIN = process.execPath;
+    process.env.AGENTPLANE_BIN_ARGS = JSON.stringify([fakeBin]);
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -340,6 +379,11 @@ describe("hermes adapter commands", () => {
         delete process.env.AGENTPLANE_BIN;
       } else {
         process.env.AGENTPLANE_BIN = previous;
+      }
+      if (previousArgs === undefined) {
+        delete process.env.AGENTPLANE_BIN_ARGS;
+      } else {
+        process.env.AGENTPLANE_BIN_ARGS = previousArgs;
       }
     }
   });

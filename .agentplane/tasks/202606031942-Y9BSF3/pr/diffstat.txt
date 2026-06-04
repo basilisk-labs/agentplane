@@ -1,0 +1,9 @@
+ .../run-cli.core.help-snap.test.ts.snap            |   1 +
+ .../src/cli/run-cli.core.insights-report.test.ts   |  92 +++++++-
+ .../src/cli/run-cli/command-catalog/core.ts        |   6 +
+ .../src/cli/run-cli/command-loaders/core.ts        |   4 +
+ .../src/commands/insights/insights-issue-render.ts |   4 +
+ .../src/commands/insights/insights-triage.ts       | 235 +++++++++++++++++++++
+ .../src/commands/insights/insights.command.ts      |  42 +++-
+ .../src/commands/insights/insights.spec.ts         | 123 ++++++++++-
+ 8 files changed, 504 insertions(+), 3 deletions(-)

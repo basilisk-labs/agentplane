@@ -80,7 +80,13 @@ export type TaskOrigin = {
   [key: string]: string | undefined;
 };
 
-export type TaskRunnerOutcomeStatus = "prepared" | "running" | "success" | "failed" | "cancelled";
+export type TaskRunnerOutcomeStatus =
+  | "prepared"
+  | "running"
+  | "success"
+  | "failed"
+  | "blocked"
+  | "cancelled";
 
 export type TaskRunnerExecutionMetrics = {
   duration_ms?: number;

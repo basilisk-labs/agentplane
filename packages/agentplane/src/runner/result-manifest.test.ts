@@ -139,6 +139,36 @@ describe("runner result manifest", () => {
     });
   });
 
+  it("accepts blocked terminal manifests for external runner blockers", async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-result-manifest-blocked-"));
+    const resultPath = path.join(tempDir, "result.json");
+    await writeFile(
+      resultPath,
+      JSON.stringify({
+        schema_version: 1,
+        status: "blocked",
+        exit_code: 1,
+        summary: "GitHub push permission blocked publication.",
+        evidence: {
+          blocked_reason: "github push returned HTTP 403 for the runner identity",
+          verification_candidates: ["retry publication with a permitted GitHub identity"],
+        },
+      }),
+      "utf8",
+    );
+
+    await expect(readRunnerResultManifest(resultPath)).resolves.toMatchObject({
+      schema_version: 1,
+      status: "blocked",
+      exit_code: 1,
+      summary: "GitHub push permission blocked publication.",
+      evidence: {
+        blocked_reason: "github push returned HTTP 403 for the runner identity",
+        verification_candidates: ["retry publication with a permitted GitHub identity"],
+      },
+    });
+  });
+
   it("preserves malformed manifest payloads for later inspection", async () => {
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-result-manifest-preserve-"));
     const resultPath = path.join(tempDir, "result.json");

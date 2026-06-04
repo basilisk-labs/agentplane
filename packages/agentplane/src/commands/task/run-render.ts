@@ -36,7 +36,9 @@ export function renderTaskRunPayload(opts: {
 }
 
 export function isTerminalRunnerStatus(status: RunnerLifecycleStatus): boolean {
-  return status === "success" || status === "failed" || status === "cancelled";
+  return (
+    status === "success" || status === "failed" || status === "blocked" || status === "cancelled"
+  );
 }
 
 export function tailText(text: string, lineCount: number): string {

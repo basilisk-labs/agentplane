@@ -64,6 +64,7 @@ const RUNNER_OUTCOME_STATUS_VALUES = [
   "running",
   "success",
   "failed",
+  "blocked",
   "cancelled",
 ] as const;
 const RUNNER_MODE_VALUES = ["execute", "dry_run"] as const;

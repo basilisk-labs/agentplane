@@ -84,7 +84,17 @@ export function currentAgentplaneCommand(): { command: string; argsPrefix: strin
   const rawAgentplaneBin = process.env.AGENTPLANE_BIN?.trim();
   const command =
     rawAgentplaneBin && rawAgentplaneBin.length > 0 ? rawAgentplaneBin : resolveAgentplaneBinPath();
-  return { command, argsPrefix: [] };
+  const rawArgsPrefix = process.env.AGENTPLANE_BIN_ARGS?.trim();
+  if (!rawArgsPrefix) return { command, argsPrefix: [] };
+  try {
+    const parsed = JSON.parse(rawArgsPrefix) as unknown;
+    const argsPrefix = Array.isArray(parsed)
+      ? parsed.map((entry) => String(entry ?? "").trim()).filter(Boolean)
+      : [];
+    return { command, argsPrefix };
+  } catch {
+    return { command, argsPrefix: [] };
+  }
 }
 
 async function runnerVisibilityPacket(opts: {
@@ -205,6 +215,7 @@ export async function routePacket(opts: {
         safe_to_mutate: decision.executionPacket.safeToMutate,
         blockers: decision.blockers,
       },
+      execution_packet: decision.executionPacket,
       runner,
       evidence_refs: {
         task_readme: `.agentplane/tasks/${decision.task.id}/README.md`,

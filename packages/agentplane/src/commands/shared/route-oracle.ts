@@ -30,6 +30,12 @@ export type RouteExecutionPacket = {
   authoritativeCheckout: RouteOracle["authoritativeCheckout"];
   authoritativeCheckoutPath: string | null;
   mutationPathHint: string | null;
+  mustRunFrom: string | null;
+  exactArgv: string[] | null;
+  mustNot: string[];
+  returnControlWhen: string;
+  humanProviderAction: string | null;
+  staleStateCheck: string;
   evidenceMissing: string[];
   verificationCandidate: string | null;
   stopReason: string | null;
@@ -44,8 +50,10 @@ function actionKindFor(opts: {
   nextAction: RouteBatchNextAction;
 }): RouteExecutionPacket["actionKind"] {
   if (opts.task.status === "DONE" && opts.nextAction.command === null) return "stop";
-  if (opts.nextAction.requiresApproval && !opts.nextAction.command) return "provider_action";
-  return opts.nextAction.command ? "local_command" : "stop";
+  if (opts.nextAction.requiresApproval) return "provider_action";
+  if (!opts.nextAction.command && opts.nextAction.code.startsWith("wait_")) return "wait";
+  if (!opts.nextAction.command) return "stop";
+  return exactArgvFor(opts.nextAction.command) ? "local_command" : "stop";
 }
 
 function recommendedRoleFor(opts: {
@@ -95,6 +103,89 @@ function verificationCandidateFor(nextAction: RouteBatchNextAction): string | nu
   if (nextAction.code === "update_pr_artifacts") return "agentplane pr check <task-id>";
   if (nextAction.code === "wait_hosted_checks") return "agentplane pr check <task-id>";
   return null;
+}
+
+function exactArgvFor(command: string | null): string[] | null {
+  const trimmed = command?.trim() ?? "";
+  if (!trimmed) return null;
+  if (/[;&|<>`$]/u.test(trimmed)) return null;
+  const args: string[] = [];
+  let current = "";
+  let quote: "'" | '"' | null = null;
+  for (const char of trimmed) {
+    if (quote) {
+      if (char === quote) {
+        quote = null;
+      } else {
+        current += char;
+      }
+      continue;
+    }
+    if (char === "'" || char === '"') {
+      quote = char;
+      continue;
+    }
+    if (/\s/u.test(char)) {
+      if (current) {
+        args.push(current);
+        current = "";
+      }
+      continue;
+    }
+    current += char;
+  }
+  if (quote) return null;
+  if (current) args.push(current);
+  return args.length > 0 ? args : null;
+}
+
+function mustNotFor(actionKind: RouteExecutionPacket["actionKind"]): string[] {
+  const base = [
+    "do not reconstruct branch/worktree/PR state from prose",
+    "do not widen lifecycle authority beyond this packet",
+    "do not mutate outside mutationPathHint",
+  ];
+  if (actionKind === "local_command") {
+    return [
+      ...base,
+      "do not execute raw shell when exactArgv is null",
+      "do not continue after a non-zero command exit without recomputing the route",
+    ];
+  }
+  if (actionKind === "provider_action") {
+    return [...base, "do not complete AgentPlane task truth from provider/card state"];
+  }
+  if (actionKind === "wait") {
+    return [...base, "do not reclaim or force progress without explicit parent approval"];
+  }
+  return [...base, "do not perform further task mutation for this route state"];
+}
+
+function returnControlWhenFor(opts: {
+  actionKind: RouteExecutionPacket["actionKind"];
+  nextAction: RouteBatchNextAction;
+}): string {
+  if (opts.actionKind === "local_command") {
+    return "after the exact command exits; recompute task next-action before any further step";
+  }
+  if (opts.actionKind === "provider_action") {
+    return "after the provider or human action completes; recompute task next-action with remote truth when relevant";
+  }
+  if (opts.actionKind === "wait") {
+    return "after the waited condition changes or the parent supervisor grants reclaim/escalation";
+  }
+  if (opts.nextAction.command && exactArgvFor(opts.nextAction.command) === null) {
+    return "after this route is split into argv-safe steps; recompute task next-action before mutating";
+  }
+  return opts.nextAction.summary;
+}
+
+function humanProviderActionFor(opts: {
+  actionKind: RouteExecutionPacket["actionKind"];
+  nextAction: RouteBatchNextAction;
+}): string | null {
+  if (opts.actionKind !== "provider_action") return null;
+  return opts.nextAction.summary;
 }
 
 function checkoutPathFor(
@@ -275,19 +366,28 @@ export function deriveRouteExecutionPacket(opts: {
   const requiresProviderAction = actionKind === "provider_action";
   const stopReason =
     actionKind === "stop"
-      ? (opts.blockers[0]?.summary ?? opts.nextAction.summary)
+      ? opts.nextAction.command && exactArgvFor(opts.nextAction.command) === null
+        ? "next command is not argv-safe; route must be split before an external agent can execute it"
+        : (opts.blockers[0]?.summary ?? opts.nextAction.summary)
       : actionKind === "wait"
         ? opts.nextAction.summary
         : null;
+  const exactArgv = actionKind === "local_command" ? exactArgvFor(opts.oracle.nextCommand) : null;
   return {
     schemaVersion: 1,
     actionKind,
-    safeToMutate: opts.oracle.mutationPathHint !== null,
+    safeToMutate: actionKind === "local_command" && opts.oracle.mutationPathHint !== null,
     requiresProviderAction,
     recommendedRole: recommendedRoleFor({ nextAction: opts.nextAction, actionKind }),
     authoritativeCheckout: opts.oracle.authoritativeCheckout,
     authoritativeCheckoutPath: opts.oracle.authoritativeCheckoutPath,
     mutationPathHint: opts.oracle.mutationPathHint,
+    mustRunFrom: opts.oracle.authoritativeCheckoutPath,
+    exactArgv,
+    mustNot: mustNotFor(actionKind),
+    returnControlWhen: returnControlWhenFor({ actionKind, nextAction: opts.nextAction }),
+    humanProviderAction: humanProviderActionFor({ actionKind, nextAction: opts.nextAction }),
+    staleStateCheck: `agentplane task next-action ${opts.task.id} --explain`,
     evidenceMissing: evidenceMissingFor({
       task: opts.task,
       blockers: opts.blockers,
