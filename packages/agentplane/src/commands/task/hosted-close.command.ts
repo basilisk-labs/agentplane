@@ -84,9 +84,9 @@ export function taskIsClosedByPreMergeClosure(opts: {
   if (taskCommitHash.length === 0) return false;
   const marker = readPreMergeClosureMarker(opts.meta);
   if (!marker) return false;
-  if (marker.basisCommit !== taskCommitHash) return false;
   if (marker.branch !== opts.branch) return false;
   if ((opts.meta.branch?.trim() ?? "") !== opts.branch) return false;
+  if (marker.prNumber != null && marker.prNumber !== opts.prNumber) return false;
   return opts.meta.pr_number == null || opts.meta.pr_number === opts.prNumber;
 }
 
@@ -98,7 +98,13 @@ export function preMergeClosureAllowsMissingBasisCommit(opts: {
   if (opts.meta.pr_number === opts.prNumber) return true;
   if (opts.meta.pr_number != null) return false;
   const marker = readPreMergeClosureMarker(opts.meta);
-  return marker !== null && marker.basisCommit === (opts.task.commit?.hash?.trim() ?? "");
+  if (!marker) return false;
+  if (marker.prNumber === opts.prNumber) return true;
+  if (marker.prNumber != null) return false;
+  return (
+    normalizeTaskStatus(opts.task.status) === "DONE" &&
+    (opts.task.commit?.hash?.trim() ?? "") !== ""
+  );
 }
 
 export function isExplicitHostedCloseFollowupBranch(opts: {

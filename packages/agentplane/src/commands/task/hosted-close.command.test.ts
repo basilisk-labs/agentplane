@@ -94,13 +94,13 @@ describe("taskIsClosedByPreMergeClosure", () => {
     ).toBe(false);
   });
 
-  it("rejects markers that do not bind to the task close commit", () => {
+  it("accepts legacy markers whose basis is the pre-finish branch head", () => {
     expect(
       taskIsClosedByPreMergeClosure({
         task: {
           id: "T-1",
           status: "DONE",
-          commit: { hash: "close-commit", message: "done" },
+          commit: { hash: "evidence-commit", message: "done" },
         } as never,
         meta: {
           schema_version: 1,
@@ -112,13 +112,13 @@ describe("taskIsClosedByPreMergeClosure", () => {
           pre_merge_closure: {
             state: "closed_before_merge",
             branch: "task/T-1/pre-merge",
-            basis_commit: "different-commit",
+            basis_commit: "pre-finish-head",
           },
         } as never,
         branch: "task/T-1/pre-merge",
         prNumber: 4402,
       }),
-    ).toBe(false);
+    ).toBe(true);
   });
 
   it("rejects stale pre-merge markers from another branch or PR", () => {
@@ -155,6 +155,23 @@ describe("taskIsClosedByPreMergeClosure", () => {
         meta,
         branch: "task/T-1/pre-merge",
         prNumber: 4403,
+      }),
+    ).toBe(false);
+    expect(
+      taskIsClosedByPreMergeClosure({
+        task,
+        meta: {
+          ...meta,
+          pr_number: undefined,
+          pre_merge_closure: {
+            state: "closed_before_merge",
+            branch: "task/T-1/pre-merge",
+            basis_commit: "abc123",
+            pr_number: 4403,
+          },
+        } as never,
+        branch: "task/T-1/pre-merge",
+        prNumber: 4402,
       }),
     ).toBe(false);
   });
@@ -213,7 +230,7 @@ describe("preMergeClosureBasisIsAncestor", () => {
 });
 
 describe("preMergeClosureAllowsMissingBasisCommit", () => {
-  it("accepts old pre-merge closure metadata only when the marker binds to the DONE commit", () => {
+  it("accepts legacy no-PR markers after DONE and rejects explicit PR mismatches", () => {
     const task = {
       id: "T-1",
       status: "DONE",
@@ -228,7 +245,7 @@ describe("preMergeClosureAllowsMissingBasisCommit", () => {
       pre_merge_closure: {
         state: "closed_before_merge",
         branch: "task/T-1/pre-merge",
-        basis_commit: "close-commit",
+        basis_commit: "pre-finish-head",
       },
     } as never;
 
@@ -252,7 +269,8 @@ describe("preMergeClosureAllowsMissingBasisCommit", () => {
           pre_merge_closure: {
             state: "closed_before_merge",
             branch: "task/T-1/pre-merge",
-            basis_commit: "different-commit",
+            basis_commit: "pre-finish-head",
+            pr_number: 4403,
           },
         } as never,
       }),
