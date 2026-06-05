@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606050055-6XZ1JZ/normalize-lifecycle-doctor-warnings-before-v0-6",
+  "created_at": "2026-06-05T01:02:41.108Z",
+  "diffstat_sha256": "sha256:4a4bd307a017dfa4af61104d58b0c9af828d1fa9c8d50bc266a31c35b19c0b82",
+  "last_verified_at": "2026-06-05T01:02:40.980Z",
+  "last_verified_diffstat_sha256": "sha256:4a4bd307a017dfa4af61104d58b0c9af828d1fa9c8d50bc266a31c35b19c0b82",
+  "schema_version": 1,
+  "task_id": "202606050055-6XZ1JZ",
+  "updated_at": "2026-06-05T01:02:41.108Z",
+  "verify": {
+    "status": "pass"
+  }
+}

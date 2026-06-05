@@ -4,7 +4,7 @@ title: "Normalize lifecycle doctor warnings before v0.6.17"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-06-05T01:02:40.980Z"
+  updated_by: "REVIEWER"
+  note: "Lifecycle doctor warnings normalized."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: normalize lifecycle doctor warnings found during v0.6.17 release preparation."
+  -
+    type: "verify"
+    at: "2026-06-05T01:02:40.980Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Lifecycle doctor warnings normalized."
 doc_version: 3
-doc_updated_at: "2026-06-05T00:56:01.059Z"
+doc_updated_at: "2026-06-05T01:02:41.082Z"
 doc_updated_by: "CODER"
 description: "Doctor reported shipped branch_pr task drift and DONE tasks missing implementation commit hashes during the v0.6.17 release candidate. Normalize those lifecycle records so future agents get direct, unambiguous task context."
 sections:
@@ -57,11 +63,46 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-06-05T01:02:40.980Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Lifecycle doctor warnings normalized.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-05T00:56:01.059Z, excerpt_hash=sha256:3a7ad2b856c7271ed14128f9db3c3de5ae19f825a44b90dca9d2cbf79bc2b4a3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606050055-6XZ1JZ-normalize-lifecycle-doctor-warnings-before-v0-6/.agentplane/tasks/202606050055-6XZ1JZ/blueprint/resolved-snapshot.json
+    - old_digest: 16e2cf969044797a471384af5e210c14e5e75f2ec41f8bb9d27ffc1ad95ed91a
+    - current_digest: 16e2cf969044797a471384af5e210c14e5e75f2ec41f8bb9d27ffc1ad95ed91a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606050055-6XZ1JZ
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: false
+    - safe_command: agentplane work start 202606050055-6XZ1JZ --agent CODER --slug normalize-lifecycle-doctor-warnings-before-v0-6 --worktree
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - runner_required: false
+    - runner_failure_means: not_runner_route
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Ran agentplane doctor in the lifecycle repair branch; result: errors=0 warnings=0.
+      Impact: Future agents no longer receive stale shipped-branch drift or missing commit-hash warnings during startup diagnostics.
+      Resolution: Synchronized merged branch metadata and repaired no-op closure commit metadata for historical DONE tasks.
 id_source: "generated"
 ---
 ## Summary
@@ -90,6 +131,38 @@ PLANNER fallback scaffold for "Normalize lifecycle doctor warnings before v0.6.1
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-06-05T01:02:40.980Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Lifecycle doctor warnings normalized.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-05T00:56:01.059Z, excerpt_hash=sha256:3a7ad2b856c7271ed14128f9db3c3de5ae19f825a44b90dca9d2cbf79bc2b4a3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606050055-6XZ1JZ-normalize-lifecycle-doctor-warnings-before-v0-6/.agentplane/tasks/202606050055-6XZ1JZ/blueprint/resolved-snapshot.json
+- old_digest: 16e2cf969044797a471384af5e210c14e5e75f2ec41f8bb9d27ffc1ad95ed91a
+- current_digest: 16e2cf969044797a471384af5e210c14e5e75f2ec41f8bb9d27ffc1ad95ed91a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606050055-6XZ1JZ
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: false
+- safe_command: agentplane work start 202606050055-6XZ1JZ --agent CODER --slug normalize-lifecycle-doctor-warnings-before-v0-6 --worktree
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- runner_required: false
+- runner_failure_means: not_runner_route
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -98,3 +171,7 @@ PLANNER fallback scaffold for "Normalize lifecycle doctor warnings before v0.6.1
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Ran agentplane doctor in the lifecycle repair branch; result: errors=0 warnings=0.
+  Impact: Future agents no longer receive stale shipped-branch drift or missing commit-hash warnings during startup diagnostics.
+  Resolution: Synchronized merged branch metadata and repaired no-op closure commit metadata for historical DONE tasks.

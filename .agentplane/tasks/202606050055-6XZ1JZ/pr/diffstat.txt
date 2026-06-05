@@ -1,0 +1,10 @@
+ .agentplane/tasks/202605221745-8BHZSX/README.md    | 37 +++++++++--
+ .../evaluator-opinion.md                           | 18 ++++++
+ .../evaluator-prompt.md                            | 74 ++++++++++++++++++++++
+ .../quality-report.json                            | 20 ++++++
+ .agentplane/tasks/202606011809-VCQPP7/README.md    | 37 +++++++++--
+ .../evaluator-opinion.md                           | 18 ++++++
+ .../evaluator-prompt.md                            | 74 ++++++++++++++++++++++
+ .../quality-report.json                            | 20 ++++++
+ .agentplane/tasks/202606041738-A531FX/pr/meta.json |  6 +-
+ 9 files changed, 293 insertions(+), 11 deletions(-)
