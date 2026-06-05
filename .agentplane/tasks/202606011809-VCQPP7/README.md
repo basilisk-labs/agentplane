@@ -39,12 +39,11 @@ quality_review:
     - ".agentplane/tasks/202606011809-VCQPP7/quality/20260605-010152818-recovery-context/quality-report.json"
     - ".agentplane/tasks/202606011809-VCQPP7/quality/20260605-010152818-recovery-context/evaluator-prompt.md"
     - ".agentplane/tasks/202606011809-VCQPP7/quality/20260605-010152818-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202606011809-VCQPP7/blueprint/resolved-snapshot.json"
   findings:
     - "Task was already DONE as no-op bookkeeping after being superseded by correctly routed context task 202606011811-JSY2B9; commit 474e09715 contains the superseding assimilation work and this task's no-op README."
 commit:
-  hash: "ee7ffc9dc935fcba1c2a64fc9ec6579d40efd971"
-  message: "🖼️ 202606042316-XH5D0B docs: add v0.6.17 social assets"
+  hash: "474e09715a77bcd1ac2cd4cc2fdfdfebded36dd0"
+  message: "🚧 JSY2B9 task: assimilate task history context"
 comments:
   -
     author: "ORCHESTRATOR"
