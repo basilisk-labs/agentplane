@@ -1,12 +1,18 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-05T06:46:35Z",
   "base": "main",
   "branch": "task/202606050602-FH9XC6/publish-v0-6-18-patch-release",
   "created_at": "2026-06-05T06:33:43.715Z",
   "diffstat_sha256": "sha256:fc9d56e096e2e8928bf0bf971a35f46c436dba8feb6a3a7f3a7beaedbd054749",
   "last_verified_at": null,
+  "merge_commit": "c6d53ac0bea02365dc5cc2cc0daba0c1857cc37d",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-05T06:46:35Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606050602-FH9XC6",
-  "updated_at": "2026-06-05T06:33:43.715Z",
+  "updated_at": "2026-06-05T06:46:35Z",
   "verify": {
     "status": "skipped"
   }

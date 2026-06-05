@@ -1,10 +1,11 @@
 ---
 id: "202606050602-FH9XC6"
 title: "Publish v0.6.18 patch release"
-status: "DOING"
+result_summary: "Merged via PR #4454."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "https://github.com/basilisk-labs/agentplane/pull/4454"
   findings:
     - "No release-blocking issues remain. Residual local environment note: git hook invocation and bun-run lint path showed SIGKILL/hang behavior, but direct hook, full ESLint via node entrypoint, release heavy gate, and hosted checks passed."
-commit: null
+commit:
+  hash: "c6d53ac0bea02365dc5cc2cc0daba0c1857cc37d"
+  message: "📝 FH9XC6 task: record release quality review"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: Preparing branch_pr patch release v0.6.18 from current main after prompt runner-guidance gating work. Scope includes release plan, candidate branch, hosted checks, publish dispatch, and registry/tag verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4454 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -53,8 +59,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Preparing branch_pr patch release v0.6.18 from current main after prompt runner-guidance gating work. Scope includes release plan, candidate branch, hosted checks, publish dispatch, and registry/tag verification."
+  -
+    type: "status"
+    at: "2026-06-05T06:47:22.718Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4454 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-05T06:02:56.172Z"
+doc_updated_at: "2026-06-05T06:47:22.722Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare and publish the next patch release after prompt routing cleanup. Scope: release v0.6.18 from current main, including runner guidance gating outside parallel-codex context, with release notes, candidate merge, npm publish evidence, and registry/tag verification."
 sections:
