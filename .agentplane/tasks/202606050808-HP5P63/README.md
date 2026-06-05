@@ -1,10 +1,11 @@
 ---
 id: "202606050808-HP5P63"
 title: "Tolerate pre-merge DONE commit after rebase merge"
-status: "DOING"
+result_summary: "Fixed hosted-close rebase merge pre-merge DONE no-op handling without masking stale PR mismatch."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -45,11 +46,16 @@ quality_review:
     - "packages/agentplane/src/commands/task/hosted-close.command.test.ts"
   findings:
     - "Pass: missing pre_merge_closure basis commits are tolerated only when the pre-merge marker is bound to the task DONE commit or an explicit matching PR number, preserving stale PR mismatch rejection."
-commit: null
+commit:
+  hash: "c02dd8b733d1ad3f24ccba2a24fdaf0e62f2f57a"
+  message: "✅ HP5P63 task: refresh verification after format"
 comments:
   -
     author: "CODER"
     body: "Start: fixing hosted-close conflict detection for pre-merge DONE records after GitHub rebase merge. Scope is hosted-close command/tests; release remains blocked until this task is merged, hosted-close is green, and release-ready/publish evidence passes."
+  -
+    author: "CODER"
+    body: "Verified: hosted-close now treats a pre-merge DONE record as already closed after GitHub rebase merge only when the pre-merge marker binds to the task DONE commit or an explicit matching PR number; focused tests, lint, typecheck, build, hosted checks, and evaluator review passed."
 events:
   -
     type: "status"
@@ -76,8 +82,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified on HEAD 4f669645b after Prettier formatting fix. Command: agentplane task verify-show 202606050808-HP5P63 | Result: pass | Evidence: blueprint quality.regression snapshot current. Command: bunx vitest run packages/agentplane/src/commands/task/hosted-close.command.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 | Result: pass | Evidence: 1 file, 8 tests passed. Command: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts | Result: pass | Evidence: no output. Command: bun run --filter=agentplane typecheck | Result: pass | Evidence: exited 0. Command: bun run --filter=agentplane build | Result: pass | Evidence: dist/cli.js and release manifest generated. Command: bunx prettier packages/agentplane/src/commands/task/hosted-close.command.test.ts --check | Result: pass | Evidence: All matched files use Prettier code style."
+  -
+    type: "status"
+    at: "2026-06-05T08:24:56.463Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: hosted-close now treats a pre-merge DONE record as already closed after GitHub rebase merge only when the pre-merge marker binds to the task DONE commit or an explicit matching PR number; focused tests, lint, typecheck, build, hosted checks, and evaluator review passed."
 doc_version: 3
-doc_updated_at: "2026-06-05T08:20:27.794Z"
+doc_updated_at: "2026-06-05T08:24:56.464Z"
 doc_updated_by: "CODER"
 description: "Hosted-close must treat a pre-merge closure DONE commit that records the original implementation commit as already closed after GitHub rebase merge rewrites the merge SHA. Reproduce the PR #4457 failure and add a regression so hosted close no-ops only for matching task/pr closure metadata, without masking stale branch conflicts."
 sections:
@@ -192,6 +205,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "4f669645b32c6fdd30ddea0a274474105574083f"
+    message: "🎨 HP5P63 test: format hosted-close regression"
 id_source: "generated"
 ---
 ## Summary
