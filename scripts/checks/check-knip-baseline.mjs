@@ -43,7 +43,7 @@ function runKnipJson(configPath) {
     ? [localKnipEntrypoint, "--config", configPath, "--no-exit-code", "--reporter", "json"]
     : existsSync(localKnipShim)
       ? ["--config", configPath, "--no-exit-code", "--reporter", "json"]
-    : ["knip", "--config", configPath, "--no-exit-code", "--reporter", "json"];
+      : ["knip", "--config", configPath, "--no-exit-code", "--reporter", "json"];
 
   const existingNodeOptions = process.env.NODE_OPTIONS ?? "";
   const nodeOptions = existingNodeOptions.includes("--max-old-space-size")
