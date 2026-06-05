@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202606050039-Z2T89H",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-05T00:44:51.919Z",
+  "verdict": "pass",
+  "summary": "run-vitest-suite now runs local Vitest through the active Node process and preserves the existing bunx fallback.",
+  "evaluated_sha": "f38e1455b56a1bd2bae986808bd6ada5874129cc",
+  "blueprint_digest": "26909b53c8d21b052d55427e5517fdbcbb629e8ffb32c535b944c73ec24bdc11",
+  "findings": [
+    "The formerly failing release-ci-base chunk passed, and chunks 1-50 passed before a separate release contract assertion was found."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606050039-Z2T89H/README.md",
+    "scripts/checks/run-vitest-suite.mjs",
+    "release-ci-base-process-bound-vitest"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

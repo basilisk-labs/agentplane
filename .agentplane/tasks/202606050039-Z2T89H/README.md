@@ -4,7 +4,7 @@ title: "Run release Vitest suite through active Node"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,23 @@ verification:
   updated_by: "CODER"
   note: "run-vitest-suite now uses local Vitest via process.execPath; release-ci-base chunks 1-50 passed before the run reached a separate release contract assertion."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T00:44:51.919Z"
+  updated_by: "EVALUATOR"
+  note: "run-vitest-suite now runs local Vitest through the active Node process and preserves the existing bunx fallback."
+  evaluated_sha: "f38e1455b56a1bd2bae986808bd6ada5874129cc"
+  blueprint_digest: "26909b53c8d21b052d55427e5517fdbcbb629e8ffb32c535b944c73ec24bdc11"
+  evidence_refs:
+    - ".agentplane/tasks/202606050039-Z2T89H/README.md"
+    - ".agentplane/tasks/202606050039-Z2T89H/quality/20260605-004451919-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050039-Z2T89H/quality/20260605-004451919-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050039-Z2T89H/quality/20260605-004451919-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050039-Z2T89H/blueprint/resolved-snapshot.json"
+    - "scripts/checks/run-vitest-suite.mjs"
+    - "release-ci-base-process-bound-vitest"
+  findings:
+    - "The formerly failing release-ci-base chunk passed, and chunks 1-50 passed before a separate release contract assertion was found."
 commit: null
 comments:
   -
