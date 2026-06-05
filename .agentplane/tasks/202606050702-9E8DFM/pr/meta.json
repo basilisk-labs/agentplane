@@ -3,11 +3,12 @@
   "branch": "task/202606050702-9E8DFM/recover-readme-when-closing-no-op-tasks",
   "created_at": "2026-06-05T07:02:58.618Z",
   "diffstat_sha256": "sha256:4f969e9131f51aa97f4826e9a7a99bed9d842b4ce7a523d6bad868988b669072",
-  "last_verified_at": null,
+  "last_verified_at": "2026-06-05T07:17:57.240Z",
+  "last_verified_diffstat_sha256": "sha256:4f969e9131f51aa97f4826e9a7a99bed9d842b4ce7a523d6bad868988b669072",
   "schema_version": 1,
   "task_id": "202606050702-9E8DFM",
   "updated_at": "2026-06-05T07:02:58.618Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

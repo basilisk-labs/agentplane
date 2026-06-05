@@ -15,8 +15,16 @@ Fix task close-noop so stale bookkeeping tasks without local README can be close
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --config
+vitest.workspace.ts --project cli-core --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout
+60000. Result: pass; 1 file / 13 tests passed. Command: bun run --filter=agentplane typecheck.
+Result: pass; agentplane typecheck exited 0. Command: bun run --filter=agentplane build. Result:
+pass; CLI build succeeded.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
