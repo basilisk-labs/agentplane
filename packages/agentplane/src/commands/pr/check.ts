@@ -222,7 +222,7 @@ export async function cmdPrCheck(opts: {
     if (
       branchForFreshness &&
       branchHeadSha &&
-      hasLocalTaskSnapshot &&
+      (!hasLocalTaskSnapshot || localSnapshot.meta) &&
       (!localSnapshot.meta ||
         !localSnapshot.freshnessReviewFresh ||
         (requiresVerify && !localSnapshot.freshnessVerifySatisfied))
