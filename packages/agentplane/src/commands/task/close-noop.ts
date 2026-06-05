@@ -2,7 +2,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { recordVerifiedNoopClosure } from "./close-shared.js";
+import { ensureLocalTaskReadmeHydrated, recordVerifiedNoopClosure } from "./close-shared.js";
 
 export async function cmdTaskCloseNoop(opts: {
   ctx?: CommandContext;
@@ -31,6 +31,7 @@ export async function cmdTaskCloseNoop(opts: {
     const baseBody =
       "Verified: no implementation changes were required; closure is recorded as no-op bookkeeping.";
     const body = normalizedNote ? `${baseBody}\n\nNote: ${normalizedNote}` : baseBody;
+    await ensureLocalTaskReadmeHydrated({ ctx, taskId: opts.taskId });
     await recordVerifiedNoopClosure({
       ctx,
       taskId: opts.taskId,
