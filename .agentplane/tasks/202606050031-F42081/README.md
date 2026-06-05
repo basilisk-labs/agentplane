@@ -4,7 +4,7 @@ title: "Stabilize release TypeScript build"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "TypeScript and tsup build paths now run through process-bound wrappers; typecheck, root build, testkit build, wrapper eslint, and scripts README check passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T00:34:56.193Z"
+  updated_by: "EVALUATOR"
+  note: "Release build scripts now run TypeScript and tsup through process-bound wrappers with direct signal diagnostics."
+  evaluated_sha: "1a926df12d13049de0052cc00121c0aaf705e6de"
+  blueprint_digest: "ddc4b025eb4d3a3ded5b56e8da43a5b6dd7edcbb0337bea8364b93c61305a085"
+  evidence_refs:
+    - ".agentplane/tasks/202606050031-F42081/README.md"
+    - ".agentplane/tasks/202606050031-F42081/quality/20260605-003456193-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050031-F42081/quality/20260605-003456193-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050031-F42081/quality/20260605-003456193-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050031-F42081/blueprint/resolved-snapshot.json"
+    - "scripts/checks/run-typescript-build.mjs"
+    - "scripts/checks/run-tsup-build.mjs"
+    - "root-build-node24"
+  findings:
+    - "Root typecheck, root build, testkit build, wrapper eslint, and scripts README check passed."
 commit: null
 comments:
   -
