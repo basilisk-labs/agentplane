@@ -4,7 +4,7 @@ title: "Restore branch artifact fallback for PR check"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,22 @@ verification:
   updated_by: "REVIEWER"
   note: "Branch artifact fallback regression test passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T01:39:54.802Z"
+  updated_by: "EVALUATOR"
+  note: "PR check branch artifact fallback is restored and covered."
+  evaluated_sha: "be4952a78bab305c4aa693fcadc3b89d458af2f2"
+  blueprint_digest: "b611de77be52434444908a464d2d072dfb3f00d9ba7d99c0f662510566e086be"
+  evidence_refs:
+    - ".agentplane/tasks/202606050139-MD8NEE/README.md"
+    - ".agentplane/tasks/202606050139-MD8NEE/quality/20260605-013954802-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050139-MD8NEE/quality/20260605-013954802-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050139-MD8NEE/quality/20260605-013954802-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050139-MD8NEE/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts"
+  findings:
+    - "The fallback guard now permits branch snapshot reads when the base checkout lacks a local task README, and the regression test validates artifact_source: branch."
 commit: null
 comments:
   -
