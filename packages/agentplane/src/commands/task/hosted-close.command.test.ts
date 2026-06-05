@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   isExplicitHostedCloseFollowupBranch,
+  preMergeClosureAllowsMissingBasisCommit,
   preMergeClosureBasisIsAncestor,
   taskIsClosedByPreMergeClosure,
 } from "./hosted-close.command.js";
@@ -53,7 +54,7 @@ describe("taskIsClosedByPreMergeClosure", () => {
     for (const prNumber of [4402, undefined]) {
       expect(
         taskIsClosedByPreMergeClosure({
-          task: { id: "T-1", status: "DONE", commit: { hash: "head", message: "done" } } as never,
+          task: { id: "T-1", status: "DONE", commit: { hash: "abc123", message: "done" } } as never,
           meta: {
             schema_version: 1,
             task_id: "T-1",
@@ -93,11 +94,34 @@ describe("taskIsClosedByPreMergeClosure", () => {
     ).toBe(false);
   });
 
+  it("rejects markers that do not bind to the task close commit", () => {
+    expect(
+      taskIsClosedByPreMergeClosure({
+        task: { id: "T-1", status: "DONE", commit: { hash: "close-commit", message: "done" } } as never,
+        meta: {
+          schema_version: 1,
+          task_id: "T-1",
+          branch: "task/T-1/pre-merge",
+          pr_number: 4402,
+          created_at: "2026-02-09T00:00:00.000Z",
+          updated_at: "2026-02-09T00:00:00.000Z",
+          pre_merge_closure: {
+            state: "closed_before_merge",
+            branch: "task/T-1/pre-merge",
+            basis_commit: "different-commit",
+          },
+        } as never,
+        branch: "task/T-1/pre-merge",
+        prNumber: 4402,
+      }),
+    ).toBe(false);
+  });
+
   it("rejects stale pre-merge markers from another branch or PR", () => {
     const task = {
       id: "T-1",
       status: "DONE",
-      commit: { hash: "head", message: "done" },
+      commit: { hash: "abc123", message: "done" },
     } as never;
     const meta = {
       schema_version: 1,
@@ -181,5 +205,53 @@ describe("preMergeClosureBasisIsAncestor", () => {
         } as never,
       }),
     ).resolves.toBe(false);
+  });
+});
+
+describe("preMergeClosureAllowsMissingBasisCommit", () => {
+  it("accepts old pre-merge closure metadata only when the marker binds to the DONE commit", () => {
+    const task = {
+      id: "T-1",
+      status: "DONE",
+      commit: { hash: "close-commit", message: "done" },
+    } as never;
+    const meta = {
+      schema_version: 1,
+      task_id: "T-1",
+      branch: "task/T-1/pre-merge",
+      created_at: "2026-02-09T00:00:00.000Z",
+      updated_at: "2026-02-09T00:00:00.000Z",
+      pre_merge_closure: {
+        state: "closed_before_merge",
+        branch: "task/T-1/pre-merge",
+        basis_commit: "close-commit",
+      },
+    } as never;
+
+    expect(preMergeClosureAllowsMissingBasisCommit({ task, meta, prNumber: 4402 })).toBe(true);
+    expect(
+      preMergeClosureAllowsMissingBasisCommit({
+        task,
+        prNumber: 4402,
+        meta: {
+          ...meta,
+          pr_number: 4403,
+        } as never,
+      }),
+    ).toBe(false);
+    expect(
+      preMergeClosureAllowsMissingBasisCommit({
+        task,
+        prNumber: 4402,
+        meta: {
+          ...meta,
+          pre_merge_closure: {
+            state: "closed_before_merge",
+            branch: "task/T-1/pre-merge",
+            basis_commit: "different-commit",
+          },
+        } as never,
+      }),
+    ).toBe(false);
   });
 });
