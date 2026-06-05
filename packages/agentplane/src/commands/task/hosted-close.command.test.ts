@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   isExplicitHostedCloseFollowupBranch,
+  legacyPreMergeClosureWasRecordedAfterVerification,
   preMergeClosureAllowsMissingBasisCommit,
   preMergeClosureBasisIsAncestor,
   taskIsClosedByPreMergeClosure,
@@ -240,12 +241,14 @@ describe("preMergeClosureAllowsMissingBasisCommit", () => {
       schema_version: 1,
       task_id: "T-1",
       branch: "task/T-1/pre-merge",
+      last_verified_at: "2026-02-09T00:00:00.000Z",
       created_at: "2026-02-09T00:00:00.000Z",
       updated_at: "2026-02-09T00:00:00.000Z",
       pre_merge_closure: {
         state: "closed_before_merge",
         branch: "task/T-1/pre-merge",
         basis_commit: "pre-finish-head",
+        recorded_at: "2026-02-09T00:00:01.000Z",
       },
     } as never;
 
@@ -271,9 +274,35 @@ describe("preMergeClosureAllowsMissingBasisCommit", () => {
             branch: "task/T-1/pre-merge",
             basis_commit: "pre-finish-head",
             pr_number: 4403,
+            recorded_at: "2026-02-09T00:00:01.000Z",
           },
         } as never,
       }),
     ).toBe(false);
+  });
+
+  it("rejects stale legacy markers that predate the current verification", () => {
+    const task = {
+      id: "T-1",
+      status: "DONE",
+      commit: { hash: "close-commit", message: "done" },
+    } as never;
+    const meta = {
+      schema_version: 1,
+      task_id: "T-1",
+      branch: "task/T-1/pre-merge",
+      last_verified_at: "2026-02-09T00:00:02.000Z",
+      created_at: "2026-02-09T00:00:00.000Z",
+      updated_at: "2026-02-09T00:00:00.000Z",
+      pre_merge_closure: {
+        state: "closed_before_merge",
+        branch: "task/T-1/pre-merge",
+        basis_commit: "pre-finish-head",
+        recorded_at: "2026-02-09T00:00:01.000Z",
+      },
+    } as never;
+
+    expect(preMergeClosureAllowsMissingBasisCommit({ task, meta, prNumber: 4402 })).toBe(false);
+    expect(legacyPreMergeClosureWasRecordedAfterVerification(meta)).toBe(false);
   });
 });
