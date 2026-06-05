@@ -219,7 +219,6 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);
       await configureGitUser(root);
-
       const execFileAsync = promisify(execFile);
 
       let taskId = "";
