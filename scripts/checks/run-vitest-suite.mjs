@@ -28,7 +28,6 @@ ${Object.keys(SUITES)
 
 function buildVitestArgs(suite, files, extraArgs) {
   return [
-    "vitest",
     "--config",
     suite.config ?? "vitest.workspace.ts",
     "run",
@@ -42,6 +41,14 @@ function buildVitestArgs(suite, files, extraArgs) {
     suite.hookTimeout ?? VITEST_TIMEOUT_MS,
     ...extraArgs,
   ];
+}
+
+function vitestCommand() {
+  const localVitestEntrypoint = path.join(REPO_ROOT, "node_modules", "vitest", "vitest.mjs");
+  if (existsSync(localVitestEntrypoint)) {
+    return { command: process.execPath, argsPrefix: [localVitestEntrypoint] };
+  }
+  return { command: "bunx", argsPrefix: ["vitest"] };
 }
 
 function chunkFiles(files, chunkSize, isolatedPatterns = []) {
@@ -69,7 +76,8 @@ function chunkFiles(files, chunkSize, isolatedPatterns = []) {
 
 function runVitest(args, files) {
   const startedAt = performance.now();
-  execFileSync("bunx", args, {
+  const vitest = vitestCommand();
+  execFileSync(vitest.command, [...vitest.argsPrefix, ...args], {
     cwd: REPO_ROOT,
     env: process.env,
     stdio: "inherit",
@@ -83,7 +91,8 @@ function runVitest(args, files) {
 
 function runVitestCaptured(args, files) {
   const startedAt = performance.now();
-  const result = spawnSync("bunx", args, {
+  const vitest = vitestCommand();
+  const result = spawnSync(vitest.command, [...vitest.argsPrefix, ...args], {
     cwd: REPO_ROOT,
     encoding: "utf8",
     env: process.env,
