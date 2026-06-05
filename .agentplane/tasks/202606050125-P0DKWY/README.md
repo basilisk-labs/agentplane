@@ -4,7 +4,7 @@ title: "Harden release lifecycle test cleanup"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,22 @@ verification:
   updated_by: "REVIEWER"
   note: "Release lifecycle cleanup hardening passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T01:27:04.281Z"
+  updated_by: "EVALUATOR"
+  note: "Release lifecycle cleanup hardening is focused and verified."
+  evaluated_sha: "451a96881f3504f45485fe5132f0915b9ec86dc7"
+  blueprint_digest: "aa891a79fb76938cab35c1f008a03901f70025c2faa9a8c59c7dcc26f8311d20"
+  evidence_refs:
+    - ".agentplane/tasks/202606050125-P0DKWY/README.md"
+    - ".agentplane/tasks/202606050125-P0DKWY/quality/20260605-012704281-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050125-P0DKWY/quality/20260605-012704281-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050125-P0DKWY/quality/20260605-012704281-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050125-P0DKWY/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/cli/release-critical-lifecycle.test.ts"
+  findings:
+    - "The failing hosted test used single-attempt recursive temp repo removal; the patch uses fs.rm retry options and focused release-critical verification passed."
 commit: null
 comments:
   -
