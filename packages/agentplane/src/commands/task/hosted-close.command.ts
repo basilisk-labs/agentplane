@@ -103,8 +103,16 @@ export function preMergeClosureAllowsMissingBasisCommit(opts: {
   if (marker.prNumber != null) return false;
   return (
     normalizeTaskStatus(opts.task.status) === "DONE" &&
-    (opts.task.commit?.hash?.trim() ?? "") !== ""
+    (opts.task.commit?.hash?.trim() ?? "") !== "" &&
+    legacyPreMergeClosureWasRecordedAfterVerification(opts.meta)
   );
+}
+
+export function legacyPreMergeClosureWasRecordedAfterVerification(meta: PrMeta): boolean {
+  const marker = readPreMergeClosureMarker(meta);
+  const markerTime = Date.parse(marker?.recordedAt ?? "");
+  const verifiedTime = Date.parse(meta.last_verified_at ?? "");
+  return Number.isFinite(markerTime) && Number.isFinite(verifiedTime) && markerTime >= verifiedTime;
 }
 
 export function isExplicitHostedCloseFollowupBranch(opts: {
