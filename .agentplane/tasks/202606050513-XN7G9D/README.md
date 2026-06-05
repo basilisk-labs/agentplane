@@ -4,7 +4,7 @@ title: "Hide runner guidance outside parallel-codex context"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Verified prompt and route context hide default runner-only guidance for ordinary tasks; explicit runner routes remain covered by tests."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T05:44:18.783Z"
+  updated_by: "EVALUATOR"
+  note: "Prompt and route surfaces now hide default runner guidance outside explicit runner contexts; hosted PR checks passed on PR #4452."
+  evaluated_sha: "0c99d0953f4a2a4ca4f5ad203d1b2e4c7738a5ba"
+  blueprint_digest: "a00f707b51bb3c661393c8cf056c882304ac8dbc5704344e0a33c4a102e6fe26"
+  evidence_refs:
+    - ".agentplane/tasks/202606050513-XN7G9D/README.md"
+    - ".agentplane/tasks/202606050513-XN7G9D/quality/20260605-054418783-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050513-XN7G9D/quality/20260605-054418783-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050513-XN7G9D/quality/20260605-054418783-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050513-XN7G9D/blueprint/resolved-snapshot.json"
+    - "gh pr checks 4452"
+    - "bun run ci:local:fast"
+    - "/tmp/agentplane-XN7G9D-brief.txt"
+  findings:
+    - "Default task brief/status/next-action output no longer emits runner-only context fields for ordinary tasks; Hermes projection no longer includes runner commands unless a runner route or task runner evidence exists."
 commit: null
 comments:
   -
