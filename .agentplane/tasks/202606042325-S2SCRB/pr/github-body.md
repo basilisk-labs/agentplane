@@ -16,7 +16,7 @@ Prepare and merge the v0.6.17 patch release candidate after the cognitive-load r
 ## Verification
 
 - State: ok
-- Note: Post-rebase release candidate verification passed.
+- Note: Release PR cleanup fix verification passed.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -93,11 +93,17 @@ Prepare and merge the v0.6.17 patch release candidate after the cognitive-load r
  .../evaluator-opinion.md                           |  20 +
  .../evaluator-prompt.md                            |  74 ++++
  .../quality-report.json                            |  22 +
+ .agentplane/tasks/202606050125-P0DKWY/README.md    | 193 +++++++++
+ .../blueprint/resolved-snapshot.json               | 454 ++++++++++++++++++++
+ .../evaluator-opinion.md                           |  19 +
+ .../evaluator-prompt.md                            |  74 ++++
+ .../quality-report.json                            |  21 +
  .agentplane/workflows/last-known-good.md           |   3 +-
  docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.6.17.md                           |  61 ++-
  package.json                                       |   6 +-
  packages/agentplane/package.json                   |  10 +-
+ .../src/cli/release-critical-lifecycle.test.ts     |   6 +-
  packages/agentplane/src/commands/pr/check.ts       |   5 +
  .../src/commands/pr/internal/freshness.test.ts     |  20 +
  .../src/commands/pr/internal/freshness.ts          |   2 +-
@@ -115,7 +121,7 @@ Prepare and merge the v0.6.17 patch release candidate after the cognitive-load r
  scripts/checks/run-tsup-build.mjs                  |  50 +++
  scripts/checks/run-typescript-build.mjs            |  52 +++
  scripts/checks/run-vitest-suite.mjs                |  15 +-
- 88 files changed, 10383 insertions(+), 49 deletions(-)
+ 94 files changed, 11149 insertions(+), 50 deletions(-)
 ```
 
 </details>

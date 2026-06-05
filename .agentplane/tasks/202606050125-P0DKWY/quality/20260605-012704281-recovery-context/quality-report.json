@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202606050125-P0DKWY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-05T01:27:04.281Z",
+  "verdict": "pass",
+  "summary": "Release lifecycle cleanup hardening is focused and verified.",
+  "evaluated_sha": "451a96881f3504f45485fe5132f0915b9ec86dc7",
+  "blueprint_digest": "aa891a79fb76938cab35c1f008a03901f70025c2faa9a8c59c7dcc26f8311d20",
+  "findings": [
+    "The failing hosted test used single-attempt recursive temp repo removal; the patch uses fs.rm retry options and focused release-critical verification passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606050125-P0DKWY/README.md",
+    "packages/agentplane/src/cli/release-critical-lifecycle.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
