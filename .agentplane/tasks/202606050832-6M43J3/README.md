@@ -4,7 +4,7 @@ title: "Recognize legacy pre-merge closure markers after rebase merge"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-05T08:39:34.301Z"
+  updated_at: "2026-06-05T08:47:22.128Z"
   updated_by: "CODER"
-  note: "Verified on implementation commit bd3b3bcbd. Command: agentplane task verify-show 202606050832-6M43J3 | Result: pass | Evidence: blueprint code.branch_pr, snapshot current. Command: bunx vitest run packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 | Result: pass | Evidence: 2 files, 9 tests passed. Command: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish-execute-close.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts packages/agentplane/src/commands/shared/pr-meta/pre-merge-closure.ts | Result: pass | Evidence: no output. Command: bunx prettier packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/finish-execute-close.ts packages/agentplane/src/commands/shared/pr-meta/pre-merge-closure.ts --check | Result: pass | Evidence: All matched files use Prettier code style. Command: bun run --filter=agentplane typecheck | Result: pass | Evidence: exited 0. Command: bun run --filter=agentplane build | Result: pass | Evidence: dist/cli.js and release manifest generated."
+  note: "Verified on review-fix commit a99194e1c. Command: agentplane task verify-show 202606050832-6M43J3 | Result: pass | Evidence: blueprint code.branch_pr, snapshot current. Command: bunx vitest run packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 | Result: pass | Evidence: 2 files, 10 tests passed including stale legacy marker rejection. Command: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish-execute-close.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts packages/agentplane/src/commands/shared/pr-meta/pre-merge-closure.ts | Result: pass | Evidence: no output. Command: bunx prettier packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/finish-execute-close.ts packages/agentplane/src/commands/shared/pr-meta/pre-merge-closure.ts --check | Result: pass | Evidence: All matched files use Prettier code style. Command: bun run --filter=agentplane typecheck | Result: pass | Evidence: exited 0. Command: bun run --filter=agentplane build | Result: pass | Evidence: dist/cli.js and release manifest generated."
   attempts: 0
 commit: null
 comments:
@@ -55,8 +55,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified on implementation commit bd3b3bcbd. Command: agentplane task verify-show 202606050832-6M43J3 | Result: pass | Evidence: blueprint code.branch_pr, snapshot current. Command: bunx vitest run packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 | Result: pass | Evidence: 2 files, 9 tests passed. Command: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish-execute-close.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts packages/agentplane/src/commands/shared/pr-meta/pre-merge-closure.ts | Result: pass | Evidence: no output. Command: bunx prettier packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/finish-execute-close.ts packages/agentplane/src/commands/shared/pr-meta/pre-merge-closure.ts --check | Result: pass | Evidence: All matched files use Prettier code style. Command: bun run --filter=agentplane typecheck | Result: pass | Evidence: exited 0. Command: bun run --filter=agentplane build | Result: pass | Evidence: dist/cli.js and release manifest generated."
+  -
+    type: "verify"
+    at: "2026-06-05T08:47:22.128Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified on review-fix commit a99194e1c. Command: agentplane task verify-show 202606050832-6M43J3 | Result: pass | Evidence: blueprint code.branch_pr, snapshot current. Command: bunx vitest run packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 | Result: pass | Evidence: 2 files, 10 tests passed including stale legacy marker rejection. Command: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish-execute-close.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts packages/agentplane/src/commands/shared/pr-meta/pre-merge-closure.ts | Result: pass | Evidence: no output. Command: bunx prettier packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/finish-execute-close.ts packages/agentplane/src/commands/shared/pr-meta/pre-merge-closure.ts --check | Result: pass | Evidence: All matched files use Prettier code style. Command: bun run --filter=agentplane typecheck | Result: pass | Evidence: exited 0. Command: bun run --filter=agentplane build | Result: pass | Evidence: dist/cli.js and release manifest generated."
 doc_version: 3
-doc_updated_at: "2026-06-05T08:39:34.464Z"
+doc_updated_at: "2026-06-05T08:47:22.343Z"
 doc_updated_by: "CODER"
 description: "Hosted-close must no-op for DONE tasks whose pre_merge_closure marker was written before PR numbers were persisted and whose basis commit was the pre-finish branch head, not task.commit.hash. Also make finish pre-merge closure persist pr_number when PR metadata already knows it, so future hosted-close decisions are direct."
 sections:
@@ -114,6 +120,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-05T08:38:37.901Z, excerpt_hash=sha256:5d5617e03d28e17fc9d1706b85adadd6d0c9a4d846909ecc3a19fea6c3dc8ebe
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606050832-6M43J3-legacy-premerge-marker/.agentplane/tasks/202606050832-6M43J3/blueprint/resolved-snapshot.json
+    - old_digest: e1fece02f1e52c0c915c66701593703f93f22ece518cb7b35e1348f7737b6cb0
+    - current_digest: e1fece02f1e52c0c915c66701593703f93f22ece518cb7b35e1348f7737b6cb0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606050832-6M43J3
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606050832-6M43J3
+    - diagnostic_command: agentplane pr check 202606050832-6M43J3
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-06-05T08:47:22.128Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified on review-fix commit a99194e1c. Command: agentplane task verify-show 202606050832-6M43J3 | Result: pass | Evidence: blueprint code.branch_pr, snapshot current. Command: bunx vitest run packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 | Result: pass | Evidence: 2 files, 10 tests passed including stale legacy marker rejection. Command: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish-execute-close.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts packages/agentplane/src/commands/shared/pr-meta/pre-merge-closure.ts | Result: pass | Evidence: no output. Command: bunx prettier packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/finish-execute-close.ts packages/agentplane/src/commands/shared/pr-meta/pre-merge-closure.ts --check | Result: pass | Evidence: All matched files use Prettier code style. Command: bun run --filter=agentplane typecheck | Result: pass | Evidence: exited 0. Command: bun run --filter=agentplane build | Result: pass | Evidence: dist/cli.js and release manifest generated.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-05T08:39:34.464Z, excerpt_hash=sha256:5d5617e03d28e17fc9d1706b85adadd6d0c9a4d846909ecc3a19fea6c3dc8ebe
 
     Details:
 
@@ -207,6 +243,36 @@ Note: Verified on implementation commit bd3b3bcbd. Command: agentplane task veri
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-05T08:38:37.901Z, excerpt_hash=sha256:5d5617e03d28e17fc9d1706b85adadd6d0c9a4d846909ecc3a19fea6c3dc8ebe
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606050832-6M43J3-legacy-premerge-marker/.agentplane/tasks/202606050832-6M43J3/blueprint/resolved-snapshot.json
+- old_digest: e1fece02f1e52c0c915c66701593703f93f22ece518cb7b35e1348f7737b6cb0
+- current_digest: e1fece02f1e52c0c915c66701593703f93f22ece518cb7b35e1348f7737b6cb0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606050832-6M43J3
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606050832-6M43J3
+- diagnostic_command: agentplane pr check 202606050832-6M43J3
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-06-05T08:47:22.128Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified on review-fix commit a99194e1c. Command: agentplane task verify-show 202606050832-6M43J3 | Result: pass | Evidence: blueprint code.branch_pr, snapshot current. Command: bunx vitest run packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 | Result: pass | Evidence: 2 files, 10 tests passed including stale legacy marker rejection. Command: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish-execute-close.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts packages/agentplane/src/commands/shared/pr-meta/pre-merge-closure.ts | Result: pass | Evidence: no output. Command: bunx prettier packages/agentplane/src/commands/task/hosted-close.command.test.ts packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/finish-execute-close.ts packages/agentplane/src/commands/shared/pr-meta/pre-merge-closure.ts --check | Result: pass | Evidence: All matched files use Prettier code style. Command: bun run --filter=agentplane typecheck | Result: pass | Evidence: exited 0. Command: bun run --filter=agentplane build | Result: pass | Evidence: dist/cli.js and release manifest generated.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-05T08:39:34.464Z, excerpt_hash=sha256:5d5617e03d28e17fc9d1706b85adadd6d0c9a4d846909ecc3a19fea6c3dc8ebe
 
 Details:
 
