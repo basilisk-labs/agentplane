@@ -13,7 +13,7 @@ Created: 2026-06-05T07:02:58.618Z
 ## Verification
 
 - State: ok
-- Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --config vitest.workspace.ts --project cli-core --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Result: pass; 1 file / 13 tests passed. Command: bun run --filter=agentplane typecheck. Result: pass; agentplane typecheck exited 0. Command: bun run --filter=agentplane build. Result: pass; CLI build succeeded.
+- Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.close-noop-readme.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --config vitest.workspace.ts --project cli-core --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Result: pass; 2 files / 13 tests passed. Command: bun run --filter=agentplane typecheck. Result: pass. Command: bun run --filter=agentplane build. Result: pass. Command: bun run hotspots:check. Result: pass; oversized test baseline OK. Verified current code/test HEAD before task-artifact-only PR refresh.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,11 +31,11 @@ Created: 2026-06-05T07:02:58.618Z
 ```text
  .agentplane/tasks/202606040927-KSESDS/README.md    | 116 ++++++++++++++++++++
  .agentplane/tasks/202606041702-TVTSM2/README.md    | 120 +++++++++++++++++++++
- .../src/cli/run-cli.core.tasks.lifecycle.test.ts   | 101 +++++++++++++++++
+ .../run-cli.core.tasks.close-noop-readme.test.ts   | 120 +++++++++++++++++++++
  .../src/commands/task/close-duplicate.ts           |  59 +---------
  .../agentplane/src/commands/task/close-noop.ts     |   3 +-
  .../agentplane/src/commands/task/close-shared.ts   |  57 +++++++++-
- 6 files changed, 396 insertions(+), 60 deletions(-)
+ 6 files changed, 415 insertions(+), 60 deletions(-)
 ```
 
 </details>
