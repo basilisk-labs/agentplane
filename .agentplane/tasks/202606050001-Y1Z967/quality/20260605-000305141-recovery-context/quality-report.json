@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606050001-Y1Z967",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-05T00:03:05.141Z",
+  "verdict": "pass",
+  "summary": "pr check rejects stale branch fallback artifacts when the local task projection is missing while preserving valid local, branch, and remote artifact fallback paths.",
+  "evaluated_sha": "704ced217a8068fb992a02f433e01202f1119a56",
+  "blueprint_digest": "68ea9289dcefd98d0bb57ecba50245d142852e09c73e8e61f2f1525e794ca23d",
+  "findings": [
+    "Focused PR validation tests passed, remote artifact fallback stayed green, and package typecheck passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606050001-Y1Z967/README.md",
+    "packages/agentplane/src/commands/pr/check.ts",
+    "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-check-remote-artifacts.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
