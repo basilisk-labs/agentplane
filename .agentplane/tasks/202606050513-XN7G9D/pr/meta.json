@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-05T05:57:43Z",
   "base": "main",
   "branch": "task/202606050513-XN7G9D/hide-runner-guidance",
   "created_at": "2026-06-05T05:23:40.008Z",
   "diffstat_sha256": "sha256:6583fe76a4bbdbc9abb2d1fc2680c92d57064271e5ae87be1784016b2ebf55aa",
   "last_verified_at": "2026-06-05T05:23:39.883Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "71c5e3d1e5867291c32d07d7a15ab942a96608c8",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-05T05:57:43Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606050513-XN7G9D",
-  "updated_at": "2026-06-05T05:23:40.008Z",
+  "updated_at": "2026-06-05T05:57:43Z",
   "verify": {
     "status": "pass"
   }
