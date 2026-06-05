@@ -4,7 +4,7 @@ title: "Tolerate pre-merge DONE commit after rebase merge"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +29,22 @@ verification:
   updated_by: "CODER"
   note: "Verified on HEAD 4f669645b after Prettier formatting fix. Command: agentplane task verify-show 202606050808-HP5P63 | Result: pass | Evidence: blueprint quality.regression snapshot current. Command: bunx vitest run packages/agentplane/src/commands/task/hosted-close.command.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 | Result: pass | Evidence: 1 file, 8 tests passed. Command: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts | Result: pass | Evidence: no output. Command: bun run --filter=agentplane typecheck | Result: pass | Evidence: exited 0. Command: bun run --filter=agentplane build | Result: pass | Evidence: dist/cli.js and release manifest generated. Command: bunx prettier packages/agentplane/src/commands/task/hosted-close.command.test.ts --check | Result: pass | Evidence: All matched files use Prettier code style."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T08:24:20.552Z"
+  updated_by: "EVALUATOR"
+  note: "Hosted-close rebase merge pre-merge DONE conflict is fixed with commit-bound missing-basis tolerance and focused regression coverage."
+  evaluated_sha: "4f669645b32c6fdd30ddea0a274474105574083f"
+  blueprint_digest: "4fb0b578864a0d48006448ec7d2feb135b661f8633e8ded154524e6ed79c85a2"
+  evidence_refs:
+    - ".agentplane/tasks/202606050808-HP5P63/README.md"
+    - ".agentplane/tasks/202606050808-HP5P63/quality/20260605-082420552-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050808-HP5P63/quality/20260605-082420552-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050808-HP5P63/quality/20260605-082420552-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050808-HP5P63/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/task/hosted-close.command.test.ts"
+  findings:
+    - "Pass: missing pre_merge_closure basis commits are tolerated only when the pre-merge marker is bound to the task DONE commit or an explicit matching PR number, preserving stale PR mismatch rejection."
 commit: null
 comments:
   -
