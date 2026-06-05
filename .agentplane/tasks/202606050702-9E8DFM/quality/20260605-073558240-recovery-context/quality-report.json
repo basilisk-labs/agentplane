@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202606050702-9E8DFM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-05T07:35:58.240Z",
+  "verdict": "pass",
+  "summary": "close-noop README hydration fixes the stale no-op closure path and release task registry is no longer blocked by KSESDS/TVTSM2",
+  "evaluated_sha": "55042cf38ee6475af94177c0e215f24b9307cb1d",
+  "blueprint_digest": "b94799f9fdd63fabb3ddf19264ee305dd14071a166dc1f6a22777da53dc1f7a1",
+  "findings": [
+    "Verified focused regression split, typecheck, build, hotspots, local pr check, and hosted checks 17/17 passing for PR #4456."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606050702-9E8DFM/README.md",
+    "bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.close-noop-readme.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --config vitest.workspace.ts --project cli-core --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000",
+    "bun run --filter=agentplane typecheck",
+    "bun run --filter=agentplane build",
+    "bun run hotspots:check",
+    "agentplane pr check 202606050702-9E8DFM --hosted --stable-polls 2 --poll-interval-ms 10000 --timeout-ms 180000"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
