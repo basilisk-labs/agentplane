@@ -111,7 +111,7 @@ Created: 2026-06-04T23:25:48.534Z
  package.json                                       |   6 +-
  packages/agentplane/package.json                   |  10 +-
  .../src/cli/release-critical-lifecycle.test.ts     |   6 +-
- .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   7 +-
+ .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   8 +-
  packages/agentplane/src/commands/pr/check.ts       |   5 +
  .../src/commands/pr/internal/freshness.test.ts     |  20 +
  .../src/commands/pr/internal/freshness.ts          |   2 +-
@@ -129,7 +129,7 @@ Created: 2026-06-04T23:25:48.534Z
  scripts/checks/run-tsup-build.mjs                  |  50 ++
  scripts/checks/run-typescript-build.mjs            |  52 ++
  scripts/checks/run-vitest-suite.mjs                |  15 +-
- 100 files changed, 12057 insertions(+), 53 deletions(-)
+ 100 files changed, 12057 insertions(+), 54 deletions(-)
 ```
 
 </details>
