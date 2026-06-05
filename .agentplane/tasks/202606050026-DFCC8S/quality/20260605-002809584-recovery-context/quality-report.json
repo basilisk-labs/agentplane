@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606050026-DFCC8S",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-05T00:28:09.584Z",
+  "verdict": "pass",
+  "summary": "Knip baseline checks now use the active Node process, report termination signals, and pass under the release Node 24 shell.",
+  "evaluated_sha": "8f1090290bc5e812363b95296c7690c4af99cd3b",
+  "blueprint_digest": "8454bc02bb743e415ed2b12d0333cd8def9c5c81421f17c4a470d73bde88e232",
+  "findings": [
+    "Focused knip:check and eslint for check-knip-baseline.mjs passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606050026-DFCC8S/README.md",
+    "scripts/checks/check-knip-baseline.mjs",
+    "knip-check-node24",
+    "eslint-knip-wrapper"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

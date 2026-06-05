@@ -4,7 +4,7 @@ title: "Make knip baseline failures diagnostic"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Knip baseline wrapper now runs local knip through process.execPath; focused knip:check and wrapper eslint passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T00:28:09.584Z"
+  updated_by: "EVALUATOR"
+  note: "Knip baseline checks now use the active Node process, report termination signals, and pass under the release Node 24 shell."
+  evaluated_sha: "8f1090290bc5e812363b95296c7690c4af99cd3b"
+  blueprint_digest: "8454bc02bb743e415ed2b12d0333cd8def9c5c81421f17c4a470d73bde88e232"
+  evidence_refs:
+    - ".agentplane/tasks/202606050026-DFCC8S/README.md"
+    - ".agentplane/tasks/202606050026-DFCC8S/quality/20260605-002809584-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050026-DFCC8S/quality/20260605-002809584-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050026-DFCC8S/quality/20260605-002809584-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050026-DFCC8S/blueprint/resolved-snapshot.json"
+    - "scripts/checks/check-knip-baseline.mjs"
+    - "knip-check-node24"
+    - "eslint-knip-wrapper"
+  findings:
+    - "Focused knip:check and eslint for check-knip-baseline.mjs passed."
 commit: null
 comments:
   -
