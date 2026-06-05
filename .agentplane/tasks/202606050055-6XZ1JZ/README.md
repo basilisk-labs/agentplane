@@ -4,7 +4,7 @@ title: "Normalize lifecycle doctor warnings before v0.6.17"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,22 @@ verification:
   updated_by: "REVIEWER"
   note: "Lifecycle doctor warnings normalized."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T01:05:18.037Z"
+  updated_by: "EVALUATOR"
+  note: "Lifecycle doctor warnings are normalized."
+  evaluated_sha: "ee7ffc9dc935fcba1c2a64fc9ec6579d40efd971"
+  blueprint_digest: "16e2cf969044797a471384af5e210c14e5e75f2ec41f8bb9d27ffc1ad95ed91a"
+  evidence_refs:
+    - ".agentplane/tasks/202606050055-6XZ1JZ/README.md"
+    - ".agentplane/tasks/202606050055-6XZ1JZ/quality/20260605-010518037-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050055-6XZ1JZ/quality/20260605-010518037-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050055-6XZ1JZ/quality/20260605-010518037-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050055-6XZ1JZ/blueprint/resolved-snapshot.json"
+    - "agentplane-doctor"
+  findings:
+    - "agentplane doctor in the task branch reports errors=0 warnings=0 after syncing merged branch metadata and repairing missing no-op closure commit metadata."
 commit: null
 comments:
   -
