@@ -5,6 +5,12 @@
   "diffstat_sha256": "sha256:1e9c4c29a277c1c305a06394cd4ed0579fe00857662e5983b31152c3a25f5325",
   "last_verified_at": "2026-06-05T08:47:22.128Z",
   "last_verified_diffstat_sha256": "sha256:1e9c4c29a277c1c305a06394cd4ed0579fe00857662e5983b31152c3a25f5325",
+  "pre_merge_closure": {
+    "basis_commit": "7b5cdcb5374c3a5976e38b9e2c086637e2bec0c8",
+    "branch": "task/202606050832-6M43J3/legacy-premerge-marker",
+    "recorded_at": "2026-06-05T10:40:03.721Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "task_id": "202606050832-6M43J3",
   "updated_at": "2026-06-05T08:33:23.598Z",

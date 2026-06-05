@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606050832-6M43J3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-05T10:35:21.108Z",
+  "verdict": "pass",
+  "summary": "Hosted-close legacy pre-merge marker handling now requires PR binding or temporal verification binding, and finish persists nested pr_number for future markers.",
+  "evaluated_sha": "a99194e1c5bd5c532e3860bff1b6cedcc29cf343",
+  "blueprint_digest": "e1fece02f1e52c0c915c66701593703f93f22ece518cb7b35e1348f7737b6cb0",
+  "findings": [
+    "Pass: no-PR legacy marker bypass is constrained by branch, DONE state, nonempty task commit, and recorded_at >= last_verified_at; explicit top-level or nested PR mismatches still reject."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606050832-6M43J3/README.md",
+    "packages/agentplane/src/commands/task/hosted-close.command.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Local git hook wrappers have repeatedly hung in this session; direct focused checks and hosted PR checks passed."
+  ]
+}
