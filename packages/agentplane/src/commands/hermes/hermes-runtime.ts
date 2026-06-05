@@ -6,6 +6,10 @@ import { isRecord } from "../../shared/guards.js";
 import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import {
+  deriveRouteOperatorGuidance,
+  routeRunnerContextIsRelevant,
+} from "../shared/route-guidance.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
 const execFileAsync = promisify(execFile);
@@ -154,13 +158,10 @@ async function runnerVisibilityPacket(opts: {
   }
 }
 
-function routeNeedsRunnerProjection(
+export function routeNeedsRunnerProjection(
   decision: Awaited<ReturnType<typeof buildTaskRouteDecision>>,
 ): boolean {
-  return (
-    decision.nextAction.code === "wait_runner" ||
-    (decision.blockers ?? []).some((blocker) => blocker.code === "runner_alive")
-  );
+  return routeRunnerContextIsRelevant(deriveRouteOperatorGuidance(decision));
 }
 
 export async function routePacket(opts: {
