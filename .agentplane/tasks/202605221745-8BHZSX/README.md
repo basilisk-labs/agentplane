@@ -47,12 +47,11 @@ quality_review:
     - ".agentplane/tasks/202605221745-8BHZSX/quality/20260605-005946535-recovery-context/quality-report.json"
     - ".agentplane/tasks/202605221745-8BHZSX/quality/20260605-005946535-recovery-context/evaluator-prompt.md"
     - ".agentplane/tasks/202605221745-8BHZSX/quality/20260605-005946535-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202605221745-8BHZSX/blueprint/resolved-snapshot.json"
   findings:
     - "Task was already DONE as duplicate of 202605230332-RYW28Y; commit 2426e688f is the task-close merge that updated this task's closure README."
 commit:
-  hash: "ee7ffc9dc935fcba1c2a64fc9ec6579d40efd971"
-  message: "🖼️ 202606042316-XH5D0B docs: add v0.6.17 social assets"
+  hash: "2426e688f5d1b1dac919a905d479a706e5fba4f7"
+  message: "Merge pull request #4070 from basilisk-labs/task-close/202605221745-8BHZSX/duplicate-ryw28y"
 comments:
   -
     author: "ORCHESTRATOR"
