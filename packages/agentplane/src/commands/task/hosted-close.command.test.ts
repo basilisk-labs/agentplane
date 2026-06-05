@@ -97,7 +97,11 @@ describe("taskIsClosedByPreMergeClosure", () => {
   it("rejects markers that do not bind to the task close commit", () => {
     expect(
       taskIsClosedByPreMergeClosure({
-        task: { id: "T-1", status: "DONE", commit: { hash: "close-commit", message: "done" } } as never,
+        task: {
+          id: "T-1",
+          status: "DONE",
+          commit: { hash: "close-commit", message: "done" },
+        } as never,
         meta: {
           schema_version: 1,
           task_id: "T-1",
