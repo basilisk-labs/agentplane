@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { TaskRouteDecision } from "./route-decision-types.js";
-import { deriveRouteOperatorGuidance } from "./route-guidance.js";
+import { deriveRouteOperatorGuidance, routeRunnerContextIsRelevant } from "./route-guidance.js";
 
 describe("route operator guidance", () => {
   it("surfaces PR artifact freshness loops separately from executable route commands", () => {
@@ -42,7 +42,8 @@ describe("route operator guidance", () => {
       },
     } as TaskRouteDecision;
 
-    expect(deriveRouteOperatorGuidance(decision)).toMatchObject({
+    const guidance = deriveRouteOperatorGuidance(decision);
+    expect(guidance).toMatchObject({
       canExecuteNow: true,
       shouldRunNextCommand: true,
       operatorAction: "run_exact_argv",
@@ -80,6 +81,7 @@ describe("route operator guidance", () => {
         },
       ],
     });
+    expect(routeRunnerContextIsRelevant(guidance)).toBe(false);
   });
 
   it("points hybrid PR update route diagnostics at PR check", () => {
@@ -131,5 +133,54 @@ describe("route operator guidance", () => {
         allowed: false,
       },
     });
+  });
+
+  it("keeps runner context visible only for an active runner route", () => {
+    const decision = {
+      task: {
+        id: "202606050513-RUNNER",
+        title: "Wait for runner",
+        status: "DOING",
+        owner: "CODER",
+        planApproval: "approved",
+        verification: "pending",
+        commit: null,
+      },
+      nextAction: {
+        code: "wait_runner",
+        command: null,
+        summary: "wait for the active runner or reclaim with explicit force if it is orphaned",
+        requiresApproval: false,
+      },
+      oracle: {
+        phase: "runner_wait",
+        authoritativeCheckout: "task_worktree",
+        authoritativeCheckoutPath: "/repo/.agentplane/worktrees/task",
+        mutationPathHint: null,
+        blocker: { code: "runner_alive", summary: "latest runner still appears alive" },
+        nextCommand: null,
+        summary: "wait for the active runner or reclaim with explicit force if it is orphaned",
+      },
+      blockers: [{ code: "runner_alive", summary: "latest runner still appears alive" }],
+      executionPacket: {
+        actionKind: "wait",
+        safeToMutate: false,
+        exactArgv: null,
+        stopReason: "wait for the active runner or reclaim with explicit force if it is orphaned",
+        returnControlWhen:
+          "after the waited condition changes or the parent supervisor grants reclaim/escalation",
+        staleStateCheck: "agentplane task next-action 202606050513-RUNNER --explain",
+        verificationCandidate: null,
+      },
+    } as TaskRouteDecision;
+
+    const guidance = deriveRouteOperatorGuidance(decision);
+
+    expect(guidance.runnerContext).toMatchObject({
+      runnerIsRequired: true,
+      runnerIsAllowedNow: false,
+      runnerFailureMeans: "inspect_runner_artifacts",
+    });
+    expect(routeRunnerContextIsRelevant(guidance)).toBe(true);
   });
 });

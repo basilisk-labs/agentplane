@@ -167,11 +167,12 @@ describe("hermes adapter commands", () => {
                 returnControlWhen: string;
                 mustNot: string[];
               };
-              evidence_refs: { runner_status: string; runner_inspect: string };
+              evidence_refs: Record<string, string>;
+              runner: null;
             };
           };
         };
-        evidence_refs: { runner_event_logs: string };
+        evidence_refs: Record<string, string>;
         sync_field_policies: { status: { authority: string } };
       };
       expect(payload.idempotency_key).toContain(`agentplane:${root}:${taskId}:CODER`);
@@ -191,15 +192,14 @@ describe("hermes adapter commands", () => {
       expect(payload.metadata.agentplane.comment_projection.execution_packet.mustNot).toContain(
         "do not reconstruct branch/worktree/PR state from prose",
       );
-      expect(payload.metadata.agentplane.comment_projection.evidence_refs.runner_status).toBe(
-        `agentplane task run status ${taskId} --json`,
+      expect(payload.metadata.agentplane.comment_projection.runner).toBeNull();
+      expect(payload.metadata.agentplane.comment_projection.evidence_refs).not.toHaveProperty(
+        "runner_status",
       );
-      expect(payload.metadata.agentplane.comment_projection.evidence_refs.runner_inspect).toBe(
-        `agentplane task run inspect ${taskId} --json`,
+      expect(payload.metadata.agentplane.comment_projection.evidence_refs).not.toHaveProperty(
+        "runner_inspect",
       );
-      expect(payload.evidence_refs.runner_event_logs).toBe(
-        `agentplane task run logs ${taskId} --stream events`,
-      );
+      expect(payload.evidence_refs).not.toHaveProperty("runner_event_logs");
       expect(payload.sync_field_policies.status.authority).toBe("agentplane");
     } finally {
       io.restore();
@@ -221,17 +221,14 @@ describe("hermes adapter commands", () => {
           execute_raw_shell_from_route: boolean;
           max_route_steps_per_claim: number;
         };
-        runner: {
-          latest_available: boolean;
-          commands: { status: string; inspect: string; event_logs: string };
-        };
+        runner: null;
         hermes_comment_projection: {
           schema: string;
           execution_packet: {
             staleStateCheck: string;
             returnControlWhen: string;
           };
-          evidence_refs: { runner_status: string };
+          evidence_refs: Record<string, string>;
         };
         terminal: { hermes_root_complete_allowed: boolean };
         lifecycle_recommendation: { action: string; command: string; reason: string };
@@ -241,12 +238,7 @@ describe("hermes adapter commands", () => {
       expect(payload.projection_boundary.hermes_authority).toBe("dispatch_run_lifecycle");
       expect(payload.supervisor_policy.execute_raw_shell_from_route).toBe(false);
       expect(payload.supervisor_policy.max_route_steps_per_claim).toBe(1);
-      expect(payload.runner.latest_available).toBe(false);
-      expect(payload.runner.commands.status).toBe(`agentplane task run status ${taskId} --json`);
-      expect(payload.runner.commands.inspect).toBe(`agentplane task run inspect ${taskId} --json`);
-      expect(payload.runner.commands.event_logs).toBe(
-        `agentplane task run logs ${taskId} --stream events`,
-      );
+      expect(payload.runner).toBeNull();
       expect(payload.hermes_comment_projection.schema).toBe(
         "agentplane.hermes.lifecycle-comment.v1",
       );
@@ -256,9 +248,7 @@ describe("hermes adapter commands", () => {
       expect(payload.hermes_comment_projection.execution_packet.returnControlWhen).toContain(
         "after the provider or human action completes",
       );
-      expect(payload.hermes_comment_projection.evidence_refs.runner_status).toBe(
-        payload.runner.commands.status,
-      );
+      expect(payload.hermes_comment_projection.evidence_refs).not.toHaveProperty("runner_status");
       expect(payload.terminal.hermes_root_complete_allowed).toBe(false);
       expect(payload.lifecycle_recommendation.action).toBe("block");
       expect(payload.lifecycle_recommendation.command).toContain("hermes lifecycle block");
@@ -482,7 +472,7 @@ describe("hermes adapter commands", () => {
           task: { id: string };
           hermes_comment_projection: {
             agentplane_task_id: string;
-            evidence_refs: { runner_status: string };
+            evidence_refs: Record<string, string>;
           };
         };
         plugin_contract: { remote_board_reads_required: boolean };
@@ -490,8 +480,8 @@ describe("hermes adapter commands", () => {
       expect(payload.mode).toBe("read_only");
       expect(payload.local_projection.task.id).toBe(taskId);
       expect(payload.local_projection.hermes_comment_projection.agentplane_task_id).toBe(taskId);
-      expect(payload.local_projection.hermes_comment_projection.evidence_refs.runner_status).toBe(
-        `agentplane task run status ${taskId} --json`,
+      expect(payload.local_projection.hermes_comment_projection.evidence_refs).not.toHaveProperty(
+        "runner_status",
       );
       expect(payload.plugin_contract.remote_board_reads_required).toBe(true);
     } finally {

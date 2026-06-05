@@ -2,7 +2,10 @@ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
-import { deriveRouteOperatorGuidance } from "../shared/route-guidance.js";
+import {
+  deriveRouteOperatorGuidance,
+  routeRunnerContextIsRelevant,
+} from "../shared/route-guidance.js";
 
 export type TaskNextActionParsed = {
   taskId: string;
@@ -106,13 +109,17 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
               ? `${operatorGuidance.fallback.command}: ${operatorGuidance.fallback.reason ?? ""}`
               : "none",
         },
-        {
-          label: "runner_context",
-          value:
-            `required=${String(operatorGuidance.runnerContext.runnerIsRequired)} ` +
-            `allowed_now=${String(operatorGuidance.runnerContext.runnerIsAllowedNow)} ` +
-            `failure_means=${operatorGuidance.runnerContext.runnerFailureMeans}`,
-        },
+        ...(routeRunnerContextIsRelevant(operatorGuidance)
+          ? [
+              {
+                label: "runner_context",
+                value:
+                  `required=${String(operatorGuidance.runnerContext.runnerIsRequired)} ` +
+                  `allowed_now=${String(operatorGuidance.runnerContext.runnerIsAllowedNow)} ` +
+                  `failure_means=${operatorGuidance.runnerContext.runnerFailureMeans}`,
+              },
+            ]
+          : []),
         { label: "code", value: decision.nextAction.code },
         { label: "summary", value: decision.nextAction.summary },
         { label: "requires_approval", value: decision.nextAction.requiresApproval },

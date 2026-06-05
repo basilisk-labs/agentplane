@@ -130,7 +130,7 @@ export const evaluatorRunSpec: CommandSpec<EvaluatorRunParsed> = {
       name: "rework-context",
       valueHint: "<text>",
       repeatable: true,
-      description: "Machine-readable rework instruction for the next runner pass. May be repeated.",
+      description: "Machine-readable rework instruction for the next owner pass. May be repeated.",
     },
     {
       kind: "boolean",

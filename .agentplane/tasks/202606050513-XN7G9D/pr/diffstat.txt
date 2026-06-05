@@ -1,0 +1,11 @@
+ .agentplane/agents/EVALUATOR.json                  | 16 +++----
+ .../src/commands/evaluator/evaluator.spec.ts       |  2 +-
+ .../src/commands/hermes/hermes-runtime.ts          | 36 ++++++++++----
+ .../src/commands/hermes/hermes.command.test.ts     | 42 +++++++----------
+ .../src/commands/shared/route-guidance.test.ts     | 55 +++++++++++++++++++++-
+ .../src/commands/shared/route-guidance.ts          | 11 +++++
+ .../agentplane/src/commands/task/brief-render.ts   | 19 +++++---
+ .../src/commands/task/next-action.command.ts       | 23 +++++----
+ .../agentplane/src/commands/task/status.command.ts | 23 +++++----
+ .../src/commands/task/verify-record-execute.ts     | 14 ++++--
+ 10 files changed, 168 insertions(+), 73 deletions(-)

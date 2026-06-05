@@ -2,7 +2,10 @@ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
-import { deriveRouteOperatorGuidance } from "../shared/route-guidance.js";
+import {
+  deriveRouteOperatorGuidance,
+  routeRunnerContextIsRelevant,
+} from "../shared/route-guidance.js";
 
 export type TaskStatusParsed = {
   taskId: string;
@@ -113,13 +116,17 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
             `allowed=${String(operatorGuidance.repeatPolicy.allowed)} ` +
             `recompute=${operatorGuidance.repeatPolicy.recomputeCommand}`,
         },
-        {
-          label: "runner_context",
-          value:
-            `required=${String(operatorGuidance.runnerContext.runnerIsRequired)} ` +
-            `allowed_now=${String(operatorGuidance.runnerContext.runnerIsAllowedNow)} ` +
-            `failure_means=${operatorGuidance.runnerContext.runnerFailureMeans}`,
-        },
+        ...(routeRunnerContextIsRelevant(operatorGuidance)
+          ? [
+              {
+                label: "runner_context",
+                value:
+                  `required=${String(operatorGuidance.runnerContext.runnerIsRequired)} ` +
+                  `allowed_now=${String(operatorGuidance.runnerContext.runnerIsAllowedNow)} ` +
+                  `failure_means=${operatorGuidance.runnerContext.runnerFailureMeans}`,
+              },
+            ]
+          : []),
         { label: "safe_command", value: operatorGuidance.safeCommand ?? "none" },
         { label: "diagnostic_command", value: operatorGuidance.diagnosticCommand ?? "none" },
         {

@@ -13,7 +13,10 @@ import {
 import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
-import { deriveRouteOperatorGuidance } from "../shared/route-guidance.js";
+import {
+  deriveRouteOperatorGuidance,
+  routeRunnerContextIsRelevant,
+} from "../shared/route-guidance.js";
 import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { gitRevParse } from "../shared/git-ops.js";
@@ -96,6 +99,12 @@ async function appendDecisionContextReference(
       taskId: opts.taskId,
     });
     const guidance = deriveRouteOperatorGuidance(decision);
+    const runnerLines = routeRunnerContextIsRelevant(guidance)
+      ? [
+          `- runner_required: ${String(guidance.runnerContext.runnerIsRequired)}`,
+          `- runner_failure_means: ${guidance.runnerContext.runnerFailureMeans}`,
+        ]
+      : [];
     return appendDetailsBlock(details, [
       "DecisionContextRef:",
       `- operator_action: ${guidance.operatorAction}`,
@@ -106,8 +115,7 @@ async function appendDecisionContextReference(
       `- freshness: route=${guidance.freshness.route} remote=${guidance.freshness.remote}`,
       `- repeat_allowed: ${String(guidance.repeatPolicy.allowed)}`,
       `- repeat_stop_condition: ${guidance.repeatPolicy.stopCondition}`,
-      `- runner_required: ${String(guidance.runnerContext.runnerIsRequired)}`,
-      `- runner_failure_means: ${guidance.runnerContext.runnerFailureMeans}`,
+      ...runnerLines,
       `- risks: ${guidance.risks.map((risk) => risk.code).join(", ") || "none"}`,
     ]);
   } catch (err) {
