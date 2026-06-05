@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606050031-F42081",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-05T00:34:56.193Z",
+  "verdict": "pass",
+  "summary": "Release build scripts now run TypeScript and tsup through process-bound wrappers with direct signal diagnostics.",
+  "evaluated_sha": "1a926df12d13049de0052cc00121c0aaf705e6de",
+  "blueprint_digest": "ddc4b025eb4d3a3ded5b56e8da43a5b6dd7edcbb0337bea8364b93c61305a085",
+  "findings": [
+    "Root typecheck, root build, testkit build, wrapper eslint, and scripts README check passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606050031-F42081/README.md",
+    "scripts/checks/run-typescript-build.mjs",
+    "scripts/checks/run-tsup-build.mjs",
+    "root-build-node24"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
