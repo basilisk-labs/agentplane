@@ -1,3 +1,3 @@
- .../src/commands/task/hosted-close.command.test.ts | 76 +++++++++++++++++++++-
- .../src/commands/task/hosted-close.command.ts      | 33 ++++++++--
- 2 files changed, 100 insertions(+), 9 deletions(-)
+ .../src/commands/task/hosted-close.command.test.ts | 80 +++++++++++++++++++++-
+ .../src/commands/task/hosted-close.command.ts      | 33 +++++++--
+ 2 files changed, 104 insertions(+), 9 deletions(-)
