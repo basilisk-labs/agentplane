@@ -5,6 +5,12 @@
   "diffstat_sha256": "sha256:aee7bf11745ffece4491883fbc09502df75aca8ad560454fa464ccef5ae38c52",
   "last_verified_at": "2026-06-05T07:24:53.260Z",
   "last_verified_diffstat_sha256": "sha256:aee7bf11745ffece4491883fbc09502df75aca8ad560454fa464ccef5ae38c52",
+  "pre_merge_closure": {
+    "basis_commit": "c6d4d5ed9fcd2c7748200b5ed28b44f01f9fcc18",
+    "branch": "task/202606050702-9E8DFM/recover-readme-when-closing-no-op-tasks",
+    "recorded_at": "2026-06-05T07:37:06.406Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "task_id": "202606050702-9E8DFM",
   "updated_at": "2026-06-05T07:02:58.618Z",
