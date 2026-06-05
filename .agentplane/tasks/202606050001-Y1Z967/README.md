@@ -4,7 +4,7 @@ title: "Reject stale branch fallback PR artifacts"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Targeted PR validation and remote artifact fallback tests passed; package typecheck passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T00:03:05.141Z"
+  updated_by: "EVALUATOR"
+  note: "pr check rejects stale branch fallback artifacts when the local task projection is missing while preserving valid local, branch, and remote artifact fallback paths."
+  evaluated_sha: "704ced217a8068fb992a02f433e01202f1119a56"
+  blueprint_digest: "68ea9289dcefd98d0bb57ecba50245d142852e09c73e8e61f2f1525e794ca23d"
+  evidence_refs:
+    - ".agentplane/tasks/202606050001-Y1Z967/README.md"
+    - ".agentplane/tasks/202606050001-Y1Z967/quality/20260605-000305141-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050001-Y1Z967/quality/20260605-000305141-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050001-Y1Z967/quality/20260605-000305141-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050001-Y1Z967/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/pr/check.ts"
+    - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-check-remote-artifacts.test.ts"
+  findings:
+    - "Focused PR validation tests passed, remote artifact fallback stayed green, and package typecheck passed."
 commit: null
 comments:
   -
