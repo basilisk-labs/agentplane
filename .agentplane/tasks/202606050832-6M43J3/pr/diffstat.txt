@@ -1,0 +1,8 @@
+ .agentplane/tasks/202606050808-HP5P63/README.md    | 25 ++++++++++++++---
+ .agentplane/tasks/202606050808-HP5P63/pr/meta.json |  6 ++++
+ .../commands/shared/pr-meta/pre-merge-closure.ts   | 15 +++++++++-
+ .../src/commands/task/finish-execute-close.ts      |  1 +
+ .../task/finish.pre-merge-closure.unit.test.ts     |  9 +++++-
+ .../src/commands/task/hosted-close.command.test.ts | 32 +++++++++++++++++-----
+ .../src/commands/task/hosted-close.command.ts      | 10 +++++--
+ 7 files changed, 83 insertions(+), 15 deletions(-)
