@@ -4,7 +4,7 @@ title: "Prepare v0.6.17 release candidate"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-06-05T01:19:46.383Z"
+  updated_by: "REVIEWER"
+  note: "Post-rebase release candidate verification passed."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,20 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: prepare v0.6.17 release candidate from checked main head 693430900."
+  -
+    type: "verify"
+    at: "2026-06-05T00:53:38.335Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Release candidate verification passed."
+  -
+    type: "verify"
+    at: "2026-06-05T01:19:46.383Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Post-rebase release candidate verification passed."
 doc_version: 3
-doc_updated_at: "2026-06-04T23:25:48.488Z"
+doc_updated_at: "2026-06-05T01:19:46.482Z"
 doc_updated_by: "CODER"
 description: "Prepare and merge the v0.6.17 patch release candidate after the cognitive-load refactor and release notes/social assets are complete."
 sections:
@@ -57,11 +69,82 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-06-05T00:53:38.335Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Release candidate verification passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-04T23:25:48.488Z, excerpt_hash=sha256:00205f6af9b6b46dfc0f0e3e2aa7cde795664a36282ed1c4f1df2a26c7059ff0
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606042325-S2SCRB-prepare-v0-6-17-release-candidate/.agentplane/tasks/202606042325-S2SCRB/blueprint/resolved-snapshot.json
+    - old_digest: d514867b8334264b56c485de82f91407673273aef57fd645a0bf86f75c815096
+    - current_digest: d514867b8334264b56c485de82f91407673273aef57fd645a0bf86f75c815096
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606042325-S2SCRB
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606042325-S2SCRB
+    - diagnostic_command: agentplane pr check 202606042325-S2SCRB
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - runner_required: false
+    - runner_failure_means: not_runner_route
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-06-05T01:19:46.383Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Post-rebase release candidate verification passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-05T00:53:38.426Z, excerpt_hash=sha256:00205f6af9b6b46dfc0f0e3e2aa7cde795664a36282ed1c4f1df2a26c7059ff0
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606042325-S2SCRB-prepare-v0-6-17-release-candidate/.agentplane/tasks/202606042325-S2SCRB/blueprint/resolved-snapshot.json
+    - old_digest: d514867b8334264b56c485de82f91407673273aef57fd645a0bf86f75c815096
+    - current_digest: d514867b8334264b56c485de82f91407673273aef57fd645a0bf86f75c815096
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606042325-S2SCRB
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606042325-S2SCRB
+    - diagnostic_command: agentplane pr check 202606042325-S2SCRB
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - runner_required: false
+    - runner_failure_means: not_runner_route
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Ran PATH=/Users/densmirnov/.nvm/versions/node/v24.11.1/bin:/Users/densmirnov/.local/share/solana/install/active_release/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Users/densmirnov/.codex/tmp/arg0/codex-arg00SZcNn:/Users/densmirnov/.antigravity/antigravity/bin:/Users/densmirnov/Downloads/google-cloud-sdk/bin:/Users/densmirnov/.cargo/bin:/Users/densmirnov/.local/share/solana/install/active_release/bin:/Users/densmirnov/.bun/bin:/Users/densmirnov/.local/bin:/opt/homebrew/opt/rustup/bin:/Users/densmirnov/.codeium/windsurf/bin:/Users/densmirnov/.orbstack/bin:/opt/homebrew/opt/python@3.12/libexec/bin:/Users/densmirnov/.nvm/versions/node/v24.11.1/bin:/Users/densmirnov/.foundry/bin:/Applications/Obsidian.app/Contents/MacOS:/Applications/Codex.app/Contents/Resources:/Users/densmirnov/.orbstack/bin:/Applications/Obsidian.app/Contents/MacOS NODE_OPTIONS=--max-old-space-size=4096 bun run release:prepublish:heavy; all release prepublish checks passed including policy routing, schemas, examples, tests, coverage, architecture, knip baseline, build, package tarball, install smoke, CLI docs, recipes docs, release-ci-base, workflow coverage, significant coverage, and release-critical checks.
+      Impact: v0.6.17 candidate is locally verified before PR publication.
+      Resolution: Proceed with PR publication and hosted verification.
+
+    - Observation: After rebasing the v0.6.17 release branch onto origin/main with lifecycle doctor cleanup, ran PATH=/Users/densmirnov/.nvm/versions/node/v24.11.1/bin:/Users/densmirnov/.local/share/solana/install/active_release/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Users/densmirnov/.codex/tmp/arg0/codex-arg00SZcNn:/Users/densmirnov/.antigravity/antigravity/bin:/Users/densmirnov/Downloads/google-cloud-sdk/bin:/Users/densmirnov/.cargo/bin:/Users/densmirnov/.local/share/solana/install/active_release/bin:/Users/densmirnov/.bun/bin:/Users/densmirnov/.local/bin:/opt/homebrew/opt/rustup/bin:/Users/densmirnov/.codeium/windsurf/bin:/Users/densmirnov/.orbstack/bin:/opt/homebrew/opt/python@3.12/libexec/bin:/Users/densmirnov/.nvm/versions/node/v24.11.1/bin:/Users/densmirnov/.foundry/bin:/Applications/Obsidian.app/Contents/MacOS:/Applications/Codex.app/Contents/Resources:/Users/densmirnov/.orbstack/bin:/Applications/Obsidian.app/Contents/MacOS NODE_OPTIONS=--max-old-space-size=4096 bun run release:prepublish:heavy; all checks passed, including release-ci-base 69/69, workflow coverage, significant coverage, and release-critical 4 files / 16 tests.
+      Impact: v0.6.17 release candidate includes all completed follow-up cleanup and remains release-ready.
+      Resolution: Proceed with PR publication and hosted verification.
 id_source: "generated"
 ---
 ## Summary
@@ -90,6 +173,70 @@ PLANNER fallback scaffold for "Prepare v0.6.17 release candidate". Replace with 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-06-05T00:53:38.335Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Release candidate verification passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-04T23:25:48.488Z, excerpt_hash=sha256:00205f6af9b6b46dfc0f0e3e2aa7cde795664a36282ed1c4f1df2a26c7059ff0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606042325-S2SCRB-prepare-v0-6-17-release-candidate/.agentplane/tasks/202606042325-S2SCRB/blueprint/resolved-snapshot.json
+- old_digest: d514867b8334264b56c485de82f91407673273aef57fd645a0bf86f75c815096
+- current_digest: d514867b8334264b56c485de82f91407673273aef57fd645a0bf86f75c815096
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606042325-S2SCRB
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606042325-S2SCRB
+- diagnostic_command: agentplane pr check 202606042325-S2SCRB
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- runner_required: false
+- runner_failure_means: not_runner_route
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-06-05T01:19:46.383Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Post-rebase release candidate verification passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-05T00:53:38.426Z, excerpt_hash=sha256:00205f6af9b6b46dfc0f0e3e2aa7cde795664a36282ed1c4f1df2a26c7059ff0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606042325-S2SCRB-prepare-v0-6-17-release-candidate/.agentplane/tasks/202606042325-S2SCRB/blueprint/resolved-snapshot.json
+- old_digest: d514867b8334264b56c485de82f91407673273aef57fd645a0bf86f75c815096
+- current_digest: d514867b8334264b56c485de82f91407673273aef57fd645a0bf86f75c815096
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606042325-S2SCRB
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606042325-S2SCRB
+- diagnostic_command: agentplane pr check 202606042325-S2SCRB
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- runner_required: false
+- runner_failure_means: not_runner_route
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -98,3 +245,11 @@ PLANNER fallback scaffold for "Prepare v0.6.17 release candidate". Replace with 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Ran PATH=/Users/densmirnov/.nvm/versions/node/v24.11.1/bin:/Users/densmirnov/.local/share/solana/install/active_release/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Users/densmirnov/.codex/tmp/arg0/codex-arg00SZcNn:/Users/densmirnov/.antigravity/antigravity/bin:/Users/densmirnov/Downloads/google-cloud-sdk/bin:/Users/densmirnov/.cargo/bin:/Users/densmirnov/.local/share/solana/install/active_release/bin:/Users/densmirnov/.bun/bin:/Users/densmirnov/.local/bin:/opt/homebrew/opt/rustup/bin:/Users/densmirnov/.codeium/windsurf/bin:/Users/densmirnov/.orbstack/bin:/opt/homebrew/opt/python@3.12/libexec/bin:/Users/densmirnov/.nvm/versions/node/v24.11.1/bin:/Users/densmirnov/.foundry/bin:/Applications/Obsidian.app/Contents/MacOS:/Applications/Codex.app/Contents/Resources:/Users/densmirnov/.orbstack/bin:/Applications/Obsidian.app/Contents/MacOS NODE_OPTIONS=--max-old-space-size=4096 bun run release:prepublish:heavy; all release prepublish checks passed including policy routing, schemas, examples, tests, coverage, architecture, knip baseline, build, package tarball, install smoke, CLI docs, recipes docs, release-ci-base, workflow coverage, significant coverage, and release-critical checks.
+  Impact: v0.6.17 candidate is locally verified before PR publication.
+  Resolution: Proceed with PR publication and hosted verification.
+
+- Observation: After rebasing the v0.6.17 release branch onto origin/main with lifecycle doctor cleanup, ran PATH=/Users/densmirnov/.nvm/versions/node/v24.11.1/bin:/Users/densmirnov/.local/share/solana/install/active_release/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Users/densmirnov/.codex/tmp/arg0/codex-arg00SZcNn:/Users/densmirnov/.antigravity/antigravity/bin:/Users/densmirnov/Downloads/google-cloud-sdk/bin:/Users/densmirnov/.cargo/bin:/Users/densmirnov/.local/share/solana/install/active_release/bin:/Users/densmirnov/.bun/bin:/Users/densmirnov/.local/bin:/opt/homebrew/opt/rustup/bin:/Users/densmirnov/.codeium/windsurf/bin:/Users/densmirnov/.orbstack/bin:/opt/homebrew/opt/python@3.12/libexec/bin:/Users/densmirnov/.nvm/versions/node/v24.11.1/bin:/Users/densmirnov/.foundry/bin:/Applications/Obsidian.app/Contents/MacOS:/Applications/Codex.app/Contents/Resources:/Users/densmirnov/.orbstack/bin:/Applications/Obsidian.app/Contents/MacOS NODE_OPTIONS=--max-old-space-size=4096 bun run release:prepublish:heavy; all checks passed, including release-ci-base 69/69, workflow coverage, significant coverage, and release-critical 4 files / 16 tests.
+  Impact: v0.6.17 release candidate includes all completed follow-up cleanup and remains release-ready.
+  Resolution: Proceed with PR publication and hosted verification.

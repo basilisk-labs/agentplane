@@ -2,12 +2,13 @@
   "base": "main",
   "branch": "task/202606042325-S2SCRB/prepare-v0-6-17-release-candidate",
   "created_at": "2026-06-04T23:25:48.534Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:b2ffec87494321ec31373d784235deec684172f2df0c628e1ef5b58551b0581e",
+  "last_verified_at": "2026-06-05T01:19:46.383Z",
+  "last_verified_diffstat_sha256": "sha256:b2ffec87494321ec31373d784235deec684172f2df0c628e1ef5b58551b0581e",
   "schema_version": 1,
   "task_id": "202606042325-S2SCRB",
   "updated_at": "2026-06-04T23:25:48.534Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
