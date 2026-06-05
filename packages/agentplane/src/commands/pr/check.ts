@@ -4,7 +4,6 @@ import { resolveGhCommand } from "../shared/gh-transport.js";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
-import { fileExists } from "../../cli/fs-utils.js";
 import { createCliEmitter, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import {
@@ -192,9 +191,6 @@ export async function cmdPrCheck(opts: {
       gitRoot: resolved.gitRoot,
       branchForFreshness,
     });
-    const hasLocalTaskSnapshot = await fileExists(
-      path.join(resolved.gitRoot, config.paths.workflow_dir, task.id, "README.md"),
-    );
     let currentDiffstatText: string | null = null;
     if (branchForFreshness && localSnapshot.meta?.base) {
       const currentDiffstat = await computePrDiffstat({
@@ -218,15 +214,12 @@ export async function cmdPrCheck(opts: {
       requiresVerify,
     });
 
+    const localNeedsBranchSnapshot =
+      !localSnapshot.meta ||
+      !localSnapshot.freshnessReviewFresh ||
+      (requiresVerify && !localSnapshot.freshnessVerifySatisfied);
     let selectedSnapshot = localSnapshot;
-    if (
-      branchForFreshness &&
-      branchHeadSha &&
-      (!hasLocalTaskSnapshot || localSnapshot.meta) &&
-      (!localSnapshot.meta ||
-        !localSnapshot.freshnessReviewFresh ||
-        (requiresVerify && !localSnapshot.freshnessVerifySatisfied))
-    ) {
+    if (branchForFreshness && branchHeadSha && localNeedsBranchSnapshot) {
       const branchSnapshot = await buildBranchSnapshot({
         resolved,
         prDir,
