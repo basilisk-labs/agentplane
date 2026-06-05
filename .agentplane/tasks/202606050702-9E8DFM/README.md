@@ -1,10 +1,11 @@
 ---
 id: "202606050702-9E8DFM"
 title: "Recover README when closing no-op tasks"
-status: "DOING"
+result_summary: "Fixed no-op closure README recovery and unblocked release-ready task registry."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -45,11 +46,16 @@ quality_review:
     - "agentplane pr check 202606050702-9E8DFM --hosted --stable-polls 2 --poll-interval-ms 10000 --timeout-ms 180000"
   findings:
     - "Verified focused regression split, typecheck, build, hotspots, local pr check, and hosted checks 17/17 passing for PR #4456."
-commit: null
+commit:
+  hash: "c6d4d5ed9fcd2c7748200b5ed28b44f01f9fcc18"
+  message: "🧾 9E8DFM task: record evaluator review"
 comments:
   -
     author: "CODER"
     body: "Start: Fix close-noop README recovery, close stale bookkeeping tasks, and verify release readiness before continuing v0.6.18 publication."
+  -
+    author: "CODER"
+    body: "Verified: close-noop now hydrates missing task README artifacts before no-op closure; stale KSESDS and TVTSM2 task records are closed; focused tests, typecheck, build, hotspots, pr check, hosted checks, and evaluator review passed."
 events:
   -
     type: "status"
@@ -76,8 +82,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.close-noop-readme.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --config vitest.workspace.ts --project cli-core --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Result: pass; 2 files / 13 tests passed. Command: bun run --filter=agentplane typecheck. Result: pass. Command: bun run --filter=agentplane build. Result: pass. Command: bun run hotspots:check. Result: pass; oversized test baseline OK. Verified current code/test HEAD before task-artifact-only PR refresh."
+  -
+    type: "status"
+    at: "2026-06-05T07:37:06.359Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: close-noop now hydrates missing task README artifacts before no-op closure; stale KSESDS and TVTSM2 task records are closed; focused tests, typecheck, build, hotspots, pr check, hosted checks, and evaluator review passed."
 doc_version: 3
-doc_updated_at: "2026-06-05T07:24:53.529Z"
+doc_updated_at: "2026-06-05T07:37:06.360Z"
 doc_updated_by: "CODER"
 description: "Fix task close-noop so stale bookkeeping tasks without local README can be closed through the CLI, then close orphan active tasks blocking release readiness."
 sections:
@@ -200,6 +213,10 @@ sections:
     - Observation: Adding the regression directly to lifecycle test crossed the oversized-test baseline.
       Impact: Pre-push correctly blocked the branch and exposed a maintainability regression.
       Resolution: Moved the new regression into packages/agentplane/src/cli/run-cli.core.tasks.close-noop-readme.test.ts and kept lifecycle below the oversized-test baseline.
+extensions:
+  implementation_commit:
+    hash: "55042cf38ee6475af94177c0e215f24b9307cb1d"
+    message: "🧪 9E8DFM test: split no-op close regression"
 id_source: "generated"
 ---
 ## Summary
