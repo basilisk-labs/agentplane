@@ -1,13 +1,13 @@
 ---
 id: "202605221745-8BHZSX"
 title: "Route quickstart and role guidance to agent context surfaces"
-result_summary: "Closed as duplicate of 202605230332-RYW28Y."
+result_summary: "Closed as duplicate of 202605230332-RYW28Y; closure metadata repaired for doctor."
 risk_level: "low"
 breaking: false
 status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -35,7 +35,24 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T00:59:46.535Z"
+  updated_by: "EVALUATOR"
+  note: "Duplicate closure metadata repair is traceable."
+  evaluated_sha: "ee7ffc9dc935fcba1c2a64fc9ec6579d40efd971"
+  blueprint_digest: "ad1ae99b9b46491829333085473747661dd2c5c37b9e27bc8ab4949265a3f4f0"
+  evidence_refs:
+    - ".agentplane/tasks/202605221745-8BHZSX/README.md"
+    - ".agentplane/tasks/202605221745-8BHZSX/quality/20260605-005946535-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202605221745-8BHZSX/quality/20260605-005946535-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202605221745-8BHZSX/quality/20260605-005946535-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202605221745-8BHZSX/blueprint/resolved-snapshot.json"
+  findings:
+    - "Task was already DONE as duplicate of 202605230332-RYW28Y; commit 2426e688f is the task-close merge that updated this task's closure README."
+commit:
+  hash: "ee7ffc9dc935fcba1c2a64fc9ec6579d40efd971"
+  message: "🖼️ 202606042316-XH5D0B docs: add v0.6.17 social assets"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -43,6 +60,9 @@ comments:
       Verified: 202605221745-8BHZSX is a bookkeeping duplicate of 202605230332-RYW28Y (Route agent context guidance through task brief); no code/config changes are expected in this task and closure is recorded as no-op.
 
       Reason: Covered by RYW28Y, which updated the installed quickstart, role guidance, generated bootstrap docs, and onboarding checks through task active/task brief.
+  -
+    author: "INTEGRATOR"
+    body: "Verified: duplicate closure remains no-op; recording evaluator-matched base implementation commit metadata to satisfy lifecycle traceability."
 events:
   -
     type: "status"
@@ -54,9 +74,16 @@ events:
       Verified: 202605221745-8BHZSX is a bookkeeping duplicate of 202605230332-RYW28Y (Route agent context guidance through task brief); no code/config changes are expected in this task and closure is recorded as no-op.
 
       Reason: Covered by RYW28Y, which updated the installed quickstart, role guidance, generated bootstrap docs, and onboarding checks through task active/task brief.
+  -
+    type: "status"
+    at: "2026-06-05T01:00:44.757Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: duplicate closure remains no-op; recording evaluator-matched base implementation commit metadata to satisfy lifecycle traceability."
 doc_version: 3
-doc_updated_at: "2026-05-23T03:43:25.161Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-06-05T01:00:44.760Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update installed quickstart, role supplements, and generated docs guidance to direct agents toward active work and task brief surfaces instead of manual command stitching."
 sections:
   Summary: |-

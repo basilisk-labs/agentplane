@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202605221745-8BHZSX",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-05T00:59:46.535Z",
+  "verdict": "pass",
+  "summary": "Duplicate closure metadata repair is traceable.",
+  "evaluated_sha": "ee7ffc9dc935fcba1c2a64fc9ec6579d40efd971",
+  "blueprint_digest": "ad1ae99b9b46491829333085473747661dd2c5c37b9e27bc8ab4949265a3f4f0",
+  "findings": [
+    "Task was already DONE as duplicate of 202605230332-RYW28Y; commit 2426e688f is the task-close merge that updated this task's closure README."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202605221745-8BHZSX/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
