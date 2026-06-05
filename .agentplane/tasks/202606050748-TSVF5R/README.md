@@ -4,7 +4,7 @@ title: "Tolerate rebased pre-merge closure in hosted-close"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,26 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/commands/task/hosted-close.command.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Result: pass; 1 file / 6 tests passed. Command: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts. Result: pass. Command: bun run --filter=agentplane typecheck. Result: pass. Command: bun run --filter=agentplane build. Result: pass. Review fix: missing basis tolerance now requires explicit matching pr_number."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T08:00:40.416Z"
+  updated_by: "EVALUATOR"
+  note: "hosted-close now tolerates rebased pre-merge closure only when the PR number explicitly matches"
+  evaluated_sha: "104a66b241353703117dc97f2244ed2b553d8c34"
+  blueprint_digest: "7f1a8aab00caa3108a6c2ba6f722e1fdd39f577d7ce163330cbf17a018c32030"
+  evidence_refs:
+    - ".agentplane/tasks/202606050748-TSVF5R/README.md"
+    - ".agentplane/tasks/202606050748-TSVF5R/quality/20260605-080040416-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050748-TSVF5R/quality/20260605-080040416-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050748-TSVF5R/quality/20260605-080040416-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050748-TSVF5R/blueprint/resolved-snapshot.json"
+    - "bunx vitest run packages/agentplane/src/commands/task/hosted-close.command.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000"
+    - "node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts"
+    - "bun run --filter=agentplane typecheck"
+    - "bun run --filter=agentplane build"
+    - "agentplane pr check 202606050748-TSVF5R --hosted --stable-polls 2 --poll-interval-ms 10000 --timeout-ms 180000"
+  findings:
+    - "Verified focused hosted-close regression, lint, typecheck, build, and hosted checks 17/17 passing for PR #4457."
 commit: null
 comments:
   -
