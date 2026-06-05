@@ -5,6 +5,12 @@
   "diffstat_sha256": "sha256:9f3f966527ad8a8901e85316b171ebe58548bca1d625be5428975d382064ed91",
   "last_verified_at": "2026-06-05T08:20:27.575Z",
   "last_verified_diffstat_sha256": "sha256:9f3f966527ad8a8901e85316b171ebe58548bca1d625be5428975d382064ed91",
+  "pre_merge_closure": {
+    "basis_commit": "1a81ecf7df8b9d66ba6658edaec7bf966954cdbe",
+    "branch": "task/202606050808-HP5P63/rebase-premerge-done",
+    "recorded_at": "2026-06-05T08:24:56.508Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "task_id": "202606050808-HP5P63",
   "updated_at": "2026-06-05T08:08:46.250Z",

@@ -1,0 +1,1 @@
+🚧 6M43J3 task: Recognize legacy pre-merge closure markers after rebase merge [202606050832-6M43J3]
