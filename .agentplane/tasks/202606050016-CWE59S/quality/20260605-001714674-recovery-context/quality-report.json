@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202606050016-CWE59S",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-05T00:17:14.674Z",
+  "verdict": "pass",
+  "summary": "The release-updated ACR example is formatted and still reports the v0.6.17 producer/toolchain versions.",
+  "evaluated_sha": "f178fe88a76f8a6bee57082dfc50148f1f816853",
+  "blueprint_digest": "12f296e960998722ff9b5b8a85bc60378db8633d283646b264bd7d63be297daf",
+  "findings": [
+    "Focused Prettier check and release:acr-example:check passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606050016-CWE59S/README.md",
+    "packages/spec/examples/acr.json",
+    "release-acr-example-check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
