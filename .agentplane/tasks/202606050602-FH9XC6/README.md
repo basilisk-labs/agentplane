@@ -4,7 +4,7 @@ title: "Publish v0.6.18 patch release"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,23 @@ verification:
   updated_by: null
   note: null
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T06:40:05.049Z"
+  updated_by: "EVALUATOR"
+  note: "Release candidate v0.6.18 is ready for integration: local release candidate checks passed, remote PR artifact fallback blocker was fixed, and hosted PR checks passed 18/18 on PR #4454."
+  evaluated_sha: "40c44683db28891a05ae982b73074022faacfc26"
+  blueprint_digest: "63236ff197ead57e4c0b9ce2deb3df2f4522dc2b5b5b330287cce518f96350e9"
+  evidence_refs:
+    - ".agentplane/tasks/202606050602-FH9XC6/README.md"
+    - ".agentplane/tasks/202606050602-FH9XC6/quality/20260605-064005049-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050602-FH9XC6/quality/20260605-064005049-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050602-FH9XC6/quality/20260605-064005049-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050602-FH9XC6/blueprint/resolved-snapshot.json"
+    - ".agentplane/.release/apply/2026-06-05T06-27-10-240Z.json"
+    - "https://github.com/basilisk-labs/agentplane/pull/4454"
+  findings:
+    - "No release-blocking issues remain. Residual local environment note: git hook invocation and bun-run lint path showed SIGKILL/hang behavior, but direct hook, full ESLint via node entrypoint, release heavy gate, and hosted checks passed."
 commit: null
 comments:
   -
