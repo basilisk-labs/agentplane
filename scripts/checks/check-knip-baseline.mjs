@@ -7,6 +7,7 @@ import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runti
 const SCRIPT_NAME = "check-knip-baseline.mjs";
 const DEFAULT_CONFIG_PATH = "knip.json";
 const DEFAULT_BASELINE_PATH = "scripts/baselines/knip-baseline.json";
+const KNIP_NODE_HEAP_OPTION = "--max-old-space-size=4096";
 const ISSUE_KEYS = ["files", "exports", "types", "enumMembers", "namespaceMembers"];
 
 function parseArgs(argv) {
@@ -26,30 +27,47 @@ function parseArgs(argv) {
 }
 
 function runKnipJson(configPath) {
-  const localKnipBin = path.join(
+  const localKnipEntrypoint = path.join(process.cwd(), "node_modules", "knip", "bin", "knip.js");
+  const localKnipShim = path.join(
     process.cwd(),
     "node_modules",
     ".bin",
     process.platform === "win32" ? "knip.cmd" : "knip",
   );
-  const command = existsSync(localKnipBin) ? localKnipBin : "bunx";
-  const args = existsSync(localKnipBin)
-    ? ["--config", configPath, "--no-exit-code", "--reporter", "json"]
+  const command = existsSync(localKnipEntrypoint)
+    ? process.execPath
+    : existsSync(localKnipShim)
+      ? localKnipShim
+      : "bunx";
+  const args = existsSync(localKnipEntrypoint)
+    ? [localKnipEntrypoint, "--config", configPath, "--no-exit-code", "--reporter", "json"]
+    : existsSync(localKnipShim)
+      ? ["--config", configPath, "--no-exit-code", "--reporter", "json"]
     : ["knip", "--config", configPath, "--no-exit-code", "--reporter", "json"];
 
+  const existingNodeOptions = process.env.NODE_OPTIONS ?? "";
+  const nodeOptions = existingNodeOptions.includes("--max-old-space-size")
+    ? existingNodeOptions
+    : [KNIP_NODE_HEAP_OPTION, existingNodeOptions].filter(Boolean).join(" ");
   const result = spawnSync(command, args, {
     cwd: process.cwd(),
     encoding: "utf8",
-    env: process.env,
+    env: {
+      ...process.env,
+      NODE_OPTIONS: nodeOptions,
+    },
   });
 
   if (result.error) {
     throw result.error;
   }
-  if (result.status !== 0) {
+  if (result.status !== 0 || result.signal) {
     throw new Error(
       [
-        `knip exited with code ${result.status ?? "unknown"}`,
+        `knip exited with status=${result.status ?? "unknown"} signal=${result.signal ?? "none"}`,
+        result.signal
+          ? "Knip was terminated by the operating system; retry with the repository CI Node version and sufficient memory before treating this as unused-code drift."
+          : "",
         result.stderr.trim(),
         result.stdout.trim(),
       ]
