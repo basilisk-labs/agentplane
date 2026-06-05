@@ -1,10 +1,11 @@
 ---
 id: "202606042325-S2SCRB"
 title: "Prepare v0.6.17 release candidate"
-status: "DOING"
+result_summary: "Merged via PR #4448."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - ".agentplane/.release/apply/2026-06-05T00-14-24-165Z.json"
   findings:
     - "Release branch includes cognitive-load refactors, lifecycle doctor cleanup, hosted cleanup hardening, clean agentplane doctor, local release:prepublish:heavy after rebase, and hosted PR checks all succeeded on PR #4448."
-commit: null
+commit:
+  hash: "b8795684b584c2520b953a28587ee8ba99874e9b"
+  message: "🧪 S2SCRB release: keep pr validation baseline"
 comments:
   -
     author: "CODER"
     body: "Start: prepare v0.6.17 release candidate from checked main head 693430900."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4448 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -76,9 +82,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Release PR branch fallback review fix passed."
+  -
+    type: "status"
+    at: "2026-06-05T01:51:59.135Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4448 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-05T01:40:03.451Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T01:51:59.143Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare and merge the v0.6.17 patch release candidate after the cognitive-load refactor and release notes/social assets are complete."
 sections:
   Summary: |-
