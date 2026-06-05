@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202606050748-TSVF5R",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-05T08:00:40.416Z",
+  "verdict": "pass",
+  "summary": "hosted-close now tolerates rebased pre-merge closure only when the PR number explicitly matches",
+  "evaluated_sha": "104a66b241353703117dc97f2244ed2b553d8c34",
+  "blueprint_digest": "7f1a8aab00caa3108a6c2ba6f722e1fdd39f577d7ce163330cbf17a018c32030",
+  "findings": [
+    "Verified focused hosted-close regression, lint, typecheck, build, and hosted checks 17/17 passing for PR #4457."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606050748-TSVF5R/README.md",
+    "bunx vitest run packages/agentplane/src/commands/task/hosted-close.command.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000",
+    "node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close.command.test.ts",
+    "bun run --filter=agentplane typecheck",
+    "bun run --filter=agentplane build",
+    "agentplane pr check 202606050748-TSVF5R --hosted --stable-polls 2 --poll-interval-ms 10000 --timeout-ms 180000"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
