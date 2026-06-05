@@ -4,7 +4,7 @@ title: "Keep release workflow last-known-good in sync"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Workflow last-known-good matches .agentplane/WORKFLOW.md; bun run docs:bootstrap:check passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T00:16:03.204Z"
+  updated_by: "EVALUATOR"
+  note: "The release workflow last-known-good snapshot now matches the v0.6.17 workflow and bootstrap freshness passes."
+  evaluated_sha: "27fc3d190d4c0ffd2e378d57c221f578407bd62e"
+  blueprint_digest: "ffd03487ca7c6d43a0dc84b6a6d5149275ed9e4d2d862a7d9126394a70d20867"
+  evidence_refs:
+    - ".agentplane/tasks/202606050015-QS17HE/README.md"
+    - ".agentplane/tasks/202606050015-QS17HE/quality/20260605-001603204-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050015-QS17HE/quality/20260605-001603204-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050015-QS17HE/quality/20260605-001603204-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050015-QS17HE/blueprint/resolved-snapshot.json"
+    - ".agentplane/WORKFLOW.md"
+    - ".agentplane/workflows/last-known-good.md"
+    - "docs-bootstrap-check"
+  findings:
+    - "cmp confirmed WORKFLOW.md and last-known-good.md match; bun run docs:bootstrap:check passed."
 commit: null
 comments:
   -
