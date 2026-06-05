@@ -4,7 +4,7 @@ title: "Format release ACR example after version bump"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,23 @@ verification:
   updated_by: "CODER"
   note: "Formatted packages/spec/examples/acr.json; focused Prettier check and release ACR example check passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T00:17:14.674Z"
+  updated_by: "EVALUATOR"
+  note: "The release-updated ACR example is formatted and still reports the v0.6.17 producer/toolchain versions."
+  evaluated_sha: "f178fe88a76f8a6bee57082dfc50148f1f816853"
+  blueprint_digest: "12f296e960998722ff9b5b8a85bc60378db8633d283646b264bd7d63be297daf"
+  evidence_refs:
+    - ".agentplane/tasks/202606050016-CWE59S/README.md"
+    - ".agentplane/tasks/202606050016-CWE59S/quality/20260605-001714674-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050016-CWE59S/quality/20260605-001714674-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050016-CWE59S/quality/20260605-001714674-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050016-CWE59S/blueprint/resolved-snapshot.json"
+    - "packages/spec/examples/acr.json"
+    - "release-acr-example-check"
+  findings:
+    - "Focused Prettier check and release:acr-example:check passed."
 commit: null
 comments:
   -
