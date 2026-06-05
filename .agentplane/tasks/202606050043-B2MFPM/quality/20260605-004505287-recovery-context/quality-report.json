@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202606050043-B2MFPM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-05T00:45:05.287Z",
+  "verdict": "pass",
+  "summary": "Release CI contract now checks the process-bound TypeScript wrapper while preserving the clean forced build invariant.",
+  "evaluated_sha": "f38e1455b56a1bd2bae986808bd6ada5874129cc",
+  "blueprint_digest": "06b797e86c98b25191482b863970175b22225f31f7566aca61889205601b94ea",
+  "findings": [
+    "Targeted release-ci-contract test and Prettier check passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606050043-B2MFPM/README.md",
+    "packages/agentplane/src/commands/release/release-ci-contract.test.ts",
+    "release-ci-contract-test"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

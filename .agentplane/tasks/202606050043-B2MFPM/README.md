@@ -4,7 +4,7 @@ title: "Update release build contract for TypeScript wrapper"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,23 @@ verification:
   updated_by: "CODER"
   note: "Updated release build contract for run-typescript-build --force; targeted release-ci-contract test and Prettier check passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T00:45:05.287Z"
+  updated_by: "EVALUATOR"
+  note: "Release CI contract now checks the process-bound TypeScript wrapper while preserving the clean forced build invariant."
+  evaluated_sha: "f38e1455b56a1bd2bae986808bd6ada5874129cc"
+  blueprint_digest: "06b797e86c98b25191482b863970175b22225f31f7566aca61889205601b94ea"
+  evidence_refs:
+    - ".agentplane/tasks/202606050043-B2MFPM/README.md"
+    - ".agentplane/tasks/202606050043-B2MFPM/quality/20260605-004505287-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050043-B2MFPM/quality/20260605-004505287-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050043-B2MFPM/quality/20260605-004505287-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050043-B2MFPM/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/release/release-ci-contract.test.ts"
+    - "release-ci-contract-test"
+  findings:
+    - "Targeted release-ci-contract test and Prettier check passed."
 commit: null
 comments:
   -
