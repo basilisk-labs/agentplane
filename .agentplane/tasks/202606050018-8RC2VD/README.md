@@ -1,10 +1,11 @@
 ---
 id: "202606050018-8RC2VD"
 title: "Subsegment agentplane dependency cruiser check"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "arch-check-depcruise-phase"
   findings:
     - "Node 24 arch:deps passed, arch:check dependency-cruiser phase passed, and eslint passed for the runner."
-commit: null
+commit:
+  hash: "361fb944a9cd321d0eeb16ddb03a8aff0784927c"
+  message: "🧱 202606050018-8RC2VD ci: subsegment depcruise runner"
 comments:
   -
     author: "CODER"
     body: "Start: subsegment the largest dependency-cruiser root after final prepublish SIGKILL."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Subsegmented dependency-cruiser runner passed arch:deps under Node 24; arch:check dependency-cruiser phase passed; runner eslint passed."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:48.766Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-05T00:24:01.279Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:48.767Z"
+doc_updated_by: "INTEGRATOR"
 description: "The final v0.6.17 prepublish gate still hit SIGKILL in dependency-cruiser for the largest packages/agentplane/src segment. Split the agentplane dependency-cruiser roots into smaller stable slices while preserving the same dependency rules, then rerun arch and release gates."
 sections:
   Summary: |-

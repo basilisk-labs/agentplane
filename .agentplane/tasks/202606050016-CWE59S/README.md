@@ -1,10 +1,11 @@
 ---
 id: "202606050016-CWE59S"
 title: "Format release ACR example after version bump"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "release-acr-example-check"
   findings:
     - "Focused Prettier check and release:acr-example:check passed."
-commit: null
+commit:
+  hash: "f178fe88a76f8a6bee57082dfc50148f1f816853"
+  message: "🎨 202606050016-CWE59S release: format acr example"
 comments:
   -
     author: "CODER"
     body: "Start: format release-updated ACR example after prepublish format gate failure."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Formatted packages/spec/examples/acr.json; focused Prettier check and release ACR example check passed."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:48.293Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-05T00:17:13.972Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:48.294Z"
+doc_updated_by: "INTEGRATOR"
 description: "After the v0.6.17 release candidate commit, bun run release:prepublish:heavy failed format:check because packages/spec/examples/acr.json was not Prettier-formatted. Format the generated ACR example, verify the release gates, and continue release publication."
 sections:
   Summary: |-

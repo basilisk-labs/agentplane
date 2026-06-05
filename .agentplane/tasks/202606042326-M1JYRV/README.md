@@ -1,10 +1,11 @@
 ---
 id: "202606042326-M1JYRV"
 title: "Clarify release candidate missing plan diagnostic"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "release-candidate-missing-plan-smoke"
   findings:
     - "Regression coverage passes and the CLI smoke returns E_VALIDATION with next_action=agentplane release plan --patch."
-commit: null
+commit:
+  hash: "b1dec8d6dd38f5d4a1fc36e4b6508194814a3529"
+  message: "🧭 202606042326-M1JYRV cli: clarify missing release plan"
 comments:
   -
     author: "CODER"
     body: "Start: fix release candidate missing-plan diagnostic."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bunx vitest run packages/agentplane/src/commands/release/apply.preflight.test.ts passed; npm run typecheck passed in packages/agentplane; rebuilt agentplane; ap release candidate now reports E_VALIDATION with next_action agentplane release plan --patch instead of E_INTERNAL."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:08.143Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-04T23:28:27.059Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:08.144Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make release candidate report a direct validation error and next command when the release plan directory is missing, instead of E_INTERNAL."
 sections:
   Summary: |-

@@ -1,10 +1,11 @@
 ---
 id: "202606050031-F42081"
 title: "Stabilize release TypeScript build"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "root-build-node24"
   findings:
     - "Root typecheck, root build, testkit build, wrapper eslint, and scripts README check passed."
-commit: null
+commit:
+  hash: "1a926df12d13049de0052cc00121c0aaf705e6de"
+  message: "🧭 202606050031-F42081 ci: stabilize release build wrappers"
 comments:
   -
     author: "CODER"
     body: "Start: isolate and stabilize tsc -b SIGKILL in final release prepublish."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "TypeScript and tsup build paths now run through process-bound wrappers; typecheck, root build, testkit build, wrapper eslint, and scripts README check passed."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:50.194Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-05T00:34:43.083Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:50.195Z"
+doc_updated_by: "INTEGRATOR"
 description: "Final v0.6.17 prepublish passes arch and knip but tsc -b in bun run build is killed with signal 9. Identify the TypeScript project causing the resource termination, make the build/typecheck path stable and diagnostic, then rerun build and full prepublish."
 sections:
   Summary: |-

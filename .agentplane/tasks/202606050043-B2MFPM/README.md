@@ -1,10 +1,11 @@
 ---
 id: "202606050043-B2MFPM"
 title: "Update release build contract for TypeScript wrapper"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "release-ci-contract-test"
   findings:
     - "Targeted release-ci-contract test and Prettier check passed."
-commit: null
+commit:
+  hash: "f38e1455b56a1bd2bae986808bd6ada5874129cc"
+  message: "🧭 202606050039-Z2T89H test: run vitest via active node"
 comments:
   -
     author: "CODER"
     body: "Start: update release build contract after process-bound TypeScript wrapper."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Updated release build contract for run-typescript-build --force; targeted release-ci-contract test and Prettier check passed."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:51.642Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-05T00:44:32.976Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:51.643Z"
+doc_updated_by: "INTEGRATOR"
 description: "After replacing package build scripts with process-bound TypeScript wrappers, release-ci-contract still asserts the old literal 'tsc -b --force'. Update the contract to require clean plus run-typescript-build --force so it preserves the publishable clean-build invariant without forcing the unstable shim."
 sections:
   Summary: |-

@@ -1,10 +1,11 @@
 ---
 id: "202606050039-Z2T89H"
 title: "Run release Vitest suite through active Node"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "release-ci-base-process-bound-vitest"
   findings:
     - "The formerly failing release-ci-base chunk passed, and chunks 1-50 passed before a separate release contract assertion was found."
-commit: null
+commit:
+  hash: "f38e1455b56a1bd2bae986808bd6ada5874129cc"
+  message: "🧭 202606050039-Z2T89H test: run vitest via active node"
 comments:
   -
     author: "CODER"
     body: "Start: run release Vitest chunks through active Node after bunx vitest SIGKILL."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "run-vitest-suite now uses local Vitest via process.execPath; release-ci-base chunks 1-50 passed before the run reached a separate release contract assertion."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:51.160Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-05T00:44:51.290Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:51.161Z"
+doc_updated_by: "INTEGRATOR"
 description: "Final prepublish now reaches release-ci-base but run-vitest-suite launches bunx vitest and the first chunk is killed with SIGKILL. Direct node node_modules/vitest/vitest.mjs passes the same chunk. Update the suite runner to use the active Node process and keep signal-aware diagnostics."
 sections:
   Summary: |-

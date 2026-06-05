@@ -1,10 +1,11 @@
 ---
 id: "202606050139-MD8NEE"
 title: "Restore branch artifact fallback for PR check"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts"
   findings:
     - "The fallback guard now permits branch snapshot reads when the base checkout lacks a local task README, and the regression test validates artifact_source: branch."
-commit: null
+commit:
+  hash: "be4952a78bab305c4aa693fcadc3b89d458af2f2"
+  message: "🧪 S2SCRB release: restore branch artifact fallback"
 comments:
   -
     author: "CODER"
     body: "Start: restore branch artifact fallback for PR check after review feedback."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -58,9 +64,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Branch artifact fallback regression test passed."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:52.614Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-05T01:39:19.469Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:52.615Z"
+doc_updated_by: "INTEGRATOR"
 description: "Review found that pr check no longer reads branch PR artifacts when the base checkout lacks a local task README. Restore branch-only artifact fallback and cover it with a focused regression test."
 sections:
   Summary: |-

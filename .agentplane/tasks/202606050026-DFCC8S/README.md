@@ -1,10 +1,11 @@
 ---
 id: "202606050026-DFCC8S"
 title: "Make knip baseline failures diagnostic"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "eslint-knip-wrapper"
   findings:
     - "Focused knip:check and eslint for check-knip-baseline.mjs passed."
-commit: null
+commit:
+  hash: "8f1090290bc5e812363b95296c7690c4af99cd3b"
+  message: "🧭 202606050026-DFCC8S ci: make knip baseline diagnostic"
 comments:
   -
     author: "CODER"
     body: "Start: expose and stabilize knip baseline diagnostics after final prepublish reported code unknown."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Knip baseline wrapper now runs local knip through process.execPath; focused knip:check and wrapper eslint passed."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:49.242Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-05T00:28:08.855Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:49.243Z"
+doc_updated_by: "INTEGRATOR"
 description: "Final v0.6.17 prepublish now passes dependency-cruiser but check-knip-baseline reports only 'knip exited with code unknown'. Preserve signal/error diagnostics and stabilize the knip baseline check so agents can distinguish resource termination from unused-code drift."
 sections:
   Summary: |-

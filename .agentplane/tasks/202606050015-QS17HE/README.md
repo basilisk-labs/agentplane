@@ -1,10 +1,11 @@
 ---
 id: "202606050015-QS17HE"
 title: "Keep release workflow last-known-good in sync"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "docs-bootstrap-check"
   findings:
     - "cmp confirmed WORKFLOW.md and last-known-good.md match; bun run docs:bootstrap:check passed."
-commit: null
+commit:
+  hash: "27fc3d190d4c0ffd2e378d57c221f578407bd62e"
+  message: "🧭 202606050015-QS17HE workflow: sync release last-known-good"
 comments:
   -
     author: "CODER"
     body: "Start: synchronize release workflow last-known-good after candidate validation exposed tracked drift."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Workflow last-known-good matches .agentplane/WORKFLOW.md; bun run docs:bootstrap:check passed."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:47.821Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-05T00:15:54.079Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:47.821Z"
+doc_updated_by: "INTEGRATOR"
 description: "Release candidate preparation updated .agentplane/WORKFLOW.md to 0.6.17 but left .agentplane/workflows/last-known-good.md at 0.6.16; full release validation then produced a dirty tree. Update the release candidate so last-known-good is synchronized and the release PR carries no generated workflow drift."
 sections:
   Summary: |-

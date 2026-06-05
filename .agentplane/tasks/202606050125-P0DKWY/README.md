@@ -1,10 +1,11 @@
 ---
 id: "202606050125-P0DKWY"
 title: "Harden release lifecycle test cleanup"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - "packages/agentplane/src/cli/release-critical-lifecycle.test.ts"
   findings:
     - "The failing hosted test used single-attempt recursive temp repo removal; the patch uses fs.rm retry options and focused release-critical verification passed."
-commit: null
+commit:
+  hash: "451a96881f3504f45485fe5132f0915b9ec86dc7"
+  message: "🧪 S2SCRB release: harden lifecycle cleanup"
 comments:
   -
     author: "CODER"
     body: "Start: harden release lifecycle test cleanup after hosted verify-unit ENOTEMPTY failure."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -58,9 +64,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Release lifecycle cleanup hardening passed."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:52.128Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-05T01:26:21.413Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:52.129Z"
+doc_updated_by: "INTEGRATOR"
 description: "GitHub verify-unit failed in release-critical-lifecycle.test.ts with ENOTEMPTY while removing a temporary git info directory. Make the test cleanup robust so hosted CI does not fail on transient filesystem cleanup races."
 sections:
   Summary: |-
