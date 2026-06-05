@@ -5,6 +5,12 @@
   "diffstat_sha256": "sha256:73f34ebc6d56608141df87e2009c8ae4c9b95502906b6234edeb3545eed4d87d",
   "last_verified_at": "2026-06-05T07:57:28.461Z",
   "last_verified_diffstat_sha256": "sha256:73f34ebc6d56608141df87e2009c8ae4c9b95502906b6234edeb3545eed4d87d",
+  "pre_merge_closure": {
+    "basis_commit": "26d45af83e9e3cb76d4acccd933f977675599521",
+    "branch": "task/202606050748-TSVF5R/tolerate-rebased-pre-merge-closure",
+    "recorded_at": "2026-06-05T08:01:44.222Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "task_id": "202606050748-TSVF5R",
   "updated_at": "2026-06-05T07:48:57.074Z",
