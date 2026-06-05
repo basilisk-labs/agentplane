@@ -73,7 +73,7 @@
     "@agentplaneorg/core": "0.6.17"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "node ../../scripts/checks/run-typescript-build.mjs -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "cd ../.. && vitest --config vitest.workspace.ts run --project testkit"
   }
