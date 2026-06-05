@@ -4,7 +4,7 @@ title: "Prepare v0.6.17 release candidate"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-05T01:27:28.533Z"
+  updated_at: "2026-06-05T01:40:03.354Z"
   updated_by: "REVIEWER"
-  note: "Release PR cleanup fix verification passed."
+  note: "Release PR branch fallback review fix passed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -70,8 +70,14 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Release PR cleanup fix verification passed."
+  -
+    type: "verify"
+    at: "2026-06-05T01:40:03.354Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Release PR branch fallback review fix passed."
 doc_version: 3
-doc_updated_at: "2026-06-05T01:27:28.624Z"
+doc_updated_at: "2026-06-05T01:40:03.451Z"
 doc_updated_by: "CODER"
 description: "Prepare and merge the v0.6.17 patch release candidate after the cognitive-load refactor and release notes/social assets are complete."
 sections:
@@ -187,6 +193,38 @@ sections:
     - runner_failure_means: not_runner_route
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-06-05T01:40:03.354Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Release PR branch fallback review fix passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-05T01:27:28.624Z, excerpt_hash=sha256:00205f6af9b6b46dfc0f0e3e2aa7cde795664a36282ed1c4f1df2a26c7059ff0
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606042325-S2SCRB-prepare-v0-6-17-release-candidate/.agentplane/tasks/202606042325-S2SCRB/blueprint/resolved-snapshot.json
+    - old_digest: d514867b8334264b56c485de82f91407673273aef57fd645a0bf86f75c815096
+    - current_digest: d514867b8334264b56c485de82f91407673273aef57fd645a0bf86f75c815096
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606042325-S2SCRB
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606042325-S2SCRB
+    - diagnostic_command: agentplane pr check 202606042325-S2SCRB
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - runner_required: false
+    - runner_failure_means: not_runner_route
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -203,6 +241,10 @@ sections:
     - Observation: After hosted verify-unit exposed ENOTEMPTY cleanup race, added task 202606050125-P0DKWY and hardened release-critical-lifecycle.test.ts cleanup. Verification: bun test packages/agentplane/src/cli/release-critical-lifecycle.test.ts; bun run test:release:critical; prettier check for the changed test file.
       Impact: Release PR should no longer fail hosted verify-unit on transient temp git cleanup race.
       Resolution: Push updated release PR and rerun hosted checks.
+
+    - Observation: Addressed PR #4448 review on pr check branch artifact fallback. Verification: focused branch-artifacts regression test passed; prettier check passed for changed files.
+      Impact: Base/integration checkout can validate branch-only PR artifacts without false missing-artifact diagnostics.
+      Resolution: Push fix, resolve review thread, rerun hosted checks.
 id_source: "generated"
 ---
 ## Summary
@@ -327,6 +369,38 @@ DecisionContextRef:
 - runner_failure_means: not_runner_route
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+### 2026-06-05T01:40:03.354Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Release PR branch fallback review fix passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-05T01:27:28.624Z, excerpt_hash=sha256:00205f6af9b6b46dfc0f0e3e2aa7cde795664a36282ed1c4f1df2a26c7059ff0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606042325-S2SCRB-prepare-v0-6-17-release-candidate/.agentplane/tasks/202606042325-S2SCRB/blueprint/resolved-snapshot.json
+- old_digest: d514867b8334264b56c485de82f91407673273aef57fd645a0bf86f75c815096
+- current_digest: d514867b8334264b56c485de82f91407673273aef57fd645a0bf86f75c815096
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606042325-S2SCRB
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606042325-S2SCRB
+- diagnostic_command: agentplane pr check 202606042325-S2SCRB
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- runner_required: false
+- runner_failure_means: not_runner_route
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -347,3 +421,7 @@ DecisionContextRef:
 - Observation: After hosted verify-unit exposed ENOTEMPTY cleanup race, added task 202606050125-P0DKWY and hardened release-critical-lifecycle.test.ts cleanup. Verification: bun test packages/agentplane/src/cli/release-critical-lifecycle.test.ts; bun run test:release:critical; prettier check for the changed test file.
   Impact: Release PR should no longer fail hosted verify-unit on transient temp git cleanup race.
   Resolution: Push updated release PR and rerun hosted checks.
+
+- Observation: Addressed PR #4448 review on pr check branch artifact fallback. Verification: focused branch-artifacts regression test passed; prettier check passed for changed files.
+  Impact: Base/integration checkout can validate branch-only PR artifacts without false missing-artifact diagnostics.
+  Resolution: Push fix, resolve review thread, rerun hosted checks.
