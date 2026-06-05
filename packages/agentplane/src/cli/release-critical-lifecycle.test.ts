@@ -37,6 +37,10 @@ async function gitOutput(root: string, args: string[]): Promise<string> {
   return stdout.trim();
 }
 
+async function removeTempRepo(root: string): Promise<void> {
+  await rm(root, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+}
+
 describe("release-critical direct lifecycle", () => {
   it("runs init through task finish as the v0.3 freeze lifecycle indicator", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-release-lifecycle-"));
@@ -172,7 +176,7 @@ describe("release-critical direct lifecycle", () => {
     } finally {
       if (previousAgentplaneHome === undefined) delete process.env.AGENTPLANE_HOME;
       else process.env.AGENTPLANE_HOME = previousAgentplaneHome;
-      await rm(root, { recursive: true, force: true });
+      await removeTempRepo(root);
     }
   }, 120_000);
 });
