@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202606050431-TKMZWV/fix-upstream-issue-4451-finish-task-complete-can",
+  "created_at": "2026-06-05T04:33:32.789Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202606050431-TKMZWV",
+  "updated_at": "2026-06-05T04:33:32.789Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
