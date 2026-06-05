@@ -185,6 +185,7 @@ async function markPreMergeClosure(opts: { ctx: CommandContext; taskId: string }
       branch,
       basis_commit: basisCommit,
       recorded_at: new Date().toISOString(),
+      ...(meta.pr_number == null ? {} : { pr_number: meta.pr_number }),
     },
   });
   opts.ctx.git.invalidateStatus();

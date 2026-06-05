@@ -84,6 +84,7 @@ describe("finish pre-merge closure", () => {
             created_at: "2026-02-09T00:00:00.000Z",
             updated_at: "2026-02-09T00:00:00.000Z",
             status: "OPEN",
+            pr_number: 4402,
           },
           null,
           2,
@@ -110,12 +111,18 @@ describe("finish pre-merge closure", () => {
         expect.objectContaining({ taskId: "T-1", additionalTaskIds: [] }),
       );
       const meta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
-        pre_merge_closure?: { state?: string; basis_commit?: string; branch?: string };
+        pre_merge_closure?: {
+          state?: string;
+          basis_commit?: string;
+          branch?: string;
+          pr_number?: number;
+        };
       };
       expect(meta.pre_merge_closure).toMatchObject({
         state: "closed_before_merge",
         basis_commit: "implementation-head",
         branch: "task/T-1/pre-merge",
+        pr_number: 4402,
       });
     } finally {
       await rm(root, { recursive: true, force: true });
