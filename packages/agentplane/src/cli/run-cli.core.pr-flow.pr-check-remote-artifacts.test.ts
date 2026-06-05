@@ -98,7 +98,7 @@ describe("runCli PR check remote artifact fallback", { timeout: PR_FLOW_LONG_TIM
     const io = captureStdIO();
     try {
       const code = await runCli(["pr", "check", taskId, "--root", root]);
-      expect(code).toBe(0);
+      expect(code, `stdout:\n${io.stdout}\nstderr:\n${io.stderr}`).toBe(0);
       expect(io.stdout).toContain("✅ pr check");
     } finally {
       io.restore();
