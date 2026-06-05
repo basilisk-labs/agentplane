@@ -4,7 +4,7 @@ title: "Subsegment agentplane dependency cruiser check"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Subsegmented dependency-cruiser runner passed arch:deps under Node 24; arch:check dependency-cruiser phase passed; runner eslint passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-05T00:24:13.312Z"
+  updated_by: "EVALUATOR"
+  note: "The dependency-cruiser architecture check is now split into stable source slices with a controlled child-process heap and direct Node-version diagnostics."
+  evaluated_sha: "361fb944a9cd321d0eeb16ddb03a8aff0784927c"
+  blueprint_digest: "b2b68ec4d1fc330b26d50ec229b3a06c6c2a0506f648b498d99d6698136eec49"
+  evidence_refs:
+    - ".agentplane/tasks/202606050018-8RC2VD/README.md"
+    - ".agentplane/tasks/202606050018-8RC2VD/quality/20260605-002413312-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050018-8RC2VD/quality/20260605-002413312-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050018-8RC2VD/quality/20260605-002413312-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050018-8RC2VD/blueprint/resolved-snapshot.json"
+    - "scripts/checks/run-depcruise-arch.mjs"
+    - "arch-deps-node24"
+    - "arch-check-depcruise-phase"
+  findings:
+    - "Node 24 arch:deps passed, arch:check dependency-cruiser phase passed, and eslint passed for the runner."
 commit: null
 comments:
   -
