@@ -1,0 +1,15 @@
+ .agentplane/WORKFLOW.md                            |   3 +-
+ .agentplane/workflows/last-known-good.md           |   3 +-
+ docs/reference/generated-reference.mdx             |   6 +--
+ docs/releases/v0.6.18.md                           |  46 +++++++++++++++++++++
+ packages/agentplane/package.json                   |   6 +--
+ ....core.pr-flow.pr-check-remote-artifacts.test.ts |   2 +-
+ packages/agentplane/src/commands/pr/check.ts       |  17 +++-----
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/spec/examples/acr.json                    |   4 +-
+ packages/testkit/package.json                      |   2 +-
+ .../static/img/social/docs/releases/v0.6.18.png    | Bin 0 -> 54453 bytes
+ website/static/img/social/manifest.json            |   8 ++++
+ 14 files changed, 76 insertions(+), 27 deletions(-)
