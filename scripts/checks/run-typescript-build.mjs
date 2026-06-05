@@ -28,8 +28,7 @@ const nodeOptions = existingNodeOptions.includes("--max-old-space-size")
   : [TSC_NODE_HEAP_OPTION, existingNodeOptions].filter(Boolean).join(" ");
 
 const cliArgs = process.argv.slice(2);
-const tscArgs =
-  cliArgs[0] === "-p" || cliArgs[0] === "--project" ? cliArgs : ["-b", ...cliArgs];
+const tscArgs = cliArgs[0] === "-p" || cliArgs[0] === "--project" ? cliArgs : ["-b", ...cliArgs];
 
 const result = spawnSync(process.execPath, [localTscEntrypoint, ...tscArgs], {
   cwd: process.cwd(),
