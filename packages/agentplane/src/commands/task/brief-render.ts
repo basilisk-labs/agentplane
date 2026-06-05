@@ -1,4 +1,5 @@
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
+import { routeRunnerContextIsRelevant } from "../shared/route-guidance.js";
 import type { TaskBrief } from "./brief-model.js";
 
 function splitNonEmptyLines(text: string): string[] {
@@ -59,13 +60,17 @@ export function reportTaskBriefText(brief: TaskBrief, taskId: string): void {
           `allowed=${String(brief.decision_context.repeatPolicy.allowed)} ` +
           `recompute=${brief.decision_context.repeatPolicy.recomputeCommand}`,
       },
-      {
-        label: "runner_context",
-        value:
-          `required=${String(brief.decision_context.runnerContext.runnerIsRequired)} ` +
-          `allowed_now=${String(brief.decision_context.runnerContext.runnerIsAllowedNow)} ` +
-          `failure_means=${brief.decision_context.runnerContext.runnerFailureMeans}`,
-      },
+      ...(routeRunnerContextIsRelevant(brief.decision_context)
+        ? [
+            {
+              label: "runner_context",
+              value:
+                `required=${String(brief.decision_context.runnerContext.runnerIsRequired)} ` +
+                `allowed_now=${String(brief.decision_context.runnerContext.runnerIsAllowedNow)} ` +
+                `failure_means=${brief.decision_context.runnerContext.runnerFailureMeans}`,
+            },
+          ]
+        : []),
       {
         label: "safe_to_mutate",
         value: String(brief.execution_packet.safe_to_mutate),

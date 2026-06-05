@@ -230,3 +230,14 @@ export function deriveRouteOperatorGuidance(decision: TaskRouteDecision): RouteO
     risks,
   };
 }
+
+export function routeRunnerContextIsRelevant(
+  guidance: Pick<RouteOperatorGuidance, "runnerContext">,
+): boolean {
+  const context = guidance.runnerContext;
+  return (
+    context.runnerIsRequired ||
+    context.runnerIsAllowedNow ||
+    context.runnerFailureMeans !== "not_runner_route"
+  );
+}

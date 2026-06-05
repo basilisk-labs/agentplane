@@ -154,6 +154,15 @@ async function runnerVisibilityPacket(opts: {
   }
 }
 
+function routeNeedsRunnerProjection(
+  decision: Awaited<ReturnType<typeof buildTaskRouteDecision>>,
+): boolean {
+  return (
+    decision.nextAction.code === "wait_runner" ||
+    (decision.blockers ?? []).some((blocker) => blocker.code === "runner_alive")
+  );
+}
+
 export async function routePacket(opts: {
   ctx: CommandContext;
   cwd: string;
@@ -169,12 +178,15 @@ export async function routePacket(opts: {
     taskId: opts.taskId,
     includeRemote: opts.includeRemote,
   });
-  const runner = await runnerVisibilityPacket({
-    ctx: opts.ctx,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride,
-    taskId: opts.taskId,
-  });
+  const shouldProjectRunner = routeNeedsRunnerProjection(decision) || Boolean(fullTask.runner);
+  const runner = shouldProjectRunner
+    ? await runnerVisibilityPacket({
+        ctx: opts.ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId: opts.taskId,
+      })
+    : null;
   const terminal = {
     hermes_root_complete_allowed: taskTerminalForHermesComplete(decision.task),
     required_gate:
@@ -220,9 +232,13 @@ export async function routePacket(opts: {
       evidence_refs: {
         task_readme: `.agentplane/tasks/${decision.task.id}/README.md`,
         acr: `.agentplane/tasks/${decision.task.id}/acr.json`,
-        runner_status: runner.commands.status,
-        runner_inspect: runner.commands.inspect,
-        runner_event_logs: runner.commands.event_logs,
+        ...(runner
+          ? {
+              runner_status: runner.commands.status,
+              runner_inspect: runner.commands.inspect,
+              runner_event_logs: runner.commands.event_logs,
+            }
+          : {}),
       },
       terminal,
       authority: projectionBoundary,
@@ -260,7 +276,7 @@ export function buildHermesLifecycleRecommendation(
   return {
     action: "comment",
     command: `${base} comment --body ${JSON.stringify(body)}`,
-    reason: "Agentplane task is non-terminal; project the latest route and runner evidence.",
+    reason: "Agentplane task is non-terminal; project the latest route evidence.",
     body,
   };
 }
