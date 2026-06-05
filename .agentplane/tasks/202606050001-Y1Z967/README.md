@@ -1,10 +1,11 @@
 ---
 id: "202606050001-Y1Z967"
 title: "Reject stale branch fallback PR artifacts"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-check-remote-artifacts.test.ts"
   findings:
     - "Focused PR validation tests passed, remote artifact fallback stayed green, and package typecheck passed."
-commit: null
+commit:
+  hash: "704ced217a8068fb992a02f433e01202f1119a56"
+  message: "🧭 202606050001-Y1Z967 cli: reject stale branch fallback artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: fix stale branch fallback PR artifact acceptance found by release-ci-base chunk 31."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted PR validation and remote artifact fallback tests passed; package typecheck passed."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:47.349Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-05T00:02:56.738Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:47.349Z"
+doc_updated_by: "INTEGRATOR"
 description: "Release candidate validation showed pr check can accept stale branch fallback artifacts and return success instead of reporting missing local PR artifacts. Make the CLI reject stale fallback state with direct diagnostics, then rerun targeted PR validation tests before release candidate retry."
 sections:
   Summary: |-

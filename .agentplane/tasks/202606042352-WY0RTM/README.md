@@ -1,10 +1,11 @@
 ---
 id: "202606042352-WY0RTM"
 title: "Restore stale review metadata PR check"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "pr-notes-verify-freshness-tests"
   findings:
     - "Targeted PR notes and freshness tests passed; typecheck passed."
-commit: null
+commit:
+  hash: "e3bb2b4b9e0e43db38cf0f18184ea9bccc747a26"
+  message: "🧭 202606042352-WY0RTM cli: reject stale review metadata"
 comments:
   -
     author: "CODER"
     body: "Start: restore stale review metadata pr check behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/commands/pr/internal/freshness.test.ts passed; npm run typecheck passed in packages/agentplane."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:46.876Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-04T23:53:38.510Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:46.877Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix pr check so stale review metadata relative to branch diffstat is still rejected while live-head artifact handling remains aligned."
 sections:
   Summary: |-

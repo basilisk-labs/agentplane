@@ -1,10 +1,11 @@
 ---
 id: "202606050028-DMF6BH"
 title: "Format knip baseline wrapper"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "knip-wrapper-format-check"
   findings:
     - "Prettier check, eslint, and knip:check passed under the release Node 24 shell."
-commit: null
+commit:
+  hash: "04712afa09119c7964394c84a742288b89f7c9a9"
+  message: "🎨 202606050028-DMF6BH ci: format knip wrapper"
 comments:
   -
     author: "CODER"
     body: "Start: format the Knip baseline wrapper after prepublish format gate failure."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Formatted check-knip-baseline wrapper; focused Prettier, eslint, and knip:check passed."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:49.718Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-05T00:29:21.599Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:49.719Z"
+doc_updated_by: "INTEGRATOR"
 description: "After the Knip diagnostic wrapper fix, final release prepublish failed format:check on scripts/checks/check-knip-baseline.mjs. Format the wrapper, run focused format/lint/knip checks, and continue release validation."
 sections:
   Summary: |-

@@ -1,10 +1,11 @@
 ---
 id: "202606050035-YEAKJF"
 title: "Format TypeScript build wrapper"
-status: "DOING"
+result_summary: "Release follow-up completed and included in the v0.6.17 release branch."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "build-wrapper-format-check"
   findings:
     - "Prettier check, eslint, typecheck, and root build passed under the release Node 24 shell."
-commit: null
+commit:
+  hash: "7c1031520434708ca061e79746e77c36ea07472a"
+  message: "🎨 202606050035-YEAKJF ci: format build wrapper"
 comments:
   -
     author: "CODER"
     body: "Start: format build wrappers after prepublish format gate failure."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Formatted build wrappers; focused Prettier, eslint, typecheck, and build checks passed."
+  -
+    type: "status"
+    at: "2026-06-05T02:00:50.676Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release follow-up was implemented, reviewed, and merged through the v0.6.17 release branch."
 doc_version: 3
-doc_updated_at: "2026-06-05T00:36:20.353Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T02:00:50.677Z"
+doc_updated_by: "INTEGRATOR"
 description: "After the TypeScript/tsup build wrapper fix, final release prepublish failed format:check on scripts/checks/run-typescript-build.mjs. Format the wrapper, run focused format/lint/build checks, and continue release validation."
 sections:
   Summary: |-
