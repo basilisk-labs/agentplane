@@ -98,10 +98,25 @@ export function isExplicitHostedCloseFollowupBranch(opts: {
   return slug.startsWith("post-merge-") || /(?:^|-)followup(?:-|$)/u.test(slug);
 }
 
-async function preMergeClosureBasisIsAncestor(opts: {
+function isMissingGitCommitNameError(err: unknown): boolean {
+  const maybeError = err as { stderr?: unknown; message?: unknown } | null;
+  const text =
+    typeof maybeError?.stderr === "string"
+      ? maybeError.stderr
+      : typeof maybeError?.message === "string"
+        ? maybeError.message
+        : "";
+  return (
+    text.includes("Not a valid commit name") ||
+    text.includes("unknown revision or path not in the working tree")
+  );
+}
+
+export async function preMergeClosureBasisIsAncestor(opts: {
   gitRoot: string;
   meta: PrMeta;
   mergedHeadSha: string | null | undefined;
+  allowMissingBasisCommit?: boolean;
 }): Promise<boolean> {
   const marker = readPreMergeClosureMarker(opts.meta);
   const head = opts.mergedHeadSha?.trim() ?? "";
@@ -116,6 +131,7 @@ async function preMergeClosureBasisIsAncestor(opts: {
   } catch (err) {
     const code = (err as { code?: number | string } | null)?.code;
     if (code === 1) return false;
+    if (isMissingGitCommitNameError(err)) return opts.allowMissingBasisCommit === true;
     throw err;
   }
 }
@@ -267,6 +283,7 @@ async function closeHostedTask(opts: {
       gitRoot,
       meta,
       mergedHeadSha: target.mergedPr.headRefOid,
+      allowMissingBasisCommit: meta.pr_number === target.mergedPr.number,
     }))
   ) {
     return {

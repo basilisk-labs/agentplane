@@ -1,10 +1,16 @@
+import { execFile } from "node:child_process";
+import { writeFile } from "node:fs/promises";
+import path from "node:path";
+import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import {
   isExplicitHostedCloseFollowupBranch,
+  preMergeClosureBasisIsAncestor,
   taskIsClosedByPreMergeClosure,
 } from "./hosted-close.command.js";
 import type { TaskData } from "../../backends/task-backend.js";
+import { configureGitUser, mkGitRepoRoot } from "@agentplane/testkit";
 
 const task = { id: "202605131603-PFXN5E" } as TaskData;
 
@@ -123,5 +129,57 @@ describe("taskIsClosedByPreMergeClosure", () => {
         prNumber: 4403,
       }),
     ).toBe(false);
+  });
+});
+
+describe("preMergeClosureBasisIsAncestor", () => {
+  it("tolerates a missing basis commit after GitHub rebase merge rewrites the task branch", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+
+    await expect(
+      preMergeClosureBasisIsAncestor({
+        gitRoot: root,
+        mergedHeadSha: stdout.trim(),
+        allowMissingBasisCommit: true,
+        meta: {
+          schema_version: 1,
+          task_id: "T-1",
+          branch: "task/T-1/pre-merge",
+          created_at: "2026-02-09T00:00:00.000Z",
+          updated_at: "2026-02-09T00:00:00.000Z",
+          pre_merge_closure: {
+            state: "closed_before_merge",
+            branch: "task/T-1/pre-merge",
+            basis_commit: "c6d4d5ed9fcd2c7748200b5ed28b44f01f9fcc18",
+          },
+        } as never,
+      }),
+    ).resolves.toBe(true);
+
+    await expect(
+      preMergeClosureBasisIsAncestor({
+        gitRoot: root,
+        mergedHeadSha: stdout.trim(),
+        allowMissingBasisCommit: false,
+        meta: {
+          schema_version: 1,
+          task_id: "T-1",
+          branch: "task/T-1/pre-merge",
+          created_at: "2026-02-09T00:00:00.000Z",
+          updated_at: "2026-02-09T00:00:00.000Z",
+          pre_merge_closure: {
+            state: "closed_before_merge",
+            branch: "task/T-1/pre-merge",
+            basis_commit: "c6d4d5ed9fcd2c7748200b5ed28b44f01f9fcc18",
+          },
+        } as never,
+      }),
+    ).resolves.toBe(false);
   });
 });
