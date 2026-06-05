@@ -151,7 +151,9 @@ describe("release CI contract", () => {
     };
 
     expect(agentplanePackageJson.scripts?.build).toContain("npm run clean");
-    expect(agentplanePackageJson.scripts?.build).toContain("tsc -b --force");
+    expect(agentplanePackageJson.scripts?.build).toContain(
+      "node ../../scripts/checks/run-typescript-build.mjs --force",
+    );
   });
 
   it("keeps repo-only CLI helper exclusions out of the publishable agentplane build", async () => {
