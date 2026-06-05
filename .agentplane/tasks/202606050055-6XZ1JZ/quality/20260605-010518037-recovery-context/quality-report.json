@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202606050055-6XZ1JZ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-05T01:05:18.037Z",
+  "verdict": "pass",
+  "summary": "Lifecycle doctor warnings are normalized.",
+  "evaluated_sha": "ee7ffc9dc935fcba1c2a64fc9ec6579d40efd971",
+  "blueprint_digest": "16e2cf969044797a471384af5e210c14e5e75f2ec41f8bb9d27ffc1ad95ed91a",
+  "findings": [
+    "agentplane doctor in the task branch reports errors=0 warnings=0 after syncing merged branch metadata and repairing missing no-op closure commit metadata."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606050055-6XZ1JZ/README.md",
+    "agentplane-doctor"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
