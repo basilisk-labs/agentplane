@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "../../cli/run-cli.js";
-import { executableStepFor, runAgentplaneStep } from "./hermes-runtime.js";
+import {
+  executableStepFor,
+  routeNeedsRunnerProjection,
+  runAgentplaneStep,
+} from "./hermes-runtime.js";
+import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
 import { chmod, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -312,6 +317,48 @@ describe("hermes adapter commands", () => {
       args: ["task", "run", "202606010530-BEYQXA"],
       reason: null,
     });
+  });
+
+  it("keeps Hermes runner projection for explicit task run routes", () => {
+    const taskId = "202606010530-BEYQXA";
+    const decision = {
+      task: {
+        id: taskId,
+        title: "Hermes task launch",
+        status: "DOING",
+        owner: "CODER",
+        planApproval: "approved",
+        verification: "pending",
+        commit: null,
+      },
+      nextAction: {
+        code: "run",
+        command: `agentplane task run ${taskId}`,
+        summary: "continue the direct-mode task from the current checkout",
+        requiresApproval: false,
+      },
+      oracle: {
+        phase: "direct_execute",
+        authoritativeCheckout: "current_checkout",
+        authoritativeCheckoutPath: "/repo",
+        mutationPathHint: "/repo",
+        blocker: null,
+        nextCommand: `agentplane task run ${taskId}`,
+        summary: "continue the direct-mode task from the current checkout",
+      },
+      blockers: [],
+      executionPacket: {
+        actionKind: "local_command",
+        safeToMutate: true,
+        exactArgv: ["agentplane", "task", "run", taskId],
+        stopReason: null,
+        returnControlWhen: "after the exact command exits; recompute task next-action",
+        staleStateCheck: `agentplane task next-action ${taskId} --explain`,
+        verificationCandidate: null,
+      },
+    } as TaskRouteDecision;
+
+    expect(routeNeedsRunnerProjection(decision)).toBe(true);
   });
 
   it("rejects task run route steps for a different task id", () => {
