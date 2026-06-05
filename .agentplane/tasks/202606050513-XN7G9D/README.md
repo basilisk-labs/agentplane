@@ -1,10 +1,11 @@
 ---
 id: "202606050513-XN7G9D"
 title: "Hide runner guidance outside parallel-codex context"
-status: "DOING"
+result_summary: "Merged via PR #4452."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "/tmp/agentplane-XN7G9D-brief.txt"
   findings:
     - "Default task brief/status/next-action output no longer emits runner-only context fields for ordinary tasks; Hermes projection no longer includes runner commands unless a runner route or task runner evidence exists."
-commit: null
+commit:
+  hash: "71c5e3d1e5867291c32d07d7a15ab942a96608c8"
+  message: "🧭 XN7G9D cli: keep explicit runner launch context"
 comments:
   -
     author: "CODER"
     body: "Start: hide default runner guidance from ordinary agent prompt and route surfaces while preserving explicit runner routes and parallel-codex recipe behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4452 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified prompt and route context hide default runner-only guidance for ordinary tasks; explicit runner routes remain covered by tests."
+  -
+    type: "status"
+    at: "2026-06-05T05:58:24.885Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4452 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-05T05:23:39.982Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T05:58:24.890Z"
+doc_updated_by: "INTEGRATOR"
 description: "Default agent prompt and route surfaces must not introduce runner execution guidance unless the route is already a real runner wait/run state or the active recipe is parallel-codex. Ordinary agents should execute tasks themselves via normal AgentPlane lifecycle."
 sections:
   Summary: |-
