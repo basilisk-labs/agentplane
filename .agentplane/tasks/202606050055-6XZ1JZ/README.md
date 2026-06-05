@@ -1,10 +1,11 @@
 ---
 id: "202606050055-6XZ1JZ"
 title: "Normalize lifecycle doctor warnings before v0.6.17"
-status: "DOING"
+result_summary: "Merged via PR #4446."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - "agentplane-doctor"
   findings:
     - "agentplane doctor in the task branch reports errors=0 warnings=0 after syncing merged branch metadata and repairing missing no-op closure commit metadata."
-commit: null
+commit:
+  hash: "e51535f12d863df0591b8d2ed78f7d269bc5280c"
+  message: "🧭 6XZ1JZ task: repair historical commit traceability"
 comments:
   -
     author: "CODER"
     body: "Start: normalize lifecycle doctor warnings found during v0.6.17 release preparation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4446 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -58,9 +64,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Lifecycle doctor warnings normalized."
+  -
+    type: "status"
+    at: "2026-06-05T01:12:07.174Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4446 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-05T01:02:41.082Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-05T01:12:07.179Z"
+doc_updated_by: "INTEGRATOR"
 description: "Doctor reported shipped branch_pr task drift and DONE tasks missing implementation commit hashes during the v0.6.17 release candidate. Normalize those lifecycle records so future agents get direct, unambiguous task context."
 sections:
   Summary: |-
