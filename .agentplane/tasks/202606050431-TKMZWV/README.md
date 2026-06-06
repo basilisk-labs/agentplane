@@ -4,7 +4,7 @@ title: "Fix upstream issue #4451: finish/task complete can loop on stale quality
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-06-06T16:41:48.030Z"
+  updated_by: "CODER"
+  note: "Verified: fixed direct closeout quality review target selection for existing task-artifact-only commit metadata. Commands: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts; git diff --check; node .agentplane/policy/check-routing.mjs."
   attempts: 0
 commit: null
 comments:
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: investigating upstream issue #4451 in the dedicated branch_pr worktree and preparing the bounded Codex runner handoff."
+  -
+    type: "verify"
+    at: "2026-06-06T16:41:48.030Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: fixed direct closeout quality review target selection for existing task-artifact-only commit metadata. Commands: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts; git diff --check; node .agentplane/policy/check-routing.mjs."
 doc_version: 3
-doc_updated_at: "2026-06-05T04:33:32.696Z"
+doc_updated_at: "2026-06-06T16:41:49.122Z"
 doc_updated_by: "CODER"
 description: "Resolve https://github.com/basilisk-labs/agentplane/issues/4451"
 sections:
@@ -59,6 +65,36 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-06-06T16:41:48.030Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: fixed direct closeout quality review target selection for existing task-artifact-only commit metadata. Commands: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts; git diff --check; node .agentplane/policy/check-routing.mjs.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-05T04:33:32.696Z, excerpt_hash=sha256:ffd25d481a7f9d3f97cacaf135e78dbd8c18b1d2f457b10ada75f95c7d59fdb4
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606050431-TKMZWV/.agentplane/tasks/202606050431-TKMZWV/blueprint/resolved-snapshot.json
+    - old_digest: 9574f5a3ad62e5b13055839429cae1cb6446d9ed9caf4505903ef2f8cb4f1442
+    - current_digest: 9574f5a3ad62e5b13055839429cae1cb6446d9ed9caf4505903ef2f8cb4f1442
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606050431-TKMZWV
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606050431-TKMZWV
+    - diagnostic_command: agentplane pr check 202606050431-TKMZWV
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -94,6 +130,36 @@ PLANNER fallback scaffold for "Fix upstream issue #4451: finish/task complete ca
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-06-06T16:41:48.030Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: fixed direct closeout quality review target selection for existing task-artifact-only commit metadata. Commands: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts; git diff --check; node .agentplane/policy/check-routing.mjs.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-05T04:33:32.696Z, excerpt_hash=sha256:ffd25d481a7f9d3f97cacaf135e78dbd8c18b1d2f457b10ada75f95c7d59fdb4
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606050431-TKMZWV/.agentplane/tasks/202606050431-TKMZWV/blueprint/resolved-snapshot.json
+- old_digest: 9574f5a3ad62e5b13055839429cae1cb6446d9ed9caf4505903ef2f8cb4f1442
+- current_digest: 9574f5a3ad62e5b13055839429cae1cb6446d9ed9caf4505903ef2f8cb4f1442
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606050431-TKMZWV
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606050431-TKMZWV
+- diagnostic_command: agentplane pr check 202606050431-TKMZWV
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

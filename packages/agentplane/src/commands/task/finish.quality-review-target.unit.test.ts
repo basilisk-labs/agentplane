@@ -100,6 +100,34 @@ describe("finish quality review target selection", () => {
     expect(resolved).toEqual({ hash: "impl-sha", message: "feat: implement T-1" });
   });
 
+  it("auto-resolves quality_review.evaluated_sha when existing task commit is task-artifact-only", async () => {
+    const loaded = mkLoadedTask();
+    loaded.task.commit = {
+      hash: "artifact-sha",
+      message: "✅ T-1 close: task artifacts",
+    };
+    mocks.isTaskLocalOnlyAdvance.mockResolvedValue(true);
+    mocks.readCommitInfo.mockResolvedValue({ hash: "impl-sha", message: "feat: implement T-1" });
+    const { resolveImplementationCommitInfo } = await import("./finish-execute-commit.js");
+
+    const resolved = await resolveImplementationCommitInfo({
+      ctx: mkCtx(),
+      options: { quiet: true } as never,
+      loadedTasks: [loaded],
+      taskCommitInfo: null,
+    });
+
+    expect(mocks.isTaskLocalOnlyAdvance).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      workflowDir: ".agentplane/tasks",
+      taskId: "T-1",
+      tasksPath: ".agentplane/tasks.json",
+      fromRef: "impl-sha",
+      toRef: "artifact-sha",
+    });
+    expect(resolved).toEqual({ hash: "impl-sha", message: "feat: implement T-1" });
+  });
+
   it("keeps stale-review validation when --commit is not task-local", async () => {
     mocks.isTaskLocalOnlyAdvance.mockResolvedValue(false);
     const { resolveImplementationCommitInfo } = await import("./finish-execute-commit.js");

@@ -12,8 +12,8 @@ Created: 2026-06-05T04:33:32.789Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: fixed direct closeout quality review target selection for existing task-artifact-only commit metadata. Commands: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts; git diff --check; node .agentplane/policy/check-routing.mjs.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
