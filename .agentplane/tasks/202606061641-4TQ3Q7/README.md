@@ -4,7 +4,7 @@ title: "Fix release lifecycle reliability issues"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,22 @@ verification:
   updated_by: "CODER"
   note: "Verified review-thread fixes. Added stdin preservation test for background hook shim and configured workflow_dir release snapshot test. Checks passed: focused vitest suite 15 tests; bun run lint:core; bun run knip:check; bun run --filter=agentplane typecheck; bun run --filter=agentplane build; bun run format:changed; node .agentplane/policy/check-routing.mjs; git diff --check."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-06T17:31:32.894Z"
+  updated_by: "EVALUATOR"
+  note: "Release lifecycle reliability fixes are implemented and verified locally and on GitHub PR #4467."
+  evaluated_sha: "d56dd68ee79a1d856de053b36ea50ffd8fb2599f"
+  blueprint_digest: "19144eb59e74613d1059bc4355969ed915e9fb05f3d3f484ebf38b4ca69bf85d"
+  evidence_refs:
+    - ".agentplane/tasks/202606061641-4TQ3Q7/README.md"
+    - ".agentplane/tasks/202606061641-4TQ3Q7/quality/20260606-173132894-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606061641-4TQ3Q7/quality/20260606-173132894-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606061641-4TQ3Q7/quality/20260606-173132894-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606061641-4TQ3Q7/blueprint/resolved-snapshot.json"
+    - "https://github.com/basilisk-labs/agentplane/pull/4467"
+  findings:
+    - "Hook shim timeout now preserves stdin and exits promptly; release-candidate snapshot staging uses configured workflow_dir; release evidence workflow dispatch waits for PR creation so app-owned PR verification materializes."
 commit: null
 comments:
   -
