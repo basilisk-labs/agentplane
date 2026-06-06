@@ -4,7 +4,7 @@ title: "Fix release lifecycle reliability issues"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-06T16:50:38.864Z"
+  updated_at: "2026-06-06T17:02:39.859Z"
   updated_by: "CODER"
-  note: "Command: bunx vitest run packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts packages/agentplane/src/commands/release/apply.apply-flow.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Result: pass; 3 files / 14 tests passed. Scope: raw hook shim timeout diagnostics, release candidate blueprint snapshot staging, publish workflow release evidence PR verification contract. Command: bun run format:changed. Result: pass; 7 changed files match Prettier. Scope: changed code/workflow files. Command: bun run --filter=agentplane typecheck. Result: pass. Scope: agentplane TypeScript. Command: bun run --filter=agentplane build. Result: pass. Scope: runtime build freshness. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Scope: routing policy. Command: git diff --check. Result: pass. Scope: whitespace."
+  note: "Verified release lifecycle fixes after CI-static follow-up. Checks: focused vitest suite for hook shim/release candidate/publish workflow passed 14 tests; bun run lint:core passed; bun run knip:check passed; bun run --filter=agentplane typecheck passed; bun run --filter=agentplane build passed; bun run format:changed passed; node .agentplane/policy/check-routing.mjs passed; git diff --check passed. Local arch:check was not rerun here because dependency-cruiser requires Node 24 and local runtime reports Node v26; CI uses Node 24."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts packages/agentplane/src/commands/release/apply.apply-flow.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Result: pass; 3 files / 14 tests passed. Scope: raw hook shim timeout diagnostics, release candidate blueprint snapshot staging, publish workflow release evidence PR verification contract. Command: bun run format:changed. Result: pass; 7 changed files match Prettier. Scope: changed code/workflow files. Command: bun run --filter=agentplane typecheck. Result: pass. Scope: agentplane TypeScript. Command: bun run --filter=agentplane build. Result: pass. Scope: runtime build freshness. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Scope: routing policy. Command: git diff --check. Result: pass. Scope: whitespace."
+  -
+    type: "verify"
+    at: "2026-06-06T17:02:39.859Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified release lifecycle fixes after CI-static follow-up. Checks: focused vitest suite for hook shim/release candidate/publish workflow passed 14 tests; bun run lint:core passed; bun run knip:check passed; bun run --filter=agentplane typecheck passed; bun run --filter=agentplane build passed; bun run format:changed passed; node .agentplane/policy/check-routing.mjs passed; git diff --check passed. Local arch:check was not rerun here because dependency-cruiser requires Node 24 and local runtime reports Node v26; CI uses Node 24."
 doc_version: 3
-doc_updated_at: "2026-06-06T16:50:39.037Z"
+doc_updated_at: "2026-06-06T17:02:40.152Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issues #4461, #4462, and #4463 covering hook shim timeout diagnostics, release candidate generated snapshot staging, and release evidence PR verification materialization."
 sections:
@@ -74,6 +80,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-06T16:44:02.282Z, excerpt_hash=sha256:8222bb22ebfcffddfde2778a8121c23d65c49047429f43a4ca43ee036e6fa938
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606061641-4TQ3Q7-fix-release-lifecycle-reliability-issues/.agentplane/tasks/202606061641-4TQ3Q7/blueprint/resolved-snapshot.json
+    - old_digest: 19144eb59e74613d1059bc4355969ed915e9fb05f3d3f484ebf38b4ca69bf85d
+    - current_digest: 19144eb59e74613d1059bc4355969ed915e9fb05f3d3f484ebf38b4ca69bf85d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606061641-4TQ3Q7
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606061641-4TQ3Q7
+    - diagnostic_command: agentplane pr check 202606061641-4TQ3Q7
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-06-06T17:02:39.859Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified release lifecycle fixes after CI-static follow-up. Checks: focused vitest suite for hook shim/release candidate/publish workflow passed 14 tests; bun run lint:core passed; bun run knip:check passed; bun run --filter=agentplane typecheck passed; bun run --filter=agentplane build passed; bun run format:changed passed; node .agentplane/policy/check-routing.mjs passed; git diff --check passed. Local arch:check was not rerun here because dependency-cruiser requires Node 24 and local runtime reports Node v26; CI uses Node 24.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-06T16:50:39.037Z, excerpt_hash=sha256:8222bb22ebfcffddfde2778a8121c23d65c49047429f43a4ca43ee036e6fa938
 
     Details:
 
@@ -138,6 +174,36 @@ Note: Command: bunx vitest run packages/agentplane/src/commands/branch/work-star
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-06T16:44:02.282Z, excerpt_hash=sha256:8222bb22ebfcffddfde2778a8121c23d65c49047429f43a4ca43ee036e6fa938
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606061641-4TQ3Q7-fix-release-lifecycle-reliability-issues/.agentplane/tasks/202606061641-4TQ3Q7/blueprint/resolved-snapshot.json
+- old_digest: 19144eb59e74613d1059bc4355969ed915e9fb05f3d3f484ebf38b4ca69bf85d
+- current_digest: 19144eb59e74613d1059bc4355969ed915e9fb05f3d3f484ebf38b4ca69bf85d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606061641-4TQ3Q7
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606061641-4TQ3Q7
+- diagnostic_command: agentplane pr check 202606061641-4TQ3Q7
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-06-06T17:02:39.859Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified release lifecycle fixes after CI-static follow-up. Checks: focused vitest suite for hook shim/release candidate/publish workflow passed 14 tests; bun run lint:core passed; bun run knip:check passed; bun run --filter=agentplane typecheck passed; bun run --filter=agentplane build passed; bun run format:changed passed; node .agentplane/policy/check-routing.mjs passed; git diff --check passed. Local arch:check was not rerun here because dependency-cruiser requires Node 24 and local runtime reports Node v26; CI uses Node 24.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-06T16:50:39.037Z, excerpt_hash=sha256:8222bb22ebfcffddfde2778a8121c23d65c49047429f43a4ca43ee036e6fa938
 
 Details:
 

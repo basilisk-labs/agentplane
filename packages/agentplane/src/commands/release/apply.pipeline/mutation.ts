@@ -5,7 +5,6 @@ import { loadConfig } from "@agentplaneorg/core/config";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv, GitContext, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
-import { BLUEPRINT_SNAPSHOT_ARTIFACT_PATH } from "../../blueprint/snapshot-artifact.js";
 import { appendDcoSignoff } from "../../guard/impl/dco.js";
 import {
   cleanHookEnv,
@@ -22,6 +21,8 @@ import {
 import { fileExists } from "../apply.preflight.plan.js";
 import type { ReleaseCommandMutation, ReleaseCommandState } from "../apply.types.js";
 import { emitReleaseLine } from "./shared.js";
+
+const RELEASE_CANDIDATE_BLUEPRINT_SNAPSHOT_PATH = "blueprint/resolved-snapshot.json";
 
 export async function applyReleaseMutation(opts: {
   agentplaneDir: string;
@@ -111,7 +112,7 @@ export async function applyReleaseMutation(opts: {
       ".agentplane",
       "tasks",
       taskId,
-      BLUEPRINT_SNAPSHOT_ARTIFACT_PATH,
+      RELEASE_CANDIDATE_BLUEPRINT_SNAPSHOT_PATH,
     );
     if (await fileExists(blueprintSnapshotPath)) {
       stagePaths.push(path.relative(opts.gitRoot, blueprintSnapshotPath));
