@@ -1,0 +1,3 @@
+ .../src/commands/task/finish-execute-commit.ts     | 13 +++++++---
+ .../task/finish.quality-review-target.unit.test.ts | 28 ++++++++++++++++++++++
+ 2 files changed, 38 insertions(+), 3 deletions(-)
