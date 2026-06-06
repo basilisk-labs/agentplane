@@ -1,10 +1,11 @@
 ---
 id: "202606061644-002BXX"
 title: "Refresh README headers for latest release"
-status: "DOING"
+result_summary: "Merged via PR #4466."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "bun run release:check"
   findings:
     - "The generator resolves the tag from packages/agentplane/package.json first, with git tags only as fallback, so release:check validates the candidate package version rather than the previous published tag."
-commit: null
+commit:
+  hash: "3bde820c571a6369670bebf8867e511620cab142"
+  message: "Merge pull request #4466 from basilisk-labs/task/202606061644-002BXX/refresh-readme-headers-for-latest-release"
 comments:
   -
     author: "DOCS"
     body: "Start: Refresh README header assets to the latest release and add a release check gate so future releases fail when those generated assets drift."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4466 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -65,9 +71,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Review fix verification: scripts/generate/generate-readme-header.mjs now uses packages/agentplane/package.json as the primary README header tag source and git tags only as fallback. Command: bun run docs:readme-header:check; Result: pass; Evidence: fresh for v0.6.18. Command: node --check scripts/generate/generate-readme-header.mjs; Result: pass. Command: bun run release:check; Result: pass; Evidence: header check, social images, package builds, tarball policy, and blueprint release gate passed."
+  -
+    type: "status"
+    at: "2026-06-06T17:42:57.894Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4466 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-06T17:09:54.896Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-06-06T17:42:57.900Z"
+doc_updated_by: "INTEGRATOR"
 description: "Regenerate README header assets to the current release and make release checks fail when README header assets drift from the latest release tag."
 sections:
   Summary: |-
