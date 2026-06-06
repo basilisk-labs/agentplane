@@ -4,7 +4,7 @@ title: "Fix upstream issue #4451: finish/task complete can loop on stale quality
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,27 @@ verification:
   updated_by: "CODER"
   note: "Verified: fixed direct closeout quality review target selection for existing task-artifact-only commit metadata. Commands: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts; git diff --check; node .agentplane/policy/check-routing.mjs."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-06T16:43:20.798Z"
+  updated_by: "EVALUATOR"
+  note: "Reviewed the focused finish closeout diff and regression evidence for issue #4451."
+  evaluated_sha: "0e491ed63c0984063d4e7fd4dc6aa467543d603b"
+  blueprint_digest: "9574f5a3ad62e5b13055839429cae1cb6446d9ed9caf4505903ef2f8cb4f1442"
+  evidence_refs:
+    - ".agentplane/tasks/202606050431-TKMZWV/README.md"
+    - ".agentplane/tasks/202606050431-TKMZWV/quality/20260606-164320798-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606050431-TKMZWV/quality/20260606-164320798-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606050431-TKMZWV/quality/20260606-164320798-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606050431-TKMZWV/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/task/finish-execute-commit.ts"
+    - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
+    - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+    - "git diff --check"
+    - "node .agentplane/policy/check-routing.mjs"
+  findings:
+    - "resolveImplementationCommitInfo now normalizes existing task.commit artifact-only metadata through quality_review.evaluated_sha when isTaskLocalOnlyAdvance proves the tail is task-local."
+    - "Regression coverage exercises both explicit --commit artifact tails and existing task commit artifact tails without weakening stale-review rejection for non-task-local changes."
 commit: null
 comments:
   -

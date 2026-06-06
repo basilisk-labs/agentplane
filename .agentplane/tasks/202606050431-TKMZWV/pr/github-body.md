@@ -36,7 +36,9 @@ packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts; git di
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/task/finish-execute-commit.ts     | 13 +++++++---
+ .../task/finish.quality-review-target.unit.test.ts | 28 ++++++++++++++++++++++
+ 2 files changed, 38 insertions(+), 3 deletions(-)
 ```
 
 </details>

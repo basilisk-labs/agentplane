@@ -29,7 +29,9 @@ Created: 2026-06-05T04:33:32.789Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/task/finish-execute-commit.ts     | 13 +++++++---
+ .../task/finish.quality-review-target.unit.test.ts | 28 ++++++++++++++++++++++
+ 2 files changed, 38 insertions(+), 3 deletions(-)
 ```
 
 </details>
