@@ -53,15 +53,23 @@ describe("worktree hook shim", () => {
     }
 
     const shimPath = path.join(worktreePath, ".agentplane", "bin", "agentplane");
-    await expect(
-      execFileNodeAsync(shimPath, ["hooks", "run", "pre-commit"], {
+    let stderr = "";
+    try {
+      await execFileNodeAsync(shimPath, ["hooks", "run", "pre-commit"], {
         cwd: worktreePath,
         env: { ...process.env, AGENTPLANE_HOOK_SHIM_TIMEOUT_SECONDS: "1" },
-        timeout: 5_000,
-      }),
-    ).rejects.toMatchObject({
-      stderr: expect.stringContaining("reason_code=hook_shim_timeout"),
-    });
+        timeout: 5000,
+      });
+    } catch (err) {
+      const rawStderr = (err as { stderr?: unknown }).stderr;
+      stderr =
+        typeof rawStderr === "string"
+          ? rawStderr
+          : Buffer.isBuffer(rawStderr)
+            ? rawStderr.toString("utf8")
+            : "";
+    }
+    expect(stderr).toContain("reason_code=hook_shim_timeout");
   }, 10_000);
 });
 
