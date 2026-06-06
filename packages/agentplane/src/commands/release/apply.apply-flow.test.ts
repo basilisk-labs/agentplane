@@ -113,6 +113,21 @@ describeWhenNotHook(
         );
         expect(rcPlan).toBe(0);
         await writeReleaseNotes(root, "0.2.7", validReleaseNotesBody("0.2.7"));
+        await mkdir(path.join(root, ".agentplane", "tasks", "202604130750-E2J835", "blueprint"), {
+          recursive: true,
+        });
+        await writeFile(
+          path.join(
+            root,
+            ".agentplane",
+            "tasks",
+            "202604130750-E2J835",
+            "blueprint",
+            "resolved-snapshot.json",
+          ),
+          "{}\n",
+          "utf8",
+        );
 
         const rcApply = await withDryRunReleaseMode(async () =>
           runReleaseCandidate(
@@ -146,6 +161,16 @@ describeWhenNotHook(
         expect(report.tag?.pushed).toBe(false);
         expect(report.push?.performed).toBe(false);
         expect(report.push?.refs).toEqual([]);
+        const { stdout: stagedOut } = await execFileAsync(
+          "git",
+          ["show", "--name-only", "--pretty=format:", "HEAD"],
+          {
+            cwd: root,
+          },
+        );
+        expect(stagedOut).toContain(
+          ".agentplane/tasks/202604130750-E2J835/blueprint/resolved-snapshot.json",
+        );
       },
       RELEASE_APPLY_LONG_TIMEOUT_MS,
     );
