@@ -1,10 +1,11 @@
 ---
 id: "202606061641-4TQ3Q7"
 title: "Fix release lifecycle reliability issues"
-status: "DOING"
+result_summary: "Merged via PR #4467."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - "https://github.com/basilisk-labs/agentplane/pull/4467"
   findings:
     - "Hook shim timeout now preserves stdin and exits promptly; release-candidate snapshot staging uses configured workflow_dir; release evidence workflow dispatch waits for PR creation so app-owned PR verification materializes."
-commit: null
+commit:
+  hash: "7a941f25b58bb9fef17c65e1df19072ed13f8063"
+  message: "🛠 4TQ3Q7 release: fix lifecycle reliability issues"
 comments:
   -
     author: "CODER"
     body: "Start: implementing approved fixes for #4461, #4462, and #4463 in the dedicated branch_pr worktree with focused tests and release/lifecycle verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4467 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified review-thread fixes. Added stdin preservation test for background hook shim and configured workflow_dir release snapshot test. Checks passed: focused vitest suite 15 tests; bun run lint:core; bun run knip:check; bun run --filter=agentplane typecheck; bun run --filter=agentplane build; bun run format:changed; node .agentplane/policy/check-routing.mjs; git diff --check."
+  -
+    type: "status"
+    at: "2026-06-06T17:51:07.472Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4467 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-06T17:13:36.079Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-06T17:51:07.478Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub issues #4461, #4462, and #4463 covering hook shim timeout diagnostics, release candidate generated snapshot staging, and release evidence PR verification materialization."
 sections:
   Summary: |-
