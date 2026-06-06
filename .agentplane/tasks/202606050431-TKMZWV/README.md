@@ -1,10 +1,11 @@
 ---
 id: "202606050431-TKMZWV"
 title: "Fix upstream issue #4451: finish/task complete can loop on stale quality_review.evaluated_sha after task-artifact-only commits"
-status: "DOING"
+result_summary: "Merged via PR #4465."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -43,11 +44,16 @@ quality_review:
   findings:
     - "resolveImplementationCommitInfo now normalizes existing task.commit artifact-only metadata through quality_review.evaluated_sha when isTaskLocalOnlyAdvance proves the tail is task-local."
     - "Regression coverage exercises both explicit --commit artifact tails and existing task commit artifact tails without weakening stale-review rejection for non-task-local changes."
-commit: null
+commit:
+  hash: "70588b44881f46ba06fa6416e0a0bfca5d6034bd"
+  message: "Fix direct closeout artifact-only quality review target"
 comments:
   -
     author: "CODER"
     body: "Start: investigating upstream issue #4451 in the dedicated branch_pr worktree and preparing the bounded Codex runner handoff."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4465 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -62,9 +68,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: fixed direct closeout quality review target selection for existing task-artifact-only commit metadata. Commands: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts; git diff --check; node .agentplane/policy/check-routing.mjs."
+  -
+    type: "status"
+    at: "2026-06-06T16:54:19.050Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4465 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-06T16:41:49.122Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-06T16:54:19.055Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve https://github.com/basilisk-labs/agentplane/issues/4451"
 sections:
   Summary: |-
