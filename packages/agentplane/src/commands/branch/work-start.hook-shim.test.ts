@@ -71,6 +71,34 @@ describe("worktree hook shim", () => {
     }
     expect(stderr).toContain("reason_code=hook_shim_timeout");
   }, 10_000);
+
+  it("preserves hook stdin when the runner is watched in the background", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-shim-stdin-"));
+    const worktreePath = path.join(root, "worktree");
+    const activeBin = path.join(root, "installed agentplane", "bin", "agentplane.js");
+    const previousActiveBin = process.env[ACTIVE_BIN_ENV];
+    await mkdir(path.dirname(activeBin), { recursive: true });
+    await writeFile(activeBin, "process.stdin.pipe(process.stdout);\n", "utf8");
+    process.env[ACTIVE_BIN_ENV] = activeBin;
+    try {
+      await materializeHookShimForWorktree(worktreePath);
+    } finally {
+      if (previousActiveBin === undefined) delete process.env[ACTIVE_BIN_ENV];
+      else process.env[ACTIVE_BIN_ENV] = previousActiveBin;
+    }
+
+    const shimPath = path.join(worktreePath, ".agentplane", "bin", "agentplane");
+    const hookInput = "refs/heads/main 1111111 refs/heads/main 2222222\n";
+    const { stdout } = await execFileNodeAsync(
+      "sh",
+      ["-c", 'printf "%s" "$HOOK_INPUT" | "$1" hooks run pre-push', "sh", shimPath],
+      {
+        cwd: worktreePath,
+        env: { ...process.env, HOOK_INPUT: hookInput },
+      },
+    );
+    expect(stdout).toBe(hookInput);
+  });
 });
 
 describe("worktree task artifact materialization", () => {

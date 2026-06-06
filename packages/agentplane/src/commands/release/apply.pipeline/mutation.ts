@@ -102,6 +102,7 @@ export async function applyReleaseMutation(opts: {
   if (await fileExists(path.join(opts.gitRoot, "bun.lock"))) {
     stagePaths.push("bun.lock");
   }
+  const loaded = await loadConfig(opts.agentplaneDir);
   const taskId =
     opts.route.kind === "release_candidate"
       ? parseTaskIdFromBranch(opts.taskBranchPrefix, opts.route.current_branch)
@@ -109,8 +110,7 @@ export async function applyReleaseMutation(opts: {
   if (taskId) {
     const blueprintSnapshotPath = path.join(
       opts.gitRoot,
-      ".agentplane",
-      "tasks",
+      loaded.config.paths.workflow_dir,
       taskId,
       RELEASE_CANDIDATE_BLUEPRINT_SNAPSHOT_PATH,
     );
@@ -129,7 +129,6 @@ export async function applyReleaseMutation(opts: {
   const subject = taskId
     ? `✨ ${extractTaskSuffix(taskId)} release: publish ${opts.nextTag}`
     : `✨ release: publish ${opts.nextTag}`;
-  const loaded = await loadConfig(opts.agentplaneDir);
   const body = appendDcoSignoff({ config: loaded.config, body: undefined });
   await opts.git.commit({ message: subject, body, env: cleanHookEnv() });
   const { stdout: headHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {

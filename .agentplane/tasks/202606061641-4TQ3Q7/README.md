@@ -4,7 +4,7 @@ title: "Fix release lifecycle reliability issues"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-06T17:02:39.859Z"
+  updated_at: "2026-06-06T17:13:35.901Z"
   updated_by: "CODER"
-  note: "Verified release lifecycle fixes after CI-static follow-up. Checks: focused vitest suite for hook shim/release candidate/publish workflow passed 14 tests; bun run lint:core passed; bun run knip:check passed; bun run --filter=agentplane typecheck passed; bun run --filter=agentplane build passed; bun run format:changed passed; node .agentplane/policy/check-routing.mjs passed; git diff --check passed. Local arch:check was not rerun here because dependency-cruiser requires Node 24 and local runtime reports Node v26; CI uses Node 24."
+  note: "Verified review-thread fixes. Added stdin preservation test for background hook shim and configured workflow_dir release snapshot test. Checks passed: focused vitest suite 15 tests; bun run lint:core; bun run knip:check; bun run --filter=agentplane typecheck; bun run --filter=agentplane build; bun run format:changed; node .agentplane/policy/check-routing.mjs; git diff --check."
   attempts: 0
 commit: null
 comments:
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified release lifecycle fixes after CI-static follow-up. Checks: focused vitest suite for hook shim/release candidate/publish workflow passed 14 tests; bun run lint:core passed; bun run knip:check passed; bun run --filter=agentplane typecheck passed; bun run --filter=agentplane build passed; bun run format:changed passed; node .agentplane/policy/check-routing.mjs passed; git diff --check passed. Local arch:check was not rerun here because dependency-cruiser requires Node 24 and local runtime reports Node v26; CI uses Node 24."
+  -
+    type: "verify"
+    at: "2026-06-06T17:13:35.901Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified review-thread fixes. Added stdin preservation test for background hook shim and configured workflow_dir release snapshot test. Checks passed: focused vitest suite 15 tests; bun run lint:core; bun run knip:check; bun run --filter=agentplane typecheck; bun run --filter=agentplane build; bun run format:changed; node .agentplane/policy/check-routing.mjs; git diff --check."
 doc_version: 3
-doc_updated_at: "2026-06-06T17:02:40.152Z"
+doc_updated_at: "2026-06-06T17:13:36.079Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issues #4461, #4462, and #4463 covering hook shim timeout diagnostics, release candidate generated snapshot staging, and release evidence PR verification materialization."
 sections:
@@ -110,6 +116,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-06T16:50:39.037Z, excerpt_hash=sha256:8222bb22ebfcffddfde2778a8121c23d65c49047429f43a4ca43ee036e6fa938
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606061641-4TQ3Q7-fix-release-lifecycle-reliability-issues/.agentplane/tasks/202606061641-4TQ3Q7/blueprint/resolved-snapshot.json
+    - old_digest: 19144eb59e74613d1059bc4355969ed915e9fb05f3d3f484ebf38b4ca69bf85d
+    - current_digest: 19144eb59e74613d1059bc4355969ed915e9fb05f3d3f484ebf38b4ca69bf85d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606061641-4TQ3Q7
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606061641-4TQ3Q7
+    - diagnostic_command: agentplane pr check 202606061641-4TQ3Q7
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-06-06T17:13:35.901Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified review-thread fixes. Added stdin preservation test for background hook shim and configured workflow_dir release snapshot test. Checks passed: focused vitest suite 15 tests; bun run lint:core; bun run knip:check; bun run --filter=agentplane typecheck; bun run --filter=agentplane build; bun run format:changed; node .agentplane/policy/check-routing.mjs; git diff --check.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-06T17:02:40.152Z, excerpt_hash=sha256:8222bb22ebfcffddfde2778a8121c23d65c49047429f43a4ca43ee036e6fa938
 
     Details:
 
@@ -204,6 +240,36 @@ Note: Verified release lifecycle fixes after CI-static follow-up. Checks: focuse
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-06T16:50:39.037Z, excerpt_hash=sha256:8222bb22ebfcffddfde2778a8121c23d65c49047429f43a4ca43ee036e6fa938
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606061641-4TQ3Q7-fix-release-lifecycle-reliability-issues/.agentplane/tasks/202606061641-4TQ3Q7/blueprint/resolved-snapshot.json
+- old_digest: 19144eb59e74613d1059bc4355969ed915e9fb05f3d3f484ebf38b4ca69bf85d
+- current_digest: 19144eb59e74613d1059bc4355969ed915e9fb05f3d3f484ebf38b4ca69bf85d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606061641-4TQ3Q7
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606061641-4TQ3Q7
+- diagnostic_command: agentplane pr check 202606061641-4TQ3Q7
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-06-06T17:13:35.901Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified review-thread fixes. Added stdin preservation test for background hook shim and configured workflow_dir release snapshot test. Checks passed: focused vitest suite 15 tests; bun run lint:core; bun run knip:check; bun run --filter=agentplane typecheck; bun run --filter=agentplane build; bun run format:changed; node .agentplane/policy/check-routing.mjs; git diff --check.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-06T17:02:40.152Z, excerpt_hash=sha256:8222bb22ebfcffddfde2778a8121c23d65c49047429f43a4ca43ee036e6fa938
 
 Details:
 
