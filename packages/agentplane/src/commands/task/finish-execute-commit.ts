@@ -8,7 +8,11 @@ import {
   readCommitInfo,
   runTaskTransitionCommentCommit,
 } from "./shared.js";
-import type { LoadedFinishTask, ResolvedCommitInfo } from "./finish-shared.js";
+import {
+  existingCommitInfo,
+  type LoadedFinishTask,
+  type ResolvedCommitInfo,
+} from "./finish-shared.js";
 import type { FinishExecutionPlan, FinishOptions } from "./finish-types.js";
 
 export async function resolveTaskCommitInfo(opts: {
@@ -118,18 +122,21 @@ export async function resolveImplementationCommitInfo(opts: {
     );
   }
 
-  if (opts.loadedTasks.length !== 1 || !opts.taskCommitInfo) return null;
+  if (opts.loadedTasks.length !== 1) return null;
 
   const loaded = opts.loadedTasks[0];
   const reviewedSha = loaded?.task.quality_review?.evaluated_sha ?? null;
   if (!loaded || !reviewedSha) return null;
+  const candidateCommitInfo = opts.taskCommitInfo ?? existingCommitInfo(loaded.task);
+  if (!candidateCommitInfo) return null;
+
   const taskLocalAdvance = await isTaskLocalOnlyAdvance({
     gitRoot: opts.ctx.resolvedProject.gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
     taskId: loaded.taskId,
     tasksPath: opts.ctx.config.paths.tasks_path,
     fromRef: reviewedSha,
-    toRef: opts.taskCommitInfo.hash,
+    toRef: candidateCommitInfo.hash,
   }).catch(() => false);
   if (!taskLocalAdvance) return null;
 

@@ -14,4 +14,5 @@
  docs/assets/readme-headers/testkit.svg        |  4 +-
  package.json                                  |  2 +-
  scripts/README.md                             | 68 +++++++++++++--------------
- 16 files changed, 63 insertions(+), 63 deletions(-)
+ scripts/generate/generate-readme-header.mjs   | 13 ++++-
+ 17 files changed, 75 insertions(+), 64 deletions(-)

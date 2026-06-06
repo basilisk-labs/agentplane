@@ -13,7 +13,7 @@ Created: 2026-06-06T16:49:15.616Z
 ## Verification
 
 - State: ok
-- Note: Command: bun run docs:readme-header:check; Result: pass; Evidence: README header artifacts are fresh for v0.6.18. Command: bun run docs:scripts:check; Result: pass; Evidence: scripts/README.md is up to date. Command: bun run release:check; Result: pass; Evidence: release gate ran docs:readme-header:check, social image check, package builds, tarball policy, and blueprint release gate. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: ap doctor; Result: pass; Evidence: doctor OK with two unrelated historical DONE-task warnings.
+- Note: Review fix verification: scripts/generate/generate-readme-header.mjs now uses packages/agentplane/package.json as the primary README header tag source and git tags only as fallback. Command: bun run docs:readme-header:check; Result: pass; Evidence: fresh for v0.6.18. Command: node --check scripts/generate/generate-readme-header.mjs; Result: pass. Command: bun run release:check; Result: pass; Evidence: header check, social images, package builds, tarball policy, and blueprint release gate passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -45,7 +45,8 @@ Created: 2026-06-06T16:49:15.616Z
  docs/assets/readme-headers/testkit.svg        |  4 +-
  package.json                                  |  2 +-
  scripts/README.md                             | 68 +++++++++++++--------------
- 16 files changed, 63 insertions(+), 63 deletions(-)
+ scripts/generate/generate-readme-header.mjs   | 13 ++++-
+ 17 files changed, 75 insertions(+), 64 deletions(-)
 ```
 
 </details>
