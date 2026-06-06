@@ -85,6 +85,13 @@ describeWhenNotHook(
         const root = await mkGitRepoRootWithBranch("main");
         await writeDefaultConfig(root);
         await writeWorkflowMode(root, "branch_pr");
+        const workflowPath = path.join(root, ".agentplane", "WORKFLOW.md");
+        const workflowText = await readFile(workflowPath, "utf8");
+        await writeFile(
+          workflowPath,
+          workflowText.replace("workflow_dir: .agentplane/tasks", "workflow_dir: .tasks/custom"),
+          "utf8",
+        );
 
         await seedReleaseWorkspace(root, {
           coreVersion: "0.2.6",
@@ -113,14 +120,14 @@ describeWhenNotHook(
         );
         expect(rcPlan).toBe(0);
         await writeReleaseNotes(root, "0.2.7", validReleaseNotesBody("0.2.7"));
-        await mkdir(path.join(root, ".agentplane", "tasks", "202604130750-E2J835", "blueprint"), {
+        await mkdir(path.join(root, ".tasks", "custom", "202604130750-E2J835", "blueprint"), {
           recursive: true,
         });
         await writeFile(
           path.join(
             root,
-            ".agentplane",
-            "tasks",
+            ".tasks",
+            "custom",
             "202604130750-E2J835",
             "blueprint",
             "resolved-snapshot.json",
@@ -169,7 +176,7 @@ describeWhenNotHook(
           },
         );
         expect(stagedOut).toContain(
-          ".agentplane/tasks/202604130750-E2J835/blueprint/resolved-snapshot.json",
+          ".tasks/custom/202604130750-E2J835/blueprint/resolved-snapshot.json",
         );
       },
       RELEASE_APPLY_LONG_TIMEOUT_MS,
