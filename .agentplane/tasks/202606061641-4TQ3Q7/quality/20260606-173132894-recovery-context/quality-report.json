@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606061641-4TQ3Q7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-06T17:31:32.894Z",
+  "verdict": "pass",
+  "summary": "Release lifecycle reliability fixes are implemented and verified locally and on GitHub PR #4467.",
+  "evaluated_sha": "d56dd68ee79a1d856de053b36ea50ffd8fb2599f",
+  "blueprint_digest": "19144eb59e74613d1059bc4355969ed915e9fb05f3d3f484ebf38b4ca69bf85d",
+  "findings": [
+    "Hook shim timeout now preserves stdin and exits promptly; release-candidate snapshot staging uses configured workflow_dir; release evidence workflow dispatch waits for PR creation so app-owned PR verification materializes."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606061641-4TQ3Q7/README.md",
+    "https://github.com/basilisk-labs/agentplane/pull/4467"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Pre-push broad local CI timed out during push after direct checks passed; remote GitHub required checks passed on the pushed commit."
+  ]
+}
