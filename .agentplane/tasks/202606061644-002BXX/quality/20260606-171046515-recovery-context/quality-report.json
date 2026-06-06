@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202606061644-002BXX",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-06T17:10:46.515Z",
+  "verdict": "pass",
+  "summary": "Review thread addressed: README header generation now validates the package version used by release candidate bumps.",
+  "evaluated_sha": "a3e6d4462fe61b076d3cd6f09f2d5bbb780fb549",
+  "blueprint_digest": "8a97f69f9e5e157a8e7b7a6680e677ec3e74ae50d006ab34f6cf361f5f60dc18",
+  "findings": [
+    "The generator resolves the tag from packages/agentplane/package.json first, with git tags only as fallback, so release:check validates the candidate package version rather than the previous published tag."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606061644-002BXX/README.md",
+    "scripts/generate/generate-readme-header.mjs",
+    "bun run release:check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted checks restarted after branch update and must finish on GitHub before integration."
+  ]
+}

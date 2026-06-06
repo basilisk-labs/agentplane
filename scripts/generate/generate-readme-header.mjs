@@ -138,6 +138,14 @@ async function packageVersionTag() {
   return `v${pkg.version}`;
 }
 
+async function readmeHeaderTag() {
+  try {
+    return await packageVersionTag();
+  } catch {
+    return latestReleaseTag();
+  }
+}
+
 function trimHeadline(value, max = 92) {
   const normalized = value.replaceAll(/\s+/g, " ").trim();
   if (normalized.length <= max) return normalized;
@@ -257,7 +265,10 @@ function syncReadmeHeader(readmeText, surface) {
 }
 
 async function main() {
-  const tag = latestReleaseTag() ?? (await packageVersionTag());
+  const tag = await readmeHeaderTag();
+  if (!tag) {
+    throw new Error("Unable to resolve README header tag from package version or git tags.");
+  }
   const headline = releaseHeaderText();
   const generated = new Map();
   const stale = [];
