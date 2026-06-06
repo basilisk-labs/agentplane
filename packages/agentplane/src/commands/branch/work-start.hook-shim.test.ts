@@ -1,12 +1,15 @@
+import { execFile } from "node:child_process";
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { materializeHookShimForWorktree } from "./work-start.hook-shim.js";
 import { materializeActiveTaskArtifactsForWorktree } from "./work-start.materialize.js";
 
 const ACTIVE_BIN_ENV = "AGENTPLANE_RUNTIME_ACTIVE_BIN";
+const execFileNodeAsync = promisify(execFile);
 
 describe("worktree hook shim", () => {
   it("materializes a shim with the active installed runner before PATH fallback", async () => {
@@ -33,6 +36,33 @@ describe("worktree hook shim", () => {
     expect(shim).toContain("AGENTPLANE_HOOK_RUNNER");
     expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_GLOBAL");
   });
+
+  it("bounds raw shim runner hangs with actionable diagnostics", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-shim-timeout-"));
+    const worktreePath = path.join(root, "worktree");
+    const activeBin = path.join(root, "installed agentplane", "bin", "agentplane.js");
+    const previousActiveBin = process.env[ACTIVE_BIN_ENV];
+    await mkdir(path.dirname(activeBin), { recursive: true });
+    await writeFile(activeBin, "setInterval(() => {}, 1000);\n", "utf8");
+    process.env[ACTIVE_BIN_ENV] = activeBin;
+    try {
+      await materializeHookShimForWorktree(worktreePath);
+    } finally {
+      if (previousActiveBin === undefined) delete process.env[ACTIVE_BIN_ENV];
+      else process.env[ACTIVE_BIN_ENV] = previousActiveBin;
+    }
+
+    const shimPath = path.join(worktreePath, ".agentplane", "bin", "agentplane");
+    await expect(
+      execFileNodeAsync(shimPath, ["hooks", "run", "pre-commit"], {
+        cwd: worktreePath,
+        env: { ...process.env, AGENTPLANE_HOOK_SHIM_TIMEOUT_SECONDS: "1" },
+        timeout: 5_000,
+      }),
+    ).rejects.toMatchObject({
+      stderr: expect.stringContaining("reason_code=hook_shim_timeout"),
+    });
+  }, 10_000);
 });
 
 describe("worktree task artifact materialization", () => {

@@ -727,14 +727,6 @@ jobs:
         run: |
           set -euo pipefail
           git push --set-upstream origin "${{ steps.release_evidence.outputs.closure_branch }}"
-      - name: Dispatch Core CI for release evidence branch
-        if: steps.apply_release_evidence.outputs.created_commit == 'true'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          gh workflow run ci.yml --ref "${{ steps.release_evidence.outputs.closure_branch }}"
       - name: Open or recover release evidence PR
         if: |
           steps.release_evidence.outputs.actionable == 'true' &&
@@ -769,6 +761,21 @@ jobs:
               exit "$status"
             fi
           fi
+      - name: Dispatch Core CI for release evidence PR
+        if: |
+          steps.release_evidence.outputs.actionable == 'true' &&
+          (steps.release_evidence_existing.outputs.pr_url != '' || steps.create_release_evidence_pr.outputs.pr_url != '')
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          pr_url="${{ steps.release_evidence_existing.outputs.pr_url }}"
+          if [ -z "$pr_url" ]; then
+            pr_url="${{ steps.create_release_evidence_pr.outputs.pr_url }}"
+          fi
+          echo "Release evidence PR ready for app-owned PR verification: $pr_url"
+          gh workflow run ci.yml --ref "${{ steps.release_evidence.outputs.closure_branch }}"
       - name: Enable auto-merge for release evidence PR
         if: |
           steps.release_evidence.outputs.actionable == 'true' &&

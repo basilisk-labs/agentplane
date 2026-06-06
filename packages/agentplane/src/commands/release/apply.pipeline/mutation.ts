@@ -5,6 +5,7 @@ import { loadConfig } from "@agentplaneorg/core/config";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv, GitContext, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
+import { BLUEPRINT_SNAPSHOT_ARTIFACT_PATH } from "../../blueprint/snapshot-artifact.js";
 import { appendDcoSignoff } from "../../guard/impl/dco.js";
 import {
   cleanHookEnv,
@@ -100,6 +101,22 @@ export async function applyReleaseMutation(opts: {
   if (await fileExists(path.join(opts.gitRoot, "bun.lock"))) {
     stagePaths.push("bun.lock");
   }
+  const taskId =
+    opts.route.kind === "release_candidate"
+      ? parseTaskIdFromBranch(opts.taskBranchPrefix, opts.route.current_branch)
+      : null;
+  if (taskId) {
+    const blueprintSnapshotPath = path.join(
+      opts.gitRoot,
+      ".agentplane",
+      "tasks",
+      taskId,
+      BLUEPRINT_SNAPSHOT_ARTIFACT_PATH,
+    );
+    if (await fileExists(blueprintSnapshotPath)) {
+      stagePaths.push(path.relative(opts.gitRoot, blueprintSnapshotPath));
+    }
+  }
   await opts.git.stage(stagePaths);
 
   const staged = await opts.git.statusStagedPaths();
@@ -108,10 +125,6 @@ export async function applyReleaseMutation(opts: {
     return { releaseCommit };
   }
 
-  const taskId =
-    opts.route.kind === "release_candidate"
-      ? parseTaskIdFromBranch(opts.taskBranchPrefix, opts.route.current_branch)
-      : null;
   const subject = taskId
     ? `✨ ${extractTaskSuffix(taskId)} release: publish ${opts.nextTag}`
     : `✨ release: publish ${opts.nextTag}`;

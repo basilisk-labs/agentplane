@@ -42,7 +42,15 @@ pass. Scope: routing policy. Command: git diff --check. Result: pass. Scope: whi
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/tasks/202606050832-6M43J3/README.md    | 219 +++------------------
+ .github/workflows/publish.yml                      |  23 ++-
+ .../commands/branch/work-start.hook-shim.test.ts   |  30 +++
+ .../src/commands/release/apply.apply-flow.test.ts  |  25 +++
+ .../commands/release/apply.pipeline/mutation.ts    |  21 +-
+ .../release/publish-workflow-contract.test.ts      |  10 +-
+ .../src/commands/shared/hook-shim-template.ts      |  41 +++-
+ scripts/workflow/bootstrap-framework-dev.mjs       |  41 +++-
+ 8 files changed, 201 insertions(+), 209 deletions(-)
 ```
 
 </details>

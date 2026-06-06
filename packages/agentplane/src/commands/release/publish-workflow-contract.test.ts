@@ -161,8 +161,8 @@ describe("publish workflow contract", () => {
       "Check for existing release evidence PR",
       "Apply release task evidence on a follow-up branch",
       "Push release evidence branch",
-      "Dispatch Core CI for release evidence branch",
       "Open or recover release evidence PR",
+      "Dispatch Core CI for release evidence PR",
       "Enable auto-merge for release evidence PR",
     ]) {
       const stepIndex = workflow.indexOf(`- name: ${stepName}`);
@@ -257,11 +257,17 @@ describe("publish workflow contract", () => {
 
     expect(workflow).toContain("source.err");
     expect(workflow).toContain("cat .agentplane/.release/ready/source.err");
-    expect(workflow).toContain("Dispatch Core CI for release evidence branch");
+    expect(workflow).toContain("Dispatch Core CI for release evidence PR");
     expect(workflow).toContain(
       'gh workflow run ci.yml --ref "${{ steps.release_evidence.outputs.closure_branch }}"',
     );
+    expect(workflow).toContain(
+      'echo "Release evidence PR ready for app-owned PR verification: $pr_url"',
+    );
     expect(workflow).toContain('gh pr checks "$pr_url" --watch --interval 15');
+    expect(workflow.indexOf("Open or recover release evidence PR")).toBeLessThan(
+      workflow.indexOf("Dispatch Core CI for release evidence PR"),
+    );
   });
 
   it("serializes publish runs by release identity instead of branch ref", async () => {
