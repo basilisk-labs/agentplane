@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606061644-002BXX/refresh-readme-headers-for-latest-release",
+  "created_at": "2026-06-06T16:49:15.616Z",
+  "diffstat_sha256": "sha256:2f2e14bb15d1e1e1678837d8b7d3fd6630de3db08971cbb14bc412be83a2133c",
+  "last_verified_at": "2026-06-06T17:09:53.456Z",
+  "last_verified_diffstat_sha256": "sha256:a703f508a2ad808fff8356021bf047bb056a7ab331a269cd5cc1e4d31f473eed",
+  "schema_version": 1,
+  "task_id": "202606061644-002BXX",
+  "updated_at": "2026-06-06T16:49:15.616Z",
+  "verify": {
+    "status": "pass"
+  }
+}

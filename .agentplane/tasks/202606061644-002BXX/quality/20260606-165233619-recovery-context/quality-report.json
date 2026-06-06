@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606061644-002BXX",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-06T16:52:33.619Z",
+  "verdict": "pass",
+  "summary": "README header assets now match v0.6.18 and the release gate runs docs:readme-header:check.",
+  "evaluated_sha": "0097b705fed3c68d23bf6201bca967dcfd82d6eb",
+  "blueprint_digest": "8a97f69f9e5e157a8e7b7a6680e677ec3e74ae50d006ab34f6cf361f5f60dc18",
+  "findings": [
+    "docs:readme-header:check passed; full release:check passed with the new header gate before social image and build checks."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606061644-002BXX/README.md",
+    "bun run release:check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Release checks were green locally; hosted PR checks were still in progress when the PR was opened."
+  ]
+}
