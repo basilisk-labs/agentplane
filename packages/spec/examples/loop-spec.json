@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "docs.custom",
+  "version": "0.1.0",
+  "title": "Custom documentation loop",
+  "description": "A project-local documentation feedback loop.",
+  "kind": "implementation",
+  "status": "experimental",
+  "appliesTo": {
+    "taskKinds": ["docs"],
+    "taskTags": ["docs"],
+    "workflowModes": ["direct", "branch_pr"]
+  },
+  "requires": {
+    "approvedPlan": true
+  },
+  "permissions": {
+    "canEditFiles": true,
+    "canRunCommands": true,
+    "canModifyPolicy": false
+  },
+  "budgets": {
+    "maxIterations": 3,
+    "maxChangedFiles": 8,
+    "maxDiffLines": 600
+  },
+  "steps": [
+    { "id": "load_context", "type": "context.load" },
+    { "id": "render_prompt", "type": "prompt.render", "promptModule": "docs.custom" },
+    { "id": "docs_check", "type": "check.run" },
+    { "id": "evaluator", "type": "evaluator.run", "evaluator": "docs-source-alignment" }
+  ],
+  "transitions": [
+    { "from": "evaluator", "if": "docs_check.ok", "to": "finish", "decision": "finish" },
+    {
+      "from": "docs_check",
+      "if": "docs_check.failed && iteration < budgets.maxIterations",
+      "to": "render_prompt",
+      "decision": "retry_with_feedback"
+    }
+  ],
+  "outputs": {
+    "required": ["loop-run.json", "events.jsonl", "state.json"]
+  },
+  "stopConditions": [
+    { "id": "docs_aligned", "reason": "Docs checks pass.", "decision": "finish" },
+    { "id": "budget_exceeded", "reason": "Retry budget exhausted.", "decision": "block" }
+  ]
+}

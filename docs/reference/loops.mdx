@@ -1,0 +1,66 @@
+# Loops Reference
+
+Loops are controlled feedback cycles for AgentPlane tasks. They sit between
+blueprint route selection and runner/agent execution.
+
+## Discovery
+
+```bash
+agentplane loop list
+agentplane loop list --json
+agentplane loop show tdd.fix
+agentplane loop explain tdd.fix
+```
+
+Use `--project` to include JSON loop specifications from `.agentplane/loops`.
+Project-local loops are validated before they are listed.
+
+## Planning
+
+```bash
+agentplane loop plan <task-id>
+agentplane loop plan --kind code --tag bug --tag test --verify-steps-present
+agentplane loop plan <task-id> --json
+```
+
+Planning is read-only. It prints the selected loop, score, reasons, and rejected
+candidates. If no candidate reaches the threshold, the command exits non-zero
+and asks for an explicit route decision.
+
+## Dry-Run Evidence
+
+```bash
+agentplane loop run <task-id> --loop tdd.fix --dry-run
+agentplane loop step <task-id> --loop tdd.fix --dry-run
+```
+
+The v0.1 loop runner requires `--dry-run`. Without it, the command fails closed
+because external agent adapter execution is not yet part of the trusted loop
+surface.
+
+Dry-run output creates:
+
+```text
+.agentplane/tasks/<task-id>/runs/<run-id>/loop-run.json
+.agentplane/tasks/<task-id>/runs/<run-id>/events.jsonl
+.agentplane/tasks/<task-id>/runs/<run-id>/state.json
+.agentplane/tasks/<task-id>/runs/<run-id>/iterations/001/decision.json
+```
+
+## Validation
+
+```bash
+agentplane loop validate .agentplane/loops/custom.json
+agentplane loop validate --project
+agentplane loop validate --project --json
+```
+
+Loop JSON may use camelCase fields or the snake_case aliases used in docs:
+`schema_version`, `applies_to`, and `stop_conditions`.
+
+## Non-Goals In v0.1
+
+- no non-dry-run external agent invocation through `loop run`;
+- no automatic loop activation or promotion;
+- no policy weakening from loop specs;
+- no hidden mutation outside the task run artifact path during dry-run.

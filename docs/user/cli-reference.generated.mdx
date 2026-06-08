@@ -166,6 +166,14 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [hermes lifecycle](#hermes-lifecycle)
   - [hermes reconcile](#hermes-reconcile)
   - [hermes supervise](#hermes-supervise)
+- Loops
+  - [loop explain](#loop-explain)
+  - [loop list](#loop-list)
+  - [loop plan](#loop-plan)
+  - [loop run](#loop-run)
+  - [loop show](#loop-show)
+  - [loop step](#loop-step)
+  - [loop validate](#loop-validate)
 - Workflow
   - [flow repair](#flow-repair)
 
@@ -4128,6 +4136,122 @@ agentplane hermes supervise 202605311941-K4FCKS --json
 ```
 
 - Return a route-gated supervisor packet without executing arbitrary shell text.
+
+## Loops
+
+### loop explain
+
+Explain loop steps, transitions, permissions, and stop conditions.
+
+Usage:
+
+```text
+agentplane loop explain <loop-id> [options]
+```
+
+Options:
+
+- `--project`: Include .agentplane/loops JSON files. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+### loop list
+
+List built-in and optional project-local loop templates.
+
+Usage:
+
+```text
+agentplane loop list [options]
+```
+
+Options:
+
+- `--project`: Include .agentplane/loops JSON files. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+### loop plan
+
+Select and explain the best loop for a task or synthetic input.
+
+Usage:
+
+```text
+agentplane loop plan [<task-id>] [options]
+```
+
+Options:
+
+- `--title <text>`: Synthetic title.
+- `--description <text>`: Synthetic description.
+- `--kind <analysis|content|docs|code|release|ops|context>`: Synthetic task kind. (choices=analysis|content|docs|code|release|ops|context)
+- `--workflow-mode <direct|branch_pr>`: Workflow mode override. (choices=direct|branch_pr)
+- `--blueprint <id>`: Resolved blueprint id.
+- `--tag <tag>`: Synthetic tag; repeatable. (repeatable)
+- `--verify-steps-present`: Synthetic input has runnable Verify Steps. (default=false)
+- `--project`: Include .agentplane/loops JSON files. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+### loop run
+
+Run a loop. This version only supports --dry-run preparation.
+
+Usage:
+
+```text
+agentplane loop run <task-id> [options]
+```
+
+Options:
+
+- `--loop <loop-id>`: Loop id override.
+- `--dry-run`: Prepare LoopRun artifacts without invoking an agent. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+### loop show
+
+Show a loop specification.
+
+Usage:
+
+```text
+agentplane loop show <loop-id> [options]
+```
+
+Options:
+
+- `--project`: Include .agentplane/loops JSON files. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+### loop step
+
+Prepare one loop transition. This version only supports --dry-run.
+
+Usage:
+
+```text
+agentplane loop step <task-id> [options]
+```
+
+Options:
+
+- `--loop <loop-id>`: Loop id override.
+- `--dry-run`: Prepare LoopRun artifacts without invoking an agent. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+### loop validate
+
+Validate a loop JSON file or project loop directory.
+
+Usage:
+
+```text
+agentplane loop validate [<path>] [options]
+```
+
+Options:
+
+- `--project`: Validate all JSON loops in .agentplane/loops. (default=false)
+- `--json`: Emit JSON. (default=false)
 
 ## Workflow
 

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "taskId": "202606081917-EYAKN6",
+  "runId": "loop-2026-06-08T19-31-23-872Z-5efed071",
+  "loopId": "tdd.fix",
+  "loopVersion": "0.1.0",
+  "loopSha": "sha256:ff33bc6adf0a2db8b9033100308f5ddac3cee25062e47535e2a3556286ab777f",
+  "dryRun": true,
+  "status": "human_review",
+  "startedAt": "2026-06-08T19:31:23.872Z",
+  "stoppedAt": "2026-06-08T19:31:23.872Z",
+  "stopReason": "dry_run_prepared",
+  "artifacts": {
+    "runDir": ".agentplane/tasks/202606081917-EYAKN6/runs/loop-2026-06-08T19-31-23-872Z-5efed071",
+    "eventsPath": ".agentplane/tasks/202606081917-EYAKN6/runs/loop-2026-06-08T19-31-23-872Z-5efed071/events.jsonl",
+    "statePath": ".agentplane/tasks/202606081917-EYAKN6/runs/loop-2026-06-08T19-31-23-872Z-5efed071/state.json",
+    "loopRunPath": ".agentplane/tasks/202606081917-EYAKN6/runs/loop-2026-06-08T19-31-23-872Z-5efed071/loop-run.json",
+    "iterationsDir": ".agentplane/tasks/202606081917-EYAKN6/runs/loop-2026-06-08T19-31-23-872Z-5efed071/iterations"
+  }
+}

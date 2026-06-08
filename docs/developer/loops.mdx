@@ -1,0 +1,141 @@
+# AgentPlane Loop Model v0.1
+
+AgentPlane loops make a controlled feedback cycle explicit. A loop is not an
+agent and not a recipe prompt. A loop is a state machine over task state, repo
+state, observations, checks, evaluator output, policy, and budgets.
+
+## Facts
+
+- `Task` remains the governance object: intent, owner, approved plan,
+  verification, lifecycle, and closure.
+- `Blueprint` remains the route classifier: work type, policy modules,
+  evidence expectations, and workflow route.
+- `Recipe` remains a reusable overlay: prompt modules, conventions, skills,
+  setup, and optional loop templates.
+- `Loop` is the feedback controller: steps, transitions, stop conditions,
+  permissions, budgets, and required evidence.
+- `LoopRun` is one concrete execution attempt for one task and must leave
+  evidence under `.agentplane/tasks/<task-id>/runs/<run-id>/`.
+
+## MVP Boundary
+
+Loop support in v0.1 is intentionally conservative:
+
+- supported: built-in loop catalog, project-local loop JSON validation, route
+  planning, explanation, and dry-run LoopRun artifact creation;
+- not supported: invoking external coding agents from `agentplane loop run`
+  without `--dry-run`;
+- not supported: self-modifying trusted loops during the task that is using the
+  loop;
+- not supported: weakening policy, approval, or protected-path checks from a
+  loop specification.
+
+The design keeps AgentPlane as the local-first, git-native control plane around
+agents, not a black-box model provider or autonomous runtime.
+
+## Core Terms
+
+`LoopSpec` is the reusable template. It declares:
+
+- `id`, `version`, `kind`, and `status`;
+- `appliesTo` selectors for blueprint ids, task kinds, task tags, and workflow
+  modes;
+- `requires` gates such as approved plan, verify steps, hosted PR, or CI
+  failure;
+- `permissions`, including explicit approval-required or disallowed actions;
+- `budgets` such as maximum iterations, changed files, diff lines, wall time,
+  or agent runs;
+- ordered `steps`;
+- transition rules and stop conditions;
+- required output artifacts.
+
+`LoopRun` is the concrete run record. It stores the task id, run id, loop
+version, loop digest, dry-run flag, status, timestamps, stop reason, and artifact
+paths.
+
+`Iteration` is one pass through the loop. A full implementation can render a
+prompt, invoke an agent adapter, capture a diff, run checks, evaluate quality,
+and write a decision.
+
+`Observation` is structured evidence about a step result: check result, diff
+summary, evaluator finding, route state, policy violation, or hosted check
+status.
+
+`Decision` is the transition output: continue, retry with feedback, request
+human review, block, finish, rollback, or reject.
+
+## Built-In Loops
+
+The first built-in catalog is deliberately small:
+
+- `tdd.fix` for small behavior changes with runnable tests;
+- `ci.repair` for branch PR check failures;
+- `docs.sync` for documentation/source alignment;
+- `security.review` for scoped review without auto-patching;
+- `context.harvest` for reusable knowledge proposals;
+- `workflow.recover` for deterministic lifecycle drift repair;
+- `evaluator.quality-gate` for bounded pass/rework/block review;
+- `loop.improve` for proposing a new loop version after run evidence, without
+  activating it.
+
+Good loops are not created for prompt wording changes. A separate loop is
+justified when the work product, verification surface, risk profile, context
+requirements, stop rules, evidence requirements, approval boundary, or rollback
+strategy changes.
+
+## Artifact Layout
+
+LoopRun evidence uses the existing task run directory:
+
+```text
+.agentplane/tasks/<task-id>/
+  runs/
+    <run-id>/
+      loop-run.json
+      events.jsonl
+      state.json
+      iterations/
+        001/
+          decision.json
+```
+
+Future non-dry-run iterations can add `prompt.md`, `agent-result.json`,
+`diff.patch`, `checks/*`, and `evaluator/*` under the same iteration directory.
+
+## Event Ledger
+
+Every run writes an append-only JSONL stream. The dry-run MVP records:
+
+- `loop.started`;
+- `iteration.started`;
+- `decision.made`;
+- `loop.stopped`.
+
+The ledger is the reviewer-facing reason trail. If a loop cannot explain its
+next transition, it must stop rather than invent a next action.
+
+## Selection Model
+
+Loop planning scores candidates with six components:
+
+- applicability: task tags, task kind, and blueprint fit;
+- verification fit: required verification surfaces are present;
+- risk fit: blocked or deprecated loops are penalized;
+- context fit: declared context requirements are explicit;
+- cost fit: budgets are bounded;
+- trust fit: trusted beats experimental, blocked fails.
+
+The selected loop and rejected candidates are printed by `agentplane loop plan`.
+That explanation is part of the control-plane contract: reviewers must be able
+to see why a loop was selected.
+
+## Governance Rules
+
+- Loop execution cannot modify the loop that governs the current task.
+- Loop modification cannot activate a new trusted version.
+- Activation cannot silently promote a project-local candidate to a global
+  default.
+- Generated loops must go through dry-run explain, scenario evaluation, human
+  review, limited rollout, and promotion.
+- Stop conditions are the difference between controlled autonomy and runaway
+  automation.

@@ -35,6 +35,7 @@ const STATIC_CONTEXT_SCHEMAS = [
 ];
 
 const ROOT_ONLY_PUBLIC_SCHEMAS = ["recipe-manifest.schema.json", "workflow.schema.json"];
+const STATIC_PUBLIC_SCHEMAS = ["loop-spec.schema.json"];
 
 const main = defineScript({
   name: "sync-schemas",
@@ -102,6 +103,11 @@ const main = defineScript({
         ),
         targets: packageSchemaTargets(fileName),
       })),
+      ...STATIC_PUBLIC_SCHEMAS.map((fileName) => ({
+        label: `public schema ${fileName}`,
+        rendered: readFileSync(path.join(repoRoot, "schemas", fileName), "utf8"),
+        targets: schemaTargets(fileName),
+      })),
     ];
 
     const driftedArtifacts = findDriftedRenderedArtifacts(artifacts);
@@ -140,9 +146,18 @@ runScriptMain(main);
 
 function assertSchemaInventory(repoRoot) {
   const expectedByDir = new Map([
-    ["schemas", [...GENERATED_RUNTIME_SCHEMAS, ...ROOT_ONLY_PUBLIC_SCHEMAS]],
-    ["packages/spec/schemas", [...GENERATED_RUNTIME_SCHEMAS, ...STATIC_CONTEXT_SCHEMAS]],
-    ["packages/core/schemas", [...GENERATED_RUNTIME_SCHEMAS, ...STATIC_CONTEXT_SCHEMAS]],
+    [
+      "schemas",
+      [...GENERATED_RUNTIME_SCHEMAS, ...ROOT_ONLY_PUBLIC_SCHEMAS, ...STATIC_PUBLIC_SCHEMAS],
+    ],
+    [
+      "packages/spec/schemas",
+      [...GENERATED_RUNTIME_SCHEMAS, ...STATIC_CONTEXT_SCHEMAS, ...STATIC_PUBLIC_SCHEMAS],
+    ],
+    [
+      "packages/core/schemas",
+      [...GENERATED_RUNTIME_SCHEMAS, ...STATIC_CONTEXT_SCHEMAS, ...STATIC_PUBLIC_SCHEMAS],
+    ],
   ]);
   const errors = [];
   for (const [dir, expected] of expectedByDir) {

@@ -80,6 +80,35 @@ export const loadBlueprintValidateSpec = () =>
 export const loadBlueprintScaffoldSpec = () =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintScaffold);
 
+export const loadLoopSpec = (deps: RunDeps) =>
+  import("../../../commands/loop/loop.command.js").then((m) => m.makeRunLoopHandler(deps.getCtx));
+export const loadLoopListSpec = (deps: RunDeps) =>
+  import("../../../commands/loop/loop.command.js").then((m) =>
+    m.makeRunLoopListHandler(deps.getCtx),
+  );
+export const loadLoopShowSpec = (deps: RunDeps) =>
+  import("../../../commands/loop/loop.command.js").then((m) =>
+    m.makeRunLoopShowHandler(deps.getCtx),
+  );
+export const loadLoopExplainSpec = (deps: RunDeps) =>
+  import("../../../commands/loop/loop.command.js").then((m) =>
+    m.makeRunLoopExplainHandler(deps.getCtx),
+  );
+export const loadLoopPlanSpec = (deps: RunDeps) =>
+  import("../../../commands/loop/loop.command.js").then((m) =>
+    m.makeRunLoopPlanHandler(deps.getCtx),
+  );
+export const loadLoopRunSpec = (deps: RunDeps) =>
+  import("../../../commands/loop/loop.command.js").then((m) =>
+    m.makeRunLoopRunHandler(deps.getCtx),
+  );
+export const loadLoopStepSpec = (deps: RunDeps) =>
+  import("../../../commands/loop/loop.command.js").then((m) =>
+    m.makeRunLoopStepHandler(deps.getCtx),
+  );
+export const loadLoopValidateSpec = () =>
+  import("../../../commands/loop/loop.command.js").then((m) => m.runLoopValidate);
+
 export const fromCommandsEvaluatorCommand = commandModule(
   () => import("../../../commands/evaluator/evaluator.command.js"),
 );
