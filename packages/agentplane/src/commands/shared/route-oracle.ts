@@ -98,6 +98,7 @@ function evidenceMissingFor(opts: {
     if (blocker.code === "pr_meta_stale") missing.add("fresh_pr_artifacts");
     if (blocker.code === "close_tail_missing") missing.add("close_tail_pr");
     if (blocker.code === "runner_alive") missing.add("runner_terminal_state");
+    if (blocker.code === "dirty_task_artifacts") missing.add("task_artifact_cleanup_commit");
     if (blocker.code === "missing_included_batch_metadata") {
       missing.add("structured_branch_pr_batch_metadata");
     }
@@ -293,7 +294,9 @@ export function deriveRouteOracle(opts: {
   if (opts.workflowMode !== "branch_pr") {
     return buildOracle(opts, {
       phase:
-        opts.task.status === "DONE"
+        code === "commit_direct_task_artifacts"
+          ? "direct_done_pending_artifact_commit"
+          : opts.task.status === "DONE"
           ? "done"
           : code === "complete_direct"
             ? "direct_verified_pending_closeout"
