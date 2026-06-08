@@ -39,6 +39,30 @@ function proseOnlyIncludedClosureCandidate(task: TaskData): boolean {
   );
 }
 
+function directTaskHasStarted(task: TaskData): boolean {
+  return String(task.status).toUpperCase() === "DOING";
+}
+
+function directRunnerCommand(task: TaskData, resume: TaskResumeContext, taskId: string): string {
+  if (resume.runner.run_id || resume.runner.status) {
+    return resume.runner.next_command ?? `agentplane task verify-show ${taskId}`;
+  }
+  if (!directTaskHasStarted(task)) {
+    return resume.runner.next_command ?? `agentplane task run ${taskId}`;
+  }
+  return `agentplane task verify-show ${taskId}`;
+}
+
+function directNextActionCode(task: TaskData, resume: TaskResumeContext): string {
+  if (resume.runner.run_id || resume.runner.status) {
+    return resume.runner.next_action ?? "continue_direct";
+  }
+  if (!directTaskHasStarted(task)) {
+    return resume.runner.next_action ?? "run";
+  }
+  return "continue_direct";
+}
+
 export function deriveNextAction(opts: {
   task: TaskData;
   resume: TaskResumeContext;
@@ -50,6 +74,15 @@ export function deriveNextAction(opts: {
 }): RouteNextAction {
   const id = opts.task.id;
   if (opts.task.status === "DONE" && opts.workflowMode !== "branch_pr") {
+    if (opts.blockers.some((blocker) => blocker.code === "dirty_task_artifacts")) {
+      return {
+        code: "commit_direct_task_artifacts",
+        command: `agentplane commit ${id} --close --unstage-others`,
+        summary:
+          "task is marked done but tracked task artifacts still need the deterministic cleanup commit",
+        requiresApproval: false,
+      };
+    }
     return {
       code: "done",
       command: null,
@@ -113,8 +146,8 @@ export function deriveNextAction(opts: {
       };
     }
     return {
-      code: opts.resume.runner.next_action ?? "continue_direct",
-      command: opts.resume.runner.next_command ?? `agentplane task verify-show ${id}`,
+      code: directNextActionCode(opts.task, opts.resume),
+      command: directRunnerCommand(opts.task, opts.resume, id),
       summary: "continue the direct-mode task from the current checkout",
       requiresApproval: false,
     };

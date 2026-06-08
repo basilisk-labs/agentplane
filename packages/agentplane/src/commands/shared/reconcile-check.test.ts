@@ -93,7 +93,7 @@ describe("commands/shared/reconcile-check", () => {
     });
   });
 
-  it("ignores unrelated unreadable historical task warnings for task-scoped mutations", async () => {
+  it("ignores unrelated unreadable historical task warnings for verify and finish task-scoped mutations", async () => {
     const scopedCtx = mkCtx({
       taskBackend: {
         id: "mock",
@@ -103,13 +103,15 @@ describe("commands/shared/reconcile-check", () => {
         getLastListWarnings: vi.fn().mockReturnValue(["skip:T-HIST: unreadable_readme"]),
       } as unknown as CommandContext["taskBackend"],
     });
-    await expect(
-      ensureReconciledBeforeMutation({
-        ctx: scopedCtx,
-        command: "verify",
-        taskIds: ["T-ACTIVE"],
-      }),
-    ).resolves.toBeUndefined();
+    for (const command of ["verify", "finish"]) {
+      await expect(
+        ensureReconciledBeforeMutation({
+          ctx: scopedCtx,
+          command,
+          taskIds: ["T-ACTIVE"],
+        }),
+      ).resolves.toBeUndefined();
+    }
 
     const activeCtx = mkCtx({
       taskBackend: {

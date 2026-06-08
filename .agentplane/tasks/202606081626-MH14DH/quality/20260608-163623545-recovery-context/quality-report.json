@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202606081626-MH14DH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-08T16:36:23.545Z",
+  "verdict": "pass",
+  "summary": "Direct workflow closeout regressions from GitHub issues #4471, #4472, and #4473 have focused passing coverage.",
+  "evaluated_sha": "40950738aa961b63eb964d86de4299493f56fdd5",
+  "blueprint_digest": "5ee7a437281ec2ccd0f086778f224520cf470e80c1cf6f9a5839fb09ff360d58",
+  "findings": [
+    "PASS: Direct next-action no longer emits agentplane task run when a started direct task has no runner state; unrelated unreadable historical README warnings are ignored for verify and finish task-scoped mutation guards; direct close commits stay on task-safe scope even for code-shaped closeout context."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606081626-MH14DH/README.md",
+    "bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts",
+    "bun run format:check",
+    "bun run lint:core",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "ap doctor still reports two unrelated historical DONE tasks missing implementation commit hashes: 202606040927-KSESDS and 202606041702-TVTSM2."
+  ]
+}

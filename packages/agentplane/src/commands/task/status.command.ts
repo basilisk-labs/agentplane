@@ -116,6 +116,17 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
             `allowed=${String(operatorGuidance.repeatPolicy.allowed)} ` +
             `recompute=${operatorGuidance.repeatPolicy.recomputeCommand}`,
         },
+        {
+          label: "executor_context",
+          value:
+            `executor=${operatorGuidance.executorContext.executor} ` +
+            `runner_route_active=${String(operatorGuidance.executorContext.runnerRouteActive)} ` +
+            `instruction=${operatorGuidance.executorContext.instruction}`,
+        },
+        {
+          label: "executor_warning",
+          value: operatorGuidance.executorContext.warning,
+        },
         ...(routeRunnerContextIsRelevant(operatorGuidance)
           ? [
               {
