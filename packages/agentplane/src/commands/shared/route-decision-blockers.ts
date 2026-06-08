@@ -54,6 +54,17 @@ function hasIncludedBatchProse(task: TaskData): boolean {
   );
 }
 
+function isTaskArtifactPath(opts: {
+  workflowDir: string;
+  taskId: string;
+  relPath: string;
+}): boolean {
+  const workflowDir = opts.workflowDir.replaceAll("\\", "/").replace(/\/+$/u, "");
+  const relPath = opts.relPath.replaceAll("\\", "/");
+  const prefix = `${workflowDir}/${opts.taskId}/`;
+  return relPath === `${workflowDir}/${opts.taskId}` || relPath.startsWith(prefix);
+}
+
 export async function deriveBlockers(opts: {
   ctx: CommandContext;
   task: TaskData;
@@ -63,7 +74,29 @@ export async function deriveBlockers(opts: {
   batchOwnership: RouteBatchOwnership;
 }): Promise<RouteBlocker[]> {
   const blockers: RouteBlocker[] = [];
-  if (opts.task.status === "DONE") return blockers;
+  if (opts.task.status === "DONE") {
+    if (opts.workflowMode !== "branch_pr") {
+      const [staged, unstaged] = await Promise.all([
+        opts.ctx.git.statusStagedPaths(),
+        opts.ctx.git.statusUnstagedTrackedPaths(),
+      ]);
+      const dirtyTaskArtifacts = [...staged, ...unstaged].filter((relPath) =>
+        isTaskArtifactPath({
+          workflowDir: opts.ctx.config.paths.workflow_dir,
+          taskId: opts.task.id,
+          relPath,
+        }),
+      );
+      if (dirtyTaskArtifacts.length > 0) {
+        addBlocker(
+          blockers,
+          "dirty_task_artifacts",
+          `tracked task artifacts still need a cleanup commit (${dirtyTaskArtifacts.slice(0, 3).join(", ")}${dirtyTaskArtifacts.length > 3 ? ` +${dirtyTaskArtifacts.length - 3} more` : ""})`,
+        );
+      }
+    }
+    return blockers;
+  }
   if (opts.task.plan_approval?.state !== "approved") {
     addBlocker(blockers, "plan_not_approved", "task plan is not approved");
   }

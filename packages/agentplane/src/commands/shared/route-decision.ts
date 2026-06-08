@@ -173,6 +173,14 @@ function deriveRepairPlan(
         mutates: true,
       });
     }
+    if (blocker.code === "dirty_task_artifacts") {
+      steps.push({
+        code: "commit_direct_task_artifacts",
+        command: `agentplane commit ${id} --close`,
+        summary: "commit the tracked direct-workflow task artifacts left by manual close handling",
+        mutates: true,
+      });
+    }
     if (blocker.code === "on_base_checkout") {
       steps.push({
         code: "resume_worktree",

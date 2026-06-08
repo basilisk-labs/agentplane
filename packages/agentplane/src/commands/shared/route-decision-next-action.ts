@@ -50,6 +50,15 @@ export function deriveNextAction(opts: {
 }): RouteNextAction {
   const id = opts.task.id;
   if (opts.task.status === "DONE" && opts.workflowMode !== "branch_pr") {
+    if (opts.blockers.some((blocker) => blocker.code === "dirty_task_artifacts")) {
+      return {
+        code: "commit_direct_task_artifacts",
+        command: `agentplane commit ${id} --close`,
+        summary:
+          "task is marked done but tracked task artifacts still need the deterministic cleanup commit",
+        requiresApproval: false,
+      };
+    }
     return {
       code: "done",
       command: null,

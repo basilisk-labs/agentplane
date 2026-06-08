@@ -1,7 +1,12 @@
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { writeFile } from "node:fs/promises";
+import path from "node:path";
 import { describe } from "vitest";
 
 import {
   captureStdIO,
+  commitAll,
+  configureGitUser,
   defaultConfig,
   expect,
   it,
@@ -36,6 +41,24 @@ async function createBranchPrTask(root: string): Promise<string> {
   } finally {
     taskIo.restore();
   }
+}
+
+async function recordEvaluatorReview(root: string, taskId: string): Promise<void> {
+  await runCliSilent([
+    "evaluator",
+    "run",
+    taskId,
+    "--verdict",
+    "pass",
+    "--summary",
+    "EVALUATOR quality gate passed for route decision closeout regression.",
+    "--finding",
+    "No unresolved findings for this route decision closeout regression.",
+    "--evidence",
+    `.agentplane/tasks/${taskId}/README.md`,
+    "--root",
+    root,
+  ]);
 }
 
 describe("runCli route decision direct closeout", () => {
@@ -117,4 +140,133 @@ describe("runCli route decision direct closeout", () => {
       activeIo.restore();
     }
   });
+
+  it(
+    "routes done direct tasks with dirty tracked task artifacts to a cleanup commit",
+    { timeout: 120_000 },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await configureGitUser(root);
+      const config = defaultConfig();
+      config.workflow_mode = "direct";
+      await writeConfig(root, config);
+      await commitAll(root, "seed direct workflow config");
+
+      await writeFile(path.join(root, "file.txt"), "implementation\n", "utf8");
+      await commitAll(root, "seed implementation");
+      const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
+
+      const taskId = await createBranchPrTask(root);
+      await runCliSilent([
+        "task",
+        "plan",
+        "set",
+        taskId,
+        "--text",
+        "Exercise no-close-commit route cleanup.",
+        "--updated-by",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]);
+      await runCliSilent([
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--by",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]);
+      await runCliSilent([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: create a direct task that will be finished without an automatic close commit.",
+        "--root",
+        root,
+      ]);
+      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "EVALUATOR",
+        "--note",
+        "Ok to finish with manual close commit handling.",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      await recordEvaluatorReview(root, taskId);
+      await commitAll(root, "track task artifacts before finish");
+
+      await runCliSilent([
+        "finish",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Verified: direct finish leaves task artifacts for manual cleanup when no close commit is requested.",
+        "--result",
+        "finish without close commit",
+        "--commit",
+        implHash.trim(),
+        "--no-close-commit",
+        "--root",
+        root,
+      ]);
+
+      const trackedStatus = await execFileAsync(
+        "git",
+        ["status", "--short", "--untracked-files=no", "--", `.agentplane/tasks/${taskId}`],
+        { cwd: root },
+      );
+      expect(trackedStatus.stdout).toContain(`.agentplane/tasks/${taskId}/README.md`);
+
+      const nextIo = captureStdIO();
+      try {
+        const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+        expect(code).toBe(0);
+        const parsed = JSON.parse(nextIo.stdout) as {
+          route_oracle: {
+            phase: string;
+            blocker: { code: string } | null;
+            nextCommand: string | null;
+          };
+          execution_packet: {
+            actionKind: string;
+            exactArgv: string[] | null;
+            evidenceMissing: string[];
+          };
+          next_action: { code: string; command: string | null; summary: string };
+        };
+        expect(parsed.route_oracle.phase).toBe("direct_done_pending_artifact_commit");
+        expect(parsed.route_oracle.blocker).toMatchObject({ code: "dirty_task_artifacts" });
+        expect(parsed.next_action).toMatchObject({
+          code: "commit_direct_task_artifacts",
+          command: `agentplane commit ${taskId} --close`,
+        });
+        expect(parsed.next_action.summary).toContain("tracked task artifacts");
+        expect(parsed.route_oracle.nextCommand).toBe(parsed.next_action.command);
+        expect(parsed.execution_packet.actionKind).toBe("local_command");
+        expect(parsed.execution_packet.exactArgv).toEqual([
+          "agentplane",
+          "commit",
+          taskId,
+          "--close",
+        ]);
+        expect(parsed.execution_packet.evidenceMissing).toContain("task_artifact_cleanup_commit");
+      } finally {
+        nextIo.restore();
+      }
+    },
+  );
 });
