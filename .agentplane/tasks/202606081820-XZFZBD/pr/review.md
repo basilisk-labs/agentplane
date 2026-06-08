@@ -30,6 +30,7 @@ Created: 2026-06-08T20:19:16.515Z
 
 ```text
  .agentplane/WORKFLOW.md                            |   3 +-
+ .agentplane/workflows/last-known-good.md           |   3 +-
  docs/reference/generated-reference.mdx             |   6 +--
  docs/releases/v0.6.20.md                           |  51 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +--
@@ -41,12 +42,12 @@ Created: 2026-06-08T20:19:16.515Z
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
- packages/spec/examples/acr.json                    |  22 ++++++---
+ packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
  scripts/lib/test-route-registry.mjs                |   5 +-
  .../static/img/social/docs/releases/v0.6.20.png    | Bin 0 -> 55025 bytes
  website/static/img/social/manifest.json            |   8 ++++
- 17 files changed, 98 insertions(+), 24 deletions(-)
+ 18 files changed, 86 insertions(+), 21 deletions(-)
 ```
 
 </details>
