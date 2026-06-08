@@ -44,6 +44,7 @@ Prepare, verify, merge, and publish AgentPlane patch release 0.6.19.
  docs/assets/readme-headers/skills.svg              |   4 +-
  docs/assets/readme-headers/spec.svg                |   4 +-
  docs/assets/readme-headers/testkit.svg             |   4 +-
+ docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.6.19.md                           |  70 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +-
  packages/core/package.json                         |   2 +-
@@ -53,7 +54,8 @@ Prepare, verify, merge, and publish AgentPlane patch release 0.6.19.
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.19.png    | Bin 0 -> 54420 bytes
  website/static/img/social/manifest.json            |   8 +++
- 26 files changed, 141 insertions(+), 44 deletions(-)
+ website/static/llms-full.txt                       |  43 ++++++++++---
+ 28 files changed, 178 insertions(+), 56 deletions(-)
 ```
 
 </details>
