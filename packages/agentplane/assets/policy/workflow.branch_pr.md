@@ -57,7 +57,7 @@ agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 
 Default branch names are `task/<task-id>/<slug>` for implementation branches and `task-close/<task-id>/<sha12>` for close-tail branches. Repositories MAY override only the prefixes through `branch.task_prefix` and `branch.task_close_prefix`; task id, slug, and sha positions remain fixed.
 
-Before manually filling `<slug>` or `<branch>`, use `agentplane task brief <task-id>` or `agentplane task next-action <task-id> --explain` and prefer the emitted concrete command.
+Before manually filling `<slug>` or `<branch>`, use `agentplane task brief <task-id>` or `agentplane task next-action <task-id> --explain` and prefer the emitted concrete command. Treat AgentPlane-owned PR artifacts, quality-review freshness, integration lane, hosted-close, and cleanup as CLI-owned automation unless route output delegates a manual fallback.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.branch_pr.hard_constraint.constraints" slot="hard_constraint" mutability="append_only" -->
