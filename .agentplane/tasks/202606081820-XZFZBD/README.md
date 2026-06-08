@@ -1,10 +1,11 @@
 ---
 id: "202606081820-XZFZBD"
 title: "Publish next patch release"
-status: "DOING"
+result_summary: "Merged via PR #4500."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "3cf71ddd68f170918cf399434d97e32de95e28f1"
+  message: "📝 XZFZBD release: refresh README headers"
 comments:
   -
     author: "CODER"
     body: "Start: prepare AgentPlane v0.6.20 patch release from clean origin/main, run release gates, merge candidate PR, publish exact merged SHA, and verify GitHub/npm external truth."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4500 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -36,9 +42,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: prepare AgentPlane v0.6.20 patch release from clean origin/main, run release gates, merge candidate PR, publish exact merged SHA, and verify GitHub/npm external truth."
+  -
+    type: "status"
+    at: "2026-06-08T20:43:24.234Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4500 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-08T18:21:06.975Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-08T20:43:24.238Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare, verify, merge, and publish AgentPlane v0.6.20 with external GitHub and npm evidence."
 sections:
   Summary: |-
