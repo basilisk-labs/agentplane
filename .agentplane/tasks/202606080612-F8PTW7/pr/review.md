@@ -13,7 +13,7 @@ Created: 2026-06-08T06:13:11.577Z
 ## Verification
 
 - State: ok
-- Note: Focused route guidance checks, route-decision integration check, policy routing, typecheck, and changed-format all passed.
+- Note: CI verify-static failure fixed locally; lint, focused tests, typecheck, and changed-format passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

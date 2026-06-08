@@ -16,12 +16,7 @@ Make ap route outputs surface clearer diagnostics and must-not guidance for ambi
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Focused route guidance checks, route-decision integration check, policy routing, typecheck, and
-changed-format all passed.
-```
+- Note: CI verify-static failure fixed locally; lint, focused tests, typecheck, and changed-format passed.
 - Canonical workflow state lives in the task README.
 
 <details>
