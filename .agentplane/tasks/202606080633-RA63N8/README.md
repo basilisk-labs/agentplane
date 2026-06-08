@@ -1,10 +1,11 @@
 ---
 id: "202606080633-RA63N8"
 title: "Add deterministic intake and quality diagnostics"
-status: "DOING"
+result_summary: "Merged via PR #4479."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -44,11 +45,16 @@ quality_review:
     - "ap doctor"
   findings:
     - "Pass: the diff adds a no-LLM intake envelope, task-local manifest writing, privacy-safe insights quality metrics, runner failure fingerprints, generated CLI reference, and targeted tests. Verification evidence covers intake behavior, manifest writing, insights rendering, typecheck, targeted lint, formatting, docs freshness, routing, smoke checks, and doctor. Residual full lint wrapper hang is recorded separately and did not produce changed-file diagnostics."
-commit: null
+commit:
+  hash: "3acc5a418d617d1fce62fd399df1de35375f73a4"
+  message: "🚧 RA63N8 cli: keep intake helper types internal"
 comments:
   -
     author: "CODER"
     body: "Start: Implement deterministic intake scaffolding, context-manifest diagnostics, insights quality counters, and bounded runner loop signals within the approved CLI scope."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4479 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: deterministic intake command, task-local manifest writing, insights quality counters, runner failure fingerprints, and generated CLI reference were covered by targeted tests, typecheck, lint, docs freshness, routing, and doctor."
+  -
+    type: "status"
+    at: "2026-06-08T07:42:48.354Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4479 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-08T06:57:30.098Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-08T07:42:48.360Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement a deterministic intake envelope for raw requests, task-local file context manifests, insights quality metrics, and runner loop diagnostics without requiring LLM generation."
 sections:
   Summary: |-
