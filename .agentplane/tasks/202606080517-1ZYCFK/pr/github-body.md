@@ -20,13 +20,15 @@ Teach branch_pr agents which PR, evaluator, integration, hosted-close, and clean
 
 ```bash
 bun test packages/agentplane/src/commands/shared/route-oracle.test.ts | Result: pass | Evidence: 5 \
-  pass, 0 fail, 12 expect calls. Command: bun run agents:check | Result: pass | Evidence: agents \
-  templates OK after canonical policy asset sync. Command: node .agentplane/policy/check-routing.mjs \
-  | Result: pass | Evidence: policy routing OK; workflow.branch_pr policy and asset are 98 lines. \
-  Command: bun run format:check | Result: pass | Evidence: All matched files use Prettier code \
-  style. Command: agentplane doctor | Result: pass | Evidence: OK; only two pre-existing DONE-task \
-  missing-commit warnings outside this task. Command: git diff --check | Result: pass | Evidence: no \
-  whitespace errors.
+  pass, 0 fail, 12 expect calls. Command: bun test \
+  packages/agentplane/src/workflow-lifecycle/parity-check.test.ts | Result: pass | Evidence: 2 pass, \
+  0 fail; lifecycle docs no longer trip obsolete manual remote wording. Command: bun run \
+  agents:check | Result: pass | Evidence: agents templates OK. Command: node \
+  .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK; \
+  workflow.branch_pr policy and asset are 98 lines. Command: bun run format:check | Result: pass | \
+  Evidence: All matched files use Prettier code style. Command: agentplane doctor | Result: pass | \
+  Evidence: OK; only two pre-existing DONE-task missing-commit warnings outside this task. Command: \
+  git diff --check | Result: pass | Evidence: no whitespace errors.
 ```
 - Canonical workflow state lives in the task README.
 
