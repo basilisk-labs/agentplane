@@ -62,6 +62,70 @@ async function recordEvaluatorReview(root: string, taskId: string): Promise<void
 }
 
 describe("runCli route decision direct closeout", () => {
+  it("does not require a runner route for a newly started direct task without runner state", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise direct route guidance after start-ready.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: create a direct DOING task that has no runner artifact.",
+      "--root",
+      root,
+    ]);
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        route_oracle: { phase: string; nextCommand: string | null };
+        operator_guidance: {
+          runner_context: {
+            runner_is_required: boolean;
+            runner_is_allowed_now: boolean;
+            runner_failure_means: string;
+          };
+        };
+        next_action: { code: string; command: string | null; summary: string };
+      };
+      expect(parsed.route_oracle.phase).toBe("direct_execution");
+      expect(parsed.next_action).toMatchObject({
+        code: "continue_direct",
+        command: `agentplane task verify-show ${taskId}`,
+      });
+      expect(parsed.route_oracle.nextCommand).toBe(`agentplane task verify-show ${taskId}`);
+      expect(parsed.next_action.command).not.toContain("task run");
+      expect(parsed.operator_guidance.runner_context).toMatchObject({
+        runner_is_required: false,
+        runner_is_allowed_now: false,
+        runner_failure_means: "not_runner_route",
+      });
+    } finally {
+      nextIo.restore();
+    }
+  });
+
   it("routes verified direct tasks to closeout instead of rerunning them and drops them from active work", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

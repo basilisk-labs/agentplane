@@ -39,6 +39,20 @@ function proseOnlyIncludedClosureCandidate(task: TaskData): boolean {
   );
 }
 
+function directRunnerCommand(resume: TaskResumeContext, taskId: string): string {
+  if (resume.runner.run_id || resume.runner.status) {
+    return resume.runner.next_command ?? `agentplane task verify-show ${taskId}`;
+  }
+  return `agentplane task verify-show ${taskId}`;
+}
+
+function directNextActionCode(resume: TaskResumeContext): string {
+  if (resume.runner.run_id || resume.runner.status) {
+    return resume.runner.next_action ?? "continue_direct";
+  }
+  return "continue_direct";
+}
+
 export function deriveNextAction(opts: {
   task: TaskData;
   resume: TaskResumeContext;
@@ -122,8 +136,8 @@ export function deriveNextAction(opts: {
       };
     }
     return {
-      code: opts.resume.runner.next_action ?? "continue_direct",
-      command: opts.resume.runner.next_command ?? `agentplane task verify-show ${id}`,
+      code: directNextActionCode(opts.resume),
+      command: directRunnerCommand(opts.resume, id),
       summary: "continue the direct-mode task from the current checkout",
       requiresApproval: false,
     };
