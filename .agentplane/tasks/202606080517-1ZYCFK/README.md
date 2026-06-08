@@ -4,7 +4,7 @@ title: "Surface AgentPlane-owned automation boundaries"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,29 @@ verification:
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/commands/shared/route-oracle.test.ts | Result: pass | Evidence: 5 pass, 0 fail, 12 expect calls. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: agentplane doctor | Result: pass | Evidence: OK; only two pre-existing DONE-task missing-commit warnings outside this task. Command: git diff --check | Result: pass | Evidence: no whitespace errors."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-08T05:25:15.882Z"
+  updated_by: "EVALUATOR"
+  note: "Reviewed route oracle automation-boundary output, policy/docs alignment, and focused checks."
+  evaluated_sha: "a7846ef7681026d6cdb5cb601866ad3cdbc81136"
+  blueprint_digest: "8d2a524cab62d534b6dbfda102fdd854630ac05ada314d514e36b3f5a3f5ac70"
+  evidence_refs:
+    - ".agentplane/tasks/202606080517-1ZYCFK/README.md"
+    - ".agentplane/tasks/202606080517-1ZYCFK/quality/20260608-052515882-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606080517-1ZYCFK/quality/20260608-052515882-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606080517-1ZYCFK/quality/20260608-052515882-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606080517-1ZYCFK/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/shared/route-oracle.ts"
+    - "packages/agentplane/src/commands/shared/route-oracle.test.ts"
+    - "docs/user/task-lifecycle.mdx"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "bun test packages/agentplane/src/commands/shared/route-oracle.test.ts"
+    - "node .agentplane/policy/check-routing.mjs"
+    - "agentplane doctor"
+  findings:
+    - "Route execution packets now surface AgentPlane-owned PR artifact, evaluator SHA, integration lane, hosted-close, and cleanup boundaries in must_not."
+    - "User lifecycle docs list the same AgentPlane-owned automations, and branch_pr policy marks them as CLI-owned unless route output delegates a fallback."
 commit: null
 comments:
   -

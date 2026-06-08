@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "task_id": "202606080517-1ZYCFK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-08T05:25:15.882Z",
+  "verdict": "pass",
+  "summary": "Reviewed route oracle automation-boundary output, policy/docs alignment, and focused checks.",
+  "evaluated_sha": "a7846ef7681026d6cdb5cb601866ad3cdbc81136",
+  "blueprint_digest": "8d2a524cab62d534b6dbfda102fdd854630ac05ada314d514e36b3f5a3f5ac70",
+  "findings": [
+    "Route execution packets now surface AgentPlane-owned PR artifact, evaluator SHA, integration lane, hosted-close, and cleanup boundaries in must_not.",
+    "User lifecycle docs list the same AgentPlane-owned automations, and branch_pr policy marks them as CLI-owned unless route output delegates a fallback."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606080517-1ZYCFK/README.md",
+    "packages/agentplane/src/commands/shared/route-oracle.ts",
+    "packages/agentplane/src/commands/shared/route-oracle.test.ts",
+    "docs/user/task-lifecycle.mdx",
+    ".agentplane/policy/workflow.branch_pr.md",
+    "bun test packages/agentplane/src/commands/shared/route-oracle.test.ts",
+    "node .agentplane/policy/check-routing.mjs",
+    "agentplane doctor"
+  ],
+  "missing_tests": [
+    "No broader test run was needed; changed runtime surface is covered by focused route-oracle unit tests and policy/docs checks."
+  ],
+  "hidden_assumptions": [
+    "Agents consume ap task brief or ap task next-action --explain before lifecycle mutations."
+  ],
+  "residual_risks": [
+    "Existing unrelated doctor warnings for old DONE task commit metadata remain outside this task scope."
+  ]
+}
