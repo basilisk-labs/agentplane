@@ -4,7 +4,7 @@ title: "Surface AgentPlane-owned automation boundaries"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -18,33 +18,37 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-08T05:22:45.941Z"
+  updated_at: "2026-06-08T05:53:42.815Z"
   updated_by: "CODER"
-  note: "Command: bun test packages/agentplane/src/commands/shared/route-oracle.test.ts | Result: pass | Evidence: 5 pass, 0 fail, 12 expect calls. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: agentplane doctor | Result: pass | Evidence: OK; only two pre-existing DONE-task missing-commit warnings outside this task. Command: git diff --check | Result: pass | Evidence: no whitespace errors."
+  note: "Command: bun test packages/agentplane/src/commands/shared/route-oracle.test.ts | Result: pass | Evidence: 5 pass, 0 fail, 12 expect calls. Command: bun run agents:check | Result: pass | Evidence: agents templates OK after canonical policy asset sync. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK; workflow.branch_pr policy and asset are 98 lines. Command: bun run format:check | Result: pass | Evidence: All matched files use Prettier code style. Command: agentplane doctor | Result: pass | Evidence: OK; only two pre-existing DONE-task missing-commit warnings outside this task. Command: git diff --check | Result: pass | Evidence: no whitespace errors."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-08T05:25:15.882Z"
+  updated_at: "2026-06-08T05:54:04.268Z"
   updated_by: "EVALUATOR"
-  note: "Reviewed route oracle automation-boundary output, policy/docs alignment, and focused checks."
-  evaluated_sha: "a7846ef7681026d6cdb5cb601866ad3cdbc81136"
+  note: "Reviewed route oracle automation-boundary output, canonical policy asset parity, docs, and focused checks."
+  evaluated_sha: "a355d265ebaeff92c26149146f04aa4085a5126c"
   blueprint_digest: "8d2a524cab62d534b6dbfda102fdd854630ac05ada314d514e36b3f5a3f5ac70"
   evidence_refs:
     - ".agentplane/tasks/202606080517-1ZYCFK/README.md"
-    - ".agentplane/tasks/202606080517-1ZYCFK/quality/20260608-052515882-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606080517-1ZYCFK/quality/20260608-052515882-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606080517-1ZYCFK/quality/20260608-052515882-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606080517-1ZYCFK/quality/20260608-055404268-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606080517-1ZYCFK/quality/20260608-055404268-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606080517-1ZYCFK/quality/20260608-055404268-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606080517-1ZYCFK/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/shared/route-oracle.ts"
     - "packages/agentplane/src/commands/shared/route-oracle.test.ts"
     - "docs/user/task-lifecycle.mdx"
     - ".agentplane/policy/workflow.branch_pr.md"
+    - "packages/agentplane/assets/policy/workflow.branch_pr.md"
     - "bun test packages/agentplane/src/commands/shared/route-oracle.test.ts"
+    - "bun run agents:check"
     - "node .agentplane/policy/check-routing.mjs"
+    - "bun run format:check"
     - "agentplane doctor"
   findings:
-    - "Route execution packets now surface AgentPlane-owned PR artifact, evaluator SHA, integration lane, hosted-close, and cleanup boundaries in must_not."
-    - "User lifecycle docs list the same AgentPlane-owned automations, and branch_pr policy marks them as CLI-owned unless route output delegates a fallback."
+    - "Route execution packets surface AgentPlane-owned PR artifact, evaluator SHA, integration lane, hosted-close, and cleanup boundaries in must_not."
+    - "Canonical policy source and projected policy both mark the automation boundaries as CLI-owned unless route output delegates a manual fallback."
+    - "User lifecycle docs list the AgentPlane-owned automations and the correct stale quality-review recovery: rerun evaluator on current HEAD, then recompute route."
 commit: null
 comments:
   -
@@ -64,8 +68,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/commands/shared/route-oracle.test.ts | Result: pass | Evidence: 5 pass, 0 fail, 12 expect calls. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: agentplane doctor | Result: pass | Evidence: OK; only two pre-existing DONE-task missing-commit warnings outside this task. Command: git diff --check | Result: pass | Evidence: no whitespace errors."
+  -
+    type: "verify"
+    at: "2026-06-08T05:53:42.815Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun test packages/agentplane/src/commands/shared/route-oracle.test.ts | Result: pass | Evidence: 5 pass, 0 fail, 12 expect calls. Command: bun run agents:check | Result: pass | Evidence: agents templates OK after canonical policy asset sync. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK; workflow.branch_pr policy and asset are 98 lines. Command: bun run format:check | Result: pass | Evidence: All matched files use Prettier code style. Command: agentplane doctor | Result: pass | Evidence: OK; only two pre-existing DONE-task missing-commit warnings outside this task. Command: git diff --check | Result: pass | Evidence: no whitespace errors."
 doc_version: 3
-doc_updated_at: "2026-06-08T05:22:46.213Z"
+doc_updated_at: "2026-06-08T05:53:42.929Z"
 doc_updated_by: "CODER"
 description: "Teach branch_pr agents which PR, evaluator, integration, hosted-close, and cleanup operations AgentPlane owns so agents do not duplicate or stale them manually."
 sections:
@@ -118,6 +128,36 @@ sections:
     - repeat_allowed: true
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
+
+    ### 2026-06-08T05:53:42.815Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Command: bun test packages/agentplane/src/commands/shared/route-oracle.test.ts | Result: pass | Evidence: 5 pass, 0 fail, 12 expect calls. Command: bun run agents:check | Result: pass | Evidence: agents templates OK after canonical policy asset sync. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK; workflow.branch_pr policy and asset are 98 lines. Command: bun run format:check | Result: pass | Evidence: All matched files use Prettier code style. Command: agentplane doctor | Result: pass | Evidence: OK; only two pre-existing DONE-task missing-commit warnings outside this task. Command: git diff --check | Result: pass | Evidence: no whitespace errors.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-08T05:22:46.213Z, excerpt_hash=sha256:987d81206bca5ebc487a78e46b4fb48f8b88ae1bc4cb0f7ece506c05cbf92684
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606080517-1ZYCFK-surface-agentplane-owned-automation-boundaries/.agentplane/tasks/202606080517-1ZYCFK/blueprint/resolved-snapshot.json
+    - old_digest: 8d2a524cab62d534b6dbfda102fdd854630ac05ada314d514e36b3f5a3f5ac70
+    - current_digest: 8d2a524cab62d534b6dbfda102fdd854630ac05ada314d514e36b3f5a3f5ac70
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606080517-1ZYCFK
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606080517-1ZYCFK
+    - diagnostic_command: agentplane pr check 202606080517-1ZYCFK
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -184,6 +224,36 @@ DecisionContextRef:
 - repeat_allowed: true
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
+
+### 2026-06-08T05:53:42.815Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun test packages/agentplane/src/commands/shared/route-oracle.test.ts | Result: pass | Evidence: 5 pass, 0 fail, 12 expect calls. Command: bun run agents:check | Result: pass | Evidence: agents templates OK after canonical policy asset sync. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK; workflow.branch_pr policy and asset are 98 lines. Command: bun run format:check | Result: pass | Evidence: All matched files use Prettier code style. Command: agentplane doctor | Result: pass | Evidence: OK; only two pre-existing DONE-task missing-commit warnings outside this task. Command: git diff --check | Result: pass | Evidence: no whitespace errors.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-08T05:22:46.213Z, excerpt_hash=sha256:987d81206bca5ebc487a78e46b4fb48f8b88ae1bc4cb0f7ece506c05cbf92684
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606080517-1ZYCFK-surface-agentplane-owned-automation-boundaries/.agentplane/tasks/202606080517-1ZYCFK/blueprint/resolved-snapshot.json
+- old_digest: 8d2a524cab62d534b6dbfda102fdd854630ac05ada314d514e36b3f5a3f5ac70
+- current_digest: 8d2a524cab62d534b6dbfda102fdd854630ac05ada314d514e36b3f5a3f5ac70
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606080517-1ZYCFK
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606080517-1ZYCFK
+- diagnostic_command: agentplane pr check 202606080517-1ZYCFK
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 
