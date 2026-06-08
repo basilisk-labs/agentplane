@@ -4,7 +4,7 @@ title: "Clarify no-close-commit finish cleanup route"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,26 @@ verification:
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts; Result: pass; Evidence: 2 tests passed / 25 expects against commit c008cd9b661a, covering unstaged and staged dirty task artifacts with --unstage-others cleanup route. Command: bun run format:check; Result: pass; Evidence: all files use Prettier style. Command: bun run lint:core; Result: pass; Evidence: ESLint passed. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: review-thread fix for runnable direct cleanup command and regression coverage."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-08T14:20:44.881Z"
+  updated_by: "EVALUATOR"
+  note: "Route oracle now surfaces direct no-close cleanup and hosted checks are green on PR #4492."
+  evaluated_sha: "c008cd9b661a6c2c3193683c98c75c2147281654"
+  blueprint_digest: "394c75a6dd79044a98c96986aa2781aeeed28db4d1d57109e754abd84f0d3554"
+  evidence_refs:
+    - ".agentplane/tasks/202606081311-TXT5A5/README.md"
+    - ".agentplane/tasks/202606081311-TXT5A5/quality/20260608-142044881-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606081311-TXT5A5/quality/20260608-142044881-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606081311-TXT5A5/quality/20260608-142044881-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606081311-TXT5A5/blueprint/resolved-snapshot.json"
+    - "bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+    - "bun run format:check"
+    - "bun run lint:core"
+    - "node .agentplane/policy/check-routing.mjs"
+    - "gh pr checks 4492"
+  findings:
+    - "PASS: dirty direct task artifacts after finish --no-close-commit now produce dirty_task_artifacts, phase direct_done_pending_artifact_commit, and runnable cleanup command agentplane commit <task-id> --close --unstage-others; regression covers unstaged and already-staged artifacts."
 commit: null
 comments:
   -
