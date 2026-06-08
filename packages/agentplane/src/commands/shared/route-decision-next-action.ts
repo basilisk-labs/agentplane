@@ -183,9 +183,13 @@ export function deriveNextAction(opts: {
     opts.prFlow?.closeTail.state === "merged" ||
     opts.prFlow?.closeTail.state === "recorded_on_base"
   ) {
+    const base =
+      opts.prFlow.closeTail.state === "recorded_on_base"
+        ? opts.prFlow.closeTail.base
+        : (opts.prFlow.pr.base ?? "main");
     return {
       code: "sync_hosted_close",
-      command: "agentplane cleanup merged --finalize",
+      command: `agentplane cleanup merged --finalize --base ${base}`,
       summary:
         "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
       requiresApproval: false,

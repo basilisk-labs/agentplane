@@ -123,6 +123,11 @@ function runnerRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
   };
 }
 
+function commandIsArgvSafeCandidate(command: string | null): boolean {
+  const trimmed = command?.trim() ?? "";
+  return trimmed.length > 0 && !/[;&|<>`$]/u.test(trimmed);
+}
+
 function worktreeProjectionRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
   if (decision.nextAction.code !== "start_or_recover_worktree") return null;
   return {
@@ -137,11 +142,14 @@ function worktreeProjectionRisk(decision: TaskRouteDecision): RouteOperatorRisk 
 
 function hostedCloseFinalizeRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
   if (decision.nextAction.code !== "sync_hosted_close") return null;
+  const command = commandIsArgvSafeCandidate(decision.nextAction.command)
+    ? (decision.nextAction.command ?? "agentplane cleanup merged --finalize")
+    : "agentplane cleanup merged --finalize";
   return {
     code: "hosted_close_finalize",
     summary:
       "hosted close has already landed upstream; do not recreate closure evidence or split base sync into ad hoc shell steps",
-    mitigationCommand: "agentplane cleanup merged --finalize",
+    mitigationCommand: command,
     stopCondition:
       "if finalize cannot fast-forward base or cleanup reports dirty state, stop and inspect git status before deleting branches/worktrees",
   };
