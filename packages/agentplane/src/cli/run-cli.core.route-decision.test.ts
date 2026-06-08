@@ -848,18 +848,17 @@ describe("runCli route decision commands", () => {
       };
       expect(parsed.nextAction).toMatchObject({
         code: "sync_hosted_close",
-        command:
-          "git fetch origin main && git merge --ff-only origin/main && agentplane cleanup merged",
+        command: "agentplane cleanup merged --finalize",
       });
       expect(parsed.oracle).toMatchObject({
         phase: "hosted_close_recorded_upstream",
         authoritativeCheckout: "base_checkout",
       });
       expect(parsed.executionPacket).toMatchObject({
-        actionKind: "stop",
-        exactArgv: null,
+        actionKind: "local_command",
+        exactArgv: ["agentplane", "cleanup", "merged", "--finalize"],
         recommendedRole: "INTEGRATOR",
-        safeToMutate: false,
+        safeToMutate: true,
       });
     } finally {
       statusIo.restore();

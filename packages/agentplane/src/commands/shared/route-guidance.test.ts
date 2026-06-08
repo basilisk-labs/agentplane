@@ -183,4 +183,188 @@ describe("route operator guidance", () => {
     });
     expect(routeRunnerContextIsRelevant(guidance)).toBe(true);
   });
+
+  it("surfaces work resume as the diagnostic for repeated worktree recovery routes", () => {
+    const decision = {
+      task: {
+        id: "202606080612-F8PTW7",
+        title: "Reduce route ambiguity",
+        status: "TODO",
+        owner: "CODER",
+        planApproval: "approved",
+        verification: null,
+        commit: null,
+      },
+      nextAction: {
+        code: "start_or_recover_worktree",
+        command:
+          "agentplane work start 202606080612-F8PTW7 --agent CODER --slug reduce-route-ambiguity --worktree",
+        summary: "create or recover the dedicated branch_pr worktree before opening a PR",
+        requiresApproval: false,
+      },
+      oracle: {
+        phase: "worktree_needed",
+        authoritativeCheckout: "base_checkout",
+        authoritativeCheckoutPath: "/repo",
+        mutationPathHint: "/repo",
+        blocker: {
+          code: "missing_pr_branch",
+          summary: "branch_pr task has no recorded PR branch",
+        },
+        nextCommand:
+          "agentplane work start 202606080612-F8PTW7 --agent CODER --slug reduce-route-ambiguity --worktree",
+        summary: "create or recover the dedicated branch_pr worktree before opening a PR",
+      },
+      blockers: [
+        {
+          code: "missing_pr_branch",
+          summary: "branch_pr task has no recorded PR branch",
+        },
+      ],
+      executionPacket: {
+        actionKind: "local_command",
+        safeToMutate: true,
+        exactArgv: [
+          "agentplane",
+          "work",
+          "start",
+          "202606080612-F8PTW7",
+          "--agent",
+          "CODER",
+          "--slug",
+          "reduce-route-ambiguity",
+          "--worktree",
+        ],
+        stopReason: null,
+        returnControlWhen:
+          "after the exact command exits; recompute task next-action before any further step",
+        staleStateCheck: "agentplane task next-action 202606080612-F8PTW7 --explain",
+        verificationCandidate: null,
+      },
+    } as TaskRouteDecision;
+
+    expect(deriveRouteOperatorGuidance(decision)).toMatchObject({
+      canExecuteNow: true,
+      safeCommand:
+        "agentplane work start 202606080612-F8PTW7 --agent CODER --slug reduce-route-ambiguity --worktree",
+      diagnosticCommand: "agentplane work resume 202606080612-F8PTW7",
+      risks: [
+        {
+          code: "worktree_projection_drift",
+          mitigationCommand: "agentplane work resume 202606080612-F8PTW7",
+        },
+      ],
+    });
+  });
+
+  it("keeps hosted-close base sync inside AgentPlane cleanup finalize", () => {
+    const decision = {
+      task: {
+        id: "202606080612-F8PTW7",
+        title: "Reduce route ambiguity",
+        status: "DOING",
+        owner: "INTEGRATOR",
+        planApproval: "approved",
+        verification: "ok",
+        commit: "abc123",
+      },
+      nextAction: {
+        code: "sync_hosted_close",
+        command: "agentplane cleanup merged --finalize",
+        summary:
+          "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
+        requiresApproval: false,
+      },
+      oracle: {
+        phase: "hosted_close_recorded_upstream",
+        authoritativeCheckout: "base_checkout",
+        authoritativeCheckoutPath: "/repo",
+        mutationPathHint: "/repo",
+        blocker: null,
+        nextCommand: "agentplane cleanup merged --finalize",
+        summary:
+          "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
+      },
+      blockers: [],
+      executionPacket: {
+        actionKind: "local_command",
+        safeToMutate: true,
+        exactArgv: ["agentplane", "cleanup", "merged", "--finalize"],
+        stopReason: null,
+        returnControlWhen:
+          "after the exact command exits; recompute task next-action before any further step",
+        staleStateCheck: "agentplane task next-action 202606080612-F8PTW7 --explain",
+        verificationCandidate: null,
+      },
+    } as TaskRouteDecision;
+
+    expect(deriveRouteOperatorGuidance(decision)).toMatchObject({
+      canExecuteNow: true,
+      safeCommand: "agentplane cleanup merged --finalize",
+      diagnosticCommand: "agentplane cleanup merged --finalize",
+      risks: [
+        {
+          code: "hosted_close_finalize",
+          mitigationCommand: "agentplane cleanup merged --finalize",
+        },
+      ],
+    });
+  });
+
+  it("stops unsafe shell-chain routes until an argv-safe command exists", () => {
+    const decision = {
+      task: {
+        id: "202606080612-F8PTW7",
+        title: "Reduce route ambiguity",
+        status: "DOING",
+        owner: "INTEGRATOR",
+        planApproval: "approved",
+        verification: "ok",
+        commit: "abc123",
+      },
+      nextAction: {
+        code: "sync_hosted_close",
+        command: "git fetch origin main && git merge --ff-only origin/main",
+        summary: "sync hosted close back to base",
+        requiresApproval: false,
+      },
+      oracle: {
+        phase: "hosted_close_recorded_upstream",
+        authoritativeCheckout: "base_checkout",
+        authoritativeCheckoutPath: "/repo",
+        mutationPathHint: "/repo",
+        blocker: null,
+        nextCommand: "git fetch origin main && git merge --ff-only origin/main",
+        summary: "sync hosted close back to base",
+      },
+      blockers: [],
+      executionPacket: {
+        actionKind: "stop",
+        safeToMutate: false,
+        exactArgv: null,
+        stopReason:
+          "next command is not argv-safe; route must be split before an external agent can execute it",
+        returnControlWhen:
+          "after this route is split into argv-safe steps; recompute task next-action before mutating",
+        staleStateCheck: "agentplane task next-action 202606080612-F8PTW7 --explain",
+        verificationCandidate: null,
+      },
+    } as TaskRouteDecision;
+
+    expect(deriveRouteOperatorGuidance(decision)).toMatchObject({
+      canExecuteNow: false,
+      operatorAction: "stop",
+      diagnosticCommand: "agentplane cleanup merged --finalize",
+      risks: [
+        {
+          code: "hosted_close_finalize",
+          mitigationCommand: "agentplane cleanup merged --finalize",
+        },
+        {
+          code: "unsafe_shell_chain_route",
+          mitigationCommand: "agentplane task next-action 202606080612-F8PTW7 --explain",
+        },
+      ],
+    });
+  });
 });

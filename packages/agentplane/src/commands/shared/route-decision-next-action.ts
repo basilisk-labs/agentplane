@@ -189,9 +189,9 @@ export function deriveNextAction(opts: {
         : (opts.prFlow.pr.base ?? "main");
     return {
       code: "sync_hosted_close",
-      command: `git fetch origin ${base} && git merge --ff-only origin/${base} && agentplane cleanup merged`,
+      command: "agentplane cleanup merged --finalize",
       summary:
-        "hosted close-tail already landed upstream; pull the base branch and clean merged task branches/worktrees",
+        "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
       requiresApproval: false,
     };
   }
