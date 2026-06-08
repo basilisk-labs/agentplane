@@ -4,7 +4,7 @@ title: "Clarify non-recipe runner route guidance"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,25 @@ verification:
   updated_by: "CODER"
   note: "Post-commit route guidance verification passed on HEAD 42779867b; PR check reports fresh local artifacts and live task surfaces show current_agent executor semantics."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-08T16:45:02.310Z"
+  updated_by: "EVALUATOR"
+  note: "Route guidance now distinguishes ordinary current-agent execution from explicit runner routes."
+  evaluated_sha: "99ba15ec68fa096d59f48f3e0437b6a9db023039"
+  blueprint_digest: "bfda5dea3eba1509d7025de1f7095a7b9e2411e5386d4f010d9ad5b35ca88aac"
+  evidence_refs:
+    - ".agentplane/tasks/202606081631-MHC3NY/README.md"
+    - ".agentplane/tasks/202606081631-MHC3NY/quality/20260608-164502310-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606081631-MHC3NY/quality/20260608-164502310-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606081631-MHC3NY/quality/20260608-164502310-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606081631-MHC3NY/blueprint/resolved-snapshot.json"
+    - "bun test packages/agentplane/src/commands/shared/route-guidance.test.ts"
+    - "bun run --filter=agentplane typecheck"
+    - "node .agentplane/policy/check-routing.mjs"
+    - "ap task next-action 202606081631-MHC3NY --explain"
+  findings:
+    - "Non-runner route surfaces now show executor_context executor=current_agent runner_route_active=false with a warning that the current coding agent must run safe_command itself and must not wait for or retry a runner; explicit wait_runner coverage still preserves runner-owned guidance."
 commit: null
 comments:
   -
