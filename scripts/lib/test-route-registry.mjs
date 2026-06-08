@@ -377,7 +377,7 @@ export const VITEST_SUITES = {
       /\/run-cli\.core\.lifecycle\.start-commit\./,
       /\/run-cli\.core\.pr-flow\./,
     ],
-    maxWorkers: "4",
+    maxWorkers: "2",
     pool: "forks",
   },
   "release-critical": {
