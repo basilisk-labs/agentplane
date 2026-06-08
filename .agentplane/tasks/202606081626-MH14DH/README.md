@@ -4,7 +4,7 @@ title: "Fix direct workflow closeout regressions from GitHub issues"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -23,29 +23,29 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-08T16:34:37.058Z"
+  updated_at: "2026-06-08T16:48:03.267Z"
   updated_by: "CODER"
-  note: "Verified: direct route, reconcile guard, and direct close-commit regressions are covered and passing."
+  note: "Verified: review fix preserves runner startup for approved TODO direct tasks while started direct tasks without runner state route to verify-show."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-08T16:36:23.545Z"
+  updated_at: "2026-06-08T16:48:14.365Z"
   updated_by: "EVALUATOR"
-  note: "Direct workflow closeout regressions from GitHub issues #4471, #4472, and #4473 have focused passing coverage."
-  evaluated_sha: "40950738aa961b63eb964d86de4299493f56fdd5"
+  note: "Direct workflow closeout regressions remain fixed after review feedback on TODO runner startup routing."
+  evaluated_sha: "fd4860785cef3095b59d439dce253356c06f4903"
   blueprint_digest: "5ee7a437281ec2ccd0f086778f224520cf470e80c1cf6f9a5839fb09ff360d58"
   evidence_refs:
     - ".agentplane/tasks/202606081626-MH14DH/README.md"
-    - ".agentplane/tasks/202606081626-MH14DH/quality/20260608-163623545-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606081626-MH14DH/quality/20260608-163623545-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606081626-MH14DH/quality/20260608-163623545-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606081626-MH14DH/quality/20260608-164814365-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606081626-MH14DH/quality/20260608-164814365-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606081626-MH14DH/quality/20260608-164814365-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606081626-MH14DH/blueprint/resolved-snapshot.json"
     - "bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts"
     - "bun run format:check"
     - "bun run lint:core"
     - "node .agentplane/policy/check-routing.mjs"
   findings:
-    - "PASS: Direct next-action no longer emits agentplane task run when a started direct task has no runner state; unrelated unreadable historical README warnings are ignored for verify and finish task-scoped mutation guards; direct close commits stay on task-safe scope even for code-shaped closeout context."
+    - "PASS: Approved TODO direct tasks still route to agentplane task run, while started direct tasks with no runner state route to task verify-show; reconcile and close-commit regressions remain covered by focused tests."
 commit: null
 comments:
   -
@@ -65,8 +65,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: direct route, reconcile guard, and direct close-commit regressions are covered and passing."
+  -
+    type: "verify"
+    at: "2026-06-08T16:48:03.267Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: review fix preserves runner startup for approved TODO direct tasks while started direct tasks without runner state route to verify-show."
 doc_version: 3
-doc_updated_at: "2026-06-08T16:34:37.376Z"
+doc_updated_at: "2026-06-08T16:48:03.711Z"
 doc_updated_by: "CODER"
 description: "Fix direct-mode regressions reported in GitHub issues #4471, #4472, and #4473: avoid unnecessary runner route after start-ready, avoid blocking unrelated mutation on unreadable historical task artifacts, and ensure direct closeout commit scope is accepted by repository policy."
 sections:
@@ -117,12 +123,46 @@ sections:
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-06-08T16:48:03.267Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: review fix preserves runner startup for approved TODO direct tasks while started direct tasks without runner state route to verify-show.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-08T16:34:37.376Z, excerpt_hash=sha256:42b3d29e4d298701f1bd8e65026fe7187d9449a36b0f234efd82f001f0430c07
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606081626-MH14DH-fix-direct-workflow-closeout-regressions-from-gi/.agentplane/tasks/202606081626-MH14DH/blueprint/resolved-snapshot.json
+    - old_digest: 5ee7a437281ec2ccd0f086778f224520cf470e80c1cf6f9a5839fb09ff360d58
+    - current_digest: 5ee7a437281ec2ccd0f086778f224520cf470e80c1cf6f9a5839fb09ff360d58
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606081626-MH14DH
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606081626-MH14DH
+    - diagnostic_command: agentplane pr check 202606081626-MH14DH
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the task branch/PR before merge. After merge, revert the merge commit or follow-up close-tail commit and reopen the affected GitHub issues with the failing route/reconcile/commit-scope evidence."
   Findings: |-
     - Observation: Commands: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts; bun run format:check; bun run lint:core; node .agentplane/policy/check-routing.mjs; ap doctor.
       Impact: Result: focused tests passed 15 tests / 75 expects; format, lint, and policy routing passed; ap doctor returned OK with existing unrelated warnings for DONE tasks 202606040927-KSESDS and 202606041702-TVTSM2 missing implementation commit hash.
       Resolution: Route decision now uses task verify-show for direct tasks without runner state; reconciliation regression is covered for verify and finish task-scoped mutations; finish close-commit regression confirms task-safe scope for code-shaped close commits.
+
+    - Observation: Commands after review fix: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts; bun run format:check; bun run lint:core; node .agentplane/policy/check-routing.mjs; ap doctor.
+      Impact: Result: focused tests passed 16 tests / 80 expects; format, lint, policy routing, and doctor passed. Doctor warnings are unchanged unrelated historical DONE task commit metadata gaps: 202606040927-KSESDS and 202606041702-TVTSM2.
+      Resolution: Review feedback addressed by limiting the no-runner fallback to started direct tasks; approved TODO direct tasks still route to agentplane task run.
 id_source: "generated"
 ---
 ## Summary
@@ -183,6 +223,36 @@ DecisionContextRef:
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+### 2026-06-08T16:48:03.267Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: review fix preserves runner startup for approved TODO direct tasks while started direct tasks without runner state route to verify-show.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-08T16:34:37.376Z, excerpt_hash=sha256:42b3d29e4d298701f1bd8e65026fe7187d9449a36b0f234efd82f001f0430c07
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606081626-MH14DH-fix-direct-workflow-closeout-regressions-from-gi/.agentplane/tasks/202606081626-MH14DH/blueprint/resolved-snapshot.json
+- old_digest: 5ee7a437281ec2ccd0f086778f224520cf470e80c1cf6f9a5839fb09ff360d58
+- current_digest: 5ee7a437281ec2ccd0f086778f224520cf470e80c1cf6f9a5839fb09ff360d58
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606081626-MH14DH
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606081626-MH14DH
+- diagnostic_command: agentplane pr check 202606081626-MH14DH
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -194,3 +264,7 @@ Revert the task branch/PR before merge. After merge, revert the merge commit or 
 - Observation: Commands: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts; bun run format:check; bun run lint:core; node .agentplane/policy/check-routing.mjs; ap doctor.
   Impact: Result: focused tests passed 15 tests / 75 expects; format, lint, and policy routing passed; ap doctor returned OK with existing unrelated warnings for DONE tasks 202606040927-KSESDS and 202606041702-TVTSM2 missing implementation commit hash.
   Resolution: Route decision now uses task verify-show for direct tasks without runner state; reconciliation regression is covered for verify and finish task-scoped mutations; finish close-commit regression confirms task-safe scope for code-shaped close commits.
+
+- Observation: Commands after review fix: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts; bun run format:check; bun run lint:core; node .agentplane/policy/check-routing.mjs; ap doctor.
+  Impact: Result: focused tests passed 16 tests / 80 expects; format, lint, policy routing, and doctor passed. Doctor warnings are unchanged unrelated historical DONE task commit metadata gaps: 202606040927-KSESDS and 202606041702-TVTSM2.
+  Resolution: Review feedback addressed by limiting the no-runner fallback to started direct tasks; approved TODO direct tasks still route to agentplane task run.
