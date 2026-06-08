@@ -19,7 +19,13 @@ export type RouteOperatorGuidance = {
 };
 
 type RouteOperatorRisk = {
-  code: "pr_artifact_freshness_loop" | "git_hook_side_effect" | "runner_rail_confusion";
+  code:
+    | "pr_artifact_freshness_loop"
+    | "git_hook_side_effect"
+    | "runner_rail_confusion"
+    | "worktree_projection_drift"
+    | "hosted_close_finalize"
+    | "unsafe_shell_chain_route";
   summary: string;
   mitigationCommand: string;
   stopCondition: string;
@@ -117,6 +123,47 @@ function runnerRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
   };
 }
 
+function worktreeProjectionRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
+  if (decision.nextAction.code !== "start_or_recover_worktree") return null;
+  return {
+    code: "worktree_projection_drift",
+    summary:
+      "missing branch metadata can be real absence or stale local projection; do not create parallel task worktrees after a failed/repeated start route",
+    mitigationCommand: `agentplane work resume ${decision.task.id}`,
+    stopCondition:
+      "if work resume finds an existing task worktree or branch, continue from that route instead of running work start again",
+  };
+}
+
+function hostedCloseFinalizeRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
+  if (decision.nextAction.code !== "sync_hosted_close") return null;
+  return {
+    code: "hosted_close_finalize",
+    summary:
+      "hosted close has already landed upstream; do not recreate closure evidence or split base sync into ad hoc shell steps",
+    mitigationCommand: "agentplane cleanup merged --finalize",
+    stopCondition:
+      "if finalize cannot fast-forward base or cleanup reports dirty state, stop and inspect git status before deleting branches/worktrees",
+  };
+}
+
+function unsafeShellChainRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
+  if (
+    decision.executionPacket.actionKind !== "stop" ||
+    !decision.executionPacket.stopReason?.includes("not argv-safe")
+  ) {
+    return null;
+  }
+  return {
+    code: "unsafe_shell_chain_route",
+    summary:
+      "route selected a compound shell command that external agents must not execute as a raw shell string",
+    mitigationCommand: decision.executionPacket.staleStateCheck,
+    stopCondition:
+      "do not split or mutate manually until the route emits an argv-safe command or an AgentPlane-owned wrapper",
+  };
+}
+
 function operatorActionFor(
   actionKind: TaskRouteDecision["executionPacket"]["actionKind"],
 ): RouteOperatorGuidance["operatorAction"] {
@@ -137,6 +184,7 @@ function deriveSourceOfTruth(
   const remote = decision.sourceConfidence?.remote?.freshness === "remote_live";
   const hasRunnerRisk = risks.some((risk) => risk.code === "runner_rail_confusion");
   const hasPrRisk = risks.some((risk) => risk.code === "pr_artifact_freshness_loop");
+  const hasWorktreeRisk = risks.some((risk) => risk.code === "worktree_projection_drift");
   return {
     route: "task_next_action",
     state: "local_task_backend",
@@ -145,9 +193,11 @@ function deriveSourceOfTruth(
       ? "runner_status"
       : hasPrRisk
         ? "pr_check"
-        : remote
-          ? "provider"
-          : "task_next_action",
+        : hasWorktreeRisk
+          ? "task_next_action"
+          : remote
+            ? "provider"
+            : "task_next_action",
   };
 }
 
@@ -179,9 +229,15 @@ export function deriveRouteOperatorGuidance(decision: TaskRouteDecision): RouteO
     artifactFreshnessRisk(decision),
     gitHookRisk(decision),
     runnerRisk(decision),
+    worktreeProjectionRisk(decision),
+    hostedCloseFinalizeRisk(decision),
+    unsafeShellChainRisk(decision),
   ].filter((risk): risk is RouteOperatorRisk => risk !== null);
   const artifactRisk = risks.find((risk) => risk.code === "pr_artifact_freshness_loop") ?? null;
   const hookRisk = risks.find((risk) => risk.code === "git_hook_side_effect") ?? null;
+  const worktreeRisk = risks.find((risk) => risk.code === "worktree_projection_drift") ?? null;
+  const hostedCloseRisk = risks.find((risk) => risk.code === "hosted_close_finalize") ?? null;
+  const unsafeShellRisk = risks.find((risk) => risk.code === "unsafe_shell_chain_route") ?? null;
   const safeCommand = decision.executionPacket.exactArgv?.join(" ") ?? null;
   const canExecuteNow =
     decision.executionPacket.actionKind === "local_command" &&
@@ -190,6 +246,9 @@ export function deriveRouteOperatorGuidance(decision: TaskRouteDecision): RouteO
   const diagnosticCommand =
     artifactRisk?.mitigationCommand ??
     taskScopedCandidate(decision.executionPacket.verificationCandidate, decision.task.id) ??
+    worktreeRisk?.mitigationCommand ??
+    hostedCloseRisk?.mitigationCommand ??
+    unsafeShellRisk?.mitigationCommand ??
     risks.find((risk) => risk.code === "runner_rail_confusion")?.mitigationCommand ??
     null;
   const repeatAllowed = canExecuteNow && artifactRisk === null;
