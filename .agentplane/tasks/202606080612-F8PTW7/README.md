@@ -4,7 +4,7 @@ title: "Reduce route ambiguity in AgentPlane guidance"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -24,23 +24,23 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-08T06:31:24.690Z"
+  updated_at: "2026-06-08T06:39:45.099Z"
   updated_by: "EVALUATOR"
-  note: "Route ambiguity guidance remains implemented after lint fix."
-  evaluated_sha: "2fefe7442c493690e4d2ce590100397dd1b6810c"
+  note: "Review feedback addressed; hosted-close finalize preserves recorded base."
+  evaluated_sha: "4759630d062faaf0cf6f4000fb5b1e12bb391c1e"
   blueprint_digest: "95a6ad32bface5bdfc884bfbd7d4e2876c3da3e94bc38268affd067c3e437ab0"
   evidence_refs:
     - ".agentplane/tasks/202606080612-F8PTW7/README.md"
-    - ".agentplane/tasks/202606080612-F8PTW7/quality/20260608-063124690-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606080612-F8PTW7/quality/20260608-063124690-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606080612-F8PTW7/quality/20260608-063124690-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606080612-F8PTW7/quality/20260608-063945099-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606080612-F8PTW7/quality/20260608-063945099-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606080612-F8PTW7/quality/20260608-063945099-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606080612-F8PTW7/blueprint/resolved-snapshot.json"
     - "bun run lint:core: pass"
     - "bun test packages/agentplane/src/commands/shared/route-guidance.test.ts packages/agentplane/src/commands/shared/route-oracle.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts: pass (22 pass, 0 fail)"
     - "bun run typecheck: pass"
     - "bun run format:changed: pass"
   findings:
-    - "Removed unused base computation from sync_hosted_close route branch; local lint:core, focused route tests, typecheck, and changed-format pass on the current HEAD."
+    - "sync_hosted_close now emits AgentPlane cleanup finalize with --base <recorded-base>, and operator guidance mirrors the exact safe wrapper command while unsafe shell-chain routes still stop."
 commit: null
 comments:
   -

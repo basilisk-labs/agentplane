@@ -28,10 +28,10 @@ Make ap route outputs surface clearer diagnostics and must-not guidance for ambi
 
 ```text
  .../src/cli/run-cli.core.route-decision.test.ts    |   9 +-
- .../commands/shared/route-decision-next-action.ts  |   8 +-
+ .../commands/shared/route-decision-next-action.ts  |   4 +-
  .../src/commands/shared/route-guidance.test.ts     | 184 +++++++++++++++++++++
- .../src/commands/shared/route-guidance.ts          |  67 +++++++-
- 4 files changed, 253 insertions(+), 15 deletions(-)
+ .../src/commands/shared/route-guidance.ts          |  75 ++++++++-
+ 4 files changed, 261 insertions(+), 11 deletions(-)
 ```
 
 </details>
