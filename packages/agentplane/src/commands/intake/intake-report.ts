@@ -1,5 +1,5 @@
 import { execFile as execFileCb } from "node:child_process";
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -289,10 +289,19 @@ export async function writeTaskIntakeManifest(opts: {
   taskId: string;
   report: IntakeReport;
 }): Promise<string> {
-  const rel = path
-    .join(opts.workflowDir, opts.taskId, "context", "file-manifest.json")
-    .replaceAll("\\", "/");
-  const abs = path.join(opts.root, rel);
+  const tasksRoot = path.resolve(opts.root, opts.workflowDir);
+  const taskDir = path.resolve(tasksRoot, opts.taskId);
+  const rootWithSep = tasksRoot.endsWith(path.sep) ? tasksRoot : `${tasksRoot}${path.sep}`;
+  if (!taskDir.startsWith(rootWithSep)) {
+    throw new Error("Task manifest path escaped the configured workflow directory.");
+  }
+  await access(path.join(taskDir, "README.md"));
+  const abs = path.resolve(taskDir, "context", "file-manifest.json");
+  const taskDirWithSep = taskDir.endsWith(path.sep) ? taskDir : `${taskDir}${path.sep}`;
+  if (!abs.startsWith(taskDirWithSep)) {
+    throw new Error("Task manifest path escaped the selected task directory.");
+  }
+  const rel = path.relative(opts.root, abs).replaceAll("\\", "/");
   await mkdir(path.dirname(abs), { recursive: true });
   const report = { ...opts.report, manifest_path: rel };
   await writeFile(abs, `${JSON.stringify(report, null, 2)}\n`, "utf8");

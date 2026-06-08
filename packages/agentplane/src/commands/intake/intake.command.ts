@@ -16,6 +16,7 @@ export type IntakeParsed = {
 };
 
 const output = createCliEmitter();
+const TASK_ID_RE = /^\d{12}-[A-Z0-9]{6}$/;
 
 export const intakeSpec: CommandSpec<IntakeParsed> = {
   id: ["intake"],
@@ -80,6 +81,16 @@ export const intakeSpec: CommandSpec<IntakeParsed> = {
       throw usageError({
         spec: intakeSpec,
         message: "--write-manifest requires --task <task-id>.",
+      });
+    }
+    if (
+      raw.opts["write-manifest"] === true &&
+      typeof raw.opts.task === "string" &&
+      !TASK_ID_RE.test(raw.opts.task.trim())
+    ) {
+      throw usageError({
+        spec: intakeSpec,
+        message: "Invalid value for --task: expected task id like 202606080633-RA63N8.",
       });
     }
   },
