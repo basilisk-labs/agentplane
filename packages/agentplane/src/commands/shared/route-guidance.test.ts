@@ -64,6 +64,14 @@ describe("route operator guidance", () => {
         allowed: true,
         command: "agentplane doctor",
       },
+      executorContext: {
+        executor: "current_agent",
+        runnerRouteActive: false,
+        currentAgentMustExecute: true,
+        instruction: "current_agent_executes_safe_command",
+        warning:
+          "not a runner route; the current coding agent must run safe_command itself and must not wait for or retry a runner",
+      },
       runnerContext: {
         runnerIsRequired: false,
         runnerIsAllowedNow: false,
@@ -176,6 +184,12 @@ describe("route operator guidance", () => {
 
     const guidance = deriveRouteOperatorGuidance(decision);
 
+    expect(guidance.executorContext).toMatchObject({
+      executor: "runner",
+      runnerRouteActive: true,
+      currentAgentMustExecute: false,
+      instruction: "runner_route_follow_runner_lifecycle",
+    });
     expect(guidance.runnerContext).toMatchObject({
       runnerIsRequired: true,
       runnerIsAllowedNow: false,

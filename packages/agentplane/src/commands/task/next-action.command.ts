@@ -108,6 +108,16 @@ function operatorGuidanceJson(guidance: RouteOperatorGuidance): Record<string, u
     },
     repeatPolicy: guidance.repeatPolicy,
     fallback: guidance.fallback,
+    executor_context: {
+      executor: guidance.executorContext.executor,
+      runner_route_active: guidance.executorContext.runnerRouteActive,
+      runnerRouteActive: guidance.executorContext.runnerRouteActive,
+      current_agent_must_execute: guidance.executorContext.currentAgentMustExecute,
+      currentAgentMustExecute: guidance.executorContext.currentAgentMustExecute,
+      instruction: guidance.executorContext.instruction,
+      warning: guidance.executorContext.warning,
+    },
+    executorContext: guidance.executorContext,
     runner_context: {
       runner_is_required: guidance.runnerContext.runnerIsRequired,
       runnerIsRequired: guidance.runnerContext.runnerIsRequired,
@@ -196,6 +206,17 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
           value:
             `allowed=${String(operatorGuidance.repeatPolicy.allowed)} ` +
             `recompute=${operatorGuidance.repeatPolicy.recomputeCommand}`,
+        },
+        {
+          label: "executor_context",
+          value:
+            `executor=${operatorGuidance.executorContext.executor} ` +
+            `runner_route_active=${String(operatorGuidance.executorContext.runnerRouteActive)} ` +
+            `instruction=${operatorGuidance.executorContext.instruction}`,
+        },
+        {
+          label: "executor_warning",
+          value: operatorGuidance.executorContext.warning,
         },
         {
           label: "fallback",
