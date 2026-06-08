@@ -252,7 +252,7 @@ describe("runCli route decision direct closeout", () => {
         expect(parsed.route_oracle.blocker).toMatchObject({ code: "dirty_task_artifacts" });
         expect(parsed.next_action).toMatchObject({
           code: "commit_direct_task_artifacts",
-          command: `agentplane commit ${taskId} --close`,
+          command: `agentplane commit ${taskId} --close --unstage-others`,
         });
         expect(parsed.next_action.summary).toContain("tracked task artifacts");
         expect(parsed.route_oracle.nextCommand).toBe(parsed.next_action.command);
@@ -262,10 +262,40 @@ describe("runCli route decision direct closeout", () => {
           "commit",
           taskId,
           "--close",
+          "--unstage-others",
         ]);
         expect(parsed.execution_packet.evidenceMissing).toContain("task_artifact_cleanup_commit");
       } finally {
         nextIo.restore();
+      }
+
+      await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/README.md`], {
+        cwd: root,
+      });
+
+      const stagedNextIo = captureStdIO();
+      try {
+        const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+        expect(code).toBe(0);
+        const parsed = JSON.parse(stagedNextIo.stdout) as {
+          route_oracle: { blocker: { code: string } | null };
+          next_action: { code: string; command: string | null };
+          execution_packet: { exactArgv: string[] | null };
+        };
+        expect(parsed.route_oracle.blocker).toMatchObject({ code: "dirty_task_artifacts" });
+        expect(parsed.next_action).toMatchObject({
+          code: "commit_direct_task_artifacts",
+          command: `agentplane commit ${taskId} --close --unstage-others`,
+        });
+        expect(parsed.execution_packet.exactArgv).toEqual([
+          "agentplane",
+          "commit",
+          taskId,
+          "--close",
+          "--unstage-others",
+        ]);
+      } finally {
+        stagedNextIo.restore();
       }
     },
   );

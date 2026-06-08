@@ -29,12 +29,12 @@ Created: 2026-06-08T13:12:33.563Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...cli.core.route-decision.direct-closeout.test.ts | 152 +++++++++++++++++++++
- .../src/commands/shared/route-decision-blockers.ts |  35 ++++-
- .../commands/shared/route-decision-next-action.ts  |   9 ++
- .../src/commands/shared/route-decision.ts          |   8 ++
+ ...cli.core.route-decision.direct-closeout.test.ts | 182 +++++++++++++++++++++
+ .../src/commands/shared/route-decision-blockers.ts |  35 +++-
+ .../commands/shared/route-decision-next-action.ts  |   9 +
+ .../src/commands/shared/route-decision.ts          |   8 +
  .../agentplane/src/commands/shared/route-oracle.ts |  13 +-
- 5 files changed, 211 insertions(+), 6 deletions(-)
+ 5 files changed, 241 insertions(+), 6 deletions(-)
 ```
 
 </details>
