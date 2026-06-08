@@ -1,10 +1,11 @@
 ---
 id: "202606081048-960K2W"
 title: "Release AgentPlane 0.6.19"
-status: "DOING"
+result_summary: "Merged via PR #4489."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -43,11 +44,16 @@ quality_review:
     - "bun run release:check:registry -- --version 0.6.19"
   findings:
     - "PASS: candidate branch contains exact 0.6.19 package parity, release notes, generated README headers, release social preview, and task-local verification; local gates and hosted PR #4489 checks passed, including Release-ready manifest and PR verification."
-commit: null
+commit:
+  hash: "c60446fecf114d6a538393c405ace3840fee025b"
+  message: "📝 960K2W release: refresh generated reference"
 comments:
   -
     author: "CODER"
     body: "Start: preparing AgentPlane 0.6.19 release candidate in branch_pr task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4489 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -62,9 +68,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release candidate v0.6.19 prepared and checked locally and on GitHub PR #4489."
+  -
+    type: "status"
+    at: "2026-06-08T11:52:25.957Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4489 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-08T11:30:18.720Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-08T11:52:25.962Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare, verify, merge, and publish AgentPlane patch release 0.6.19."
 sections:
   Summary: |-
