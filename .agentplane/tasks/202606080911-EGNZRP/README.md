@@ -1,10 +1,11 @@
 ---
 id: "202606080911-EGNZRP"
 title: "Harden agent route terminal contract"
-status: "DOING"
+result_summary: "Merged via PR #4483."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ quality_review:
     - "https://github.com/basilisk-labs/agentplane/actions/runs/27129028636"
   findings:
     - "DONE branch_pr without cleanup candidates now emits terminal done/stop/no-command route; next-action JSON exposes snake_case execution/operator/approval fields while preserving aliases; local and hosted checks passed on c65a877fa."
-commit: null
+commit:
+  hash: "96c87a41141639d4ba5041bc6797bbe5cdc87ca0"
+  message: "🚧 EGNZRP task: harden agent route terminal contract"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing terminal route and JSON contract fixes from the approved critical-path plan in the dedicated branch_pr worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4483 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Reverified route terminal contract after hotspot fix."
+  -
+    type: "status"
+    at: "2026-06-08T09:53:21.930Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4483 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-08T09:28:44.893Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-08T09:53:21.937Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the agent critical path so DONE branch_pr tasks stop instead of looping on empty cleanup, normalize next-action JSON execution packet shape, and clarify route approval fields."
 sections:
   Summary: |-
