@@ -5,14 +5,14 @@ import { promisify } from "node:util";
 
 const execFile = promisify(execFileCb);
 
-export type IntakeFileRef = {
+type IntakeFileRef = {
   path: string;
   source: "explicit" | "git_changed" | "search_candidate";
   confidence: "high" | "medium" | "low";
   reason: string;
 };
 
-export type IntakeWarning = {
+type IntakeWarning = {
   code:
     | "missing_file_context"
     | "missing_acceptance_criteria"
