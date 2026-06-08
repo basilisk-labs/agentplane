@@ -12,8 +12,8 @@ Created: 2026-06-08T10:50:02.700Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Release candidate v0.6.19 prepared and checked locally and on GitHub PR #4489.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
