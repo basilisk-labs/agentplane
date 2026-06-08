@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-08T08:52:46Z",
   "base": "main",
   "branch": "task/202606080758-NWA0GF/fix-patch-release-readiness",
   "created_at": "2026-06-08T07:59:25.193Z",
   "diffstat_sha256": "sha256:8bf677edc3de7158a18b0e43bccd38c2a86af070af69fedc5d24ff598156afaa",
   "last_verified_at": "2026-06-08T08:32:53.134Z",
   "last_verified_diffstat_sha256": "sha256:8bf677edc3de7158a18b0e43bccd38c2a86af070af69fedc5d24ff598156afaa",
+  "merge_commit": "c787343ba654bef1a9e42483708fd8afad016b74",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-08T08:52:46Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606080758-NWA0GF",
-  "updated_at": "2026-06-08T07:59:25.193Z",
+  "updated_at": "2026-06-08T08:52:46Z",
   "verify": {
     "status": "pass"
   }
