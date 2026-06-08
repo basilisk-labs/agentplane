@@ -89,6 +89,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [insights issue](#insights-issue)
   - [insights report](#insights-report)
   - [insights triage](#insights-triage)
+  - [intake](#intake)
   - [runtime explain](#runtime-explain)
 - Recipes
   - [recipes active](#recipes-active)
@@ -2469,6 +2470,51 @@ agentplane insights triage --preset startup-routing --json
 ```
 
 - Emit machine-readable triage for support tooling.
+
+### intake
+
+Build a deterministic intake envelope for a raw request.
+
+Extracts explicit file context, current git context, optional search candidates, default constraints, and quality warnings. This command does not use an LLM.
+
+Usage:
+
+```text
+agentplane intake <request> ... [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable JSON. (default=false)
+- `--search`: Add low-confidence rg-based file candidates from request keywords. (default=false)
+- `--no-git`: Do not include current git status files in the intake context. (default=false)
+- `--task <task-id>`: Existing task id for manifest writing.
+- `--write-manifest`: Write .agentplane/tasks/&lt;task-id&gt;/context/file-manifest.json. Requires --task. (default=false)
+
+Notes:
+
+- Search candidates are evidence hints, not authority.
+- \`--write-manifest\` writes a task-local artifact only; task creation remains owned by \`agentplane task new\` and \`agentplane task begin\`.
+
+Examples:
+
+```sh
+agentplane intake "Fix parser edge case in packages/agentplane/src/parser.ts; must keep public API"
+```
+
+- Inspect request quality and explicit file context before creating or running a task.
+
+```sh
+agentplane intake "Improve task quality diagnostics" --search --json
+```
+
+- Emit a machine-readable intake envelope with low-confidence search candidates.
+
+```sh
+agentplane intake "Implement approved scope" --task 202606080633-RA63N8 --write-manifest
+```
+
+- Persist a task-local context manifest without changing task lifecycle state.
 
 ### runtime explain
 

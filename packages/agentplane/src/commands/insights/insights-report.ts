@@ -1,5 +1,5 @@
 import { execFile as execFileCb } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -65,6 +65,12 @@ export type InsightsReport = {
     event_types: CountMap;
     active_task_ids: string[];
     recent_task_ids: string[];
+  };
+  quality: {
+    verify_steps: CountMap;
+    intake_manifest: CountMap;
+    runner_repeat: CountMap;
+    runner_failure_fingerprints: CountMap;
   };
   runner: {
     tasks_with_runner: number;
@@ -173,6 +179,15 @@ function taskUpdatedAt(task: TaskRecord): string {
   return typeof value === "string" ? value : "";
 }
 
+async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function summarizeTasks(tasks: TaskRecord[], recentLimit: number): InsightsReport["tasks"] {
   const byStatus: CountMap = {};
   const byOwner: CountMap = {};
@@ -216,6 +231,70 @@ function summarizeTasks(tasks: TaskRecord[], recentLimit: number): InsightsRepor
     event_types: eventTypes,
     active_task_ids: activeTaskIds.toSorted(),
     recent_task_ids: recentTaskIds,
+  };
+}
+
+function runnerFailureFingerprint(entry: NonNullable<TaskRecord["frontmatter"]["runner"]>): string {
+  const duration =
+    typeof entry.metrics?.duration_ms === "number"
+      ? bucketDurationMs(entry.metrics.duration_ms)
+      : "duration_unknown";
+  const stdout =
+    typeof entry.metrics?.stdout_bytes === "number"
+      ? bucketBytes(entry.metrics.stdout_bytes)
+      : "stdout_unknown";
+  const stderr =
+    typeof entry.metrics?.stderr_bytes === "number"
+      ? bucketBytes(entry.metrics.stderr_bytes)
+      : "stderr_unknown";
+  return [
+    `status=${entry.status}`,
+    `adapter=${entry.adapter_id}`,
+    `mode=${entry.mode}`,
+    `exit=${entry.exit_code ?? "null"}`,
+    duration,
+    stdout,
+    stderr,
+  ].join("|");
+}
+
+async function summarizeQuality(tasks: TaskRecord[]): Promise<InsightsReport["quality"]> {
+  const verifySteps: CountMap = {};
+  const intakeManifest: CountMap = {};
+  const runnerRepeat: CountMap = {};
+  const runnerFailureFingerprints: CountMap = {};
+
+  await Promise.all(
+    tasks.map(async (task) => {
+      bump(verifySteps, task.frontmatter.verify.length > 0 ? "present" : "missing");
+      const manifestPath = path.join(
+        path.dirname(task.readmePath),
+        "context",
+        "file-manifest.json",
+      );
+      bump(intakeManifest, (await pathExists(manifestPath)) ? "present" : "missing");
+
+      const runner = task.frontmatter.runner;
+      if (!runner) return;
+      const entries = [runner, ...(runner.history ?? [])];
+      bump(runnerRepeat, entries.length > 1 ? "repeat" : "single");
+      for (const entry of entries) {
+        if (
+          entry.status === "failed" ||
+          entry.status === "blocked" ||
+          entry.status === "cancelled"
+        ) {
+          bump(runnerFailureFingerprints, runnerFailureFingerprint(entry));
+        }
+      }
+    }),
+  );
+
+  return {
+    verify_steps: verifySteps,
+    intake_manifest: intakeManifest,
+    runner_repeat: runnerRepeat,
+    runner_failure_fingerprints: runnerFailureFingerprints,
   };
 }
 
@@ -313,6 +392,7 @@ export async function buildInsightsReport(opts: {
     },
     git,
     tasks: summarizeTasks(tasks, opts.recentLimit),
+    quality: await summarizeQuality(tasks),
     runner: summarizeRunner(tasks),
   };
 }
@@ -360,6 +440,13 @@ export function renderInsightsReport(report: InsightsReport): CliReportEntry[] {
     { label: "plan_approval", value: renderCountMap(report.tasks.plan_approval) },
     { label: "verification", value: renderCountMap(report.tasks.verification) },
     { label: "verify_steps", value: renderCountMap(report.tasks.verify_steps) },
+    { label: "quality_verify_steps", value: renderCountMap(report.quality.verify_steps) },
+    { label: "quality_intake_manifest", value: renderCountMap(report.quality.intake_manifest) },
+    { label: "quality_runner_repeat", value: renderCountMap(report.quality.runner_repeat) },
+    {
+      label: "quality_runner_failure_fingerprints",
+      value: renderCountMap(report.quality.runner_failure_fingerprints, 5),
+    },
     { label: "task_event_types", value: renderCountMap(report.tasks.event_types) },
     { label: "active_task_ids", value: report.tasks.active_task_ids.join(", ") || "none" },
     { label: "recent_task_ids", value: report.tasks.recent_task_ids.join(", ") || "none" },
