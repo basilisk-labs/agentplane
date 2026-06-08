@@ -5,7 +5,9 @@ import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import {
   deriveRouteOperatorGuidance,
   routeRunnerContextIsRelevant,
+  type RouteOperatorGuidance,
 } from "../shared/route-guidance.js";
+import type { RouteExecutionPacket } from "../shared/route-oracle.js";
 
 export type TaskNextActionParsed = {
   taskId: string;
@@ -49,6 +51,93 @@ export const taskNextActionSpec: CommandSpec<TaskNextActionParsed> = {
   }),
 };
 
+function executionPacketJson(packet: RouteExecutionPacket): Record<string, unknown> {
+  return {
+    schema_version: packet.schemaVersion,
+    action_kind: packet.actionKind,
+    safe_to_mutate: packet.safeToMutate,
+    requires_provider_action: packet.requiresProviderAction,
+    recommended_role: packet.recommendedRole,
+    authoritative_checkout: packet.authoritativeCheckout,
+    authoritative_checkout_path: packet.authoritativeCheckoutPath,
+    mutation_path_hint: packet.mutationPathHint,
+    must_run_from: packet.mustRunFrom,
+    exact_argv: packet.exactArgv,
+    must_not: packet.mustNot,
+    return_control_when: packet.returnControlWhen,
+    human_provider_action: packet.humanProviderAction,
+    stale_state_check: packet.staleStateCheck,
+    evidence_missing: packet.evidenceMissing,
+    verification_candidate: packet.verificationCandidate,
+    stop_reason: packet.stopReason,
+    // Backward-compatible aliases for consumers that still read the internal TS shape.
+    ...packet,
+  };
+}
+
+function operatorGuidanceJson(guidance: RouteOperatorGuidance): Record<string, unknown> {
+  return {
+    schema_version: guidance.schemaVersion,
+    schemaVersion: guidance.schemaVersion,
+    can_execute_now: guidance.canExecuteNow,
+    canExecuteNow: guidance.canExecuteNow,
+    should_run_next_command: guidance.shouldRunNextCommand,
+    shouldRunNextCommand: guidance.shouldRunNextCommand,
+    operator_action: guidance.operatorAction,
+    operatorAction: guidance.operatorAction,
+    safe_command: guidance.safeCommand,
+    safeCommand: guidance.safeCommand,
+    diagnostic_command: guidance.diagnosticCommand,
+    diagnosticCommand: guidance.diagnosticCommand,
+    source_of_truth: {
+      route: guidance.sourceOfTruth.route,
+      state: guidance.sourceOfTruth.state,
+      remote: guidance.sourceOfTruth.remote,
+      diagnostic: guidance.sourceOfTruth.diagnostic,
+    },
+    sourceOfTruth: guidance.sourceOfTruth,
+    freshness: guidance.freshness,
+    repeat_policy: {
+      allowed: guidance.repeatPolicy.allowed,
+      max_attempts_before_recompute: guidance.repeatPolicy.maxAttemptsBeforeRecompute,
+      maxAttemptsBeforeRecompute: guidance.repeatPolicy.maxAttemptsBeforeRecompute,
+      recompute_command: guidance.repeatPolicy.recomputeCommand,
+      recomputeCommand: guidance.repeatPolicy.recomputeCommand,
+      stop_condition: guidance.repeatPolicy.stopCondition,
+      stopCondition: guidance.repeatPolicy.stopCondition,
+    },
+    repeatPolicy: guidance.repeatPolicy,
+    fallback: guidance.fallback,
+    runner_context: {
+      runner_is_required: guidance.runnerContext.runnerIsRequired,
+      runnerIsRequired: guidance.runnerContext.runnerIsRequired,
+      runner_is_allowed_now: guidance.runnerContext.runnerIsAllowedNow,
+      runnerIsAllowedNow: guidance.runnerContext.runnerIsAllowedNow,
+      local_work_allowed_if_runner_fails: guidance.runnerContext.localWorkAllowedIfRunnerFails,
+      localWorkAllowedIfRunnerFails: guidance.runnerContext.localWorkAllowedIfRunnerFails,
+      runner_failure_means: guidance.runnerContext.runnerFailureMeans,
+      runnerFailureMeans: guidance.runnerContext.runnerFailureMeans,
+      return_control_when: guidance.runnerContext.returnControlWhen,
+      returnControlWhen: guidance.runnerContext.returnControlWhen,
+    },
+    runnerContext: guidance.runnerContext,
+    stop_reason: guidance.stopReason,
+    stopReason: guidance.stopReason,
+    after_command: guidance.afterCommand,
+    afterCommand: guidance.afterCommand,
+    stale_state_check: guidance.staleStateCheck,
+    staleStateCheck: guidance.staleStateCheck,
+    risks: guidance.risks.map((risk) => ({
+      code: risk.code,
+      summary: risk.summary,
+      mitigation_command: risk.mitigationCommand,
+      mitigationCommand: risk.mitigationCommand,
+      stop_condition: risk.stopCondition,
+      stopCondition: risk.stopCondition,
+    })),
+  };
+}
+
 export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, parsed: TaskNextActionParsed): Promise<number> => {
     const decision = await buildTaskRouteDecision({
@@ -64,8 +153,14 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
       output.json({
         task: decision.task,
         route_oracle: decision.oracle,
-        execution_packet: decision.executionPacket,
-        operator_guidance: operatorGuidance,
+        execution_packet: executionPacketJson(decision.executionPacket),
+        operator_guidance: operatorGuidanceJson(operatorGuidance),
+        approval: {
+          route_requires_approval: decision.approval.routeRequiresApproval,
+          gateway_mutation_policy: decision.approval.gatewayMutationApprovalRequired,
+          effective_mutation_approval: decision.approval.effectiveMutationApprovalRequired,
+          ...decision.approval,
+        },
         next_action: decision.nextAction,
         blockers: decision.blockers,
         source_confidence: {
@@ -165,6 +260,14 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
               { label: "checkout_role", value: decision.workspace.checkoutRole },
               { label: "branch", value: decision.workspace.branch ?? "unknown" },
               { label: "base_branch", value: decision.workspace.baseBranch ?? "unknown" },
+              {
+                label: "route_requires_approval",
+                value: decision.approval.routeRequiresApproval,
+              },
+              {
+                label: "gateway_mutation_policy",
+                value: decision.approval.gatewayMutationApprovalRequired,
+              },
               {
                 label: "effective_mutation_approval",
                 value: decision.approval.effectiveMutationApprovalRequired,

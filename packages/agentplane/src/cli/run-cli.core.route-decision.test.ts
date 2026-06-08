@@ -704,7 +704,7 @@ describe("runCli route decision commands", () => {
     expect(readme).toContain('plan_approval:\n  state: "pending"');
   });
 
-  it("treats done branch_pr tasks as terminal even when PR metadata is absent", async () => {
+  it("treats done branch_pr tasks with no cleanup candidates as terminal", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -735,7 +735,6 @@ describe("runCli route decision commands", () => {
         .replace("commit: null", 'commit:\n  hash: "abc123"\n  message: "Merge PR #1"'),
       "utf8",
     );
-
     const statusIo = captureStdIO();
     try {
       const code = await runCli(["task", "status", taskId, "--route", "--json", "--root", root]);
@@ -743,11 +742,13 @@ describe("runCli route decision commands", () => {
       expect(code).toBe(0);
       const parsed = JSON.parse(statusIo.stdout) as {
         blockers: { code: string }[];
-        nextAction: { code: string; command: string };
+        nextAction: { code: string; command: string | null };
+        oracle: { phase: string };
       };
       expect(parsed.blockers).toEqual([]);
-      expect(parsed.nextAction.code).toBe("cleanup");
-      expect(parsed.nextAction.command).toBe("agentplane cleanup merged");
+      expect(parsed.oracle.phase).toBe("done");
+      expect(parsed.nextAction.code).toBe("done");
+      expect(parsed.nextAction.command).toBeNull();
     } finally {
       statusIo.restore();
     }

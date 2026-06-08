@@ -1,0 +1,11 @@
+ .../src/cli/run-cli.core.route-decision.test.ts    |  11 ++-
+ .../cli/run-cli.core.task-next-action-json.test.ts | 108 +++++++++++++++++++++
+ .../src/commands/branch/cleanup-merged.ts          |   4 +-
+ .../commands/shared/route-decision-next-action.ts  |   9 ++
+ .../src/commands/shared/route-decision-types.ts    |   2 +
+ .../src/commands/shared/route-decision.ts          |  37 ++++++-
+ .../agentplane/src/commands/shared/route-oracle.ts |   6 ++
+ .../src/commands/task/next-action.command.ts       | 107 +++++++++++++++++++-
+ .../agentplane/src/commands/task/status.command.ts |   8 ++
+ .../src/runner/usecases/task-run-bootstrap.ts      |  18 +++-
+ 10 files changed, 296 insertions(+), 14 deletions(-)

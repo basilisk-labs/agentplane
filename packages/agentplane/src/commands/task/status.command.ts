@@ -138,6 +138,14 @@ export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<Comman
           value: String(decision.executionPacket.requiresProviderAction),
         },
         {
+          label: "route_requires_approval",
+          value: String(decision.approval.routeRequiresApproval),
+        },
+        {
+          label: "gateway_mutation_policy",
+          value: String(decision.approval.gatewayMutationApprovalRequired),
+        },
+        {
           label: "effective_mutation_approval",
           value: String(decision.approval.effectiveMutationApprovalRequired),
         },

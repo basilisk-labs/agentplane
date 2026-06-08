@@ -48,9 +48,11 @@ export type TaskRouteDecision = {
     };
     gatewayMutationApprovalRequired: boolean;
     effectiveMutationApprovalRequired: boolean;
+    routeRequiresApproval: boolean;
   };
   batchOwnership: RouteBatchOwnership;
   prFlow: PrFlowStatusReport | null;
+  cleanupCandidateCount: number | null;
   blockers: RouteBlocker[];
   ambiguities: RouteAmbiguity[];
   nextAction: RouteNextAction;

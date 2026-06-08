@@ -307,6 +307,12 @@ export function deriveRouteOracle(opts: {
       authoritativeCheckout: "base_checkout",
     });
   }
+  if (code === "done") {
+    return buildOracle(opts, {
+      phase: "done",
+      authoritativeCheckout: "base_checkout",
+    });
+  }
   if (opts.batchOwnership.role === "included") {
     return buildOracle(opts, {
       phase: "batch_delegate",

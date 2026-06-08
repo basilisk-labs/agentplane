@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
+import { resolveCleanupCandidates } from "../branch/cleanup-merged.js";
 import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.shared.js";
 import { resolveBatchOwnership } from "./route-batch-ownership.js";
 import { deriveBlockers } from "./route-decision-blockers.js";
@@ -50,8 +51,12 @@ function inferredTaskBranch(
   return null;
 }
 
-function deriveApprovalContract(ctx: CommandContext): TaskRouteDecision["approval"] {
+function deriveApprovalContract(
+  ctx: CommandContext,
+  nextAction: TaskRouteDecision["nextAction"],
+): TaskRouteDecision["approval"] {
   const approvals = ctx.config.agents?.approvals;
+  const routeRequiresApproval = nextAction.requiresApproval === true;
   return {
     runtime: {
       requirePlan: approvals?.require_plan === true,
@@ -59,7 +64,8 @@ function deriveApprovalContract(ctx: CommandContext): TaskRouteDecision["approva
       requireVerify: approvals?.require_verify === true,
     },
     gatewayMutationApprovalRequired: true,
-    effectiveMutationApprovalRequired: true,
+    effectiveMutationApprovalRequired: routeRequiresApproval,
+    routeRequiresApproval,
   };
 }
 
@@ -334,6 +340,28 @@ function buildRouteSourceConfidence(opts: {
   });
 }
 
+async function resolveDoneCleanupCandidateCount(opts: {
+  ctx: CommandContext;
+  resume: TaskResumeContext;
+  task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
+}): Promise<number | null> {
+  if (opts.ctx.config.workflow_mode !== "branch_pr") return null;
+  if (String(opts.task.status).toUpperCase() !== "DONE") return null;
+  const baseBranch = opts.resume.base_branch?.trim() ?? "";
+  if (!baseBranch) return null;
+  try {
+    const candidates = await resolveCleanupCandidates({
+      ctx: opts.ctx,
+      gitRoot: opts.ctx.resolvedProject.gitRoot,
+      workflowDir: opts.ctx.config.paths.workflow_dir,
+      baseBranch,
+    });
+    return candidates.length;
+  } catch {
+    return null;
+  }
+}
+
 export async function buildTaskRouteDecision(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -376,6 +404,7 @@ export async function buildTaskRouteDecision(opts: {
     ctx.config.workflow_mode === "branch_pr"
       ? await resolveBatchOwnership({ ctx, task })
       : { role: "none" as const };
+  const cleanupCandidateCount = await resolveDoneCleanupCandidateCount({ ctx, resume, task });
   const blockers = await deriveBlockers({
     ctx,
     task,
@@ -389,6 +418,7 @@ export async function buildTaskRouteDecision(opts: {
     resume,
     workflowMode: ctx.config.workflow_mode,
     prFlow,
+    cleanupCandidateCount,
     blockers,
     batchOwnership,
   });
@@ -432,9 +462,10 @@ export async function buildTaskRouteDecision(opts: {
       baseCheckoutPath,
       taskWorktreePath,
     },
-    approval: deriveApprovalContract(ctx),
+    approval: deriveApprovalContract(ctx, nextAction),
     batchOwnership,
     prFlow,
+    cleanupCandidateCount,
     blockers,
     nextAction,
     oracle,

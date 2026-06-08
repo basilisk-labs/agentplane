@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606080911-EGNZRP/harden-agent-route-terminal-contract",
+  "created_at": "2026-06-08T09:12:54.861Z",
+  "diffstat_sha256": "sha256:03d7bbd4fdd33c00f241ee446fa5d792f9e4b66d5cded35e3229d27b44e37eaa",
+  "last_verified_at": "2026-06-08T09:28:44.780Z",
+  "last_verified_diffstat_sha256": "sha256:1b8b2c95281f9b0afe0c31778bde258ec937c5714b0d602b93952e9f631a95a3",
+  "schema_version": 1,
+  "task_id": "202606080911-EGNZRP",
+  "updated_at": "2026-06-08T09:12:54.861Z",
+  "verify": {
+    "status": "pass"
+  }
+}
