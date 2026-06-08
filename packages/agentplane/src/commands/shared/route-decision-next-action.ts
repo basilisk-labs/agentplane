@@ -39,16 +39,26 @@ function proseOnlyIncludedClosureCandidate(task: TaskData): boolean {
   );
 }
 
-function directRunnerCommand(resume: TaskResumeContext, taskId: string): string {
+function directTaskHasStarted(task: TaskData): boolean {
+  return String(task.status).toUpperCase() === "DOING";
+}
+
+function directRunnerCommand(task: TaskData, resume: TaskResumeContext, taskId: string): string {
   if (resume.runner.run_id || resume.runner.status) {
     return resume.runner.next_command ?? `agentplane task verify-show ${taskId}`;
+  }
+  if (!directTaskHasStarted(task)) {
+    return resume.runner.next_command ?? `agentplane task run ${taskId}`;
   }
   return `agentplane task verify-show ${taskId}`;
 }
 
-function directNextActionCode(resume: TaskResumeContext): string {
+function directNextActionCode(task: TaskData, resume: TaskResumeContext): string {
   if (resume.runner.run_id || resume.runner.status) {
     return resume.runner.next_action ?? "continue_direct";
+  }
+  if (!directTaskHasStarted(task)) {
+    return resume.runner.next_action ?? "run";
   }
   return "continue_direct";
 }
@@ -136,8 +146,8 @@ export function deriveNextAction(opts: {
       };
     }
     return {
-      code: directNextActionCode(opts.resume),
-      command: directRunnerCommand(opts.resume, id),
+      code: directNextActionCode(opts.task, opts.resume),
+      command: directRunnerCommand(opts.task, opts.resume, id),
       summary: "continue the direct-mode task from the current checkout",
       requiresApproval: false,
     };
