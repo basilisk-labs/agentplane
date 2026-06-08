@@ -1,10 +1,11 @@
 ---
 id: "202606081311-TXT5A5"
 title: "Clarify no-close-commit finish cleanup route"
-status: "DOING"
+result_summary: "Merged via PR #4492."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -48,11 +49,16 @@ quality_review:
     - "gh pr checks 4492"
   findings:
     - "PASS: dirty direct task artifacts after finish --no-close-commit now produce dirty_task_artifacts, phase direct_done_pending_artifact_commit, and runnable cleanup command agentplane commit <task-id> --close --unstage-others; regression covers unstaged and already-staged artifacts."
-commit: null
+commit:
+  hash: "604a044fc06d44942e5d47724c7b7d46996e3405"
+  message: "📝 TXT5A5 task: record evaluator review"
 comments:
   -
     author: "CODER"
     body: "Start: implementing issue #4474 in dedicated branch_pr worktree; scope is direct finish --no-close-commit route cleanup visibility plus focused regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4492 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -85,9 +91,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts; Result: pass; Evidence: 2 tests passed / 25 expects against commit c008cd9b661a, covering unstaged and staged dirty task artifacts with --unstage-others cleanup route. Command: bun run format:check; Result: pass; Evidence: all files use Prettier style. Command: bun run lint:core; Result: pass; Evidence: ESLint passed. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: review-thread fix for runnable direct cleanup command and regression coverage."
+  -
+    type: "status"
+    at: "2026-06-08T14:29:02.110Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4492 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-08T13:28:37.015Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-08T14:29:02.116Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub issue #4474: finish --no-close-commit can mark a direct-workflow task DONE while route guidance says no cleanup is needed even though tracked task artifacts still require an explicit cleanup commit. Improve code and verification so the route oracle surfaces required artifact cleanup instead of a misleading terminal state."
 sections:
   Summary: |-
