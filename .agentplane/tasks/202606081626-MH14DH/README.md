@@ -4,7 +4,7 @@ title: "Fix direct workflow closeout regressions from GitHub issues"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,25 @@ verification:
   updated_by: "CODER"
   note: "Verified: direct route, reconcile guard, and direct close-commit regressions are covered and passing."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-08T16:36:23.545Z"
+  updated_by: "EVALUATOR"
+  note: "Direct workflow closeout regressions from GitHub issues #4471, #4472, and #4473 have focused passing coverage."
+  evaluated_sha: "40950738aa961b63eb964d86de4299493f56fdd5"
+  blueprint_digest: "5ee7a437281ec2ccd0f086778f224520cf470e80c1cf6f9a5839fb09ff360d58"
+  evidence_refs:
+    - ".agentplane/tasks/202606081626-MH14DH/README.md"
+    - ".agentplane/tasks/202606081626-MH14DH/quality/20260608-163623545-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606081626-MH14DH/quality/20260608-163623545-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606081626-MH14DH/quality/20260608-163623545-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606081626-MH14DH/blueprint/resolved-snapshot.json"
+    - "bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts"
+    - "bun run format:check"
+    - "bun run lint:core"
+    - "node .agentplane/policy/check-routing.mjs"
+  findings:
+    - "PASS: Direct next-action no longer emits agentplane task run when a started direct task has no runner state; unrelated unreadable historical README warnings are ignored for verify and finish task-scoped mutation guards; direct close commits stay on task-safe scope even for code-shaped closeout context."
 commit: null
 comments:
   -
