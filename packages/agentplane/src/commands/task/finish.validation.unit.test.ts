@@ -533,6 +533,7 @@ describe("task finish validation", () => {
     expect(mocks.ensureReconciledBeforeMutation).toHaveBeenCalledWith({
       ctx,
       command: "finish",
+      taskIds: ["T-1"],
     });
   });
 

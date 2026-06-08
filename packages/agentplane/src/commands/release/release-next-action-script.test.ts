@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -80,6 +80,47 @@ afterEach(async () => {
 });
 
 describe("release next-action script", () => {
+  it("resolves GitHub repo and token from gh when env is absent", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "agentplane-release-gh-fallback-"));
+    temps.push(dir);
+    const fakeGh = path.join(dir, "gh");
+    await writeFile(
+      fakeGh,
+      [
+        "#!/bin/sh",
+        'if [ "$1" = "auth" ] && [ "$2" = "token" ]; then echo gh-token; exit 0; fi',
+        'if [ "$1" = "repo" ] && [ "$2" = "view" ]; then echo basilisk-labs/agentplane; exit 0; fi',
+        "exit 1",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeGh, 0o755);
+
+    const result = await execFileAsync(
+      "node",
+      [
+        "--input-type=module",
+        "-e",
+        [
+          "import { resolveGithubRepo, resolveGithubToken } from './scripts/lib/github-actions-workflow-status.mjs';",
+          "console.log(`${resolveGithubRepo()} ${resolveGithubToken()}`);",
+        ].join(" "),
+      ],
+      {
+        env: {
+          ...process.env,
+          PATH: `${dir}${path.delimiter}${process.env.PATH ?? ""}`,
+          GITHUB_REPOSITORY: "",
+          GITHUB_TOKEN: "",
+          GH_TOKEN: "",
+        },
+      },
+    );
+
+    expect(result.stdout.trim()).toBe("basilisk-labs/agentplane gh-token");
+  });
+
   it("prints compact release truth and next action", async () => {
     const statePath = await writeJsonFixture("state.json", releaseState);
     const recoveryPath = await writeJsonFixture("recovery.json", recoveryReport);

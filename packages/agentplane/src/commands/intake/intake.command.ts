@@ -13,6 +13,7 @@ export type IntakeParsed = {
   noGit: boolean;
   taskId?: string;
   writeManifest: boolean;
+  includeRawRequest: boolean;
 };
 
 const output = createCliEmitter();
@@ -51,6 +52,13 @@ export const intakeSpec: CommandSpec<IntakeParsed> = {
       default: false,
       description: "Write .agentplane/tasks/<task-id>/context/file-manifest.json. Requires --task.",
     },
+    {
+      kind: "boolean",
+      name: "include-raw-request",
+      default: false,
+      description:
+        "Persist the raw request in the task manifest. By default manifest raw text is redacted.",
+    },
   ],
   examples: [
     {
@@ -83,6 +91,12 @@ export const intakeSpec: CommandSpec<IntakeParsed> = {
         message: "--write-manifest requires --task <task-id>.",
       });
     }
+    if (raw.opts["include-raw-request"] === true && raw.opts["write-manifest"] !== true) {
+      throw usageError({
+        spec: intakeSpec,
+        message: "--include-raw-request requires --write-manifest.",
+      });
+    }
     if (
       raw.opts["write-manifest"] === true &&
       typeof raw.opts.task === "string" &&
@@ -103,6 +117,7 @@ export const intakeSpec: CommandSpec<IntakeParsed> = {
     noGit: raw.opts["no-git"] === true,
     taskId: raw.opts.task as string | undefined,
     writeManifest: raw.opts["write-manifest"] === true,
+    includeRawRequest: raw.opts["include-raw-request"] === true,
   }),
 };
 
@@ -160,6 +175,7 @@ export function makeRunIntakeHandler(deps: RunDeps): CommandHandler<IntakeParsed
           workflowDir: loaded.config.paths.workflow_dir,
           taskId,
           report,
+          includeRawRequest: parsed.includeRawRequest,
         });
         report = { ...report, manifest_path: manifestPath };
       }

@@ -89,7 +89,7 @@ describe("runCli commit wrapper: close", { timeout: COMMIT_WRAPPER_SUITE_TIMEOUT
       const bodyRes = await execFileAsync("git", ["log", "-1", "--pretty=%b"], { cwd: root });
       const subject = subjectRes.stdout.trim();
       const body = bodyRes.stdout.trim();
-      expect(subject).toBe("✨ R18Y1Q cli: generate deterministic close commits");
+      expect(subject).toBe("✨ R18Y1Q task: generate deterministic close commits");
       expect(subject).not.toContain("✅ R18Y1Q close:");
       expect(body).toContain("Summary:\n- Updated implementation code.");
       expect(body).not.toContain("Summary:\n- Generate deterministic close commits.");

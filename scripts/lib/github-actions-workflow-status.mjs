@@ -1,5 +1,6 @@
 import http from "node:http";
 import https from "node:https";
+import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 
 function assertNonEmpty(value, label) {
@@ -32,11 +33,32 @@ export function resolveGithubApiBase() {
 }
 
 export function resolveGithubToken(token = process.env.GITHUB_TOKEN) {
-  return assertNonEmpty(token, "GITHUB_TOKEN");
+  const fromEnv = typeof token === "string" && token.trim() ? token : process.env.GH_TOKEN;
+  if (typeof fromEnv === "string" && fromEnv.trim()) return fromEnv.trim();
+  const fromGh = readGhValue(["auth", "token"]);
+  if (fromGh) return fromGh;
+  return assertNonEmpty(token, "GITHUB_TOKEN or gh auth token");
 }
 
 export function resolveGithubRepo(repo = process.env.GITHUB_REPOSITORY) {
+  if (typeof repo === "string" && repo.trim()) return repo.trim();
+  const fromGh = readGhValue(["repo", "view", "--json", "nameWithOwner", "--jq", ".nameWithOwner"]);
+  if (fromGh) return fromGh;
   return assertNonEmpty(repo, "repository slug");
+}
+
+function readGhValue(args) {
+  try {
+    const output = execFileSync("gh", args, {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      timeout: 10_000,
+    });
+    const value = String(output ?? "").trim();
+    return value.length > 0 ? value : null;
+  } catch {
+    return null;
+  }
 }
 
 function requestJson(url, token) {

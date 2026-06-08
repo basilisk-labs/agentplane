@@ -115,6 +115,7 @@ export async function ensureReconciledBeforeMutation(opts: {
   ctx: CommandContext;
   command: string;
   strictTaskScan?: boolean;
+  taskIds?: readonly string[];
 }): Promise<void> {
   try {
     await opts.ctx.git.statusChangedPaths();
@@ -146,10 +147,11 @@ export async function ensureReconciledBeforeMutation(opts: {
     });
   }
 
-  const warnings = await filterWarningsResolvedFromTaskBranch(
+  const branchFilteredWarnings = await filterWarningsResolvedFromTaskBranch(
     opts.ctx,
     opts.ctx.taskBackend.getLastListWarnings?.() ?? [],
   );
+  const warnings = filterWarningsOutsideTaskScope(branchFilteredWarnings, opts.taskIds);
   if (warnings.length === 0) return;
 
   throw new CliError({
@@ -164,6 +166,19 @@ export async function ensureReconciledBeforeMutation(opts: {
       },
       buildWarningDiagnostic(warnings),
     ),
+  });
+}
+
+function filterWarningsOutsideTaskScope(
+  warnings: string[],
+  taskIds: readonly string[] | undefined,
+): string[] {
+  const taskSet = new Set((taskIds ?? []).map((taskId) => taskId.trim()).filter(Boolean));
+  if (taskSet.size === 0 || warnings.length === 0) return warnings;
+  return warnings.filter((raw) => {
+    const parsed = parseTaskScanWarning(raw);
+    if (!parsed.taskId || taskSet.has(parsed.taskId)) return true;
+    return parsed.kind !== "missing_or_unreadable_readme" && parsed.kind !== "unreadable_readme";
   });
 }
 

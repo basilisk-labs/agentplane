@@ -47,11 +47,19 @@ export type IntakeReport = {
 const PATH_TOKEN_RE =
   /(?:^|[\s"'`([{])((?:\.{1,2}\/|[A-Za-z0-9_.-]+\/)[A-Za-z0-9_./@+=:-]*[A-Za-z0-9_@+=:-]|[A-Za-z0-9_.-]+\.(?:ts|tsx|js|jsx|mjs|cjs|json|md|mdx|yml|yaml|toml|css|scss|html|py|rs|go|java|kt|sh|sql))/g;
 
+const HASH_FILE_REF_RE =
+  /#(?:file|path)[:=]?\s*((?:\.{1,2}\/|[A-Za-z0-9_.-]+\/)[A-Za-z0-9_./@+=:-]*[A-Za-z0-9_@+=:-]|[A-Za-z0-9_.-]+\.(?:ts|tsx|js|jsx|mjs|cjs|json|md|mdx|yml|yaml|toml|css|scss|html|py|rs|go|java|kt|sh|sql))/gi;
+
+const HASH_PATH_TOKEN_RE =
+  /#((?:\.{1,2}\/|[A-Za-z0-9_.-]+\/)[A-Za-z0-9_./@+=:-]*[A-Za-z0-9_@+=:-]|[A-Za-z0-9_.-]+\.(?:ts|tsx|js|jsx|mjs|cjs|json|md|mdx|yml|yaml|toml|css|scss|html|py|rs|go|java|kt|sh|sql))/g;
+
 const ACCEPTANCE_RE =
-  /\b(acceptance|criteria|verify|verification|must|ensure|prove|pass|expected|success|done when)\b/i;
+  /\b(acceptance|criteria|verify|verification|must|ensure|prove|pass|expected|success|done when)\b|критери[ийя]|при[её]мк|провер|должн|ожидаем|успешн|готово когда|считается готов/im;
 
 const CONSTRAINT_RE =
-  /\b(do not|don't|must not|only|avoid|without|limit|keep|preserve|no external|no new|constraint)\b/i;
+  /\b(do not|don't|must not|only|avoid|without|limit|keep|preserve|no external|no new|constraint)\b|не использовать|нельзя|без\b|только|сохран|огранич|не менять|не добавлять|избегать/im;
+
+const TASK_ID_RE = /^\d{12}-[A-Z0-9]{6}$/;
 
 const BROAD_SCOPE_RE =
   /\b(everything|all|entire|whole|полностью|всё|все|везде|переделай|rewrite|refactor all)\b/i;
@@ -87,6 +95,26 @@ function addFileRef(map: Map<string, IntakeFileRef>, ref: IntakeFileRef): void {
 
 function extractExplicitPaths(text: string): IntakeFileRef[] {
   const refs: IntakeFileRef[] = [];
+  for (const match of text.matchAll(HASH_FILE_REF_RE)) {
+    const value = normalizeCandidatePath(match[1] ?? "");
+    if (!value) continue;
+    refs.push({
+      path: value,
+      source: "explicit",
+      confidence: "high",
+      reason: "hash file reference in request",
+    });
+  }
+  for (const match of text.matchAll(HASH_PATH_TOKEN_RE)) {
+    const value = normalizeCandidatePath(match[1] ?? "");
+    if (!value) continue;
+    refs.push({
+      path: value,
+      source: "explicit",
+      confidence: "high",
+      reason: "hash path reference in request",
+    });
+  }
   for (const match of text.matchAll(PATH_TOKEN_RE)) {
     const value = normalizeCandidatePath(match[1] ?? "");
     if (!value) continue;
@@ -288,7 +316,11 @@ export async function writeTaskIntakeManifest(opts: {
   workflowDir: string;
   taskId: string;
   report: IntakeReport;
+  includeRawRequest?: boolean;
 }): Promise<string> {
+  if (!TASK_ID_RE.test(opts.taskId)) {
+    throw new Error("Invalid task id for intake manifest.");
+  }
   const tasksRoot = path.resolve(opts.root, opts.workflowDir);
   const taskDir = path.resolve(tasksRoot, opts.taskId);
   const rootWithSep = tasksRoot.endsWith(path.sep) ? tasksRoot : `${tasksRoot}${path.sep}`;
@@ -303,7 +335,14 @@ export async function writeTaskIntakeManifest(opts: {
   }
   const rel = path.relative(opts.root, abs).replaceAll("\\", "/");
   await mkdir(path.dirname(abs), { recursive: true });
-  const report = { ...opts.report, manifest_path: rel };
+  const report = {
+    ...opts.report,
+    request: {
+      ...opts.report.request,
+      raw: opts.includeRawRequest === true ? opts.report.request.raw : "[redacted]",
+    },
+    manifest_path: rel,
+  };
   await writeFile(abs, `${JSON.stringify(report, null, 2)}\n`, "utf8");
   return rel;
 }

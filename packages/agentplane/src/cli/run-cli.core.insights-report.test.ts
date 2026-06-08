@@ -74,6 +74,7 @@ describe("runCli insights report", () => {
       expect(io.stdout).toContain("tasks_total:");
       expect(io.stdout).toContain("TODO=1");
       expect(io.stdout).toContain("DONE=1");
+      expect(io.stdout).toContain("legacy_done_missing=1");
       expect(io.stdout).toContain("202605010101-AAAAAA");
       expect(io.stdout).not.toContain("Sensitive task title");
       expect(io.stdout).not.toContain("Sensitive task description");
@@ -128,6 +129,9 @@ describe("runCli insights report", () => {
           recent_task_ids?: string[];
           by_status?: Record<string, number>;
         };
+        quality?: {
+          intake_manifest?: Record<string, number>;
+        };
       };
       expect(payload.schema).toBe("agentplane.insights.report.v1");
       expect(payload.privacy).toMatchObject({
@@ -146,6 +150,9 @@ describe("runCli insights report", () => {
       expect(payload.tasks?.by_status?.TODO).toBe(1);
       expect(payload.tasks?.active_task_ids).toEqual(["202605010101-AAAAAA"]);
       expect(payload.tasks?.recent_task_ids).toEqual(["202605010101-AAAAAA"]);
+      expect(payload.quality?.intake_manifest).toMatchObject({
+        missing: 1,
+      });
       expect(io.stdout).not.toContain("JSON sensitive task title");
       expect(io.stdout).not.toContain("JSON sensitive task description");
     } finally {

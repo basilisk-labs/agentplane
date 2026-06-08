@@ -145,7 +145,7 @@ async function recordVerificationResult(opts: {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  await ensureReconciledBeforeMutation({ ctx, command: "verify" });
+  await ensureReconciledBeforeMutation({ ctx, command: "verify", taskIds: [opts.taskId] });
   const backend = ctx.taskBackend;
   const config = ctx.config;
   const resolved = ctx.resolvedProject;

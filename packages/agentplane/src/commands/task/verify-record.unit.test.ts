@@ -488,6 +488,7 @@ describe("task verify record (unit)", () => {
     expect(mocks.ensureReconciledBeforeMutation).toHaveBeenCalledWith({
       ctx,
       command: "verify",
+      taskIds: ["T-1"],
     });
 
     const next = writeTask.mock.calls[0]?.[0];

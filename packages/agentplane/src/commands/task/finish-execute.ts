@@ -121,6 +121,8 @@ export async function executeFinishPlan(opts: {
     noWriteAcr: options.noWriteAcr,
   });
 
+  emitNoCloseCommitGuidance({ ctx, options, plan });
+
   const incidentOutcome = await collectIncidentsForLoadedTasks({
     ctx,
     taskIds: options.taskIds,
@@ -167,6 +169,20 @@ export async function executeFinishPlan(opts: {
   }
 
   return 0;
+}
+
+function emitNoCloseCommitGuidance(opts: {
+  ctx: CommandContext;
+  options: FinishOptions;
+  plan: FinishExecutionPlan;
+}): void {
+  if (opts.options.quiet) return;
+  if (opts.ctx.config.workflow_mode !== "direct") return;
+  if (opts.options.noCloseCommit !== true) return;
+  if (opts.plan.shouldCloseCommit) return;
+  process.stdout.write(
+    "direct finish: task state updated; close commit was skipped by --no-close-commit. Commit task artifacts manually before publishing.\n",
+  );
 }
 
 function assertFinishPhasePolicy(opts: {

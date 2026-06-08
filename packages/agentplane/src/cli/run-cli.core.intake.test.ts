@@ -11,6 +11,8 @@ import {
 } from "@agentplane/testkit/cli-core-tasks-query";
 import { describe } from "vitest";
 
+import { writeTaskIntakeManifest } from "../commands/intake/intake-report.js";
+
 useRunCliIntegrationHarness();
 
 describe("runCli intake", () => {
@@ -53,6 +55,43 @@ describe("runCli intake", () => {
       expect(payload.warnings?.some((warning) => warning.code === "missing_file_context")).toBe(
         false,
       );
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("detects hash file references and Russian acceptance/constraint phrases", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "intake",
+        "Исправь #file:packages/agentplane/src/parser.ts. Критерии приемки: проверка проходит. Не использовать новые зависимости.",
+        "--json",
+        "--no-git",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        quality?: {
+          has_explicit_files?: boolean;
+          has_acceptance_criteria?: boolean;
+          has_constraints?: boolean;
+        };
+        files?: { path?: string; source?: string; confidence?: string; reason?: string }[];
+      };
+      expect(payload.quality).toMatchObject({
+        has_explicit_files: true,
+        has_acceptance_criteria: true,
+        has_constraints: true,
+      });
+      expect(payload.files).toContainEqual({
+        path: "packages/agentplane/src/parser.ts",
+        source: "explicit",
+        confidence: "high",
+        reason: "hash file reference in request",
+      });
     } finally {
       io.restore();
     }
@@ -107,7 +146,8 @@ describe("runCli intake", () => {
       expect(payload.manifest_path).toBe(`.agentplane/tasks/${taskId}/context/file-manifest.json`);
       const manifest = JSON.parse(
         await readFile(path.join(root, payload.manifest_path ?? ""), "utf8"),
-      ) as { files?: { path?: string }[] };
+      ) as { request?: { raw?: string }; files?: { path?: string }[] };
+      expect(manifest.request?.raw).toBe("[redacted]");
       expect(manifest.files).toContainEqual(
         expect.objectContaining({ path: "packages/agentplane/src/parser.ts" }),
       );
@@ -168,6 +208,28 @@ describe("runCli intake", () => {
         io.restore();
       }
     }
+
+    await expect(
+      writeTaskIntakeManifest({
+        root,
+        workflowDir: ".agentplane/tasks",
+        taskId: "../../../tmp/foo",
+        report: {
+          schema: "agentplane.intake.report.v1",
+          generated_at: "2026-06-08T00:00:00.000Z",
+          request: { chars: 1, words: 1, raw: "x" },
+          quality: {
+            has_explicit_files: false,
+            has_acceptance_criteria: false,
+            has_constraints: false,
+            likely_broad_scope: false,
+          },
+          files: [],
+          constraints: [],
+          warnings: [],
+        },
+      }),
+    ).rejects.toThrow(/Invalid task id/u);
   });
 
   it("surfaces intake manifest coverage in insights report", async () => {
