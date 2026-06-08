@@ -1,10 +1,11 @@
 ---
 id: "202606080612-F8PTW7"
 title: "Reduce route ambiguity in AgentPlane guidance"
-status: "DOING"
+result_summary: "Merged via PR #4477."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "bun run format:changed: pass"
   findings:
     - "sync_hosted_close now emits AgentPlane cleanup finalize with --base <recorded-base>, and operator guidance mirrors the exact safe wrapper command while unsafe shell-chain routes still stop."
-commit: null
+commit:
+  hash: "0c6c5f0bd76d94427dec120adf33a948cafab80c"
+  message: "🚧 F8PTW7 task: Refresh review quality evidence"
 comments:
   -
     author: "CODER"
     body: "Start: reduce route/operator ambiguity guidance for branch_pr route states."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4477 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -72,9 +78,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review thread fix validated locally; lint, focused tests, typecheck, and changed-format passed."
+  -
+    type: "status"
+    at: "2026-06-08T06:47:09.119Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4477 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-08T06:38:56.487Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-08T06:47:09.125Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make ap route outputs surface clearer diagnostics and must-not guidance for ambiguous branch_pr states so agents do less manual reconstruction."
 sections:
   Summary: |-
