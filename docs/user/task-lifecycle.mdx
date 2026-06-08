@@ -66,7 +66,7 @@ before doing another lifecycle step.
   the current quality report is stale, rerun the evaluator on current `HEAD` instead of creating an
   amend commit just to align the SHA.
 - `integrate queue` / `integrate --run-verify` own the serialized merge lane and hosted-check
-  gate; do not merge, rebase, squash, or force-push the task branch outside that route.
+  gate; do not merge, rebase, squash, or rewrite task branch history outside that route.
 - `finish --pre-merge-closure`, `task hosted-close-pr`, and hosted close own close-tail evidence;
   do not recreate close-tail artifacts after upstream close has landed.
 - `cleanup merged` owns merged branch/worktree cleanup; do not silently delete task worktrees or
