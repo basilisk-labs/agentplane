@@ -1,10 +1,11 @@
 ---
 id: "202606081631-MHC3NY"
 title: "Clarify non-recipe runner route guidance"
-status: "DOING"
+result_summary: "Merged via PR #4495."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -43,11 +44,16 @@ quality_review:
     - "ap task next-action 202606081631-MHC3NY --explain"
   findings:
     - "Non-runner route surfaces now show executor_context executor=current_agent runner_route_active=false with a warning that the current coding agent must run safe_command itself and must not wait for or retry a runner; explicit wait_runner coverage still preserves runner-owned guidance."
-commit: null
+commit:
+  hash: "10e521b4ba0d70e1a5b5052698eec89ce3cf18f3"
+  message: "🧪 MHC3NY task: record route guidance quality review"
 comments:
   -
     author: "CODER"
     body: "Start: implement focused route guidance fix so ordinary Codex agents execute local work themselves unless explicit task-run, wait_runner, runner_alive, or active runner recipe delegation is present."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4495 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -68,9 +74,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-commit route guidance verification passed on HEAD 42779867b; PR check reports fresh local artifacts and live task surfaces show current_agent executor semantics."
+  -
+    type: "status"
+    at: "2026-06-08T16:54:09.350Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4495 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-08T16:38:38.675Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-08T16:54:09.356Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix AgentPlane route/operator guidance so normal Codex agents do not treat runner_context or stale runner attempts as an active runner route unless task run, wait_runner, runner_alive, or an active runner recipe such as parallel-codex explicitly delegates execution."
 sections:
   Summary: |-
