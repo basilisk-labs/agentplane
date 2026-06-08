@@ -62,7 +62,7 @@ describe("runCli", () => {
 
   it(
     "finish promotes formatter hook blockers into close-commit next-action guidance",
-    { timeout: 60_000 },
+    { timeout: BLOCK_FINISH_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);

@@ -387,7 +387,7 @@ describe("runCli", () => {
 
   it(
     "finish reports deterministic close-commit failures as close-commit phase errors",
-    { timeout: 60_000 },
+    { timeout: BLOCK_FINISH_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
