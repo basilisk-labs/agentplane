@@ -160,7 +160,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^25.9.1",
+    "@types/node": "^25.9.2",
     "@typescript-eslint/eslint-plugin": "^8.60.1",
     "@typescript-eslint/parser": "^8.60.1",
     "@vitest/coverage-v8": "4.1.8",
@@ -174,7 +174,7 @@
     "eslint-plugin-unicorn": "^64.0.0",
     "globals": "^17.6.0",
     "jscpd": "^4.2.4",
-    "knip": "^6.15.0",
+    "knip": "^6.16.1",
     "lefthook": "^2.1.9",
     "prettier": "^3.8.3",
     "tsup": "^8.5.1",
