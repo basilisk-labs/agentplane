@@ -4,7 +4,7 @@ title: "Reduce route ambiguity in AgentPlane guidance"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,24 +24,23 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-08T06:23:29.741Z"
+  updated_at: "2026-06-08T06:31:24.690Z"
   updated_by: "EVALUATOR"
-  note: "Route ambiguity guidance is implemented and covered by focused tests."
-  evaluated_sha: "6c6f8499f7905c96b8929374bd95251af1b04a91"
+  note: "Route ambiguity guidance remains implemented after lint fix."
+  evaluated_sha: "2fefe7442c493690e4d2ce590100397dd1b6810c"
   blueprint_digest: "95a6ad32bface5bdfc884bfbd7d4e2876c3da3e94bc38268affd067c3e437ab0"
   evidence_refs:
     - ".agentplane/tasks/202606080612-F8PTW7/README.md"
-    - ".agentplane/tasks/202606080612-F8PTW7/quality/20260608-062329741-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606080612-F8PTW7/quality/20260608-062329741-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606080612-F8PTW7/quality/20260608-062329741-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606080612-F8PTW7/quality/20260608-063124690-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606080612-F8PTW7/quality/20260608-063124690-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606080612-F8PTW7/quality/20260608-063124690-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606080612-F8PTW7/blueprint/resolved-snapshot.json"
-    - "bun test packages/agentplane/src/commands/shared/route-guidance.test.ts packages/agentplane/src/commands/shared/route-oracle.test.ts: pass (11 pass, 0 fail)"
-    - "bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts: pass (11 pass, 0 fail)"
-    - "node .agentplane/policy/check-routing.mjs: pass (policy routing OK)"
+    - "bun run lint:core: pass"
+    - "bun test packages/agentplane/src/commands/shared/route-guidance.test.ts packages/agentplane/src/commands/shared/route-oracle.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts: pass (22 pass, 0 fail)"
     - "bun run typecheck: pass"
     - "bun run format:changed: pass"
   findings:
-    - "sync_hosted_close now uses AgentPlane cleanup finalize instead of an unsafe shell chain; operator guidance surfaces worktree projection drift, hosted-close finalize, and unsafe shell-chain risks with concrete diagnostics."
+    - "Removed unused base computation from sync_hosted_close route branch; local lint:core, focused route tests, typecheck, and changed-format pass on the current HEAD."
 commit: null
 comments:
   -
