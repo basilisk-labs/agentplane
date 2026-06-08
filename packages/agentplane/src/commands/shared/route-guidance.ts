@@ -11,6 +11,7 @@ export type RouteOperatorGuidance = {
   freshness: RouteFreshnessContext;
   repeatPolicy: RouteRepeatPolicy;
   fallback: RouteFallbackContext;
+  executorContext: RouteExecutorContext;
   runnerContext: RouteRunnerContext;
   stopReason: string | null;
   afterCommand: string;
@@ -55,6 +56,17 @@ type RouteFallbackContext = {
   allowed: boolean;
   command: string | null;
   reason: string | null;
+};
+
+type RouteExecutorContext = {
+  executor: "current_agent" | "runner";
+  runnerRouteActive: boolean;
+  currentAgentMustExecute: boolean;
+  instruction:
+    | "current_agent_executes_safe_command"
+    | "runner_route_follow_runner_lifecycle"
+    | "current_agent_waits_for_provider_or_recompute";
+  warning: string;
 };
 
 type RouteRunnerContext = {
@@ -232,6 +244,45 @@ function deriveRunnerContext(decision: TaskRouteDecision): RouteRunnerContext {
   };
 }
 
+function deriveExecutorContext(
+  decision: TaskRouteDecision,
+  runnerContext: RouteRunnerContext,
+): RouteExecutorContext {
+  const runnerRouteActive = runnerContext.runnerIsRequired || runnerContext.runnerIsAllowedNow;
+  const currentAgentMustExecute =
+    !runnerRouteActive &&
+    decision.executionPacket.actionKind === "local_command" &&
+    decision.executionPacket.safeToMutate;
+  if (runnerRouteActive) {
+    return {
+      executor: "runner",
+      runnerRouteActive,
+      currentAgentMustExecute: false,
+      instruction: "runner_route_follow_runner_lifecycle",
+      warning:
+        "runner route is active; inspect runner artifacts/status before local mutation or verification",
+    };
+  }
+  if (currentAgentMustExecute) {
+    return {
+      executor: "current_agent",
+      runnerRouteActive,
+      currentAgentMustExecute,
+      instruction: "current_agent_executes_safe_command",
+      warning:
+        "not a runner route; the current coding agent must run safe_command itself and must not wait for or retry a runner",
+    };
+  }
+  return {
+    executor: "current_agent",
+    runnerRouteActive,
+    currentAgentMustExecute: false,
+    instruction: "current_agent_waits_for_provider_or_recompute",
+    warning:
+      "not a runner route; do not introduce runner retry/wait language unless next-action explicitly delegates to task run or wait_runner",
+  };
+}
+
 export function deriveRouteOperatorGuidance(decision: TaskRouteDecision): RouteOperatorGuidance {
   const risks = [
     artifactFreshnessRisk(decision),
@@ -260,6 +311,7 @@ export function deriveRouteOperatorGuidance(decision: TaskRouteDecision): RouteO
     risks.find((risk) => risk.code === "runner_rail_confusion")?.mitigationCommand ??
     null;
   const repeatAllowed = canExecuteNow && artifactRisk === null;
+  const runnerContext = deriveRunnerContext(decision);
   return {
     schemaVersion: 1,
     canExecuteNow,
@@ -286,7 +338,8 @@ export function deriveRouteOperatorGuidance(decision: TaskRouteDecision): RouteO
       command: hookRisk?.mitigationCommand ?? null,
       reason: hookRisk?.summary ?? null,
     },
-    runnerContext: deriveRunnerContext(decision),
+    executorContext: deriveExecutorContext(decision, runnerContext),
+    runnerContext,
     stopReason: canExecuteNow
       ? null
       : (decision.executionPacket.stopReason ??

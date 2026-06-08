@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606081631-MHC3NY/clarify-non-recipe-runner-route-guidance",
+  "created_at": "2026-06-08T16:32:55.363Z",
+  "diffstat_sha256": "sha256:b62fe5e3acc54434f97cf6044167e3a7da5ff13b229c77f0ae3940f43e5fa0a4",
+  "last_verified_at": "2026-06-08T16:38:38.497Z",
+  "last_verified_diffstat_sha256": "sha256:b62fe5e3acc54434f97cf6044167e3a7da5ff13b229c77f0ae3940f43e5fa0a4",
+  "schema_version": 1,
+  "task_id": "202606081631-MHC3NY",
+  "updated_at": "2026-06-08T16:32:55.363Z",
+  "verify": {
+    "status": "pass"
+  }
+}

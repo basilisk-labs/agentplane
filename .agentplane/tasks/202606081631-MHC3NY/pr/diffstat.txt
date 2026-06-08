@@ -1,0 +1,6 @@
+ .../src/commands/shared/route-guidance.test.ts     | 14 ++++++
+ .../src/commands/shared/route-guidance.ts          | 55 +++++++++++++++++++++-
+ .../agentplane/src/commands/task/brief-render.ts   | 13 +++++
+ .../src/commands/task/next-action.command.ts       | 21 +++++++++
+ .../agentplane/src/commands/task/status.command.ts | 11 +++++
+ 5 files changed, 113 insertions(+), 1 deletion(-)
