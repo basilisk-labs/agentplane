@@ -14,7 +14,12 @@ Fix direct workflow closeout regressions reported by GitHub issues #4471, #4472,
 ## Verification
 
 - State: ok
-- Note: Verified: direct route, reconcile guard, and direct close-commit regressions are covered and passing.
+- Note:
+
+```text
+Verified: review fix preserves runner startup for approved TODO direct tasks while started direct
+tasks without runner state route to verify-show.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -25,11 +30,11 @@ Fix direct workflow closeout regressions reported by GitHub issues #4471, #4472,
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...-cli.core.lifecycle.finish-close-commit.test.ts |  7 ++-
- ...cli.core.route-decision.direct-closeout.test.ts | 64 ++++++++++++++++++++++
- .../src/commands/shared/reconcile-check.test.ts    | 18 +++---
- .../commands/shared/route-decision-next-action.ts  | 18 +++++-
- 4 files changed, 94 insertions(+), 13 deletions(-)
+ ...-cli.core.lifecycle.finish-close-commit.test.ts |   7 +-
+ ...cli.core.route-decision.direct-closeout.test.ts | 104 +++++++++++++++++++++
+ .../src/commands/shared/reconcile-check.test.ts    |  18 ++--
+ .../commands/shared/route-decision-next-action.ts  |  28 +++++-
+ 4 files changed, 144 insertions(+), 13 deletions(-)
 ```
 
 </details>

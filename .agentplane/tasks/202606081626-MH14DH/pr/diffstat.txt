@@ -1,5 +1,5 @@
- ...-cli.core.lifecycle.finish-close-commit.test.ts |  7 ++-
- ...cli.core.route-decision.direct-closeout.test.ts | 64 ++++++++++++++++++++++
- .../src/commands/shared/reconcile-check.test.ts    | 18 +++---
- .../commands/shared/route-decision-next-action.ts  | 18 +++++-
- 4 files changed, 94 insertions(+), 13 deletions(-)
+ ...-cli.core.lifecycle.finish-close-commit.test.ts |   7 +-
+ ...cli.core.route-decision.direct-closeout.test.ts | 104 +++++++++++++++++++++
+ .../src/commands/shared/reconcile-check.test.ts    |  18 ++--
+ .../commands/shared/route-decision-next-action.ts  |  28 +++++-
+ 4 files changed, 144 insertions(+), 13 deletions(-)

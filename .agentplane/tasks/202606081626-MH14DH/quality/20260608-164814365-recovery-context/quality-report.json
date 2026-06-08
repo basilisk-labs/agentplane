@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202606081626-MH14DH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-08T16:48:14.365Z",
+  "verdict": "pass",
+  "summary": "Direct workflow closeout regressions remain fixed after review feedback on TODO runner startup routing.",
+  "evaluated_sha": "fd4860785cef3095b59d439dce253356c06f4903",
+  "blueprint_digest": "5ee7a437281ec2ccd0f086778f224520cf470e80c1cf6f9a5839fb09ff360d58",
+  "findings": [
+    "PASS: Approved TODO direct tasks still route to agentplane task run, while started direct tasks with no runner state route to task verify-show; reconcile and close-commit regressions remain covered by focused tests."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606081626-MH14DH/README.md",
+    "bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts",
+    "bun run format:check",
+    "bun run lint:core",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "ap doctor still reports two unrelated historical DONE tasks missing implementation commit hashes: 202606040927-KSESDS and 202606041702-TVTSM2."
+  ]
+}
