@@ -4,7 +4,7 @@ title: "Clarify no-close-commit finish cleanup route"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-08T13:17:36.890Z"
+  updated_at: "2026-06-08T13:18:21.430Z"
   updated_by: "CODER"
-  note: "Command: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts; Result: pass; Evidence: 2 tests passed including no-close-commit dirty tracked artifact route cleanup regression. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: ap doctor; Result: pass; Evidence: doctor OK with 2 unrelated pre-existing DONE-task commit-hash warnings. Command: bun run lint:core and bun run test:critical; Result: pass; Evidence: ESLint passed and critical-cli suite passed 5/5 chunks. Scope: route oracle/next-action cleanup behavior for direct DONE tasks with tracked task artifacts."
+  note: "Command: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts; Result: pass; Evidence: 2 tests passed against commit e1e3e16a1544, including no-close-commit dirty tracked artifact cleanup route. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: ap doctor; Result: pass; Evidence: doctor OK with 2 unrelated pre-existing DONE-task commit-hash warnings. Command: bun run lint:core and bun run test:critical; Result: pass; Evidence: ESLint passed and critical-cli suite passed 5/5 chunks. Scope: direct DONE route oracle cleanup behavior and regression coverage."
   attempts: 0
 commit: null
 comments:
@@ -47,8 +47,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts; Result: pass; Evidence: 2 tests passed including no-close-commit dirty tracked artifact route cleanup regression. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: ap doctor; Result: pass; Evidence: doctor OK with 2 unrelated pre-existing DONE-task commit-hash warnings. Command: bun run lint:core and bun run test:critical; Result: pass; Evidence: ESLint passed and critical-cli suite passed 5/5 chunks. Scope: route oracle/next-action cleanup behavior for direct DONE tasks with tracked task artifacts."
+  -
+    type: "verify"
+    at: "2026-06-08T13:18:21.430Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts; Result: pass; Evidence: 2 tests passed against commit e1e3e16a1544, including no-close-commit dirty tracked artifact cleanup route. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: ap doctor; Result: pass; Evidence: doctor OK with 2 unrelated pre-existing DONE-task commit-hash warnings. Command: bun run lint:core and bun run test:critical; Result: pass; Evidence: ESLint passed and critical-cli suite passed 5/5 chunks. Scope: direct DONE route oracle cleanup behavior and regression coverage."
 doc_version: 3
-doc_updated_at: "2026-06-08T13:17:37.072Z"
+doc_updated_at: "2026-06-08T13:18:21.629Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issue #4474: finish --no-close-commit can mark a direct-workflow task DONE while route guidance says no cleanup is needed even though tracked task artifacts still require an explicit cleanup commit. Improve code and verification so the route oracle surfaces required artifact cleanup instead of a misleading terminal state."
 sections:
@@ -80,6 +86,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-08T13:12:33.514Z, excerpt_hash=sha256:97c982ad8211f9396d5b6bab798b66666cac94f2ddb7cc9b770c93ae91c69573
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606081311-TXT5A5-clarify-no-close-commit-finish-cleanup-route/.agentplane/tasks/202606081311-TXT5A5/blueprint/resolved-snapshot.json
+    - old_digest: 394c75a6dd79044a98c96986aa2781aeeed28db4d1d57109e754abd84f0d3554
+    - current_digest: 394c75a6dd79044a98c96986aa2781aeeed28db4d1d57109e754abd84f0d3554
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606081311-TXT5A5
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606081311-TXT5A5
+    - diagnostic_command: agentplane pr check 202606081311-TXT5A5
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-06-08T13:18:21.430Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Command: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts; Result: pass; Evidence: 2 tests passed against commit e1e3e16a1544, including no-close-commit dirty tracked artifact cleanup route. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: ap doctor; Result: pass; Evidence: doctor OK with 2 unrelated pre-existing DONE-task commit-hash warnings. Command: bun run lint:core and bun run test:critical; Result: pass; Evidence: ESLint passed and critical-cli suite passed 5/5 chunks. Scope: direct DONE route oracle cleanup behavior and regression coverage.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-08T13:17:37.072Z, excerpt_hash=sha256:97c982ad8211f9396d5b6bab798b66666cac94f2ddb7cc9b770c93ae91c69573
 
     Details:
 
@@ -145,6 +181,36 @@ Note: Command: bun test packages/agentplane/src/cli/run-cli.core.route-decision.
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-08T13:12:33.514Z, excerpt_hash=sha256:97c982ad8211f9396d5b6bab798b66666cac94f2ddb7cc9b770c93ae91c69573
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606081311-TXT5A5-clarify-no-close-commit-finish-cleanup-route/.agentplane/tasks/202606081311-TXT5A5/blueprint/resolved-snapshot.json
+- old_digest: 394c75a6dd79044a98c96986aa2781aeeed28db4d1d57109e754abd84f0d3554
+- current_digest: 394c75a6dd79044a98c96986aa2781aeeed28db4d1d57109e754abd84f0d3554
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606081311-TXT5A5
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606081311-TXT5A5
+- diagnostic_command: agentplane pr check 202606081311-TXT5A5
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-06-08T13:18:21.430Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts; Result: pass; Evidence: 2 tests passed against commit e1e3e16a1544, including no-close-commit dirty tracked artifact cleanup route. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: ap doctor; Result: pass; Evidence: doctor OK with 2 unrelated pre-existing DONE-task commit-hash warnings. Command: bun run lint:core and bun run test:critical; Result: pass; Evidence: ESLint passed and critical-cli suite passed 5/5 chunks. Scope: direct DONE route oracle cleanup behavior and regression coverage.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-08T13:17:37.072Z, excerpt_hash=sha256:97c982ad8211f9396d5b6bab798b66666cac94f2ddb7cc9b770c93ae91c69573
 
 Details:
 
