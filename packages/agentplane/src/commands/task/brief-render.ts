@@ -60,6 +60,19 @@ export function reportTaskBriefText(brief: TaskBrief, taskId: string): void {
           `allowed=${String(brief.decision_context.repeatPolicy.allowed)} ` +
           `recompute=${brief.decision_context.repeatPolicy.recomputeCommand}`,
       },
+      {
+        label: "executor_context",
+        value:
+          `executor=${brief.decision_context.executorContext.executor} ` +
+          `runner_route_active=${String(
+            brief.decision_context.executorContext.runnerRouteActive,
+          )} ` +
+          `instruction=${brief.decision_context.executorContext.instruction}`,
+      },
+      {
+        label: "executor_warning",
+        value: brief.decision_context.executorContext.warning,
+      },
       ...(routeRunnerContextIsRelevant(brief.decision_context)
         ? [
             {
