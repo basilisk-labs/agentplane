@@ -4,7 +4,7 @@ title: "Add deterministic intake and quality diagnostics"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,26 @@ verification:
   updated_by: "CODER"
   note: "Verified: deterministic intake command, task-local manifest writing, insights quality counters, runner failure fingerprints, and generated CLI reference were covered by targeted tests, typecheck, lint, docs freshness, routing, and doctor."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-08T07:01:36.852Z"
+  updated_by: "EVALUATOR"
+  note: "Deterministic intake and quality diagnostics implementation matches approved scope."
+  evaluated_sha: "6ed9b958151b711db0cd14a658474611b2b7d4b5"
+  blueprint_digest: "8d1cedc74e1c1788fc8689259692eb3a3a7cf367a50cce59ed0dce5e2372e26d"
+  evidence_refs:
+    - ".agentplane/tasks/202606080633-RA63N8/README.md"
+    - ".agentplane/tasks/202606080633-RA63N8/quality/20260608-070136852-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606080633-RA63N8/quality/20260608-070136852-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606080633-RA63N8/quality/20260608-070136852-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606080633-RA63N8/blueprint/resolved-snapshot.json"
+    - "bun test packages/agentplane/src/cli/run-cli.core.intake.test.ts packages/agentplane/src/cli/run-cli.core.insights-report.test.ts"
+    - "bun run typecheck"
+    - "targeted eslint changed files"
+    - "bun run docs:cli:check"
+    - "ap doctor"
+  findings:
+    - "Pass: the diff adds a no-LLM intake envelope, task-local manifest writing, privacy-safe insights quality metrics, runner failure fingerprints, generated CLI reference, and targeted tests. Verification evidence covers intake behavior, manifest writing, insights rendering, typecheck, targeted lint, formatting, docs freshness, routing, smoke checks, and doctor. Residual full lint wrapper hang is recorded separately and did not produce changed-file diagnostics."
 commit: null
 comments:
   -
