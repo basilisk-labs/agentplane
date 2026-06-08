@@ -203,7 +203,7 @@ describe("runCli", () => {
           "--owner",
           "CODER",
           "--tag",
-          "docs",
+          "code",
           "--root",
           root,
         ]);
@@ -242,7 +242,7 @@ describe("runCli", () => {
           "--body",
           "Verified: finish close commit path writes done metadata and close commit in one invocation.",
           "--result",
-          "finish close commit",
+          "implement resolver",
           "--commit",
           implHash.trim(),
           "--close-commit",
@@ -259,7 +259,8 @@ describe("runCli", () => {
       const { stdout: headSubject } = await execFileAsync("git", ["show", "-s", "--format=%s"], {
         cwd: root,
       });
-      expect(headSubject.trim()).toBe("task: finish close commit");
+      expect(headSubject.trim()).toBe("task: implement resolver");
+      expect(headSubject).not.toContain("code:");
       expect(headSubject).not.toContain("close:");
     },
   );

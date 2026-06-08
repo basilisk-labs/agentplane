@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606081626-MH14DH/fix-direct-workflow-closeout-regressions-from-gi",
+  "created_at": "2026-06-08T16:28:14.734Z",
+  "diffstat_sha256": "sha256:6e14bc6258ce7cda352cdd9fa2d66bdb9fda32a16377ae12fdc0652f61eeae49",
+  "last_verified_at": "2026-06-08T16:34:37.058Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202606081626-MH14DH",
+  "updated_at": "2026-06-08T16:28:14.734Z",
+  "verify": {
+    "status": "pass"
+  }
+}
