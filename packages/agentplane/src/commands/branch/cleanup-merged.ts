@@ -33,7 +33,7 @@ const output = createCliEmitter();
 
 type CleanupBranchKind = "task" | "task-close";
 
-type CleanupCandidate = {
+export type CleanupCandidate = {
   taskId: string;
   branch: string;
   worktreePath: string | null;
@@ -87,7 +87,7 @@ async function taskLifecycleIsOnBase(opts: {
   );
 }
 
-async function resolveCleanupCandidates(opts: {
+export async function resolveCleanupCandidates(opts: {
   ctx: CommandContext;
   gitRoot: string;
   workflowDir: string;

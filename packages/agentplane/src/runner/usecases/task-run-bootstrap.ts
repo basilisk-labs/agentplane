@@ -131,7 +131,11 @@ export function renderTaskRunnerBootstrap(
         };
         nextAction?: { code?: string; command?: string | null; summary?: string };
         workspace?: { checkoutRole?: string };
-        approval?: { effectiveMutationApprovalRequired?: boolean };
+        approval?: {
+          effectiveMutationApprovalRequired?: boolean;
+          gatewayMutationApprovalRequired?: boolean;
+          routeRequiresApproval?: boolean;
+        };
       }
     | undefined;
   const runnerContext = routeDecision ? runnerDecisionContext(routeDecision) : null;
@@ -178,8 +182,18 @@ export function renderTaskRunnerBootstrap(
                 }`
               : "none"
           }`,
+          `- route_requires_approval: ${String(
+            routeDecision.approval?.routeRequiresApproval ??
+              routeDecision.approval?.effectiveMutationApprovalRequired ??
+              true,
+          )}`,
+          `- gateway_mutation_policy: ${String(
+            routeDecision.approval?.gatewayMutationApprovalRequired ?? true,
+          )}`,
           `- effective_mutation_approval: ${String(
-            routeDecision.approval?.effectiveMutationApprovalRequired ?? true,
+            routeDecision.approval?.effectiveMutationApprovalRequired ??
+              routeDecision.approval?.routeRequiresApproval ??
+              true,
           )}`,
           `- route_action_kind: ${routeDecision.executionPacket?.actionKind ?? "unknown"}`,
           `- route_safe_to_mutate: ${String(routeDecision.executionPacket?.safeToMutate ?? false)}`,

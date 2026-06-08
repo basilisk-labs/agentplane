@@ -44,6 +44,7 @@ export function deriveNextAction(opts: {
   resume: TaskResumeContext;
   workflowMode: string;
   prFlow: PrFlowStatusReport | null;
+  cleanupCandidateCount: number | null;
   blockers: readonly RouteBlocker[];
   batchOwnership: RouteBatchOwnership;
 }): RouteNextAction {
@@ -71,6 +72,14 @@ export function deriveNextAction(opts: {
         command: null,
         summary:
           "task is done but the implementation PR is closed before merge; inspect or reopen it",
+        requiresApproval: false,
+      };
+    }
+    if (opts.cleanupCandidateCount === 0) {
+      return {
+        code: "done",
+        command: null,
+        summary: "task is already done and no merged branch/worktree cleanup candidates remain",
         requiresApproval: false,
       };
     }
