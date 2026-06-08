@@ -1,0 +1,8 @@
+ docs/user/cli-reference.generated.mdx              |  46 ++++
+ .../agentplane/src/cli/run-cli.core.intake.test.ts | 176 ++++++++++++
+ .../src/cli/run-cli/command-catalog/core.ts        |   6 +
+ .../src/cli/run-cli/command-loaders/core.ts        |   2 +
+ .../src/commands/insights/insights-report.ts       |  89 +++++-
+ .../src/commands/intake/intake-report.ts           | 300 +++++++++++++++++++++
+ .../src/commands/intake/intake.command.ts          | 167 ++++++++++++
+ 7 files changed, 785 insertions(+), 1 deletion(-)

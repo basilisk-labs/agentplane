@@ -7,6 +7,7 @@ import {
   insightsSpec,
   insightsTriageSpec,
 } from "../../../commands/insights/insights.spec.js";
+import { intakeSpec } from "../../../commands/intake/intake.command.js";
 import { upgradeSpec } from "../../../commands/upgrade.spec.js";
 import { workflowBuildSpec } from "../../../commands/workflow-build.command.js";
 import { workflowSpec } from "../../../commands/workflow.command.js";
@@ -73,6 +74,7 @@ import {
   loadInsightsIssueSpec,
   loadInsightsReportSpec,
   loadInsightsTriageSpec,
+  loadIntakeSpec,
   loadDemoSpec,
   loadReleaseTasksReconcileSpec,
 } from "../command-loaders/core.js";
@@ -151,6 +153,10 @@ export const CORE_COMMANDS = [
   }),
   declareCommand(insightsIssueSpec, {
     load: loadInsightsIssueSpec,
+    needs: "project+config",
+  }),
+  declareCommand(intakeSpec, {
+    load: loadIntakeSpec,
     needs: "project+config",
   }),
   fromCommandsDoctorGitLocksCommand(doctorGitLocksSpec, "runDoctorGitLocks", {

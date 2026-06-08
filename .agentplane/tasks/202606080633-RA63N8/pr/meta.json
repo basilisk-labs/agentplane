@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606080633-RA63N8/add-deterministic-intake-and-quality-diagnostics",
+  "created_at": "2026-06-08T06:35:18.787Z",
+  "diffstat_sha256": "sha256:cb65ed4542711f0fa94a78beec34f3f5f7c496b7866f07308a8589938386e778",
+  "last_verified_at": "2026-06-08T06:57:29.534Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202606080633-RA63N8",
+  "updated_at": "2026-06-08T06:35:18.787Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -88,3 +88,5 @@ export const loadInsightsIssueSpec = (deps: RunDeps) =>
   import("../../../commands/insights/insights.command.js").then((m) =>
     m.makeRunInsightsIssueHandler(deps),
   );
+export const loadIntakeSpec = (deps: RunDeps) =>
+  import("../../../commands/intake/intake.command.js").then((m) => m.makeRunIntakeHandler(deps));
