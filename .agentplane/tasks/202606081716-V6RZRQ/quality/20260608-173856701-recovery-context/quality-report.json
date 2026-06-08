@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202606081716-V6RZRQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-08T17:38:56.701Z",
+  "verdict": "pass",
+  "summary": "Dependabot PR #4488 lockfile repair is complete and merged.",
+  "evaluated_sha": "84dd8737a6d47c174fe001078fcdba6da0289dbb",
+  "blueprint_digest": "84f4e50197b3830a5491b4910eb6e45b6e0e4f80294a470a12844330915ae44e",
+  "findings": [
+    "bun.lock was updated to match website dependency changes; local frozen install and website build:check passed; hosted docs/core checks passed after rerun; Windows first failure was cache infrastructure and passed on rerun."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606081716-V6RZRQ/README.md",
+    "gh pr checks 4488"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
