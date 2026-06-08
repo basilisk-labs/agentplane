@@ -1,10 +1,11 @@
 ---
 id: "202606080758-NWA0GF"
 title: "Fix patch release readiness issues"
-status: "DOING"
+result_summary: "Merged via PR #4481."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -45,11 +46,16 @@ quality_review:
     - "bun test focused suites; bun run format:check; bun run docs:cli:check; bun run hotspots:check; bun run release:check; bun run typecheck; node .agentplane/policy/check-routing.mjs; ap doctor; GitHub PR #4481 checks pass"
   findings:
     - "Implementation covers intake file/Russian prompt detection, redacted intake manifests, release GitHub fallback, insights legacy manifest bucketing, direct reconcile scoping, policy-safe close commit subjects, and no-close guidance. Local checks passed; hosted PR checks passed on PR #4481 before integration attempt."
-commit: null
+commit:
+  hash: "c787343ba654bef1a9e42483708fd8afad016b74"
+  message: "🛠️ NWA0GF code: fix patch release readiness checks"
 comments:
   -
     author: "CODER"
     body: "Start: implementing release-readiness fixes for intake diagnostics, insights quality counters, release next-action GitHub fallback, and direct-workflow issue triage in the dedicated task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4481 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -94,9 +100,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: focused intake/insights/release/direct/commit-wrapper tests passed; format:check passed; docs:cli:check passed; hotspots:check passed; release:check passed; typecheck passed; policy routing passed; ap doctor passed. release:tasks:check is blocked only by this active DOING task before closeout."
+  -
+    type: "status"
+    at: "2026-06-08T08:53:27.474Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4481 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-08T08:32:53.290Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-08T08:53:27.482Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement release-readiness fixes identified by code audit: intake #file and Russian prompt detection, safer intake manifests, release next-action GitHub fallback, insights legacy-quality noise, and direct-workflow issue fixes or verified triage for #4471-#4474."
 sections:
   Summary: |-
