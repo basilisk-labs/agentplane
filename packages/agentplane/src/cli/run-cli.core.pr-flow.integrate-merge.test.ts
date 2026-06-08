@@ -408,7 +408,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       cwd: root,
     });
     const suffix = extractTaskSuffix(taskId);
-    expect(headSubject.trim()).toBe(`🔀 ${suffix} code: integrate task artifacts collision`);
+    expect(headSubject.trim()).toBe(`🔀 ${suffix} task: integrate task artifacts collision`);
     expect(headSubject).not.toContain("✅");
     const { stdout: headFiles } = await execFileAsync("git", ["show", "--name-only", "--format="], {
       cwd: root,
