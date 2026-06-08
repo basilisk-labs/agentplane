@@ -1,10 +1,11 @@
 ---
 id: "202606081626-MH14DH"
 title: "Fix direct workflow closeout regressions from GitHub issues"
-status: "DOING"
+result_summary: "Merged via PR #4494."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -46,11 +47,16 @@ quality_review:
     - "node .agentplane/policy/check-routing.mjs"
   findings:
     - "PASS: Approved TODO direct tasks still route to agentplane task run, while started direct tasks with no runner state route to task verify-show; reconcile and close-commit regressions remain covered by focused tests."
-commit: null
+commit:
+  hash: "a5566c2cc9ecaeefcb06734211cbce461291509e"
+  message: "📝 MH14DH task: refresh review evidence"
 comments:
   -
     author: "CODER"
     body: "Start: fix the three direct workflow closeout regressions reported in GitHub issues #4471, #4472, and #4473 with focused route, reconcile, and close-commit tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4494 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: review fix preserves runner startup for approved TODO direct tasks while started direct tasks without runner state route to verify-show."
+  -
+    type: "status"
+    at: "2026-06-08T17:11:05.674Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4494 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-08T16:48:03.711Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-08T17:11:05.681Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix direct-mode regressions reported in GitHub issues #4471, #4472, and #4473: avoid unnecessary runner route after start-ready, avoid blocking unrelated mutation on unreadable historical task artifacts, and ensure direct closeout commit scope is accepted by repository policy."
 sections:
   Summary: "Fix direct workflow closeout regressions reported by GitHub issues #4471, #4472, and #4473. The intended behavior is that ordinary direct tasks are not routed to runner execution unless runner evidence is actually required, unreadable historical task artifacts do not block unrelated active-task verify/finish flows, and generated direct closeout commits use repository-accepted task/close scope semantics."
