@@ -149,7 +149,7 @@ describe("runCli", () => {
         cwd: root,
       },
     );
-    expect(headSubject.trim()).toBe("docs: branch_pr close commit");
+    expect(headSubject.trim()).toBe("task: branch_pr close commit");
     expect(headSubject).not.toContain("✅");
   });
 
@@ -379,7 +379,7 @@ describe("runCli", () => {
           cwd: root,
         },
       );
-      expect(headSubject.trim()).toBe("docs: branch_pr close commit remote default base");
+      expect(headSubject.trim()).toBe("task: branch_pr close commit remote default base");
       expect(headSubject).not.toContain("✅");
     },
   );
@@ -475,7 +475,7 @@ describe("runCli", () => {
           cwd: root,
         },
       );
-      expect(headSubject.trim()).toBe("docs: branch_pr finish explicit base override");
+      expect(headSubject.trim()).toBe("task: branch_pr finish explicit base override");
       expect(headSubject).not.toContain("✅");
     },
   );
