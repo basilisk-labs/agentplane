@@ -104,7 +104,8 @@ export async function buildCloseCommitMessage(opts: {
 }
 
 function normalizeCloseCommitScope(scope: string): string {
-  return scope === "tests" ? "code" : scope;
+  const normalized = scope.trim();
+  return ["task", "close", "integrate", "formatting"].includes(normalized) ? normalized : "task";
 }
 
 export function taskReadmePathForTask(opts: {

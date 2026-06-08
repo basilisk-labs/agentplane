@@ -272,7 +272,14 @@ async function summarizeQuality(tasks: TaskRecord[]): Promise<InsightsReport["qu
         "context",
         "file-manifest.json",
       );
-      bump(intakeManifest, (await pathExists(manifestPath)) ? "present" : "missing");
+      const manifestExists = await pathExists(manifestPath);
+      if (manifestExists) {
+        bump(intakeManifest, "present");
+      } else if (task.frontmatter.status === "DONE") {
+        bump(intakeManifest, "legacy_done_missing");
+      } else {
+        bump(intakeManifest, "missing");
+      }
 
       const runner = task.frontmatter.runner;
       if (!runner) return;

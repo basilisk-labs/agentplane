@@ -259,7 +259,7 @@ describe("runCli", () => {
       const { stdout: headSubject } = await execFileAsync("git", ["show", "-s", "--format=%s"], {
         cwd: root,
       });
-      expect(headSubject.trim()).toBe("docs: finish close commit");
+      expect(headSubject.trim()).toBe("task: finish close commit");
       expect(headSubject).not.toContain("close:");
     },
   );

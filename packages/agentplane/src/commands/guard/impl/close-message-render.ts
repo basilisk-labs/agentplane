@@ -110,6 +110,10 @@ export function normalizeScope(opts: {
   files?: string[];
 }): string {
   const preferred = [
+    "task",
+    "close",
+    "integrate",
+    "formatting",
     "context",
     "codex",
     "runner",

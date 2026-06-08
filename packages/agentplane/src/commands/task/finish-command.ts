@@ -21,7 +21,7 @@ export async function cmdFinish(options: FinishOptions): Promise<number> {
       event: "finish_started",
       details: { task_count: options.taskIds.length, backend: ctx.backendId },
     });
-    await ensureReconciledBeforeMutation({ ctx, command: "finish" });
+    await ensureReconciledBeforeMutation({ ctx, command: "finish", taskIds: options.taskIds });
     await ensureFinishRunsOnBaseBranch({
       ctx,
       cwd: options.cwd,

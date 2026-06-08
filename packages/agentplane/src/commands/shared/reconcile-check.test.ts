@@ -93,6 +93,73 @@ describe("commands/shared/reconcile-check", () => {
     });
   });
 
+  it("ignores unrelated unreadable historical task warnings for task-scoped mutations", async () => {
+    const scopedCtx = mkCtx({
+      taskBackend: {
+        id: "mock",
+        listTasks: vi.fn().mockResolvedValue([]),
+        getTask: vi.fn().mockResolvedValue(null),
+        writeTask: vi.fn().mockResolvedValue(),
+        getLastListWarnings: vi.fn().mockReturnValue(["skip:T-HIST: unreadable_readme"]),
+      } as unknown as CommandContext["taskBackend"],
+    });
+    await expect(
+      ensureReconciledBeforeMutation({
+        ctx: scopedCtx,
+        command: "verify",
+        taskIds: ["T-ACTIVE"],
+      }),
+    ).resolves.toBeUndefined();
+
+    const activeCtx = mkCtx({
+      taskBackend: {
+        id: "mock",
+        listTasks: vi.fn().mockResolvedValue([]),
+        getTask: vi.fn().mockResolvedValue(null),
+        writeTask: vi.fn().mockResolvedValue(),
+        getLastListWarnings: vi.fn().mockReturnValue(["skip:T-ACTIVE: unreadable_readme"]),
+      } as unknown as CommandContext["taskBackend"],
+    });
+    await expect(
+      ensureReconciledBeforeMutation({
+        ctx: activeCtx,
+        command: "verify",
+        taskIds: ["T-ACTIVE"],
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        command: "verify",
+        warning_count: 1,
+      },
+    });
+  });
+
+  it("keeps unrelated invalid frontmatter warnings even for task-scoped mutations", async () => {
+    const ctx = mkCtx({
+      taskBackend: {
+        id: "mock",
+        listTasks: vi.fn().mockResolvedValue([]),
+        getTask: vi.fn().mockResolvedValue(null),
+        writeTask: vi.fn().mockResolvedValue(),
+        getLastListWarnings: vi.fn().mockReturnValue(["skip:T-HIST: invalid_readme_frontmatter"]),
+      } as unknown as CommandContext["taskBackend"],
+    });
+    await expect(
+      ensureReconciledBeforeMutation({
+        ctx,
+        command: "finish",
+        taskIds: ["T-ACTIVE"],
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        command: "finish",
+        warning_count: 1,
+      },
+    });
+  });
+
   it("skips task scan when strictTaskScan=false", async () => {
     const listTasks = vi.fn().mockRejectedValue(new Error("should not run"));
     const ctx = mkCtx({
