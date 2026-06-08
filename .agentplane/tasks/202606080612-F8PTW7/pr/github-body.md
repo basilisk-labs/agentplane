@@ -16,7 +16,7 @@ Make ap route outputs surface clearer diagnostics and must-not guidance for ambi
 ## Verification
 
 - State: ok
-- Note: CI verify-static failure fixed locally; lint, focused tests, typecheck, and changed-format passed.
+- Note: Review thread fix validated locally; lint, focused tests, typecheck, and changed-format passed.
 - Canonical workflow state lives in the task README.
 
 <details>

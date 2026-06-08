@@ -270,7 +270,7 @@ describe("route operator guidance", () => {
       },
       nextAction: {
         code: "sync_hosted_close",
-        command: "agentplane cleanup merged --finalize",
+        command: "agentplane cleanup merged --finalize --base main",
         summary:
           "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
         requiresApproval: false,
@@ -281,7 +281,7 @@ describe("route operator guidance", () => {
         authoritativeCheckoutPath: "/repo",
         mutationPathHint: "/repo",
         blocker: null,
-        nextCommand: "agentplane cleanup merged --finalize",
+        nextCommand: "agentplane cleanup merged --finalize --base main",
         summary:
           "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
       },
@@ -289,7 +289,7 @@ describe("route operator guidance", () => {
       executionPacket: {
         actionKind: "local_command",
         safeToMutate: true,
-        exactArgv: ["agentplane", "cleanup", "merged", "--finalize"],
+        exactArgv: ["agentplane", "cleanup", "merged", "--finalize", "--base", "main"],
         stopReason: null,
         returnControlWhen:
           "after the exact command exits; recompute task next-action before any further step",
@@ -300,12 +300,12 @@ describe("route operator guidance", () => {
 
     expect(deriveRouteOperatorGuidance(decision)).toMatchObject({
       canExecuteNow: true,
-      safeCommand: "agentplane cleanup merged --finalize",
-      diagnosticCommand: "agentplane cleanup merged --finalize",
+      safeCommand: "agentplane cleanup merged --finalize --base main",
+      diagnosticCommand: "agentplane cleanup merged --finalize --base main",
       risks: [
         {
           code: "hosted_close_finalize",
-          mitigationCommand: "agentplane cleanup merged --finalize",
+          mitigationCommand: "agentplane cleanup merged --finalize --base main",
         },
       ],
     });

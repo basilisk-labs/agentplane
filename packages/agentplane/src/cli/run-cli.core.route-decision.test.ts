@@ -848,7 +848,7 @@ describe("runCli route decision commands", () => {
       };
       expect(parsed.nextAction).toMatchObject({
         code: "sync_hosted_close",
-        command: "agentplane cleanup merged --finalize",
+        command: "agentplane cleanup merged --finalize --base main",
       });
       expect(parsed.oracle).toMatchObject({
         phase: "hosted_close_recorded_upstream",
@@ -856,7 +856,7 @@ describe("runCli route decision commands", () => {
       });
       expect(parsed.executionPacket).toMatchObject({
         actionKind: "local_command",
-        exactArgv: ["agentplane", "cleanup", "merged", "--finalize"],
+        exactArgv: ["agentplane", "cleanup", "merged", "--finalize", "--base", "main"],
         recommendedRole: "INTEGRATOR",
         safeToMutate: true,
       });
