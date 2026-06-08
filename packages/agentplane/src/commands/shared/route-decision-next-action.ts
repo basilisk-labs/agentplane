@@ -53,7 +53,7 @@ export function deriveNextAction(opts: {
     if (opts.blockers.some((blocker) => blocker.code === "dirty_task_artifacts")) {
       return {
         code: "commit_direct_task_artifacts",
-        command: `agentplane commit ${id} --close`,
+        command: `agentplane commit ${id} --close --unstage-others`,
         summary:
           "task is marked done but tracked task artifacts still need the deterministic cleanup commit",
         requiresApproval: false,
