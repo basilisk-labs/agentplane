@@ -1,10 +1,11 @@
 ---
 id: "202606080517-1ZYCFK"
 title: "Surface AgentPlane-owned automation boundaries"
-status: "DOING"
+result_summary: "Merged via PR #4475."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -51,11 +52,16 @@ quality_review:
     - "Route execution packets surface AgentPlane-owned PR artifact, evaluator SHA, integration lane, hosted-close, and cleanup boundaries in must_not."
     - "Canonical policy source and projected policy both mark the automation boundaries as CLI-owned unless route output delegates a manual fallback."
     - "User lifecycle docs list the AgentPlane-owned automations without obsolete manual remote guidance and state the correct stale quality-review recovery: rerun evaluator on current HEAD, then recompute route."
-commit: null
+commit:
+  hash: "5f0a175b070cc3dc7b9dc521f7f34eb95f9c4ea4"
+  message: "🚧 1ZYCFK task: refresh final quality evidence"
 comments:
   -
     author: "CODER"
     body: "Start: implement AgentPlane-owned automation boundary guidance in branch_pr policy, route oracle must_not packets, docs, and focused route tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4475 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -82,9 +88,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/commands/shared/route-oracle.test.ts | Result: pass | Evidence: 5 pass, 0 fail, 12 expect calls. Command: bun test packages/agentplane/src/workflow-lifecycle/parity-check.test.ts | Result: pass | Evidence: 2 pass, 0 fail; lifecycle docs no longer trip obsolete manual remote wording. Command: bun run agents:check | Result: pass | Evidence: agents templates OK. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK; workflow.branch_pr policy and asset are 98 lines. Command: bun run format:check | Result: pass | Evidence: All matched files use Prettier code style. Command: agentplane doctor | Result: pass | Evidence: OK; only two pre-existing DONE-task missing-commit warnings outside this task. Command: git diff --check | Result: pass | Evidence: no whitespace errors."
+  -
+    type: "status"
+    at: "2026-06-08T06:05:26.645Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4475 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-08T05:59:42.947Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-08T06:05:26.652Z"
+doc_updated_by: "INTEGRATOR"
 description: "Teach branch_pr agents which PR, evaluator, integration, hosted-close, and cleanup operations AgentPlane owns so agents do not duplicate or stale them manually."
 sections:
   Summary: |-

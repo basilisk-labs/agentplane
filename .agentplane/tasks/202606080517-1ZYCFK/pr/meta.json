@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-08T06:04:41Z",
   "base": "main",
   "branch": "task/202606080517-1ZYCFK/surface-agentplane-owned-automation-boundaries",
   "created_at": "2026-06-08T05:22:46.289Z",
   "diffstat_sha256": "sha256:ed8eb94919e22109d61bd18f7b20247b8549c94f5c7d3f2f4a4cc127f3b92047",
   "last_verified_at": "2026-06-08T05:59:42.791Z",
   "last_verified_diffstat_sha256": "sha256:ed8eb94919e22109d61bd18f7b20247b8549c94f5c7d3f2f4a4cc127f3b92047",
+  "merge_commit": "5f0a175b070cc3dc7b9dc521f7f34eb95f9c4ea4",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-08T06:04:41Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606080517-1ZYCFK",
-  "updated_at": "2026-06-08T05:22:46.289Z",
+  "updated_at": "2026-06-08T06:04:41Z",
   "verify": {
     "status": "pass"
   }
