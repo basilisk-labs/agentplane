@@ -13,7 +13,7 @@ Created: 2026-06-08T13:12:33.563Z
 ## Verification
 
 - State: ok
-- Note: Command: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts; Result: pass; Evidence: 2 tests passed against commit e1e3e16a1544, including no-close-commit dirty tracked artifact cleanup route. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: ap doctor; Result: pass; Evidence: doctor OK with 2 unrelated pre-existing DONE-task commit-hash warnings. Command: bun run lint:core and bun run test:critical; Result: pass; Evidence: ESLint passed and critical-cli suite passed 5/5 chunks. Scope: direct DONE route oracle cleanup behavior and regression coverage.
+- Note: Command: bun run format:check; Result: pass; Evidence: All matched files use Prettier code style after format fix. Command: bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts; Result: pass; Evidence: 2 tests passed against commit 852b9a6f3ed7, including no-close-commit dirty tracked artifact cleanup route. Command: bun run lint:core; Result: pass; Evidence: ESLint passed. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: git push pre-push fast CI; Result: pass before push; Evidence: targeted route-oracle suite passed 5 files / 37 tests plus schemas, release parity, build, CLI cold-start baseline, hotspot and routing gates. Scope: direct DONE route oracle cleanup behavior and formatting repair.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
