@@ -147,23 +147,56 @@ function exactArgvFor(command: string | null): string[] | null {
   return args.length > 0 ? args : null;
 }
 
-function mustNotFor(actionKind: RouteExecutionPacket["actionKind"]): string[] {
+function automationBoundaryMustNotFor(code: string): string[] {
+  const rules: Record<string, string[]> = {
+    open_pr: [
+      "do not create/link the hosted PR manually; agentplane pr open owns branch publish, PR artifacts, and PR creation/linking",
+    ],
+    update_pr_artifacts: [
+      "do not repair stale PR artifacts with manual edits or amend commits; agentplane pr update/pr check own PR artifact freshness",
+    ],
+    verify_or_update_pr: [
+      "do not repair stale PR artifacts with manual edits or amend commits; agentplane pr update/pr check own PR artifact freshness",
+      "do not amend only to align quality_review.evaluated_sha; rerun evaluator on current HEAD, then recompute the route",
+    ],
+    wait_hosted_checks: [
+      "do not merge/rebase/squash the task branch manually; integrate queue/integrate own the serialized merge lane",
+      "do not amend only to align quality_review.evaluated_sha; rerun evaluator on current HEAD, then recompute the route",
+    ],
+    open_close_tail: [
+      "do not write close-tail artifacts manually; agentplane task hosted-close-pr owns close-tail recovery",
+    ],
+    sync_hosted_close: [
+      "do not recreate close-tail evidence after hosted close landed; sync base truth, then run AgentPlane cleanup",
+    ],
+    cleanup: [
+      "do not delete task branches/worktrees manually; agentplane cleanup merged owns merged-work cleanup",
+    ],
+  };
+  return rules[code] ?? [];
+}
+
+function mustNotFor(opts: {
+  actionKind: RouteExecutionPacket["actionKind"];
+  nextAction: RouteBatchNextAction;
+}): string[] {
   const base = [
     "do not reconstruct branch/worktree/PR state from prose",
     "do not widen lifecycle authority beyond this packet",
     "do not mutate outside mutationPathHint",
+    ...automationBoundaryMustNotFor(opts.nextAction.code),
   ];
-  if (actionKind === "local_command") {
+  if (opts.actionKind === "local_command") {
     return [
       ...base,
       "do not execute raw shell when exactArgv is null",
       "do not continue after a non-zero command exit without recomputing the route",
     ];
   }
-  if (actionKind === "provider_action") {
+  if (opts.actionKind === "provider_action") {
     return [...base, "do not complete AgentPlane task truth from provider/card state"];
   }
-  if (actionKind === "wait") {
+  if (opts.actionKind === "wait") {
     return [...base, "do not reclaim or force progress without explicit parent approval"];
   }
   return [...base, "do not perform further task mutation for this route state"];
@@ -392,7 +425,7 @@ export function deriveRouteExecutionPacket(opts: {
     mutationPathHint: opts.oracle.mutationPathHint,
     mustRunFrom: opts.oracle.authoritativeCheckoutPath,
     exactArgv,
-    mustNot: mustNotFor(actionKind),
+    mustNot: mustNotFor({ actionKind, nextAction: opts.nextAction }),
     returnControlWhen: returnControlWhenFor({ actionKind, nextAction: opts.nextAction }),
     humanProviderAction: humanProviderActionFor({ actionKind, nextAction: opts.nextAction }),
     staleStateCheck: `agentplane task next-action ${opts.task.id} --explain`,
