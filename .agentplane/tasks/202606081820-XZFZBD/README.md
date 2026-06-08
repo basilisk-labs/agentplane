@@ -19,11 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "ok"
+  updated_at: "2026-06-08T20:57:48.589Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.20."
 commit:
   hash: "3cf71ddd68f170918cf399434d97e32de95e28f1"
   message: "📝 XZFZBD release: refresh README headers"
@@ -50,8 +49,8 @@ events:
     to: "DONE"
     note: "Verified: PR #4500 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-08T20:43:24.238Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-06-08T20:57:48.589Z"
+doc_updated_by: "DEUS"
 description: "Prepare, verify, merge, and publish AgentPlane v0.6.20 with external GitHub and npm evidence."
 sections:
   Summary: |-
@@ -79,6 +78,19 @@ sections:
     6. Confirm final repository state. Expected: git status --short --untracked-files=all has no unintended changes, and task findings capture any residual release risk.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.20.
+    - Details:
+      - release_sha: 0b33a0fa905f7ca23bff1594c6be32ffcf92a4ba
+      - version: 0.6.20
+      - tag: v0.6.20
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.20
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/27166239175
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -120,6 +132,19 @@ Release plan: version=v0.6.20, tag=v0.6.20, scope=prepare candidate from clean o
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+- State: ok
+- Note: Hosted publish confirmed for v0.6.20.
+- Details:
+  - release_sha: 0b33a0fa905f7ca23bff1594c6be32ffcf92a4ba
+  - version: 0.6.20
+  - tag: v0.6.20
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.20
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/27166239175
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
