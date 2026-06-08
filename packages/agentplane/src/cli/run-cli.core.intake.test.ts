@@ -116,6 +116,60 @@ describe("runCli intake", () => {
     }
   });
 
+  it("rejects path-like or non-existent task ids before writing a manifest", async () => {
+    const root = await mkGitRepoRoot();
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "intake",
+          "Implement approved scope",
+          "--task",
+          "../../../tmp/foo",
+          "--write-manifest",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain("Invalid value for --task");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "intake",
+          "Implement approved scope",
+          "--task",
+          "202606080633-NOTASK",
+          "--write-manifest",
+          "--root",
+          root,
+        ]);
+        expect(code).not.toBe(0);
+        expect(
+          await readFile(
+            path.join(
+              root,
+              ".agentplane",
+              "tasks",
+              "202606080633-NOTASK",
+              "context",
+              "file-manifest.json",
+            ),
+            "utf8",
+          ).catch(() => null),
+        ).toBeNull();
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
   it("surfaces intake manifest coverage in insights report", async () => {
     const root = await mkGitRepoRoot();
     const createIo = captureStdIO();
