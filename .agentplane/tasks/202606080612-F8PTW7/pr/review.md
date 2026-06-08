@@ -30,10 +30,10 @@ Created: 2026-06-08T06:13:11.577Z
 
 ```text
  .../src/cli/run-cli.core.route-decision.test.ts    |   9 +-
- .../commands/shared/route-decision-next-action.ts  |   4 +-
+ .../commands/shared/route-decision-next-action.ts  |   8 +-
  .../src/commands/shared/route-guidance.test.ts     | 184 +++++++++++++++++++++
  .../src/commands/shared/route-guidance.ts          |  67 +++++++-
- 4 files changed, 253 insertions(+), 11 deletions(-)
+ 4 files changed, 253 insertions(+), 15 deletions(-)
 ```
 
 </details>
