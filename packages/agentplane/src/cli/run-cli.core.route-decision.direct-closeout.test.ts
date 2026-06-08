@@ -62,6 +62,46 @@ async function recordEvaluatorReview(root: string, taskId: string): Promise<void
 }
 
 describe("runCli route decision direct closeout", () => {
+  it("keeps the runner startup route for approved direct tasks that have not started", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise direct route guidance before start-ready.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        route_oracle: { phase: string; nextCommand: string | null };
+        next_action: { code: string; command: string | null };
+      };
+      expect(parsed.route_oracle.phase).toBe("direct_execution");
+      expect(parsed.next_action).toMatchObject({
+        code: "run",
+        command: `agentplane task run ${taskId}`,
+      });
+      expect(parsed.route_oracle.nextCommand).toBe(`agentplane task run ${taskId}`);
+    } finally {
+      nextIo.restore();
+    }
+  });
+
   it("does not require a runner route for a newly started direct task without runner state", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
