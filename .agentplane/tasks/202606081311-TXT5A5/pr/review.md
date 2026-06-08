@@ -33,8 +33,8 @@ Created: 2026-06-08T13:12:33.563Z
  .../src/commands/shared/route-decision-blockers.ts |  35 ++++-
  .../commands/shared/route-decision-next-action.ts  |   9 ++
  .../src/commands/shared/route-decision.ts          |   8 ++
- .../agentplane/src/commands/shared/route-oracle.ts |   5 +-
- 5 files changed, 207 insertions(+), 2 deletions(-)
+ .../agentplane/src/commands/shared/route-oracle.ts |  13 +-
+ 5 files changed, 211 insertions(+), 6 deletions(-)
 ```
 
 </details>

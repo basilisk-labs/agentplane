@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202606081311-TXT5A5/clarify-no-close-commit-finish-cleanup-route",
   "created_at": "2026-06-08T13:12:33.563Z",
-  "diffstat_sha256": "sha256:98de24093c6c2bfd04e08f761265b22b28cb5fdea55b117a05cf9c0f229fb412",
+  "diffstat_sha256": "sha256:6191e2305ad20286bfe75184869a8c4ce55a38c9d9399c26d23c1e53c698e674",
   "last_verified_at": "2026-06-08T13:18:21.430Z",
   "last_verified_diffstat_sha256": "sha256:98de24093c6c2bfd04e08f761265b22b28cb5fdea55b117a05cf9c0f229fb412",
   "schema_version": 1,

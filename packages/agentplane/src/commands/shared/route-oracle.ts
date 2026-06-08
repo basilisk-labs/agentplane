@@ -297,10 +297,10 @@ export function deriveRouteOracle(opts: {
         code === "commit_direct_task_artifacts"
           ? "direct_done_pending_artifact_commit"
           : opts.task.status === "DONE"
-          ? "done"
-          : code === "complete_direct"
-            ? "direct_verified_pending_closeout"
-            : "direct_execution",
+            ? "done"
+            : code === "complete_direct"
+              ? "direct_verified_pending_closeout"
+              : "direct_execution",
       authoritativeCheckout: "current_checkout",
     });
   }
