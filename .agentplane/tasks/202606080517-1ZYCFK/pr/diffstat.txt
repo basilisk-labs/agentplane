@@ -1,0 +1,5 @@
+ .agentplane/policy/workflow.branch_pr.md           |  2 +-
+ docs/user/task-lifecycle.mdx                       | 23 ++++++++++++
+ .../src/commands/shared/route-oracle.test.ts       | 15 ++++++++
+ .../agentplane/src/commands/shared/route-oracle.ts | 43 +++++++++++++++++++---
+ 4 files changed, 77 insertions(+), 6 deletions(-)

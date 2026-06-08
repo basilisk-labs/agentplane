@@ -70,6 +70,12 @@ describe("route oracle execution packet", () => {
         "after the exact command exits; recompute task next-action before any further step",
       staleStateCheck: "agentplane task next-action 202605281713-EW6N63 --explain",
     });
+    expect(packet.mustNot).toContain(
+      "do not merge/rebase/squash the task branch manually; integrate queue/integrate own the serialized merge lane",
+    );
+    expect(packet.mustNot).toContain(
+      "do not amend only to align quality_review.evaluated_sha; rerun evaluator on current HEAD, then recompute the route",
+    );
   });
 
   it("classifies no-command wait actions as wait instead of terminal stop", () => {
@@ -170,6 +176,12 @@ describe("route oracle execution packet", () => {
       verificationCandidate: "agentplane pr check <task-id>",
       evidenceMissing: ["verification_record"],
     });
+    expect(packet.mustNot).toContain(
+      "do not repair stale PR artifacts with manual edits or amend commits; agentplane pr update/pr check own PR artifact freshness",
+    );
+    expect(packet.mustNot).toContain(
+      "do not amend only to align quality_review.evaluated_sha; rerun evaluator on current HEAD, then recompute the route",
+    );
   });
 
   it("keeps quoted command arguments intact in exact argv packets", () => {
@@ -271,5 +283,8 @@ describe("route oracle execution packet", () => {
         "next command is not argv-safe; route must be split before an external agent can execute it",
     });
     expect(packet.returnControlWhen).toContain("split into argv-safe steps");
+    expect(packet.mustNot).toContain(
+      "do not recreate close-tail evidence after hosted close landed; sync base truth, then run AgentPlane cleanup",
+    );
   });
 });
