@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "task_id": "202606080517-1ZYCFK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-08T05:59:59.947Z",
+  "verdict": "pass",
+  "summary": "Reviewed route oracle automation-boundary output, canonical policy asset parity, docs parity wording, and focused checks.",
+  "evaluated_sha": "652f3beda6467e1c0e35020e0d78630078ef4f34",
+  "blueprint_digest": "8d2a524cab62d534b6dbfda102fdd854630ac05ada314d514e36b3f5a3f5ac70",
+  "findings": [
+    "Route execution packets surface AgentPlane-owned PR artifact, evaluator SHA, integration lane, hosted-close, and cleanup boundaries in must_not.",
+    "Canonical policy source and projected policy both mark the automation boundaries as CLI-owned unless route output delegates a manual fallback.",
+    "User lifecycle docs list the AgentPlane-owned automations without obsolete manual remote guidance and state the correct stale quality-review recovery: rerun evaluator on current HEAD, then recompute route."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606080517-1ZYCFK/README.md",
+    "packages/agentplane/src/commands/shared/route-oracle.ts",
+    "packages/agentplane/src/commands/shared/route-oracle.test.ts",
+    "packages/agentplane/src/workflow-lifecycle/parity-check.test.ts",
+    "docs/user/task-lifecycle.mdx",
+    ".agentplane/policy/workflow.branch_pr.md",
+    "packages/agentplane/assets/policy/workflow.branch_pr.md",
+    "bun test packages/agentplane/src/commands/shared/route-oracle.test.ts",
+    "bun test packages/agentplane/src/workflow-lifecycle/parity-check.test.ts",
+    "bun run agents:check",
+    "node .agentplane/policy/check-routing.mjs",
+    "bun run format:check",
+    "agentplane doctor"
+  ],
+  "missing_tests": [
+    "Hosted CI rerun is required for full matrix proof after branch publication."
+  ],
+  "hidden_assumptions": [
+    "Agents consume ap task brief or ap task next-action --explain before lifecycle mutations."
+  ],
+  "residual_risks": [
+    "Existing unrelated doctor warnings for old DONE task commit metadata remain outside this task scope."
+  ]
+}
