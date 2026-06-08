@@ -4,7 +4,7 @@ title: "Release AgentPlane 0.6.19"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,11 +18,31 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-06-08T11:30:18.500Z"
+  updated_by: "CODER"
+  note: "Release candidate v0.6.19 prepared and checked locally and on GitHub PR #4489."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-08T11:30:34.541Z"
+  updated_by: "EVALUATOR"
+  note: "Release candidate v0.6.19 satisfies the approved release scope and hosted gate evidence is green."
+  evaluated_sha: "70747328493abba8347a52a5b2df91e26814c396"
+  blueprint_digest: "2cf92bf7430ca34110a24d06cfe601d6afa933f167709660464f0764ebe8c47c"
+  evidence_refs:
+    - ".agentplane/tasks/202606081048-960K2W/README.md"
+    - ".agentplane/tasks/202606081048-960K2W/quality/20260608-113034541-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606081048-960K2W/quality/20260608-113034541-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606081048-960K2W/quality/20260608-113034541-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606081048-960K2W/blueprint/resolved-snapshot.json"
+    - "git:70747328493abba8347a52a5b2df91e26814c396"
+    - "gh-pr:4489 checks pass"
+    - "bun run release:prepublish:fast"
+    - "node scripts/release/check-task-registry-ready.mjs --ignore-release-task 202606081048-960K2W"
+    - "bun run release:check:registry -- --version 0.6.19"
+  findings:
+    - "PASS: candidate branch contains exact 0.6.19 package parity, release notes, generated README headers, release social preview, and task-local verification; local gates and hosted PR #4489 checks passed, including Release-ready manifest and PR verification."
 commit: null
 comments:
   -
@@ -36,8 +56,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: preparing AgentPlane 0.6.19 release candidate in branch_pr task worktree."
+  -
+    type: "verify"
+    at: "2026-06-08T11:30:18.500Z"
+    author: "CODER"
+    state: "ok"
+    note: "Release candidate v0.6.19 prepared and checked locally and on GitHub PR #4489."
 doc_version: 3
-doc_updated_at: "2026-06-08T10:50:02.644Z"
+doc_updated_at: "2026-06-08T11:30:18.720Z"
 doc_updated_by: "CODER"
 description: "Prepare, verify, merge, and publish AgentPlane patch release 0.6.19."
 sections:
@@ -80,11 +106,44 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-06-08T11:30:18.500Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Release candidate v0.6.19 prepared and checked locally and on GitHub PR #4489.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-08T10:50:02.644Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606081048-960K2W-release-agentplane-0-6-19/.agentplane/tasks/202606081048-960K2W/blueprint/resolved-snapshot.json
+    - old_digest: 2cf92bf7430ca34110a24d06cfe601d6afa933f167709660464f0764ebe8c47c
+    - current_digest: 2cf92bf7430ca34110a24d06cfe601d6afa933f167709660464f0764ebe8c47c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606081048-960K2W
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606081048-960K2W
+    - diagnostic_command: agentplane pr check 202606081048-960K2W
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Local gates passed: release task readiness with current release task excluded, npm availability for 0.6.19, release:prepublish:fast, format:check, and pre-push fast CI including 2076 fast tests plus critical CLI chunks.
+      Impact: Candidate branch contains exact package parity 0.6.19, release notes, generated README header assets, and release social preview.
+      Resolution: Hosted PR #4489 checks passed: Core CI, Docs CI, CodeQL, PR verification, Release-ready manifest, test-windows, and required verify jobs.
 id_source: "generated"
 ---
 ## Summary
@@ -135,6 +194,36 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-06-08T11:30:18.500Z — VERIFY — ok
+
+By: CODER
+
+Note: Release candidate v0.6.19 prepared and checked locally and on GitHub PR #4489.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-08T10:50:02.644Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606081048-960K2W-release-agentplane-0-6-19/.agentplane/tasks/202606081048-960K2W/blueprint/resolved-snapshot.json
+- old_digest: 2cf92bf7430ca34110a24d06cfe601d6afa933f167709660464f0764ebe8c47c
+- current_digest: 2cf92bf7430ca34110a24d06cfe601d6afa933f167709660464f0764ebe8c47c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606081048-960K2W
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606081048-960K2W
+- diagnostic_command: agentplane pr check 202606081048-960K2W
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -143,3 +232,7 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Local gates passed: release task readiness with current release task excluded, npm availability for 0.6.19, release:prepublish:fast, format:check, and pre-push fast CI including 2076 fast tests plus critical CLI chunks.
+  Impact: Candidate branch contains exact package parity 0.6.19, release notes, generated README header assets, and release social preview.
+  Resolution: Hosted PR #4489 checks passed: Core CI, Docs CI, CodeQL, PR verification, Release-ready manifest, test-windows, and required verify jobs.

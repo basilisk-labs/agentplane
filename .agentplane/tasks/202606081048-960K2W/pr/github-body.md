@@ -15,8 +15,8 @@ Prepare, verify, merge, and publish AgentPlane patch release 0.6.19.
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Release candidate v0.6.19 prepared and checked locally and on GitHub PR #4489.
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -3,11 +3,12 @@
   "branch": "task/202606081048-960K2W/release-agentplane-0-6-19",
   "created_at": "2026-06-08T10:50:02.700Z",
   "diffstat_sha256": "sha256:3501c13c81293dc242604f5ce98fda531661edbf08128691a3bc7335066cfc53",
-  "last_verified_at": null,
+  "last_verified_at": "2026-06-08T11:30:18.500Z",
+  "last_verified_diffstat_sha256": "sha256:3501c13c81293dc242604f5ce98fda531661edbf08128691a3bc7335066cfc53",
   "schema_version": 1,
   "task_id": "202606081048-960K2W",
   "updated_at": "2026-06-08T10:50:02.700Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
