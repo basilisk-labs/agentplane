@@ -49,13 +49,8 @@
   },
   "permissions": {
     "filesystem": {
-      "allowed_paths": [
-        "packages/**"
-      ],
-      "protected_paths": [
-        ".github/**",
-        "secrets/**"
-      ]
+      "allowed_paths": ["packages/**"],
+      "protected_paths": [".github/**", "secrets/**"]
     },
     "network": {
       "mode": "disabled"
@@ -91,17 +86,12 @@
       {
         "path": "packages/core/src/tasks/task-artifact-schema.acr.ts",
         "status": "added",
-        "risk_categories": [
-          "schema",
-          "evidence"
-        ]
+        "risk_categories": ["schema", "evidence"]
       }
     ],
     "risk": {
       "level": "medium",
-      "categories": [
-        "schema"
-      ],
+      "categories": ["schema"],
       "protected_paths_touched": false
     }
   },

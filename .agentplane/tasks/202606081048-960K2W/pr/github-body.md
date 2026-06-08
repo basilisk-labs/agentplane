@@ -49,11 +49,11 @@ Prepare, verify, merge, and publish AgentPlane patch release 0.6.19.
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
- packages/spec/examples/acr.json                    |  22 +++++--
+ packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.19.png    | Bin 0 -> 54420 bytes
  website/static/img/social/manifest.json            |   8 +++
- 26 files changed, 155 insertions(+), 48 deletions(-)
+ 26 files changed, 141 insertions(+), 44 deletions(-)
 ```
 
 </details>
