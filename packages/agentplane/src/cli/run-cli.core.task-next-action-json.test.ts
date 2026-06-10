@@ -106,7 +106,7 @@ describe("task next-action JSON", () => {
     }
   });
 
-  it("routes open user questions to task answer before task progression", async () => {
+  it("routes open user questions to task answer before plan approval", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -126,7 +126,6 @@ describe("task next-action JSON", () => {
       "--root",
       root,
     ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
     await runCliSilent([
       "task",
       "ask",

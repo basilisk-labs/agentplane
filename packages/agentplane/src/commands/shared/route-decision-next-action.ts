@@ -125,20 +125,20 @@ export function deriveNextAction(opts: {
       requiresApproval: false,
     };
   }
-  if (opts.task.plan_approval?.state !== "approved") {
-    return {
-      code: "approve_plan",
-      command: `agentplane task plan approve ${id} --by ORCHESTRATOR`,
-      summary: "approve the task plan before owner-scoped execution",
-      requiresApproval: true,
-    };
-  }
   const humanInput = getHumanInputState(opts.task);
   if (humanInput.openQuestion) {
     return {
       code: "answer_user_question",
       command: humanInputAnswerCommand(id),
       summary: `answer the open user question before continuing: ${humanInput.openQuestion.question}`,
+      requiresApproval: true,
+    };
+  }
+  if (opts.task.plan_approval?.state !== "approved") {
+    return {
+      code: "approve_plan",
+      command: `agentplane task plan approve ${id} --by ORCHESTRATOR`,
+      summary: "approve the task plan before owner-scoped execution",
       requiresApproval: true,
     };
   }
