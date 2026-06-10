@@ -50,6 +50,12 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 const TASKS_CLI_TIMEOUT_MS = 300_000;
+type HumanInputTestExtensions = {
+  "agentplane.human_input"?: {
+    openQuestion?: { question?: string; previousStatus?: string } | null;
+    history?: { answer?: string }[];
+  };
+};
 
 describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
   it("task comment validates flags and appends comments", async () => {
@@ -193,9 +199,10 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
 
     const blocked = await readTask({ cwd: root, rootOverride: root, taskId });
     expect(blocked.frontmatter.status).toBe("BLOCKED");
-    const blockerState = blocked.frontmatter.extensions?.["agentplane.human_input"] as
-      | { openQuestion?: { question?: string; previousStatus?: string } }
+    const blockedExtensions = blocked.frontmatter.extensions as
+      | HumanInputTestExtensions
       | undefined;
+    const blockerState = blockedExtensions?.["agentplane.human_input"];
     expect(blockerState?.openQuestion?.question).toBe("Which endpoint should this use?");
     expect(blockerState?.openQuestion?.previousStatus).toBe("TODO");
 
@@ -222,9 +229,10 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
 
     const answered = await readTask({ cwd: root, rootOverride: root, taskId });
     expect(answered.frontmatter.status).toBe("TODO");
-    const answeredState = answered.frontmatter.extensions?.["agentplane.human_input"] as
-      | { openQuestion?: unknown; history?: { answer?: string }[] }
+    const answeredExtensions = answered.frontmatter.extensions as
+      | HumanInputTestExtensions
       | undefined;
+    const answeredState = answeredExtensions?.["agentplane.human_input"];
     expect(answeredState?.openQuestion).toBeNull();
     expect(answeredState?.history?.at(-1)?.answer).toBe("Use the existing internal API.");
     expect(answered.frontmatter.comments?.at(-1)?.body).toContain("Use the existing internal API.");

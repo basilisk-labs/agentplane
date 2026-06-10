@@ -46,9 +46,7 @@ export const loadTaskActiveSpec = (deps: RunDeps) =>
     m.makeRunTaskActiveHandler(deps.getCtx),
   );
 export const loadTaskAskSpec = (deps: RunDeps) =>
-  import("../../../commands/task/ask.command.js").then((m) =>
-    m.makeRunTaskAskHandler(deps.getCtx),
-  );
+  import("../../../commands/task/ask.command.js").then((m) => m.makeRunTaskAskHandler(deps.getCtx));
 export const loadTaskAnswerSpec = (deps: RunDeps) =>
   import("../../../commands/task/answer.command.js").then((m) =>
     m.makeRunTaskAnswerHandler(deps.getCtx),
