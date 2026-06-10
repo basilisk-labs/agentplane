@@ -14,6 +14,8 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Task
   - [ready](#ready)
   - [task active](#task-active)
+  - [task answer](#task-answer)
+  - [task ask](#task-ask)
   - [task begin](#task-begin)
   - [task brief](#task-brief)
   - [task comment](#task-comment)
@@ -392,6 +394,52 @@ agentplane task active --json
 ```
 
 - Emit machine-readable active work state.
+
+### task answer
+
+Answer and close a task user-input blocker.
+
+Usage:
+
+```text
+agentplane task answer <task-id> [options]
+```
+
+Options:
+
+- `--by <USER>`: Answer author.
+- `--body <text>`: Answer body.
+
+Examples:
+
+```sh
+agentplane task answer 202602030608-F1Q8AB --by USER --body "Use the existing REST API."
+```
+
+- Close the open user-input blocker.
+
+### task ask
+
+Record a blocking user question for a task.
+
+Usage:
+
+```text
+agentplane task ask <task-id> [options]
+```
+
+Options:
+
+- `--author <ROLE>`: Question author.
+- `--body <text>`: Blocking question.
+
+Examples:
+
+```sh
+agentplane task ask 202602030608-F1Q8AB --author CODER --body "Which API should this use?"
+```
+
+- Block the task until the user answers.
 
 ### task begin
 
