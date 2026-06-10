@@ -164,12 +164,8 @@ describe("task next-action JSON", () => {
       expect(parsed.execution_packet.human_provider_action).toContain(
         "Which implementation path should this use?",
       );
-      expect(parsed.blockers[0]).toEqual(
-        expect.objectContaining({
-          code: "human_input_required",
-          summary: expect.stringContaining("Which implementation path should this use?"),
-        }),
-      );
+      expect(parsed.blockers[0]?.code).toBe("human_input_required");
+      expect(parsed.blockers[0]?.summary).toContain("Which implementation path should this use?");
     } finally {
       io.restore();
     }

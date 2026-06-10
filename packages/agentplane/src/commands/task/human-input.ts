@@ -91,4 +91,3 @@ export function setHumanInputState(
 export function humanInputAnswerCommand(taskId: string): string {
   return `agentplane task answer ${taskId} --by USER --body "..."`;
 }
-
