@@ -176,6 +176,80 @@ describe("runCli task active", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS }, () => {
     }
   });
 
+  it("surfaces waiting-on-user questions with answer commands", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const blockedTaskId = "202603010157-ASKSER";
+    await seedTaskQueryFixture(root, [
+      {
+        id: blockedTaskId,
+        title: "Waiting on user",
+        description: "Needs a user decision",
+        status: "BLOCKED",
+        priority: "high",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["code"],
+        verify: [],
+        plan_approval: {
+          state: "approved",
+          updated_at: "2026-03-01T02:00:00.000Z",
+          updated_by: "ORCHESTRATOR",
+          note: null,
+        },
+        extensions: {
+          "agentplane.human_input": {
+            openQuestion: {
+              id: "question-20260301020000000",
+              question: "Should this use the REST or CLI path?",
+              askedAt: "2026-03-01T02:00:00.000Z",
+              askedBy: "CODER",
+              previousStatus: "DOING",
+            },
+            history: [],
+          },
+        },
+      },
+    ]);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const textIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "active", "--owner", "CODER", "--root", root]);
+      expect(code).toBe(0);
+      expect(textIo.stdout).toContain(blockedTaskId);
+      expect(textIo.stdout).toContain("waiting_on_user=true");
+      expect(textIo.stdout).toContain("Should this use the REST or CLI path?");
+      expect(textIo.stdout).toContain(`agentplane task answer ${blockedTaskId}`);
+    } finally {
+      textIo.restore();
+    }
+
+    const jsonIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "active", "--owner", "CODER", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(jsonIo.stdout) as {
+        items: {
+          human_input: {
+            waiting_on_user: boolean;
+            question: string | null;
+            answer_command: string | null;
+          };
+        }[];
+      };
+      expect(parsed.items[0]?.human_input).toEqual({
+        waiting_on_user: true,
+        question: "Should this use the REST or CLI path?",
+        answer_command: `agentplane task answer ${blockedTaskId} --by USER --body "..."`,
+      });
+    } finally {
+      jsonIo.restore();
+    }
+  });
+
   it("prints a concrete next step when no active work matches", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const doneTaskId = "202603010159-ZZZZZZ";

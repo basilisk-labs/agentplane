@@ -13,6 +13,7 @@ import {
   taskListStatusLabel,
 } from "./shared/branch-pr-list-state.js";
 import type { DependencyState } from "./shared/dependencies.js";
+import { getHumanInputState, humanInputAnswerCommand } from "./human-input.js";
 
 export type TaskActiveParsed = {
   filters: TaskListFilters;
@@ -41,6 +42,11 @@ type ActiveWorkItem = {
   };
   blocker_count: number;
   blockers: { code: string; summary: string }[];
+  human_input: {
+    waiting_on_user: boolean;
+    question: string | null;
+    answer_command: string | null;
+  };
   source_freshness: "live_local";
   rank: {
     bucket: number;
@@ -221,6 +227,13 @@ function formatActiveWorkLine(item: ActiveWorkItem): string {
     ...(item.task.priority ? [`prio=${item.task.priority}`] : []),
     `deps=${formatDependencyState(item.dependency_readiness)}`,
     `next=${item.next_action.code}`,
+    ...(item.human_input.waiting_on_user
+      ? [
+          "waiting_on_user=true",
+          `question=${JSON.stringify(item.human_input.question)}`,
+          `answer=${item.human_input.answer_command}`,
+        ]
+      : []),
     `blockers=${item.blocker_count}`,
     `source_freshness=${item.source_freshness}`,
   ];
@@ -261,6 +274,7 @@ async function buildActiveWorkItems(opts: {
       const status = taskListStatusLabel(task);
       const blockerCount = route.blockers.length;
       const priority = normalizePriority(task.priority);
+      const humanInput = getHumanInputState(task);
       return {
         task: {
           id: task.id,
@@ -278,6 +292,11 @@ async function buildActiveWorkItems(opts: {
         },
         blocker_count: blockerCount,
         blockers: route.blockers.map((blocker) => ({ ...blocker })),
+        human_input: {
+          waiting_on_user: humanInput.openQuestion !== null,
+          question: humanInput.openQuestion?.question ?? null,
+          answer_command: humanInput.openQuestion ? humanInputAnswerCommand(task.id) : null,
+        },
         source_freshness: "live_local" as const,
         rank: {
           bucket: actionRank({

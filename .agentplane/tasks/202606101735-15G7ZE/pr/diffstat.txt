@@ -1,0 +1,13 @@
+ .../cli/run-cli.core.task-next-action-json.test.ts |  69 ++++++++++++
+ .../src/cli/run-cli.core.tasks.active.test.ts      |  74 +++++++++++++
+ .../src/cli/run-cli.core.tasks.lifecycle.test.ts   |  89 +++++++++++++++
+ .../src/cli/run-cli/command-catalog/task.ts        |   6 ++
+ .../src/cli/run-cli/command-loaders/task.ts        |   8 ++
+ .../src/commands/shared/route-decision-blockers.ts |   9 ++
+ .../commands/shared/route-decision-next-action.ts  |  10 ++
+ .../src/commands/shared/route-decision.ts          |   9 ++
+ .../agentplane/src/commands/task/active.command.ts |  19 ++++
+ .../agentplane/src/commands/task/answer.command.ts | 107 ++++++++++++++++++
+ .../agentplane/src/commands/task/ask.command.ts    | 119 +++++++++++++++++++++
+ .../agentplane/src/commands/task/human-input.ts    |  94 ++++++++++++++++
+ 12 files changed, 613 insertions(+)
