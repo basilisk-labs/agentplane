@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202606101735-15G7ZE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-10T17:58:42.646Z",
+  "verdict": "pass",
+  "summary": "Human input blocker implementation is task-scoped and covered by focused CLI tests.",
+  "evaluated_sha": "a08513d863411d967cf8c86287e26b4942c81361",
+  "blueprint_digest": "4e19c83fcadf1f3c322caf9fddc13399e598bed72373a6bce4f34167612bbfab",
+  "findings": [
+    "task ask/answer stores an explicit user-input blocker, active listing exposes the question and answer command, and route next-action blocks progression until answered."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606101735-15G7ZE/README.md",
+    "bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts",
+    "bun run --filter=agentplane build",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

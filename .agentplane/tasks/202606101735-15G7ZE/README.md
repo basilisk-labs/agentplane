@@ -4,7 +4,7 @@ title: "Add task-level human input blockers"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,24 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts. Result: pass, 3 files / 19 tests. Command: bun run --filter=agentplane build. Result: pass, tsup build succeeded. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Command: git diff --check. Result: pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-10T17:58:42.646Z"
+  updated_by: "EVALUATOR"
+  note: "Human input blocker implementation is task-scoped and covered by focused CLI tests."
+  evaluated_sha: "a08513d863411d967cf8c86287e26b4942c81361"
+  blueprint_digest: "4e19c83fcadf1f3c322caf9fddc13399e598bed72373a6bce4f34167612bbfab"
+  evidence_refs:
+    - ".agentplane/tasks/202606101735-15G7ZE/README.md"
+    - ".agentplane/tasks/202606101735-15G7ZE/quality/20260610-175842646-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606101735-15G7ZE/quality/20260610-175842646-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606101735-15G7ZE/quality/20260610-175842646-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606101735-15G7ZE/blueprint/resolved-snapshot.json"
+    - "bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+    - "bun run --filter=agentplane build"
+    - "node .agentplane/policy/check-routing.mjs"
+  findings:
+    - "task ask/answer stores an explicit user-input blocker, active listing exposes the question and answer command, and route next-action blocks progression until answered."
 commit: null
 comments:
   -
