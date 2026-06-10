@@ -6,6 +6,7 @@ import type { RouteBlocker } from "./route-oracle.js";
 import { isTaskLocalOnlyAdvance } from "./task-local-freshness.js";
 import type { CommandContext } from "./task-backend.js";
 import { isRecord } from "../../shared/guards.js";
+import { getHumanInputState } from "../task/human-input.js";
 
 function addBlocker(blockers: RouteBlocker[], code: string, summary: string): void {
   if (blockers.some((blocker) => blocker.code === code)) return;
@@ -96,6 +97,14 @@ export async function deriveBlockers(opts: {
       }
     }
     return blockers;
+  }
+  const humanInput = getHumanInputState(opts.task);
+  if (humanInput.openQuestion) {
+    addBlocker(
+      blockers,
+      "human_input_required",
+      `waiting on user answer to: ${humanInput.openQuestion.question}`,
+    );
   }
   if (opts.task.plan_approval?.state !== "approved") {
     addBlocker(blockers, "plan_not_approved", "task plan is not approved");

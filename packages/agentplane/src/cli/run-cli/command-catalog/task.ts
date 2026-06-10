@@ -1,5 +1,7 @@
 import { taskAddSpec } from "../../../commands/task/add.command.js";
 import { taskActiveSpec } from "../../../commands/task/active.command.js";
+import { taskAnswerSpec } from "../../../commands/task/answer.command.js";
+import { taskAskSpec } from "../../../commands/task/ask.command.js";
 import { taskCloseDuplicateSpec } from "../../../commands/task/close-duplicate.command.js";
 import { taskCloseNoopSpec } from "../../../commands/task/close-noop.command.js";
 import { taskCommentSpec } from "../../../commands/task/comment.command.js";
@@ -82,6 +84,8 @@ import {
   loadTaskHostedCloseSpec,
   loadTaskHostedClosePrSpec,
   loadTaskActiveSpec,
+  loadTaskAnswerSpec,
+  loadTaskAskSpec,
   loadTaskListSpec,
   loadTaskNextSpec,
   loadTaskSearchSpec,
@@ -156,6 +160,8 @@ export const TASK_COMMANDS = [
     helpGroup: "Advanced",
   }),
   declareCommand(taskActiveSpec, { load: loadTaskActiveSpec }),
+  declareCommand(taskAskSpec, { load: loadTaskAskSpec }),
+  declareCommand(taskAnswerSpec, { load: loadTaskAnswerSpec }),
   declareCommand(taskListSpec, {
     load: loadTaskListSpec,
     invocation: requireCanonicalCommandInvocation(["task", "list"]),

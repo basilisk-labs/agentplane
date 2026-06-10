@@ -105,4 +105,73 @@ describe("task next-action JSON", () => {
       io.restore();
     }
   });
+
+  it("routes open user questions to task answer before task progression", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise user input route blocker.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "ask",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Which implementation path should this use?",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(io.stdout) as {
+        next_action: { code: string; command: string; requiresApproval: boolean };
+        execution_packet: {
+          action_kind: string;
+          recommended_role: string;
+          human_provider_action: string;
+        };
+        blockers: { code: string; summary: string }[];
+      };
+      expect(parsed.next_action).toEqual(
+        expect.objectContaining({
+          code: "answer_user_question",
+          command: `agentplane task answer ${taskId} --by USER --body "..."`,
+          requiresApproval: true,
+        }),
+      );
+      expect(parsed.execution_packet.action_kind).toBe("provider_action");
+      expect(parsed.execution_packet.recommended_role).toBe("USER");
+      expect(parsed.execution_packet.human_provider_action).toContain(
+        "Which implementation path should this use?",
+      );
+      expect(parsed.blockers[0]).toEqual(
+        expect.objectContaining({
+          code: "human_input_required",
+          summary: expect.stringContaining("Which implementation path should this use?"),
+        }),
+      );
+    } finally {
+      io.restore();
+    }
+  });
 });

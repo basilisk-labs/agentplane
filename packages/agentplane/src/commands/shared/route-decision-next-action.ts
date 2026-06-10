@@ -6,6 +6,7 @@ import type { RouteNextAction } from "./route-decision-types.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { workStartCommand } from "./work-start-command.js";
 import { isRecord } from "../../shared/guards.js";
+import { getHumanInputState, humanInputAnswerCommand } from "../task/human-input.js";
 
 function verifiedIncludedClosureCandidate(task: TaskData): boolean {
   if (task.verification?.state !== "ok") return false;
@@ -129,6 +130,15 @@ export function deriveNextAction(opts: {
       code: "approve_plan",
       command: `agentplane task plan approve ${id} --by ORCHESTRATOR`,
       summary: "approve the task plan before owner-scoped execution",
+      requiresApproval: true,
+    };
+  }
+  const humanInput = getHumanInputState(opts.task);
+  if (humanInput.openQuestion) {
+    return {
+      code: "answer_user_question",
+      command: humanInputAnswerCommand(id),
+      summary: `answer the open user question before continuing: ${humanInput.openQuestion.question}`,
       requiresApproval: true,
     };
   }

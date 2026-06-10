@@ -22,6 +22,7 @@ import { loadBackendTask, loadCommandContext, type CommandContext } from "./task
 import { buildRouteSourceConfidenceBase } from "./source-confidence.js";
 import { hasClosedPreMergeClosureMarker, parsePrMeta } from "./pr-meta.js";
 import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
+import { humanInputAnswerCommand } from "../task/human-input.js";
 
 function isCliUsageOrIo(err: unknown): boolean {
   return err instanceof CliError && (err.code === "E_USAGE" || err.code === "E_IO");
@@ -170,6 +171,14 @@ function deriveRepairPlan(
         code: "approve_plan",
         command: `agentplane task plan approve ${id} --by ORCHESTRATOR`,
         summary: "approve the task plan before owner-scoped execution",
+        mutates: true,
+      });
+    }
+    if (blocker.code === "human_input_required") {
+      steps.push({
+        code: "answer_user_question",
+        command: humanInputAnswerCommand(id),
+        summary: "answer the open user question before continuing task execution",
         mutates: true,
       });
     }
