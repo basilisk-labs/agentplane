@@ -3,7 +3,7 @@ import { isRecord } from "../../shared/guards.js";
 
 const HUMAN_INPUT_EXTENSION_KEY = "agentplane.human_input";
 
-export type HumanInputQuestion = {
+type HumanInputQuestion = {
   id: string;
   question: string;
   askedAt: string;
