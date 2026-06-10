@@ -1,10 +1,11 @@
 ---
 id: "202606101735-15G7ZE"
 title: "Add task-level human input blockers"
-status: "DOING"
+result_summary: "Merged via PR #4503."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "node .agentplane/policy/check-routing.mjs"
   findings:
     - "task ask/answer stores an explicit user-input blocker, active listing exposes the question and answer command, and route next-action blocks progression until answered."
-commit: null
+commit:
+  hash: "6fe3d34e173a7342e39760ff2ef6fc84744db70b"
+  message: "🐛 15G7ZE task: answer questions before plan approval"
 comments:
   -
     author: "CODER"
     body: "Start: Implement task-scoped human input blockers, expose waiting-on-user tasks in active and route guidance, and verify with focused CLI tests plus routing validation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4503 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts. Result: pass, 3 files / 19 tests. Command: bun run --filter=agentplane build. Result: pass, tsup build succeeded. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Command: git diff --check. Result: pass."
+  -
+    type: "status"
+    at: "2026-06-10T18:51:48.240Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4503 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-10T17:55:00.963Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-10T18:51:48.244Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add explicit task-scoped human input blocker support so agents can record a blocking question, ap task active surfaces waiting-on-user tasks with the exact question and answer command, and route guidance treats unresolved user input as a first-class blocker."
 sections:
   Summary: |-

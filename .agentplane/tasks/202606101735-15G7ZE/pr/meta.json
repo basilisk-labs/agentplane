@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-10T18:51:04Z",
   "base": "main",
   "branch": "task/202606101735-15G7ZE/add-task-level-human-input-blockers",
   "created_at": "2026-06-10T17:38:34.588Z",
   "diffstat_sha256": "sha256:8d3b9ecca822b799a3cdb8a7929eda27bc3370942d880f92cf5e78e7e5529577",
   "last_verified_at": "2026-06-10T17:55:00.382Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "6fe3d34e173a7342e39760ff2ef6fc84744db70b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-10T18:51:04Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606101735-15G7ZE",
-  "updated_at": "2026-06-10T17:38:34.588Z",
+  "updated_at": "2026-06-10T18:51:04Z",
   "verify": {
     "status": "pass"
   }
