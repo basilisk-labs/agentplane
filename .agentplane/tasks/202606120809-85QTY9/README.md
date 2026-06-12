@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,19 +25,21 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-12T08:34:44.647Z"
+  updated_at: "2026-06-12T09:14:53.014Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed."
-  evaluated_sha: "8dd55b3c97719d5585164ec6c18da3454b81813c"
+  note: "Quality review passed after lint repair."
+  evaluated_sha: "541d6680602de7ffaa069210e11efbd7d4d4bb65"
   blueprint_digest: "6e4812a08d29086cee97f6976e0519ae25c0570dcf043905b54fe69fabce383c"
   evidence_refs:
     - ".agentplane/tasks/202606120809-85QTY9/README.md"
-    - ".agentplane/tasks/202606120809-85QTY9/quality/20260612-083444647-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606120809-85QTY9/quality/20260612-083444647-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606120809-85QTY9/quality/20260612-083444647-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606120809-85QTY9/quality/20260612-091453014-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606120809-85QTY9/quality/20260612-091453014-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606120809-85QTY9/quality/20260612-091453014-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606120809-85QTY9/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+    - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
   findings:
-    - "No blocking findings."
+    - "No blocking findings after rerunning lint, typecheck, and route quality tests."
 commit:
   hash: "658a1144e4ea80d9b5f800512ac86f4e687ab010"
   message: "Record quality review for branch_pr churn task"
