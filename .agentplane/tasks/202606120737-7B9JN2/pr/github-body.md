@@ -19,11 +19,8 @@ Keep runner code in place but remove default public/agent prompt guidance that m
 - Note:
 
 ```text
-Verified: current HEAD 1e7d5cfd3 hides runner from default route/help/prompt surfaces while keeping
-internal task run dispatch and the parallel-codex runner prompt exception. Checks passed on this
-branch: focused vitest route/help/prompt suite (8 files, 53 tests); bun run --filter=agentplane
-build; node .agentplane/policy/check-routing.mjs; bun run docs:cli:check; ap doctor (OK with two
-pre-existing DONE task commit-hash warnings).
+Verified current HEAD after CI fixes: bun run format:check; bun run lint:core; bunx vitest run
+route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -42,14 +39,14 @@ pre-existing DONE task commit-hash warnings).
  ...cli.core.route-decision.direct-closeout.test.ts |   8 +-
  .../src/cli/run-cli/command-catalog.test.ts        |   6 +
  .../src/cli/run-cli/command-catalog/task.ts        |  24 +++-
- .../commands/shared/route-decision-next-action.ts  |   6 -
+ .../commands/shared/route-decision-next-action.ts  |  10 --
  .../src/commands/shared/route-guidance.test.ts     |   3 +-
  .../src/commands/shared/route-guidance.ts          |   6 +-
  .../agentplane/src/commands/task/brief-render.ts   |  12 +-
  .../src/commands/task/next-action.command.ts       |  10 +-
  .../src/runner/context/base-prompts.test.ts        | 124 +++++++++++----------
  .../agentplane/src/runner/context/base-prompts.ts  |   3 +-
- 14 files changed, 122 insertions(+), 204 deletions(-)
+ 14 files changed, 121 insertions(+), 209 deletions(-)
 ```
 
 </details>

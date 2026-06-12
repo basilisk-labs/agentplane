@@ -187,9 +187,7 @@ describe("collectRunnerBasePrompts", () => {
       source: "bundled:runner-prompt:RUNNER.md",
       title: "Framework Runner Prompt",
     });
-    expect(prompts[0]?.content).toContain(
-      "This prompt is not part of default agent guidance.",
-    );
+    expect(prompts[0]?.content).toContain("This prompt is not part of default agent guidance.");
   });
 
   it("invalidates cached repo-local prompt files when their content changes", async () => {

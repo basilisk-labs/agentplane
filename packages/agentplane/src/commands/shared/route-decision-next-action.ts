@@ -40,10 +40,6 @@ function proseOnlyIncludedClosureCandidate(task: TaskData): boolean {
   );
 }
 
-function directTaskHasStarted(task: TaskData): boolean {
-  return String(task.status).toUpperCase() === "DOING";
-}
-
 function directRunnerCommand(task: TaskData, resume: TaskResumeContext, taskId: string): string {
   if (resume.runner.run_id || resume.runner.status) {
     return resume.runner.next_command ?? `agentplane task verify-show ${taskId}`;

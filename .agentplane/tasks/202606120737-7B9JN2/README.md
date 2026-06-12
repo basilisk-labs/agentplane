@@ -4,7 +4,7 @@ title: "Hide runner from default agent prompts"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-12T07:50:21.188Z"
-  updated_by: "DOCS"
-  note: "Verified: current HEAD 1e7d5cfd3 hides runner from default route/help/prompt surfaces while keeping internal task run dispatch and the parallel-codex runner prompt exception. Checks passed on this branch: focused vitest route/help/prompt suite (8 files, 53 tests); bun run --filter=agentplane build; node .agentplane/policy/check-routing.mjs; bun run docs:cli:check; ap doctor (OK with two pre-existing DONE task commit-hash warnings)."
+  updated_at: "2026-06-12T08:01:21.346Z"
+  updated_by: "CODER"
+  note: "Verified current HEAD after CI fixes: bun run format:check; bun run lint:core; bunx vitest run route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite."
   attempts: 0
 commit: null
 comments:
@@ -52,8 +52,14 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: current HEAD 1e7d5cfd3 hides runner from default route/help/prompt surfaces while keeping internal task run dispatch and the parallel-codex runner prompt exception. Checks passed on this branch: focused vitest route/help/prompt suite (8 files, 53 tests); bun run --filter=agentplane build; node .agentplane/policy/check-routing.mjs; bun run docs:cli:check; ap doctor (OK with two pre-existing DONE task commit-hash warnings)."
+  -
+    type: "verify"
+    at: "2026-06-12T08:01:21.346Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified current HEAD after CI fixes: bun run format:check; bun run lint:core; bunx vitest run route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite."
 doc_version: 3
-doc_updated_at: "2026-06-12T07:50:21.382Z"
+doc_updated_at: "2026-06-12T08:01:21.620Z"
 doc_updated_by: "DOCS"
 description: "Keep runner code in place but remove default public/agent prompt guidance that makes agents aware of or able to launch the runner. Preserve runner visibility only when the parallel-codex recipe is explicitly active."
 sections:
@@ -136,6 +142,36 @@ sections:
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-06-12T08:01:21.346Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified current HEAD after CI fixes: bun run format:check; bun run lint:core; bunx vitest run route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T07:50:21.382Z, excerpt_hash=sha256:d98c57099bc86c0a0aced11b25e46acac0c113adf57a40ebc6d03a7b2cba14d2
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606120737-7B9JN2-hide-runner-default-prompts/.agentplane/tasks/202606120737-7B9JN2/blueprint/resolved-snapshot.json
+    - old_digest: 896693a74ddd02d87117785ebcf8fc0b5c180e3923165e7712312a3ffe255c7c
+    - current_digest: 896693a74ddd02d87117785ebcf8fc0b5c180e3923165e7712312a3ffe255c7c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606120737-7B9JN2
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606120737-7B9JN2
+    - diagnostic_command: agentplane pr check 202606120737-7B9JN2
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -148,6 +184,10 @@ sections:
     - Observation: Default direct routing returns current-agent verify-show instead of task run; normal task brief/next-action text omits runner_route_active=false; task run commands are internal help surface only; framework runner prompt is collected only when recipe_id is parallel-codex.
       Impact: Default agents should not discover or launch the runner during stabilization.
       Resolution: Left runner implementation code in place, removed public/default route and prompt exposure, and preserved the explicit parallel-codex recipe escape hatch.
+
+    - Observation: Hosted failures were format drift in base-prompts.test.ts and unused helper in route-decision-next-action.ts.
+      Impact: Runner remains hidden from default prompts and public help while CI static/contract checks are addressed.
+      Resolution: Removed the unused helper, formatted the test, and reran local format, lint, and focused regression tests.
 id_source: "generated"
 ---
 ## Summary
@@ -238,6 +278,36 @@ DecisionContextRef:
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+### 2026-06-12T08:01:21.346Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified current HEAD after CI fixes: bun run format:check; bun run lint:core; bunx vitest run route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T07:50:21.382Z, excerpt_hash=sha256:d98c57099bc86c0a0aced11b25e46acac0c113adf57a40ebc6d03a7b2cba14d2
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606120737-7B9JN2-hide-runner-default-prompts/.agentplane/tasks/202606120737-7B9JN2/blueprint/resolved-snapshot.json
+- old_digest: 896693a74ddd02d87117785ebcf8fc0b5c180e3923165e7712312a3ffe255c7c
+- current_digest: 896693a74ddd02d87117785ebcf8fc0b5c180e3923165e7712312a3ffe255c7c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606120737-7B9JN2
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606120737-7B9JN2
+- diagnostic_command: agentplane pr check 202606120737-7B9JN2
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -254,3 +324,7 @@ DecisionContextRef:
 - Observation: Default direct routing returns current-agent verify-show instead of task run; normal task brief/next-action text omits runner_route_active=false; task run commands are internal help surface only; framework runner prompt is collected only when recipe_id is parallel-codex.
   Impact: Default agents should not discover or launch the runner during stabilization.
   Resolution: Left runner implementation code in place, removed public/default route and prompt exposure, and preserved the explicit parallel-codex recipe escape hatch.
+
+- Observation: Hosted failures were format drift in base-prompts.test.ts and unused helper in route-decision-next-action.ts.
+  Impact: Runner remains hidden from default prompts and public help while CI static/contract checks are addressed.
+  Resolution: Removed the unused helper, formatted the test, and reran local format, lint, and focused regression tests.
