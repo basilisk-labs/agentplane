@@ -4,7 +4,7 @@ title: "Expose loop CLI discovery and route planning"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 2
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -19,9 +19,9 @@ verify:
   - "bun run --filter=agentplane test -- packages/agentplane/src/cli/run-cli.core.loop.test.ts"
   - "bun run docs:cli:check"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-06-12T10:24:28.984Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -33,8 +33,8 @@ commit: null
 comments: []
 events: []
 doc_version: 3
-doc_updated_at: "2026-06-08T19:19:02.386Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-06-12T10:24:09.315Z"
+doc_updated_by: "PLANNER"
 description: "Add agentplane loop list/show/explain/plan commands that inspect built-in and project-local loops, score candidates against task or synthetic input, and print reviewable route explanations."
 sections:
   Summary: |-
@@ -51,12 +51,11 @@ sections:
     4. Add command catalog/loaders and help/docs generation integration.
     5. Add CLI tests for text and JSON output.
   Verify Steps: |-
-    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Run `bun run --filter=agentplane test -- packages/agentplane/src/cli/run-cli.core.loop.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
-    2. Run `bun run docs:cli:check`. Expected: it succeeds and confirms the requested outcome for this task.
-    3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-    4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+    1. Run `bun run --filter=agentplane test -- packages/agentplane/src/commands/loop packages/agentplane/src/loops`. Expected: loop list/show/explain/plan text and JSON command behavior are covered.
+    2. Run `bun run docs:cli:check`. Expected: generated CLI docs include loop commands and remain current.
+    3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after command/catalog changes.
+    4. Run `agentplane loop list --json` and a representative `agentplane loop plan ... --json` against a fixture or synthetic input. Expected: selected and rejected loop candidates include reviewable scores/reasons.
+    5. Confirm planning remains read-only and does not create run artifacts or mutate task state.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -87,12 +86,11 @@ Add agentplane loop list/show/explain/plan commands that inspect built-in and pr
 
 ## Verify Steps
 
-PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Run `bun run --filter=agentplane test -- packages/agentplane/src/cli/run-cli.core.loop.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
-2. Run `bun run docs:cli:check`. Expected: it succeeds and confirms the requested outcome for this task.
-3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+1. Run `bun run --filter=agentplane test -- packages/agentplane/src/commands/loop packages/agentplane/src/loops`. Expected: loop list/show/explain/plan text and JSON command behavior are covered.
+2. Run `bun run docs:cli:check`. Expected: generated CLI docs include loop commands and remain current.
+3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after command/catalog changes.
+4. Run `agentplane loop list --json` and a representative `agentplane loop plan ... --json` against a fixture or synthetic input. Expected: selected and rejected loop candidates include reviewable scores/reasons.
+5. Confirm planning remains read-only and does not create run artifacts or mutate task state.
 
 ## Verification
 

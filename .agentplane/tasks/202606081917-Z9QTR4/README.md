@@ -4,7 +4,7 @@ title: "Document AgentPlane Loop Model v0.1"
 status: "TODO"
 priority: "high"
 owner: "DOCS"
-revision: 2
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -19,9 +19,9 @@ verify:
   - "bun run docs:ia:check"
   - "node .agentplane/policy/check-routing.mjs"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-06-12T10:24:22.628Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -33,8 +33,8 @@ commit: null
 comments: []
 events: []
 doc_version: 3
-doc_updated_at: "2026-06-08T19:18:43.997Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-06-12T10:24:01.308Z"
+doc_updated_by: "PLANNER"
 description: "Turn the loop requirements into canonical developer/user documentation: define Loop, LoopRun, Iteration, Observation, Decision, stop conditions, artifact layout, supported MVP scope, and staged non-goals."
 sections:
   Summary: |-
@@ -51,11 +51,11 @@ sections:
     4. Cross-link existing architecture, recipes, runner/evidence docs where relevant.
     5. Verify policy routing and docs IA checks.
   Verify Steps: |-
-    PLANNER fallback scaffold for "Document AgentPlane Loop Model v0.1". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Document AgentPlane Loop Model v0.1". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run `bun run docs:check` or the repo-local docs validation command if narrower docs checks are available. Expected: loop model documentation builds/checks without broken references.
+    2. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after documentation changes.
+    3. Inspect the loop docs/reference pages. Expected: Loop, LoopRun, Iteration, Observation, Decision, stop conditions, artifact layout, MVP scope, and non-goals are explicitly documented.
+    4. Confirm docs state v0.1 safety boundaries: no uncontrolled external agent invocation, no self-modifying trusted loops, and no policy weakening.
+    5. Compare docs against the implemented v0.1 model and record any future v0.2 material in Findings rather than presenting it as current capability.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -86,11 +86,11 @@ Turn the loop requirements into canonical developer/user documentation: define L
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Document AgentPlane Loop Model v0.1". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Document AgentPlane Loop Model v0.1". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run `bun run docs:check` or the repo-local docs validation command if narrower docs checks are available. Expected: loop model documentation builds/checks without broken references.
+2. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after documentation changes.
+3. Inspect the loop docs/reference pages. Expected: Loop, LoopRun, Iteration, Observation, Decision, stop conditions, artifact layout, MVP scope, and non-goals are explicitly documented.
+4. Confirm docs state v0.1 safety boundaries: no uncontrolled external agent invocation, no self-modifying trusted loops, and no policy weakening.
+5. Compare docs against the implemented v0.1 model and record any future v0.2 material in Findings rather than presenting it as current capability.
 
 ## Verification
 

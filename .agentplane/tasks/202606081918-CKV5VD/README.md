@@ -4,7 +4,7 @@ title: "Verify and version AgentPlane loops release candidate"
 status: "TODO"
 priority: "high"
 owner: "TESTER"
-revision: 2
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -20,9 +20,9 @@ verify:
   - "bun run --filter=agentplane test"
   - "bun run docs:cli:check"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-06-12T10:24:33.936Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -34,8 +34,8 @@ commit: null
 comments: []
 events: []
 doc_version: 3
-doc_updated_at: "2026-06-08T19:19:16.393Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-06-12T10:24:17.659Z"
+doc_updated_by: "PLANNER"
 description: "Refresh generated CLI/docs artifacts if needed, run focused and package-level checks, record verification, and bump/package a new branch-local version that includes loop support."
 sections:
   Summary: |-
@@ -52,13 +52,12 @@ sections:
     4. Record verification for included tasks and final git status evidence.
     5. Leave agentplane-loops as the source branch containing the new loop-supported version.
   Verify Steps: |-
-    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Run `bun run --filter=agentplane test`. Expected: it succeeds and confirms the requested outcome for this task.
-    2. Run `bun run --filter=agentplane build`. Expected: it succeeds and confirms the requested outcome for this task.
-    3. Run `bun run docs:cli:check`. Expected: it succeeds and confirms the requested outcome for this task.
-    4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-    5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+    1. Run `bun run --filter=agentplane test`. Expected: package tests pass with loop support included.
+    2. Run `bun run --filter=agentplane build`. Expected: package build succeeds for the branch-local loop version.
+    3. Run `bun run docs:cli:check`. Expected: generated CLI reference is current.
+    4. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid.
+    5. Run focused smoke commands: `agentplane loop list`, `agentplane loop plan --kind code --tag bug --tag test --verify-steps-present`, and a dry-run loop command against a disposable/fixture task. Expected: loop discovery, planning, and dry-run artifacts work without non-dry-run agent execution.
+    6. Confirm the final git state is on `agentplane-loops` and no merge/publish to `main` occurred.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -89,13 +88,12 @@ Refresh generated CLI/docs artifacts if needed, run focused and package-level ch
 
 ## Verify Steps
 
-PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Run `bun run --filter=agentplane test`. Expected: it succeeds and confirms the requested outcome for this task.
-2. Run `bun run --filter=agentplane build`. Expected: it succeeds and confirms the requested outcome for this task.
-3. Run `bun run docs:cli:check`. Expected: it succeeds and confirms the requested outcome for this task.
-4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+1. Run `bun run --filter=agentplane test`. Expected: package tests pass with loop support included.
+2. Run `bun run --filter=agentplane build`. Expected: package build succeeds for the branch-local loop version.
+3. Run `bun run docs:cli:check`. Expected: generated CLI reference is current.
+4. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid.
+5. Run focused smoke commands: `agentplane loop list`, `agentplane loop plan --kind code --tag bug --tag test --verify-steps-present`, and a dry-run loop command against a disposable/fixture task. Expected: loop discovery, planning, and dry-run artifacts work without non-dry-run agent execution.
+6. Confirm the final git state is on `agentplane-loops` and no merge/publish to `main` occurred.
 
 ## Verification
 
