@@ -1,10 +1,11 @@
 ---
 id: "202606120809-85QTY9"
 title: "Reduce branch_pr commit count for single-task fixes"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -37,11 +38,16 @@ quality_review:
     - ".agentplane/tasks/202606120809-85QTY9/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "658a1144e4ea80d9b5f800512ac86f4e687ab010"
+  message: "Record quality review for branch_pr churn task"
 comments:
   -
     author: "CODER"
     body: "Start: reduce branch_pr commit count by moving quality evidence and pre-merge closure ahead of PR publication/integration where route state allows it."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -56,8 +62,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified route decision quality/pre-merge lifecycle change. Checks: bunx vitest route-decision tests passed; route-oracle/route-guidance tests passed; bun run typecheck passed; node .agentplane/policy/check-routing.mjs passed; git diff --check passed; hotspot-report threshold passed."
+  -
+    type: "status"
+    at: "2026-06-12T08:37:43.377Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-06-12T08:28:40.142Z"
+doc_updated_at: "2026-06-12T08:37:43.378Z"
 doc_updated_by: "CODER"
 description: "Optimize branch_pr lifecycle guidance so evaluator quality evidence and pre-merge closure are recorded before the final task-branch publication, reducing common single-task fixes from four commit events toward two to three without weakening verification gates."
 sections:
@@ -117,6 +130,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "8dd55b3c97719d5585164ec6c18da3454b81813c"
+    message: "Reduce branch_pr quality gate commit churn"
 id_source: "generated"
 ---
 ## Summary
