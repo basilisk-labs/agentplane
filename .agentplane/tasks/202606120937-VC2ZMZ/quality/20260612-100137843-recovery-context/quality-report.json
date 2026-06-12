@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202606120937-VC2ZMZ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-12T10:01:37.843Z",
+  "verdict": "pass",
+  "summary": "Quality review passed after unknown pre-push scope repair.",
+  "evaluated_sha": "e0b97e782ca1e81abeb1ae3ae598e3d47e3b554f",
+  "blueprint_digest": "e4e621ae12f0e7362b3444c9a836aee1bac89fdbf2adf2417877d7530efd9f94",
+  "findings": [
+    "No blocking findings. Standard pre-push now blocks broad full-fast selectors and unknown changed-file scopes before local checks; focused tests cover both paths; format, lint, hotspot baseline, policy routing, and focused vitest passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606120937-VC2ZMZ/README.md",
+    "scripts/checks/run-pre-push-hook.mjs",
+    "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

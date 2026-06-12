@@ -4,7 +4,7 @@ title: "Bound pre-push fast CI in git hooks"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -19,27 +19,27 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-12T09:56:39.889Z"
+  updated_at: "2026-06-12T10:01:20.711Z"
   updated_by: "CODER"
-  note: "Verified pre-push full-fast hook guard after hosted contract repair. Checks passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts (84 tests), bun run hotspots:check, bunx eslint scripts/checks/run-pre-push-hook.mjs packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts, bun run format:check, node .agentplane/policy/check-routing.mjs. Pre-commit hook itself died signal 9 during commit, so commit used --no-verify after equivalent manual checks."
+  note: "Verified review-thread repair for unknown pre-push scopes. Checks passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts (85 tests), bunx eslint scripts/checks/run-pre-push-hook.mjs packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts, bun run hotspots:check, bun run format:check, node .agentplane/policy/check-routing.mjs."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-12T09:57:05.818Z"
+  updated_at: "2026-06-12T10:01:37.843Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed after hosted verify-contract repair."
-  evaluated_sha: "0757fb1125acce823e6e62f421126da4c30cebe0"
+  note: "Quality review passed after unknown pre-push scope repair."
+  evaluated_sha: "e0b97e782ca1e81abeb1ae3ae598e3d47e3b554f"
   blueprint_digest: "e4e621ae12f0e7362b3444c9a836aee1bac89fdbf2adf2417877d7530efd9f94"
   evidence_refs:
     - ".agentplane/tasks/202606120937-VC2ZMZ/README.md"
-    - ".agentplane/tasks/202606120937-VC2ZMZ/quality/20260612-095705818-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606120937-VC2ZMZ/quality/20260612-095705818-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606120937-VC2ZMZ/quality/20260612-095705818-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606120937-VC2ZMZ/quality/20260612-100137843-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606120937-VC2ZMZ/quality/20260612-100137843-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606120937-VC2ZMZ/quality/20260612-100137843-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606120937-VC2ZMZ/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts"
     - "scripts/checks/run-pre-push-hook.mjs"
+    - "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts"
   findings:
-    - "No blocking findings. The full-fast pre-push guard is covered in a focused test file, hotspot baseline passes without expansion, and equivalent manual checks passed after hook runtime signal 9."
+    - "No blocking findings. Standard pre-push now blocks broad full-fast selectors and unknown changed-file scopes before local checks; focused tests cover both paths; format, lint, hotspot baseline, policy routing, and focused vitest passed."
 commit: null
 comments:
   -
@@ -65,8 +65,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified pre-push full-fast hook guard after hosted contract repair. Checks passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts (84 tests), bun run hotspots:check, bunx eslint scripts/checks/run-pre-push-hook.mjs packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts, bun run format:check, node .agentplane/policy/check-routing.mjs. Pre-commit hook itself died signal 9 during commit, so commit used --no-verify after equivalent manual checks."
+  -
+    type: "verify"
+    at: "2026-06-12T10:01:20.711Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified review-thread repair for unknown pre-push scopes. Checks passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts (85 tests), bunx eslint scripts/checks/run-pre-push-hook.mjs packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts, bun run hotspots:check, bun run format:check, node .agentplane/policy/check-routing.mjs."
 doc_version: 3
-doc_updated_at: "2026-06-12T09:56:40.512Z"
+doc_updated_at: "2026-06-12T10:01:20.983Z"
 doc_updated_by: "CODER"
 description: "Prevent git pre-push hooks from running the full-fast local CI lane when the fast selector classifies a push as broad. The hook should fail quickly with an actionable diagnostic or route to a bounded hook-safe lane, instead of hanging until signal 9/timeout. Preserve full-fast for explicit local CI invocations."
 sections:
@@ -144,6 +150,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-06-12T10:01:20.711Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified review-thread repair for unknown pre-push scopes. Checks passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts (85 tests), bunx eslint scripts/checks/run-pre-push-hook.mjs packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts, bun run hotspots:check, bun run format:check, node .agentplane/policy/check-routing.mjs.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T09:56:40.512Z, excerpt_hash=sha256:7163c951255340a09d357b9af9b5359c9510a8ae1072a920a53632a23080c43b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606120937-VC2ZMZ-bound-pre-push-fast-ci-in-git-hooks/.agentplane/tasks/202606120937-VC2ZMZ/blueprint/resolved-snapshot.json
+    - old_digest: e4e621ae12f0e7362b3444c9a836aee1bac89fdbf2adf2417877d7530efd9f94
+    - current_digest: e4e621ae12f0e7362b3444c9a836aee1bac89fdbf2adf2417877d7530efd9f94
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606120937-VC2ZMZ
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane evaluator run 202606120937-VC2ZMZ --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202606120937-VC2ZMZ/README.md
+    - diagnostic_command: agentplane evaluator run 202606120937-VC2ZMZ --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202606120937-VC2ZMZ/README.md
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -156,6 +192,10 @@ sections:
     - Observation: Hosted verify-contract failed because the new regression was added to an already oversized hook test file.
       Impact: The implementation was valid but CI contract rejected new test-size debt.
       Resolution: Moved the regression into a focused pre-push full-fast test file, reducing run-cli.core.hooks.hook-run.test.ts below the 1000-line oversized threshold without expanding baseline.
+
+    - Observation: Review thread identified that unknown/multi-branch pre-push scopes could still reach ci:local:fast without AGENTPLANE_FAST_CHANGED_FILES.
+      Impact: The original guard did not cover push scopes where no bounded diff range exists, leaving a signal-9 path open.
+      Resolution: Standard pre-push now blocks non-empty updates with an empty/unknown changed-file scope before running format or local CI; focused regression covers multi-branch updates and asserts local scripts are not invoked.
 id_source: "generated"
 ---
 ## Summary
@@ -242,6 +282,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-06-12T10:01:20.711Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified review-thread repair for unknown pre-push scopes. Checks passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts (85 tests), bunx eslint scripts/checks/run-pre-push-hook.mjs packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts, bun run hotspots:check, bun run format:check, node .agentplane/policy/check-routing.mjs.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T09:56:40.512Z, excerpt_hash=sha256:7163c951255340a09d357b9af9b5359c9510a8ae1072a920a53632a23080c43b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606120937-VC2ZMZ-bound-pre-push-fast-ci-in-git-hooks/.agentplane/tasks/202606120937-VC2ZMZ/blueprint/resolved-snapshot.json
+- old_digest: e4e621ae12f0e7362b3444c9a836aee1bac89fdbf2adf2417877d7530efd9f94
+- current_digest: e4e621ae12f0e7362b3444c9a836aee1bac89fdbf2adf2417877d7530efd9f94
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606120937-VC2ZMZ
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane evaluator run 202606120937-VC2ZMZ --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202606120937-VC2ZMZ/README.md
+- diagnostic_command: agentplane evaluator run 202606120937-VC2ZMZ --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202606120937-VC2ZMZ/README.md
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -258,3 +328,7 @@ DecisionContextRef:
 - Observation: Hosted verify-contract failed because the new regression was added to an already oversized hook test file.
   Impact: The implementation was valid but CI contract rejected new test-size debt.
   Resolution: Moved the regression into a focused pre-push full-fast test file, reducing run-cli.core.hooks.hook-run.test.ts below the 1000-line oversized threshold without expanding baseline.
+
+- Observation: Review thread identified that unknown/multi-branch pre-push scopes could still reach ci:local:fast without AGENTPLANE_FAST_CHANGED_FILES.
+  Impact: The original guard did not cover push scopes where no bounded diff range exists, leaving a signal-9 path open.
+  Resolution: Standard pre-push now blocks non-empty updates with an empty/unknown changed-file scope before running format or local CI; focused regression covers multi-branch updates and asserts local scripts are not invoked.
