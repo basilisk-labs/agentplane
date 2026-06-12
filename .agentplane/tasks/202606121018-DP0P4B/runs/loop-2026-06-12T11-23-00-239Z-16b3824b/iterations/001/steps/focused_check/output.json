@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "focused_check",
+  "stepType": "check.run",
+  "dryRun": true,
+  "status": "prepared",
+  "skippedExecution": true,
+  "reason": "dry_run_prepared_without_external_agent_execution",
+  "promptModule": null,
+  "declaredOutputs": [
+    {
+      "id": "check_result",
+      "type": "object",
+      "required": true
+    }
+  ],
+  "declaredArtifacts": [
+    {
+      "id": "check_output",
+      "path": "steps/focused_check/output.json"
+    }
+  ]
+}

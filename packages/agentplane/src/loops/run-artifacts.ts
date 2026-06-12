@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { aggregateLoopMetricScores } from "./metrics.js";
 import type {
   LoopDecisionRecord,
   LoopEvent,
@@ -124,13 +125,19 @@ export async function createDryRunLoopRun(opts: {
     firstIterationDir,
     loop: opts.loop,
   });
+  const scores = aggregateLoopMetricScores(opts.loop.metrics);
   const decision: LoopDecisionRecord = {
     schemaVersion: 1,
     kind: "loop.decision",
     decision: "request_human_review",
     reason: "dry_run_prepared_without_external_agent_execution",
     confidence: "high",
+    scores,
+    scoreDelta: null,
+    failedContracts: scores.missingRequired,
+    progressEvidence: ["dry_run_step_artifacts_prepared"],
     nextStep: "render_prompt",
+    nextStepReason: "dry_run_requires_human_review_before_external_agent_execution",
     feedbackRefs: [],
     humanReviewRequired: true,
   };

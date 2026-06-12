@@ -312,7 +312,12 @@ export type LoopDecisionRecord = {
   decision: LoopStopDecision;
   reason: string;
   confidence: "low" | "medium" | "high";
+  scores?: LoopMetricAggregate;
+  scoreDelta?: number | null;
+  failedContracts?: readonly string[];
+  progressEvidence?: readonly string[];
   nextStep?: string;
+  nextStepReason?: string;
   feedbackRefs: readonly string[];
   humanReviewRequired: boolean;
 };

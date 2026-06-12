@@ -159,6 +159,7 @@ describe("runCli loop commands", () => {
       expect(payload.dryRun).toBe(true);
       const loopRunPath = path.join(root, payload.artifacts.loopRunPath);
       const eventsPath = path.join(root, payload.artifacts.eventsPath);
+      const decisionPath = path.join(root, payload.artifacts.iterationsDir, "001", "decision.json");
       const renderPromptStep = payload.artifacts.stepArtifacts.find(
         (step: { stepId: string }) => step.stepId === "render_prompt",
       );
@@ -172,6 +173,12 @@ describe("runCli loop commands", () => {
       expect(JSON.parse(await readFile(stepInputPath, "utf8")).contract).toBeTruthy();
       expect(JSON.parse(await readFile(stepOutputPath, "utf8")).promptModule.id).toBe(
         "tdd.fix.implement",
+      );
+      const decision = JSON.parse(await readFile(decisionPath, "utf8"));
+      expect(decision.scores.missingRequired).toContain("verification_score");
+      expect(decision.failedContracts).toContain("verification_score");
+      expect(decision.nextStepReason).toBe(
+        "dry_run_requires_human_review_before_external_agent_execution",
       );
     } finally {
       io.restore();
