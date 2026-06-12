@@ -190,6 +190,27 @@ function deriveRepairPlan(
         mutates: true,
       });
     }
+    if (blocker.code === "quality_review_missing" || blocker.code === "quality_review_stale") {
+      steps.push({
+        code: "run_quality_review",
+        command:
+          `agentplane evaluator run ${id} --verdict pass --summary "Quality review passed." ` +
+          `--finding "No blocking findings." --evidence .agentplane/tasks/${id}/README.md`,
+        summary: "record EVALUATOR quality review before PR publication or integration",
+        mutates: true,
+      });
+    }
+    if (blocker.code === "pre_merge_closure_missing") {
+      steps.push({
+        code: "record_pre_merge_closure",
+        command:
+          `agentplane finish ${id} --author ${decision.task.owner} ` +
+          `--body "Verified: pre-merge closure packet is ready for the task PR." ` +
+          `--result "pre-merge closure" --commit HEAD --pre-merge-closure`,
+        summary: "record task DONE and pre-merge closure on the task branch before integration",
+        mutates: true,
+      });
+    }
     if (blocker.code === "on_base_checkout") {
       steps.push({
         code: "resume_worktree",

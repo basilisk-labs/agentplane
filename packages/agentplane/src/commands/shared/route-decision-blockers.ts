@@ -7,6 +7,9 @@ import { isTaskLocalOnlyAdvance } from "./task-local-freshness.js";
 import type { CommandContext } from "./task-backend.js";
 import { isRecord } from "../../shared/guards.js";
 import { getHumanInputState } from "../task/human-input.js";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { hasClosedPreMergeClosureMarker, parsePrMeta } from "./pr-meta.js";
 
 function addBlocker(blockers: RouteBlocker[], code: string, summary: string): void {
   if (blockers.some((blocker) => blocker.code === code)) return;
@@ -29,6 +32,46 @@ async function isPrMetaOnlyTaskLocalAdvance(opts: {
     fromRef: metaHeadSha,
     toRef: branchHeadSha,
   }).catch(() => false);
+}
+
+async function qualityReviewIsFreshForHead(opts: {
+  ctx: CommandContext;
+  task: TaskData;
+  headSha: string | null;
+}): Promise<boolean> {
+  const review = opts.task.quality_review;
+  if (!review || review.state !== "pass" || review.updated_by !== "EVALUATOR") return false;
+  if (!review.evidence_refs.some((ref) => ref.endsWith("/quality-report.json"))) return false;
+  if (review.findings.length === 0) return false;
+  if (!opts.headSha || !review.evaluated_sha) return true;
+  if (review.evaluated_sha === opts.headSha) return true;
+  return isTaskLocalOnlyAdvance({
+    gitRoot: opts.ctx.resolvedProject.gitRoot,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
+    tasksPath: opts.ctx.config.paths.tasks_path,
+    taskId: opts.task.id,
+    fromRef: review.evaluated_sha,
+    toRef: opts.headSha,
+  }).catch(() => false);
+}
+
+async function readLocalPreMergeState(opts: {
+  ctx: CommandContext;
+  taskId: string;
+}): Promise<{ open: boolean; closed: boolean }> {
+  const metaPath = path.join(
+    opts.ctx.resolvedProject.gitRoot,
+    opts.ctx.config.paths.workflow_dir,
+    opts.taskId,
+    "pr",
+    "meta.json",
+  );
+  try {
+    const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
+    return { open: meta.status === "OPEN", closed: hasClosedPreMergeClosureMarker(meta) };
+  } catch {
+    return { open: false, closed: false };
+  }
 }
 
 function hasStructuredIncludedBatchMetadata(task: TaskData): boolean {
@@ -151,6 +194,37 @@ export async function deriveBlockers(opts: {
         "close_tail_missing",
         "implementation PR is merged but close-tail is missing",
       );
+    }
+    if (
+      opts.task.verification?.state === "ok" &&
+      String(opts.task.status).toUpperCase() === "DOING"
+    ) {
+      const review = opts.task.quality_review;
+      const headSha = opts.prFlow?.branch.headSha ?? opts.resume.head_sha;
+      if (!review) {
+        addBlocker(
+          blockers,
+          "quality_review_missing",
+          "verified branch_pr task requires EVALUATOR quality review before PR publication or integration",
+        );
+      } else if (
+        !(await qualityReviewIsFreshForHead({ ctx: opts.ctx, task: opts.task, headSha }))
+      ) {
+        addBlocker(
+          blockers,
+          "quality_review_stale",
+          "EVALUATOR quality review is missing required evidence or does not cover the current implementation head",
+        );
+      } else {
+        const preMerge = await readLocalPreMergeState({ ctx: opts.ctx, taskId: opts.task.id });
+        if ((opts.prFlow?.pr.state === "OPEN" || preMerge.open) && !preMerge.closed) {
+          addBlocker(
+            blockers,
+            "pre_merge_closure_missing",
+            "open branch_pr task requires pre-merge closure on the task branch before integration",
+          );
+        }
+      }
     }
     if (
       opts.batchOwnership.role === "none" &&
