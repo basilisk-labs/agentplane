@@ -1,0 +1,3 @@
+ .../src/cli/run-cli.core.hooks.hook-run.test.ts    | 76 ++++++++++++++++++++++
+ scripts/checks/run-pre-push-hook.mjs               | 21 ++++++
+ 2 files changed, 97 insertions(+)
