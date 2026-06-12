@@ -6,9 +6,9 @@
   "last_verified_at": "2026-06-12T08:28:39.987Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "pre_merge_closure": {
-    "basis_commit": "658a1144e4ea80d9b5f800512ac86f4e687ab010",
+    "basis_commit": "fa9d7e9d472dbfaf5606ce21736d3d94f035c93a",
     "branch": "task/202606120809-85QTY9/reduce-branch-pr-commit-count-for-single-task-fi",
-    "recorded_at": "2026-06-12T08:37:43.411Z",
+    "recorded_at": "2026-06-12T09:15:32.139Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

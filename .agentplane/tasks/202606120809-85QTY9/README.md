@@ -1,11 +1,11 @@
 ---
 id: "202606120809-85QTY9"
 title: "Reduce branch_pr commit count for single-task fixes"
-result_summary: "pre-merge closure"
+result_summary: "pre-merge closure refreshed"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -41,8 +41,8 @@ quality_review:
   findings:
     - "No blocking findings after rerunning lint, typecheck, and route quality tests."
 commit:
-  hash: "658a1144e4ea80d9b5f800512ac86f4e687ab010"
-  message: "Record quality review for branch_pr churn task"
+  hash: "fa9d7e9d472dbfaf5606ce21736d3d94f035c93a"
+  message: "Refresh quality review after lint repair"
 comments:
   -
     author: "CODER"
@@ -50,6 +50,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet after lint repair."
 events:
   -
     type: "status"
@@ -71,8 +74,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-06-12T09:15:32.092Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet after lint repair."
 doc_version: 3
-doc_updated_at: "2026-06-12T08:37:43.378Z"
+doc_updated_at: "2026-06-12T09:15:32.094Z"
 doc_updated_by: "CODER"
 description: "Optimize branch_pr lifecycle guidance so evaluator quality evidence and pre-merge closure are recorded before the final task-branch publication, reducing common single-task fixes from four commit events toward two to three without weakening verification gates."
 sections:
@@ -134,8 +144,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "8dd55b3c97719d5585164ec6c18da3454b81813c"
-    message: "Reduce branch_pr quality gate commit churn"
+    hash: "541d6680602de7ffaa069210e11efbd7d4d4bb65"
+    message: "Fix route quality lint issues"
 id_source: "generated"
 ---
 ## Summary
