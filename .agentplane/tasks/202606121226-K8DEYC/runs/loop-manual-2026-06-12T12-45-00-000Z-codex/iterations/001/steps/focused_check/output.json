@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "focused_check",
+  "stepType": "check.run",
+  "status": "passed",
+  "checkResult": {
+    "filesOk": true,
+    "contentOk": true,
+    "localOnly": true,
+    "commands": [
+      "node content check: passed",
+      "rg --pcre2 external-reference check: no matches",
+      "test -f mini-site files: passed"
+    ]
+  }
+}

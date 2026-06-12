@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "evaluator",
+  "stepType": "evaluator.run",
+  "status": "passed",
+  "evaluator": "codex.manual",
+  "verdict": "pass",
+  "findings": [],
+  "residualRisk": "Browser file:// visual verification remains blocked by Browser Use URL policy."
+}

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.input",
+  "stepId": "evaluator",
+  "stepType": "evaluator.run",
+  "contract": {
+    "inputs": [
+      {
+        "id": "diff",
+        "type": "object",
+        "required": true,
+        "source": "capture_diff"
+      },
+      {
+        "id": "check_result",
+        "type": "object",
+        "required": true,
+        "source": "focused_check"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "evaluator_verdict",
+        "type": "object",
+        "required": true
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "diff",
+      "ref": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/capture_diff/output.json"
+    },
+    {
+      "id": "check_result",
+      "ref": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/focused_check/output.json"
+    }
+  ]
+}

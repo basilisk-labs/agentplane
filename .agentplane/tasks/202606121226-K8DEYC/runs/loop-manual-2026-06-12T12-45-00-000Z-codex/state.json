@@ -1,0 +1,44 @@
+{
+  "status": "passed",
+  "dryRun": false,
+  "executionMode": "manual_codex_runner",
+  "decision": "finish",
+  "stepArtifacts": [
+    {
+      "stepId": "load_context",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/load_context/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/load_context/output.json",
+      "outputStatus": "passed"
+    },
+    {
+      "stepId": "render_prompt",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/render_prompt/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/render_prompt/output.json",
+      "outputStatus": "passed"
+    },
+    {
+      "stepId": "agent_patch",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/agent_patch/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/agent_patch/output.json",
+      "outputStatus": "passed"
+    },
+    {
+      "stepId": "capture_diff",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/capture_diff/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/capture_diff/output.json",
+      "outputStatus": "passed"
+    },
+    {
+      "stepId": "focused_check",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/focused_check/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/focused_check/output.json",
+      "outputStatus": "passed"
+    },
+    {
+      "stepId": "evaluator",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/evaluator/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/evaluator/output.json",
+      "outputStatus": "passed"
+    }
+  ]
+}

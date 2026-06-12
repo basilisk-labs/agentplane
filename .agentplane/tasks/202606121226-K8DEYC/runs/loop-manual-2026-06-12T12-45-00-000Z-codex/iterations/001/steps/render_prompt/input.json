@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.input",
+  "stepId": "render_prompt",
+  "stepType": "prompt.render",
+  "contract": {
+    "inputs": [
+      {
+        "id": "task_context",
+        "type": "object",
+        "required": true,
+        "source": "load_context"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "rendered_prompt",
+        "type": "string",
+        "required": true
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "task_context",
+      "ref": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-2026-06-12T12-45-00-000Z-codex/iterations/001/steps/load_context/output.json"
+    }
+  ]
+}

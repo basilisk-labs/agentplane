@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "render_prompt",
+  "stepType": "prompt.render",
+  "status": "passed",
+  "promptModule": {
+    "id": "tdd.fix.implement",
+    "moduleSha": "sha256:ea5a2d1870c62522480fff1df754c27fe1dd811816b814b5102ccf9e668840f2",
+    "renderedPromptSha": "sha256:1636619a0dd2c414a3c979b6e7e7f303f2404829dc733186d9965101d3dc1c68"
+  },
+  "renderedPrompt": "Update the mini-site artifact to visibly report this manual loop execution: one iteration, manual Codex runner, file-based handoff, and the six tdd.fix steps. Keep it static and local-only."
+}
