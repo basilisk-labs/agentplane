@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-12T07:56:21Z",
   "base": "main",
   "branch": "task/202606120733-M4SP6C/fix-task-artifact-lifecycle-issue-regressions",
   "created_at": "2026-06-12T07:36:43.111Z",
   "diffstat_sha256": "sha256:8fe529784a12b5297cd37be7c788eab0dfff81247d0381a4edd089ea60f8568f",
   "last_verified_at": "2026-06-12T07:42:48.757Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "40fdd9700a3d9e695941749442eb9fc68a88b5e9",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-12T07:56:21Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606120733-M4SP6C",
-  "updated_at": "2026-06-12T07:36:43.111Z",
+  "updated_at": "2026-06-12T07:56:21Z",
   "verify": {
     "status": "pass"
   }

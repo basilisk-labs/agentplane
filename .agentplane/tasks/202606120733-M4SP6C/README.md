@@ -1,10 +1,11 @@
 ---
 id: "202606120733-M4SP6C"
 title: "Fix task artifact lifecycle issue regressions"
-status: "DOING"
+result_summary: "Merged via PR #4507."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -43,11 +44,16 @@ quality_review:
     - "https://github.com/basilisk-labs/agentplane/pull/4507"
   findings:
     - "Close commit messages now fall back to a strict checkmark task subject when the implementation commit is not task-formatted; insights issue/report generation tolerates dangling task directories without blocking feedback issue creation. Local focused tests, typecheck, formatting, routing, and doctor passed."
-commit: null
+commit:
+  hash: "40fdd9700a3d9e695941749442eb9fc68a88b5e9"
+  message: "✅ M4SP6C task: record evaluator review"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing focused fixes for GitHub issues #4505 and #4506 in the dedicated branch_pr worktree; scope is lifecycle/task artifact handling and regression tests only."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4507 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -62,9 +68,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/commands/guard/impl/close-message.test.ts; Result: pass; Evidence: 18 tests passed. Scope: close commit message builder. Command: bun test packages/agentplane/src/cli/run-cli.core.insights-report.test.ts; Result: pass; Evidence: 11 tests passed, including dangling task dir issue dry-run. Scope: insights issue/report diagnostics. Command: bun test packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.close.test.ts packages/core/src/commit/commit-policy.test.ts; Result: pass; Evidence: 34 tests passed. Scope: close wrapper and commit policy. Command: bun run typecheck; Result: pass. Evidence: TypeScript build exited 0. Scope: workspace typecheck. Command: bunx prettier --check touched files; Result: pass. Evidence: all matched files use Prettier code style. Scope: touched files. Command: git diff --check; Result: pass. Evidence: no whitespace errors. Scope: final diff. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Evidence: policy routing OK. Scope: policy routing. Command: ap doctor; Result: pass. Evidence: doctor OK, errors=0; two pre-existing DONE task missing commit hash warnings. Scope: AgentPlane workspace health."
+  -
+    type: "status"
+    at: "2026-06-12T07:57:08.307Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4507 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-12T07:42:50.192Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-12T07:57:08.312Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub issues #4505 and #4506: direct close-flow commit subject validation around task artifact cleanup, and insights issue creation blocking on dangling task artifacts. Scope is implementation/tests only; no release publishing."
 sections:
   Summary: |-
