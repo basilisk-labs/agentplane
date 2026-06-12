@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "agent_patch",
+  "stepType": "agent.run",
+  "dryRun": false,
+  "status": "success",
+  "skippedExecution": false,
+  "reason": "agent_step_executed_with_task_runner",
+  "promptModule": null,
+  "runnerHandoff": {
+    "adapterId": "codex",
+    "mode": "execute",
+    "runId": "2026-06-12T17-13-30-411Z",
+    "runDir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121713-XDY1ND/runs/2026-06-12T17-13-30-411Z",
+    "bundlePath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121713-XDY1ND/runs/2026-06-12T17-13-30-411Z/bundle.json",
+    "bootstrapPath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121713-XDY1ND/runs/2026-06-12T17-13-30-411Z/bootstrap.md",
+    "resultPath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121713-XDY1ND/runs/2026-06-12T17-13-30-411Z/result.json",
+    "resultStatus": "success",
+    "exitCode": 0,
+    "resultSummary": "Created the task-local loop execution report artifact and verified the required visible sections."
+  },
+  "declaredOutputs": [],
+  "declaredArtifacts": []
+}

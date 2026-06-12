@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "status": "success",
+  "exit_code": 0,
+  "summary": "Created the task-local loop execution report artifact and verified the required visible sections.",
+  "stdout_summary": "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
+  "artifacts": [
+    {
+      "path": ".agentplane/tasks/202606121713-XDY1ND/artifacts/loop-execution-report/index.html",
+      "label": "loop-execution-report"
+    }
+  ],
+  "capabilities_used": [
+    "runner.exec",
+    "file.write",
+    "process.exec"
+  ],
+  "metrics": {
+    "duration_ms": 120270,
+    "stdout_bytes": 123701,
+    "stderr_bytes": 43847,
+    "output_last_message_bytes": 551
+  }
+}

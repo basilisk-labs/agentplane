@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.input",
+  "stepId": "evaluator",
+  "stepType": "evaluator.run",
+  "dryRun": true,
+  "contract": {
+    "inputs": [
+      {
+        "id": "diff",
+        "type": "object",
+        "required": true,
+        "source": "git.diff"
+      },
+      {
+        "id": "check_result",
+        "type": "object",
+        "required": true,
+        "source": "focused_check"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "evaluator_verdict",
+        "type": "object",
+        "required": true
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "diff",
+      "type": "object",
+      "required": true,
+      "source": "git.diff"
+    },
+    {
+      "id": "check_result",
+      "type": "object",
+      "required": true,
+      "source": "focused_check"
+    }
+  ]
+}

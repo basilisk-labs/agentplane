@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AgentPlane Loop Execution Report</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --ink: #1b1f27;
+        --muted: #5c6573;
+        --line: #d7dce3;
+        --panel: #ffffff;
+        --accent: #0f766e;
+        --accent-soft: #d9f4ef;
+        --warn: #8a5a00;
+        --warn-soft: #fff4d6;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.55;
+      }
+
+      main {
+        width: min(1040px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 40px 0 56px;
+      }
+
+      header {
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 20px;
+        margin-bottom: 24px;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
+
+      h2 {
+        font-size: 20px;
+        margin-bottom: 14px;
+      }
+
+      p {
+        margin: 0 0 12px;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        margin-top: 10px;
+        max-width: 760px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      section {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      dl {
+        display: grid;
+        grid-template-columns: 148px minmax(0, 1fr);
+        gap: 10px 14px;
+        margin: 0;
+      }
+
+      dt {
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 0.94em;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        border-radius: 999px;
+        padding: 3px 10px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .note {
+        border-left: 4px solid var(--warn);
+        background: var(--warn-soft);
+        padding: 12px 14px;
+        color: #463000;
+      }
+
+      .wide {
+        grid-column: 1 / -1;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      li + li {
+        margin-top: 8px;
+      }
+
+      @media (max-width: 760px) {
+        main {
+          width: min(100% - 24px, 1040px);
+          padding-top: 28px;
+        }
+
+        h1 {
+          font-size: 26px;
+        }
+
+        .grid,
+        dl {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>AgentPlane Loop Execution Report</h1>
+        <p class="subtitle">Task-local artifact created by the delegated <code>tdd.fix</code> loop step without source-code edits or lifecycle commands.</p>
+      </header>
+
+      <div class="grid">
+        <section>
+          <h2>Task</h2>
+          <dl>
+            <dt>ID</dt>
+            <dd><code>202606121713-XDY1ND</code></dd>
+            <dt>Title</dt>
+            <dd>Loop demo: create execution report artifact</dd>
+            <dt>Owner</dt>
+            <dd><code>CODER</code></dd>
+            <dt>Status at bundle</dt>
+            <dd><code>DOING</code></dd>
+            <dt>Scope</dt>
+            <dd>Create a task-local HTML report artifact and avoid source-code edits.</dd>
+          </dl>
+        </section>
+
+        <section>
+          <h2>Loop Step</h2>
+          <dl>
+            <dt>Loop</dt>
+            <dd><code>tdd.fix</code></dd>
+            <dt>Version</dt>
+            <dd><code>0.1.0</code></dd>
+            <dt>Step</dt>
+            <dd><code>agent_patch</code></dd>
+            <dt>Step type</dt>
+            <dd><code>agent.run</code></dd>
+            <dt>Route phase</dt>
+            <dd><code>loop_agent_step</code></dd>
+          </dl>
+        </section>
+
+        <section>
+          <h2>Runner Result</h2>
+          <dl>
+            <dt>Run ID</dt>
+            <dd><code>2026-06-12T17-13-30-411Z</code></dd>
+            <dt>Adapter</dt>
+            <dd><code>codex</code></dd>
+            <dt>Checkout</dt>
+            <dd><code>/Users/densmirnov/Github/agentplane</code></dd>
+            <dt>Outcome</dt>
+            <dd><span class="status">artifact produced</span></dd>
+            <dt>Manifest</dt>
+            <dd><code>.agentplane/tasks/202606121713-XDY1ND/runs/2026-06-12T17-13-30-411Z/result.json</code></dd>
+          </dl>
+        </section>
+
+        <section>
+          <h2>Artifact Proof</h2>
+          <dl>
+            <dt>Artifact path</dt>
+            <dd><code>.agentplane/tasks/202606121713-XDY1ND/artifacts/loop-execution-report/index.html</code></dd>
+            <dt>Required sections</dt>
+            <dd>Task, loop step, runner result, and artifact proof are visible in this document.</dd>
+            <dt>Verification</dt>
+            <dd><code>test -f .agentplane/tasks/202606121713-XDY1ND/artifacts/loop-execution-report/index.html</code></dd>
+          </dl>
+        </section>
+
+        <section class="wide">
+          <h2>Execution Boundary</h2>
+          <ul>
+            <li>No branch-pr lifecycle command was run from this delegated loop step.</li>
+            <li>No task metadata update, PR operation, merge, release, push, or worktree cleanup was performed.</li>
+            <li>The only requested task artifact is this HTML report under the task-local artifact directory.</li>
+          </ul>
+        </section>
+
+        <section class="wide">
+          <h2>Critical Check</h2>
+          <p class="note">The bundle records a blueprint stop reason because <code>code.direct</code> is incompatible with <code>branch_pr</code> workflow mode. The route decision still delegates this specific loop step and requires returning control after the result manifest is written.</p>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
