@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "write_proposal",
+  "stepType": "artifact.write",
+  "dryRun": true,
+  "status": "prepared",
+  "skippedExecution": true,
+  "reason": "dry_run_prepared_without_external_agent_execution",
+  "promptModule": null,
+  "declaredOutputs": [],
+  "declaredArtifacts": []
+}

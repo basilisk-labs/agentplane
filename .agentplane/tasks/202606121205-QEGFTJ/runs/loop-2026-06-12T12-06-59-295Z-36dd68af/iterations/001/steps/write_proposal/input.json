@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.input",
+  "stepId": "write_proposal",
+  "stepType": "artifact.write",
+  "dryRun": true,
+  "contract": null,
+  "sources": []
+}

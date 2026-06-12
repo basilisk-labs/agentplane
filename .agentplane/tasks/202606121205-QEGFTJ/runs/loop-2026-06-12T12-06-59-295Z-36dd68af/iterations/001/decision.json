@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.decision",
+  "decision": "request_human_review",
+  "reason": "dry_run_prepared_without_external_agent_execution",
+  "confidence": "high",
+  "scores": {
+    "total": 0,
+    "max": 0,
+    "normalized": 0,
+    "failedThresholds": [],
+    "missingRequired": [],
+    "scores": []
+  },
+  "scoreDelta": null,
+  "failedContracts": [],
+  "progressEvidence": [
+    "dry_run_step_artifacts_prepared"
+  ],
+  "nextStep": "render_prompt",
+  "nextStepReason": "dry_run_requires_human_review_before_external_agent_execution",
+  "feedbackRefs": [],
+  "humanReviewRequired": true
+}

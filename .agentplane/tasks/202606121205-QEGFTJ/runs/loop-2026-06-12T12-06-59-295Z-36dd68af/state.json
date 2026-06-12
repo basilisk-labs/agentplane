@@ -1,0 +1,46 @@
+{
+  "status": "human_review",
+  "dry_run": true,
+  "stepArtifacts": [
+    {
+      "stepId": "aggregate",
+      "stepType": "metrics.aggregate",
+      "inputPath": ".agentplane/tasks/202606121205-QEGFTJ/runs/loop-2026-06-12T12-06-59-295Z-36dd68af/iterations/001/steps/aggregate/input.json",
+      "outputPath": ".agentplane/tasks/202606121205-QEGFTJ/runs/loop-2026-06-12T12-06-59-295Z-36dd68af/iterations/001/steps/aggregate/output.json"
+    },
+    {
+      "stepId": "classify_failures",
+      "stepType": "agent.review",
+      "inputPath": ".agentplane/tasks/202606121205-QEGFTJ/runs/loop-2026-06-12T12-06-59-295Z-36dd68af/iterations/001/steps/classify_failures/input.json",
+      "outputPath": ".agentplane/tasks/202606121205-QEGFTJ/runs/loop-2026-06-12T12-06-59-295Z-36dd68af/iterations/001/steps/classify_failures/output.json",
+      "promptModule": {
+        "id": "loop.failure-classifier",
+        "moduleSha": "sha256:3cd9fd6409d8c063e93e499de9cd83d763365f4c1398ad196e2d233e2b89918a",
+        "renderedPromptSha": null
+      }
+    },
+    {
+      "stepId": "propose_candidate",
+      "stepType": "agent.run",
+      "inputPath": ".agentplane/tasks/202606121205-QEGFTJ/runs/loop-2026-06-12T12-06-59-295Z-36dd68af/iterations/001/steps/propose_candidate/input.json",
+      "outputPath": ".agentplane/tasks/202606121205-QEGFTJ/runs/loop-2026-06-12T12-06-59-295Z-36dd68af/iterations/001/steps/propose_candidate/output.json",
+      "promptModule": {
+        "id": "loop.improvement-proposal",
+        "moduleSha": "sha256:73dd77c189a5cc68f8fc60d4d7a43bfff0bef8204d9ff6520e758414ad274731",
+        "renderedPromptSha": null
+      }
+    },
+    {
+      "stepId": "compare",
+      "stepType": "metrics.compare",
+      "inputPath": ".agentplane/tasks/202606121205-QEGFTJ/runs/loop-2026-06-12T12-06-59-295Z-36dd68af/iterations/001/steps/compare/input.json",
+      "outputPath": ".agentplane/tasks/202606121205-QEGFTJ/runs/loop-2026-06-12T12-06-59-295Z-36dd68af/iterations/001/steps/compare/output.json"
+    },
+    {
+      "stepId": "write_proposal",
+      "stepType": "artifact.write",
+      "inputPath": ".agentplane/tasks/202606121205-QEGFTJ/runs/loop-2026-06-12T12-06-59-295Z-36dd68af/iterations/001/steps/write_proposal/input.json",
+      "outputPath": ".agentplane/tasks/202606121205-QEGFTJ/runs/loop-2026-06-12T12-06-59-295Z-36dd68af/iterations/001/steps/write_proposal/output.json"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.input",
+  "stepId": "compare",
+  "stepType": "metrics.compare",
+  "dryRun": true,
+  "contract": null,
+  "sources": []
+}

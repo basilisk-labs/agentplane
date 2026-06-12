@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "classify_failures",
+  "stepType": "agent.review",
+  "dryRun": true,
+  "status": "prepared",
+  "skippedExecution": true,
+  "reason": "dry_run_prepared_without_external_agent_execution",
+  "promptModule": {
+    "id": "loop.failure-classifier",
+    "moduleSha": "sha256:3cd9fd6409d8c063e93e499de9cd83d763365f4c1398ad196e2d233e2b89918a",
+    "renderedPromptSha": null
+  },
+  "declaredOutputs": [],
+  "declaredArtifacts": []
+}

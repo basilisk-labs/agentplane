@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.input",
+  "stepId": "classify_failures",
+  "stepType": "agent.review",
+  "dryRun": true,
+  "contract": null,
+  "sources": []
+}

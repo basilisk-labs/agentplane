@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "propose_candidate",
+  "stepType": "agent.run",
+  "dryRun": true,
+  "status": "prepared",
+  "skippedExecution": true,
+  "reason": "dry_run_prepared_without_external_agent_execution",
+  "promptModule": {
+    "id": "loop.improvement-proposal",
+    "moduleSha": "sha256:73dd77c189a5cc68f8fc60d4d7a43bfff0bef8204d9ff6520e758414ad274731",
+    "renderedPromptSha": null
+  },
+  "declaredOutputs": [],
+  "declaredArtifacts": []
+}
