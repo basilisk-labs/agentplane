@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "taskId": "202606121437-V50C2K",
+  "runId": "loop-2026-06-12T16-06-26-152Z-13614a9d",
+  "loopId": "tdd.fix",
+  "loopVersion": "0.1.0",
+  "loopSha": "sha256:46e40bb79aa94ad003ec1daccbd859b8a15069a1ab618d226ae4ceffe6fbef0d",
+  "dryRun": false,
+  "status": "human_review",
+  "startedAt": "2026-06-12T16:06:26.152Z",
+  "stoppedAt": "2026-06-12T16:06:26.152Z",
+  "stopReason": "agent_step_executed",
+  "artifacts": {
+    "runDir": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d",
+    "eventsPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/events.jsonl",
+    "statePath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/state.json",
+    "loopRunPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/loop-run.json",
+    "iterationsDir": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations",
+    "stepArtifacts": [
+      {
+        "stepId": "load_context",
+        "stepType": "context.load",
+        "inputPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations/001/steps/load_context/input.json",
+        "outputPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations/001/steps/load_context/output.json"
+      },
+      {
+        "stepId": "render_prompt",
+        "stepType": "prompt.render",
+        "inputPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations/001/steps/render_prompt/input.json",
+        "outputPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations/001/steps/render_prompt/output.json",
+        "promptModule": {
+          "id": "tdd.fix.implement",
+          "moduleSha": "sha256:ea5a2d1870c62522480fff1df754c27fe1dd811816b814b5102ccf9e668840f2",
+          "renderedPromptSha": null
+        }
+      },
+      {
+        "stepId": "agent_patch",
+        "stepType": "agent.run",
+        "inputPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations/001/steps/agent_patch/input.json",
+        "outputPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations/001/steps/agent_patch/output.json"
+      },
+      {
+        "stepId": "capture_diff",
+        "stepType": "git.diff",
+        "inputPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations/001/steps/capture_diff/input.json",
+        "outputPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations/001/steps/capture_diff/output.json"
+      },
+      {
+        "stepId": "focused_check",
+        "stepType": "check.run",
+        "inputPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations/001/steps/focused_check/input.json",
+        "outputPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations/001/steps/focused_check/output.json"
+      },
+      {
+        "stepId": "evaluator",
+        "stepType": "evaluator.run",
+        "inputPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations/001/steps/evaluator/input.json",
+        "outputPath": ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-06-26-152Z-13614a9d/iterations/001/steps/evaluator/output.json"
+      }
+    ]
+  }
+}

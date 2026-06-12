@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "agent_patch",
+  "stepType": "agent.run",
+  "dryRun": false,
+  "status": "blocked",
+  "skippedExecution": false,
+  "reason": "agent_step_executed_with_task_runner",
+  "promptModule": null,
+  "runnerHandoff": {
+    "adapterId": "codex",
+    "mode": "execute",
+    "runId": "2026-06-12T16-06-27-234Z",
+    "runDir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z",
+    "bundlePath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/bundle.json",
+    "bootstrapPath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/bootstrap.md",
+    "resultPath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/result.json",
+    "resultStatus": "blocked",
+    "exitCode": 0,
+    "resultSummary": "Route exact command failed before creating or recovering the branch_pr worktree because the authoritative base checkout is missing the task README; the required stale-state recomputation failed on the same missing file."
+  },
+  "declaredOutputs": [],
+  "declaredArtifacts": []
+}
