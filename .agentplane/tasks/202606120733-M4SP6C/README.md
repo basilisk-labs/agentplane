@@ -4,7 +4,7 @@ title: "Fix task artifact lifecycle issue regressions"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,27 @@ verification:
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/commands/guard/impl/close-message.test.ts; Result: pass; Evidence: 18 tests passed. Scope: close commit message builder. Command: bun test packages/agentplane/src/cli/run-cli.core.insights-report.test.ts; Result: pass; Evidence: 11 tests passed, including dangling task dir issue dry-run. Scope: insights issue/report diagnostics. Command: bun test packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.close.test.ts packages/core/src/commit/commit-policy.test.ts; Result: pass; Evidence: 34 tests passed. Scope: close wrapper and commit policy. Command: bun run typecheck; Result: pass. Evidence: TypeScript build exited 0. Scope: workspace typecheck. Command: bunx prettier --check touched files; Result: pass. Evidence: all matched files use Prettier code style. Scope: touched files. Command: git diff --check; Result: pass. Evidence: no whitespace errors. Scope: final diff. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Evidence: policy routing OK. Scope: policy routing. Command: ap doctor; Result: pass. Evidence: doctor OK, errors=0; two pre-existing DONE task missing commit hash warnings. Scope: AgentPlane workspace health."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-12T07:46:49.748Z"
+  updated_by: "EVALUATOR"
+  note: "Fixes task artifact lifecycle regressions for close commit subject generation and insights issue reporting."
+  evaluated_sha: "b2718886b6423cf134c9baefb3a24432b9073d0b"
+  blueprint_digest: "4c79ec405ccc5aa8aaf12a54822f1a0f7e97e854a2c19b6a9ada24f78c0b6e5e"
+  evidence_refs:
+    - ".agentplane/tasks/202606120733-M4SP6C/README.md"
+    - ".agentplane/tasks/202606120733-M4SP6C/quality/20260612-074649748-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606120733-M4SP6C/quality/20260612-074649748-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606120733-M4SP6C/quality/20260612-074649748-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606120733-M4SP6C/blueprint/resolved-snapshot.json"
+    - "bun test packages/agentplane/src/commands/guard/impl/close-message.test.ts"
+    - "bun test packages/agentplane/src/cli/run-cli.core.insights-report.test.ts"
+    - "bun test packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.close.test.ts packages/core/src/commit/commit-policy.test.ts"
+    - "bun run typecheck"
+    - "node .agentplane/policy/check-routing.mjs"
+    - "https://github.com/basilisk-labs/agentplane/pull/4507"
+  findings:
+    - "Close commit messages now fall back to a strict checkmark task subject when the implementation commit is not task-formatted; insights issue/report generation tolerates dangling task directories without blocking feedback issue creation. Local focused tests, typecheck, formatting, routing, and doctor passed."
 commit: null
 comments:
   -
