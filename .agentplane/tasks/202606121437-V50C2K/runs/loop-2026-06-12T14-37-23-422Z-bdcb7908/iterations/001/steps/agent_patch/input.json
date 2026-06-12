@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.input",
+  "stepId": "agent_patch",
+  "stepType": "agent.run",
+  "dryRun": true,
+  "contract": null,
+  "sources": []
+}

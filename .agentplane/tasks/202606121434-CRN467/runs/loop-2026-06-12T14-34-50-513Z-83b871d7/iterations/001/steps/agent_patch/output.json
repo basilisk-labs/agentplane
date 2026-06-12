@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "agent_patch",
+  "stepType": "agent.run",
+  "dryRun": false,
+  "status": "blocked",
+  "skippedExecution": false,
+  "reason": "agent_step_executed_with_task_runner",
+  "promptModule": null,
+  "runnerHandoff": {
+    "adapterId": "codex",
+    "mode": "execute",
+    "runId": "2026-06-12T14-34-51-843Z",
+    "runDir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121434-CRN467/runs/2026-06-12T14-34-51-843Z",
+    "bundlePath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121434-CRN467/runs/2026-06-12T14-34-51-843Z/bundle.json",
+    "bootstrapPath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121434-CRN467/runs/2026-06-12T14-34-51-843Z/bootstrap.md",
+    "resultPath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121434-CRN467/runs/2026-06-12T14-34-51-843Z/result.json",
+    "resultStatus": "blocked",
+    "exitCode": 0,
+    "resultSummary": "Exact routed worktree-start command failed, and the required route recompute failed with the same missing task README path."
+  },
+  "declaredOutputs": [],
+  "declaredArtifacts": []
+}

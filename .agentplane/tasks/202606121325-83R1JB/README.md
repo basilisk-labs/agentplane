@@ -4,7 +4,7 @@ title: "Wire loop agent.run to task runner"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-12T13:29:32.804Z"
+  updated_at: "2026-06-12T14:40:36.562Z"
   updated_by: "CODER"
-  note: "Loop agent.run dry-run now prepares Codex task runner handoff artifacts and persists adapter/run/bundle/bootstrap/result references in step output. Focused loop tests, format check, build, real ap loop run, and policy routing passed."
+  note: "Verified loop execute-agent-step implementation: focused loop tests passed, changed formatting passed, package build passed, policy routing passed. Manual smoke ran Codex runner through ap loop run --execute-agent-step and recorded runner result metadata; both smoke tasks blocked inside runner route because branch_pr authoritative base checkout lacks branch-local task README, which is a separate runner-route issue."
   attempts: 0
 commit: null
 comments:
@@ -50,8 +50,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Loop agent.run dry-run now prepares Codex task runner handoff artifacts and persists adapter/run/bundle/bootstrap/result references in step output. Focused loop tests, format check, build, real ap loop run, and policy routing passed."
+  -
+    type: "verify"
+    at: "2026-06-12T14:40:36.562Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified loop execute-agent-step implementation: focused loop tests passed, changed formatting passed, package build passed, policy routing passed. Manual smoke ran Codex runner through ap loop run --execute-agent-step and recorded runner result metadata; both smoke tasks blocked inside runner route because branch_pr authoritative base checkout lacks branch-local task README, which is a separate runner-route issue."
 doc_version: 3
-doc_updated_at: "2026-06-12T13:29:32.927Z"
+doc_updated_at: "2026-06-12T14:40:38.473Z"
 doc_updated_by: "CODER"
 description: "Connect loop execution so agent.run steps can prepare or execute the existing AgentPlane task runner adapter, persisting runner bundle/result references in loop step artifacts."
 sections:
@@ -117,9 +123,42 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: worktree_projection_drift
 
+    ### 2026-06-12T14:40:36.562Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified loop execute-agent-step implementation: focused loop tests passed, changed formatting passed, package build passed, policy routing passed. Manual smoke ran Codex runner through ap loop run --execute-agent-step and recorded runner result metadata; both smoke tasks blocked inside runner route because branch_pr authoritative base checkout lacks branch-local task README, which is a separate runner-route issue.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T13:29:32.927Z, excerpt_hash=sha256:71b55cf560e60ec3ec4f24988d09de87f03f8f001635b3d2d36071523f542887
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121325-83R1JB/blueprint/resolved-snapshot.json
+    - old_digest: 11330fb2b6743b0ece9d8a10fd907246682e40ea2ebbfd01b00d5780d8c86c8e
+    - current_digest: 11330fb2b6743b0ece9d8a10fd907246682e40ea2ebbfd01b00d5780d8c86c8e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606121325-83R1JB
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane work start 202606121325-83R1JB --agent CODER --slug wire-loop-agent-run-to-task-runner --worktree
+    - diagnostic_command: agentplane work resume 202606121325-83R1JB
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: worktree_projection_drift
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the implementation commit on agentplane-loops. The change is limited to loop dry-run/runner handoff code, tests, and task artifacts."
-  Findings: ""
+  Findings: |-
+    - Observation: ap loop run <task> --loop tdd.fix --execute-agent-step --json produced loop records with dryRun=false, stopReason=agent_step_executed, and agent_patch/output.json runnerHandoff.mode=execute.
+      Impact: Loop command now executes only the agent.run step and stops before diff/check/evaluator retry steps; full physical artifact creation still needs a branch-local trunk runner route fix.
+      Resolution: Keep execute-agent-step as safe partial execution; handle branch-local runner-route compatibility in a follow-up task.
 id_source: "generated"
 ---
 ## Summary
@@ -195,6 +234,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: worktree_projection_drift
 
+### 2026-06-12T14:40:36.562Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified loop execute-agent-step implementation: focused loop tests passed, changed formatting passed, package build passed, policy routing passed. Manual smoke ran Codex runner through ap loop run --execute-agent-step and recorded runner result metadata; both smoke tasks blocked inside runner route because branch_pr authoritative base checkout lacks branch-local task README, which is a separate runner-route issue.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T13:29:32.927Z, excerpt_hash=sha256:71b55cf560e60ec3ec4f24988d09de87f03f8f001635b3d2d36071523f542887
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121325-83R1JB/blueprint/resolved-snapshot.json
+- old_digest: 11330fb2b6743b0ece9d8a10fd907246682e40ea2ebbfd01b00d5780d8c86c8e
+- current_digest: 11330fb2b6743b0ece9d8a10fd907246682e40ea2ebbfd01b00d5780d8c86c8e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606121325-83R1JB
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane work start 202606121325-83R1JB --agent CODER --slug wire-loop-agent-run-to-task-runner --worktree
+- diagnostic_command: agentplane work resume 202606121325-83R1JB
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: worktree_projection_drift
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -202,3 +271,7 @@ DecisionContextRef:
 Revert the implementation commit on agentplane-loops. The change is limited to loop dry-run/runner handoff code, tests, and task artifacts.
 
 ## Findings
+
+- Observation: ap loop run <task> --loop tdd.fix --execute-agent-step --json produced loop records with dryRun=false, stopReason=agent_step_executed, and agent_patch/output.json runnerHandoff.mode=execute.
+  Impact: Loop command now executes only the agent.run step and stops before diff/check/evaluator retry steps; full physical artifact creation still needs a branch-local trunk runner route fix.
+  Resolution: Keep execute-agent-step as safe partial execution; handle branch-local runner-route compatibility in a follow-up task.

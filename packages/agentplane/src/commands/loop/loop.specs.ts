@@ -38,6 +38,7 @@ export type LoopRunParsed = {
   taskId: string;
   loopId?: LoopId;
   dryRun: boolean;
+  executeAgentStep: boolean;
   json: boolean;
 };
 
@@ -192,7 +193,7 @@ export const loopPlanSpec: CommandSpec<LoopPlanParsed> = {
 export const loopRunSpec: CommandSpec<LoopRunParsed> = {
   id: ["loop", "run"],
   group: "Loops",
-  summary: "Run a loop. This version only supports --dry-run preparation.",
+  summary: "Run a loop in dry-run mode or execute only the agent step.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     { kind: "string", name: "loop", valueHint: "<loop-id>", description: "Loop id override." },
@@ -202,12 +203,19 @@ export const loopRunSpec: CommandSpec<LoopRunParsed> = {
       default: false,
       description: "Prepare LoopRun artifacts without invoking an agent.",
     },
+    {
+      kind: "boolean",
+      name: "execute-agent-step",
+      default: false,
+      description: "Execute the first agent.run step through the task runner, then stop.",
+    },
     { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
   ],
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     loopId: typeof raw.opts.loop === "string" ? (raw.opts.loop as LoopId) : undefined,
     dryRun: raw.opts["dry-run"] === true,
+    executeAgentStep: raw.opts["execute-agent-step"] === true,
     json: raw.opts.json === true,
   }),
 };
@@ -215,7 +223,7 @@ export const loopRunSpec: CommandSpec<LoopRunParsed> = {
 export const loopStepSpec: CommandSpec<LoopStepParsed> = {
   ...loopRunSpec,
   id: ["loop", "step"],
-  summary: "Prepare one loop transition. This version only supports --dry-run.",
+  summary: "Prepare or execute the agent step for one loop transition.",
 };
 
 export const loopValidateSpec: CommandSpec<LoopValidateParsed> = {

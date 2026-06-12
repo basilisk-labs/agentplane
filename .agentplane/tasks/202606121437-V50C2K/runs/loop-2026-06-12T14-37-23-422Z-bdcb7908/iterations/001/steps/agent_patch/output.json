@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "agent_patch",
+  "stepType": "agent.run",
+  "dryRun": false,
+  "status": "blocked",
+  "skippedExecution": false,
+  "reason": "agent_step_executed_with_task_runner",
+  "promptModule": null,
+  "runnerHandoff": {
+    "adapterId": "codex",
+    "mode": "execute",
+    "runId": "2026-06-12T14-37-24-520Z",
+    "runDir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z",
+    "bundlePath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/bundle.json",
+    "bootstrapPath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/bootstrap.md",
+    "resultPath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/result.json",
+    "resultStatus": "blocked",
+    "exitCode": 0,
+    "resultSummary": "Route command failed because the authoritative base checkout is missing the task README required by agentplane work start and task next-action."
+  },
+  "declaredOutputs": [],
+  "declaredArtifacts": []
+}

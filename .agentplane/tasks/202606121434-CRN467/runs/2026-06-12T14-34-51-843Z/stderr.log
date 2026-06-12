@@ -1,0 +1,165 @@
+2026-06-12T14:34:52.719447Z  WARN codex_features: unknown feature key in config: rmcp_client
+2026-06-12T14:34:53.770882Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:34:55.140074Z  WARN rmcp::transport::auth: Token refresh not possible, re-authorization required. error=OAuth token refresh failed: Server returned error response: invalid_grant: Grant not found
+2026-06-12T14:34:55.140123Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when Auth(AuthorizationRequired)
+2026-06-12T14:34:57.665503Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:34:57.682674Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:57.682688Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:57.683315Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:57.683325Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:57.683884Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:57.683896Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:57.684461Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:57.684472Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:57.685064Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:57.685076Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:57.686169Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:57.686177Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:58.177504Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:34:58.189447Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:34:58.189518Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:34:59.870208Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:34:59.886326Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:59.886346Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:59.887098Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:59.887110Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:59.887713Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:59.887721Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:59.888403Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:59.888414Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:59.888988Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:59.888997Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:59.890102Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:34:59.890110Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:00.445897Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:00.456472Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:00.456515Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:05.460739Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:05.477194Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:05.477208Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:05.477760Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:05.477768Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:05.478376Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:05.478388Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:05.478972Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:05.478979Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:05.479533Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:05.479544Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:05.480726Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:05.480734Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:05.960160Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:05.971476Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:05.971523Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:11.348009Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:11.362825Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:11.362836Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:11.363363Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:11.363372Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:11.363913Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:11.363924Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:11.364466Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:11.364474Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:11.365022Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:11.365030Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:11.366069Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:11.366077Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:11.823701Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:11.834706Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:11.834752Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:19.472576Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:19.488502Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:19.488516Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:19.489095Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:19.489103Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:19.489641Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:19.489651Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:19.490277Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:19.490287Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:19.490857Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:19.490865Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:19.491989Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:19.491997Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:20.053328Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:20.069454Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:20.069513Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:26.919930Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:26.936007Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:26.936018Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:26.936630Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:26.936642Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:26.937251Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:26.937259Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:26.937836Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:26.937843Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:26.938404Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:26.938413Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:26.939568Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:26.939575Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:27.427191Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:27.439076Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:27.439136Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:32.665975Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:32.681064Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:32.681077Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:32.681624Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:32.681633Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:32.682179Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:32.682187Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:32.682709Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:32.682717Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:32.683245Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:32.683253Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:32.684305Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:32.684312Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:33.156541Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:33.168355Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:33.168425Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:55.457350Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:55.473418Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:55.473437Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:55.474002Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:55.474012Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:55.474630Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:55.474646Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:55.475306Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:55.475317Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:55.475883Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:55.475891Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:55.476973Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:55.476983Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:35:55.932046Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:55.942917Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:35:55.942964Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:36:01.321792Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:36:01.339024Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:01.339038Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:01.339569Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:01.339580Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:01.340145Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:01.340153Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:01.340699Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:01.340709Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:01.341252Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:01.341262Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:01.342385Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:01.342394Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:01.879823Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:36:01.892303Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:36:01.892388Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:36:05.110474Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:36:05.131652Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:05.131693Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:05.132341Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:05.132350Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:05.133168Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:05.133181Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:05.133829Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:05.133840Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:05.134433Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:05.134441Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:05.135661Z  WARN codex_core_skills::loader: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:05.135670Z  WARN codex_core_skills::loader: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-06-12T14:36:05.644351Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:36:05.655948Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:36:05.655993Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=/Users/densmirnov/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-06-12T14:36:11.030526Z  WARN codex_mcp::rmcp_client: failed to initialize MCP client during shutdown: MCP startup failed: handshaking with MCP server failed: Send message error Transport [rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<rmcp::transport::auth::AuthClient<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: Auth error: OAuth authorization required, when send initialize request

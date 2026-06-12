@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.input",
+  "stepId": "render_prompt",
+  "stepType": "prompt.render",
+  "dryRun": true,
+  "contract": {
+    "inputs": [
+      {
+        "id": "task_context",
+        "type": "object",
+        "required": true,
+        "source": "task.approved_plan"
+      },
+      {
+        "id": "verify_steps",
+        "type": "array",
+        "required": true,
+        "source": "task.verify_steps"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "rendered_prompt",
+        "type": "string",
+        "required": true
+      }
+    ],
+    "artifacts": [
+      {
+        "id": "prompt",
+        "path": "steps/render_prompt/output.json"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "task_context",
+      "type": "object",
+      "required": true,
+      "source": "task.approved_plan"
+    },
+    {
+      "id": "verify_steps",
+      "type": "array",
+      "required": true,
+      "source": "task.verify_steps"
+    }
+  ]
+}

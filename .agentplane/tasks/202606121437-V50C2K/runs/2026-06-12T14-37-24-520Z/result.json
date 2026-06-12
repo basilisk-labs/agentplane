@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "blocked",
+  "exit_code": 0,
+  "summary": "Route command failed because the authoritative base checkout is missing the task README required by agentplane work start and task next-action.",
+  "stdout_summary": "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
+  "artifacts": [
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/bundle.json",
+      "label": "bundle"
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/bootstrap.md",
+      "label": "bootstrap"
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/agent-trace.jsonl",
+      "label": "raw-trace"
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/stderr.log",
+      "label": "stderr-log"
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/codex-last-message.md",
+      "label": "assistant-last-message"
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/result.json",
+      "label": "result-manifest"
+    }
+  ],
+  "capabilities_used": [
+    "runner.exec"
+  ],
+  "metrics": {
+    "duration_ms": 80225,
+    "stdout_bytes": 49129,
+    "stderr_bytes": 30693,
+    "output_last_message_bytes": 812
+  }
+}

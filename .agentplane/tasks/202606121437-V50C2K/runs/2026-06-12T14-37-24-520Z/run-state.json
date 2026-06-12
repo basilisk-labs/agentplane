@@ -1,0 +1,286 @@
+{
+  "schema_version": 1,
+  "runner_api_version": "1",
+  "run_id": "2026-06-12T14-37-24-520Z",
+  "adapter_id": "codex",
+  "target": {
+    "kind": "task",
+    "task_id": "202606121437-V50C2K"
+  },
+  "status": "blocked",
+  "mode": "execute",
+  "bundle_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/bundle.json",
+  "result_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/result.json",
+  "bootstrap_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/bootstrap.md",
+  "events_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/events.jsonl",
+  "trace_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/agent-trace.jsonl",
+  "stderr_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/stderr.log",
+  "trace_policy": {
+    "mode": "raw",
+    "max_tail_bytes": 65536,
+    "capture_stderr": true,
+    "retention": "keep",
+    "compression": "none",
+    "redact_patterns": []
+  },
+  "timeout_policy": {
+    "wall_clock_ms": 900000,
+    "idle_ms": 180000,
+    "terminate_grace_ms": 1500
+  },
+  "policy_decision": {
+    "adapter_id": "codex",
+    "requested": {},
+    "effective": {},
+    "fields": {
+      "sandbox": {
+        "status": "not_requested",
+        "capability_level": "native",
+        "channel": "argv",
+        "supported_values": [
+          "read-only",
+          "workspace-write",
+          "danger-full-access"
+        ],
+        "note": "Recipe sandbox is enforced through codex --sandbox argv mapping."
+      },
+      "writes_artifacts_to": {
+        "status": "not_requested",
+        "capability_level": "advisory",
+        "channel": "env",
+        "note": "Recipe artifact prefixes are exported through env and enforced post-run against external manifest artifacts and evidence paths."
+      }
+    },
+    "refusal_reason": null
+  },
+  "created_at": "2026-06-12T14:37:24.524Z",
+  "updated_at": "2026-06-12T14:38:44.762Z",
+  "prepared_metadata": {
+    "prompt_count": 5,
+    "bundle_bytes": 132709,
+    "bootstrap_bytes": 6815,
+    "bundle_sha256": "5c7ef1d029a13bf598b1332c48a2e77241bf53ff80da249b9e9567168364cadf",
+    "bootstrap_sha256": "8e2a57e48a8236e88ff3ca7edef9c9d94daceb2129447800624b23f3b33072cc",
+    "has_task_context": true,
+    "has_recipe_context": false,
+    "trace_policy": {
+      "mode": "raw",
+      "max_tail_bytes": 65536,
+      "capture_stderr": true,
+      "retention": "keep",
+      "compression": "none",
+      "redact_patterns": []
+    },
+    "timeout_policy": {
+      "wall_clock_ms": 900000,
+      "idle_ms": 180000,
+      "terminate_grace_ms": 1500
+    },
+    "adapter_capabilities": {
+      "adapter_id": "codex",
+      "fields": {
+        "sandbox": {
+          "level": "native",
+          "channel": "argv",
+          "supported_values": [
+            "read-only",
+            "workspace-write",
+            "danger-full-access"
+          ],
+          "note": "Recipe sandbox is enforced through codex --sandbox argv mapping."
+        },
+        "writes_artifacts_to": {
+          "level": "advisory",
+          "channel": "env",
+          "note": "Recipe artifact prefixes are exported through env and enforced post-run against external manifest artifacts and evidence paths."
+        }
+      }
+    },
+    "adapter_capability_registry": {
+      "entries": [
+        {
+          "id": "runner.adapter.codex",
+          "kind": "runner_adapter",
+          "availability": "available",
+          "source": {
+            "id": "runner_adapter",
+            "detail": "codex"
+          },
+          "summary": "Runner adapter codex",
+          "metadata": {
+            "adapter_id": "codex",
+            "declared_fields": [
+              "sandbox",
+              "writes_artifacts_to"
+            ]
+          }
+        },
+        {
+          "id": "runner.adapter.codex.policy_field.sandbox",
+          "kind": "runner_policy_field",
+          "availability": "available",
+          "source": {
+            "id": "runner_adapter",
+            "detail": "codex"
+          },
+          "summary": "Runner policy field sandbox",
+          "supported_values": [
+            "danger-full-access",
+            "read-only",
+            "workspace-write"
+          ],
+          "metadata": {
+            "adapter_id": "codex",
+            "field": "sandbox",
+            "level": "native",
+            "channel": "argv",
+            "note": "Recipe sandbox is enforced through codex --sandbox argv mapping."
+          }
+        },
+        {
+          "id": "runner.adapter.codex.policy_field.writes_artifacts_to",
+          "kind": "runner_policy_field",
+          "availability": "available",
+          "source": {
+            "id": "runner_adapter",
+            "detail": "codex"
+          },
+          "summary": "Runner policy field writes_artifacts_to",
+          "metadata": {
+            "adapter_id": "codex",
+            "field": "writes_artifacts_to",
+            "level": "advisory",
+            "channel": "env",
+            "note": "Recipe artifact prefixes are exported through env and enforced post-run against external manifest artifacts and evidence paths."
+          }
+        }
+      ]
+    },
+    "policy_decision": {
+      "adapter_id": "codex",
+      "requested": {},
+      "effective": {},
+      "fields": {
+        "sandbox": {
+          "status": "not_requested",
+          "capability_level": "native",
+          "channel": "argv",
+          "supported_values": [
+            "read-only",
+            "workspace-write",
+            "danger-full-access"
+          ],
+          "note": "Recipe sandbox is enforced through codex --sandbox argv mapping."
+        },
+        "writes_artifacts_to": {
+          "status": "not_requested",
+          "capability_level": "advisory",
+          "channel": "env",
+          "note": "Recipe artifact prefixes are exported through env and enforced post-run against external manifest artifacts and evidence paths."
+        }
+      },
+      "refusal_reason": null
+    },
+    "invocation": {
+      "executable": "codex",
+      "argv": [
+        "codex",
+        "-a",
+        "never",
+        "exec",
+        "--json",
+        "--output-last-message",
+        "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/codex-last-message.md",
+        "-C",
+        "/Users/densmirnov/Github/agentplane",
+        "-s",
+        "danger-full-access",
+        "-"
+      ],
+      "argv_count": 12,
+      "env_keys": [
+        "AGENTPLANE_RUNNER_ADAPTER",
+        "AGENTPLANE_RUNNER_API_VERSION",
+        "AGENTPLANE_RUNNER_MODE",
+        "AGENTPLANE_RUNNER_RESULT_PATH",
+        "AGENTPLANE_RUNNER_TARGET"
+      ],
+      "cwd": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z",
+      "run_dir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z",
+      "bundle_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/bundle.json",
+      "state_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/run-state.json",
+      "events_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/events.jsonl",
+      "result_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/result.json",
+      "trace_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/agent-trace.jsonl",
+      "stderr_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/stderr.log",
+      "bootstrap_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/bootstrap.md",
+      "output_last_message_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/codex-last-message.md",
+      "dry_run": false,
+      "has_result_path": true,
+      "has_output_last_message_path": true
+    }
+  },
+  "supervision": {
+    "pid": 98601,
+    "command": "codex -a never exec --json --output-last-message /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/codex-last-message.md -C /Users/densmirnov/Github/agentplane -s danger-full-access -",
+    "started_at": "2026-06-12T14:37:24.531Z",
+    "heartbeat_at": "2026-06-12T14:38:44.193Z",
+    "exit_signal": null,
+    "timeout_reason": null,
+    "timeout_requested_at": null,
+    "terminate_sent_at": null,
+    "kill_sent_at": null,
+    "force_killed": false
+  },
+  "result": {
+    "status": "blocked",
+    "exit_code": 0,
+    "started_at": "2026-06-12T14:37:24.531Z",
+    "ended_at": "2026-06-12T14:38:44.756Z",
+    "summary": "Route command failed because the authoritative base checkout is missing the task README required by agentplane work start and task next-action.",
+    "stdout_summary": "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
+    "output_paths": [
+      "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/bundle.json",
+      "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/bootstrap.md",
+      "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/agent-trace.jsonl",
+      "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/stderr.log",
+      "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/codex-last-message.md",
+      "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/result.json"
+    ],
+    "metrics": {
+      "duration_ms": 80225,
+      "stdout_bytes": 49129,
+      "stderr_bytes": 30693,
+      "output_last_message_bytes": 812
+    },
+    "artifacts": [
+      {
+        "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/bundle.json",
+        "label": "bundle"
+      },
+      {
+        "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/bootstrap.md",
+        "label": "bootstrap"
+      },
+      {
+        "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/agent-trace.jsonl",
+        "label": "raw-trace"
+      },
+      {
+        "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/stderr.log",
+        "label": "stderr-log"
+      },
+      {
+        "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/codex-last-message.md",
+        "label": "assistant-last-message"
+      },
+      {
+        "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T14-37-24-520Z/result.json",
+        "label": "result-manifest"
+      }
+    ],
+    "capabilities_used": [
+      "runner.exec"
+    ]
+  }
+}

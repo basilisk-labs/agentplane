@@ -25,7 +25,10 @@ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { CliError, ValidationError } from "../../shared/errors.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { blueprintResolveInputFromTask, workflowModeFromConfig } from "../blueprint/task-input.js";
-import { prepareTaskRunnerExecution } from "../../runner/usecases/task-run.js";
+import {
+  executeTaskRunnerExecution,
+  prepareTaskRunnerExecution,
+} from "../../runner/usecases/task-run.js";
 
 export {
   loopExplainSpec,
@@ -302,11 +305,18 @@ function makeRunLoopDryRunHandler(
 ) {
   return async (_ctx: CommandCtx, p: LoopRunParsed): Promise<number> => {
     const commandCtx = await getCtx(commandName);
-    if (!p.dryRun) {
+    if (p.dryRun && p.executeAgentStep) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: `${commandName} currently requires --dry-run; external agent execution is not enabled in loop v0.1.`,
+        message: `${commandName} accepts either --dry-run or --execute-agent-step, not both.`,
+      });
+    }
+    if (!p.dryRun && !p.executeAgentStep) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `${commandName} currently requires --dry-run or --execute-agent-step.`,
       });
     }
     const loop = await resolveLoopForRun({
@@ -314,13 +324,37 @@ function makeRunLoopDryRunHandler(
       taskId: p.taskId,
       loopId: p.loopId,
     });
+    let executedAgentStep = false;
     const record = await createDryRunLoopRun({
       projectRoot: commandCtx.resolvedProject.gitRoot,
       workflowDir: commandCtx.config.paths.workflow_dir,
       taskId: p.taskId,
       loop,
+      executionMode: p.executeAgentStep ? "execute_agent_step" : "dry_run",
       prepareRunnerHandoff: async (step) => {
         if (step.type !== "agent.run") return null;
+        if (p.executeAgentStep && !executedAgentStep) {
+          executedAgentStep = true;
+          const executed = await executeTaskRunnerExecution({
+            ctx: commandCtx,
+            cwd: commandCtx.resolvedProject.gitRoot,
+            task_id: p.taskId,
+          });
+          const paths = executed.bundle.execution.artifact_paths;
+          return {
+            adapterId: executed.bundle.execution.adapter_id,
+            mode: executed.bundle.execution.mode,
+            runId: executed.bundle.execution.run_id,
+            runDir: paths.run_dir,
+            bundlePath: paths.bundle_path,
+            bootstrapPath: paths.bootstrap_path,
+            resultPath: paths.result_path,
+            resultStatus: executed.result.status,
+            exitCode: executed.result.exit_code,
+            resultSummary: executed.result.summary,
+            stderrSummary: executed.result.stderr_summary,
+          };
+        }
         const prepared = await prepareTaskRunnerExecution({
           ctx: commandCtx,
           cwd: commandCtx.resolvedProject.gitRoot,

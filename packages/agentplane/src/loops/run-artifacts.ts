@@ -21,6 +21,10 @@ export type LoopRunnerHandoffRecord = {
   bundlePath: string;
   bootstrapPath: string;
   resultPath: string;
+  resultStatus?: string;
+  exitCode?: number | null;
+  resultSummary?: string;
+  stderrSummary?: string;
 };
 
 export type PrepareLoopStepRunnerHandoff = (
@@ -70,6 +74,7 @@ async function writePreparedStepArtifacts(opts: {
     const outputPath = path.join(relativeStepDir, "output.json");
     const promptModule = promptModuleIdentity(step);
     const runnerHandoff = await opts.prepareRunnerHandoff?.(step);
+    const executed = runnerHandoff?.mode === "execute";
     await writeFile(
       path.join(stepDir, "input.json"),
       `${JSON.stringify(
@@ -94,10 +99,12 @@ async function writePreparedStepArtifacts(opts: {
           kind: "loop.step.output",
           stepId: step.id,
           stepType: step.type,
-          dryRun: true,
-          status: "prepared",
-          skippedExecution: true,
-          reason: "dry_run_prepared_without_external_agent_execution",
+          dryRun: !executed,
+          status: executed ? (runnerHandoff.resultStatus ?? "blocked") : "prepared",
+          skippedExecution: !executed,
+          reason: executed
+            ? "agent_step_executed_with_task_runner"
+            : "dry_run_prepared_without_external_agent_execution",
           promptModule: promptModule ?? null,
           runnerHandoff: runnerHandoff ?? null,
           declaredOutputs: step.contract?.outputs ?? [],
@@ -124,9 +131,11 @@ export async function createDryRunLoopRun(opts: {
   taskId: string;
   loop: LoopSpec;
   now?: Date;
+  executionMode?: "dry_run" | "execute_agent_step";
   prepareRunnerHandoff?: PrepareLoopStepRunnerHandoff;
 }): Promise<LoopRunRecord> {
   const startedAt = (opts.now ?? new Date()).toISOString();
+  const executionMode = opts.executionMode ?? "dry_run";
   const runId = `loop-${startedAt.replaceAll(/[:.]/g, "-")}-${randomUUID().slice(0, 8)}`;
   const relativeRunDir = path.join(opts.workflowDir, opts.taskId, "runs", runId);
   const runDir = path.join(opts.projectRoot, relativeRunDir);
@@ -149,14 +158,23 @@ export async function createDryRunLoopRun(opts: {
     schemaVersion: 1,
     kind: "loop.decision",
     decision: "request_human_review",
-    reason: "dry_run_prepared_without_external_agent_execution",
+    reason:
+      executionMode === "execute_agent_step"
+        ? "agent_step_executed_before_followup_checks"
+        : "dry_run_prepared_without_external_agent_execution",
     confidence: "high",
     scores,
     scoreDelta: null,
     failedContracts: scores.missingRequired,
-    progressEvidence: ["dry_run_step_artifacts_prepared"],
-    nextStep: "render_prompt",
-    nextStepReason: "dry_run_requires_human_review_before_external_agent_execution",
+    progressEvidence:
+      executionMode === "execute_agent_step"
+        ? ["agent_step_runner_executed", "followup_loop_steps_not_run"]
+        : ["dry_run_step_artifacts_prepared"],
+    nextStep: executionMode === "execute_agent_step" ? "capture_diff" : "render_prompt",
+    nextStepReason:
+      executionMode === "execute_agent_step"
+        ? "execute_agent_step_stops_before_diff_checks_and_evaluator"
+        : "dry_run_requires_human_review_before_external_agent_execution",
     feedbackRefs: [],
     humanReviewRequired: true,
   };
@@ -172,11 +190,11 @@ export async function createDryRunLoopRun(opts: {
     loopId: opts.loop.id,
     loopVersion: opts.loop.version,
     loopSha,
-    dryRun: true,
+    dryRun: executionMode === "dry_run",
     status: "human_review",
     startedAt,
     stoppedAt: startedAt,
-    stopReason: "dry_run_prepared",
+    stopReason: executionMode === "execute_agent_step" ? "agent_step_executed" : "dry_run_prepared",
     artifacts: {
       runDir: relativeRunDir,
       eventsPath: path.join(relativeRunDir, "events.jsonl"),
@@ -195,7 +213,11 @@ export async function createDryRunLoopRun(opts: {
     timestamp: startedAt,
   } satisfies Omit<LoopEvent, "type" | "details">;
   const events: LoopEvent[] = [
-    { ...eventBase, type: "loop.started", details: { dry_run: true } },
+    {
+      ...eventBase,
+      type: "loop.started",
+      details: { dry_run: record.dryRun, execution_mode: executionMode },
+    },
     { ...eventBase, type: "iteration.started", details: { iteration: 1 } },
     ...stepArtifacts.map((step) => ({
       ...eventBase,
@@ -214,7 +236,16 @@ export async function createDryRunLoopRun(opts: {
   await writeFile(eventsPath, events.map(jsonLine).join(""));
   await writeFile(
     statePath,
-    `${JSON.stringify({ status: record.status, dry_run: true, stepArtifacts }, null, 2)}\n`,
+    `${JSON.stringify(
+      {
+        status: record.status,
+        dry_run: record.dryRun,
+        execution_mode: executionMode,
+        stepArtifacts,
+      },
+      null,
+      2,
+    )}\n`,
   );
   await writeFile(loopRunPath, `${JSON.stringify(record, null, 2)}\n`);
   return record;
