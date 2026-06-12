@@ -19,11 +19,11 @@ Keep runner code in place but remove default public/agent prompt guidance that m
 - Note:
 
 ```text
-Verified: runner is hidden from default route/help/prompt surfaces while internal task run remains
-available for explicit recipe paths. Checks: focused vitest route/help/prompt suite passed (8 files,
-53 tests); bun run --filter=agentplane build passed; node .agentplane/policy/check-routing.mjs
-passed; bun run docs:cli:check passed after regenerating CLI reference; ap doctor passed with only
-pre-existing DONE task commit-hash warnings.
+Verified: current HEAD 1e7d5cfd3 hides runner from default route/help/prompt surfaces while keeping
+internal task run dispatch and the parallel-codex runner prompt exception. Checks passed on this
+branch: focused vitest route/help/prompt suite (8 files, 53 tests); bun run --filter=agentplane
+build; node .agentplane/policy/check-routing.mjs; bun run docs:cli:check; ap doctor (OK with two
+pre-existing DONE task commit-hash warnings).
 ```
 - Canonical workflow state lives in the task README.
 
