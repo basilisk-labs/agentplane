@@ -232,7 +232,7 @@ export function deriveNextAction(opts: {
     };
   }
   if (opts.blockers.some((blocker) => blocker.code === "pre_merge_closure_missing")) {
-    const commit = opts.resume.head_sha ?? "HEAD";
+    const commit = opts.prFlow?.branch.headSha ?? opts.resume.head_sha ?? "HEAD";
     return {
       code: "record_pre_merge_closure",
       command:
