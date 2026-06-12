@@ -4,7 +4,7 @@ title: "Wire loop agent.run to task runner"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -31,6 +31,26 @@ verification:
   updated_by: "CODER"
   note: "Verified loop execute-agent-step implementation: focused loop tests passed, changed formatting passed, package build passed, policy routing passed. Manual smoke ran Codex runner through ap loop run --execute-agent-step and recorded runner result metadata; both smoke tasks blocked inside runner route because branch_pr authoritative base checkout lacks branch-local task README, which is a separate runner-route issue."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-12T14:41:41.312Z"
+  updated_by: "EVALUATOR"
+  note: "loop execute-agent-step is implemented and verified as a safe partial runner execution mode"
+  evaluated_sha: "c9d1c7083f8a07443e08644b1bf3fa0f9dc826d0"
+  blueprint_digest: "11330fb2b6743b0ece9d8a10fd907246682e40ea2ebbfd01b00d5780d8c86c8e"
+  evidence_refs:
+    - ".agentplane/tasks/202606121325-83R1JB/README.md"
+    - ".agentplane/tasks/202606121325-83R1JB/quality/20260612-144141312-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606121325-83R1JB/quality/20260612-144141312-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606121325-83R1JB/quality/20260612-144141312-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606121325-83R1JB/blueprint/resolved-snapshot.json"
+    - "bun test packages/agentplane/src/commands/loop/loop.command.test.ts packages/agentplane/src/loops/run-artifacts.test.ts packages/agentplane/src/loops/metrics.test.ts packages/agentplane/src/loops/validate.test.ts"
+    - "bun run format:changed"
+    - "bun run --filter=agentplane build"
+    - "node .agentplane/policy/check-routing.mjs"
+    - ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T14-37-23-422Z-bdcb7908/loop-run.json"
+  findings:
+    - "New CLI flag executes one agent.run step through the configured task runner, stores execute-mode runner handoff/result metadata, and stops before diff/check/evaluator steps with human_review."
 commit: null
 comments:
   -
