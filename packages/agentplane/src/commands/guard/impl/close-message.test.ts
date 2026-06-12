@@ -83,7 +83,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     expect(msg.body).not.toContain(".agentplane/tasks/");
   });
 
-  it("preserves the legacy subject shape when the implementation commit is not task-formatted", async () => {
+  it("uses a commit-policy-safe task subject when the implementation commit is not task-formatted", async () => {
     const { root, implHash } = await mkRepoWithImplCommit();
     const task: TaskData = {
       id: "202602081506-R18Y1Q",
@@ -100,7 +100,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toBe("task: add close commit mode");
+    expect(msg.subject).toBe("✅ R18Y1Q task: add close commit mode");
     expect(msg.subject).not.toContain("(no result_summary)");
   });
 
@@ -135,7 +135,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
       },
     });
 
-    expect(msg.subject).toBe("task: add Redmine connector adapter");
+    expect(msg.subject).toBe("✅ R18Y1Q task: add Redmine connector adapter");
   });
 
   it("uses the task title for the subject when result_summary is a machine slug", async () => {
@@ -161,8 +161,8 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toBe("task: finish force approval");
-    expect(msg.subject).not.toBe("task: force-finish-check");
+    expect(msg.subject).toBe("✅ R18Y1Q task: finish force approval");
+    expect(msg.subject).not.toBe("✅ R18Y1Q task: force-finish-check");
   });
 
   it("uses spike emoji and does not require verify summary", async () => {
@@ -187,7 +187,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toBe("task: spike close message builder");
+    expect(msg.subject).toBe("✅ R18Y1Q task: spike close message builder");
     expect(msg.body).toContain("Verification:\n- Not required (spike).");
   });
 
@@ -251,7 +251,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
     expect(msg.subject).toBe(
-      "task: this summary is intentionally very long to exceed the close subject...",
+      "✅ R18Y1Q task: this summary is intentionally very long to exceed the close subject...",
     );
     expect(msg.body).toContain("Verification:\n- Ok (see task verification note).");
     expect(msg.body).toContain("Why:\n- Task metadata: breaking; risk=high.");
