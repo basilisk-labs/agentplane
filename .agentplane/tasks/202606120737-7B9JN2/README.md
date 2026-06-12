@@ -4,7 +4,7 @@ title: "Hide runner from default agent prompts"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-12T08:01:21.346Z"
+  updated_at: "2026-06-12T08:11:03.533Z"
   updated_by: "CODER"
-  note: "Verified current HEAD after CI fixes: bun run format:check; bun run lint:core; bunx vitest run route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite."
+  note: "Verified current HEAD after review fix: unstarted direct tasks route to task start-ready with current agent, started direct tasks still route to verify-show, and no direct path emits task run. Checks passed: bun run format:check; bun run lint:core; bunx vitest run route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite; bun run --filter=agentplane build."
   attempts: 0
 commit: null
 comments:
@@ -58,8 +58,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified current HEAD after CI fixes: bun run format:check; bun run lint:core; bunx vitest run route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite."
+  -
+    type: "verify"
+    at: "2026-06-12T08:11:03.533Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified current HEAD after review fix: unstarted direct tasks route to task start-ready with current agent, started direct tasks still route to verify-show, and no direct path emits task run. Checks passed: bun run format:check; bun run lint:core; bunx vitest run route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite; bun run --filter=agentplane build."
 doc_version: 3
-doc_updated_at: "2026-06-12T08:01:21.620Z"
+doc_updated_at: "2026-06-12T08:11:03.813Z"
 doc_updated_by: "DOCS"
 description: "Keep runner code in place but remove default public/agent prompt guidance that makes agents aware of or able to launch the runner. Preserve runner visibility only when the parallel-codex recipe is explicitly active."
 sections:
@@ -172,6 +178,36 @@ sections:
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-06-12T08:11:03.533Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified current HEAD after review fix: unstarted direct tasks route to task start-ready with current agent, started direct tasks still route to verify-show, and no direct path emits task run. Checks passed: bun run format:check; bun run lint:core; bunx vitest run route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite; bun run --filter=agentplane build.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T08:01:21.620Z, excerpt_hash=sha256:d98c57099bc86c0a0aced11b25e46acac0c113adf57a40ebc6d03a7b2cba14d2
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606120737-7B9JN2-hide-runner-default-prompts/.agentplane/tasks/202606120737-7B9JN2/blueprint/resolved-snapshot.json
+    - old_digest: 896693a74ddd02d87117785ebcf8fc0b5c180e3923165e7712312a3ffe255c7c
+    - current_digest: 896693a74ddd02d87117785ebcf8fc0b5c180e3923165e7712312a3ffe255c7c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606120737-7B9JN2
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202606120737-7B9JN2
+    - diagnostic_command: agentplane pr check 202606120737-7B9JN2
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -188,6 +224,10 @@ sections:
     - Observation: Hosted failures were format drift in base-prompts.test.ts and unused helper in route-decision-next-action.ts.
       Impact: Runner remains hidden from default prompts and public help while CI static/contract checks are addressed.
       Resolution: Removed the unused helper, formatted the test, and reran local format, lint, and focused regression tests.
+
+    - Observation: Review thread identified that approved direct tasks before start-ready were routed to verify-show no-op.
+      Impact: Agents following task next-action can now start direct tasks without discovering or launching the runner.
+      Resolution: Route unstarted direct tasks to task start-ready, keep started direct tasks on current-agent verify-show, and preserve runner state handling only for existing runner metadata.
 id_source: "generated"
 ---
 ## Summary
@@ -308,6 +348,36 @@ DecisionContextRef:
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+### 2026-06-12T08:11:03.533Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified current HEAD after review fix: unstarted direct tasks route to task start-ready with current agent, started direct tasks still route to verify-show, and no direct path emits task run. Checks passed: bun run format:check; bun run lint:core; bunx vitest run route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite; bun run --filter=agentplane build.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T08:01:21.620Z, excerpt_hash=sha256:d98c57099bc86c0a0aced11b25e46acac0c113adf57a40ebc6d03a7b2cba14d2
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606120737-7B9JN2-hide-runner-default-prompts/.agentplane/tasks/202606120737-7B9JN2/blueprint/resolved-snapshot.json
+- old_digest: 896693a74ddd02d87117785ebcf8fc0b5c180e3923165e7712312a3ffe255c7c
+- current_digest: 896693a74ddd02d87117785ebcf8fc0b5c180e3923165e7712312a3ffe255c7c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606120737-7B9JN2
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202606120737-7B9JN2
+- diagnostic_command: agentplane pr check 202606120737-7B9JN2
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -328,3 +398,7 @@ DecisionContextRef:
 - Observation: Hosted failures were format drift in base-prompts.test.ts and unused helper in route-decision-next-action.ts.
   Impact: Runner remains hidden from default prompts and public help while CI static/contract checks are addressed.
   Resolution: Removed the unused helper, formatted the test, and reran local format, lint, and focused regression tests.
+
+- Observation: Review thread identified that approved direct tasks before start-ready were routed to verify-show no-op.
+  Impact: Agents following task next-action can now start direct tasks without discovering or launching the runner.
+  Resolution: Route unstarted direct tasks to task start-ready, keep started direct tasks on current-agent verify-show, and preserve runner state handling only for existing runner metadata.

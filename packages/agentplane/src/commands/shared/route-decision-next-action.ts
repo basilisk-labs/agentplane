@@ -40,9 +40,20 @@ function proseOnlyIncludedClosureCandidate(task: TaskData): boolean {
   );
 }
 
-function directRunnerCommand(task: TaskData, resume: TaskResumeContext, taskId: string): string {
+function directTaskIsDoing(task: TaskData): boolean {
+  return String(task.status).toUpperCase() === "DOING";
+}
+
+function directCurrentAgentCommand(
+  task: TaskData,
+  resume: TaskResumeContext,
+  taskId: string,
+): string {
   if (resume.runner.run_id || resume.runner.status) {
     return resume.runner.next_command ?? `agentplane task verify-show ${taskId}`;
+  }
+  if (!directTaskIsDoing(task)) {
+    return `agentplane task start-ready ${taskId} --author ${task.owner} --body "Start: continue direct-mode task in current checkout."`;
   }
   return `agentplane task verify-show ${taskId}`;
 }
@@ -50,6 +61,9 @@ function directRunnerCommand(task: TaskData, resume: TaskResumeContext, taskId: 
 function directNextActionCode(task: TaskData, resume: TaskResumeContext): string {
   if (resume.runner.run_id || resume.runner.status) {
     return resume.runner.next_action ?? "continue_direct";
+  }
+  if (!directTaskIsDoing(task)) {
+    return "start_direct";
   }
   return "continue_direct";
 }
@@ -147,7 +161,7 @@ export function deriveNextAction(opts: {
     }
     return {
       code: directNextActionCode(opts.task, opts.resume),
-      command: directRunnerCommand(opts.task, opts.resume, id),
+      command: directCurrentAgentCommand(opts.task, opts.resume, id),
       summary: "continue the direct-mode task from the current checkout",
       requiresApproval: false,
     };

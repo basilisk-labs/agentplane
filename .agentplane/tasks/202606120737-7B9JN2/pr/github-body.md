@@ -19,8 +19,11 @@ Keep runner code in place but remove default public/agent prompt guidance that m
 - Note:
 
 ```text
-Verified current HEAD after CI fixes: bun run format:check; bun run lint:core; bunx vitest run
-route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite.
+Verified current HEAD after review fix: unstarted direct tasks route to task start-ready with
+current agent, started direct tasks still route to verify-show, and no direct path emits task run.
+Checks passed: bun run format:check; bun run lint:core; bunx vitest run
+route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite; bun run
+--filter=agentplane build.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -35,18 +38,18 @@ route-guidance/base-prompts/route-decision/help-snap/command-catalog focused sui
  docs/user/cli-reference.generated.mdx              | 110 ------------------
  packages/agentplane/assets/RUNNER.md               |   4 +
  .../run-cli.core.help-snap.test.ts.snap            |   6 +-
- .../cli/run-cli.core.route-decision.batch.test.ts  |   4 +-
- ...cli.core.route-decision.direct-closeout.test.ts |   8 +-
+ .../cli/run-cli.core.route-decision.batch.test.ts  |   5 +-
+ ...cli.core.route-decision.direct-closeout.test.ts |  11 +-
  .../src/cli/run-cli/command-catalog.test.ts        |   6 +
  .../src/cli/run-cli/command-catalog/task.ts        |  24 +++-
- .../commands/shared/route-decision-next-action.ts  |  10 --
+ .../commands/shared/route-decision-next-action.ts  |  18 +--
  .../src/commands/shared/route-guidance.test.ts     |   3 +-
  .../src/commands/shared/route-guidance.ts          |   6 +-
  .../agentplane/src/commands/task/brief-render.ts   |  12 +-
  .../src/commands/task/next-action.command.ts       |  10 +-
  .../src/runner/context/base-prompts.test.ts        | 124 +++++++++++----------
  .../agentplane/src/runner/context/base-prompts.ts  |   3 +-
- 14 files changed, 121 insertions(+), 209 deletions(-)
+ 14 files changed, 136 insertions(+), 206 deletions(-)
 ```
 
 </details>
