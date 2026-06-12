@@ -13,7 +13,7 @@ Created: 2026-06-12T07:39:05.478Z
 ## Verification
 
 - State: ok
-- Note: Verified current HEAD after review fix: unstarted direct tasks route to task start-ready with current agent, started direct tasks still route to verify-show, and no direct path emits task run. Checks passed: bun run format:check; bun run lint:core; bunx vitest run route-guidance/base-prompts/route-decision/help-snap/command-catalog focused suite; bun run --filter=agentplane build.
+- Note: Verified merge HEAD after rebasing on origin/main: bun run format:check; bun run lint:core; focused vitest route-guidance/base-prompts/route-decision/help-snap/command-catalog suite; bun run --filter=agentplane build; node .agentplane/policy/check-routing.mjs.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

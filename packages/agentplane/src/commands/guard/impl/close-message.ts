@@ -78,7 +78,7 @@ export async function buildCloseCommitMessage(opts: {
   const parsedSubject = parseTaskSubjectTemplate(task.commit?.message ?? "");
   const rendered = renderMergeMessage({
     scope: normalizeCloseCommitScope(normalizeScope({ tags, title, files: keyFiles })),
-    subjectEmoji: parsedSubject?.emoji,
+    subjectEmoji: parsedSubject?.emoji ?? "✅",
     tags,
     prTitle: title,
     sourcePrNumber,

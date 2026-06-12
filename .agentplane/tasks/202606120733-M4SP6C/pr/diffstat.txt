@@ -1,0 +1,5 @@
+ .../src/cli/run-cli.core.insights-report.test.ts           |  5 ++++-
+ .../src/commands/guard/impl/close-message.test.ts          | 14 +++++++-------
+ .../agentplane/src/commands/guard/impl/close-message.ts    |  2 +-
+ .../agentplane/src/commands/insights/insights-report.ts    | 10 +++++++++-
+ 4 files changed, 21 insertions(+), 10 deletions(-)
