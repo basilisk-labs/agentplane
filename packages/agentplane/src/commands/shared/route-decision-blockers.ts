@@ -40,7 +40,7 @@ async function qualityReviewIsFreshForHead(opts: {
   headSha: string | null;
 }): Promise<boolean> {
   const review = opts.task.quality_review;
-  if (!review || review.state !== "pass" || review.updated_by !== "EVALUATOR") return false;
+  if (review?.state !== "pass" || review.updated_by !== "EVALUATOR") return false;
   if (!review.evidence_refs.some((ref) => ref.endsWith("/quality-report.json"))) return false;
   if (review.findings.length === 0) return false;
   if (!opts.headSha || !review.evaluated_sha) return true;
@@ -201,29 +201,34 @@ export async function deriveBlockers(opts: {
     ) {
       const review = opts.task.quality_review;
       const headSha = opts.prFlow?.branch.headSha ?? opts.resume.head_sha;
-      if (!review) {
+      if (review) {
+        const reviewIsFresh = await qualityReviewIsFreshForHead({
+          ctx: opts.ctx,
+          task: opts.task,
+          headSha,
+        });
+        if (reviewIsFresh) {
+          const preMerge = await readLocalPreMergeState({ ctx: opts.ctx, taskId: opts.task.id });
+          if ((opts.prFlow?.pr.state === "OPEN" || preMerge.open) && !preMerge.closed) {
+            addBlocker(
+              blockers,
+              "pre_merge_closure_missing",
+              "open branch_pr task requires pre-merge closure on the task branch before integration",
+            );
+          }
+        } else {
+          addBlocker(
+            blockers,
+            "quality_review_stale",
+            "EVALUATOR quality review is missing required evidence or does not cover the current implementation head",
+          );
+        }
+      } else {
         addBlocker(
           blockers,
           "quality_review_missing",
           "verified branch_pr task requires EVALUATOR quality review before PR publication or integration",
         );
-      } else if (
-        !(await qualityReviewIsFreshForHead({ ctx: opts.ctx, task: opts.task, headSha }))
-      ) {
-        addBlocker(
-          blockers,
-          "quality_review_stale",
-          "EVALUATOR quality review is missing required evidence or does not cover the current implementation head",
-        );
-      } else {
-        const preMerge = await readLocalPreMergeState({ ctx: opts.ctx, taskId: opts.task.id });
-        if ((opts.prFlow?.pr.state === "OPEN" || preMerge.open) && !preMerge.closed) {
-          addBlocker(
-            blockers,
-            "pre_merge_closure_missing",
-            "open branch_pr task requires pre-merge closure on the task branch before integration",
-          );
-        }
       }
     }
     if (
