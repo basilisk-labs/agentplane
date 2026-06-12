@@ -47,11 +47,8 @@ async function createBranchPrTask(root: string): Promise<string> {
 
 async function markTaskDoing(root: string, taskId: string): Promise<void> {
   const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
-  await writeFile(
-    readmePath,
-    (await readFile(readmePath, "utf8")).replace('status: "TODO"', 'status: "DOING"'),
-    "utf8",
-  );
+  const readme = await readFile(readmePath, "utf8");
+  await writeFile(readmePath, readme.replace('status: "TODO"', 'status: "DOING"'), "utf8");
 }
 
 async function createVerifiedOpenPrFixture(
