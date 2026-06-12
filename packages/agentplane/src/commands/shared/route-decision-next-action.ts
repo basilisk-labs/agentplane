@@ -48,18 +48,12 @@ function directRunnerCommand(task: TaskData, resume: TaskResumeContext, taskId: 
   if (resume.runner.run_id || resume.runner.status) {
     return resume.runner.next_command ?? `agentplane task verify-show ${taskId}`;
   }
-  if (!directTaskHasStarted(task)) {
-    return resume.runner.next_command ?? `agentplane task run ${taskId}`;
-  }
   return `agentplane task verify-show ${taskId}`;
 }
 
 function directNextActionCode(task: TaskData, resume: TaskResumeContext): string {
   if (resume.runner.run_id || resume.runner.status) {
     return resume.runner.next_action ?? "continue_direct";
-  }
-  if (!directTaskHasStarted(task)) {
-    return resume.runner.next_action ?? "run";
   }
   return "continue_direct";
 }

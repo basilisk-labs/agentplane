@@ -69,8 +69,7 @@ describe("route operator guidance", () => {
         runnerRouteActive: false,
         currentAgentMustExecute: true,
         instruction: "current_agent_executes_safe_command",
-        warning:
-          "not a runner route; the current coding agent must run safe_command itself and must not wait for or retry a runner",
+        warning: "current coding agent must run safe_command itself",
       },
       runnerContext: {
         runnerIsRequired: false,

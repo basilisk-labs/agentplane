@@ -62,7 +62,7 @@ async function recordEvaluatorReview(root: string, taskId: string): Promise<void
 }
 
 describe("runCli route decision direct closeout", () => {
-  it("keeps the runner startup route for approved direct tasks that have not started", async () => {
+  it("keeps approved direct tasks on the current-agent route before start-ready", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "direct";
@@ -93,10 +93,10 @@ describe("runCli route decision direct closeout", () => {
       };
       expect(parsed.route_oracle.phase).toBe("direct_execution");
       expect(parsed.next_action).toMatchObject({
-        code: "run",
-        command: `agentplane task run ${taskId}`,
+        code: "continue_direct",
+        command: `agentplane task verify-show ${taskId}`,
       });
-      expect(parsed.route_oracle.nextCommand).toBe(`agentplane task run ${taskId}`);
+      expect(parsed.route_oracle.nextCommand).toBe(`agentplane task verify-show ${taskId}`);
     } finally {
       nextIo.restore();
     }

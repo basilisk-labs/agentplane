@@ -62,12 +62,12 @@ export function reportTaskBriefText(brief: TaskBrief, taskId: string): void {
       },
       {
         label: "executor_context",
-        value:
-          `executor=${brief.decision_context.executorContext.executor} ` +
-          `runner_route_active=${String(
-            brief.decision_context.executorContext.runnerRouteActive,
-          )} ` +
-          `instruction=${brief.decision_context.executorContext.instruction}`,
+        value: brief.decision_context.executorContext.runnerRouteActive
+          ? `executor=${brief.decision_context.executorContext.executor} ` +
+            `runner_route_active=true ` +
+            `instruction=${brief.decision_context.executorContext.instruction}`
+          : `executor=${brief.decision_context.executorContext.executor} ` +
+            `instruction=${brief.decision_context.executorContext.instruction}`,
       },
       {
         label: "executor_warning",

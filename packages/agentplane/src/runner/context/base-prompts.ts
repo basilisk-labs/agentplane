@@ -41,9 +41,10 @@ export async function collectRunnerBasePrompts(opts: {
   const agents_dir =
     trimmedAgentsDir && trimmedAgentsDir.length > 0 ? trimmedAgentsDir : ".agentplane/agents";
   const fallback_flavor = opts.fallback_policy_gateway_flavor ?? "codex";
+  const includeFrameworkRunnerPrompt = opts.recipe?.recipe_id === "parallel-codex";
 
   const resolvedBasePrompts = await Promise.all([
-    loadFrameworkRunnerPrompt(),
+    includeFrameworkRunnerPrompt ? loadFrameworkRunnerPrompt() : Promise.resolve(null),
     loadPolicyGatewayPrompt({
       git_root: opts.git_root,
       fallback_flavor,

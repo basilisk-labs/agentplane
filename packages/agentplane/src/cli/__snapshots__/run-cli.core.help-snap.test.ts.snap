@@ -16,6 +16,8 @@ Commands:
     ready  Report dependency readiness details for a task.
     task  Task lifecycle and task-store commands.
     task active  Select active agent work with next actions, blockers, dependency readiness, and freshness.
+    task answer  Answer and close a task user-input blocker.
+    task ask  Record a blocking user question for a task.
     task begin  Create, plan, approve, and start or route a task through the normal lifecycle.
     task brief  Print an agent-ready task brief without remote lookups by default.
     task comment  Append a comment to a task.
@@ -30,10 +32,6 @@ Commands:
     task plan  Task plan commands (set/approve/reject).
     task plan approve  Approve the current task plan (enforces Verify Steps gating when configured).
     task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
-    task run  Run an AgentPlane task through the configured runner adapter.
-    task run inspect  Inspect task runner artifacts, state, and recent events.
-    task run logs  Print task runner events, trace, or stderr logs.
-    task run status  Show the latest or selected task runner run status.
     task search  Search tasks by text or regex with optional filters.
     task show  Print task metadata and resolved blueprint route as JSON.
     task start-ready  Run readiness checks and start a task in one deterministic command.
