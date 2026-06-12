@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 680" role="img" aria-labelledby="title desc">
+  <title id="title">Loop workflow field</title>
+  <desc id="desc">A visual map of intent, steps, evidence, and decision nodes connected by a loop path.</desc>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="45%" r="60%">
+      <stop offset="0" stop-color="#4adf9a" stop-opacity=".34"/>
+      <stop offset=".5" stop-color="#1a5b42" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#070b09" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wire" x1="80" y1="120" x2="800" y2="560" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9ff4c8"/>
+      <stop offset=".55" stop-color="#62d6a2"/>
+      <stop offset="1" stop-color="#d8f6a5"/>
+    </linearGradient>
+  </defs>
+  <rect width="920" height="680" rx="40" fill="#0b0f0d"/>
+  <rect x="24" y="24" width="872" height="632" rx="32" fill="#101612" stroke="#27342d"/>
+  <circle cx="458" cy="334" r="310" fill="url(#glow)"/>
+  <path d="M184 337C184 206 285 116 423 116c157 0 275 93 297 229" fill="none" stroke="url(#wire)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M720 345l-31-36 47-7z" fill="#9ff4c8"/>
+  <path d="M735 361c0 132-101 223-240 223-154 0-271-91-296-224" fill="none" stroke="url(#wire)" stroke-width="5" stroke-linecap="round" stroke-dasharray="18 18"/>
+  <path d="M198 360l32 35-47 8z" fill="#9ff4c8"/>
+  <g fill="#17211b" stroke="#62d6a2" stroke-width="2">
+    <rect x="90" y="266" width="188" height="94" rx="22"/>
+    <rect x="324" y="72" width="208" height="94" rx="22"/>
+    <rect x="642" y="272" width="188" height="94" rx="22"/>
+    <rect x="354" y="514" width="208" height="94" rx="22"/>
+  </g>
+  <g fill="#f4f1e8" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="28">
+    <text x="184" y="322" text-anchor="middle">Intent</text>
+    <text x="428" y="128" text-anchor="middle">Steps</text>
+    <text x="736" y="328" text-anchor="middle">Evidence</text>
+    <text x="458" y="570" text-anchor="middle">Decision</text>
+  </g>
+  <g fill="#a9b1aa" font-family="Inter, Arial, sans-serif" font-size="17">
+    <text x="184" y="348" text-anchor="middle">approved task</text>
+    <text x="428" y="153" text-anchor="middle">typed contracts</text>
+    <text x="736" y="354" text-anchor="middle">jsonl + artifacts</text>
+    <text x="458" y="596" text-anchor="middle">score aware</text>
+  </g>
+  <g fill="#62d6a2">
+    <circle cx="184" cy="337" r="6"/>
+    <circle cx="428" cy="116" r="6"/>
+    <circle cx="736" cy="337" r="6"/>
+    <circle cx="458" cy="584" r="6"/>
+  </g>
+</svg>

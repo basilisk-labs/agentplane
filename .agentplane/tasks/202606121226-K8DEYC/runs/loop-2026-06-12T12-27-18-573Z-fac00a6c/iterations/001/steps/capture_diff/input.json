@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.input",
+  "stepId": "capture_diff",
+  "stepType": "git.diff",
+  "dryRun": true,
+  "contract": null,
+  "sources": []
+}

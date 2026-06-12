@@ -1,0 +1,225 @@
+:root {
+  color-scheme: dark;
+  --ink: #f4f1e8;
+  --muted: #a9b1aa;
+  --field: #0b0f0d;
+  --panel: #141916;
+  --line: rgba(244, 241, 232, 0.16);
+  --accent: #62d6a2;
+  --accent-strong: #9ff4c8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--field);
+  color: var(--ink);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  letter-spacing: 0;
+}
+
+main {
+  overflow: hidden;
+}
+
+.hero {
+  min-height: 92svh;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.82fr) minmax(320px, 1.18fr);
+  align-items: center;
+  gap: clamp(28px, 6vw, 96px);
+  padding: clamp(28px, 6vw, 84px);
+  border-bottom: 1px solid var(--line);
+}
+
+.hero__copy {
+  max-width: 620px;
+  animation: rise 700ms ease-out both;
+}
+
+.eyebrow {
+  margin: 0 0 16px;
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 18px;
+  font-size: clamp(4rem, 14vw, 11rem);
+  line-height: 0.86;
+  font-weight: 860;
+}
+
+h2 {
+  max-width: 680px;
+  margin-bottom: 0;
+  font-size: clamp(2rem, 6vw, 5.8rem);
+  line-height: 0.94;
+  font-weight: 820;
+}
+
+.lede {
+  max-width: 520px;
+  margin-bottom: 32px;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.6vw, 1.28rem);
+  line-height: 1.55;
+}
+
+.action {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  border: 1px solid rgba(98, 214, 162, 0.5);
+  color: var(--field);
+  background: var(--accent);
+  text-decoration: none;
+  font-weight: 780;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.action:hover {
+  transform: translateY(-2px);
+  background: var(--accent-strong);
+}
+
+.hero__visual {
+  width: min(100%, 760px);
+  justify-self: end;
+  filter: drop-shadow(0 24px 70px rgba(98, 214, 162, 0.16));
+  animation: settle 900ms 120ms ease-out both;
+}
+
+.mechanics,
+.artifacts {
+  padding: clamp(44px, 8vw, 112px) clamp(28px, 6vw, 84px);
+  display: grid;
+  grid-template-columns: minmax(240px, 0.82fr) minmax(320px, 1.18fr);
+  gap: clamp(28px, 6vw, 96px);
+  border-bottom: 1px solid var(--line);
+}
+
+.path {
+  counter-reset: step;
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.path li {
+  counter-increment: step;
+  position: relative;
+  padding: 20px 20px 20px 64px;
+  background: color-mix(in srgb, var(--panel) 86%, transparent);
+  border: 1px solid var(--line);
+  font-size: clamp(1rem, 1.7vw, 1.32rem);
+  font-weight: 720;
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.path li::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  left: 20px;
+  top: 21px;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 860;
+}
+
+.path li:hover {
+  transform: translateX(4px);
+  border-color: rgba(98, 214, 162, 0.44);
+}
+
+.file-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.file-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.file-list span {
+  color: var(--ink);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.file-list strong {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (max-width: 820px) {
+  .hero,
+  .mechanics,
+  .artifacts {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    min-height: auto;
+    padding-top: 42px;
+  }
+
+  .hero__visual {
+    justify-self: start;
+  }
+
+  .file-list li {
+    display: grid;
+    gap: 8px;
+  }
+}

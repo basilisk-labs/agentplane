@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Loop Brief</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main>
+      <section class="hero" aria-labelledby="site-title">
+        <div class="hero__copy">
+          <p class="eyebrow">AgentPlane loop demo</p>
+          <h1 id="site-title">Loop Brief</h1>
+          <p class="lede">
+            A static artifact that turns a loop run into something visible:
+            intent, steps, evidence, and decision in one local page.
+          </p>
+          <a class="action" href="#artifacts">Inspect artifacts</a>
+        </div>
+        <img class="hero__visual" src="./assets/loop-field.svg" alt="Loop workflow field showing intent, steps, evidence, and decision nodes" />
+      </section>
+
+      <section class="mechanics" aria-labelledby="mechanics-title">
+        <div>
+          <p class="eyebrow">Selected loop</p>
+          <h2 id="mechanics-title">tdd.fix prepares the repair path</h2>
+        </div>
+        <ol class="path" aria-label="Prepared loop steps">
+          <li>Load context</li>
+          <li>Render prompt</li>
+          <li>Patch</li>
+          <li>Capture diff</li>
+          <li>Run check</li>
+          <li>Evaluate</li>
+        </ol>
+      </section>
+
+      <section id="artifacts" class="artifacts" aria-labelledby="artifacts-title">
+        <div>
+          <p class="eyebrow">Physical output</p>
+          <h2 id="artifacts-title">Files written to disk</h2>
+        </div>
+        <ul class="file-list">
+          <li><span>index.html</span><strong>page structure</strong></li>
+          <li><span>styles.css</span><strong>visual system</strong></li>
+          <li><span>assets/loop-field.svg</span><strong>local image asset</strong></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
