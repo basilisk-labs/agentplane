@@ -188,6 +188,14 @@ async function pathExists(filePath: string): Promise<boolean> {
   }
 }
 
+async function listTasksForInsights(root: string): Promise<TaskRecord[]> {
+  try {
+    return await listTasks({ cwd: root, rootOverride: root });
+  } catch {
+    return [];
+  }
+}
+
 function summarizeTasks(tasks: TaskRecord[], recentLimit: number): InsightsReport["tasks"] {
   const byStatus: CountMap = {};
   const byOwner: CountMap = {};
@@ -354,7 +362,7 @@ export async function buildInsightsReport(opts: {
     Promise.resolve(getVersion()),
     readBackendSummary(root, loaded.config.tasks_backend.config_path),
     readGitStatus(root),
-    listTasks({ cwd: root, rootOverride: root }),
+    listTasksForInsights(root),
   ]);
   const nodeMajor = Number.parseInt(process.versions.node.split(".")[0] ?? "", 10);
 

@@ -1,6 +1,6 @@
 import { describe, vi } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 
 import {
   captureStdIO,
@@ -241,6 +241,9 @@ describe("runCli insights report", () => {
     const config = defaultConfig();
     config.feedback.github_issues.enabled = true;
     await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "tasks", "202606101931-QR2GX2"), {
+      recursive: true,
+    });
 
     const io = captureStdIO();
     try {
