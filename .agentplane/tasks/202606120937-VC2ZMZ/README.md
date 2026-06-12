@@ -4,7 +4,7 @@ title: "Bound pre-push fast CI in git hooks"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +23,21 @@ verification:
   updated_by: "CODER"
   note: "Verified pre-push broad-CI guard: hooks/local-CI regression suite passed; direct broad push input now fails fast with an actionable full-fast diagnostic before running broad local CI; targeted eslint, format check, agentplane build, and policy routing passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-12T09:45:47.781Z"
+  updated_by: "EVALUATOR"
+  note: "Quality review passed: standard pre-push now stops scoped full-fast pushes before broad local CI, preserving explicit full-fast validation."
+  evaluated_sha: "e919d1502243c460e8b9a7df3eac8cc7511e2b1a"
+  blueprint_digest: "e4e621ae12f0e7362b3444c9a836aee1bac89fdbf2adf2417877d7530efd9f94"
+  evidence_refs:
+    - ".agentplane/tasks/202606120937-VC2ZMZ/README.md"
+    - ".agentplane/tasks/202606120937-VC2ZMZ/quality/20260612-094547781-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606120937-VC2ZMZ/quality/20260612-094547781-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606120937-VC2ZMZ/quality/20260612-094547781-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606120937-VC2ZMZ/blueprint/resolved-snapshot.json"
+  findings:
+    - "No blocking findings. Residual risk: release/full hook pushes still run broad lanes by design."
 commit: null
 comments:
   -
