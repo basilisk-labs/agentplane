@@ -34,7 +34,13 @@ passed.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../run-cli.core.route-decision.quality.test.ts    | 228 +++++++++++++++++++++
+ .../src/commands/shared/route-decision-blockers.ts |  74 +++++++
+ .../commands/shared/route-decision-next-action.ts  |  29 +++
+ .../src/commands/shared/route-decision.ts          |  21 ++
+ .../agentplane/src/commands/shared/route-oracle.ts |  24 +++
+ scripts/lib/test-route-registry.mjs                |   1 +
+ 6 files changed, 377 insertions(+)
 ```
 
 </details>
