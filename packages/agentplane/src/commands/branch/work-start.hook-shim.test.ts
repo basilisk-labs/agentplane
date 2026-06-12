@@ -72,6 +72,47 @@ describe("worktree hook shim", () => {
     expect(stderr).toContain("reason_code=hook_shim_timeout");
   }, 10_000);
 
+  it("normalizes killed runner exits into actionable diagnostics", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-shim-signal-"));
+    const worktreePath = path.join(root, "worktree");
+    const activeBin = path.join(root, "installed agentplane", "bin", "agentplane.js");
+    const previousActiveBin = process.env[ACTIVE_BIN_ENV];
+    await mkdir(path.dirname(activeBin), { recursive: true });
+    await writeFile(activeBin, "process.kill(process.pid, 'SIGKILL');\n", "utf8");
+    process.env[ACTIVE_BIN_ENV] = activeBin;
+    try {
+      await materializeHookShimForWorktree(worktreePath);
+    } finally {
+      if (previousActiveBin === undefined) delete process.env[ACTIVE_BIN_ENV];
+      else process.env[ACTIVE_BIN_ENV] = previousActiveBin;
+    }
+
+    const shimPath = path.join(worktreePath, ".agentplane", "bin", "agentplane");
+    let exitCode: number | null = null;
+    let signal: string | null = null;
+    let stderr = "";
+    try {
+      await execFileNodeAsync(shimPath, ["hooks", "run", "pre-commit"], {
+        cwd: worktreePath,
+        timeout: 5000,
+      });
+    } catch (err) {
+      exitCode = (err as { code?: number | null }).code ?? null;
+      signal = (err as { signal?: string | null }).signal ?? null;
+      const rawStderr = (err as { stderr?: unknown }).stderr;
+      stderr =
+        typeof rawStderr === "string"
+          ? rawStderr
+          : Buffer.isBuffer(rawStderr)
+            ? rawStderr.toString("utf8")
+            : "";
+    }
+    expect(exitCode).toBe(1);
+    expect(signal).toBeNull();
+    expect(stderr).toContain("terminated by signal 9");
+    expect(stderr).toContain("reason_code=hook_runner_signal");
+  }, 10_000);
+
   it("preserves hook stdin when the runner is watched in the background", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-shim-stdin-"));
     const worktreePath = path.join(root, "worktree");
