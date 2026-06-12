@@ -4,7 +4,7 @@ title: "Reduce branch_pr commit count for single-task fixes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,21 @@ verification:
   updated_by: "CODER"
   note: "Verified route decision quality/pre-merge lifecycle change. Checks: bunx vitest route-decision tests passed; route-oracle/route-guidance tests passed; bun run typecheck passed; node .agentplane/policy/check-routing.mjs passed; git diff --check passed; hotspot-report threshold passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-12T08:34:44.647Z"
+  updated_by: "EVALUATOR"
+  note: "Quality review passed."
+  evaluated_sha: "8dd55b3c97719d5585164ec6c18da3454b81813c"
+  blueprint_digest: "6e4812a08d29086cee97f6976e0519ae25c0570dcf043905b54fe69fabce383c"
+  evidence_refs:
+    - ".agentplane/tasks/202606120809-85QTY9/README.md"
+    - ".agentplane/tasks/202606120809-85QTY9/quality/20260612-083444647-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606120809-85QTY9/quality/20260612-083444647-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606120809-85QTY9/quality/20260612-083444647-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606120809-85QTY9/blueprint/resolved-snapshot.json"
+  findings:
+    - "No blocking findings."
 commit: null
 comments:
   -
