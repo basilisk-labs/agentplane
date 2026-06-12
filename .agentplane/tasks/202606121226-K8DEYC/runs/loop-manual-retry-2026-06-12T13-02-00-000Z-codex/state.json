@@ -1,0 +1,147 @@
+{
+  "status": "passed",
+  "dryRun": false,
+  "executionMode": "manual_codex_runner",
+  "iterations": 2,
+  "decision": "finish",
+  "lastDecision": {
+    "schemaVersion": 1,
+    "kind": "loop.decision",
+    "decision": "finish",
+    "reason": "second iteration applied feedback and focused checks passed",
+    "confidence": "high",
+    "scores": {
+      "total": 0.91,
+      "max": 1,
+      "normalized": 0.91,
+      "failedThresholds": [],
+      "missingRequired": [],
+      "scores": [
+        {
+          "id": "verification_score",
+          "source": "check",
+          "score": 1,
+          "weight": 0.45,
+          "threshold": 0.8,
+          "passed": true,
+          "missing": false,
+          "reason": "marker_present"
+        },
+        {
+          "id": "diff_scope_score",
+          "source": "rule",
+          "score": 0.9,
+          "weight": 0.25,
+          "threshold": 0.7,
+          "passed": true,
+          "missing": false,
+          "reason": "two_task_artifact_files_changed"
+        },
+        {
+          "id": "policy_compliance_score",
+          "source": "rule",
+          "score": 1,
+          "weight": 0.2,
+          "threshold": 1,
+          "passed": true,
+          "missing": false,
+          "reason": "local_only_references"
+        },
+        {
+          "id": "iteration_progress_score",
+          "source": "aggregate",
+          "score": 0.9,
+          "weight": 0.1,
+          "threshold": 0.4,
+          "passed": true,
+          "missing": false,
+          "reason": "failed_then_passed"
+        }
+      ]
+    },
+    "failedContracts": [],
+    "progressEvidence": [
+      "iteration_001_failed",
+      "feedback_applied",
+      "iteration_002_passed"
+    ],
+    "nextStep": "finish",
+    "nextStepReason": "manual_runner_retry_completed",
+    "feedbackRefs": [],
+    "humanReviewRequired": false
+  },
+  "stepArtifacts": [
+    {
+      "iteration": 1,
+      "stepId": "load_context",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/load_context/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/load_context/output.json"
+    },
+    {
+      "iteration": 1,
+      "stepId": "render_prompt",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/render_prompt/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/render_prompt/output.json"
+    },
+    {
+      "iteration": 1,
+      "stepId": "agent_patch",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/agent_patch/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/agent_patch/output.json"
+    },
+    {
+      "iteration": 1,
+      "stepId": "capture_diff",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/capture_diff/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/capture_diff/output.json"
+    },
+    {
+      "iteration": 1,
+      "stepId": "focused_check",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/focused_check/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/focused_check/output.json"
+    },
+    {
+      "iteration": 1,
+      "stepId": "evaluator",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/evaluator/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/evaluator/output.json"
+    },
+    {
+      "iteration": 2,
+      "stepId": "load_context",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/load_context/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/load_context/output.json"
+    },
+    {
+      "iteration": 2,
+      "stepId": "render_prompt",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/render_prompt/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/render_prompt/output.json"
+    },
+    {
+      "iteration": 2,
+      "stepId": "agent_patch",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/agent_patch/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/agent_patch/output.json"
+    },
+    {
+      "iteration": 2,
+      "stepId": "capture_diff",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/capture_diff/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/capture_diff/output.json"
+    },
+    {
+      "iteration": 2,
+      "stepId": "focused_check",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/focused_check/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/focused_check/output.json"
+    },
+    {
+      "iteration": 2,
+      "stepId": "evaluator",
+      "inputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/evaluator/input.json",
+      "outputPath": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/evaluator/output.json"
+    }
+  ]
+}

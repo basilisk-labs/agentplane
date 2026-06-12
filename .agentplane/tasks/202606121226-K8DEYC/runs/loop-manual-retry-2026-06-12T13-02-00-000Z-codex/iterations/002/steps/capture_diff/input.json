@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.input",
+  "stepId": "capture_diff",
+  "stepType": "git.diff",
+  "sources": [
+    {
+      "id": "agent_patch",
+      "ref": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/agent_patch/output.json"
+    }
+  ]
+}

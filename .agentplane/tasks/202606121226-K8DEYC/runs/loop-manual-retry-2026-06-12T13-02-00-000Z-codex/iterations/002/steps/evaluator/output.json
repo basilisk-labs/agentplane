@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "evaluator",
+  "stepType": "evaluator.run",
+  "status": "passed",
+  "evaluator": "codex.manual",
+  "verdict": "pass",
+  "findings": [],
+  "residualRisk": "This is manual runner evidence; ap loop run still only supports dry-run."
+}

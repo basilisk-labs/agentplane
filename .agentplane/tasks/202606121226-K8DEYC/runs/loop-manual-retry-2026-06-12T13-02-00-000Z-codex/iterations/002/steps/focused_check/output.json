@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "focused_check",
+  "stepType": "check.run",
+  "status": "passed",
+  "checkResult": {
+    "marker": "Retry proof",
+    "present": true,
+    "localOnly": true,
+    "commands": [
+      "node marker check: passed",
+      "rg external refs: no matches"
+    ]
+  }
+}

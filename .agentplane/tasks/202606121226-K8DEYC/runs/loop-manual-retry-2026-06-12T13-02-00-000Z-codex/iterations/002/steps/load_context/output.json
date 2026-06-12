@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "load_context",
+  "stepType": "context.load",
+  "status": "passed",
+  "context": {
+    "taskSummary": "Mini-site artifact task with retry behavior test.",
+    "artifact": "artifacts/mini-site/index.html",
+    "iteration": 2
+  }
+}

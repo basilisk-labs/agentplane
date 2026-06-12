@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "artifactKind": "agentplane.blueprint.execution_state",
+  "blueprintId": "code.branch_pr",
+  "blueprintVersion": 1,
+  "taskId": "202606121226-K8DEYC",
+  "runId": "2026-06-12T12-59-14-759Z",
+  "nodes": [
+    {
+      "nodeId": "intake",
+      "status": "ready",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is ready because all dependencies are satisfied."
+    },
+    {
+      "nodeId": "scope",
+      "status": "pending",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is pending until dependencies complete."
+    },
+    {
+      "nodeId": "approval_gate",
+      "status": "pending",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is pending until dependencies complete."
+    },
+    {
+      "nodeId": "context_resolve",
+      "status": "pending",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is pending until dependencies complete."
+    },
+    {
+      "nodeId": "worktree_start",
+      "status": "pending",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is pending until dependencies complete."
+    },
+    {
+      "nodeId": "work_unit",
+      "status": "pending",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is pending until dependencies complete."
+    },
+    {
+      "nodeId": "fast_local_checks",
+      "status": "pending",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is pending until dependencies complete."
+    },
+    {
+      "nodeId": "pr_artifact",
+      "status": "pending",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is pending until dependencies complete."
+    },
+    {
+      "nodeId": "verify_record",
+      "status": "pending",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is pending until dependencies complete."
+    },
+    {
+      "nodeId": "quality_gate",
+      "status": "pending",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is pending until dependencies complete."
+    },
+    {
+      "nodeId": "hosted_checks",
+      "status": "pending",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is pending until dependencies complete."
+    },
+    {
+      "nodeId": "publish_or_integrate",
+      "status": "pending",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is pending until dependencies complete."
+    },
+    {
+      "nodeId": "finish",
+      "status": "pending",
+      "evidenceRefs": [],
+      "updatedAt": "2026-06-12T12-59-14-759Z",
+      "message": "Node is pending until dependencies complete."
+    }
+  ],
+  "history": [
+    {
+      "schemaVersion": 1,
+      "at": "2026-06-12T12-59-14-759Z",
+      "type": "planned",
+      "message": "Blueprint execution state initialized from deterministic plan."
+    }
+  ]
+}

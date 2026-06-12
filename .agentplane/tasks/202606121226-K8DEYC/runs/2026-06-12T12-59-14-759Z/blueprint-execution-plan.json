@@ -1,0 +1,563 @@
+{
+  "schemaVersion": 1,
+  "artifactKind": "agentplane.blueprint.execution_plan",
+  "blueprintId": "code.branch_pr",
+  "blueprintVersion": 1,
+  "taskId": "202606121226-K8DEYC",
+  "runId": "2026-06-12T12-59-14-759Z",
+  "generatedAt": "2026-06-12T12-59-14-759Z",
+  "steps": [
+    {
+      "nodeId": "intake",
+      "nodeKind": "intake",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "dependsOn": [],
+      "allowedCommands": [],
+      "policyModules": [],
+      "expectedEvidence": []
+    },
+    {
+      "nodeId": "scope",
+      "nodeKind": "scope",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "dependsOn": [
+        "intake"
+      ],
+      "allowedCommands": [],
+      "policyModules": [],
+      "expectedEvidence": [
+        "assumptions"
+      ]
+    },
+    {
+      "nodeId": "approval_gate",
+      "nodeKind": "approval_gate",
+      "mode": "approval",
+      "required": true,
+      "protected": true,
+      "dependsOn": [
+        "scope"
+      ],
+      "allowedCommands": [],
+      "policyModules": [],
+      "expectedEvidence": [
+        "approval"
+      ]
+    },
+    {
+      "nodeId": "context_resolve",
+      "nodeKind": "context_resolve",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "dependsOn": [
+        "approval_gate"
+      ],
+      "allowedCommands": [],
+      "policyModules": [
+        ".agentplane/policy/security.must.md",
+        ".agentplane/policy/dod.core.md",
+        ".agentplane/policy/dod.code.md",
+        ".agentplane/policy/workflow.branch_pr.md"
+      ],
+      "expectedEvidence": [
+        "context_manifest"
+      ]
+    },
+    {
+      "nodeId": "worktree_start",
+      "nodeKind": "worktree_start",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "dependsOn": [
+        "context_resolve"
+      ],
+      "allowedCommands": [
+        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
+      ],
+      "policyModules": [],
+      "expectedEvidence": [
+        "changed_paths"
+      ]
+    },
+    {
+      "nodeId": "work_unit",
+      "nodeKind": "work_unit",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "dependsOn": [
+        "worktree_start"
+      ],
+      "allowedCommands": [],
+      "policyModules": [],
+      "expectedEvidence": [
+        "changed_paths"
+      ]
+    },
+    {
+      "nodeId": "fast_local_checks",
+      "nodeKind": "fast_local_checks",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "dependsOn": [
+        "work_unit"
+      ],
+      "allowedCommands": [
+        "agentplane task verify-show <task-id>",
+        "project focused checks"
+      ],
+      "policyModules": [],
+      "expectedEvidence": [
+        "check_result"
+      ]
+    },
+    {
+      "nodeId": "pr_artifact",
+      "nodeKind": "pr_artifact",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "dependsOn": [
+        "fast_local_checks"
+      ],
+      "allowedCommands": [
+        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
+      ],
+      "policyModules": [],
+      "expectedEvidence": [
+        "artifact",
+        "external_link"
+      ]
+    },
+    {
+      "nodeId": "verify_record",
+      "nodeKind": "verify_record",
+      "mode": "record",
+      "required": true,
+      "protected": true,
+      "dependsOn": [
+        "pr_artifact"
+      ],
+      "allowedCommands": [],
+      "policyModules": [],
+      "expectedEvidence": [
+        "check_result"
+      ]
+    },
+    {
+      "nodeId": "quality_gate",
+      "nodeKind": "quality_gate",
+      "mode": "agentic",
+      "required": true,
+      "protected": true,
+      "dependsOn": [
+        "verify_record"
+      ],
+      "allowedCommands": [
+        "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review"
+      ],
+      "policyModules": [],
+      "expectedEvidence": [
+        "quality_report"
+      ]
+    },
+    {
+      "nodeId": "hosted_checks",
+      "nodeKind": "hosted_checks",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "dependsOn": [
+        "quality_gate"
+      ],
+      "allowedCommands": [],
+      "policyModules": [],
+      "expectedEvidence": [
+        "check_result",
+        "external_link"
+      ]
+    },
+    {
+      "nodeId": "publish_or_integrate",
+      "nodeKind": "publish_or_integrate",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "dependsOn": [
+        "hosted_checks"
+      ],
+      "allowedCommands": [
+        "agentplane integrate <task-id> --branch <branch> --run-verify"
+      ],
+      "policyModules": [],
+      "expectedEvidence": [
+        "commit",
+        "external_link"
+      ]
+    },
+    {
+      "nodeId": "finish",
+      "nodeKind": "finish",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "dependsOn": [
+        "publish_or_integrate"
+      ],
+      "allowedCommands": [],
+      "policyModules": [],
+      "expectedEvidence": [
+        "commit"
+      ]
+    }
+  ],
+  "nodeContracts": [
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "intake",
+        "nodeKind": "intake",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "dependsOn": [],
+        "allowedCommands": [],
+        "policyModules": [],
+        "expectedEvidence": []
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    },
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "scope",
+        "nodeKind": "scope",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "dependsOn": [
+          "intake"
+        ],
+        "allowedCommands": [],
+        "policyModules": [],
+        "expectedEvidence": [
+          "assumptions"
+        ]
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    },
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "approval_gate",
+        "nodeKind": "approval_gate",
+        "mode": "approval",
+        "required": true,
+        "protected": true,
+        "dependsOn": [
+          "scope"
+        ],
+        "allowedCommands": [],
+        "policyModules": [],
+        "expectedEvidence": [
+          "approval"
+        ]
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    },
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "context_resolve",
+        "nodeKind": "context_resolve",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "dependsOn": [
+          "approval_gate"
+        ],
+        "allowedCommands": [],
+        "policyModules": [
+          ".agentplane/policy/security.must.md",
+          ".agentplane/policy/dod.core.md",
+          ".agentplane/policy/dod.code.md",
+          ".agentplane/policy/workflow.branch_pr.md"
+        ],
+        "expectedEvidence": [
+          "context_manifest"
+        ]
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    },
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "worktree_start",
+        "nodeKind": "worktree_start",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "dependsOn": [
+          "context_resolve"
+        ],
+        "allowedCommands": [
+          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
+        ],
+        "policyModules": [],
+        "expectedEvidence": [
+          "changed_paths"
+        ]
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    },
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "work_unit",
+        "nodeKind": "work_unit",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "dependsOn": [
+          "worktree_start"
+        ],
+        "allowedCommands": [],
+        "policyModules": [],
+        "expectedEvidence": [
+          "changed_paths"
+        ]
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    },
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "fast_local_checks",
+        "nodeKind": "fast_local_checks",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "dependsOn": [
+          "work_unit"
+        ],
+        "allowedCommands": [
+          "agentplane task verify-show <task-id>",
+          "project focused checks"
+        ],
+        "policyModules": [],
+        "expectedEvidence": [
+          "check_result"
+        ]
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    },
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "pr_artifact",
+        "nodeKind": "pr_artifact",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "dependsOn": [
+          "fast_local_checks"
+        ],
+        "allowedCommands": [
+          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
+        ],
+        "policyModules": [],
+        "expectedEvidence": [
+          "artifact",
+          "external_link"
+        ]
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    },
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "verify_record",
+        "nodeKind": "verify_record",
+        "mode": "record",
+        "required": true,
+        "protected": true,
+        "dependsOn": [
+          "pr_artifact"
+        ],
+        "allowedCommands": [],
+        "policyModules": [],
+        "expectedEvidence": [
+          "check_result"
+        ]
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    },
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "quality_gate",
+        "nodeKind": "quality_gate",
+        "mode": "agentic",
+        "required": true,
+        "protected": true,
+        "dependsOn": [
+          "verify_record"
+        ],
+        "allowedCommands": [
+          "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review"
+        ],
+        "policyModules": [],
+        "expectedEvidence": [
+          "quality_report"
+        ]
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    },
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "hosted_checks",
+        "nodeKind": "hosted_checks",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "dependsOn": [
+          "quality_gate"
+        ],
+        "allowedCommands": [],
+        "policyModules": [],
+        "expectedEvidence": [
+          "check_result",
+          "external_link"
+        ]
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    },
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "publish_or_integrate",
+        "nodeKind": "publish_or_integrate",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "dependsOn": [
+          "hosted_checks"
+        ],
+        "allowedCommands": [
+          "agentplane integrate <task-id> --branch <branch> --run-verify"
+        ],
+        "policyModules": [],
+        "expectedEvidence": [
+          "commit",
+          "external_link"
+        ]
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    },
+    {
+      "schemaVersion": 1,
+      "artifactKind": "agentplane.blueprint.node_execution_contract",
+      "blueprintId": "code.branch_pr",
+      "blueprintVersion": 1,
+      "taskId": "202606121226-K8DEYC",
+      "runId": "2026-06-12T12-59-14-759Z",
+      "step": {
+        "nodeId": "finish",
+        "nodeKind": "finish",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "dependsOn": [
+          "publish_or_integrate"
+        ],
+        "allowedCommands": [],
+        "policyModules": [],
+        "expectedEvidence": [
+          "commit"
+        ]
+      },
+      "acceptedRecipeExtensions": [],
+      "stopReasons": []
+    }
+  ]
+}

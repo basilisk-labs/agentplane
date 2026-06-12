@@ -4,7 +4,7 @@ title: "Build mini-site artifact for loop demonstration"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-12T12:48:47.060Z"
+  updated_at: "2026-06-12T13:01:59.721Z"
   updated_by: "CODER"
-  note: "Manual Codex runner loop completed one non-dry-run iteration: patch applied, diff captured, focused checks passed, evaluator passed, decision finish with normalized score 0.9."
+  note: "Retry loop proof completed: first manual Codex runner iteration failed verification and routed retry_with_feedback; second iteration applied feedback and finished with normalized score 0.91. Task runner dry-run also confirmed codex adapter artifacts exist."
   attempts: 0
 commit: null
 comments:
@@ -58,8 +58,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Manual Codex runner loop completed one non-dry-run iteration: patch applied, diff captured, focused checks passed, evaluator passed, decision finish with normalized score 0.9."
+  -
+    type: "verify"
+    at: "2026-06-12T13:01:59.721Z"
+    author: "CODER"
+    state: "ok"
+    note: "Retry loop proof completed: first manual Codex runner iteration failed verification and routed retry_with_feedback; second iteration applied feedback and finished with normalized score 0.91. Task runner dry-run also confirmed codex adapter artifacts exist."
 doc_version: 3
-doc_updated_at: "2026-06-12T12:48:47.267Z"
+doc_updated_at: "2026-06-12T13:01:59.912Z"
 doc_updated_by: "CODER"
 description: "Create a small static mini-site artifact on disk that demonstrates the loop workflow with a concrete frontend result and records loop dry-run evidence around the task."
 sections:
@@ -82,28 +88,35 @@ sections:
     Automated loop CLI checks:
     - ap loop plan 202606121226-K8DEYC --json: passed; selected tdd.fix@0.1.0 with total score 0.965.
     - ap loop run 202606121226-K8DEYC --dry-run --json: passed; created dry-run loop-2026-06-12T12-27-18-573Z-fac00a6c with 6 prepared step artifacts.
+    - ap loop run 202606121226-K8DEYC --json without --dry-run: rejected by CLI; loop v0.1 requires --dry-run and has no external agent execution enabled.
 
-    Manual Codex runner loop:
-    - Created run loop-manual-2026-06-12T12-45-00-000Z-codex with executionMode=manual_codex_runner and dryRun=false.
-    - Iterations: 1.
-    - Completed steps: load_context, render_prompt, agent_patch, capture_diff, focused_check, evaluator.
-    - Data handoff: each step wrote input.json and output.json under iterations/001/steps/<step-id>/. Later steps referenced earlier step outputs by file path.
-    - Real patch: updated artifacts/mini-site/index.html and styles.css with a Manual runner section showing loop id, iteration count, executor, and file-based handoff.
-    - Focused checks: manual runner site content OK; local physical files exist; policy routing OK.
-    - Decision: finish. Scores: verification_score=1, diff_scope_score=0.9, policy_compliance_score=1, iteration_progress_score=0.8, normalized=0.9.
+    Manual Codex runner loop, one-pass proof:
+    - Run loop-manual-2026-06-12T12-45-00-000Z-codex completed 1 non-dry-run iteration with executionMode=manual_codex_runner and decision=finish.
 
-    Boundary:
-    - This proves the loop model with Codex acting as a manual runner. The built-in ap loop run command still does not execute external agents without --dry-run in loop v0.1.
+    Manual Codex runner loop, retry proof:
+    - Run loop-manual-retry-2026-06-12T13-02-00-000Z-codex completed 2 non-dry-run iterations.
+    - Iteration 001: focused_check failed because Retry proof marker was missing; evaluator verdict=rework; decision=retry_with_feedback; normalized score=0.34; failedContracts=[verification_score].
+    - Iteration 002: feedback was passed through evaluator output into render_prompt input; agent_patch added Retry proof section; focused_check passed; evaluator verdict=pass; decision=finish; normalized score=0.91; failedContracts=[].
+    - Data handoff: each iteration wrote input.json and output.json under iterations/<n>/steps/<step-id>/. Iteration 002 render_prompt referenced iteration 001 evaluator output as feedback.
+
+    Task runner infrastructure check:
+    - ap task run 202606121226-K8DEYC --dry-run --json: passed; adapter_id=codex; created runner bundle/bootstrap artifacts under runs/2026-06-12T12-59-14-759Z.
+    - Interpretation: Codex task runner exists, but loop agent.run is not wired to it yet.
+
+    Physical artifact checks:
+    - Retry proof marker exists in artifacts/mini-site/index.html.
+    - External-reference check on index.html and styles.css returned no matches.
+    - node .agentplane/policy/check-routing.mjs: policy routing OK.
 
     <!-- BEGIN VERIFICATION RESULTS -->
-    ### 2026-06-12T12:48:47.060Z — VERIFY — ok
+    ### 2026-06-12T13:01:59.721Z — VERIFY — ok
 
     By: CODER
 
-    Note: Manual Codex runner loop completed one non-dry-run iteration: patch applied, diff captured, focused checks passed, evaluator passed, decision finish with normalized score 0.9.
+    Note: Retry loop proof completed: first manual Codex runner iteration failed verification and routed retry_with_feedback; second iteration applied feedback and finished with normalized score 0.91. Task runner dry-run also confirmed codex adapter artifacts exist.
     Attempts: 0
 
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T12:48:32.358Z, excerpt_hash=sha256:e1d238ab01f9bd201b8dd5220c30a9e8a74d5a94b8cee688ea1ff6add27ba6a2
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T13:01:52.079Z, excerpt_hash=sha256:e1d238ab01f9bd201b8dd5220c30a9e8a74d5a94b8cee688ea1ff6add27ba6a2
 
     Details:
 
@@ -168,28 +181,35 @@ Executed on branch agentplane-loops.
 Automated loop CLI checks:
 - ap loop plan 202606121226-K8DEYC --json: passed; selected tdd.fix@0.1.0 with total score 0.965.
 - ap loop run 202606121226-K8DEYC --dry-run --json: passed; created dry-run loop-2026-06-12T12-27-18-573Z-fac00a6c with 6 prepared step artifacts.
+- ap loop run 202606121226-K8DEYC --json without --dry-run: rejected by CLI; loop v0.1 requires --dry-run and has no external agent execution enabled.
 
-Manual Codex runner loop:
-- Created run loop-manual-2026-06-12T12-45-00-000Z-codex with executionMode=manual_codex_runner and dryRun=false.
-- Iterations: 1.
-- Completed steps: load_context, render_prompt, agent_patch, capture_diff, focused_check, evaluator.
-- Data handoff: each step wrote input.json and output.json under iterations/001/steps/<step-id>/. Later steps referenced earlier step outputs by file path.
-- Real patch: updated artifacts/mini-site/index.html and styles.css with a Manual runner section showing loop id, iteration count, executor, and file-based handoff.
-- Focused checks: manual runner site content OK; local physical files exist; policy routing OK.
-- Decision: finish. Scores: verification_score=1, diff_scope_score=0.9, policy_compliance_score=1, iteration_progress_score=0.8, normalized=0.9.
+Manual Codex runner loop, one-pass proof:
+- Run loop-manual-2026-06-12T12-45-00-000Z-codex completed 1 non-dry-run iteration with executionMode=manual_codex_runner and decision=finish.
 
-Boundary:
-- This proves the loop model with Codex acting as a manual runner. The built-in ap loop run command still does not execute external agents without --dry-run in loop v0.1.
+Manual Codex runner loop, retry proof:
+- Run loop-manual-retry-2026-06-12T13-02-00-000Z-codex completed 2 non-dry-run iterations.
+- Iteration 001: focused_check failed because Retry proof marker was missing; evaluator verdict=rework; decision=retry_with_feedback; normalized score=0.34; failedContracts=[verification_score].
+- Iteration 002: feedback was passed through evaluator output into render_prompt input; agent_patch added Retry proof section; focused_check passed; evaluator verdict=pass; decision=finish; normalized score=0.91; failedContracts=[].
+- Data handoff: each iteration wrote input.json and output.json under iterations/<n>/steps/<step-id>/. Iteration 002 render_prompt referenced iteration 001 evaluator output as feedback.
+
+Task runner infrastructure check:
+- ap task run 202606121226-K8DEYC --dry-run --json: passed; adapter_id=codex; created runner bundle/bootstrap artifacts under runs/2026-06-12T12-59-14-759Z.
+- Interpretation: Codex task runner exists, but loop agent.run is not wired to it yet.
+
+Physical artifact checks:
+- Retry proof marker exists in artifacts/mini-site/index.html.
+- External-reference check on index.html and styles.css returned no matches.
+- node .agentplane/policy/check-routing.mjs: policy routing OK.
 
 <!-- BEGIN VERIFICATION RESULTS -->
-### 2026-06-12T12:48:47.060Z — VERIFY — ok
+### 2026-06-12T13:01:59.721Z — VERIFY — ok
 
 By: CODER
 
-Note: Manual Codex runner loop completed one non-dry-run iteration: patch applied, diff captured, focused checks passed, evaluator passed, decision finish with normalized score 0.9.
+Note: Retry loop proof completed: first manual Codex runner iteration failed verification and routed retry_with_feedback; second iteration applied feedback and finished with normalized score 0.91. Task runner dry-run also confirmed codex adapter artifacts exist.
 Attempts: 0
 
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T12:48:32.358Z, excerpt_hash=sha256:e1d238ab01f9bd201b8dd5220c30a9e8a74d5a94b8cee688ea1ff6add27ba6a2
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T13:01:52.079Z, excerpt_hash=sha256:e1d238ab01f9bd201b8dd5220c30a9e8a74d5a94b8cee688ea1ff6add27ba6a2
 
 Details:
 

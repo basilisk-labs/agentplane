@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "agent_patch",
+  "stepType": "agent.run",
+  "status": "passed",
+  "executor": "codex.manual",
+  "changedPaths": [],
+  "summary": "No patch applied in iteration 001; focused check is expected to detect missing Retry proof marker."
+}

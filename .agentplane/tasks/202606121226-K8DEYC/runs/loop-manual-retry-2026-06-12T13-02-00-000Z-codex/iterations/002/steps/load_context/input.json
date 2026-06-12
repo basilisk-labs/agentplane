@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.input",
+  "stepId": "load_context",
+  "stepType": "context.load",
+  "iteration": 2
+}

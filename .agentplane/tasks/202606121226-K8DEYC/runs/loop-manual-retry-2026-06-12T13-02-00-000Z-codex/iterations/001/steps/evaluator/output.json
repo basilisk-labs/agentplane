@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "evaluator",
+  "stepType": "evaluator.run",
+  "status": "failed",
+  "evaluator": "codex.manual",
+  "verdict": "rework",
+  "findings": [
+    "Retry proof marker is missing from the mini-site."
+  ],
+  "feedback": [
+    "Add a visible Retry proof section and rerun focused checks."
+  ]
+}

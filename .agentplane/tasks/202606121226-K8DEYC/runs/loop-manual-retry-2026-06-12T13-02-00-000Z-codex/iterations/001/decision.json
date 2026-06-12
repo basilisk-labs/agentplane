@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.decision",
+  "decision": "retry_with_feedback",
+  "reason": "focused check failed because Retry proof marker was missing",
+  "confidence": "high",
+  "scores": {
+    "total": 0.34,
+    "max": 1,
+    "normalized": 0.34,
+    "failedThresholds": [
+      "verification_score"
+    ],
+    "missingRequired": [],
+    "scores": [
+      {
+        "id": "verification_score",
+        "source": "check",
+        "score": 0,
+        "weight": 0.45,
+        "threshold": 0.8,
+        "passed": false,
+        "missing": false,
+        "reason": "marker_missing"
+      },
+      {
+        "id": "diff_scope_score",
+        "source": "rule",
+        "score": 1,
+        "weight": 0.25,
+        "threshold": 0.7,
+        "passed": true,
+        "missing": false,
+        "reason": "no_diff"
+      },
+      {
+        "id": "policy_compliance_score",
+        "source": "rule",
+        "score": 1,
+        "weight": 0.2,
+        "threshold": 1,
+        "passed": true,
+        "missing": false,
+        "reason": "no_external_refs"
+      },
+      {
+        "id": "iteration_progress_score",
+        "source": "aggregate",
+        "score": 0.2,
+        "weight": 0.1,
+        "threshold": 0.4,
+        "passed": false,
+        "missing": false,
+        "reason": "needs_retry"
+      }
+    ]
+  },
+  "failedContracts": [
+    "verification_score"
+  ],
+  "progressEvidence": [
+    "focused_check_failed"
+  ],
+  "nextStep": "render_prompt",
+  "nextStepReason": "retry_with_feedback_from_evaluator",
+  "feedbackRefs": [
+    ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/evaluator/output.json"
+  ],
+  "humanReviewRequired": false
+}

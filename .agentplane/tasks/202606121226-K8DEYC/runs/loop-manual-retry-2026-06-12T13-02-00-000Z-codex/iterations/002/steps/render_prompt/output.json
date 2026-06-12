@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "render_prompt",
+  "stepType": "prompt.render",
+  "status": "passed",
+  "promptModule": {
+    "id": "tdd.fix.implement",
+    "moduleSha": "sha256:ea5a2d1870c62522480fff1df754c27fe1dd811816b814b5102ccf9e668840f2",
+    "renderedPromptSha": "sha256:a620e3bf900ad781ad819313f637552d6251b264d04b95e79e57281a9a57595d"
+  },
+  "renderedPrompt": "Feedback: Retry proof marker is missing. Add a visible Retry proof section, keep files local-only, then rerun checks."
+}

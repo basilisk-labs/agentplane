@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.input",
+  "stepId": "render_prompt",
+  "stepType": "prompt.render",
+  "sources": [
+    {
+      "id": "task_context",
+      "ref": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/002/steps/load_context/output.json"
+    },
+    {
+      "id": "feedback",
+      "ref": ".agentplane/tasks/202606121226-K8DEYC/runs/loop-manual-retry-2026-06-12T13-02-00-000Z-codex/iterations/001/steps/evaluator/output.json"
+    }
+  ]
+}

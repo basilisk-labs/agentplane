@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "capture_diff",
+  "stepType": "git.diff",
+  "status": "passed",
+  "filesChanged": 2,
+  "diffLines": 53,
+  "diffSha": "sha256:f1f7bdeee28cdade05113800375af307bfe67688b6fdd095e6be3d6945cb688b",
+  "diff": "diff --git a/.agentplane/tasks/202606121226-K8DEYC/artifacts/mini-site/index.html b/.agentplane/tasks/202606121226-K8DEYC/artifacts/mini-site/index.html\nindex 9c7fd389a..98e660175 100644\n--- a/.agentplane/tasks/202606121226-K8DEYC/artifacts/mini-site/index.html\n+++ b/.agentplane/tasks/202606121226-K8DEYC/artifacts/mini-site/index.html\n@@ -72,6 +72,15 @@\n           </div>\n         </dl>\n       </section>\n+\n+      <section class=\"retry-proof\" aria-labelledby=\"retry-proof-title\">\n+        <p class=\"eyebrow\">Retry proof</p>\n+        <h2 id=\"retry-proof-title\">Second iteration fixed the missing marker</h2>\n+        <p>\n+          Iteration 001 failed its focused check because this marker was absent.\n+          Iteration 002 used that feedback, patched the page, and passed.\n+        </p>\n+      </section>\n     </main>\n   </body>\n </html>\ndiff --git a/.agentplane/tasks/202606121226-K8DEYC/artifacts/mini-site/styles.css b/.agentplane/tasks/202606121226-K8DEYC/artifacts/mini-site/styles.css\nindex a1d30fbf8..96695e7f8 100644\n--- a/.agentplane/tasks/202606121226-K8DEYC/artifacts/mini-site/styles.css\n+++ b/.agentplane/tasks/202606121226-K8DEYC/artifacts/mini-site/styles.css\n@@ -212,6 +212,27 @@ h2 {\n   font-weight: 820;\n }\n \n+.retry-proof {\n+  padding: clamp(44px, 8vw, 112px) clamp(28px, 6vw, 84px);\n+  background: var(--accent);\n+  color: var(--field);\n+}\n+\n+.retry-proof .eyebrow {\n+  color: color-mix(in srgb, var(--field) 72%, white);\n+}\n+\n+.retry-proof h2 {\n+  max-width: 820px;\n+}\n+\n+.retry-proof p:last-child {\n+  max-width: 700px;\n+  margin: 28px 0 0;\n+  font-size: clamp(1.02rem, 1.7vw, 1.32rem);\n+  line-height: 1.5;\n+}\n+\n @keyframes rise {\n   from {\n     opacity: 0;\n"
+}

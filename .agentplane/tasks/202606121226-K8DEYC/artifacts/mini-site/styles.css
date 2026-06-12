@@ -212,6 +212,27 @@ h2 {
   font-weight: 820;
 }
 
+.retry-proof {
+  padding: clamp(44px, 8vw, 112px) clamp(28px, 6vw, 84px);
+  background: var(--accent);
+  color: var(--field);
+}
+
+.retry-proof .eyebrow {
+  color: color-mix(in srgb, var(--field) 72%, white);
+}
+
+.retry-proof h2 {
+  max-width: 820px;
+}
+
+.retry-proof p:last-child {
+  max-width: 700px;
+  margin: 28px 0 0;
+  font-size: clamp(1.02rem, 1.7vw, 1.32rem);
+  line-height: 1.5;
+}
+
 @keyframes rise {
   from {
     opacity: 0;

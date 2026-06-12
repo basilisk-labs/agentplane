@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "render_prompt",
+  "stepType": "prompt.render",
+  "status": "passed",
+  "promptModule": {
+    "id": "tdd.fix.implement",
+    "moduleSha": "sha256:ea5a2d1870c62522480fff1df754c27fe1dd811816b814b5102ccf9e668840f2",
+    "renderedPromptSha": "sha256:ed8edbc8cb8025dad545cb511ddbb18f571484af75e3c40d923c119007c8cd3f"
+  },
+  "renderedPrompt": "Ensure the mini-site contains a visible Retry proof marker. If missing, report feedback for retry."
+}
