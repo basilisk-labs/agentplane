@@ -77,4 +77,19 @@ describe("loop validation", () => {
       expect.arrayContaining(["invalid_step_contract", "duplicate_contract_id"]),
     );
   });
+
+  it("rejects malformed metric definitions", () => {
+    const result = validateLoopSpec({
+      ...BASE_LOOP,
+      metrics: [
+        { id: "verification_score", source: "check", weight: 0 },
+        { id: "verification_score", source: "not-a-source", threshold: 1.2 },
+      ],
+    } as LoopSpec);
+
+    expect(result.ok).toBe(false);
+    expect(result.errors.map((error) => error.code)).toEqual(
+      expect.arrayContaining(["invalid_metric", "duplicate_metric_id"]),
+    );
+  });
 });

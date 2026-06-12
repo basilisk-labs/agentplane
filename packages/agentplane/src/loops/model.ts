@@ -96,6 +96,7 @@ export type LoopSpec = {
     include?: readonly string[];
     exclude?: readonly string[];
   };
+  metrics?: readonly LoopMetricDefinition[];
   steps: readonly LoopStep[];
   transitions: readonly LoopTransition[];
   outputs: {
@@ -148,6 +149,38 @@ export type LoopStepContract = {
   artifacts?: readonly LoopArtifactContract[];
 };
 
+export type LoopMetricSource = "rule" | "check" | "evaluator" | "aggregate";
+
+export type LoopMetricDefinition = {
+  id: string;
+  source: LoopMetricSource;
+  weight?: number;
+  threshold?: number;
+  required?: boolean;
+  description?: string;
+  refs?: readonly string[];
+};
+
+export type LoopMetricScore = {
+  id: string;
+  source: LoopMetricSource;
+  score: number | null;
+  weight: number;
+  threshold?: number;
+  passed: boolean | null;
+  missing: boolean;
+  reason?: string;
+};
+
+export type LoopMetricAggregate = {
+  total: number;
+  max: number;
+  normalized: number;
+  failedThresholds: readonly string[];
+  missingRequired: readonly string[];
+  scores: readonly LoopMetricScore[];
+};
+
 export type LoopTransition = {
   from?: string;
   if: string;
@@ -176,6 +209,8 @@ export type LoopValidationProblem = {
     | "invalid_budget"
     | "invalid_step_contract"
     | "duplicate_contract_id"
+    | "invalid_metric"
+    | "duplicate_metric_id"
     | "unknown_transition_step";
   message: string;
   path?: string;

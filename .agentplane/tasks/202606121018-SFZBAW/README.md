@@ -1,10 +1,10 @@
 ---
 id: "202606121018-SFZBAW"
 title: "Add loop metrics and score aggregation"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,17 +27,33 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-06-12T11:15:46.257Z"
+  updated_by: "CODER"
+  note: "Loop metrics model and deterministic score aggregation implemented on agentplane-loops. Verified with focused loop tests, schema/example checks, package build, format check, and policy routing."
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Implement loop metrics and score aggregation on agentplane-loops as the branch-local trunk. Force override is intentional because v0.2 is continuing on agentplane-loops instead of the standard main-based branch_pr route."
+events:
+  -
+    type: "status"
+    at: "2026-06-12T11:07:55.144Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Implement loop metrics and score aggregation on agentplane-loops as the branch-local trunk. Force override is intentional because v0.2 is continuing on agentplane-loops instead of the standard main-based branch_pr route."
+  -
+    type: "verify"
+    at: "2026-06-12T11:15:46.257Z"
+    author: "CODER"
+    state: "ok"
+    note: "Loop metrics model and deterministic score aggregation implemented on agentplane-loops. Verified with focused loop tests, schema/example checks, package build, format check, and policy routing."
 doc_version: 3
-doc_updated_at: "2026-06-12T10:20:47.913Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-06-12T11:15:48.852Z"
+doc_updated_by: "CODER"
 description: "Add a LoopSpec metrics model and deterministic score aggregation so loop decisions can compare verification, scope, policy, and progress signals without depending only on free-form evaluator text."
 sections:
   Summary: |-
@@ -61,11 +77,44 @@ sections:
     5. Confirm legacy loop specs without metrics still validate or fail with an intentional compatibility decision recorded in Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-06-12T11:15:46.257Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Loop metrics model and deterministic score aggregation implemented on agentplane-loops. Verified with focused loop tests, schema/example checks, package build, format check, and policy routing.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T11:07:55.144Z, excerpt_hash=sha256:488263e3227e3dc2de4b7b5256478b646e4fb8c7ea7ea9b95b2f1dfda9757da4
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121018-SFZBAW/blueprint/resolved-snapshot.json
+    - old_digest: 8f3cc05a7052f2aaae758994fc60f68678a5481bb29838faf663c6be52dd93f7
+    - current_digest: 8f3cc05a7052f2aaae758994fc60f68678a5481bb29838faf663c6be52dd93f7
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606121018-SFZBAW
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane work start 202606121018-SFZBAW --agent CODER --slug add-loop-metrics-and-score-aggregation --worktree
+    - diagnostic_command: agentplane work resume 202606121018-SFZBAW
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: worktree_projection_drift
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Added LoopSpec metrics definitions, validation, representative tdd.fix metrics, and aggregateLoopMetricScores for weighted deterministic scoring.
+      Impact: Later score-aware decision work can compare verification, scope, policy, and progress signals without relying only on evaluator prose.
+      Resolution: Kept metrics optional and backward-compatible for legacy loop specs; missing required signals are explicit in aggregate output.
 id_source: "generated"
 ---
 ## Summary
@@ -98,6 +147,36 @@ Add a LoopSpec metrics model and deterministic score aggregation so loop decisio
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-06-12T11:15:46.257Z — VERIFY — ok
+
+By: CODER
+
+Note: Loop metrics model and deterministic score aggregation implemented on agentplane-loops. Verified with focused loop tests, schema/example checks, package build, format check, and policy routing.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T11:07:55.144Z, excerpt_hash=sha256:488263e3227e3dc2de4b7b5256478b646e4fb8c7ea7ea9b95b2f1dfda9757da4
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121018-SFZBAW/blueprint/resolved-snapshot.json
+- old_digest: 8f3cc05a7052f2aaae758994fc60f68678a5481bb29838faf663c6be52dd93f7
+- current_digest: 8f3cc05a7052f2aaae758994fc60f68678a5481bb29838faf663c6be52dd93f7
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606121018-SFZBAW
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane work start 202606121018-SFZBAW --agent CODER --slug add-loop-metrics-and-score-aggregation --worktree
+- diagnostic_command: agentplane work resume 202606121018-SFZBAW
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: worktree_projection_drift
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -106,3 +185,7 @@ Add a LoopSpec metrics model and deterministic score aggregation so loop decisio
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Added LoopSpec metrics definitions, validation, representative tdd.fix metrics, and aggregateLoopMetricScores for weighted deterministic scoring.
+  Impact: Later score-aware decision work can compare verification, scope, policy, and progress signals without relying only on evaluator prose.
+  Resolution: Kept metrics optional and backward-compatible for legacy loop specs; missing required signals are explicit in aggregate output.

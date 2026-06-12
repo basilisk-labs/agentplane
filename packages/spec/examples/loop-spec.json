@@ -24,6 +24,23 @@
     "maxChangedFiles": 8,
     "maxDiffLines": 600
   },
+  "metrics": [
+    {
+      "id": "docs_check_score",
+      "source": "check",
+      "weight": 0.6,
+      "threshold": 0.8,
+      "required": true,
+      "refs": ["docs_check"]
+    },
+    {
+      "id": "source_alignment_score",
+      "source": "evaluator",
+      "weight": 0.4,
+      "threshold": 0.7,
+      "refs": ["evaluator"]
+    }
+  ],
   "steps": [
     { "id": "load_context", "type": "context.load" },
     {

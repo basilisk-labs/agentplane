@@ -1,5 +1,6 @@
 import type {
   LoopContractValueType,
+  LoopMetricSource,
   LoopRegistry,
   LoopSpec,
   LoopStep,
@@ -43,6 +44,8 @@ const VALID_CONTRACT_VALUE_TYPES = new Set<LoopContractValueType>([
   "path",
   "ref",
 ]);
+
+const VALID_METRIC_SOURCES = new Set<LoopMetricSource>(["rule", "check", "evaluator", "aggregate"]);
 
 function validateContractEntries(opts: {
   entries: unknown;
@@ -122,6 +125,64 @@ function validateStepContract(step: LoopStep, stepIndex: number): LoopValidation
   return errors;
 }
 
+function validateMetrics(loop: LoopSpec): LoopValidationProblem[] {
+  const metrics = loop.metrics as unknown;
+  if (metrics === undefined) return [];
+  if (!Array.isArray(metrics)) {
+    return [problem("invalid_metric", "Loop metrics must be an array.", "metrics")];
+  }
+  const errors: LoopValidationProblem[] = [];
+  const ids: string[] = [];
+  for (const [index, metric] of metrics.entries()) {
+    const metricPath = `metrics[${index}]`;
+    if (!isObject(metric)) {
+      errors.push(problem("invalid_metric", "Metric definition must be an object.", metricPath));
+      continue;
+    }
+    if (!hasText(metric.id)) {
+      errors.push(problem("invalid_metric", "Metric id must be non-empty.", metricPath));
+    } else {
+      ids.push(metric.id);
+    }
+    const source = metric.source;
+    if (!hasText(source) || !VALID_METRIC_SOURCES.has(source as LoopMetricSource)) {
+      errors.push(
+        problem(
+          "invalid_metric",
+          `Metric source must be one of: ${[...VALID_METRIC_SOURCES].join(", ")}.`,
+          metricPath,
+        ),
+      );
+    }
+    if (
+      metric.weight !== undefined &&
+      (typeof metric.weight !== "number" || !Number.isFinite(metric.weight) || metric.weight <= 0)
+    ) {
+      errors.push(
+        problem("invalid_metric", "Metric weight must be a positive number.", metricPath),
+      );
+    }
+    if (
+      metric.threshold !== undefined &&
+      (typeof metric.threshold !== "number" ||
+        !Number.isFinite(metric.threshold) ||
+        metric.threshold < 0 ||
+        metric.threshold > 1)
+    ) {
+      errors.push(
+        problem("invalid_metric", "Metric threshold must be between 0 and 1.", metricPath),
+      );
+    }
+    if (metric.refs !== undefined && !Array.isArray(metric.refs)) {
+      errors.push(problem("invalid_metric", "Metric refs must be an array.", metricPath));
+    }
+  }
+  for (const duplicate of duplicates(ids)) {
+    errors.push(problem("duplicate_metric_id", `Duplicate metric id: ${duplicate}`, "metrics"));
+  }
+  return errors;
+}
+
 export function validateLoopSpec(loop: LoopSpec): LoopValidationResult {
   const errors: LoopValidationProblem[] = [];
   if (!hasText(loop.id)) errors.push(problem("empty_field", "Loop id must be non-empty.", "id"));
@@ -159,6 +220,7 @@ export function validateLoopSpec(loop: LoopSpec): LoopValidationResult {
   loop.steps.forEach((step, index) => {
     errors.push(...validateStepContract(step, index));
   });
+  errors.push(...validateMetrics(loop));
   for (const duplicate of duplicates(loop.stopConditions.map((condition) => condition.id))) {
     errors.push(
       problem(

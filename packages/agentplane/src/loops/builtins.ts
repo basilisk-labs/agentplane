@@ -35,6 +35,37 @@ export const BUILTIN_LOOPS = [
       include: ["task.intent", "task.approved_plan", "task.verify_steps", "git.diff"],
       exclude: ["secrets", "unrelated_raw_transcripts"],
     },
+    metrics: [
+      {
+        id: "verification_score",
+        source: "check",
+        weight: 0.45,
+        threshold: 0.8,
+        required: true,
+        refs: ["focused_check"],
+      },
+      {
+        id: "diff_scope_score",
+        source: "rule",
+        weight: 0.25,
+        threshold: 0.7,
+        refs: ["capture_diff"],
+      },
+      {
+        id: "policy_compliance_score",
+        source: "rule",
+        weight: 0.2,
+        threshold: 1,
+        refs: ["permissions", "context.exclude"],
+      },
+      {
+        id: "iteration_progress_score",
+        source: "aggregate",
+        weight: 0.1,
+        threshold: 0.4,
+        refs: ["previous_iteration", "current_iteration"],
+      },
+    ],
     steps: [
       { id: "load_context", type: "context.load" },
       {

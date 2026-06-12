@@ -57,6 +57,10 @@
     },
     "requires": { "type": "object" },
     "permissions": { "type": "object" },
+    "metrics": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/metricDefinition" }
+    },
     "budgets": {
       "type": "object",
       "required": ["maxIterations"],
@@ -163,6 +167,20 @@
         "path": { "type": "string", "minLength": 1 },
         "required": { "type": "boolean" },
         "description": { "type": "string" }
+      }
+    },
+    "metricDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "source": { "enum": ["rule", "check", "evaluator", "aggregate"] },
+        "weight": { "type": "number", "exclusiveMinimum": 0 },
+        "threshold": { "type": "number", "minimum": 0, "maximum": 1 },
+        "required": { "type": "boolean" },
+        "description": { "type": "string" },
+        "refs": { "type": "array", "items": { "type": "string", "minLength": 1 } }
       }
     }
   }
