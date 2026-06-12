@@ -44,7 +44,33 @@ async function createTask(root: string): Promise<string> {
       root,
     ]);
     expect(code).toBe(0);
-    return io.stdout.trim();
+    const taskId = io.stdout.trim();
+    const approveCode = await runCli([
+      "task",
+      "plan",
+      "approve",
+      taskId,
+      "--by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    expect(approveCode).toBe(0);
+    const startCode = await runCli([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: prepare loop dry-run evidence for runner handoff integration.",
+      "--force",
+      "--yes",
+      "--root",
+      root,
+    ]);
+    expect(startCode).toBe(0);
+    return taskId;
   } finally {
     io.restore();
   }
@@ -163,9 +189,13 @@ describe("runCli loop commands", () => {
       const renderPromptStep = payload.artifacts.stepArtifacts.find(
         (step: { stepId: string }) => step.stepId === "render_prompt",
       );
+      const agentPatchStep = payload.artifacts.stepArtifacts.find(
+        (step: { stepId: string }) => step.stepId === "agent_patch",
+      );
       expect(renderPromptStep.promptModule.id).toBe("tdd.fix.implement");
       const stepInputPath = path.join(root, renderPromptStep.inputPath);
       const stepOutputPath = path.join(root, renderPromptStep.outputPath);
+      const agentPatchOutputPath = path.join(root, agentPatchStep.outputPath);
       expect(JSON.parse(await readFile(loopRunPath, "utf8")).runId).toBe(payload.runId);
       const events = await readFile(eventsPath, "utf8");
       expect(events).toContain("loop.started");
@@ -174,6 +204,13 @@ describe("runCli loop commands", () => {
       expect(JSON.parse(await readFile(stepOutputPath, "utf8")).promptModule.id).toBe(
         "tdd.fix.implement",
       );
+      const agentPatchOutput = JSON.parse(await readFile(agentPatchOutputPath, "utf8"));
+      expect(agentPatchOutput.runnerHandoff.adapterId).toBe("codex");
+      expect(agentPatchOutput.runnerHandoff.mode).toBe("dry_run");
+      expect(agentPatchOutput.runnerHandoff.runId).toBeTruthy();
+      expect(agentPatchOutput.runnerHandoff.bundlePath).toContain("bundle.json");
+      expect(agentPatchOutput.runnerHandoff.bootstrapPath).toContain("bootstrap.md");
+      expect(agentPatchOutput.runnerHandoff.resultPath).toContain("result.json");
       const decision = JSON.parse(await readFile(decisionPath, "utf8"));
       expect(decision.scores.missingRequired).toContain("verification_score");
       expect(decision.failedContracts).toContain("verification_score");

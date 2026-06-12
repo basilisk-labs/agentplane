@@ -25,6 +25,7 @@ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { CliError, ValidationError } from "../../shared/errors.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { blueprintResolveInputFromTask, workflowModeFromConfig } from "../blueprint/task-input.js";
+import { prepareTaskRunnerExecution } from "../../runner/usecases/task-run.js";
 
 export {
   loopExplainSpec,
@@ -318,6 +319,25 @@ function makeRunLoopDryRunHandler(
       workflowDir: commandCtx.config.paths.workflow_dir,
       taskId: p.taskId,
       loop,
+      prepareRunnerHandoff: async (step) => {
+        if (step.type !== "agent.run") return null;
+        const prepared = await prepareTaskRunnerExecution({
+          ctx: commandCtx,
+          cwd: commandCtx.resolvedProject.gitRoot,
+          task_id: p.taskId,
+          mode: "dry_run",
+        });
+        const paths = prepared.bundle.execution.artifact_paths;
+        return {
+          adapterId: prepared.bundle.execution.adapter_id,
+          mode: prepared.bundle.execution.mode,
+          runId: prepared.bundle.execution.run_id,
+          runDir: paths.run_dir,
+          bundlePath: paths.bundle_path,
+          bootstrapPath: paths.bootstrap_path,
+          resultPath: paths.result_path,
+        };
+      },
     });
     if (p.json) {
       process.stdout.write(`${JSON.stringify(record, null, 2)}\n`);

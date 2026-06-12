@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.decision",
+  "decision": "request_human_review",
+  "reason": "dry_run_prepared_without_external_agent_execution",
+  "confidence": "high",
+  "scores": {
+    "total": 0,
+    "max": 1,
+    "normalized": 0,
+    "failedThresholds": [],
+    "missingRequired": [
+      "verification_score"
+    ],
+    "scores": [
+      {
+        "id": "verification_score",
+        "source": "check",
+        "score": null,
+        "weight": 0.45,
+        "threshold": 0.8,
+        "passed": null,
+        "missing": true,
+        "reason": "missing_signal"
+      },
+      {
+        "id": "diff_scope_score",
+        "source": "rule",
+        "score": null,
+        "weight": 0.25,
+        "threshold": 0.7,
+        "passed": null,
+        "missing": true,
+        "reason": "missing_signal"
+      },
+      {
+        "id": "policy_compliance_score",
+        "source": "rule",
+        "score": null,
+        "weight": 0.2,
+        "threshold": 1,
+        "passed": null,
+        "missing": true,
+        "reason": "missing_signal"
+      },
+      {
+        "id": "iteration_progress_score",
+        "source": "aggregate",
+        "score": null,
+        "weight": 0.1,
+        "threshold": 0.4,
+        "passed": null,
+        "missing": true,
+        "reason": "missing_signal"
+      }
+    ]
+  },
+  "scoreDelta": null,
+  "failedContracts": [
+    "verification_score"
+  ],
+  "progressEvidence": [
+    "dry_run_step_artifacts_prepared"
+  ],
+  "nextStep": "render_prompt",
+  "nextStepReason": "dry_run_requires_human_review_before_external_agent_execution",
+  "feedbackRefs": [],
+  "humanReviewRequired": true
+}

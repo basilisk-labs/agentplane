@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "agent_patch",
+  "stepType": "agent.run",
+  "dryRun": true,
+  "status": "prepared",
+  "skippedExecution": true,
+  "reason": "dry_run_prepared_without_external_agent_execution",
+  "promptModule": null,
+  "runnerHandoff": {
+    "adapterId": "codex",
+    "mode": "dry_run",
+    "runId": "2026-06-12T13-28-54-339Z",
+    "runDir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121325-83R1JB/runs/2026-06-12T13-28-54-339Z",
+    "bundlePath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121325-83R1JB/runs/2026-06-12T13-28-54-339Z/bundle.json",
+    "bootstrapPath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121325-83R1JB/runs/2026-06-12T13-28-54-339Z/bootstrap.md",
+    "resultPath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121325-83R1JB/runs/2026-06-12T13-28-54-339Z/result.json"
+  },
+  "declaredOutputs": [],
+  "declaredArtifacts": []
+}

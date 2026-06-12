@@ -13,6 +13,20 @@ import type {
   LoopStepArtifactRecord,
 } from "./model.js";
 
+export type LoopRunnerHandoffRecord = {
+  adapterId: string;
+  mode: "dry_run" | "execute";
+  runId: string;
+  runDir: string;
+  bundlePath: string;
+  bootstrapPath: string;
+  resultPath: string;
+};
+
+export type PrepareLoopStepRunnerHandoff = (
+  step: LoopStep,
+) => Promise<LoopRunnerHandoffRecord | null | undefined>;
+
 function sha256(value: string): string {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
 }
@@ -38,6 +52,7 @@ async function writePreparedStepArtifacts(opts: {
   relativeRunDir: string;
   firstIterationDir: string;
   loop: LoopSpec;
+  prepareRunnerHandoff?: PrepareLoopStepRunnerHandoff;
 }): Promise<LoopStepArtifactRecord[]> {
   const records: LoopStepArtifactRecord[] = [];
   for (const step of opts.loop.steps) {
@@ -54,6 +69,7 @@ async function writePreparedStepArtifacts(opts: {
     const inputPath = path.join(relativeStepDir, "input.json");
     const outputPath = path.join(relativeStepDir, "output.json");
     const promptModule = promptModuleIdentity(step);
+    const runnerHandoff = await opts.prepareRunnerHandoff?.(step);
     await writeFile(
       path.join(stepDir, "input.json"),
       `${JSON.stringify(
@@ -83,6 +99,7 @@ async function writePreparedStepArtifacts(opts: {
           skippedExecution: true,
           reason: "dry_run_prepared_without_external_agent_execution",
           promptModule: promptModule ?? null,
+          runnerHandoff: runnerHandoff ?? null,
           declaredOutputs: step.contract?.outputs ?? [],
           declaredArtifacts: step.contract?.artifacts ?? [],
         },
@@ -107,6 +124,7 @@ export async function createDryRunLoopRun(opts: {
   taskId: string;
   loop: LoopSpec;
   now?: Date;
+  prepareRunnerHandoff?: PrepareLoopStepRunnerHandoff;
 }): Promise<LoopRunRecord> {
   const startedAt = (opts.now ?? new Date()).toISOString();
   const runId = `loop-${startedAt.replaceAll(/[:.]/g, "-")}-${randomUUID().slice(0, 8)}`;
@@ -124,6 +142,7 @@ export async function createDryRunLoopRun(opts: {
     relativeRunDir,
     firstIterationDir,
     loop: opts.loop,
+    prepareRunnerHandoff: opts.prepareRunnerHandoff,
   });
   const scores = aggregateLoopMetricScores(opts.loop.metrics);
   const decision: LoopDecisionRecord = {
