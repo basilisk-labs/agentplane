@@ -5,7 +5,7 @@ result_summary: "pre-merge closure refreshed"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -40,8 +40,8 @@ quality_review:
   findings:
     - "No blocking findings after addressing PR branch head review comment and rerunning lint, typecheck, and focused tests."
 commit:
-  hash: "fa9d7e9d472dbfaf5606ce21736d3d94f035c93a"
-  message: "Refresh quality review after lint repair"
+  hash: "bb0e9f766641a835af4f02c22e5756b0d708e4f0"
+  message: "Refresh quality review after PR review fix"
 comments:
   -
     author: "CODER"
@@ -52,6 +52,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet after lint repair."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet after PR review fix."
 events:
   -
     type: "status"
@@ -80,8 +83,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet after lint repair."
+  -
+    type: "status"
+    at: "2026-06-12T09:26:11.756Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet after PR review fix."
 doc_version: 3
-doc_updated_at: "2026-06-12T09:15:32.094Z"
+doc_updated_at: "2026-06-12T09:26:11.756Z"
 doc_updated_by: "CODER"
 description: "Optimize branch_pr lifecycle guidance so evaluator quality evidence and pre-merge closure are recorded before the final task-branch publication, reducing common single-task fixes from four commit events toward two to three without weakening verification gates."
 sections:
@@ -143,8 +153,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "541d6680602de7ffaa069210e11efbd7d4d4bb65"
-    message: "Fix route quality lint issues"
+    hash: "4a9e2956b82fb63053f45d6f12988ee40fad42ce"
+    message: "Use PR branch head for pre-merge route"
 id_source: "generated"
 ---
 ## Summary
