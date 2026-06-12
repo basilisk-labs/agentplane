@@ -159,8 +159,20 @@ describe("runCli loop commands", () => {
       expect(payload.dryRun).toBe(true);
       const loopRunPath = path.join(root, payload.artifacts.loopRunPath);
       const eventsPath = path.join(root, payload.artifacts.eventsPath);
+      const renderPromptStep = payload.artifacts.stepArtifacts.find(
+        (step: { stepId: string }) => step.stepId === "render_prompt",
+      );
+      expect(renderPromptStep.promptModule.id).toBe("tdd.fix.implement");
+      const stepInputPath = path.join(root, renderPromptStep.inputPath);
+      const stepOutputPath = path.join(root, renderPromptStep.outputPath);
       expect(JSON.parse(await readFile(loopRunPath, "utf8")).runId).toBe(payload.runId);
-      expect(await readFile(eventsPath, "utf8")).toContain("loop.started");
+      const events = await readFile(eventsPath, "utf8");
+      expect(events).toContain("loop.started");
+      expect(events).toContain("step.prepared");
+      expect(JSON.parse(await readFile(stepInputPath, "utf8")).contract).toBeTruthy();
+      expect(JSON.parse(await readFile(stepOutputPath, "utf8")).promptModule.id).toBe(
+        "tdd.fix.implement",
+      );
     } finally {
       io.restore();
     }

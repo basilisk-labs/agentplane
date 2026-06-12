@@ -224,6 +224,20 @@ export type LoopPlan = {
 
 export type LoopRunStatus = "prepared" | "running" | "passed" | "blocked" | "human_review";
 
+export type LoopPromptModuleIdentity = {
+  id: string;
+  moduleSha: string;
+  renderedPromptSha?: string | null;
+};
+
+export type LoopStepArtifactRecord = {
+  stepId: string;
+  stepType: LoopStepType;
+  inputPath: string;
+  outputPath: string;
+  promptModule?: LoopPromptModuleIdentity;
+};
+
 export type LoopRunRecord = {
   schemaVersion: 1;
   taskId: string;
@@ -242,6 +256,7 @@ export type LoopRunRecord = {
     statePath: string;
     loopRunPath: string;
     iterationsDir: string;
+    stepArtifacts?: readonly LoopStepArtifactRecord[];
   };
 };
 

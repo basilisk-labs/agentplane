@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.decision",
+  "decision": "request_human_review",
+  "reason": "dry_run_prepared_without_external_agent_execution",
+  "confidence": "high",
+  "nextStep": "render_prompt",
+  "feedbackRefs": [],
+  "humanReviewRequired": true
+}

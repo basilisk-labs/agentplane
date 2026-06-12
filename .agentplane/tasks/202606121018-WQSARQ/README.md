@@ -1,10 +1,10 @@
 ---
 id: "202606121018-WQSARQ"
 title: "Persist loop per-step evidence and prompt identity"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,17 +27,33 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-06-12T11:05:53.114Z"
+  updated_by: "CODER"
+  note: "Per-step dry-run evidence and prompt identity implemented on agentplane-loops. Verified with focused loop tests, package build, format check, policy routing, and a real dry-run smoke for tdd.fix."
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Implement per-step loop evidence and prompt identity on agentplane-loops as the branch-local trunk. Force override is intentional because the standard branch_pr route still targets main while this loops version uses agentplane-loops as the base."
+events:
+  -
+    type: "status"
+    at: "2026-06-12T10:58:59.079Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Implement per-step loop evidence and prompt identity on agentplane-loops as the branch-local trunk. Force override is intentional because the standard branch_pr route still targets main while this loops version uses agentplane-loops as the base."
+  -
+    type: "verify"
+    at: "2026-06-12T11:05:53.114Z"
+    author: "CODER"
+    state: "ok"
+    note: "Per-step dry-run evidence and prompt identity implemented on agentplane-loops. Verified with focused loop tests, package build, format check, policy routing, and a real dry-run smoke for tdd.fix."
 doc_version: 3
-doc_updated_at: "2026-06-12T10:20:30.045Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-06-12T11:05:54.952Z"
+doc_updated_by: "CODER"
 description: "Extend loop dry-run/run artifacts with per-step input/output refs and promptModule identity so later metrics and prompt improvement can audit what each loop step prepared or executed."
 sections:
   Summary: |-
@@ -61,11 +77,44 @@ sections:
     5. Inspect `events.jsonl`. Expected: step events point to existing artifact refs and do not rely on free-form prose only.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-06-12T11:05:53.114Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Per-step dry-run evidence and prompt identity implemented on agentplane-loops. Verified with focused loop tests, package build, format check, policy routing, and a real dry-run smoke for tdd.fix.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T10:58:59.079Z, excerpt_hash=sha256:9292222a1ba3814f8ab8703818958df6b67daea5d7f3633050b4acc3a0a578d5
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121018-WQSARQ/blueprint/resolved-snapshot.json
+    - old_digest: b457313e22122ea931c9aa445183e246d02e560cdf78ae128ddf53616151fe29
+    - current_digest: b457313e22122ea931c9aa445183e246d02e560cdf78ae128ddf53616151fe29
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606121018-WQSARQ
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane work start 202606121018-WQSARQ --agent CODER --slug persist-loop-per-step-evidence-and-prompt-identi --worktree
+    - diagnostic_command: agentplane work resume 202606121018-WQSARQ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: worktree_projection_drift
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Dry-run LoopRun artifacts now include per-step input/output JSON refs plus step.prepared events and promptModule identity where applicable.
+      Impact: Later metric and score-aware decision tasks can inspect step boundaries without relying on free-form logs or executing external agents.
+      Resolution: Kept execution dry-run-only; step outputs explicitly record skippedExecution=true and task-local artifact paths.
 id_source: "generated"
 ---
 ## Summary
@@ -98,6 +147,36 @@ Extend loop dry-run/run artifacts with per-step input/output refs and promptModu
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-06-12T11:05:53.114Z — VERIFY — ok
+
+By: CODER
+
+Note: Per-step dry-run evidence and prompt identity implemented on agentplane-loops. Verified with focused loop tests, package build, format check, policy routing, and a real dry-run smoke for tdd.fix.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-12T10:58:59.079Z, excerpt_hash=sha256:9292222a1ba3814f8ab8703818958df6b67daea5d7f3633050b4acc3a0a578d5
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121018-WQSARQ/blueprint/resolved-snapshot.json
+- old_digest: b457313e22122ea931c9aa445183e246d02e560cdf78ae128ddf53616151fe29
+- current_digest: b457313e22122ea931c9aa445183e246d02e560cdf78ae128ddf53616151fe29
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606121018-WQSARQ
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane work start 202606121018-WQSARQ --agent CODER --slug persist-loop-per-step-evidence-and-prompt-identi --worktree
+- diagnostic_command: agentplane work resume 202606121018-WQSARQ
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: worktree_projection_drift
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -106,3 +185,7 @@ Extend loop dry-run/run artifacts with per-step input/output refs and promptModu
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Dry-run LoopRun artifacts now include per-step input/output JSON refs plus step.prepared events and promptModule identity where applicable.
+  Impact: Later metric and score-aware decision tasks can inspect step boundaries without relying on free-form logs or executing external agents.
+  Resolution: Kept execution dry-run-only; step outputs explicitly record skippedExecution=true and task-local artifact paths.

@@ -2,7 +2,15 @@ import { createHash, randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { LoopDecisionRecord, LoopEvent, LoopRunRecord, LoopSpec } from "./model.js";
+import type {
+  LoopDecisionRecord,
+  LoopEvent,
+  LoopPromptModuleIdentity,
+  LoopRunRecord,
+  LoopSpec,
+  LoopStep,
+  LoopStepArtifactRecord,
+} from "./model.js";
 
 function sha256(value: string): string {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
@@ -10,6 +18,86 @@ function sha256(value: string): string {
 
 function jsonLine(value: unknown): string {
   return `${JSON.stringify(value)}\n`;
+}
+
+function safeStepDirectoryName(stepId: string): string {
+  return stepId.replaceAll(/[^A-Za-z0-9._-]/g, "_");
+}
+
+function promptModuleIdentity(step: LoopStep): LoopPromptModuleIdentity | undefined {
+  if (!step.promptModule) return undefined;
+  return {
+    id: step.promptModule,
+    moduleSha: sha256(step.promptModule),
+    renderedPromptSha: null,
+  };
+}
+
+async function writePreparedStepArtifacts(opts: {
+  relativeRunDir: string;
+  firstIterationDir: string;
+  loop: LoopSpec;
+}): Promise<LoopStepArtifactRecord[]> {
+  const records: LoopStepArtifactRecord[] = [];
+  for (const step of opts.loop.steps) {
+    const stepDirName = safeStepDirectoryName(step.id);
+    const stepDir = path.join(opts.firstIterationDir, "steps", stepDirName);
+    await mkdir(stepDir, { recursive: true });
+    const relativeStepDir = path.join(
+      opts.relativeRunDir,
+      "iterations",
+      "001",
+      "steps",
+      stepDirName,
+    );
+    const inputPath = path.join(relativeStepDir, "input.json");
+    const outputPath = path.join(relativeStepDir, "output.json");
+    const promptModule = promptModuleIdentity(step);
+    await writeFile(
+      path.join(stepDir, "input.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: 1,
+          kind: "loop.step.input",
+          stepId: step.id,
+          stepType: step.type,
+          dryRun: true,
+          contract: step.contract ?? null,
+          sources: step.contract?.inputs ?? [],
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    await writeFile(
+      path.join(stepDir, "output.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: 1,
+          kind: "loop.step.output",
+          stepId: step.id,
+          stepType: step.type,
+          dryRun: true,
+          status: "prepared",
+          skippedExecution: true,
+          reason: "dry_run_prepared_without_external_agent_execution",
+          promptModule: promptModule ?? null,
+          declaredOutputs: step.contract?.outputs ?? [],
+          declaredArtifacts: step.contract?.artifacts ?? [],
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    records.push({
+      stepId: step.id,
+      stepType: step.type,
+      inputPath,
+      outputPath,
+      ...(promptModule ? { promptModule } : {}),
+    });
+  }
+  return records;
 }
 
 export async function createDryRunLoopRun(opts: {
@@ -31,6 +119,11 @@ export async function createDryRunLoopRun(opts: {
   await mkdir(firstIterationDir, { recursive: true });
 
   const loopSha = sha256(JSON.stringify(opts.loop));
+  const stepArtifacts = await writePreparedStepArtifacts({
+    relativeRunDir,
+    firstIterationDir,
+    loop: opts.loop,
+  });
   const decision: LoopDecisionRecord = {
     schemaVersion: 1,
     kind: "loop.decision",
@@ -64,6 +157,7 @@ export async function createDryRunLoopRun(opts: {
       statePath: path.join(relativeRunDir, "state.json"),
       loopRunPath: path.join(relativeRunDir, "loop-run.json"),
       iterationsDir: path.join(relativeRunDir, "iterations"),
+      stepArtifacts,
     },
   };
   const eventBase = {
@@ -77,13 +171,24 @@ export async function createDryRunLoopRun(opts: {
   const events: LoopEvent[] = [
     { ...eventBase, type: "loop.started", details: { dry_run: true } },
     { ...eventBase, type: "iteration.started", details: { iteration: 1 } },
+    ...stepArtifacts.map((step) => ({
+      ...eventBase,
+      type: "step.prepared",
+      details: {
+        step_id: step.stepId,
+        step_type: step.stepType,
+        input_ref: step.inputPath,
+        output_ref: step.outputPath,
+        ...(step.promptModule ? { prompt_module: step.promptModule } : {}),
+      },
+    })),
     { ...eventBase, type: "decision.made", details: decision },
     { ...eventBase, type: "loop.stopped", details: { stop_reason: record.stopReason } },
   ];
   await writeFile(eventsPath, events.map(jsonLine).join(""));
   await writeFile(
     statePath,
-    `${JSON.stringify({ status: record.status, dry_run: true }, null, 2)}\n`,
+    `${JSON.stringify({ status: record.status, dry_run: true, stepArtifacts }, null, 2)}\n`,
   );
   await writeFile(loopRunPath, `${JSON.stringify(record, null, 2)}\n`);
   return record;
