@@ -4,7 +4,7 @@ title: "Add loop step runner target"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -30,6 +30,27 @@ verification:
   updated_by: "CODER"
   note: "Verified loop_step runner target implementation. Focused tests passed, format passed, core/agentplane/testkit builds passed, policy routing passed, and real ap loop run --execute-agent-step produced runnerHandoff.resultStatus=success with a task-local artifact."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-06-12T16:56:36.947Z"
+  updated_by: "EVALUATOR"
+  note: "loop_step runner target fixes execute-agent-step route semantics"
+  evaluated_sha: "053aa3964113f7b7a1b20f148c8a4bad1e220439"
+  blueprint_digest: "a940f30d542fa366f69abf394a5a2e20c28c2b0dc44ff9e60b20b265027c1b53"
+  evidence_refs:
+    - ".agentplane/tasks/202606121640-2F38K9/README.md"
+    - ".agentplane/tasks/202606121640-2F38K9/quality/20260612-165636947-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606121640-2F38K9/quality/20260612-165636947-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606121640-2F38K9/quality/20260612-165636947-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606121640-2F38K9/blueprint/resolved-snapshot.json"
+    - "bun test packages/agentplane/src/commands/loop/loop.command.test.ts packages/agentplane/src/loops/run-artifacts.test.ts packages/agentplane/src/loops/metrics.test.ts packages/agentplane/src/loops/validate.test.ts packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts packages/agentplane/src/runner/adapters/codex.test.ts"
+    - "bun run format:changed"
+    - "bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run --filter=@agentplane/testkit build"
+    - "node .agentplane/policy/check-routing.mjs"
+    - ".agentplane/tasks/202606121437-V50C2K/runs/loop-2026-06-12T16-52-42-228Z-4254144c/iterations/001/steps/agent_patch/output.json"
+    - ".agentplane/tasks/202606121437-V50C2K/artifacts/runner-execute-smoke.txt"
+  findings:
+    - "ap loop run --execute-agent-step now calls the runner with target.kind=loop_step, receives a loop_agent_step route packet with no route_exact_argv, avoids branch_pr work start, and completed the smoke task with runnerHandoff.resultStatus=success plus a task-local artifact."
 commit: null
 comments:
   -
