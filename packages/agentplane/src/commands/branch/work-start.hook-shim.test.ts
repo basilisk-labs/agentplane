@@ -70,6 +70,7 @@ describe("worktree hook shim", () => {
             : "";
     }
     expect(stderr).toContain("reason_code=hook_shim_timeout");
+    expect(stderr).not.toContain("reason_code=hook_runner_signal");
   }, 10_000);
 
   it("normalizes killed runner exits into actionable diagnostics", async () => {
