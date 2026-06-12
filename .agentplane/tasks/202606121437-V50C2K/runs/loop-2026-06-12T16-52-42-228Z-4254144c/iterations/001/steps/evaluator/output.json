@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "evaluator",
+  "stepType": "evaluator.run",
+  "dryRun": true,
+  "status": "prepared",
+  "skippedExecution": true,
+  "reason": "dry_run_prepared_without_external_agent_execution",
+  "promptModule": null,
+  "runnerHandoff": null,
+  "declaredOutputs": [
+    {
+      "id": "evaluator_verdict",
+      "type": "object",
+      "required": true
+    }
+  ],
+  "declaredArtifacts": []
+}

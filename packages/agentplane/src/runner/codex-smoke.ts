@@ -11,9 +11,11 @@ export type CodexSmokeClassification = {
 };
 
 function describeTarget(target: RunnerTarget): string {
-  return target.kind === "task"
-    ? `task ${target.task_id}`
-    : `scenario ${target.recipe_id}:${target.scenario_id}`;
+  if (target.kind === "task") return `task ${target.task_id}`;
+  if (target.kind === "loop_step") {
+    return `loop step ${target.loop_id}/${target.step_id} for task ${target.task_id}`;
+  }
+  return `scenario ${target.recipe_id}:${target.scenario_id}`;
 }
 
 export function classifyCodexSmokeRun(state: RunnerRunState): CodexSmokeClassification {

@@ -107,10 +107,15 @@ export type TaskRunnerEvidence = {
 };
 
 export type TaskRunnerTarget = {
-  kind: "task" | "recipe_scenario";
+  kind: "task" | "recipe_scenario" | "loop_step";
   task_id?: string;
   recipe_id?: string;
   scenario_id?: string;
+  loop_id?: string;
+  loop_version?: string;
+  step_id?: string;
+  step_type?: string;
+  prompt_module?: string | null;
 };
 
 export type TaskRunnerHistoryEntry = {

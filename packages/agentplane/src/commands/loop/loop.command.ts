@@ -339,6 +339,16 @@ function makeRunLoopDryRunHandler(
             ctx: commandCtx,
             cwd: commandCtx.resolvedProject.gitRoot,
             task_id: p.taskId,
+            target: {
+              kind: "loop_step",
+              task_id: p.taskId,
+              loop_id: loop.id,
+              loop_version: loop.version,
+              step_id: step.id,
+              step_type: step.type,
+              prompt_module: step.promptModule ?? null,
+              contract: step.contract ? { ...step.contract } : null,
+            },
           });
           const paths = executed.bundle.execution.artifact_paths;
           return {

@@ -16,6 +16,11 @@ function truncateGoalText(value: string, maxLength = 320): string {
 
 function renderCodexGoalLine(bundle: RunnerContextBundle, targetLabel: string): string | null {
   if (bundle.execution.adapter_id !== "codex") return null;
+  if (bundle.target.kind === "loop_step") {
+    return `/goal ${truncateGoalText(
+      `Execute AgentPlane loop step ${bundle.target.loop_id}/${bundle.target.step_id} for task ${bundle.target.task_id}`,
+    )}`;
+  }
   const taskTitle = compactGoalText(bundle.task?.data.title ?? "");
   const recipeGoal =
     typeof bundle.recipe?.scenario?.goal === "string"
@@ -75,6 +80,8 @@ function runnerDecisionContext(routeDecision: {
     /\b(agentplane|ap)\s+task\s+run\b/.test(command);
   const runnerIsRequired =
     runnerIsAllowedNow ||
+    routeDecision.oracle?.phase === "loop_agent_step" ||
+    routeDecision.nextAction?.code === "execute_loop_step" ||
     routeDecision.nextAction?.code === "wait_runner" ||
     routeDecision.oracle?.phase === "runner_wait";
   return {
@@ -98,8 +105,11 @@ export function renderTaskRunnerBootstrap(
   const targetLabel =
     bundle.target.kind === "task"
       ? `task ${bundle.target.task_id}`
-      : `recipe scenario ${bundle.target.recipe_id}:${bundle.target.scenario_id}`;
+      : bundle.target.kind === "loop_step"
+        ? `loop step ${bundle.target.loop_id}/${bundle.target.step_id} for task ${bundle.target.task_id}`
+        : `recipe scenario ${bundle.target.recipe_id}:${bundle.target.scenario_id}`;
   const codexGoalLine = renderCodexGoalLine(bundle, targetLabel);
+  const loopStepTarget = bundle.target.kind === "loop_step" ? bundle.target : null;
   const stopRules = bundle.blueprint?.stopReasons ?? [];
   const playbook = bundle.playbook?.selected_playbook;
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
@@ -236,10 +246,29 @@ export function renderTaskRunnerBootstrap(
       : []),
     "",
     "Use bundle.json as the complete runner input. Do not reconstruct prompts or route decisions from CLI argv.",
-    "Follow route_decision in bundle.json unless local state has changed; if it may be stale, run `agentplane task next-action <task-id> --explain` before mutating.",
-    "Route oracle contract: follow route_exact_argv when present, run it from route_must_run_from, treat route_primary_blocker as the current stop reason, and use route_phase instead of manually reconstructing branch/worktree/PR state.",
+    ...(loopStepTarget
+      ? [
+          "Loop-step execution contract:",
+          `- loop_id: ${loopStepTarget.loop_id}`,
+          `- loop_version: ${loopStepTarget.loop_version ?? "unknown"}`,
+          `- step_id: ${loopStepTarget.step_id}`,
+          `- step_type: ${loopStepTarget.step_type}`,
+          `- prompt_module: ${loopStepTarget.prompt_module ?? "none"}`,
+          "- Execute this loop step directly in route_must_run_from/current checkout.",
+          "- route_exact_argv is intentionally empty for loop_step targets; do not run branch_pr lifecycle commands such as `agentplane work start`, `agentplane pr open`, `agentplane integrate`, `agentplane finish`, or `agentplane cleanup`.",
+          "- Do not recompute `agentplane task next-action` before doing the loop-step work. Use the task context, loop step metadata, and step contract from bundle.json as the execution input.",
+          "- Keep writes inside the requested task/loop scope unless the task itself explicitly requires code changes. If the requested artifact cannot be produced, write a blocked result manifest with the reason and recommended parent action.",
+        ]
+      : [
+          "Follow route_decision in bundle.json unless local state has changed; if it may be stale, run `agentplane task next-action <task-id> --explain` before mutating.",
+          "Route oracle contract: follow route_exact_argv when present, run it from route_must_run_from, treat route_primary_blocker as the current stop reason, and use route_phase instead of manually reconstructing branch/worktree/PR state.",
+        ]),
     "For file-edit tools that do not accept cwd/workdir, use absolute paths under route_mutation_path_hint when route_safe_to_mutate is true; otherwise stop before mutating files.",
-    "Return control according to route_return_control_when. Do not continue to a second route step until route_stale_state_check has been recomputed.",
+    ...(loopStepTarget
+      ? ["Return control after writing result_path; the parent loop decides follow-up steps."]
+      : [
+          "Return control according to route_return_control_when. Do not continue to a second route step until route_stale_state_check has been recomputed.",
+        ]),
     "Runner rail contract: only think about runner execution when runner_is_required or runner_is_allowed_now is true; otherwise treat runner failures from earlier attempts as diagnostic evidence, not as the current route.",
     "When reading bundle.json directly, use camelCase JSON paths: route_decision.oracle.nextCommand, route_decision.oracle.authoritativeCheckout, route_decision.oracle.authoritativeCheckoutPath, route_decision.oracle.mutationPathHint, route_decision.oracle.blocker, and route_decision.oracle.phase.",
     ...(routeDecision?.executionPacket?.mustNot?.length
@@ -275,6 +304,7 @@ export function renderTaskRunnerBootstrap(
         ]
       : []),
     "Execute-mode runs must write a valid JSON result manifest to result_path before exiting.",
+    'If the manifest includes artifacts, every artifacts entry must be an object like {"path":"relative/or/absolute/path","label":"short-label"}; never use bare string artifact paths.',
     "Minimal manifest example:",
     '{"schema_version":1,"status":"success","summary":"Completed.","capabilities_used":["runner.exec"]}',
     "",

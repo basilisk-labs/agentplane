@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "status": "failed",
+  "exit_code": 1,
+  "summary": "Codex execution failed before producing a valid result manifest.",
+  "stderr_summary": "Invalid runner result manifest at /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.json: artifacts entries must be objects",
+  "artifacts": [
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/bundle.json",
+      "label": "bundle"
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/bootstrap.md",
+      "label": "bootstrap"
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/agent-trace.jsonl",
+      "label": "raw-trace"
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/stderr.log",
+      "label": "stderr-log"
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.source.json",
+      "label": "source-result-manifest"
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/codex-last-message.md",
+      "label": "assistant-last-message"
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.invalid.json",
+      "label": "invalid-result-manifest"
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.json",
+      "label": "result-manifest"
+    }
+  ],
+  "capabilities_used": [
+    "codex.exec"
+  ]
+}

@@ -68,7 +68,7 @@ const RUNNER_OUTCOME_STATUS_VALUES = [
   "cancelled",
 ] as const;
 const RUNNER_MODE_VALUES = ["execute", "dry_run"] as const;
-const RUNNER_TARGET_KIND_VALUES = ["task", "recipe_scenario"] as const;
+const RUNNER_TARGET_KIND_VALUES = ["task", "recipe_scenario", "loop_step"] as const;
 const TASK_SYNC_FIELD_AUTHORITY_VALUES = [
   "agentplane",
   "provider",
@@ -127,6 +127,11 @@ const RUNNER_TARGET_SCHEMA = z
     task_id: NON_EMPTY_STRING.optional(),
     recipe_id: NON_EMPTY_STRING.optional(),
     scenario_id: NON_EMPTY_STRING.optional(),
+    loop_id: NON_EMPTY_STRING.optional(),
+    loop_version: NON_EMPTY_STRING.optional(),
+    step_id: NON_EMPTY_STRING.optional(),
+    step_type: NON_EMPTY_STRING.optional(),
+    prompt_module: NON_EMPTY_STRING.nullable().optional(),
   })
   .passthrough();
 

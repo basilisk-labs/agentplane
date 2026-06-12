@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "success",
+  "summary": "Created the task-local runner execute smoke artifact without source-code edits.",
+  "capabilities_used": [
+    "runner.exec",
+    "file.write"
+  ],
+  "artifacts": [
+    ".agentplane/tasks/202606121437-V50C2K/artifacts/runner-execute-smoke.txt"
+  ],
+  "evidence": {
+    "policy_decision_recorded": true,
+    "policy_decision_source": "bundle.json execution.policy_decision",
+    "changed_paths": [
+      ".agentplane/tasks/202606121437-V50C2K/artifacts/runner-execute-smoke.txt",
+      ".agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.json"
+    ],
+    "source_code_edits": false
+  },
+  "notes": [
+    "No branch_pr lifecycle commands were run.",
+    "No recursive AgentPlane runner invocation was run.",
+    "Blueprint stop reason workflow_mode_incompatible was present, but the loop-step route explicitly bypassed branch_pr lifecycle routing and required only this runner result manifest plus the task-local artifact."
+  ]
+}

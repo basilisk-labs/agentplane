@@ -4,7 +4,7 @@ title: "Direct smoke execute loop agent step"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -29,31 +29,87 @@ verification:
   note: null
   attempts: 0
 runner:
-  run_id: "2026-06-12T16-06-27-234Z"
-  status: "blocked"
+  run_id: "2026-06-12T16-52-42-470Z"
+  status: "success"
   adapter_id: "codex"
   mode: "execute"
-  updated_at: "2026-06-12T16:07:46.769Z"
-  started_at: "2026-06-12T16:06:27.247Z"
-  ended_at: "2026-06-12T16:07:46.766Z"
+  updated_at: "2026-06-12T16:54:09.369Z"
+  started_at: "2026-06-12T16:52:42.497Z"
+  ended_at: "2026-06-12T16:54:09.364Z"
   exit_code: 0
   target:
-    kind: "task"
+    kind: "loop_step"
     task_id: "202606121437-V50C2K"
-  summary: "Codex runner is blocked by an external condition."
+    contract: null
+    loop_id: "tdd.fix"
+    loop_version: "0.1.0"
+    prompt_module: null
+    step_id: "agent_patch"
+    step_type: "agent.run"
+  summary: "Codex runner completed successfully."
   output_paths:
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/bundle.json"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/bootstrap.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/agent-trace.jsonl"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/stderr.log"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/codex-last-message.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/result.json"
+    - ".agentplane/tasks/202606121437-V50C2K/artifacts/runner-execute-smoke.txt"
+    - ".agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-52-42-470Z/result.json"
   metrics:
-    duration_ms: 79519
-    stdout_bytes: 45725
+    duration_ms: 86867
+    stdout_bytes: 197365
     stderr_bytes: 25171
-    output_last_message_bytes: 1144
+    output_last_message_bytes: 760
   history:
+    -
+      adapter_id: "codex"
+      ended_at: "2026-06-12T16:54:09.364Z"
+      exit_code: 0
+      metrics:
+        duration_ms: 86867
+        stdout_bytes: 197365
+        stderr_bytes: 25171
+        output_last_message_bytes: 760
+      mode: "execute"
+      output_paths:
+        - ".agentplane/tasks/202606121437-V50C2K/artifacts/runner-execute-smoke.txt"
+        - ".agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-52-42-470Z/result.json"
+      run_id: "2026-06-12T16-52-42-470Z"
+      started_at: "2026-06-12T16:52:42.497Z"
+      status: "success"
+      summary: "Codex runner completed successfully."
+      target:
+        kind: "loop_step"
+        task_id: "202606121437-V50C2K"
+        contract: null
+        loop_id: "tdd.fix"
+        loop_version: "0.1.0"
+        prompt_module: null
+        step_id: "agent_patch"
+        step_type: "agent.run"
+      updated_at: "2026-06-12T16:54:09.369Z"
+    -
+      adapter_id: "codex"
+      ended_at: "2026-06-12T16:48:49.698Z"
+      exit_code: 1
+      mode: "execute"
+      output_paths:
+        - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/bundle.json"
+        - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/bootstrap.md"
+        - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/agent-trace.jsonl"
+        - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/stderr.log"
+        - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.source.json"
+        - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/codex-last-message.md"
+        - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.invalid.json"
+        - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.json"
+      run_id: "2026-06-12T16-46-56-806Z"
+      started_at: "2026-06-12T16:46:56.846Z"
+      status: "failed"
+      summary: "Codex runner failed; inspect run artifacts for details."
+      target:
+        kind: "loop_step"
+        task_id: "202606121437-V50C2K"
+        loop_id: "tdd.fix"
+        loop_version: "0.1.0"
+        prompt_module: null
+        step_id: "agent_patch"
+        step_type: "agent.run"
+      updated_at: "2026-06-12T16:48:49.706Z"
     -
       adapter_id: "codex"
       ended_at: "2026-06-12T16:07:46.766Z"
@@ -118,7 +174,7 @@ events:
     to: "DOING"
     note: "Start: direct smoke-test loop execute-agent-step with a task-local artifact only."
 doc_version: 3
-doc_updated_at: "2026-06-12T16:07:46.775Z"
+doc_updated_at: "2026-06-12T16:54:09.380Z"
 doc_updated_by: "CODER"
 description: "Use loop --execute-agent-step to run the task runner once in the current checkout. Create a task-local artifact file named runner-execute-smoke.txt containing a short confirmation and avoid source-code edits."
 sections:
@@ -148,6 +204,62 @@ sections:
   Findings: |-
     <!-- BEGIN RUNNER OUTCOME -->
 
+    #### 2026-06-12T16:54:09.369Z — RUNNER — success
+
+    RunId: 2026-06-12T16-52-42-470Z
+
+    Adapter: codex
+
+    Mode: execute
+
+    Target: tdd.fix/agent_patch -> task 202606121437-V50C2K
+
+    UpdatedAt: 2026-06-12T16:54:09.369Z
+
+    RunArtifacts: .agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-52-42-470Z
+
+    ExitCode: 0
+
+    StartedAt: 2026-06-12T16:52:42.497Z
+
+    EndedAt: 2026-06-12T16:54:09.364Z
+
+    Summary: Codex runner completed successfully.
+
+    Artifacts: runner-execute-smoke=.agentplane/tasks/202606121437-V50C2K/artifacts/runner-execute-smoke.txt, result-manifest=.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-52-42-470Z/result.json
+
+    Capabilities: runner.exec, file.read, result.manifest.write
+
+    Metrics: duration_ms=86867, stdout_bytes=197365, stderr_bytes=25171, output_last_message_bytes=760
+
+    VerificationHint: runner completed successfully; human verification and closure remain explicit lifecycle steps.
+
+    #### 2026-06-12T16:48:49.706Z — RUNNER — failed
+
+    RunId: 2026-06-12T16-46-56-806Z
+
+    Adapter: codex
+
+    Mode: execute
+
+    Target: tdd.fix/agent_patch -> task 202606121437-V50C2K
+
+    UpdatedAt: 2026-06-12T16:48:49.706Z
+
+    RunArtifacts: .agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z
+
+    ExitCode: 1
+
+    StartedAt: 2026-06-12T16:46:56.846Z
+
+    EndedAt: 2026-06-12T16:48:49.698Z
+
+    Summary: Codex runner failed; inspect run artifacts for details.
+
+    Outputs: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/bundle.json, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/bootstrap.md, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/agent-trace.jsonl, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/stderr.log, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.source.json, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/codex-last-message.md, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.invalid.json, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.json
+
+    VerificationHint: runner failed; inspect artifacts before retrying or recording verification evidence.
+
     #### 2026-06-12T16:07:46.769Z — RUNNER — blocked
 
     RunId: 2026-06-12T16-06-27-234Z
@@ -170,9 +282,7 @@ sections:
 
     Summary: Codex runner is blocked by an external condition.
 
-    Artifacts: bundle=/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/bundle.json, bootstrap=/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/bootstrap.md, raw-trace=/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/agent-trace.jsonl, stderr-log=/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/stderr.log, assistant-last-message=/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/codex-last-message.md, result-manifest=/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/result.json
-
-    Capabilities: runner.exec
+    Outputs: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/bundle.json, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/bootstrap.md, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/agent-trace.jsonl, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/stderr.log, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/codex-last-message.md, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/result.json
 
     Metrics: duration_ms=79519, stdout_bytes=45725, stderr_bytes=25171, output_last_message_bytes=1144
 
@@ -248,6 +358,62 @@ PLANNER fallback scaffold for "Direct smoke execute loop agent step". Replace wi
 
 <!-- BEGIN RUNNER OUTCOME -->
 
+#### 2026-06-12T16:54:09.369Z — RUNNER — success
+
+RunId: 2026-06-12T16-52-42-470Z
+
+Adapter: codex
+
+Mode: execute
+
+Target: tdd.fix/agent_patch -> task 202606121437-V50C2K
+
+UpdatedAt: 2026-06-12T16:54:09.369Z
+
+RunArtifacts: .agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-52-42-470Z
+
+ExitCode: 0
+
+StartedAt: 2026-06-12T16:52:42.497Z
+
+EndedAt: 2026-06-12T16:54:09.364Z
+
+Summary: Codex runner completed successfully.
+
+Artifacts: runner-execute-smoke=.agentplane/tasks/202606121437-V50C2K/artifacts/runner-execute-smoke.txt, result-manifest=.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-52-42-470Z/result.json
+
+Capabilities: runner.exec, file.read, result.manifest.write
+
+Metrics: duration_ms=86867, stdout_bytes=197365, stderr_bytes=25171, output_last_message_bytes=760
+
+VerificationHint: runner completed successfully; human verification and closure remain explicit lifecycle steps.
+
+#### 2026-06-12T16:48:49.706Z — RUNNER — failed
+
+RunId: 2026-06-12T16-46-56-806Z
+
+Adapter: codex
+
+Mode: execute
+
+Target: tdd.fix/agent_patch -> task 202606121437-V50C2K
+
+UpdatedAt: 2026-06-12T16:48:49.706Z
+
+RunArtifacts: .agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z
+
+ExitCode: 1
+
+StartedAt: 2026-06-12T16:46:56.846Z
+
+EndedAt: 2026-06-12T16:48:49.698Z
+
+Summary: Codex runner failed; inspect run artifacts for details.
+
+Outputs: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/bundle.json, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/bootstrap.md, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/agent-trace.jsonl, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/stderr.log, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.source.json, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/codex-last-message.md, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.invalid.json, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-46-56-806Z/result.json
+
+VerificationHint: runner failed; inspect artifacts before retrying or recording verification evidence.
+
 #### 2026-06-12T16:07:46.769Z — RUNNER — blocked
 
 RunId: 2026-06-12T16-06-27-234Z
@@ -270,9 +436,7 @@ EndedAt: 2026-06-12T16:07:46.766Z
 
 Summary: Codex runner is blocked by an external condition.
 
-Artifacts: bundle=/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/bundle.json, bootstrap=/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/bootstrap.md, raw-trace=/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/agent-trace.jsonl, stderr-log=/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/stderr.log, assistant-last-message=/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/codex-last-message.md, result-manifest=/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/result.json
-
-Capabilities: runner.exec
+Outputs: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/bundle.json, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/bootstrap.md, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/agent-trace.jsonl, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/stderr.log, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/codex-last-message.md, /Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-06-27-234Z/result.json
 
 Metrics: duration_ms=79519, stdout_bytes=45725, stderr_bytes=25171, output_last_message_bytes=1144
 

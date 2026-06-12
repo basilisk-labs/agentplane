@@ -113,6 +113,65 @@ describe("runner blueprint guards", () => {
     expect(bootstrap).toContain("route_decision.oracle.nextCommand");
   });
 
+  it("renders loop-step targets without branch_pr lifecycle commands", () => {
+    const bundle = makeRunnerContextBundle({
+      adapterId: "codex",
+      taskId: "202606121437-V50C2K",
+      title: "Direct smoke execute loop agent step",
+      target: {
+        kind: "loop_step",
+        task_id: "202606121437-V50C2K",
+        loop_id: "tdd.fix",
+        loop_version: "0.1.0",
+        step_id: "agent_patch",
+        step_type: "agent.run",
+        prompt_module: "tdd.fix.implement",
+        contract: { outputs: [{ id: "runner_result", required: true }] },
+      },
+    });
+    bundle.route_decision = {
+      oracle: {
+        phase: "loop_agent_step",
+        authoritativeCheckout: "current_checkout",
+        authoritativeCheckoutPath: "/repo",
+        mutationPathHint: "/repo",
+        blocker: null,
+        nextCommand: null,
+      },
+      executionPacket: {
+        actionKind: "loop_step",
+        safeToMutate: true,
+        mustRunFrom: "/repo",
+        exactArgv: null,
+        returnControlWhen: "after writing the runner result manifest for this loop step",
+        staleStateCheck: null,
+        mustNot: ["do not run branch_pr lifecycle commands such as work start"],
+      },
+      nextAction: {
+        code: "execute_loop_step",
+        command: null,
+      },
+      workspace: { checkoutRole: "current_checkout" },
+      approval: { effectiveMutationApprovalRequired: false },
+    };
+
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+
+    expect(bootstrap.split("\n")[0]).toBe(
+      "/goal Execute AgentPlane loop step tdd.fix/agent_patch for task 202606121437-V50C2K",
+    );
+    expect(bootstrap).toContain("- target: loop step tdd.fix/agent_patch");
+    expect(bootstrap).toContain("- route_phase: loop_agent_step");
+    expect(bootstrap).toContain("- route_exact_argv: none");
+    expect(bootstrap).toContain("Loop-step execution contract:");
+    expect(bootstrap).toContain("route_exact_argv is intentionally empty");
+    expect(bootstrap).toContain("do not run branch_pr lifecycle commands");
+    expect(bootstrap).toContain("Do not recompute `agentplane task next-action`");
+    expect(bootstrap).toContain("never use bare string artifact paths");
+    expect(bootstrap).toContain("- runner_is_required: true");
+    expect(bootstrap).not.toContain("follow route_exact_argv when present");
+  });
+
   it("renders configured evaluator skepticism into the runner bootstrap", () => {
     const bundle = makeRunnerContextBundle({
       execution: { evaluator_skepticism_level: "paranoid" },

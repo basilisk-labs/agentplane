@@ -17,6 +17,11 @@ export type RunnerOutcomeProjection = {
 
 function formatRunnerTarget(target: RunnerTarget | TaskRunnerTarget): string {
   if (target.kind === "task") return `task ${target.task_id}`;
+  if (target.kind === "loop_step") {
+    const loop =
+      target.loop_id && target.step_id ? `${target.loop_id}/${target.step_id}` : "loop step";
+    return target.task_id ? `${loop} -> task ${target.task_id}` : loop;
+  }
   const base = `recipe ${target.recipe_id}:${target.scenario_id}`;
   return target.task_id ? `${base} -> task ${target.task_id}` : base;
 }

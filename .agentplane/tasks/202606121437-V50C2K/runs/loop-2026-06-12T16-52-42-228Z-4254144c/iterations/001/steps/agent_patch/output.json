@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "agent_patch",
+  "stepType": "agent.run",
+  "dryRun": false,
+  "status": "success",
+  "skippedExecution": false,
+  "reason": "agent_step_executed_with_task_runner",
+  "promptModule": null,
+  "runnerHandoff": {
+    "adapterId": "codex",
+    "mode": "execute",
+    "runId": "2026-06-12T16-52-42-470Z",
+    "runDir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-52-42-470Z",
+    "bundlePath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-52-42-470Z/bundle.json",
+    "bootstrapPath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-52-42-470Z/bootstrap.md",
+    "resultPath": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-52-42-470Z/result.json",
+    "resultStatus": "success",
+    "exitCode": 0,
+    "resultSummary": "Confirmed the task-local runner execute smoke artifact exists and satisfies the loop-step scope without source-code edits."
+  },
+  "declaredOutputs": [],
+  "declaredArtifacts": []
+}

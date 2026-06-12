@@ -55,6 +55,119 @@ export type ExecutedTaskRunnerExecution = PreparedTaskRunnerExecution & {
   result: RunnerResult;
 };
 
+function buildLoopStepRouteDecision(opts: {
+  ctx: CommandContext;
+  taskEnvelope: Awaited<ReturnType<typeof assembleRunnerTaskContext>>;
+  target: Extract<RunnerTarget, { kind: "loop_step" }>;
+}): Record<string, unknown> {
+  const task = opts.taskEnvelope.task;
+  const repository = opts.taskEnvelope.repository;
+  const checkoutPath = repository.git_root;
+  const branch = repository.branch ?? null;
+  const headSha = repository.head_commit ?? null;
+  const taskId = opts.target.task_id;
+  const summary = `execute loop step ${opts.target.step_id} for ${opts.target.loop_id}`;
+  return {
+    task: {
+      id: task.task_id,
+      title: task.data.title,
+      status: task.data.status,
+      owner: task.data.owner,
+      planApproval: task.data.plan_approval?.state ?? null,
+      verification: task.data.verification?.state ?? null,
+      commit: typeof task.data.commit === "string" ? task.data.commit : null,
+    },
+    workflowMode: opts.ctx.config.workflow_mode,
+    workspace: {
+      root: checkoutPath,
+      branch,
+      baseBranch: null,
+      headSha,
+      prBranch: null,
+      checkoutRole: "current_checkout",
+      baseCheckoutPath: null,
+      taskWorktreePath: checkoutPath,
+    },
+    approval: {
+      runtime: {
+        requirePlan: opts.ctx.config.agents?.approvals?.require_plan === true,
+        requireNetwork: opts.ctx.config.agents?.approvals?.require_network === true,
+        requireVerify: opts.ctx.config.agents?.approvals?.require_verify === true,
+      },
+      gatewayMutationApprovalRequired: true,
+      effectiveMutationApprovalRequired: false,
+      routeRequiresApproval: false,
+    },
+    batchOwnership: { role: "none" },
+    prFlow: null,
+    cleanupCandidateCount: null,
+    blockers: [],
+    ambiguities: [],
+    nextAction: {
+      code: "execute_loop_step",
+      command: null,
+      summary,
+      requiresApproval: false,
+    },
+    oracle: {
+      phase: "loop_agent_step",
+      authoritativeCheckout: "current_checkout",
+      authoritativeCheckoutPath: checkoutPath,
+      mutationPathHint: checkoutPath,
+      blocker: null,
+      nextCommand: null,
+      summary,
+    },
+    executionPacket: {
+      schemaVersion: 1,
+      actionKind: "loop_step",
+      safeToMutate: true,
+      requiresProviderAction: false,
+      recommendedRole: task.data.owner,
+      authoritativeCheckout: "current_checkout",
+      authoritativeCheckoutPath: checkoutPath,
+      mutationPathHint: checkoutPath,
+      mustRunFrom: checkoutPath,
+      exactArgv: null,
+      mustNot: [
+        "do not run branch_pr lifecycle commands such as work start, pr open, integrate, finish, or cleanup",
+        "do not recompute task next-action for loop-step execution unless reporting a blocked result",
+        "do not invoke agentplane task run recursively",
+      ],
+      returnControlWhen: "after writing the runner result manifest for this loop step",
+      humanProviderAction: null,
+      staleStateCheck: null,
+      evidenceMissing: [],
+      verificationCandidate: null,
+      stopReason: null,
+    },
+    repairPlan: [
+      {
+        code: "no_lifecycle_route",
+        command: null,
+        summary: "loop-step runner execution intentionally bypasses branch_pr lifecycle routing",
+        mutates: false,
+      },
+    ],
+    sourceConfidence: {
+      route: {
+        source: "loop_step_target",
+        freshness: "computed_local",
+        confidence: "high",
+      },
+    },
+    loopStep: {
+      taskId,
+      loopId: opts.target.loop_id,
+      loopVersion: opts.target.loop_version ?? null,
+      stepId: opts.target.step_id,
+      stepType: opts.target.step_type,
+      promptModule: opts.target.prompt_module ?? null,
+      contract: opts.target.contract ?? null,
+    },
+  };
+}
+
 class RunnerPreparationCliError extends CliError {
   readonly bundle: RunnerContextBundle;
   readonly state: RunnerRunState;
@@ -230,12 +343,19 @@ export async function prepareTaskRunnerExecution(opts: {
     recipe: opts.recipe,
     basePrompts: base_prompts,
   });
-  const route_decision = await buildTaskRouteDecision({
-    ctx: executionContext.command,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride ?? null,
-    taskId: opts.task_id,
-  });
+  const route_decision =
+    target.kind === "loop_step"
+      ? buildLoopStepRouteDecision({
+          ctx: executionContext.command,
+          taskEnvelope,
+          target,
+        })
+      : await buildTaskRouteDecision({
+          ctx: executionContext.command,
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride ?? null,
+          taskId: opts.task_id,
+        });
   const framework_explain = appendFrameworkExplainBehaviorInputs(
     executionContext.frameworkExplain,
     collectFrameworkExplainBehaviorInputs(base_prompts),

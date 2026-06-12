@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "success",
+  "exit_code": 0,
+  "summary": "Confirmed the task-local runner execute smoke artifact exists and satisfies the loop-step scope without source-code edits.",
+  "stdout_summary": "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
+  "artifacts": [
+    {
+      "path": ".agentplane/tasks/202606121437-V50C2K/artifacts/runner-execute-smoke.txt",
+      "label": "runner-execute-smoke"
+    },
+    {
+      "path": ".agentplane/tasks/202606121437-V50C2K/runs/2026-06-12T16-52-42-470Z/result.json",
+      "label": "result-manifest"
+    }
+  ],
+  "capabilities_used": [
+    "runner.exec",
+    "file.read",
+    "result.manifest.write"
+  ],
+  "metrics": {
+    "duration_ms": 86867,
+    "stdout_bytes": 197365,
+    "stderr_bytes": 25171,
+    "output_last_message_bytes": 760
+  }
+}

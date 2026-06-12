@@ -1,0 +1,1 @@
+runner execute smoke: agent_patch ran in the current checkout and produced this task-local artifact without source-code edits.

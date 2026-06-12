@@ -34,7 +34,7 @@ function normalizeTaskOrigin(value: unknown): TaskOrigin | undefined {
 function normalizeRunnerTarget(value: unknown): TaskRunnerTarget | undefined {
   if (!isRecord(value)) return undefined;
   const kind = typeof value.kind === "string" ? value.kind.trim() : "";
-  if (kind !== "task" && kind !== "recipe_scenario") return undefined;
+  if (kind !== "task" && kind !== "recipe_scenario" && kind !== "loop_step") return undefined;
   const target: TaskRunnerTarget = { kind };
   if (typeof value.task_id === "string" && value.task_id.trim())
     target.task_id = value.task_id.trim();
@@ -43,6 +43,21 @@ function normalizeRunnerTarget(value: unknown): TaskRunnerTarget | undefined {
   }
   if (typeof value.scenario_id === "string" && value.scenario_id.trim()) {
     target.scenario_id = value.scenario_id.trim();
+  }
+  if (typeof value.loop_id === "string" && value.loop_id.trim()) {
+    target.loop_id = value.loop_id.trim();
+  }
+  if (typeof value.loop_version === "string" && value.loop_version.trim()) {
+    target.loop_version = value.loop_version.trim();
+  }
+  if (typeof value.step_id === "string" && value.step_id.trim()) {
+    target.step_id = value.step_id.trim();
+  }
+  if (typeof value.step_type === "string" && value.step_type.trim()) {
+    target.step_type = value.step_type.trim();
+  }
+  if (value.prompt_module === null || typeof value.prompt_module === "string") {
+    target.prompt_module = value.prompt_module;
   }
   return target;
 }

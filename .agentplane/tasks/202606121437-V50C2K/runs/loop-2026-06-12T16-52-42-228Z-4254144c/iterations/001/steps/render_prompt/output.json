@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "kind": "loop.step.output",
+  "stepId": "render_prompt",
+  "stepType": "prompt.render",
+  "dryRun": true,
+  "status": "prepared",
+  "skippedExecution": true,
+  "reason": "dry_run_prepared_without_external_agent_execution",
+  "promptModule": {
+    "id": "tdd.fix.implement",
+    "moduleSha": "sha256:ea5a2d1870c62522480fff1df754c27fe1dd811816b814b5102ccf9e668840f2",
+    "renderedPromptSha": null
+  },
+  "runnerHandoff": null,
+  "declaredOutputs": [
+    {
+      "id": "rendered_prompt",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "declaredArtifacts": [
+    {
+      "id": "prompt",
+      "path": "steps/render_prompt/output.json"
+    }
+  ]
+}
