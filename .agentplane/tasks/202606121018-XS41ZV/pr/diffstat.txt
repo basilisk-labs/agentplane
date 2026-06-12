@@ -1,0 +1,4 @@
+ .../commands/branch/work-start.hook-shim.test.ts   | 41 ++++++++++++++++++++++
+ .../src/commands/shared/hook-shim-template.ts      |  7 ++++
+ scripts/workflow/bootstrap-framework-dev.mjs       |  7 ++++
+ 3 files changed, 55 insertions(+)

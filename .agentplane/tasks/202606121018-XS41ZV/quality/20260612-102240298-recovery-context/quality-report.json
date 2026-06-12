@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202606121018-XS41ZV",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-12T10:22:40.298Z",
+  "verdict": "pass",
+  "summary": "Quality review passed for hook shim signal normalization.",
+  "evaluated_sha": "5941a8dc61e3b958686afa34c579503503b5428e",
+  "blueprint_digest": "fe3877d3b48648eff1247b19c8f40cb4f9f20fd2f0b9b31795d965b465f7bb13",
+  "findings": [
+    "No blocking findings. The managed hook shim now converts child runner signal exits to actionable non-signal failures, and focused tests cover timeout, SIGKILL, and stdin preservation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606121018-XS41ZV/README.md",
+    "packages/agentplane/src/commands/shared/hook-shim-template.ts",
+    "packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
