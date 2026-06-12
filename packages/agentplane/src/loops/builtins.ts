@@ -37,11 +37,42 @@ export const BUILTIN_LOOPS = [
     },
     steps: [
       { id: "load_context", type: "context.load" },
-      { id: "render_prompt", type: "prompt.render", promptModule: "tdd.fix.implement" },
+      {
+        id: "render_prompt",
+        type: "prompt.render",
+        promptModule: "tdd.fix.implement",
+        contract: {
+          inputs: [
+            { id: "task_context", type: "object", required: true, source: "task.approved_plan" },
+            { id: "verify_steps", type: "array", required: true, source: "task.verify_steps" },
+          ],
+          outputs: [{ id: "rendered_prompt", type: "string", required: true }],
+          artifacts: [{ id: "prompt", path: "steps/render_prompt/output.json" }],
+        },
+      },
       { id: "agent_patch", type: "agent.run" },
       { id: "capture_diff", type: "git.diff" },
-      { id: "focused_check", type: "check.run" },
-      { id: "evaluator", type: "evaluator.run", evaluator: "recovery-context" },
+      {
+        id: "focused_check",
+        type: "check.run",
+        contract: {
+          inputs: [{ id: "diff", type: "object", required: true, source: "git.diff" }],
+          outputs: [{ id: "check_result", type: "object", required: true }],
+          artifacts: [{ id: "check_output", path: "steps/focused_check/output.json" }],
+        },
+      },
+      {
+        id: "evaluator",
+        type: "evaluator.run",
+        evaluator: "recovery-context",
+        contract: {
+          inputs: [
+            { id: "diff", type: "object", required: true, source: "git.diff" },
+            { id: "check_result", type: "object", required: true, source: "focused_check" },
+          ],
+          outputs: [{ id: "evaluator_verdict", type: "object", required: true }],
+        },
+      },
     ],
     transitions: [
       {
@@ -95,7 +126,15 @@ export const BUILTIN_LOOPS = [
     budgets: { maxIterations: 4, maxChangedFiles: 6, maxDiffLines: 400 },
     steps: [
       { id: "load_pr_state", type: "pr.check" },
-      { id: "classify_failure", type: "evaluator.run", evaluator: "ci-failure-classifier" },
+      {
+        id: "classify_failure",
+        type: "evaluator.run",
+        evaluator: "ci-failure-classifier",
+        contract: {
+          inputs: [{ id: "pr_state", type: "object", required: true, source: "load_pr_state" }],
+          outputs: [{ id: "failure_classification", type: "object", required: true }],
+        },
+      },
       { id: "render_prompt", type: "prompt.render", promptModule: "ci.repair" },
       { id: "agent_patch", type: "agent.run" },
       { id: "local_check", type: "check.run" },
@@ -148,7 +187,15 @@ export const BUILTIN_LOOPS = [
       { id: "inspect_source", type: "context.load" },
       { id: "render_prompt", type: "prompt.render", promptModule: "docs.sync" },
       { id: "agent_docs_edit", type: "agent.run" },
-      { id: "docs_build", type: "check.run" },
+      {
+        id: "docs_build",
+        type: "check.run",
+        contract: {
+          inputs: [{ id: "changed_docs", type: "array", required: true }],
+          outputs: [{ id: "docs_check_result", type: "object", required: true }],
+          artifacts: [{ id: "docs_check", path: "steps/docs_build/output.json" }],
+        },
+      },
       { id: "evaluator", type: "evaluator.run", evaluator: "docs-source-alignment" },
     ],
     transitions: [
@@ -314,8 +361,24 @@ export const BUILTIN_LOOPS = [
     budgets: { maxIterations: 2 },
     steps: [
       { id: "load_evidence", type: "context.load" },
-      { id: "evaluate", type: "evaluator.run", evaluator: "recovery-context" },
-      { id: "decision", type: "decision.route" },
+      {
+        id: "evaluate",
+        type: "evaluator.run",
+        evaluator: "recovery-context",
+        contract: {
+          inputs: [{ id: "task_evidence", type: "object", required: true }],
+          outputs: [{ id: "quality_verdict", type: "object", required: true }],
+        },
+      },
+      {
+        id: "decision",
+        type: "decision.route",
+        contract: {
+          inputs: [{ id: "quality_verdict", type: "object", required: true, source: "evaluate" }],
+          outputs: [{ id: "loop_decision", type: "object", required: true }],
+          artifacts: [{ id: "decision", path: "iterations/<n>/decision.json", required: true }],
+        },
+      },
     ],
     transitions: [
       { from: "decision", if: "evaluator.verdict == 'pass'", to: "finish", decision: "finish" },

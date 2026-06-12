@@ -26,8 +26,31 @@
   },
   "steps": [
     { "id": "load_context", "type": "context.load" },
-    { "id": "render_prompt", "type": "prompt.render", "promptModule": "docs.custom" },
-    { "id": "docs_check", "type": "check.run" },
+    {
+      "id": "render_prompt",
+      "type": "prompt.render",
+      "promptModule": "docs.custom",
+      "contract": {
+        "inputs": [
+          {
+            "id": "task_context",
+            "type": "object",
+            "required": true,
+            "source": "task.approved_plan"
+          }
+        ],
+        "outputs": [{ "id": "rendered_prompt", "type": "string", "required": true }]
+      }
+    },
+    {
+      "id": "docs_check",
+      "type": "check.run",
+      "contract": {
+        "inputs": [{ "id": "changed_docs", "type": "array", "required": true }],
+        "outputs": [{ "id": "check_result", "type": "object", "required": true }],
+        "artifacts": [{ "id": "stdout", "path": "steps/docs_check/output.json" }]
+      }
+    },
     { "id": "evaluator", "type": "evaluator.run", "evaluator": "docs-source-alignment" }
   ],
   "transitions": [

@@ -81,6 +81,25 @@
           "command": { "type": "string" },
           "promptModule": { "type": "string" },
           "evaluator": { "type": "string" },
+          "contract": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "schemaRef": { "type": "string", "minLength": 1 },
+              "inputs": {
+                "type": "array",
+                "items": { "$ref": "#/$defs/contractField" }
+              },
+              "outputs": {
+                "type": "array",
+                "items": { "$ref": "#/$defs/contractField" }
+              },
+              "artifacts": {
+                "type": "array",
+                "items": { "$ref": "#/$defs/artifactContract" }
+              }
+            }
+          },
           "when": { "type": "string" },
           "optional": { "type": "boolean" }
         }
@@ -117,6 +136,33 @@
           "reason": { "type": "string", "minLength": 1 },
           "decision": { "type": "string", "minLength": 1 }
         }
+      }
+    }
+  },
+  "$defs": {
+    "contractField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": {
+          "enum": ["string", "number", "boolean", "object", "array", "json", "path", "ref"]
+        },
+        "required": { "type": "boolean" },
+        "description": { "type": "string" },
+        "source": { "type": "string" }
+      }
+    },
+    "artifactContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "description": { "type": "string" }
       }
     }
   }

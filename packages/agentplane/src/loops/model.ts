@@ -111,8 +111,41 @@ export type LoopStep = {
   command?: string;
   promptModule?: string;
   evaluator?: string;
+  contract?: LoopStepContract;
   when?: string;
   optional?: boolean;
+};
+
+export type LoopContractValueType =
+  | "string"
+  | "number"
+  | "boolean"
+  | "object"
+  | "array"
+  | "json"
+  | "path"
+  | "ref";
+
+export type LoopContractField = {
+  id: string;
+  type?: LoopContractValueType;
+  required?: boolean;
+  description?: string;
+  source?: string;
+};
+
+export type LoopArtifactContract = {
+  id: string;
+  path?: string;
+  required?: boolean;
+  description?: string;
+};
+
+export type LoopStepContract = {
+  schemaRef?: string;
+  inputs?: readonly LoopContractField[];
+  outputs?: readonly LoopContractField[];
+  artifacts?: readonly LoopArtifactContract[];
 };
 
 export type LoopTransition = {
@@ -141,6 +174,8 @@ export type LoopValidationProblem = {
     | "missing_transition"
     | "missing_output"
     | "invalid_budget"
+    | "invalid_step_contract"
+    | "duplicate_contract_id"
     | "unknown_transition_step";
   message: string;
   path?: string;
