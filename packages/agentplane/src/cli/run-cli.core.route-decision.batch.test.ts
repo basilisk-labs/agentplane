@@ -499,9 +499,10 @@ describe("runCli route decision batch ownership", () => {
         next_action: { code: string; command: string };
       };
       expect(parsed.next_action).toMatchObject({
-        code: "run",
-        command: `agentplane task run ${includedTaskId}`,
+        code: "start_direct",
+        command: `agentplane task start-ready ${includedTaskId} --author CODER --body "Start: continue direct-mode task in current checkout."`,
       });
+      expect(parsed.next_action.command).not.toContain("task run");
     } finally {
       nextIo.restore();
     }

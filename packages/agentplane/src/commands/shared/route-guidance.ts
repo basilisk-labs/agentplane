@@ -269,8 +269,7 @@ function deriveExecutorContext(
       runnerRouteActive,
       currentAgentMustExecute,
       instruction: "current_agent_executes_safe_command",
-      warning:
-        "not a runner route; the current coding agent must run safe_command itself and must not wait for or retry a runner",
+      warning: "current coding agent must run safe_command itself",
     };
   }
   return {
@@ -278,8 +277,7 @@ function deriveExecutorContext(
     runnerRouteActive,
     currentAgentMustExecute: false,
     instruction: "current_agent_waits_for_provider_or_recompute",
-    warning:
-      "not a runner route; do not introduce runner retry/wait language unless next-action explicitly delegates to task run or wait_runner",
+    warning: "current coding agent must wait for provider action or recompute next-action",
   };
 }
 

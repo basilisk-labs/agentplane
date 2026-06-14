@@ -180,10 +180,26 @@ export const TASK_COMMANDS = [
   }),
   declareCommand(taskBeginSpec, { load: loadTaskBeginSpec }),
   declareCommand(taskBriefSpec, { load: loadTaskBriefSpec }),
-  declareCommand(taskRunStatusSpec, { load: loadTaskRunStatusSpec }),
-  declareCommand(taskRunInspectSpec, { load: loadTaskRunInspectSpec }),
-  declareCommand(taskRunLogsSpec, { load: loadTaskRunLogsSpec }),
-  declareCommand(taskRunSpec, { load: loadTaskRunSpec }),
+  declareCommand(taskRunStatusSpec, {
+    load: loadTaskRunStatusSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
+  declareCommand(taskRunInspectSpec, {
+    load: loadTaskRunInspectSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
+  declareCommand(taskRunLogsSpec, {
+    load: loadTaskRunLogsSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
+  declareCommand(taskRunSpec, {
+    load: loadTaskRunSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
   declareCommand(taskCompleteSpec, { load: loadTaskCompleteSpec }),
   declareCommand(taskDeriveSpec, {
     load: loadTaskDeriveSpec,

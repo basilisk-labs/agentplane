@@ -85,13 +85,6 @@ describe("collectRunnerBasePrompts", () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "id": "base.framework_runner",
-          "priority": 100,
-          "role": "system",
-          "source": "bundled:runner-prompt:RUNNER.md",
-          "title": "Framework Runner Prompt",
-        },
-        {
           "id": "base.policy_gateway",
           "priority": 200,
           "role": "policy",
@@ -107,19 +100,12 @@ describe("collectRunnerBasePrompts", () => {
         },
       ]
     `);
-    expect(prompts[0]?.content).toContain(
-      "Treat `bundle.json` as the authoritative input contract.",
-    );
-    expect(prompts[0]?.content).toContain("Do not run repository startup commands");
-    expect(prompts[0]?.content).toContain("Treat `text_verbosity` as the output");
-    expect(prompts[0]?.content).toContain('phase: "commentary"');
-    expect(prompts[0]?.content).not.toContain("ap:fragment");
-    expect(prompts[0]?.resolution?.winner.layer).toBe("builtin");
-    expect(prompts[1]?.content).toBe("# Repo Policy\n\nFollow the workspace contract.\n");
-    expect(prompts[1]?.resolution?.winner.layer).toBe("harness");
-    expect(prompts[1]?.resolution?.conflicts[0]?.layer).toBe("builtin");
-    expect(prompts[2]?.content).toContain('"role": "Repo-local coder profile"');
-    expect(prompts[2]?.resolution?.winner.layer).toBe("user");
+    expect(prompts.map((prompt) => prompt.id)).not.toContain("base.framework_runner");
+    expect(prompts[0]?.content).toBe("# Repo Policy\n\nFollow the workspace contract.\n");
+    expect(prompts[0]?.resolution?.winner.layer).toBe("harness");
+    expect(prompts[0]?.resolution?.conflicts[0]?.layer).toBe("builtin");
+    expect(prompts[1]?.content).toContain('"role": "Repo-local coder profile"');
+    expect(prompts[1]?.resolution?.winner.layer).toBe("user");
   });
 
   it("falls back cleanly to bundled defaults when repo-local prompt files are absent", async () => {
@@ -130,16 +116,15 @@ describe("collectRunnerBasePrompts", () => {
       owner_id: "CODER",
     });
 
-    expect(prompts).toHaveLength(3);
-    expect(prompts[0]?.source).toBe("bundled:runner-prompt:RUNNER.md");
-    expect(prompts[0]?.title).toBe("Framework Runner Prompt");
-    expect(prompts[1]?.source).toBe("bundled:policy-gateway:AGENTS.md");
-    expect(prompts[1]?.title).toBe("Bundled Policy Gateway Fallback (AGENTS.md)");
-    expect(prompts[1]?.content).toContain("AGENTS.md");
+    expect(prompts).toHaveLength(2);
+    expect(prompts.map((prompt) => prompt.id)).not.toContain("base.framework_runner");
+    expect(prompts[0]?.source).toBe("bundled:policy-gateway:AGENTS.md");
+    expect(prompts[0]?.title).toBe("Bundled Policy Gateway Fallback (AGENTS.md)");
+    expect(prompts[0]?.content).toContain("AGENTS.md");
+    expect(prompts[0]?.resolution?.winner.layer).toBe("builtin");
+    expect(prompts[1]?.source).toBe("bundled:agent-profile:CODER.json");
+    expect(prompts[1]?.content).toContain('"id": "CODER"');
     expect(prompts[1]?.resolution?.winner.layer).toBe("builtin");
-    expect(prompts[2]?.source).toBe("bundled:agent-profile:CODER.json");
-    expect(prompts[2]?.content).toContain('"id": "CODER"');
-    expect(prompts[2]?.resolution?.winner.layer).toBe("builtin");
   });
 
   it("assembles runner prompts without an initialized local context workspace", async () => {
@@ -153,7 +138,6 @@ describe("collectRunnerBasePrompts", () => {
     });
 
     expect(prompts.map((prompt) => prompt.id)).toEqual([
-      "base.framework_runner",
       "base.policy_gateway",
       "base.owner_profile",
     ]);
@@ -162,21 +146,48 @@ describe("collectRunnerBasePrompts", () => {
     );
   });
 
-  it("reuses static bundled framework prompt assembly across repeated collections", async () => {
+  it("keeps the framework runner prompt out of default collections", async () => {
     const root = await makeTempRepo();
 
-    const first = await collectRunnerBasePrompts({
-      git_root: root,
-      owner_id: "CODER",
-    });
-    const second = await collectRunnerBasePrompts({
+    const prompts = await collectRunnerBasePrompts({
       git_root: root,
       owner_id: "CODER",
     });
 
-    expect(second.find((prompt) => prompt.id === "base.framework_runner")).toBe(
-      first.find((prompt) => prompt.id === "base.framework_runner"),
-    );
+    expect(prompts.map((prompt) => prompt.id)).not.toContain("base.framework_runner");
+  });
+
+  it("includes the framework runner prompt only for active parallel-codex recipes", async () => {
+    const root = await makeTempRepo();
+
+    const prompts = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+      recipe: {
+        recipe_id: "parallel-codex",
+        scenario_id: "fanout",
+        recipe_name: "Parallel Codex Runners",
+        recipe_version: "1.0.0",
+        recipe_dir: path.join(root, ".agentplane", "recipes", "parallel-codex"),
+        scenario_file: null,
+        selection_reasons: ["explicit recipe activation"],
+        run_profile: { mode: "execution" },
+        scenario: {
+          goal: "Run independent Codex task runners.",
+          summary: "Parallel Codex fanout",
+        },
+        agents: [],
+        skills: [],
+        tools: [],
+      },
+    });
+
+    expect(prompts[0]).toMatchObject({
+      id: "base.framework_runner",
+      source: "bundled:runner-prompt:RUNNER.md",
+      title: "Framework Runner Prompt",
+    });
+    expect(prompts[0]?.content).toContain("This prompt is not part of default agent guidance.");
   });
 
   it("invalidates cached repo-local prompt files when their content changes", async () => {
@@ -245,23 +256,22 @@ describe("collectRunnerBasePrompts", () => {
     });
 
     expect(prompts.map((prompt) => prompt.id)).toEqual([
-      "base.framework_runner",
       "base.policy_gateway",
       "base.owner_profile",
       "project.skills_index",
     ]);
-    expect(prompts[3]).toMatchObject({
+    expect(prompts[2]).toMatchObject({
       role: "context",
       priority: 350,
       source: "skills/*/SKILL.md",
       title: "Repository Skill Discovery",
     });
-    expect(prompts[3]?.content).toContain('"name": "release-operator"');
-    expect(prompts[3]?.content).toContain(
+    expect(prompts[2]?.content).toContain('"name": "release-operator"');
+    expect(prompts[2]?.content).toContain(
       '"description": "Use when release packaging needs validation."',
     );
-    expect(prompts[3]?.content).toContain('"source": "skills/release-operator/SKILL.md"');
-    expect(prompts[3]?.content).not.toContain("Long body");
+    expect(prompts[2]?.content).toContain('"source": "skills/release-operator/SKILL.md"');
+    expect(prompts[2]?.content).not.toContain("Long body");
   });
 
   it("inserts execution profile runtime constraints before the owner profile when provided", async () => {
@@ -277,22 +287,21 @@ describe("collectRunnerBasePrompts", () => {
     });
 
     expect(prompts.map((prompt) => prompt.id)).toEqual([
-      "base.framework_runner",
       "base.policy_gateway",
       "base.execution_profile",
       "base.owner_profile",
     ]);
-    expect(prompts[2]).toMatchObject({
+    expect(prompts[1]).toMatchObject({
       role: "policy",
       priority: 250,
       source: "runtime:execution-profile:conservative",
       title: "Execution Profile Runtime (conservative)",
     });
-    expect(prompts[2]?.content).toContain('"reasoning_effort": "high"');
-    expect(prompts[2]?.content).toContain('"text_verbosity": "medium"');
-    expect(prompts[2]?.content).toContain('"require_force": true');
-    expect(prompts[2]?.content).toContain('"terminate_grace_ms": 5000');
-    expect(prompts[2]?.resolution?.winner.layer).toBe("harness");
+    expect(prompts[1]?.content).toContain('"reasoning_effort": "high"');
+    expect(prompts[1]?.content).toContain('"text_verbosity": "medium"');
+    expect(prompts[1]?.content).toContain('"require_force": true');
+    expect(prompts[1]?.content).toContain('"terminate_grace_ms": 5000');
+    expect(prompts[1]?.resolution?.winner.layer).toBe("harness");
   });
 
   it("adds recipe-aware prompt blocks after framework, policy, and owner prompts", async () => {
@@ -358,7 +367,6 @@ describe("collectRunnerBasePrompts", () => {
     });
 
     expect(prompts.map((prompt) => prompt.id)).toEqual([
-      "base.framework_runner",
       "base.policy_gateway",
       "base.owner_profile",
       "project.skills_index",
@@ -367,15 +375,15 @@ describe("collectRunnerBasePrompts", () => {
       "recipe.skill.RECIPE_SKILL",
       "recipe.tools_summary",
     ]);
-    expect(prompts[4]?.content).toContain('"goal": "Preview installed tasks."');
-    expect(prompts[5]?.source).toBe(".agentplane/recipes/viewer/agents/recipe.md");
-    expect(prompts[5]?.content).toContain("Use recipe local policy.");
+    expect(prompts[3]?.content).toContain('"goal": "Preview installed tasks."');
+    expect(prompts[4]?.source).toBe(".agentplane/recipes/viewer/agents/recipe.md");
+    expect(prompts[4]?.content).toContain("Use recipe local policy.");
+    expect(prompts[4]?.resolution?.winner.layer).toBe("extension");
+    expect(prompts[4]?.resolution?.conflicts[0]?.source).toBe("recipe:viewer:agent:RECIPE_AGENT");
+    expect(prompts[5]?.source).toBe(".agentplane/recipes/viewer/skills/analysis.md");
+    expect(prompts[5]?.content).toContain("Inspect bundle.");
     expect(prompts[5]?.resolution?.winner.layer).toBe("extension");
-    expect(prompts[5]?.resolution?.conflicts[0]?.source).toBe("recipe:viewer:agent:RECIPE_AGENT");
-    expect(prompts[6]?.source).toBe(".agentplane/recipes/viewer/skills/analysis.md");
-    expect(prompts[6]?.content).toContain("Inspect bundle.");
-    expect(prompts[6]?.resolution?.winner.layer).toBe("extension");
-    expect(prompts[7]?.content).toContain('"entrypoint": "tools/run.js"');
+    expect(prompts[6]?.content).toContain('"entrypoint": "tools/run.js"');
 
     const graph = runnerPromptBlocksToModuleGraph(prompts);
     expect(compileRunnerPromptModuleGraph(graph)).toEqual(prompts);

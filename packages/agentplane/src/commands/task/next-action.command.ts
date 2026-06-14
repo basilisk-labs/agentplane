@@ -209,10 +209,12 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
         },
         {
           label: "executor_context",
-          value:
-            `executor=${operatorGuidance.executorContext.executor} ` +
-            `runner_route_active=${String(operatorGuidance.executorContext.runnerRouteActive)} ` +
-            `instruction=${operatorGuidance.executorContext.instruction}`,
+          value: operatorGuidance.executorContext.runnerRouteActive
+            ? `executor=${operatorGuidance.executorContext.executor} ` +
+              `runner_route_active=true ` +
+              `instruction=${operatorGuidance.executorContext.instruction}`
+            : `executor=${operatorGuidance.executorContext.executor} ` +
+              `instruction=${operatorGuidance.executorContext.instruction}`,
         },
         {
           label: "executor_warning",
