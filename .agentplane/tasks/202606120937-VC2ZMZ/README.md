@@ -1,10 +1,11 @@
 ---
 id: "202606120937-VC2ZMZ"
 title: "Bound pre-push fast CI in git hooks"
-status: "DOING"
+result_summary: "Merged via PR #4511."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts"
   findings:
     - "No blocking findings. Standard pre-push now blocks broad full-fast selectors and unknown changed-file scopes before local checks; focused tests cover both paths; format, lint, hotspot baseline, policy routing, and focused vitest passed."
-commit: null
+commit:
+  hash: "61df9f2f72b2816de1787bc6cb0c1493858b6980"
+  message: "Merge pull request #4511 from basilisk-labs/task/202606120937-VC2ZMZ/bound-pre-push-fast-ci-in-git-hooks"
 comments:
   -
     author: "CODER"
     body: "Start: bound managed pre-push hook execution so broad local CI classifications no longer hang git push before diagnostics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4511 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified review-thread repair for unknown pre-push scopes. Checks passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts (85 tests), bunx eslint scripts/checks/run-pre-push-hook.mjs packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts, bun run hotspots:check, bun run format:check, node .agentplane/policy/check-routing.mjs."
+  -
+    type: "status"
+    at: "2026-06-14T16:33:37.666Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4511 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-12T10:01:20.983Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-14T16:33:37.672Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent git pre-push hooks from running the full-fast local CI lane when the fast selector classifies a push as broad. The hook should fail quickly with an actionable diagnostic or route to a bounded hook-safe lane, instead of hanging until signal 9/timeout. Preserve full-fast for explicit local CI invocations."
 sections:
   Summary: |-

@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-14T16:32:52Z",
   "base": "main",
   "branch": "task/202606120937-VC2ZMZ/bound-pre-push-fast-ci-in-git-hooks",
   "created_at": "2026-06-12T09:40:00.939Z",
   "diffstat_sha256": "sha256:58572bc9d8b0b9ee2763df51814758f65920eedc2f9ab537dcd0dc6b61c0bdff",
   "last_verified_at": "2026-06-12T10:01:20.711Z",
   "last_verified_diffstat_sha256": "sha256:58572bc9d8b0b9ee2763df51814758f65920eedc2f9ab537dcd0dc6b61c0bdff",
+  "merge_commit": "61df9f2f72b2816de1787bc6cb0c1493858b6980",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-14T16:32:52Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606120937-VC2ZMZ",
-  "updated_at": "2026-06-12T09:40:00.939Z",
+  "updated_at": "2026-06-14T16:32:52Z",
   "verify": {
     "status": "pass"
   }
