@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-14T16:42:50Z",
   "base": "main",
   "branch": "task/202606121018-XS41ZV/precommit-signal9-shim",
   "created_at": "2026-06-12T10:19:56.321Z",
   "diffstat_sha256": "sha256:9e086badb0df22a6b0d93b93d415eb031f51519746b17de4701cdcacddcd9a73",
   "last_verified_at": "2026-06-12T10:31:07.548Z",
   "last_verified_diffstat_sha256": "sha256:9e086badb0df22a6b0d93b93d415eb031f51519746b17de4701cdcacddcd9a73",
+  "merge_commit": "d1b4bd4362d1bfa194adeaa04cc035abd30633c4",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-14T16:42:50Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606121018-XS41ZV",
-  "updated_at": "2026-06-12T10:19:56.321Z",
+  "updated_at": "2026-06-14T16:42:50Z",
   "verify": {
     "status": "pass"
   }
