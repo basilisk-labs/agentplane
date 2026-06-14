@@ -1,10 +1,11 @@
 ---
 id: "202606121018-XS41ZV"
 title: "Diagnose pre-commit hook signal 9 runtime"
-status: "DOING"
+result_summary: "Merged via PR #4512."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - "packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts"
   findings:
     - "No blocking findings. Timeout-triggered kills and independent runner signal exits now produce distinct reason codes, and focused shim tests verify both paths."
-commit: null
+commit:
+  hash: "d1b4bd4362d1bfa194adeaa04cc035abd30633c4"
+  message: "Merge pull request #4512 from basilisk-labs/task/202606121018-XS41ZV/precommit-signal9-shim"
 comments:
   -
     author: "CODER"
     body: "Start: diagnose the pre-commit signal-9 hook runtime by converting raw child SIGKILL exits in the managed hook shim into actionable non-signal hook failures, then verify with focused shim tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4512 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,9 +70,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified review-thread repair for timeout vs runner-signal diagnostics. Checks passed: bunx prettier --write touched shim files, bunx vitest run packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts (5 tests), bunx eslint packages/agentplane/src/commands/shared/hook-shim-template.ts packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts, node .agentplane/policy/check-routing.mjs. Timeout path now preserves only reason_code=hook_shim_timeout; independent killed runner path emits reason_code=hook_runner_signal."
+  -
+    type: "status"
+    at: "2026-06-14T16:43:44.425Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4512 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-12T10:31:08.403Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-14T16:43:44.431Z"
+doc_updated_by: "INTEGRATOR"
 description: "Diagnose and fix local pre-commit hook signal 9 failures in the AgentPlane hook shim/runtime path without weakening verification."
 sections:
   Summary: |-
