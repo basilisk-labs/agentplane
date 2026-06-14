@@ -1,10 +1,11 @@
 ---
 id: "202606141629-3KVKMY"
 title: "Add DeepWiki auto-sync badge"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - ".agentplane/tasks/202606141629-3KVKMY/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "cec61490b8a094cb60db5a6459d883bc01a9a597"
+  message: "🚧 3KVKMY task: record verification evidence"
 comments:
   -
     author: "CODER"
     body: "Start: Adding the DeepWiki README badge requested in GitHub issue #4513, limited to README.md and task evidence for docs-only verification."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -65,8 +71,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: README.md contains the exact Ask DeepWiki badge linking to https://deepwiki.com/basilisk-labs/agentplane; node .agentplane/policy/check-routing.mjs passed; agentplane doctor passed with only pre-existing DONE task commit metadata warnings; DeepWiki project page and badge.svg returned HTTP 200."
+  -
+    type: "status"
+    at: "2026-06-14T16:40:21.970Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-06-14T16:37:05.108Z"
+doc_updated_at: "2026-06-14T16:40:21.971Z"
 doc_updated_by: "CODER"
 description: "Add DeepWiki auto-sync badge"
 sections:
@@ -150,6 +163,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "61ff92feb085c0aad99dbee5d0ce3e4baab14fb0"
+    message: "🚧 3KVKMY task: add DeepWiki README badge"
 id_source: "generated"
 ---
 ## Summary

@@ -5,6 +5,12 @@
   "diffstat_sha256": "sha256:5183f92917fbe1f0ab5333fb64d89de5004dc327baec40f6ae36d8b47e03558a",
   "last_verified_at": "2026-06-14T16:37:04.882Z",
   "last_verified_diffstat_sha256": "sha256:5183f92917fbe1f0ab5333fb64d89de5004dc327baec40f6ae36d8b47e03558a",
+  "pre_merge_closure": {
+    "basis_commit": "cec61490b8a094cb60db5a6459d883bc01a9a597",
+    "branch": "task/202606141629-3KVKMY/add-deepwiki-auto-sync-badge",
+    "recorded_at": "2026-06-14T16:40:22.011Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "task_id": "202606141629-3KVKMY",
   "updated_at": "2026-06-14T16:30:28.150Z",
