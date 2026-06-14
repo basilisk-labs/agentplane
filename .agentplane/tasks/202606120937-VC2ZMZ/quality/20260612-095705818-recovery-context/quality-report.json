@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202606120937-VC2ZMZ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-12T09:57:05.818Z",
+  "verdict": "pass",
+  "summary": "Quality review passed after hosted verify-contract repair.",
+  "evaluated_sha": "0757fb1125acce823e6e62f421126da4c30cebe0",
+  "blueprint_digest": "e4e621ae12f0e7362b3444c9a836aee1bac89fdbf2adf2417877d7530efd9f94",
+  "findings": [
+    "No blocking findings. The full-fast pre-push guard is covered in a focused test file, hotspot baseline passes without expansion, and equivalent manual checks passed after hook runtime signal 9."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606120937-VC2ZMZ/README.md",
+    "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts",
+    "scripts/checks/run-pre-push-hook.mjs"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

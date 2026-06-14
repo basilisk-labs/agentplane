@@ -12,6 +12,7 @@ import {
   resolveDefaultBaseRef,
   selectBranchDiffRange,
 } from "../lib/pre-push-scope.mjs";
+import { selectFastCiPlan } from "../lib/local-ci-selection.mjs";
 
 function pushUnique(entries, value) {
   const candidate = String(value ?? "").trim();
@@ -220,6 +221,32 @@ function failIfPollutedReleaseGitConfig() {
     "This indicates repository config pollution, not a release payload failure.",
     "Restore the checkout git config before retrying release verification.",
   ]);
+}
+
+function failIfStandardPrePushRequiresFullFast({ updates, changedFiles, diffRange }) {
+  if (changedFiles.length === 0) {
+    if (updates.length === 0) return;
+    fail("pre-push blocked: changed-file scope could not be bounded for this push.", [
+      "Standard git hooks cannot safely run the broad fast lane for unknown push scopes.",
+      "Run the broad validation explicitly, then push with --no-verify after it passes:",
+      "  bun run ci:local:fast",
+      "This keeps git push hooks bounded and avoids hook watchdog/SSH signal-9 failures.",
+    ]);
+  }
+
+  const plan = selectFastCiPlan(changedFiles);
+  if (plan.kind !== "full-fast") return;
+
+  const rangeText = diffRange ? `${diffRange.from}..${diffRange.to}` : "<push-range>";
+  fail(
+    "pre-push blocked: changed files require the full-fast local CI lane, which is too broad for a git hook.",
+    [
+      `selector=${plan.kind} reason=${plan.reason}`,
+      "Run the broad validation explicitly, then push with --no-verify after it passes:",
+      `  AGENTPLANE_FAST_CHANGED_FILES="$(git diff --name-only ${rangeText})" bun run ci:local:fast`,
+      "This keeps git push hooks bounded and avoids hook watchdog/SSH signal-9 failures.",
+    ],
+  );
 }
 
 const TASK_ID_RE = /\b\d{12}-[A-Z0-9]{6}\b/;
@@ -503,6 +530,9 @@ function main() {
     newBranchFallbackRef: resolveDefaultBaseRef(),
   });
   enforceTaskBoundOutgoingCommits(diffRange);
+  if (!isReleasePush) {
+    failIfStandardPrePushRequiresFullFast({ updates, changedFiles, diffRange });
+  }
   const key = proofKey({ updates, mode, ciScript, changedFiles });
   if (!trackedChangesShort()) {
     const proof = readReusableProof(key);
