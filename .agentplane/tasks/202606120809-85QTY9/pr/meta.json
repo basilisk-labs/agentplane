@@ -1,0 +1,20 @@
+{
+  "base": "main",
+  "branch": "task/202606120809-85QTY9/reduce-branch-pr-commit-count-for-single-task-fi",
+  "created_at": "2026-06-12T08:11:34.867Z",
+  "diffstat_sha256": "sha256:74e05f0a9f693e13d444a7afe404b14eae0fd9df372388f0eb5e57cb9184ae45",
+  "last_verified_at": "2026-06-12T08:28:39.987Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pre_merge_closure": {
+    "basis_commit": "bb0e9f766641a835af4f02c22e5756b0d708e4f0",
+    "branch": "task/202606120809-85QTY9/reduce-branch-pr-commit-count-for-single-task-fi",
+    "recorded_at": "2026-06-12T09:26:11.797Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "task_id": "202606120809-85QTY9",
+  "updated_at": "2026-06-12T08:11:34.867Z",
+  "verify": {
+    "status": "pass"
+  }
+}

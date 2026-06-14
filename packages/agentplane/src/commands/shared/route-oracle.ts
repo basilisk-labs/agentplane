@@ -69,6 +69,8 @@ function recommendedRoleFor(opts: {
   ) {
     return "CODER";
   }
+  if (opts.nextAction.code === "run_quality_review") return "EVALUATOR";
+  if (opts.nextAction.code === "record_pre_merge_closure") return "CODER";
   if (
     opts.nextAction.code === "wait_hosted_checks" ||
     opts.nextAction.code === "open_close_tail" ||
@@ -99,6 +101,9 @@ function evidenceMissingFor(opts: {
     if (blocker.code === "close_tail_missing") missing.add("close_tail_pr");
     if (blocker.code === "runner_alive") missing.add("runner_terminal_state");
     if (blocker.code === "dirty_task_artifacts") missing.add("task_artifact_cleanup_commit");
+    if (blocker.code === "quality_review_missing") missing.add("evaluator_quality_review");
+    if (blocker.code === "quality_review_stale") missing.add("fresh_evaluator_quality_review");
+    if (blocker.code === "pre_merge_closure_missing") missing.add("pre_merge_closure");
     if (blocker.code === "missing_included_batch_metadata") {
       missing.add("structured_branch_pr_batch_metadata");
     }
@@ -109,6 +114,7 @@ function evidenceMissingFor(opts: {
 function verificationCandidateFor(nextAction: RouteBatchNextAction): string | null {
   if (nextAction.code === "verify_or_update_pr") return "agentplane pr check <task-id>";
   if (nextAction.code.includes("verify")) return nextAction.command;
+  if (nextAction.code === "run_quality_review") return nextAction.command;
   if (nextAction.code === "update_pr_artifacts") return "agentplane pr check <task-id>";
   if (nextAction.code === "wait_hosted_checks") return "agentplane pr check <task-id>";
   return null;
@@ -159,6 +165,12 @@ function automationBoundaryMustNotFor(code: string): string[] {
     verify_or_update_pr: [
       "do not repair stale PR artifacts with manual edits or amend commits; agentplane pr update/pr check own PR artifact freshness",
       "do not amend only to align quality_review.evaluated_sha; rerun evaluator on current HEAD, then recompute the route",
+    ],
+    run_quality_review: [
+      "do not publish or queue the PR before quality_review is recorded for the current implementation head",
+    ],
+    record_pre_merge_closure: [
+      "do not queue integration before the pre-merge closure marker is committed on the task branch",
     ],
     wait_hosted_checks: [
       "do not merge/rebase/squash the task branch manually; integrate queue/integrate own the serialized merge lane",
@@ -355,6 +367,18 @@ export function deriveRouteOracle(opts: {
   if (code === "update_pr_artifacts" || code === "verify_or_update_pr") {
     return buildOracle(opts, {
       phase: code === "update_pr_artifacts" ? "pr_artifacts_stale" : "verify_or_pr_update",
+      authoritativeCheckout: "task_worktree",
+    });
+  }
+  if (code === "run_quality_review") {
+    return buildOracle(opts, {
+      phase: "quality_review_needed",
+      authoritativeCheckout: "task_worktree",
+    });
+  }
+  if (code === "record_pre_merge_closure") {
+    return buildOracle(opts, {
+      phase: "pre_merge_closure_needed",
       authoritativeCheckout: "task_worktree",
     });
   }

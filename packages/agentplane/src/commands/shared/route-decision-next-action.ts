@@ -211,11 +211,40 @@ export function deriveNextAction(opts: {
       requiresApproval: false,
     };
   }
+  if (
+    opts.blockers.some(
+      (blocker) =>
+        blocker.code === "quality_review_missing" || blocker.code === "quality_review_stale",
+    )
+  ) {
+    return {
+      code: "run_quality_review",
+      command:
+        `agentplane evaluator run ${id} --verdict pass --summary "Quality review passed." ` +
+        `--finding "No blocking findings." --evidence .agentplane/tasks/${id}/README.md`,
+      summary:
+        "record EVALUATOR quality review before publishing or integrating the branch_pr task",
+      requiresApproval: false,
+    };
+  }
   if (opts.prFlow?.pr.state === "not_found") {
     return {
       code: "open_pr",
       command: `agentplane pr open ${id} --author ${opts.task.owner}`,
       summary: "publish/link the task PR",
+      requiresApproval: false,
+    };
+  }
+  if (opts.blockers.some((blocker) => blocker.code === "pre_merge_closure_missing")) {
+    const commit = opts.prFlow?.branch.headSha ?? opts.resume.head_sha ?? "HEAD";
+    return {
+      code: "record_pre_merge_closure",
+      command:
+        `agentplane finish ${id} --author ${opts.task.owner} ` +
+        `--body "Verified: pre-merge closure packet is ready for the task PR." ` +
+        `--result "pre-merge closure" --commit ${commit} --pre-merge-closure`,
+      summary:
+        "record task DONE and pre-merge closure on the task branch before queueing integration",
       requiresApproval: false,
     };
   }

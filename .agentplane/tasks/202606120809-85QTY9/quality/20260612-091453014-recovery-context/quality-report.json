@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202606120809-85QTY9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-12T09:14:53.014Z",
+  "verdict": "pass",
+  "summary": "Quality review passed after lint repair.",
+  "evaluated_sha": "541d6680602de7ffaa069210e11efbd7d4d4bb65",
+  "blueprint_digest": "6e4812a08d29086cee97f6976e0519ae25c0570dcf043905b54fe69fabce383c",
+  "findings": [
+    "No blocking findings after rerunning lint, typecheck, and route quality tests."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606120809-85QTY9/README.md",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts",
+    "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
