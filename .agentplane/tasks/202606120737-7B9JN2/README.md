@@ -1,10 +1,11 @@
 ---
 id: "202606120737-7B9JN2"
 title: "Hide runner from default agent prompts"
-status: "DOING"
+result_summary: "Merged via PR #4508."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +28,16 @@ verification:
   updated_by: "CODER"
   note: "Verified merge HEAD after rebasing on origin/main: bun run format:check; bun run lint:core; focused vitest route-guidance/base-prompts/route-decision/help-snap/command-catalog suite; bun run --filter=agentplane build; node .agentplane/policy/check-routing.mjs."
   attempts: 0
-commit: null
+commit:
+  hash: "9efb9144f163f3ccc91c87481832786ae78565ee"
+  message: "Merge pull request #4508 from basilisk-labs/task/202606120737-7B9JN2/hide-runner-default-prompts"
 comments:
   -
     author: "DOCS"
     body: "Start: hide runner execution guidance from default agent prompt and route surfaces while preserving the explicit parallel-codex runner exception."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4508 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified merge HEAD after rebasing on origin/main: bun run format:check; bun run lint:core; focused vitest route-guidance/base-prompts/route-decision/help-snap/command-catalog suite; bun run --filter=agentplane build; node .agentplane/policy/check-routing.mjs."
+  -
+    type: "status"
+    at: "2026-06-14T16:53:30.995Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4508 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-12T08:28:03.613Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-06-14T16:53:31.002Z"
+doc_updated_by: "INTEGRATOR"
 description: "Keep runner code in place but remove default public/agent prompt guidance that makes agents aware of or able to launch the runner. Preserve runner visibility only when the parallel-codex recipe is explicitly active."
 sections:
   Summary: |-
