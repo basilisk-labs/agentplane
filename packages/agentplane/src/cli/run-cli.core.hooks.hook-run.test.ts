@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { execFile, execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
 import {
   chmod,
   mkdir,
