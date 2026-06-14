@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202606141629-3KVKMY/add-deepwiki-auto-sync-badge",
+  "created_at": "2026-06-14T16:30:28.150Z",
+  "diffstat_sha256": "sha256:5183f92917fbe1f0ab5333fb64d89de5004dc327baec40f6ae36d8b47e03558a",
+  "last_verified_at": "2026-06-14T16:31:35.014Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202606141629-3KVKMY",
+  "updated_at": "2026-06-14T16:30:28.150Z",
+  "verify": {
+    "status": "pass"
+  }
+}

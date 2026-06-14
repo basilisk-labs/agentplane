@@ -20,6 +20,7 @@ Operationalize AI-assisted engineering with reproducible local workflow records.
 [![GitHub stars](https://img.shields.io/github/stars/basilisk-labs/agentplane?style=flat)](https://github.com/basilisk-labs/agentplane/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node.js 24+](https://img.shields.io/badge/Node.js-24%2B-3c873a.svg)](docs/user/prerequisites.mdx)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/basilisk-labs/agentplane)
 
 [![SLSA v1 provenance](https://img.shields.io/badge/SLSA-v1-success)](https://registry.npmjs.org/-/npm/v1/attestations/agentplane@latest)
 [![Trusted publisher](https://img.shields.io/badge/npm-trusted%20publisher-blue)](https://docs.npmjs.com/generating-provenance-statements)
