@@ -80,6 +80,6 @@
   },
   "devDependencies": {
     "@agentplane/testkit": "0.0.0",
-    "@types/yauzl": "^3.3.0"
+    "@types/yauzl": "^3.4.0"
   }
 }
