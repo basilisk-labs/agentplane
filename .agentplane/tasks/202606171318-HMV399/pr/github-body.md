@@ -19,8 +19,9 @@ Implement platform sync for major agent platforms by projecting AgentPlane disci
 - Note:
 
 ```text
-Verified: route loop fix, OPEN PR metadata persistence, platform registry split, typecheck, hotspot
-contract, and focused platform/route tests pass on final branch head.
+Verified: addressed PR review by skipping self-target policy gateway projections and returning both
+Windsurf init sync paths; focused platform/init tests, typecheck, format, lint, hotspots, and
+routing checks pass.
 ```
 - Canonical workflow state lives in the task README.
 
