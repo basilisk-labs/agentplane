@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202606171318-HMV399",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-17T16:18:46.442Z",
+  "verdict": "pass",
+  "summary": "Quality review passed after PR metadata persisted open GitHub identity.",
+  "evaluated_sha": "f5b406dd377b4f09d2a42b3dce60c1a0d25a4226",
+  "blueprint_digest": "b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f",
+  "findings": [
+    "No blocking findings."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606171318-HMV399/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
