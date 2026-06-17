@@ -23,7 +23,7 @@ export type PlatformRenderContext = {
   roleGuideText: string;
 };
 
-export type PlatformProjection = {
+type PlatformProjection = {
   path: string;
   description: string;
   render: (ctx: PlatformRenderContext) => string;
