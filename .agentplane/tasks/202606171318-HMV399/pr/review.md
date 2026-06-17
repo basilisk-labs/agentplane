@@ -24,20 +24,22 @@ Created: 2026-06-17T13:19:36.764Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-06-17T13:19:36.764Z
+- Updated: 2026-06-17T16:17:44.421Z
 - Branch: task/202606171318-HMV399/platform-sync
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
  .../src/cli/run-cli.core.platform-sync.test.ts     | 205 +++++++
- .../src/cli/run-cli.core.route-decision.test.ts    | 108 ++++
+ .../src/cli/run-cli.core.route-decision.test.ts    | 104 ++++
  .../src/cli/run-cli/command-catalog/core.ts        |  14 +
  .../src/cli/run-cli/command-loaders/core.ts        |   3 +
  .../agentplane/src/cli/run-cli/commands/ide.ts     | 150 +----
  .../src/cli/run-cli/commands/init/ide-sync.ts      |  11 +-
  .../src/cli/run-cli/commands/platform.ts           | 662 +++++++++++++++++++++
- .../src/commands/shared/route-decision.ts          |   9 +-
- 8 files changed, 1014 insertions(+), 148 deletions(-)
+ .../src/commands/pr/internal/sync-github.test.ts   |  21 +
+ .../src/commands/pr/internal/sync-github.ts        |   2 +-
+ .../src/commands/shared/route-decision.ts          |  14 +-
+ 10 files changed, 1036 insertions(+), 150 deletions(-)
 ```
 
 </details>

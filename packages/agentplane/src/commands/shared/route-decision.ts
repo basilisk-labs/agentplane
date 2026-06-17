@@ -1,4 +1,4 @@
-import { findWorktreeForBranch } from "@agentplaneorg/core/git";
+import { findWorktreeForBranch, gitRevParse } from "@agentplaneorg/core/git";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -286,6 +286,9 @@ async function resolveLocalRecordedCloseFlow(opts: {
     const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.task.id);
     const trimmedBase = meta.base?.trim();
     const base = trimmedBase && trimmedBase.length > 0 ? trimmedBase : "main";
+    const branchHeadSha = meta.branch
+      ? await gitRevParse(opts.ctx.resolvedProject.gitRoot, [meta.branch]).catch(() => null)
+      : null;
     if (meta.status === "OPEN") {
       const preMergeClosed = hasClosedPreMergeClosureMarker(meta);
       return {
@@ -296,7 +299,7 @@ async function resolveLocalRecordedCloseFlow(opts: {
         },
         branch: {
           name: meta.branch ?? null,
-          headSha: meta.head_sha ?? null,
+          headSha: branchHeadSha ?? meta.head_sha ?? null,
           metaHeadSha: meta.head_sha ?? null,
         },
         pr: {
