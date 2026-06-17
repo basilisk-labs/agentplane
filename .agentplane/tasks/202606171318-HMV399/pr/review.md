@@ -13,7 +13,7 @@ Created: 2026-06-17T13:19:36.764Z
 ## Verification
 
 - State: ok
-- Note: Verified: refreshed generated CLI reference for platform commands after review fixes; focused tests, typecheck, docs:cli:check, format, lint, hotspots, and routing checks pass.
+- Note: Verified: removed unused exported PlatformProjection type; knip:check, typecheck, format, lint, and hotspots pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

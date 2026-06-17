@@ -19,8 +19,8 @@ Implement platform sync for major agent platforms by projecting AgentPlane disci
 - Note:
 
 ```text
-Verified: refreshed generated CLI reference for platform commands after review fixes; focused tests,
-typecheck, docs:cli:check, format, lint, hotspots, and routing checks pass.
+Verified: removed unused exported PlatformProjection type; knip:check, typecheck, format, lint, and
+hotspots pass.
 ```
 - Canonical workflow state lives in the task README.
 
