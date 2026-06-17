@@ -6,7 +6,7 @@ Created: 2026-06-17T13:19:36.764Z
 
 - Task: `202606171318-HMV399`
 - Title: Add platform sync for agent instruction surfaces
-- Status: DOING
+- Status: DONE
 - Branch: `task/202606171318-HMV399/platform-sync`
 - Canonical task record: `.agentplane/tasks/202606171318-HMV399/README.md`
 
@@ -29,17 +29,18 @@ Created: 2026-06-17T13:19:36.764Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.platform-sync.test.ts     | 205 +++++++
- .../src/cli/run-cli.core.route-decision.test.ts    | 104 ++++
+ .../src/cli/run-cli.core.platform-sync.test.ts     | 205 ++++++++++
+ ...li.core.route-decision.pr-open-metadata.test.ts | 152 ++++++++
  .../src/cli/run-cli/command-catalog/core.ts        |  14 +
  .../src/cli/run-cli/command-loaders/core.ts        |   3 +
- .../agentplane/src/cli/run-cli/commands/ide.ts     | 150 +----
- .../src/cli/run-cli/commands/init/ide-sync.ts      |  11 +-
- .../src/cli/run-cli/commands/platform.ts           | 662 +++++++++++++++++++++
- .../src/commands/pr/internal/sync-github.test.ts   |  21 +
+ .../agentplane/src/cli/run-cli/commands/ide.ts     | 150 +-------
+ .../src/cli/run-cli/commands/init/ide-sync.ts      |  12 +-
+ .../src/cli/run-cli/commands/platform-registry.ts  | 253 +++++++++++++
+ .../src/cli/run-cli/commands/platform.ts           | 416 +++++++++++++++++++++
+ .../src/commands/pr/internal/sync-github.test.ts   |  21 ++
  .../src/commands/pr/internal/sync-github.ts        |   2 +-
  .../src/commands/shared/route-decision.ts          |  14 +-
- 10 files changed, 1036 insertions(+), 150 deletions(-)
+ 11 files changed, 1092 insertions(+), 150 deletions(-)
 ```
 
 </details>
