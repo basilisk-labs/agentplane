@@ -241,7 +241,8 @@ const PLATFORM_INTEGRATIONS: Record<PlatformId, PlatformIntegration> = {
         render: (ctx) => renderFullProjection(ctx),
       },
     ],
-    doctorHint: "Open Cascade Customizations > Rules and confirm the AgentPlane workspace rule is enabled.",
+    doctorHint:
+      "Open Cascade Customizations > Rules and confirm the AgentPlane workspace rule is enabled.",
   },
   cline: {
     id: "cline",
@@ -276,7 +277,8 @@ const PLATFORM_INTEGRATIONS: Record<PlatformId, PlatformIntegration> = {
   openclaw: {
     id: "openclaw",
     label: "OpenClaw",
-    summary: "Native per-agent workspace AGENTS.md; external AgentPlane OpenClaw plugin owns deeper integration.",
+    summary:
+      "Native per-agent workspace AGENTS.md; external AgentPlane OpenClaw plugin owns deeper integration.",
     surfaces: ["native", "external"],
     nativeSources: ["AGENTS.md", "SOUL.md", "USER.md"],
     projections: [],
@@ -284,7 +286,8 @@ const PLATFORM_INTEGRATIONS: Record<PlatformId, PlatformIntegration> = {
       repository: "https://github.com/basilisk-labs/agentplane-openclaw-plugin",
       note: "Install the OpenClaw plugin for platform-native lifecycle integration; keep AgentPlane discipline in each agent workspace AGENTS.md.",
     },
-    doctorHint: "Verify the target OpenClaw agent workspace contains AGENTS.md and the plugin is installed when lifecycle integration is needed.",
+    doctorHint:
+      "Verify the target OpenClaw agent workspace contains AGENTS.md and the plugin is installed when lifecycle integration is needed.",
   },
   hermes: {
     id: "hermes",
@@ -297,7 +300,8 @@ const PLATFORM_INTEGRATIONS: Record<PlatformId, PlatformIntegration> = {
       repository: "https://github.com/basilisk-labs/agentplane-hermes-plugin",
       note: "Install the Hermes plugin for worker-lane integration; keep AgentPlane task truth in the repository.",
     },
-    doctorHint: "Verify the Hermes plugin is installed and repository AGENTS.md is visible to spawned workers.",
+    doctorHint:
+      "Verify the Hermes plugin is installed and repository AGENTS.md is visible to spawned workers.",
   },
 };
 
@@ -378,17 +382,17 @@ export const runPlatform: CommandHandler<GroupCommandParsed> = async (_ctx, p) =
   });
 };
 
-export const runPlatformList: CommandHandler<Record<string, never>> = async (ctx) => {
+export const runPlatformList: CommandHandler<Record<string, never>> = (ctx) => {
   const rows = PLATFORM_IDS.map((id) => toPlatformSummary(PLATFORM_INTEGRATIONS[id]));
   if (ctx.outputMode === "json") {
     output.json({ platforms: rows });
   } else {
     output.lines(rows.map((row) => `${row.id}\t${row.surfaces.join(",")}\t${row.summary}`));
   }
-  return 0;
+  return Promise.resolve(0);
 };
 
-export const runPlatformExplain: CommandHandler<PlatformExplainParsed> = async (ctx, parsed) => {
+export const runPlatformExplain: CommandHandler<PlatformExplainParsed> = (ctx, parsed) => {
   const platform = PLATFORM_INTEGRATIONS[parsed.platform];
   if (ctx.outputMode === "json") {
     output.json(toPlatformDetail(platform));
@@ -400,23 +404,26 @@ export const runPlatformExplain: CommandHandler<PlatformExplainParsed> = async (
         { label: "Summary", value: platform.summary },
         { label: "Surfaces", value: platform.surfaces.join(", ") },
         { label: "Native sources", value: platform.nativeSources.join(", ") },
-        { label: "Generated targets", value: platform.projections.map((p) => p.path).join(", ") || "none" },
+        {
+          label: "Generated targets",
+          value: platform.projections.map((p) => p.path).join(", ") || "none",
+        },
         { label: "External adapter", value: platform.externalAdapter?.repository ?? "none" },
       ],
       { header: "Platform integration" },
     );
   }
-  return 0;
+  return Promise.resolve(0);
 };
 
-export const runPlatformDoctor: CommandHandler<PlatformExplainParsed> = async (ctx, parsed) => {
+export const runPlatformDoctor: CommandHandler<PlatformExplainParsed> = (ctx, parsed) => {
   const platform = PLATFORM_INTEGRATIONS[parsed.platform];
   if (ctx.outputMode === "json") {
     output.json({ platform: platform.id, hint: platform.doctorHint });
   } else {
     output.line(`${platform.id}: ${platform.doctorHint}`);
   }
-  return 0;
+  return Promise.resolve(0);
 };
 
 export function makeRunPlatformSyncHandler(deps: RunDeps): CommandHandler<PlatformSyncParsed> {
@@ -454,14 +461,14 @@ export async function syncPlatforms(opts: {
   source: string;
   dry_run: boolean;
   platforms: PlatformId[];
-  targets: Array<{
+  targets: {
     platform: PlatformId;
     path: string;
     description: string;
     status: "planned" | "written";
-  }>;
-  native_sources: Array<{ platform: PlatformId; sources: string[] }>;
-  external_adapters: Array<{ platform: PlatformId; repository: string; note: string }>;
+  }[];
+  native_sources: { platform: PlatformId; sources: string[] }[];
+  external_adapters: { platform: PlatformId; repository: string; note: string }[];
 }> {
   const resolved = await opts.deps.getResolvedProject("platform sync");
   const gateway = await resolvePolicyGatewayForRepo({
@@ -477,14 +484,14 @@ export async function syncPlatforms(opts: {
     roleGuideText,
   };
 
-  const targets: Array<{
+  const targets: {
     platform: PlatformId;
     path: string;
     description: string;
     status: "planned" | "written";
-  }> = [];
-  const native_sources: Array<{ platform: PlatformId; sources: string[] }> = [];
-  const external_adapters: Array<{ platform: PlatformId; repository: string; note: string }> = [];
+  }[] = [];
+  const native_sources: { platform: PlatformId; sources: string[] }[] = [];
+  const external_adapters: { platform: PlatformId; repository: string; note: string }[] = [];
 
   for (const platformId of opts.platforms) {
     const platform = PLATFORM_INTEGRATIONS[platformId];
@@ -521,10 +528,16 @@ export async function syncPlatforms(opts: {
   };
 }
 
-export function makeRunIdePlatformSyncHandler(deps: RunDeps): CommandHandler<{ ide?: "cursor" | "windsurf" }> {
+export function makeRunIdePlatformSyncHandler(
+  deps: RunDeps,
+): CommandHandler<{ ide?: "cursor" | "windsurf" }> {
   return async (ctx, parsed) => {
     const platforms: PlatformId[] =
-      parsed.ide === "cursor" ? ["cursor"] : parsed.ide === "windsurf" ? ["windsurf"] : ["cursor", "windsurf"];
+      parsed.ide === "cursor"
+        ? ["cursor"]
+        : parsed.ide === "windsurf"
+          ? ["windsurf"]
+          : ["cursor", "windsurf"];
     const result = await syncPlatforms({
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,

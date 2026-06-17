@@ -4,7 +4,7 @@ title: "Add platform sync for agent instruction surfaces"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-17T13:28:44.282Z"
+  updated_at: "2026-06-17T16:09:37.435Z"
   updated_by: "CODER"
-  note: "Implemented platform sync instruction-surface projections and verified targeted CLI behavior."
+  note: "Verified: platform sync lint fixes and branch_pr local open PR routing optimization pass targeted tests, lint, typecheck, policy routing, and dry-run platform smoke."
   attempts: 0
 quality_review:
   state: "pass"
@@ -58,8 +58,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented platform sync instruction-surface projections and verified targeted CLI behavior."
+  -
+    type: "verify"
+    at: "2026-06-17T16:09:37.435Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: platform sync lint fixes and branch_pr local open PR routing optimization pass targeted tests, lint, typecheck, policy routing, and dry-run platform smoke."
 doc_version: 3
-doc_updated_at: "2026-06-17T13:28:44.539Z"
+doc_updated_at: "2026-06-17T16:09:37.721Z"
 doc_updated_by: "CODER"
 description: "Implement platform sync for major agent platforms by projecting AgentPlane discipline into native instruction files, excluding runner integration."
 sections:
@@ -113,6 +119,36 @@ sections:
     - repeat_allowed: false
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-06-17T16:09:37.435Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: platform sync lint fixes and branch_pr local open PR routing optimization pass targeted tests, lint, typecheck, policy routing, and dry-run platform smoke.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-17T13:28:44.539Z, excerpt_hash=sha256:965e1c2363a04da781e5d56f59a03f483289bce0e7edfea23718ff8072a42acd
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606171318-HMV399-platform-sync/.agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json
+    - old_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+    - current_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606171318-HMV399
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane evaluator run 202606171318-HMV399 --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202606171318-HMV399/README.md
+    - diagnostic_command: agentplane evaluator run 202606171318-HMV399 --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202606171318-HMV399/README.md
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -201,6 +237,36 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-06-17T16:09:37.435Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: platform sync lint fixes and branch_pr local open PR routing optimization pass targeted tests, lint, typecheck, policy routing, and dry-run platform smoke.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-17T13:28:44.539Z, excerpt_hash=sha256:965e1c2363a04da781e5d56f59a03f483289bce0e7edfea23718ff8072a42acd
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606171318-HMV399-platform-sync/.agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json
+- old_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+- current_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606171318-HMV399
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane evaluator run 202606171318-HMV399 --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202606171318-HMV399/README.md
+- diagnostic_command: agentplane evaluator run 202606171318-HMV399 --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202606171318-HMV399/README.md
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
 
 <!-- END VERIFICATION RESULTS -->
 

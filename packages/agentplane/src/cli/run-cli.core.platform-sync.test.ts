@@ -39,6 +39,10 @@ async function writeAgentplaneFixture(root: string): Promise<void> {
 
 installRunCliIntegrationHarness();
 
+type PlatformListPayload = {
+  platforms: { id: string }[];
+};
+
 describe("platform sync", () => {
   it("lists platform instruction-surface integrations", async () => {
     const io = captureStdIO();
@@ -66,12 +70,9 @@ describe("platform sync", () => {
         exitCode: 0,
         hasData: true,
       });
-      expect(payload.data).toMatchObject({
-        platforms: expect.arrayContaining([
-          expect.objectContaining({ id: "codex" }),
-          expect.objectContaining({ id: "cline" }),
-        ]),
-      });
+      const data = payload.data as PlatformListPayload;
+      expect(data.platforms.some((platform) => platform.id === "codex")).toBe(true);
+      expect(data.platforms.some((platform) => platform.id === "cline")).toBe(true);
     } finally {
       io.restore();
     }
@@ -139,8 +140,12 @@ describe("platform sync", () => {
       const output = normalizeSlashes(io.stdout);
       expect(output).toContain("written\tclaude\tCLAUDE.md");
       expect(output).toContain("written\tcursor\t.cursor/rules/agentplane.mdc");
-      expect(output).toContain("external\topenclaw\thttps://github.com/basilisk-labs/agentplane-openclaw-plugin");
-      expect(output).toContain("external\thermes\thttps://github.com/basilisk-labs/agentplane-hermes-plugin");
+      expect(output).toContain(
+        "external\topenclaw\thttps://github.com/basilisk-labs/agentplane-openclaw-plugin",
+      );
+      expect(output).toContain(
+        "external\thermes\thttps://github.com/basilisk-labs/agentplane-hermes-plugin",
+      );
     } finally {
       io.restore();
     }
