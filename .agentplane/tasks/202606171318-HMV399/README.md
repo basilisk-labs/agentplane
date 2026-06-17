@@ -1,10 +1,11 @@
 ---
 id: "202606171318-HMV399"
 title: "Add platform sync for agent instruction surfaces"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - ".agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "3c628a8648b93106bf77b6463b3e2ad01b2ffa00"
+  message: "🚧 HMV399 task: record route quality review"
 comments:
   -
     author: "CODER"
     body: "Start: implement platform sync for instruction surfaces only, keep runner integration out of scope, preserve ide sync compatibility, and verify generated platform projections."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -64,8 +70,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: platform sync lint fixes and branch_pr local open PR routing optimization pass targeted tests, lint, typecheck, policy routing, and dry-run platform smoke."
+  -
+    type: "status"
+    at: "2026-06-17T16:20:27.580Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-06-17T16:09:37.721Z"
+doc_updated_at: "2026-06-17T16:20:27.581Z"
 doc_updated_by: "CODER"
 description: "Implement platform sync for major agent platforms by projecting AgentPlane discipline into native instruction files, excluding runner integration."
 sections:
@@ -176,6 +189,10 @@ sections:
     Scope: runtime platform registry and dry-run projection reporting.
       Impact: Verification covers declared acceptance checks for the platform sync implementation.
       Resolution: Ready for PR artifact creation and review.
+extensions:
+  implementation_commit:
+    hash: "f5b406dd377b4f09d2a42b3dce60c1a0d25a4226"
+    message: "🚧 HMV399 task: persist open PR route state"
 id_source: "generated"
 ---
 ## Summary

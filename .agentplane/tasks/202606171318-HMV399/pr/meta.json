@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:e64a2f19f1c1a247dca88ac22861942b56fde55020b55c64aeadb604a11c3de0",
   "pr_number": 4522,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4522",
+  "pre_merge_closure": {
+    "basis_commit": "3c628a8648b93106bf77b6463b3e2ad01b2ffa00",
+    "branch": "task/202606171318-HMV399/platform-sync",
+    "pr_number": 4522,
+    "recorded_at": "2026-06-17T16:20:27.629Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202606171318-HMV399",
