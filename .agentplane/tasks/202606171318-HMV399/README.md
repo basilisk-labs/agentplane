@@ -4,7 +4,7 @@ title: "Add platform sync for agent instruction surfaces"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -26,16 +26,16 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-17T16:18:00.574Z"
+  updated_at: "2026-06-17T16:18:46.442Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed after platform sync lint fixes and branch_pr route optimization."
-  evaluated_sha: "a3a04d0c60aa14a931f3a1e55e3d4276b2aa6313"
+  note: "Quality review passed after PR metadata persisted open GitHub identity."
+  evaluated_sha: "f5b406dd377b4f09d2a42b3dce60c1a0d25a4226"
   blueprint_digest: "b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f"
   evidence_refs:
     - ".agentplane/tasks/202606171318-HMV399/README.md"
-    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-161800574-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-161800574-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-161800574-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-161846442-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-161846442-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-161846442-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
