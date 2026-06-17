@@ -19,8 +19,8 @@ Implement platform sync for major agent platforms by projecting AgentPlane disci
 - Note:
 
 ```text
-Verified: platform sync lint fixes and branch_pr local open PR routing optimization pass targeted
-tests, lint, typecheck, policy routing, and dry-run platform smoke.
+Verified: route loop fix, OPEN PR metadata persistence, platform registry split, typecheck, hotspot
+contract, and focused platform/route tests pass on final branch head.
 ```
 - Canonical workflow state lives in the task README.
 

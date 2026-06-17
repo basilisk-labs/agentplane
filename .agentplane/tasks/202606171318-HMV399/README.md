@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -21,22 +21,22 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-17T16:09:37.435Z"
+  updated_at: "2026-06-17T17:16:58.362Z"
   updated_by: "CODER"
-  note: "Verified: platform sync lint fixes and branch_pr local open PR routing optimization pass targeted tests, lint, typecheck, policy routing, and dry-run platform smoke."
+  note: "Verified: route loop fix, OPEN PR metadata persistence, platform registry split, typecheck, hotspot contract, and focused platform/route tests pass on final branch head."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-17T16:18:46.442Z"
+  updated_at: "2026-06-17T17:18:27.534Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed after PR metadata persisted open GitHub identity."
-  evaluated_sha: "f5b406dd377b4f09d2a42b3dce60c1a0d25a4226"
+  note: "Quality review passed after route loop and platform registry fixes."
+  evaluated_sha: "139a72078ef300a8f4984029aabafcb0d97d1c30"
   blueprint_digest: "b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f"
   evidence_refs:
     - ".agentplane/tasks/202606171318-HMV399/README.md"
-    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-161846442-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-161846442-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-161846442-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-171827534-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-171827534-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-171827534-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
@@ -77,8 +77,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-06-17T17:16:58.362Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: route loop fix, OPEN PR metadata persistence, platform registry split, typecheck, hotspot contract, and focused platform/route tests pass on final branch head."
 doc_version: 3
-doc_updated_at: "2026-06-17T16:20:27.581Z"
+doc_updated_at: "2026-06-17T17:16:59.185Z"
 doc_updated_by: "CODER"
 description: "Implement platform sync for major agent platforms by projecting AgentPlane discipline into native instruction files, excluding runner integration."
 sections:
@@ -162,6 +168,36 @@ sections:
     - repeat_allowed: true
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
+
+    ### 2026-06-17T17:16:58.362Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: route loop fix, OPEN PR metadata persistence, platform registry split, typecheck, hotspot contract, and focused platform/route tests pass on final branch head.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-17T16:20:27.581Z, excerpt_hash=sha256:965e1c2363a04da781e5d56f59a03f483289bce0e7edfea23718ff8072a42acd
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606171318-HMV399-platform-sync/.agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json
+    - old_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+    - current_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606171318-HMV399
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202606171318-HMV399 --branch task/202606171318-HMV399/platform-sync
+    - diagnostic_command: agentplane pr check 202606171318-HMV399
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -284,6 +320,36 @@ DecisionContextRef:
 - repeat_allowed: true
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
+
+### 2026-06-17T17:16:58.362Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: route loop fix, OPEN PR metadata persistence, platform registry split, typecheck, hotspot contract, and focused platform/route tests pass on final branch head.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-17T16:20:27.581Z, excerpt_hash=sha256:965e1c2363a04da781e5d56f59a03f483289bce0e7edfea23718ff8072a42acd
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606171318-HMV399-platform-sync/.agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json
+- old_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+- current_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606171318-HMV399
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202606171318-HMV399 --branch task/202606171318-HMV399/platform-sync
+- diagnostic_command: agentplane pr check 202606171318-HMV399
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 

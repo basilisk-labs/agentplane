@@ -13,7 +13,7 @@ Created: 2026-06-17T13:19:36.764Z
 ## Verification
 
 - State: ok
-- Note: Verified: platform sync lint fixes and branch_pr local open PR routing optimization pass targeted tests, lint, typecheck, policy routing, and dry-run platform smoke.
+- Note: Verified: route loop fix, OPEN PR metadata persistence, platform registry split, typecheck, hotspot contract, and focused platform/route tests pass on final branch head.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
