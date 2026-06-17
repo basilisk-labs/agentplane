@@ -13,7 +13,7 @@ Created: 2026-06-17T13:19:36.764Z
 ## Verification
 
 - State: ok
-- Note: Implemented platform sync instruction-surface projections and verified targeted CLI behavior.
+- Note: Verified: platform sync lint fixes and branch_pr local open PR routing optimization pass targeted tests, lint, typecheck, policy routing, and dry-run platform smoke.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,13 +29,15 @@ Created: 2026-06-17T13:19:36.764Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.platform-sync.test.ts     | 200 +++++++
+ .../src/cli/run-cli.core.platform-sync.test.ts     | 205 +++++++
+ .../src/cli/run-cli.core.route-decision.test.ts    | 108 ++++
  .../src/cli/run-cli/command-catalog/core.ts        |  14 +
  .../src/cli/run-cli/command-loaders/core.ts        |   3 +
  .../agentplane/src/cli/run-cli/commands/ide.ts     | 150 +----
  .../src/cli/run-cli/commands/init/ide-sync.ts      |  11 +-
- .../src/cli/run-cli/commands/platform.ts           | 649 +++++++++++++++++++++
- 6 files changed, 882 insertions(+), 145 deletions(-)
+ .../src/cli/run-cli/commands/platform.ts           | 662 +++++++++++++++++++++
+ .../src/commands/shared/route-decision.ts          |   9 +-
+ 8 files changed, 1014 insertions(+), 148 deletions(-)
 ```
 
 </details>
