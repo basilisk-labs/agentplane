@@ -3,7 +3,8 @@ import path from "node:path";
 import { fileExists } from "../../../fs-utils.js";
 
 import type { RunDeps } from "../../command-catalog/kernel.js";
-import { syncPlatforms, type PlatformId } from "../platform.js";
+import type { PlatformId } from "../platform-registry.js";
+import { syncPlatforms } from "../platform.js";
 
 export async function maybeSyncIde(opts: {
   cwd: string;
