@@ -2,8 +2,8 @@ import path from "node:path";
 
 import { fileExists } from "../../../fs-utils.js";
 
-import { cmdIdeSync } from "../ide.js";
 import type { RunDeps } from "../../command-catalog/kernel.js";
+import { syncPlatforms, type PlatformId } from "../platform.js";
 
 export async function maybeSyncIde(opts: {
   cwd: string;
@@ -25,7 +25,14 @@ export async function maybeSyncIde(opts: {
       Promise.reject(new Error("getLoadedConfig is not available during init")),
     getHelpJsonForDocs: () => [],
   };
-  await cmdIdeSync({ cwd: opts.cwd, rootOverride: opts.rootOverride, ide: opts.ide, deps });
+  const platforms: PlatformId[] = opts.ide === "cursor" ? ["cursor"] : ["windsurf"];
+  await syncPlatforms({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    platforms,
+    dryRun: false,
+    deps,
+  });
 
   const installPaths: string[] = [];
   const cursorPath = path.join(opts.gitRoot, ".cursor", "rules", "agentplane.mdc");
