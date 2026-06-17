@@ -219,7 +219,7 @@ export async function syncPlatforms(opts: {
     platform: PlatformId;
     path: string;
     description: string;
-    status: "planned" | "written";
+    status: "planned" | "skipped" | "written";
   }[];
   native_sources: { platform: PlatformId; sources: string[] }[];
   external_adapters: { platform: PlatformId; repository: string; note: string }[];
@@ -242,7 +242,7 @@ export async function syncPlatforms(opts: {
     platform: PlatformId;
     path: string;
     description: string;
-    status: "planned" | "written";
+    status: "planned" | "skipped" | "written";
   }[] = [];
   const native_sources: { platform: PlatformId; sources: string[] }[] = [];
   const external_adapters: { platform: PlatformId; repository: string; note: string }[] = [];
@@ -259,6 +259,16 @@ export async function syncPlatforms(opts: {
     }
     for (const projection of platform.projections) {
       const absPath = path.join(resolved.gitRoot, projection.path);
+      const isPolicyGatewayTarget = path.resolve(absPath) === path.resolve(gateway.absPath);
+      if (isPolicyGatewayTarget) {
+        targets.push({
+          platform: platform.id,
+          path: projection.path,
+          description: projection.description,
+          status: "skipped",
+        });
+        continue;
+      }
       if (!opts.dryRun) {
         await mkdir(path.dirname(absPath), { recursive: true });
         await writeTextIfChanged(absPath, projection.render(renderContext));
