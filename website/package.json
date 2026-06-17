@@ -39,7 +39,7 @@
     "@docusaurus/types": "3.10.1",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.1",
     "typescript": "~6.0.3"
   },
   "browserslist": {
