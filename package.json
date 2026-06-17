@@ -173,7 +173,7 @@
     "eslint-plugin-promise": "^7.3.0",
     "eslint-plugin-unicorn": "^66.0.0",
     "globals": "^17.6.0",
-    "jscpd": "^4.2.4",
+    "jscpd": "^5.0.9",
     "knip": "^6.16.1",
     "lefthook": "^2.1.9",
     "prettier": "^3.8.4",
