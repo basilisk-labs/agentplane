@@ -1009,9 +1009,6 @@ describe("runCli route decision commands", () => {
     await writeFile(path.join(root, "impl.txt"), "implementation\n");
     await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "feat: implementation"], { cwd: root });
-    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: root,
-    });
 
     await runCliSilent([
       "task",
@@ -1061,7 +1058,6 @@ describe("runCli route decision commands", () => {
           base: "main",
           branch,
           created_at: "2026-01-01T00:00:00.000Z",
-          head_sha: implementationHead.trim(),
           pr_number: 123,
           pr_url: "https://github.com/example/repo/pull/123",
           schema_version: 1,
