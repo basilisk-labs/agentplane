@@ -29,6 +29,7 @@ Created: 2026-06-17T13:19:36.764Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/cli-reference.generated.mdx              |  78 ++++
  .../agentplane/src/cli/run-cli.core.init.test.ts   |   4 +
  .../src/cli/run-cli.core.platform-sync.test.ts     | 224 +++++++++++
  ...li.core.route-decision.pr-open-metadata.test.ts | 152 ++++++++
@@ -41,7 +42,7 @@ Created: 2026-06-17T13:19:36.764Z
  .../src/commands/pr/internal/sync-github.test.ts   |  21 +
  .../src/commands/pr/internal/sync-github.ts        |   2 +-
  .../src/commands/shared/route-decision.ts          |  14 +-
- 12 files changed, 1129 insertions(+), 150 deletions(-)
+ 13 files changed, 1207 insertions(+), 150 deletions(-)
 ```
 
 </details>
