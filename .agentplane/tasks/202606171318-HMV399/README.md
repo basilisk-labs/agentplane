@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -21,26 +21,26 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-17T17:32:06.614Z"
+  updated_at: "2026-06-17T17:52:00.981Z"
   updated_by: "CODER"
-  note: "Verified: refreshed generated CLI reference for platform commands after review fixes; focused tests, typecheck, docs:cli:check, format, lint, hotspots, and routing checks pass."
+  note: "Verified: removed unused exported PlatformProjection type; knip:check, typecheck, format, lint, and hotspots pass."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-17T17:32:08.870Z"
+  updated_at: "2026-06-17T17:52:04.474Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed after generated CLI docs refresh."
-  evaluated_sha: "f1f71b07a00b291242c28427c6ccf0d74832cc7e"
+  note: "Quality review passed after knip export cleanup."
+  evaluated_sha: "44139b4787adb929b55461f1250bfeaf3e6cbd2f"
   blueprint_digest: "b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f"
   evidence_refs:
     - ".agentplane/tasks/202606171318-HMV399/README.md"
-    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-173208870-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-173208870-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-173208870-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-175204474-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-175204474-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-175204474-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json"
-    - "docs/user/cli-reference.generated.mdx"
+    - "packages/agentplane/src/cli/run-cli/commands/platform-registry.ts"
   findings:
-    - "No blocking findings after platform docs refresh."
+    - "No blocking findings after unused exported type removal."
 commit:
   hash: "3c628a8648b93106bf77b6463b3e2ad01b2ffa00"
   message: "🚧 HMV399 task: record route quality review"
@@ -96,8 +96,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: refreshed generated CLI reference for platform commands after review fixes; focused tests, typecheck, docs:cli:check, format, lint, hotspots, and routing checks pass."
+  -
+    type: "verify"
+    at: "2026-06-17T17:52:00.981Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: removed unused exported PlatformProjection type; knip:check, typecheck, format, lint, and hotspots pass."
 doc_version: 3
-doc_updated_at: "2026-06-17T17:32:07.380Z"
+doc_updated_at: "2026-06-17T17:52:02.583Z"
 doc_updated_by: "CODER"
 description: "Implement platform sync for major agent platforms by projecting AgentPlane discipline into native instruction files, excluding runner integration."
 sections:
@@ -250,6 +256,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-17T17:22:34.855Z, excerpt_hash=sha256:965e1c2363a04da781e5d56f59a03f483289bce0e7edfea23718ff8072a42acd
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606171318-HMV399-platform-sync/.agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json
+    - old_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+    - current_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606171318-HMV399
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202606171318-HMV399 --branch task/202606171318-HMV399/platform-sync
+    - diagnostic_command: agentplane pr check 202606171318-HMV399
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-06-17T17:52:00.981Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: removed unused exported PlatformProjection type; knip:check, typecheck, format, lint, and hotspots pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-17T17:32:07.380Z, excerpt_hash=sha256:965e1c2363a04da781e5d56f59a03f483289bce0e7edfea23718ff8072a42acd
 
     Details:
 
@@ -462,6 +498,36 @@ Note: Verified: refreshed generated CLI reference for platform commands after re
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-17T17:22:34.855Z, excerpt_hash=sha256:965e1c2363a04da781e5d56f59a03f483289bce0e7edfea23718ff8072a42acd
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606171318-HMV399-platform-sync/.agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json
+- old_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+- current_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606171318-HMV399
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202606171318-HMV399 --branch task/202606171318-HMV399/platform-sync
+- diagnostic_command: agentplane pr check 202606171318-HMV399
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-06-17T17:52:00.981Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: removed unused exported PlatformProjection type; knip:check, typecheck, format, lint, and hotspots pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-17T17:32:07.380Z, excerpt_hash=sha256:965e1c2363a04da781e5d56f59a03f483289bce0e7edfea23718ff8072a42acd
 
 Details:
 
