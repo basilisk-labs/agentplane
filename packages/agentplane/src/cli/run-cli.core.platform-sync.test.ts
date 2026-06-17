@@ -171,6 +171,25 @@ describe("platform sync", () => {
     expect(cursorText).toContain("## Synced Role Activation");
   });
 
+  it("does not overwrite CLAUDE.md when it is the active policy gateway", async () => {
+    const root = await mkGitRepoRoot();
+    const sourceText = "# Claude Gateway\n\nUse canonical policy from this file.\n";
+    await writeFile(path.join(root, "CLAUDE.md"), sourceText, "utf8");
+    await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["platform", "sync", "--platform", "claude", "--root", root]);
+      expect(code).toBe(0);
+      const output = normalizeSlashes(io.stdout);
+      expect(output).toContain("skipped\tclaude\tCLAUDE.md");
+    } finally {
+      io.restore();
+    }
+
+    await expect(readFile(path.join(root, "CLAUDE.md"), "utf8")).resolves.toBe(sourceText);
+  });
+
   it("keeps ide sync as a Cursor and Windsurf compatibility wrapper", async () => {
     const root = await mkGitRepoRoot();
     await writeAgentplaneFixture(root);

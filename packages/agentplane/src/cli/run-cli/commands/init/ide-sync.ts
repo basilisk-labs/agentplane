@@ -37,9 +37,13 @@ export async function maybeSyncIde(opts: {
 
   const installPaths: string[] = [];
   const cursorPath = path.join(opts.gitRoot, ".cursor", "rules", "agentplane.mdc");
+  const devinPath = path.join(opts.gitRoot, ".devin", "rules", "agentplane.md");
   const windsurfPath = path.join(opts.gitRoot, ".windsurf", "rules", "agentplane.md");
   if (opts.ide === "cursor" && (await fileExists(cursorPath))) {
     installPaths.push(path.relative(opts.gitRoot, cursorPath));
+  }
+  if (opts.ide === "windsurf" && (await fileExists(devinPath))) {
+    installPaths.push(path.relative(opts.gitRoot, devinPath));
   }
   if (opts.ide === "windsurf" && (await fileExists(windsurfPath))) {
     installPaths.push(path.relative(opts.gitRoot, windsurfPath));
