@@ -38,6 +38,13 @@ import { preflightSpec } from "../commands/core/preflight.js";
 import { quickstartSpec } from "../commands/core/quickstart.js";
 import { roleSpec } from "../commands/core/role.js";
 import { ideSyncSpec } from "../commands/ide.js";
+import {
+  platformDoctorSpec,
+  platformExplainSpec,
+  platformListSpec,
+  platformSpec,
+  platformSyncSpec,
+} from "../commands/platform.js";
 import { initSpec } from "../commands/init/spec.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
@@ -55,6 +62,7 @@ import {
   fromCommandsInsightsCommand,
   fromCommandsIncidentsIncidentsCommand,
   fromCommandsCoreRole,
+  fromCommandsPlatform,
   fromCommandsDoctorRun,
   fromCommandsDoctorGitLocksCommand,
   fromCommandsWorkflowCommand,
@@ -71,6 +79,7 @@ import {
   loadModeSetSpec,
   loadProfileSetSpec,
   loadIdeSyncSpec,
+  loadPlatformSyncSpec,
   loadInsightsIssueSpec,
   loadInsightsReportSpec,
   loadInsightsTriageSpec,
@@ -169,6 +178,11 @@ export const CORE_COMMANDS = [
     needs: "none",
     invocation: requireCanonicalCommandInvocation(["role"]),
   }),
+  fromCommandsPlatform(platformSpec, "runPlatform", { needs: "none" }),
+  fromCommandsPlatform(platformListSpec, "runPlatformList", { needs: "none" }),
+  declareCommand(platformSyncSpec, { load: loadPlatformSyncSpec, needs: "project" }),
+  fromCommandsPlatform(platformExplainSpec, "runPlatformExplain", { needs: "none" }),
+  fromCommandsPlatform(platformDoctorSpec, "runPlatformDoctor", { needs: "none" }),
   declareCommand(agentsSpec, { load: loadAgentsSpec, needs: "project" }),
   declareCommand(configShowSpec, {
     load: loadConfigShowSpec,

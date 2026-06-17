@@ -36,6 +36,7 @@ export const fromCommandsIncidentsIncidentsCommand = commandModule(
   () => import("../../../commands/incidents/incidents.command.js"),
 );
 export const fromCommandsCoreRole = commandModule(() => import("../commands/core/role.js"));
+export const fromCommandsPlatform = commandModule(() => import("../commands/platform.js"));
 export const fromCommandsDoctorRun = commandModule(() => import("../../../commands/doctor.run.js"));
 export const fromCommandsDoctorGitLocksCommand = commandModule(
   () => import("../../../commands/doctor-git-locks.run.js"),
@@ -76,6 +77,8 @@ export const loadProfileSetSpec = (deps: RunDeps) =>
   import("../commands/config.js").then((m) => m.makeRunProfileSetHandler(deps));
 export const loadIdeSyncSpec = (deps: RunDeps) =>
   import("../commands/ide.js").then((m) => m.makeRunIdeSyncHandler(deps));
+export const loadPlatformSyncSpec = (deps: RunDeps) =>
+  import("../commands/platform.js").then((m) => m.makeRunPlatformSyncHandler(deps));
 export const loadInsightsReportSpec = (deps: RunDeps) =>
   import("../../../commands/insights/insights.command.js").then((m) =>
     m.makeRunInsightsReportHandler(deps),
