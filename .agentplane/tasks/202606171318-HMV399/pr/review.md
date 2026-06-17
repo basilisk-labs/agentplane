@@ -13,7 +13,7 @@ Created: 2026-06-17T13:19:36.764Z
 ## Verification
 
 - State: ok
-- Note: Verified: addressed PR review by skipping self-target policy gateway projections and returning both Windsurf init sync paths; focused platform/init tests, typecheck, format, lint, hotspots, and routing checks pass.
+- Note: Verified: refreshed generated CLI reference for platform commands after review fixes; focused tests, typecheck, docs:cli:check, format, lint, hotspots, and routing checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -21,25 +21,26 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-17T17:22:34.025Z"
+  updated_at: "2026-06-17T17:32:06.614Z"
   updated_by: "CODER"
-  note: "Verified: addressed PR review by skipping self-target policy gateway projections and returning both Windsurf init sync paths; focused platform/init tests, typecheck, format, lint, hotspots, and routing checks pass."
+  note: "Verified: refreshed generated CLI reference for platform commands after review fixes; focused tests, typecheck, docs:cli:check, format, lint, hotspots, and routing checks pass."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-17T17:22:43.661Z"
+  updated_at: "2026-06-17T17:32:08.870Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed after addressing GitHub review threads."
-  evaluated_sha: "7a4c1818dd4aa1ff3c5d69a1eb0675e082e8f459"
+  note: "Quality review passed after generated CLI docs refresh."
+  evaluated_sha: "f1f71b07a00b291242c28427c6ccf0d74832cc7e"
   blueprint_digest: "b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f"
   evidence_refs:
     - ".agentplane/tasks/202606171318-HMV399/README.md"
-    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-172243661-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-172243661-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-172243661-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-173208870-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-173208870-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606171318-HMV399/quality/20260617-173208870-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json"
+    - "docs/user/cli-reference.generated.mdx"
   findings:
-    - "No blocking findings after self-sync and Windsurf install path fixes."
+    - "No blocking findings after platform docs refresh."
 commit:
   hash: "3c628a8648b93106bf77b6463b3e2ad01b2ffa00"
   message: "🚧 HMV399 task: record route quality review"
@@ -89,8 +90,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: addressed PR review by skipping self-target policy gateway projections and returning both Windsurf init sync paths; focused platform/init tests, typecheck, format, lint, hotspots, and routing checks pass."
+  -
+    type: "verify"
+    at: "2026-06-17T17:32:06.614Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: refreshed generated CLI reference for platform commands after review fixes; focused tests, typecheck, docs:cli:check, format, lint, hotspots, and routing checks pass."
 doc_version: 3
-doc_updated_at: "2026-06-17T17:22:34.855Z"
+doc_updated_at: "2026-06-17T17:32:07.380Z"
 doc_updated_by: "CODER"
 description: "Implement platform sync for major agent platforms by projecting AgentPlane discipline into native instruction files, excluding runner integration."
 sections:
@@ -213,6 +220,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-17T17:16:59.185Z, excerpt_hash=sha256:965e1c2363a04da781e5d56f59a03f483289bce0e7edfea23718ff8072a42acd
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606171318-HMV399-platform-sync/.agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json
+    - old_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+    - current_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202606171318-HMV399
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202606171318-HMV399 --branch task/202606171318-HMV399/platform-sync
+    - diagnostic_command: agentplane pr check 202606171318-HMV399
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-06-17T17:32:06.614Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: refreshed generated CLI reference for platform commands after review fixes; focused tests, typecheck, docs:cli:check, format, lint, hotspots, and routing checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-17T17:22:34.855Z, excerpt_hash=sha256:965e1c2363a04da781e5d56f59a03f483289bce0e7edfea23718ff8072a42acd
 
     Details:
 
@@ -395,6 +432,36 @@ Note: Verified: addressed PR review by skipping self-target policy gateway proje
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-17T17:16:59.185Z, excerpt_hash=sha256:965e1c2363a04da781e5d56f59a03f483289bce0e7edfea23718ff8072a42acd
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606171318-HMV399-platform-sync/.agentplane/tasks/202606171318-HMV399/blueprint/resolved-snapshot.json
+- old_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+- current_digest: b7415c132ee2feaef281151b317ac903e49ddafffbb697e72638d84217d7862f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202606171318-HMV399
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202606171318-HMV399 --branch task/202606171318-HMV399/platform-sync
+- diagnostic_command: agentplane pr check 202606171318-HMV399
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-06-17T17:32:06.614Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: refreshed generated CLI reference for platform commands after review fixes; focused tests, typecheck, docs:cli:check, format, lint, hotspots, and routing checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-17T17:22:34.855Z, excerpt_hash=sha256:965e1c2363a04da781e5d56f59a03f483289bce0e7edfea23718ff8072a42acd
 
 Details:
 
