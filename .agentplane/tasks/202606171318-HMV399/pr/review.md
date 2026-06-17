@@ -13,7 +13,7 @@ Created: 2026-06-17T13:19:36.764Z
 ## Verification
 
 - State: ok
-- Note: Verified: route loop fix, OPEN PR metadata persistence, platform registry split, typecheck, hotspot contract, and focused platform/route tests pass on final branch head.
+- Note: Verified: addressed PR review by skipping self-target policy gateway projections and returning both Windsurf init sync paths; focused platform/init tests, typecheck, format, lint, hotspots, and routing checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
