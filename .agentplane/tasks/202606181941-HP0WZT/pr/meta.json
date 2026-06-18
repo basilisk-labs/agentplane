@@ -5,6 +5,12 @@
   "diffstat_sha256": "sha256:b4d50048a9df8913ebe89120f9d72dc64627984541347eaeaf40d72aa8a1329a",
   "last_verified_at": "2026-06-18T19:46:23.509Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pre_merge_closure": {
+    "basis_commit": "c936641b85d2e4abab0d4c1d408035766968ee7a",
+    "branch": "task/202606181941-HP0WZT/fix-close-dirty-state-regressions",
+    "recorded_at": "2026-06-18T19:58:53.342Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "task_id": "202606181941-HP0WZT",
   "updated_at": "2026-06-18T19:46:23.792Z",

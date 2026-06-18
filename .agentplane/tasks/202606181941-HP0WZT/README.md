@@ -1,10 +1,11 @@
 ---
 id: "202606181941-HP0WZT"
 title: "Fix close dirty-state regressions"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - ".agentplane/tasks/202606181941-HP0WZT/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "c936641b85d2e4abab0d4c1d408035766968ee7a"
+  message: "🧪 HP0WZT task: refresh quality review"
 comments:
   -
     author: "CODER"
     body: "Start: fixing GitHub issues #4523 and #4524 in a dedicated branch_pr worktree with focused dirty-task and close-order regression coverage."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -58,8 +64,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: ./node_modules/.bin/vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local-handoff.test.ts. Result: pass. Evidence: 1 test passed; empty task dirs ignored while non-empty missing README still warns. Command: ./node_modules/.bin/vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.validation.unit.test.ts. Result: pass. Evidence: 22 tests passed, including close-commit pre-mutation validation. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: agentplane doctor. Result: pass. Evidence: doctor OK; unrelated warnings remain for old DONE tasks 202606040927-KSESDS and 202606041702-TVTSM2 missing commit hashes."
+  -
+    type: "status"
+    at: "2026-06-18T19:58:53.295Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-06-18T19:46:23.741Z"
+doc_updated_at: "2026-06-18T19:58:53.296Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issues #4523 and #4524: empty task directories must not count as dirty task artifacts, and close/finish must not transition task status before dirty-state preconditions pass."
 sections:
@@ -116,6 +129,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "aa5016b25df1b5a60d29b5de80c7be875eb22d3d"
+    message: "🐛 HP0WZT task: ignore empty task dirs in close scan"
 id_source: "generated"
 ---
 ## Summary
