@@ -164,6 +164,11 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [hermes lifecycle](#hermes-lifecycle)
   - [hermes reconcile](#hermes-reconcile)
   - [hermes supervise](#hermes-supervise)
+- Platform
+  - [platform doctor](#platform-doctor)
+  - [platform explain](#platform-explain)
+  - [platform list](#platform-list)
+  - [platform sync](#platform-sync)
 - Workflow
   - [flow repair](#flow-repair)
 
@@ -3572,6 +3577,12 @@ agentplane ide sync --ide cursor
 
 - Generate Cursor rules only.
 
+```sh
+agentplane platform sync --platform cursor --platform windsurf
+```
+
+- Use the platform sync command directly.
+
 ## Context
 
 ### context check
@@ -4066,6 +4077,73 @@ agentplane hermes supervise 202605311941-K4FCKS --json
 ```
 
 - Return a route-gated supervisor packet without executing arbitrary shell text.
+
+## Platform
+
+### platform doctor
+
+Print verification guidance for one platform integration surface.
+
+Usage:
+
+```text
+agentplane platform doctor <platform>
+```
+
+### platform explain
+
+Explain one platform integration surface.
+
+Usage:
+
+```text
+agentplane platform explain <platform>
+```
+
+### platform list
+
+List supported platform instruction-surface integrations.
+
+Usage:
+
+```text
+agentplane platform list
+```
+
+### platform sync
+
+Generate platform-specific instruction files from AgentPlane policy.
+
+Usage:
+
+```text
+agentplane platform sync [options]
+```
+
+Options:
+
+- `--platform <codex|claude|gemini|opencode|copilot|cursor|windsurf|cline|kiro|openclaw|hermes|all>`: Platform to sync. Repeat or pass comma-separated values. Default: all. (repeatable)
+- `--dry-run`: Print planned platform targets without writing files. (default=false)
+
+Examples:
+
+```sh
+agentplane platform list
+```
+
+- Show supported instruction surfaces.
+
+```sh
+agentplane platform sync
+```
+
+- Generate all platform projections.
+
+```sh
+agentplane platform sync --platform cursor --platform cline
+```
+
+- Generate Cursor and Cline rules only.
 
 ## Workflow
 

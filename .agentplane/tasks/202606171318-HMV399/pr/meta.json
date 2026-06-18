@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202606171318-HMV399/platform-sync",
+  "created_at": "2026-06-17T13:19:36.764Z",
+  "diffstat_sha256": "sha256:f9672cc8827250963778060ce63bb70a1d896a65d1750190cba9a5853e731f20",
+  "last_verified_at": "2026-06-17T17:52:00.981Z",
+  "last_verified_diffstat_sha256": "sha256:f9672cc8827250963778060ce63bb70a1d896a65d1750190cba9a5853e731f20",
+  "pr_number": 4522,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4522",
+  "pre_merge_closure": {
+    "basis_commit": "3c628a8648b93106bf77b6463b3e2ad01b2ffa00",
+    "branch": "task/202606171318-HMV399/platform-sync",
+    "pr_number": 4522,
+    "recorded_at": "2026-06-17T16:20:27.629Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202606171318-HMV399",
+  "updated_at": "2026-06-17T16:17:44.421Z",
+  "verify": {
+    "status": "pass"
+  }
+}

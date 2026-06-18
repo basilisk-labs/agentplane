@@ -1,4 +1,4 @@
-import { findWorktreeForBranch } from "@agentplaneorg/core/git";
+import { findWorktreeForBranch, gitRevParse } from "@agentplaneorg/core/git";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -286,7 +286,11 @@ async function resolveLocalRecordedCloseFlow(opts: {
     const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.task.id);
     const trimmedBase = meta.base?.trim();
     const base = trimmedBase && trimmedBase.length > 0 ? trimmedBase : "main";
-    if (meta.status === "OPEN" && hasClosedPreMergeClosureMarker(meta)) {
+    const branchHeadSha = meta.branch
+      ? await gitRevParse(opts.ctx.resolvedProject.gitRoot, [meta.branch]).catch(() => null)
+      : null;
+    if (meta.status === "OPEN") {
+      const preMergeClosed = hasClosedPreMergeClosureMarker(meta);
       return {
         task: {
           id: opts.task.id,
@@ -295,7 +299,7 @@ async function resolveLocalRecordedCloseFlow(opts: {
         },
         branch: {
           name: meta.branch ?? null,
-          headSha: null,
+          headSha: branchHeadSha ?? meta.head_sha ?? null,
           metaHeadSha: meta.head_sha ?? null,
         },
         pr: {
@@ -310,7 +314,9 @@ async function resolveLocalRecordedCloseFlow(opts: {
         },
         closeTail: {
           state: "not_applicable",
-          reason: "pre-merge closure records finalization before implementation PR merge",
+          reason: preMergeClosed
+            ? "pre-merge closure records finalization before implementation PR merge"
+            : "implementation PR is open; pre-merge closure is still recorded on the task branch",
         },
         hostedChecks: { checked: false, reason: "remote lookup skipped" },
         reviewThreads: { checked: false, reason: "remote lookup skipped" },
