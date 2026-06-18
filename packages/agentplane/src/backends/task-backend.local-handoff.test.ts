@@ -23,7 +23,7 @@ describe("LocalBackend handoff artifacts", () => {
     }
   });
 
-  it("ignores handoff-only task directories when listing tasks", async () => {
+  it("ignores handoff-only and empty task directories when listing tasks", async () => {
     const backend = new LocalBackend({ dir: tempDir });
 
     await mkdir(path.join(tempDir, "202601300000-HANDOF", "handoff"), { recursive: true });
@@ -32,7 +32,9 @@ describe("LocalBackend handoff artifacts", () => {
       "{}",
       "utf8",
     );
+    await mkdir(path.join(tempDir, "202601300000-EMPTY"), { recursive: true });
     await mkdir(path.join(tempDir, "NO_README"), { recursive: true });
+    await writeFile(path.join(tempDir, "NO_README", "artifact.txt"), "not a task readme", "utf8");
 
     await backend.writeTask({
       id: "202601300000-ABCD",
@@ -51,6 +53,7 @@ describe("LocalBackend handoff artifacts", () => {
 
     expect(tasks.map((task) => task.id)).toEqual(["202601300000-ABCD"]);
     expect(warnings).toContain("skip:NO_README: missing_or_unreadable_readme");
+    expect(warnings).not.toContain("skip:202601300000-EMPTY: missing_or_unreadable_readme");
     expect(warnings).not.toContain("skip:202601300000-HANDOF: missing_or_unreadable_readme");
   });
 });
