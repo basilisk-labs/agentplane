@@ -4,7 +4,7 @@ title: "Fix close dirty-state regressions"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,16 +26,16 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-06-18T19:50:21.981Z"
+  updated_at: "2026-06-18T19:51:44.992Z"
   updated_by: "EVALUATOR"
   note: "Quality review passed."
-  evaluated_sha: "173c916b1e09a6573b52df8f05fb1b84ad09b15d"
+  evaluated_sha: "aa5016b25df1b5a60d29b5de80c7be875eb22d3d"
   blueprint_digest: "bf281fc3c1c95752b31227879bbeec9b1d9513b2bf6a2a7bfcd20520004bfbd2"
   evidence_refs:
     - ".agentplane/tasks/202606181941-HP0WZT/README.md"
-    - ".agentplane/tasks/202606181941-HP0WZT/quality/20260618-195021981-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202606181941-HP0WZT/quality/20260618-195021981-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202606181941-HP0WZT/quality/20260618-195021981-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202606181941-HP0WZT/quality/20260618-195144992-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202606181941-HP0WZT/quality/20260618-195144992-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202606181941-HP0WZT/quality/20260618-195144992-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202606181941-HP0WZT/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
