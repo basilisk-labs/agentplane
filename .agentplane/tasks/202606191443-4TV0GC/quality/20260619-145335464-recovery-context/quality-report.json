@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202606191443-4TV0GC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-06-19T14:53:35.464Z",
+  "verdict": "pass",
+  "summary": "Quality review passed for v0.6.21 release candidate.",
+  "evaluated_sha": "464e050fc9ea0ed510ac3c6bd1b402049031f431",
+  "blueprint_digest": "6729c1e669e7dab2dcfcbec93308d34b20a1383fb4957caee1c9a4a2e0d85432",
+  "findings": [
+    "No blocking findings. Runner execution remains hidden from ordinary help/docs; release candidate report shows no tag or push publication."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202606191443-4TV0GC/README.md",
+    ".agentplane/.release/apply/2026-06-19T14-50-42-458Z.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
