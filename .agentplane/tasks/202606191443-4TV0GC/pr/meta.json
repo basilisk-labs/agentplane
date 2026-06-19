@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-06-19T15:42:16Z",
   "base": "main",
   "branch": "task/202606191443-4TV0GC/prepare-v0-6-21-patch-release",
   "created_at": "2026-06-19T14:45:09.630Z",
   "diffstat_sha256": "sha256:bb4e8f4029b0801d7707695f4ae9694afaaa62d6ae53e4359a707b7ddd2e341a",
   "last_verified_at": "2026-06-19T14:59:28.154Z",
   "last_verified_diffstat_sha256": "sha256:bb4e8f4029b0801d7707695f4ae9694afaaa62d6ae53e4359a707b7ddd2e341a",
+  "merge_commit": "af543f4f3cd495efdadfc53de14d74d4506d2703",
+  "merge_strategy": "merge",
+  "merged_at": "2026-06-19T15:42:16Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202606191443-4TV0GC",
-  "updated_at": "2026-06-19T14:45:09.630Z",
+  "updated_at": "2026-06-19T15:42:16Z",
   "verify": {
     "status": "pass"
   }
