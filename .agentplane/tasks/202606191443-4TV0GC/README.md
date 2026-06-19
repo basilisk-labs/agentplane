@@ -21,10 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-06-19T14:59:28.154Z"
-  updated_by: "CODER"
-  note: "Remote PR publication attempted after local release candidate verification. ap pr open failed on SSH host key verification; HTTPS pushes via gh credential helper hung and were interrupted without creating the remote branch. Local candidate remains clean and verified at HEAD 2322d3db77775f59e6da8e9423fd33653bf64a9b."
-  attempts: 0
+  updated_at: "2026-06-19T15:57:25.228Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.21."
 quality_review:
   state: "pass"
   updated_at: "2026-06-19T14:53:35.464Z"
@@ -79,8 +78,8 @@ events:
     to: "DONE"
     note: "Verified: PR #4526 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-19T15:42:58.723Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-06-19T15:57:25.228Z"
+doc_updated_by: "DEUS"
 description: "Prepare the v0.6.21 patch release candidate from main and keep runner guidance hidden from ordinary agent routes until explicitly stabilized."
 sections:
   Summary: |-
@@ -106,66 +105,19 @@ sections:
     5. Run `git status --short --untracked-files=all` and inspect the release diff. Expected: only intentional task/release files are changed, with no unrelated worktree drift.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    ### 2026-06-19T14:53:04.244Z — VERIFY — ok
-
-    By: CODER
-
-    Note: Release candidate v0.6.21 prepared on task branch without tag/npm publication. Checks passed: ap task next-action kept executor=current_agent; bun scripts/release/check-release-notes.mjs --tag v0.6.21 --min-bullets 65; node .agentplane/policy/check-routing.mjs; ap doctor (OK with two pre-existing DONE-task warnings); targeted route/help bun tests 22 pass; bun run release:parity; bun run release:acr-example:check; bun run docs:cli:check; bun run test:release:critical (16 pass).
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-19T14:45:09.585Z, excerpt_hash=sha256:0b2bcfee58e0d35544aecb99b3fe26ef471d5e8a452f807d685a1d57dd8d08ad
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606191443-4TV0GC-prepare-v0-6-21-patch-release/.agentplane/tasks/202606191443-4TV0GC/blueprint/resolved-snapshot.json
-    - old_digest: 6729c1e669e7dab2dcfcbec93308d34b20a1383fb4957caee1c9a4a2e0d85432
-    - current_digest: 6729c1e669e7dab2dcfcbec93308d34b20a1383fb4957caee1c9a4a2e0d85432
-    - route_changed: no
-    - safe_command: agentplane blueprint snapshot 202606191443-4TV0GC
-
-    DecisionContextRef:
-    - operator_action: run_exact_argv
-    - can_execute_now: true
-    - safe_command: agentplane pr update 202606191443-4TV0GC
-    - diagnostic_command: agentplane pr check 202606191443-4TV0GC
-    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
-    - freshness: route=computed_local remote=remote_skipped
-    - repeat_allowed: false
-    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
-    - risks: pr_artifact_freshness_loop, git_hook_side_effect
-
-    ### 2026-06-19T14:59:28.154Z — VERIFY — ok
-
-    By: CODER
-
-    Note: Remote PR publication attempted after local release candidate verification. ap pr open failed on SSH host key verification; HTTPS pushes via gh credential helper hung and were interrupted without creating the remote branch. Local candidate remains clean and verified at HEAD 2322d3db77775f59e6da8e9423fd33653bf64a9b.
-    Attempts: 0
-
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-19T14:53:04.421Z, excerpt_hash=sha256:0b2bcfee58e0d35544aecb99b3fe26ef471d5e8a452f807d685a1d57dd8d08ad
-
-    Details:
-
-    BlueprintSnapshotRef:
-    - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606191443-4TV0GC-prepare-v0-6-21-patch-release/.agentplane/tasks/202606191443-4TV0GC/blueprint/resolved-snapshot.json
-    - old_digest: 6729c1e669e7dab2dcfcbec93308d34b20a1383fb4957caee1c9a4a2e0d85432
-    - current_digest: 6729c1e669e7dab2dcfcbec93308d34b20a1383fb4957caee1c9a4a2e0d85432
-    - route_changed: no
-    - safe_command: agentplane blueprint snapshot 202606191443-4TV0GC
-
-    DecisionContextRef:
-    - operator_action: run_exact_argv
-    - can_execute_now: true
-    - safe_command: agentplane pr update 202606191443-4TV0GC
-    - diagnostic_command: agentplane pr check 202606191443-4TV0GC
-    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
-    - freshness: route=computed_local remote=remote_skipped
-    - repeat_allowed: false
-    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
-    - risks: pr_artifact_freshness_loop, git_hook_side_effect
-
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.21.
+    - Details:
+      - release_sha: bbbaf605e276bfb2187a927658107a2d2b1bb42f
+      - version: 0.6.21
+      - tag: v0.6.21
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.21
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/27835663684
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -212,66 +164,19 @@ Release plan: version=0.6.21, tag=v0.6.21, scope=patch candidate from main commi
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-### 2026-06-19T14:53:04.244Z — VERIFY — ok
-
-By: CODER
-
-Note: Release candidate v0.6.21 prepared on task branch without tag/npm publication. Checks passed: ap task next-action kept executor=current_agent; bun scripts/release/check-release-notes.mjs --tag v0.6.21 --min-bullets 65; node .agentplane/policy/check-routing.mjs; ap doctor (OK with two pre-existing DONE-task warnings); targeted route/help bun tests 22 pass; bun run release:parity; bun run release:acr-example:check; bun run docs:cli:check; bun run test:release:critical (16 pass).
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-19T14:45:09.585Z, excerpt_hash=sha256:0b2bcfee58e0d35544aecb99b3fe26ef471d5e8a452f807d685a1d57dd8d08ad
-
-Details:
-
-BlueprintSnapshotRef:
-- state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606191443-4TV0GC-prepare-v0-6-21-patch-release/.agentplane/tasks/202606191443-4TV0GC/blueprint/resolved-snapshot.json
-- old_digest: 6729c1e669e7dab2dcfcbec93308d34b20a1383fb4957caee1c9a4a2e0d85432
-- current_digest: 6729c1e669e7dab2dcfcbec93308d34b20a1383fb4957caee1c9a4a2e0d85432
-- route_changed: no
-- safe_command: agentplane blueprint snapshot 202606191443-4TV0GC
-
-DecisionContextRef:
-- operator_action: run_exact_argv
-- can_execute_now: true
-- safe_command: agentplane pr update 202606191443-4TV0GC
-- diagnostic_command: agentplane pr check 202606191443-4TV0GC
-- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
-- freshness: route=computed_local remote=remote_skipped
-- repeat_allowed: false
-- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
-- risks: pr_artifact_freshness_loop, git_hook_side_effect
-
-### 2026-06-19T14:59:28.154Z — VERIFY — ok
-
-By: CODER
-
-Note: Remote PR publication attempted after local release candidate verification. ap pr open failed on SSH host key verification; HTTPS pushes via gh credential helper hung and were interrupted without creating the remote branch. Local candidate remains clean and verified at HEAD 2322d3db77775f59e6da8e9423fd33653bf64a9b.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-06-19T14:53:04.421Z, excerpt_hash=sha256:0b2bcfee58e0d35544aecb99b3fe26ef471d5e8a452f807d685a1d57dd8d08ad
-
-Details:
-
-BlueprintSnapshotRef:
-- state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606191443-4TV0GC-prepare-v0-6-21-patch-release/.agentplane/tasks/202606191443-4TV0GC/blueprint/resolved-snapshot.json
-- old_digest: 6729c1e669e7dab2dcfcbec93308d34b20a1383fb4957caee1c9a4a2e0d85432
-- current_digest: 6729c1e669e7dab2dcfcbec93308d34b20a1383fb4957caee1c9a4a2e0d85432
-- route_changed: no
-- safe_command: agentplane blueprint snapshot 202606191443-4TV0GC
-
-DecisionContextRef:
-- operator_action: run_exact_argv
-- can_execute_now: true
-- safe_command: agentplane pr update 202606191443-4TV0GC
-- diagnostic_command: agentplane pr check 202606191443-4TV0GC
-- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
-- freshness: route=computed_local remote=remote_skipped
-- repeat_allowed: false
-- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
-- risks: pr_artifact_freshness_loop, git_hook_side_effect
-
+- State: ok
+- Note: Hosted publish confirmed for v0.6.21.
+- Details:
+  - release_sha: bbbaf605e276bfb2187a927658107a2d2b1bb42f
+  - version: 0.6.21
+  - tag: v0.6.21
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.21
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/27835663684
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
