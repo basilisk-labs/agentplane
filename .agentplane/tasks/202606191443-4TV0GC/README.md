@@ -1,10 +1,11 @@
 ---
 id: "202606191443-4TV0GC"
 title: "Prepare v0.6.21 patch release"
-status: "DOING"
+result_summary: "Merged via PR #4526."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - ".agentplane/.release/apply/2026-06-19T14-50-42-458Z.json"
   findings:
     - "No blocking findings. Runner execution remains hidden from ordinary help/docs; release candidate report shows no tag or push publication."
-commit: null
+commit:
+  hash: "af543f4f3cd495efdadfc53de14d74d4506d2703"
+  message: "Prepare v0.6.21 patch release"
 comments:
   -
     author: "CODER"
     body: "Start: Preparing v0.6.21 patch release candidate from the dedicated task worktree, with ordinary agent routes kept on current-agent execution and runner usage limited to explicit exceptions."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4526 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -65,9 +71,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Remote PR publication attempted after local release candidate verification. ap pr open failed on SSH host key verification; HTTPS pushes via gh credential helper hung and were interrupted without creating the remote branch. Local candidate remains clean and verified at HEAD 2322d3db77775f59e6da8e9423fd33653bf64a9b."
+  -
+    type: "status"
+    at: "2026-06-19T15:42:58.716Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4526 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-06-19T14:59:28.385Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-06-19T15:42:58.723Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare the v0.6.21 patch release candidate from main and keep runner guidance hidden from ordinary agent routes until explicitly stabilized."
 sections:
   Summary: |-
