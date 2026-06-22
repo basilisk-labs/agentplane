@@ -20,7 +20,7 @@ jobs:
     outputs:
       core: ${{ steps.filter.outputs.core }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: dorny/paths-filter@v4
@@ -56,7 +56,7 @@ jobs:
           else
             echo "ref=${{ github.ref }}" >> "$GITHUB_OUTPUT"
           fi
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ steps.target.outputs.ref }}
       - uses: oven-sh/setup-bun@v2

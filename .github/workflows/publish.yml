@@ -60,13 +60,13 @@ jobs:
           else
             echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           fi
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ steps.ref.outputs.ref }}
           fetch-depth: 0
       - name: Checkout current workflow runtime
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.sha != ''
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: .agentplane/.release/runtime
       - uses: actions/setup-node@v6
@@ -227,7 +227,7 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN || '' }}
       NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/.npmrc
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.detect.outputs.ref }}
           fetch-depth: 0

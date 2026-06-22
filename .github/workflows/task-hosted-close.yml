@@ -25,7 +25,7 @@ jobs:
       GIT_COMMITTER_NAME: DEUS
       GIT_COMMITTER_EMAIL: deus@agentplane.org
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: refs/heads/main
           fetch-depth: 0
