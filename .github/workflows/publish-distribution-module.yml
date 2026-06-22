@@ -34,13 +34,13 @@ jobs:
       RELEASE_SHA: ${{ github.event.inputs.sha }}
       GITHUB_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.sha }}
           fetch-depth: 0
           submodules: recursive
       - name: Checkout current workflow runtime
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: .agentplane/.release/runtime
       - uses: oven-sh/setup-bun@v2

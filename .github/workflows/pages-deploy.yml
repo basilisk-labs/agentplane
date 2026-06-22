@@ -24,7 +24,7 @@ jobs:
         shell: bash
         run: |
           echo "ref=${{ github.ref }}" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ steps.ref.outputs.ref }}
       - uses: oven-sh/setup-bun@v2
