@@ -26,7 +26,7 @@ Local context means `context/wiki/**`, `context/capabilities/**`, `context/raw/*
 ap context search "<query>"
 ap context show <ref>
 ap context learn changes
-ap context learn files <path> [--run]
+ap context learn files <path> [--dry-run]
 ap context ingest --changed|--all|--index-only
 ap context reindex --include-raw
 ap context wiki lint <path>
