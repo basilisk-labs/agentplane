@@ -42,6 +42,21 @@ async function writeMinimalReadableArtifacts(root: string): Promise<void> {
   );
   await write(
     root,
+    "context/wiki/reports/conflicts.md",
+    "Conflict ID: none. conflicting claim IDs: none. source_refs: x. status: none. required human decision: none.\n",
+  );
+  await write(
+    root,
+    "context/wiki/reports/open-questions.md",
+    "Unresolved entity identities: none. unresolved coverage spans: none. possibly_same_as candidates: none. topology uncertainties: none. source_refs: x.\n",
+  );
+  await write(
+    root,
+    "context/wiki/reports/evaluator-review.md",
+    "Verdict: pass. Scenario coverage: scenario.test. Failures: none. Raw-deletion resilience assessment: pass. source_refs: x.\n",
+  );
+  await write(
+    root,
     ".agentplane/context/derived/graph/entities.jsonl",
     JSON.stringify({
       id: "entity.payment_api",
@@ -54,6 +69,22 @@ async function writeMinimalReadableArtifacts(root: string): Promise<void> {
     JSON.stringify({
       id: "edge.payment_api.workflow",
       source_refs: ["context/raw/specs/payment-api.md#lines=1-3"],
+    }) + "\n",
+  );
+  await write(root, ".agentplane/context/derived/wiki/link-index.jsonl", "");
+  await write(root, ".agentplane/context/derived/wiki/orphan-report.jsonl", "");
+  await write(
+    root,
+    ".agentplane/context/derived/reports/evaluator.jsonl",
+    JSON.stringify({
+      schema_version: 1,
+      scenario_id: "scenario.payment_api_recall",
+      summary: "Future agent can update Payment API context from wiki and derived rows.",
+      entrypoints: ["context/wiki/entities/payment-api.md"],
+      expected_findings: ["entity.payment_api"],
+      verdict: "pass",
+      evidence_refs: [".agentplane/context/derived/graph/entities.jsonl"],
+      raw_deletion_resilience: "pass",
     }) + "\n",
   );
 }
@@ -140,6 +171,50 @@ describe("maximum-assimilation artifact validation", () => {
 
     expect(errors).toContain(
       "context/wiki/entities-extra/payment-api.md: wiki page is not covered by topology plan page families",
+    );
+  });
+
+  it("requires evaluator scenarios to use wiki or derived entrypoints", async () => {
+    const root = await tempRoot();
+    await writeMinimalReadableArtifacts(root);
+    await write(
+      root,
+      ".agentplane/context/derived/wiki/topology.plan.json",
+      JSON.stringify({
+        schema_version: 1,
+        mode: "maximum_assimilation",
+        source_shape: {
+          primary: "product_docs",
+          rationale: "Payment API source is product documentation.",
+          evidence_span_ids: ["span.payment-api.0001"],
+        },
+        canonical_page_families: [
+          {
+            family_id: "family.entities",
+            path_template: "context/wiki/entities/{slug}.md",
+            page_type: "concept",
+            source_evidence_span_ids: ["span.payment-api.0001"],
+          },
+        ],
+      }) + "\n",
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/reports/evaluator.jsonl",
+      JSON.stringify({
+        schema_version: 1,
+        scenario_id: "scenario.raw_only",
+        summary: "Raw-only scenario.",
+        entrypoints: ["context/raw/specs/payment-api.md"],
+        verdict: "pass",
+        evidence_refs: ["context/raw/specs/payment-api.md"],
+      }) + "\n",
+    );
+
+    const errors = await validateMaximumAssimilationArtifacts({ root, changedPaths: [] });
+
+    expect(errors).toContain(
+      ".agentplane/context/derived/reports/evaluator.jsonl#scenario.raw_only: scenario must use wiki or derived entrypoints, not raw-only",
     );
   });
 });

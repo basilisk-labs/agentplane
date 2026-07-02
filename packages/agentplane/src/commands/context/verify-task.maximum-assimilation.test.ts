@@ -115,6 +115,71 @@ async function writeMaximumAssimilationArtifacts(root: string, opts?: { glossary
   );
   await write(
     root,
+    "context/wiki/reports/conflicts.md",
+    [
+      "---",
+      "agentplane_context:",
+      "schema_version: 1",
+      "artifact_type: wiki_page",
+      'canonical_id: "report.conflicts"',
+      "modality: observation",
+      "epistemic_status: draft",
+      "source_refs: []",
+      "---",
+      "# Conflicts",
+      "",
+      "No conflicts are currently recorded.",
+      "",
+      "- no-source: generated empty report",
+    ].join("\n"),
+  );
+  await write(
+    root,
+    "context/wiki/reports/open-questions.md",
+    [
+      "---",
+      "agentplane_context:",
+      "schema_version: 1",
+      "artifact_type: wiki_page",
+      'canonical_id: "report.open_questions"',
+      "modality: observation",
+      "epistemic_status: draft",
+      "source_refs: []",
+      "---",
+      "# Open Questions",
+      "",
+      "No open questions are currently recorded.",
+      "",
+      "- no-source: generated empty report",
+    ].join("\n"),
+  );
+  await write(
+    root,
+    "context/wiki/reports/evaluator-review.md",
+    [
+      "---",
+      "agentplane_context:",
+      "schema_version: 1",
+      "artifact_type: wiki_page",
+      'canonical_id: "report.evaluator_review"',
+      "modality: observation",
+      "epistemic_status: draft",
+      "source_refs:",
+      '  - "[Evaluator](../../.agentplane/context/derived/reports/evaluator.jsonl)"',
+      "---",
+      "# Evaluator Review",
+      "",
+      "Verdict: pass.",
+      "",
+      "Scenario coverage: scenario.payment_api_recall.",
+      "",
+      "Failures: none.",
+      "",
+      "Raw-deletion resilience assessment: pass.",
+    ].join("\n"),
+  );
+  await write(
+    root,
     ".agentplane/context/derived/graph/entities.jsonl",
     [
       {
@@ -180,6 +245,22 @@ async function writeMaximumAssimilationArtifacts(root: string, opts?: { glossary
       ],
       target_paths: ["context/wiki/entities/payment-api.md"],
       source_refs: ["context/raw/specs/payment-api.md#lines=1-6"],
+    }) + "\n",
+  );
+  await write(root, ".agentplane/context/derived/wiki/link-index.jsonl", "");
+  await write(root, ".agentplane/context/derived/wiki/orphan-report.jsonl", "");
+  await write(
+    root,
+    ".agentplane/context/derived/reports/evaluator.jsonl",
+    JSON.stringify({
+      schema_version: 1,
+      scenario_id: "scenario.payment_api_recall",
+      summary: "Future agent can update Payment API context from wiki and graph rows.",
+      entrypoints: ["context/wiki/entities/payment-api.md"],
+      expected_findings: ["entity.payment_api"],
+      verdict: "pass",
+      evidence_refs: [".agentplane/context/derived/graph/entities.jsonl"],
+      raw_deletion_resilience: "pass",
     }) + "\n",
   );
   await write(

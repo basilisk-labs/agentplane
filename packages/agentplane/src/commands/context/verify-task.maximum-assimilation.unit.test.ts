@@ -371,6 +371,36 @@ agentplane_context:
         forbidden_creation_patterns: ["one page per minor fact"],
       })}\n`,
     );
+    await write(root, ".agentplane/context/derived/wiki/link-index.jsonl", "");
+    await write(root, ".agentplane/context/derived/wiki/orphan-report.jsonl", "");
+    await write(
+      root,
+      "context/wiki/reports/conflicts.md",
+      "source_refs: x\nVerdict: pass. No conflicts.\n",
+    );
+    await write(
+      root,
+      "context/wiki/reports/open-questions.md",
+      "source_refs: x\nNo unresolved entity identities, coverage spans, possibly_same_as candidates, or topology uncertainties.\n",
+    );
+    await write(
+      root,
+      "context/wiki/reports/evaluator-review.md",
+      "source_refs: x\nVerdict: pass. Scenario coverage: scenario.glossary. Failures: none. Raw-deletion resilience assessment: pass.\n",
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/reports/evaluator.jsonl",
+      `${JSON.stringify({
+        schema_version: 1,
+        scenario_id: "scenario.glossary",
+        summary: "Future agent can use glossary and derived rows.",
+        entrypoints: ["context/wiki/glossary.md"],
+        verdict: "pass",
+        evidence_refs: [".agentplane/context/derived/graph/entities.jsonl"],
+        raw_deletion_resilience: "pass",
+      })}\n`,
+    );
 
     await expect(
       cmdContextVerifyTask({
