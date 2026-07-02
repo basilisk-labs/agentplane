@@ -4,7 +4,7 @@ title: "Add SGR v2 typed context extraction writer"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -25,22 +25,22 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-02T18:49:19.595Z"
+  updated_at: "2026-07-02T19:07:05.794Z"
   updated_by: "CODER"
-  note: "Verified SGR v2 typed context extraction writer and prompt routing."
+  note: "Verified current implementation head 26c0d113 after review fixes."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-02T19:01:54.443Z"
+  updated_at: "2026-07-02T19:06:58.223Z"
   updated_by: "EVALUATOR"
   note: "Quality review passed."
-  evaluated_sha: "c0158cdfa56e750e6e7e7a44be76a02274649076"
+  evaluated_sha: "26c0d113ead47c3886ba3bd9f05032eed2fc0872"
   blueprint_digest: "ac7f23de9f0eb248425eeac8cf30f006f8efe41e2119b8b97d46a1eaf56f11e4"
   evidence_refs:
     - ".agentplane/tasks/202607021729-1F4FNM/README.md"
-    - ".agentplane/tasks/202607021729-1F4FNM/quality/20260702-190154443-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607021729-1F4FNM/quality/20260702-190154443-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607021729-1F4FNM/quality/20260702-190154443-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607021729-1F4FNM/quality/20260702-190658223-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607021729-1F4FNM/quality/20260702-190658223-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607021729-1F4FNM/quality/20260702-190658223-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607021729-1F4FNM/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
@@ -63,8 +63,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified SGR v2 typed context extraction writer and prompt routing."
+  -
+    type: "verify"
+    at: "2026-07-02T19:07:05.794Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified current implementation head 26c0d113 after review fixes."
 doc_version: 3
-doc_updated_at: "2026-07-02T18:49:19.814Z"
+doc_updated_at: "2026-07-02T19:07:05.939Z"
 doc_updated_by: "CODER"
 description: "Phase 2 from the Context Maximum Assimilation PRD. Add SGR schema v2 typed context extraction records, span_refs, confidence_vector, entity_resolution/page_creation/topology_decision payloads, and writer routing for claims, ontology, sources, wiki-derived artifacts while preserving v1 compatibility."
 sections:
@@ -151,6 +157,38 @@ sections:
     - repeat_allowed: false
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-07-02T19:07:05.794Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified current implementation head 26c0d113 after review fixes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-02T18:49:19.814Z, excerpt_hash=sha256:b7f3fd9fd2ee17da795e80b7aa1dddd3037bef9d8d0e7ce1132f07b74eecf963
+
+    Details:
+
+    Review fixes preserve evaluator_result and blueprint_route_decision on SGR v1 while context_extraction uses SGR v2, and protect typed writer row identity from payload reserved fields. Passed focused tests (18), touched-file eslint, Knip baseline, format:changed, framework bootstrap, policy routing, and ap doctor.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021729-1F4FNM-add-sgr-v2-typed-context-extraction-writer/.agentplane/tasks/202607021729-1F4FNM/blueprint/resolved-snapshot.json
+    - old_digest: ac7f23de9f0eb248425eeac8cf30f006f8efe41e2119b8b97d46a1eaf56f11e4
+    - current_digest: ac7f23de9f0eb248425eeac8cf30f006f8efe41e2119b8b97d46a1eaf56f11e4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607021729-1F4FNM
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202607021729-1F4FNM --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit 26c0d113ead47c3886ba3bd9f05032eed2fc0872 --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -251,6 +289,38 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-07-02T19:07:05.794Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified current implementation head 26c0d113 after review fixes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-02T18:49:19.814Z, excerpt_hash=sha256:b7f3fd9fd2ee17da795e80b7aa1dddd3037bef9d8d0e7ce1132f07b74eecf963
+
+Details:
+
+Review fixes preserve evaluator_result and blueprint_route_decision on SGR v1 while context_extraction uses SGR v2, and protect typed writer row identity from payload reserved fields. Passed focused tests (18), touched-file eslint, Knip baseline, format:changed, framework bootstrap, policy routing, and ap doctor.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021729-1F4FNM-add-sgr-v2-typed-context-extraction-writer/.agentplane/tasks/202607021729-1F4FNM/blueprint/resolved-snapshot.json
+- old_digest: ac7f23de9f0eb248425eeac8cf30f006f8efe41e2119b8b97d46a1eaf56f11e4
+- current_digest: ac7f23de9f0eb248425eeac8cf30f006f8efe41e2119b8b97d46a1eaf56f11e4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607021729-1F4FNM
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202607021729-1F4FNM --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit 26c0d113ead47c3886ba3bd9f05032eed2fc0872 --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 
