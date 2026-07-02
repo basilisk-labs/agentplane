@@ -1,10 +1,11 @@
 ---
 id: "202607021729-BC11BT"
 title: "Enforce maximum-assimilation structural validators"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -44,11 +45,16 @@ quality_review:
     - ".agentplane/tasks/202607021729-BC11BT/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "65d025a74730c6b5034eaec6a61285d3ce86f668"
+  message: "🚧 BC11BT task: record PR metadata"
 comments:
   -
     author: "CODER"
     body: "Start: implementing maximum-assimilation structural validators in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -63,8 +69,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified maximum-assimilation structural validators."
+  -
+    type: "status"
+    at: "2026-07-02T19:30:23.391Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-02T19:25:18.683Z"
+doc_updated_at: "2026-07-02T19:30:23.391Z"
 doc_updated_by: "CODER"
 description: "Phase 3 from the Context Maximum Assimilation PRD. Add validators for span-level coverage, entity-resolution ledger, page-creation ledger, structured topology.plan.json, wiki/graph coherence, and wiki archetypes. Wire them into context verify-task with failure fixtures for missing rows, regex-only topology, no graph refs, and incomplete span coverage."
 sections:
@@ -126,6 +139,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "bea2e5d7e757cb4bce4f7ed4a2c2f316f4e3d93b"
+    message: "🚧 BC11BT task: enforce maximum-assimilation validators"
 id_source: "generated"
 ---
 ## Summary
