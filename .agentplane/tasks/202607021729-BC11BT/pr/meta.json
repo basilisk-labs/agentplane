@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202607021729-BC11BT/enforce-maximum-assimilation-structural-validato",
+  "created_at": "2026-07-02T19:17:35.140Z",
+  "diffstat_sha256": "sha256:c6a5d945b2d4695a4336615227613eb14fecfa0e104198e1acf46ca30efac629",
+  "last_verified_at": "2026-07-02T19:25:18.567Z",
+  "last_verified_diffstat_sha256": "sha256:c6a5d945b2d4695a4336615227613eb14fecfa0e104198e1acf46ca30efac629",
+  "schema_version": 1,
+  "task_id": "202607021729-BC11BT",
+  "updated_at": "2026-07-02T19:17:35.140Z",
+  "verify": {
+    "status": "pass"
+  }
+}

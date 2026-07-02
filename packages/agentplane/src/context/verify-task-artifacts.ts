@@ -125,12 +125,40 @@ function hasNonEmptyGraphRefs(text: string): boolean {
   const frontmatter = frontmatterMatch?.[1] ?? "";
   if (!frontmatter) return false;
   const parsed = parseYaml(frontmatter) as unknown;
-  if (!isRecord(parsed) || !isRecord(parsed.agentplane_context)) return false;
-  const graphRefs = parsed.agentplane_context.graph_refs;
+  if (!isRecord(parsed)) return false;
+  const graphRefs = isRecord(parsed.agentplane_context)
+    ? parsed.agentplane_context.graph_refs
+    : parsed.graph_refs;
   if (!isRecord(graphRefs)) return false;
   return (
     (Array.isArray(graphRefs.entities) && graphRefs.entities.length > 0) ||
     (Array.isArray(graphRefs.edges) && graphRefs.edges.length > 0)
+  );
+}
+
+function wikiFrontmatterRecord(text: string): Record<string, unknown> | null {
+  const frontmatterMatch = /^---\n([\s\S]*?)\n---/u.exec(text.replaceAll("\r\n", "\n"));
+  const frontmatter = frontmatterMatch?.[1] ?? "";
+  if (!frontmatter) return null;
+  const parsed = parseYaml(frontmatter) as unknown;
+  return isRecord(parsed) ? parsed : null;
+}
+
+function hasNoGraphRefReason(text: string): boolean {
+  const frontmatter = wikiFrontmatterRecord(text);
+  if (!frontmatter) return false;
+  const reason = isRecord(frontmatter.agentplane_context)
+    ? frontmatter.agentplane_context.no_graph_ref_reason
+    : frontmatter.no_graph_ref_reason;
+  return typeof reason === "string" && reason.trim() !== "";
+}
+
+function isGraphRefExemptWikiPage(rel: string): boolean {
+  return (
+    rel === "context/wiki/index.md" ||
+    rel === "context/wiki/glossary.md" ||
+    rel.includes("/reports/") ||
+    rel.includes("/maps/")
   );
 }
 
@@ -179,10 +207,54 @@ async function validateMaximumAssimilationDerivedConsistency(
   }
   await walk(wikiRoot);
   let pagesWithGraphRefs = 0;
+  let pagesRequiringGraphRefs = 0;
   for (const page of wikiPages) {
-    if (hasNonEmptyGraphRefs(await readText(page))) pagesWithGraphRefs += 1;
+    const rel = toPosix(path.relative(root, page));
+    const text = await readText(page);
+    const isExempt = isGraphRefExemptWikiPage(rel);
+    if (!isExempt) pagesRequiringGraphRefs += 1;
+    if (hasNonEmptyGraphRefs(text)) {
+      pagesWithGraphRefs += 1;
+      continue;
+    }
+    if (!isExempt && !hasNoGraphRefReason(text)) {
+      errors.push(
+        `${rel}: maximum-assimilation wiki pages require graph_refs or no_graph_ref_reason`,
+      );
+    }
   }
-  if (pagesWithGraphRefs === 0) return;
+  if (pagesRequiringGraphRefs > 0 && pagesWithGraphRefs === 0) {
+    errors.push("maximum-assimilation requires at least one wiki page with graph_refs");
+  }
+
+  const openQuestionRows = await loadJsonlRows(
+    path.join(root, ".agentplane/context/derived/claims/open_questions.jsonl"),
+  );
+  const openQuestionRefs = new Set<string>();
+  for (const row of openQuestionRows) {
+    for (const ref of [
+      ...rowSourceRefs(row),
+      ...String(row.summary ?? "")
+        .split(/\s+/u)
+        .filter(Boolean),
+    ]) {
+      openQuestionRefs.add(ref);
+    }
+  }
+  for (const row of entities) {
+    const id = String(row.id ?? "");
+    if (!id) continue;
+    const status = typeof row.status === "string" ? row.status : "active";
+    if (status !== "active" && status !== "accepted") continue;
+    const hasPage = typeof row.target_path === "string" && row.target_path.trim() !== "";
+    const hasNoPageReason =
+      typeof row.no_page_reason === "string" && row.no_page_reason.trim() !== "";
+    if (!hasPage && !hasNoPageReason && !openQuestionRefs.has(id)) {
+      errors.push(
+        `.agentplane/context/derived/graph/entities.jsonl#${id}: active entity requires target_path, no_page_reason, or open question`,
+      );
+    }
+  }
 }
 
 async function validateCapabilityArtifact(filePath: string, errors: string[]): Promise<void> {
@@ -291,7 +363,7 @@ export async function validateContextArtifacts(opts: {
     await validateMaximumAssimilationGlossary(opts.root, errors);
   }
   await validateGraph(opts.root, errors);
-  await validateMaximumAssimilationCoverage(opts.root, opts.context, errors);
+  await validateMaximumAssimilationCoverage(opts.root, opts.context, errors, opts.task.id);
   await validateMaximumAssimilationDerivedConsistency(opts.root, opts.context, errors);
   if (
     isMaximumAssimilationTask(opts.task, opts.context) &&

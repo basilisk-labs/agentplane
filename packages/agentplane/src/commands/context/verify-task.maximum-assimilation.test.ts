@@ -85,6 +85,9 @@ async function writeMaximumAssimilationArtifacts(root: string, opts?: { glossary
       "epistemic_status: draft",
       "source_refs:",
       '  - "[Payment API](../../raw/specs/payment-api.md#lines=1-6)"',
+      "graph_refs:",
+      "  entities:",
+      '    - "entity.payment_api"',
       "---",
       "# Payment API",
       "",
@@ -117,11 +120,13 @@ async function writeMaximumAssimilationArtifacts(root: string, opts?: { glossary
       {
         id: "entity.payment_api",
         label: "Payment API",
+        target_path: "context/wiki/entities/payment-api.md",
         source_refs: ["context/raw/specs/payment-api.md#lines=1-3"],
       },
       {
         id: "entity.payment_workflow",
         label: "Payment Workflow",
+        no_page_reason: "Covered on the Payment API page.",
         source_refs: ["context/raw/specs/payment-api.md#L4-L6"],
       },
     ]
@@ -165,6 +170,7 @@ async function writeMaximumAssimilationArtifacts(root: string, opts?: { glossary
     JSON.stringify({
       id: "coverage.payment_api",
       source_path: "context/raw/specs/payment-api.md",
+      span_id: "span.payment-api.0001",
       coverage_status: "covered",
       reason: "Payment API semantics are represented by wiki, fact, and graph artifacts.",
       covered_item_ids: [
@@ -172,8 +178,99 @@ async function writeMaximumAssimilationArtifacts(root: string, opts?: { glossary
         "entity.payment_workflow",
         "fact.payment_api.public_source",
       ],
+      target_paths: ["context/wiki/entities/payment-api.md"],
       source_refs: ["context/raw/specs/payment-api.md#lines=1-6"],
     }) + "\n",
+  );
+  await write(
+    root,
+    ".agentplane/tasks/202605191451-CTXMAX/source-spans.skeleton.jsonl",
+    JSON.stringify({
+      span_id: "span.payment-api.0001",
+      source_path: "context/raw/specs/payment-api.md",
+      line_start: 1,
+      line_end: 6,
+      text_hash: "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    }) + "\n",
+  );
+  await write(
+    root,
+    ".agentplane/context/derived/ontology/entity-resolution.jsonl",
+    [
+      {
+        id: "resolution.payment_api",
+        source_term: "Payment API",
+        resolution: "new_entity_proposal",
+        proposed_entity_id: "entity.payment_api",
+        candidate_entities_checked: [{ entity_id: "entity.payment_workflow" }],
+        why_not_existing: "Payment API is the canonical source entity.",
+        source_refs: ["context/raw/specs/payment-api.md#lines=1-3"],
+      },
+      {
+        id: "resolution.payment_workflow",
+        source_term: "Payment Workflow",
+        resolution: "new_entity_proposal",
+        proposed_entity_id: "entity.payment_workflow",
+        candidate_entities_checked: [{ entity_id: "entity.payment_api" }],
+        why_not_existing: "Payment Workflow is a separate workflow concept.",
+        source_refs: ["context/raw/specs/payment-api.md#L4-L6"],
+      },
+    ]
+      .map((row) => JSON.stringify(row))
+      .join("\n") + "\n",
+  );
+  await write(
+    root,
+    ".agentplane/context/derived/ontology/page-creation.jsonl",
+    JSON.stringify({
+      id: "page.payment-api",
+      path: "context/wiki/entities/payment-api.md",
+      page_type: "concept",
+      family_id: "family.entities",
+      canonical_entity_ids: ["entity.payment_api"],
+      decision: "create_new_page",
+      span_refs: ["span.payment-api.0001"],
+      source_refs: ["context/raw/specs/payment-api.md#lines=1-6"],
+    }) + "\n",
+  );
+  await write(
+    root,
+    ".agentplane/context/derived/wiki/topology.plan.json",
+    JSON.stringify(
+      {
+        schema_version: 1,
+        mode: "maximum_assimilation",
+        topology_version: 1,
+        generated_by_task_id: "202605191451-CTXMAX",
+        source_shape: {
+          primary: "product_docs",
+          rationale: "Payment API source is product documentation.",
+          evidence_span_ids: ["span.payment-api.0001"],
+        },
+        canonical_page_families: [
+          {
+            family_id: "family.entities",
+            path_template: "context/wiki/entities/{slug}.md",
+            page_type: "concept",
+            creation_rule: "Create pages for reusable product entities.",
+            page_vs_heading_rule: "Keep local details as headings.",
+            source_evidence_span_ids: ["span.payment-api.0001"],
+          },
+        ],
+        canonical_pages: [
+          {
+            path: "context/wiki/entities/payment-api.md",
+            page_type: "concept",
+            canonical_entity_ids: ["entity.payment_api"],
+            required_sections: ["Sources"],
+            source_evidence_span_ids: ["span.payment-api.0001"],
+          },
+        ],
+        forbidden_creation_patterns: ["one page per minor fact"],
+      },
+      null,
+      2,
+    ) + "\n",
   );
 }
 
