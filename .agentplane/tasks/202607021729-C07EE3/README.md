@@ -1,10 +1,11 @@
 ---
 id: "202607021729-C07EE3"
 title: "Force context ingest to maximum-assimilation"
-status: "DOING"
+result_summary: "Merged via PR #4535."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -43,11 +44,16 @@ quality_review:
     - ".agentplane/tasks/202607021729-C07EE3/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "72e48115165fdbf4663e94f9b2e9166f68617c2c"
+  message: "Merge pull request #4535 from basilisk-labs/task/202607021729-C07EE3/force-context-ingest-to-maximum-assimilation"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing Phase 0 single-mode context assimilation from the dedicated main task worktree; scope is limited to ingest mode routing, SGR coverage status cleanup, focused tests, and matching docs/prompt wording."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4535 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -74,9 +80,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: focused ingest/SGR tests, release-readiness tests, policy routing, doctor, and ci:local:fast passed on the task branch."
+  -
+    type: "status"
+    at: "2026-07-02T18:10:31.359Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4535 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-07-02T17:50:28.545Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-02T18:10:31.365Z"
+doc_updated_by: "INTEGRATOR"
 description: "Phase 0 from the 2026-07-02 Context Maximum Assimilation PRD. Make maximum-assimilation the only public context ingest task mode: map deprecated workspace modes to maximum-assimilation, always request context.maximum_assimilation from ingest, extend coverage statuses to duplicate/conflict/out_of_scope, align prompt/docs with span-level coverage terminology, and add focused tests proving no context ingest path creates context.assimilation."
 sections:
   Summary: |-
