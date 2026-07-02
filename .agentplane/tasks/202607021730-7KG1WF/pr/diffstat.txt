@@ -6,5 +6,5 @@
  .../src/commands/context/context-runner.ts         |  13 +
  .../src/commands/context/context.spec.ts           |  34 ++
  .../agentplane/src/commands/context/migrate.ts     | 359 +++++++++++++++++++++
- .../src/commands/context/migrate.unit.test.ts      | 190 +++++++++++
- 9 files changed, 627 insertions(+)
+ .../src/commands/context/migrate.unit.test.ts      | 208 ++++++++++++
+ 9 files changed, 645 insertions(+)
