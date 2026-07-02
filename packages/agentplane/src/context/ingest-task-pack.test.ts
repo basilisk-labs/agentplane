@@ -92,6 +92,12 @@ describe("context ingest task pack", () => {
         ".agentplane/context/derived/ontology/page-creation.jsonl",
         ".agentplane/context/derived/sources/source-spans.jsonl",
         ".agentplane/context/derived/wiki/topology.plan.json",
+        ".agentplane/context/derived/wiki/link-index.jsonl",
+        ".agentplane/context/derived/wiki/orphan-report.jsonl",
+        ".agentplane/context/derived/reports/evaluator.jsonl",
+        "context/wiki/reports/conflicts.md",
+        "context/wiki/reports/open-questions.md",
+        "context/wiki/reports/evaluator-review.md",
       ]),
     );
     expect(parsedAllowedOutputs).toEqual(

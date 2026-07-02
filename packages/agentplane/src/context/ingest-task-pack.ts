@@ -34,6 +34,9 @@ function buildExpectedArtifacts(taskId: string): Record<string, unknown> {
       ...generatedTaskPackFiles,
       "context/wiki/glossary.md",
       "context/wiki/reports/coverage.md",
+      "context/wiki/reports/conflicts.md",
+      "context/wiki/reports/open-questions.md",
+      "context/wiki/reports/evaluator-review.md",
       ".agentplane/context/derived/facts/facts.jsonl",
       ".agentplane/context/derived/graph/entities.jsonl",
       ".agentplane/context/derived/graph/edges.jsonl",
@@ -41,7 +44,10 @@ function buildExpectedArtifacts(taskId: string): Record<string, unknown> {
       ".agentplane/context/derived/ontology/page-creation.jsonl",
       ".agentplane/context/derived/sources/source-spans.jsonl",
       ".agentplane/context/derived/wiki/topology.plan.json",
+      ".agentplane/context/derived/wiki/link-index.jsonl",
+      ".agentplane/context/derived/wiki/orphan-report.jsonl",
       ".agentplane/context/derived/reports/coverage.jsonl",
+      ".agentplane/context/derived/reports/evaluator.jsonl",
     ],
     notes: [
       "Task-bound pack files are CLI-generated scaffolds.",
@@ -115,7 +121,10 @@ export async function writeContextTaskPack(opts: {
       page_creation: ".agentplane/context/derived/ontology/page-creation.jsonl",
       source_spans: ".agentplane/context/derived/sources/source-spans.jsonl",
       topology_plan: ".agentplane/context/derived/wiki/topology.plan.json",
+      link_index: ".agentplane/context/derived/wiki/link-index.jsonl",
+      orphan_report: ".agentplane/context/derived/wiki/orphan-report.jsonl",
       coverage: ".agentplane/context/derived/reports/coverage.jsonl",
+      evaluator_scenarios: ".agentplane/context/derived/reports/evaluator.jsonl",
     },
   });
   await writeTextIfChanged(

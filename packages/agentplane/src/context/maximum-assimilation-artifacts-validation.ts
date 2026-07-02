@@ -97,6 +97,83 @@ function isExemptWikiPage(rel: string): boolean {
   );
 }
 
+async function validateRequiredReports(root: string, errors: string[]): Promise<void> {
+  const requiredReports = [
+    "context/wiki/reports/coverage.md",
+    "context/wiki/reports/conflicts.md",
+    "context/wiki/reports/open-questions.md",
+    "context/wiki/reports/evaluator-review.md",
+  ];
+  for (const rel of requiredReports) {
+    if (!(await fileExists(path.join(root, rel)))) {
+      errors.push(`${rel}: maximum-assimilation requires this wiki report`);
+    }
+  }
+
+  const evaluatorText = await readExistingText(root, "context/wiki/reports/evaluator-review.md");
+  if (
+    evaluatorText &&
+    (!/verdict/iu.test(evaluatorText) ||
+      !/scenario/iu.test(evaluatorText) ||
+      !/failure/iu.test(evaluatorText) ||
+      !/raw[-_\s]+deletion/iu.test(evaluatorText))
+  ) {
+    errors.push(
+      "context/wiki/reports/evaluator-review.md: evaluator review must include verdict, scenario coverage, failures, and raw-deletion resilience",
+    );
+  }
+}
+
+async function validateWikiDerivedReports(root: string, errors: string[]): Promise<void> {
+  const required = [
+    ".agentplane/context/derived/wiki/link-index.jsonl",
+    ".agentplane/context/derived/wiki/orphan-report.jsonl",
+  ];
+  for (const rel of required) {
+    if (!(await fileExists(path.join(root, rel)))) {
+      errors.push(`${rel}: maximum-assimilation requires this derived wiki report`);
+    }
+  }
+}
+
+function arrayField(row: Record<string, unknown>, field: string): string[] {
+  const value = row[field];
+  return Array.isArray(value)
+    ? value.filter((entry): entry is string => typeof entry === "string" && entry.trim() !== "")
+    : [];
+}
+
+function hasWikiOrDerivedEntrypoint(values: string[]): boolean {
+  return values.some(
+    (value) =>
+      value.startsWith("context/wiki/") || value.startsWith(".agentplane/context/derived/"),
+  );
+}
+
+async function validateEvaluatorScenarios(root: string, errors: string[]): Promise<void> {
+  const rel = ".agentplane/context/derived/reports/evaluator.jsonl";
+  const rows = await loadJsonlRows(path.join(root, rel));
+  if (rows.length === 0) {
+    errors.push(`${rel}: evaluator_quality_review requires at least one scenario row`);
+    return;
+  }
+  for (const row of rows) {
+    const id = stringField(row, "scenario_id") || stringField(row, "id") || "<unknown>";
+    const verdict = stringField(row, "verdict");
+    const entrypoints = arrayField(row, "entrypoints");
+    const evidenceRefs = arrayField(row, "evidence_refs");
+    if (entrypoints.length === 0) errors.push(`${rel}#${id}: scenario requires entrypoints`);
+    if (!hasWikiOrDerivedEntrypoint(entrypoints)) {
+      errors.push(`${rel}#${id}: scenario must use wiki or derived entrypoints, not raw-only`);
+    }
+    if (evidenceRefs.length === 0) errors.push(`${rel}#${id}: scenario requires evidence_refs`);
+    if (["fail", "failed", "rework"].includes(verdict)) {
+      errors.push(`${rel}#${id}: failed evaluator scenario requires rework verdict`);
+    }
+    if (!verdict) errors.push(`${rel}#${id}: scenario requires verdict`);
+  }
+}
+
 async function validateEntityResolution(root: string, errors: string[]): Promise<void> {
   const rel = ".agentplane/context/derived/ontology/entity-resolution.jsonl";
   const rows = await loadJsonlRows(path.join(root, rel));
@@ -315,6 +392,9 @@ export async function validateMaximumAssimilationArtifacts(opts: {
   await validateTopologyPlan(opts.root, opts.changedPaths, errors);
   await validateEntityResolution(opts.root, errors);
   await validatePageCreation(opts.root, opts.changedPaths, errors);
+  await validateRequiredReports(opts.root, errors);
+  await validateWikiDerivedReports(opts.root, errors);
+  await validateEvaluatorScenarios(opts.root, errors);
 
   const coverageTexts = await Promise.all(
     [

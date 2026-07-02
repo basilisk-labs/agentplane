@@ -123,6 +123,7 @@ import {
   contextWikiLinkSpec,
   contextWikiLintSpec,
   contextWikiNewSpec,
+  contextWikiReportSpec,
   contextWikiSpec,
 } from "../../../commands/context/context.spec.js";
 import {
@@ -297,6 +298,7 @@ export const PROJECT_COMMANDS = [
   fromCommandsContextCommand(contextWikiExplainSpec, "runContextWikiExplain"),
   fromCommandsContextCommand(contextWikiLinkSpec, "runContextWikiLink"),
   fromCommandsContextCommand(contextWikiIndexSpec, "runContextWikiIndex"),
+  fromCommandsContextCommand(contextWikiReportSpec, "runContextWikiReport"),
   fromCommandsContextCommand(contextDoctorSpec, "runContextDoctor", { surface: "advanced" }),
   fromCommandsContextCommand(contextVerifyTaskSpec, "runContextVerifyTask", {
     surface: "advanced",

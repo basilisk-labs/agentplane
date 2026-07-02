@@ -13,6 +13,7 @@ import {
   cmdContextWikiLint,
   cmdContextWikiNew,
 } from "./wiki.js";
+import { cmdContextWikiReport } from "./wiki-reports.js";
 import { cmdContextHarvestTasks, type ContextHarvestTasksParsed } from "./harvest-tasks.js";
 import {
   cmdContextGraphSummary,
@@ -218,6 +219,13 @@ export async function runContextWikiIndex(
   p: Parameters<typeof cmdContextWikiIndex>[0]["parsed"],
 ): Promise<number> {
   return await cmdContextWikiIndex({ cwd: _ctx.cwd, rootOverride: _ctx.rootOverride, parsed: p });
+}
+
+export async function runContextWikiReport(
+  _ctx: CommandCtx,
+  p: Parameters<typeof cmdContextWikiReport>[0]["parsed"],
+): Promise<number> {
+  return await cmdContextWikiReport({ cwd: _ctx.cwd, rootOverride: _ctx.rootOverride, parsed: p });
 }
 
 export async function runContextHarvestTasks(
