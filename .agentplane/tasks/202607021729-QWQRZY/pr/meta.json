@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-07-02T18:32:59Z",
   "base": "main",
   "branch": "task/202607021729-QWQRZY/context-task-pack-source-spans",
   "created_at": "2026-07-02T18:12:34.390Z",
   "diffstat_sha256": "sha256:31dccd2c611b7bd7b365e0e403301b8273d33b6b0e94cb2b6796e1b49fd81618",
   "last_verified_at": "2026-07-02T18:17:57.690Z",
   "last_verified_diffstat_sha256": "sha256:31dccd2c611b7bd7b365e0e403301b8273d33b6b0e94cb2b6796e1b49fd81618",
+  "merge_commit": "838282055006bf5824c7e859fd05e0e7c59b8c51",
+  "merge_strategy": "merge",
+  "merged_at": "2026-07-02T18:32:59Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202607021729-QWQRZY",
-  "updated_at": "2026-07-02T18:12:34.390Z",
+  "updated_at": "2026-07-02T18:32:59Z",
   "verify": {
     "status": "pass"
   }

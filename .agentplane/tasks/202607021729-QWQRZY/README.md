@@ -1,10 +1,11 @@
 ---
 id: "202607021729-QWQRZY"
 title: "Create context task pack and source span skeleton"
-status: "DOING"
+result_summary: "Merged via PR #4537."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -44,11 +45,16 @@ quality_review:
     - ".agentplane/tasks/202607021729-QWQRZY/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "838282055006bf5824c7e859fd05e0e7c59b8c51"
+  message: "Merge pull request #4537 from basilisk-labs/task/202607021729-QWQRZY/context-task-pack-source-spans"
 comments:
   -
     author: "CODER"
     body: "Start: implementing deterministic source span skeleton and context task pack artifacts for maximum-assimilation ingest."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4537 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -69,9 +75,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified after PR artifact refresh: targeted source-span/task-pack tests, release-readiness suite, policy routing, and doctor passed."
+  -
+    type: "status"
+    at: "2026-07-02T18:33:43.214Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4537 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-07-02T18:17:57.872Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-02T18:33:43.219Z"
+doc_updated_by: "INTEGRATOR"
 description: "Phase 1 from the Context Maximum Assimilation PRD. Add deterministic source span skeleton generation and make context ingest create task-bound context-pack.md, canonical-snapshot.json, source-set.lock.json, source-spans.skeleton.jsonl, and expected-artifacts.json. Extend context task allowed outputs for these files and add tests for stable span IDs and task pack creation."
 sections:
   Summary: |-
