@@ -1,5 +1,6 @@
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import { cmdContextIngest, type ContextIngestParsed } from "./ingest.js";
+import { cmdContextMigrate } from "./migrate.js";
 import { cmdContextReindex } from "./reindex.js";
 import { cmdContextDashboard } from "./dashboard.js";
 import { cmdContextSearch } from "./search.js";
@@ -40,6 +41,17 @@ export { runContextInit } from "./context-init-runner.js";
 
 export async function runContextIngest(_ctx: CommandCtx, p: ContextIngestParsed): Promise<number> {
   return await cmdContextIngest({
+    cwd: _ctx.cwd,
+    rootOverride: _ctx.rootOverride,
+    parsed: p,
+  });
+}
+
+export async function runContextMigrate(
+  _ctx: CommandCtx,
+  p: Parameters<typeof cmdContextMigrate>[0]["parsed"],
+): Promise<number> {
+  return await cmdContextMigrate({
     cwd: _ctx.cwd,
     rootOverride: _ctx.rootOverride,
     parsed: p,
@@ -341,6 +353,7 @@ export {
   contextGraphValidateSpec,
   contextHarvestSpec,
   contextHarvestTasksSpec,
+  contextMigrateSpec,
   contextReindexSpec,
   contextSearchSpec,
   contextShowSpec,
