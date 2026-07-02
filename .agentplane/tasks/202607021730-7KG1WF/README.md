@@ -1,10 +1,11 @@
 ---
 id: "202607021730-7KG1WF"
 title: "Document and migrate maximum-assimilation v2"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -44,11 +45,16 @@ quality_review:
     - ".agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "f4ffe1d5e9f14dbcdd33b2b8869b5d5af25a6aeb"
+  message: "🚧 7KG1WF task: refresh final quality evidence"
 comments:
   -
     author: "CODER"
     body: "Start: implement maximum-assimilation v2 migration command and docs."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -93,8 +99,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified final metadata and quality snapshot refresh."
+  -
+    type: "status"
+    at: "2026-07-02T21:02:25.307Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-02T21:02:00.622Z"
+doc_updated_at: "2026-07-02T21:02:25.308Z"
 doc_updated_by: "CODER"
 description: "Phase 5 from the Context Maximum Assimilation PRD. Add migration or dry-run support for legacy context modes/artifacts, preserve existing wiki/facts/graph, generate initial topology/entity/page manifests where possible, and update user/developer docs plus release notes for the single public maximum-assimilation workflow."
 sections:
@@ -302,6 +315,10 @@ sections:
     - Observation: context migrate maximum-assimilation-v2 preserves existing context/wiki, facts, and graph data while materializing missing topology, page-creation, page-manifest, and entity-resolution artifacts; dry-run writes nothing.
       Impact: Existing context workspaces can migrate toward strict maximum-assimilation v2 without data loss or retroactive invented raw-span coverage.
       Resolution: Added CLI command, command registration, unit tests, user docs, review docs, and release notes.
+extensions:
+  implementation_commit:
+    hash: "4506da62508dcc376d91f3e2e547dab42c0e3e1b"
+    message: "🚧 7KG1WF task: address migration source refs review"
 id_source: "generated"
 ---
 ## Summary
