@@ -50,8 +50,8 @@ function slug(value: string): string {
     .replaceAll(/^\.|\.$/gu, "");
 }
 
-function sourceRef(pathValue: string): { path: string; section: string } {
-  return { path: pathValue, section: "legacy-migration" };
+function sourceRef(pathValue: string): string {
+  return `${pathValue}#section=legacy-migration`;
 }
 
 function spanRef(pathValue: string): string {

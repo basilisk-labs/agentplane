@@ -112,6 +112,15 @@ describe("context migrate maximum-assimilation-v2", () => {
         "utf8",
       ),
     ).toContain("context/wiki/entities/payment-api.md");
+    const pageCreation = JSON.parse(
+      await readFile(
+        path.join(root, ".agentplane/context/derived/ontology/page-creation.jsonl"),
+        "utf8",
+      ),
+    ) as { source_refs?: unknown[] };
+    expect(pageCreation.source_refs).toEqual([
+      "context/wiki/entities/payment-api.md#section=legacy-migration",
+    ]);
     expect(
       await readFile(
         path.join(root, ".agentplane/context/derived/wiki/page-manifests.jsonl"),
@@ -124,6 +133,15 @@ describe("context migrate maximum-assimilation-v2", () => {
         "utf8",
       ),
     ).toContain("entity.payment_api");
+    const entityResolution = JSON.parse(
+      await readFile(
+        path.join(root, ".agentplane/context/derived/ontology/entity-resolution.jsonl"),
+        "utf8",
+      ),
+    ) as { source_refs?: unknown[] };
+    expect(entityResolution.source_refs).toEqual([
+      ".agentplane/context/derived/graph/entities.jsonl#section=legacy-migration",
+    ]);
   });
 
   it("does not overwrite an existing topology plan and appends only missing rows", async () => {
