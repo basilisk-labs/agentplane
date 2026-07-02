@@ -1,0 +1,9 @@
+ .../verify-task.maximum-assimilation.test.ts       |  97 ++++++++++
+ .../verify-task.maximum-assimilation.unit.test.ts  |  90 +++++++++
+ .../src/context/coverage-validation.test.ts        | 120 ++++++++++++
+ .../agentplane/src/context/coverage-validation.ts  |  68 ++++++-
+ ...ximum-assimilation-artifacts-validation.test.ts | 110 +++++++++++
+ .../maximum-assimilation-artifacts-validation.ts   | 214 +++++++++++++++++++++
+ .../src/context/verify-task-artifacts.ts           |  82 +++++++-
+ .../agentplane/src/context/verify-task.test.ts     |  72 +++++++
+ 8 files changed, 843 insertions(+), 10 deletions(-)

@@ -41,10 +41,23 @@ async function loadJsonlRows(filePath: string): Promise<Record<string, unknown>[
   return parseJsonlLines(await readText(filePath)) as Record<string, unknown>[];
 }
 
+function rowStringArray(row: Record<string, unknown>, field: string): string[] {
+  const value = row[field];
+  if (!Array.isArray(value)) return [];
+  return value.filter((entry): entry is string => typeof entry === "string" && entry.trim() !== "");
+}
+
+function rowIds(rows: Record<string, unknown>[]): Set<string> {
+  return new Set(
+    rows.map((row) => (typeof row.id === "string" ? row.id.trim() : "")).filter((id) => id !== ""),
+  );
+}
+
 export async function validateMaximumAssimilationCoverage(
   root: string,
   context: ContextExtension,
   errors: string[],
+  taskId?: string,
 ): Promise<void> {
   if (context.mode !== "maximum_assimilation" || isProfileSwitchContextTask(context)) return;
 
@@ -72,15 +85,60 @@ export async function validateMaximumAssimilationCoverage(
       errors.push(`${rel}#${id}: coverage row has no source_ref/source_refs`);
     }
     if (status === "covered") {
-      const coveredItemIds = Array.isArray(row.covered_item_ids) ? row.covered_item_ids : [];
-      if (
-        coveredItemIds.length === 0 ||
-        coveredItemIds.some((value) => typeof value !== "string" || !value.trim())
-      ) {
+      const coveredItemIds = rowStringArray(row, "covered_item_ids");
+      if (coveredItemIds.length === 0) {
         errors.push(`${rel}#${id}: covered coverage rows must include covered_item_ids`);
       }
+      if (rowStringArray(row, "target_paths").length === 0) {
+        errors.push(`${rel}#${id}: covered coverage rows must include target_paths`);
+      }
+    }
+    if (status === "duplicate" && typeof row.duplicate_of_span_id !== "string") {
+      errors.push(`${rel}#${id}: duplicate coverage rows must include duplicate_of_span_id`);
     }
     if (sourcePath) coveredSourcePaths.add(sourcePath);
+  }
+
+  const contradictionIds = rowIds(
+    await loadJsonlRows(path.join(root, ".agentplane/context/derived/claims/contradictions.jsonl")),
+  );
+  const openQuestionIds = rowIds(
+    await loadJsonlRows(path.join(root, ".agentplane/context/derived/claims/open_questions.jsonl")),
+  );
+  for (const row of rows) {
+    const id = typeof row.id === "string" && row.id.trim() ? row.id : "<unknown>";
+    const status = typeof row.coverage_status === "string" ? row.coverage_status.trim() : "";
+    const coveredItemIds = rowStringArray(row, "covered_item_ids");
+    if (status === "conflict" && !coveredItemIds.some((itemId) => contradictionIds.has(itemId))) {
+      errors.push(`${rel}#${id}: conflict coverage rows must reference a contradiction record`);
+    }
+    if (status === "unresolved" && !coveredItemIds.some((itemId) => openQuestionIds.has(itemId))) {
+      errors.push(`${rel}#${id}: unresolved coverage rows must reference an open_question record`);
+    }
+  }
+
+  if (taskId) {
+    const skeletonRel = `.agentplane/tasks/${taskId}/source-spans.skeleton.jsonl`;
+    const skeletonRows = await loadJsonlRows(path.join(root, skeletonRel));
+    if (skeletonRows.length === 0) {
+      errors.push(`${skeletonRel}: maximum-assimilation requires source span skeleton rows`);
+    } else {
+      const coveredSpanIds = new Set(
+        rows
+          .map((row) => (typeof row.span_id === "string" ? row.span_id.trim() : ""))
+          .filter((spanId) => spanId !== ""),
+      );
+      for (const span of skeletonRows) {
+        const spanId = typeof span.span_id === "string" ? span.span_id.trim() : "";
+        if (!spanId) {
+          errors.push(`${skeletonRel}: source span row missing span_id`);
+          continue;
+        }
+        if (!coveredSpanIds.has(spanId)) {
+          errors.push(`${rel}: missing coverage row for source span ${spanId}`);
+        }
+      }
+    }
   }
 
   const sourceFiles = Array.isArray(context.source_set?.files) ? context.source_set.files : [];
