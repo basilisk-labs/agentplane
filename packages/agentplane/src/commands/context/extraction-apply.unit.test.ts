@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -142,5 +142,137 @@ describe("context extraction apply", () => {
     expect(provenance).toContain("context/raw/research/source.md#lines=1-6");
     expect(coverage).toContain("coverage.research-source");
     expect(coverage).toContain("context/raw/research/source.md");
+  });
+
+  it("routes SGR v2 typed records to claims, ontology, sources, and wiki outputs", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/extraction-v2.json",
+      JSON.stringify({
+        schema_version: 2,
+        kind: "context_extraction",
+        task_id: "202607021729-1F4FNM",
+        reasoning: [{ label: "typed", summary: "Typed records drive maximum assimilation." }],
+        source_refs: [{ path: "context/raw/research/source.md", lines: "1-20" }],
+        extracted_items: [
+          {
+            id: "decision.context-writer",
+            kind: "decision",
+            summary: "Context writer materializes typed records before wiki synthesis.",
+            source_refs: [{ path: "context/raw/research/source.md", lines: "1-4" }],
+            span_refs: ["span.source.1"],
+            confidence_vector: {
+              extraction: 0.9,
+              source_quality: 0.8,
+              entity_resolution: 0.85,
+              freshness: 0.95,
+            },
+            status: "accepted",
+            validity: "current",
+            target_path: "context/wiki/workflows/context-writer.md",
+          },
+          {
+            id: "resolution.context-writer",
+            kind: "entity_resolution",
+            summary: "Source-local term resolves to an existing canonical entity.",
+            source_refs: [{ path: "context/raw/research/source.md", lines: "5-8" }],
+            confidence: 0.88,
+            status: "accepted",
+            entity_resolution: {
+              source_term: "context writer",
+              resolution: "alias_of",
+              canonical_entity_id: "entity.context_writer",
+            },
+          },
+          {
+            id: "page.context-writer",
+            kind: "page_creation",
+            summary: "Workflow page creation is source-backed.",
+            source_refs: [{ path: "context/raw/research/source.md", lines: "9-12" }],
+            confidence: 0.82,
+            status: "proposed",
+            page_creation: {
+              path: "context/wiki/workflows/context-writer.md",
+              page_type: "workflow",
+              decision: "create",
+            },
+          },
+          {
+            id: "topology.context",
+            kind: "topology_decision",
+            summary: "Context wiki topology is workflow-shaped.",
+            source_refs: [{ path: "context/raw/research/source.md", lines: "13-16" }],
+            confidence: 0.8,
+            status: "accepted",
+            topology_decision: {
+              source_shape: { primary: "codebase_and_task_history" },
+              canonical_page_families: [{ family_id: "family.workflows" }],
+            },
+          },
+          {
+            id: "coverage.span-source",
+            kind: "coverage",
+            summary: "Span-level coverage points to typed records.",
+            source_refs: [{ path: "context/raw/research/source.md", lines: "1-20" }],
+            confidence: 0.91,
+            status: "accepted",
+            coverage: {
+              source_path: "context/raw/research/source.md",
+              span_id: "span.source.1",
+              status: "covered",
+              reason: "Typed decision and ontology rows cover this span.",
+              covered_item_ids: ["decision.context-writer", "resolution.context-writer"],
+              target_paths: ["context/wiki/workflows/context-writer.md"],
+            },
+          },
+        ],
+      }),
+    );
+
+    await cmdContextExtractionApply({
+      cwd: root,
+      parsed: { file: "context/extraction-v2.json", taskId: "202607021729-1F4FNM", dryRun: true },
+    });
+    await expect(
+      stat(path.join(root, ".agentplane/context/derived/claims/decisions.jsonl")),
+    ).rejects.toThrow();
+
+    await cmdContextExtractionApply({
+      cwd: root,
+      parsed: { file: "context/extraction-v2.json", taskId: "202607021729-1F4FNM", dryRun: false },
+    });
+
+    const decisions = await readFile(
+      path.join(root, ".agentplane/context/derived/claims/decisions.jsonl"),
+      "utf8",
+    );
+    const entityResolution = await readFile(
+      path.join(root, ".agentplane/context/derived/ontology/entity-resolution.jsonl"),
+      "utf8",
+    );
+    const aliases = await readFile(
+      path.join(root, ".agentplane/context/derived/ontology/aliases.jsonl"),
+      "utf8",
+    );
+    const sourceSpans = await readFile(
+      path.join(root, ".agentplane/context/derived/sources/source-spans.jsonl"),
+      "utf8",
+    );
+    const topologyPlan = JSON.parse(
+      await readFile(
+        path.join(root, ".agentplane/context/derived/wiki/topology.plan.json"),
+        "utf8",
+      ),
+    ) as { mode: string; source_shape: { primary: string } };
+
+    expect(decisions).toContain("decision.context-writer");
+    expect(decisions).toContain("confidence_vector");
+    expect(entityResolution).toContain("resolution.context-writer");
+    expect(aliases).toContain("entity.context_writer");
+    expect(sourceSpans).toContain("span.source.1");
+    expect(sourceSpans).toContain("target_paths");
+    expect(topologyPlan.mode).toBe("maximum_assimilation");
+    expect(topologyPlan.source_shape.primary).toBe("codebase_and_task_history");
   });
 });

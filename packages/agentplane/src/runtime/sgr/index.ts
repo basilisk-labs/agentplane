@@ -1,4 +1,5 @@
 export {
+  CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
   SGR_CONTRACT_SCHEMA_VERSION,
   validateBlueprintRouteDecisionSgrResult,
   validateContextExtractionSgrResult,
