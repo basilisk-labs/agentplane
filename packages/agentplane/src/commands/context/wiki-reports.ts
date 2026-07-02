@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { fileExists, parseJsonlLines, readText, toPosix } from "./context-utils.js";
-import { collectWikiFiles, extractFrontmatter } from "./wiki-lint.js";
+import { collectWikiFiles, extractFrontmatter, normalizeExistingWikiTarget } from "./wiki-lint.js";
 
 type JsonRow = Record<string, unknown>;
 
@@ -119,13 +119,10 @@ function extractWikilinks(text: string): string[] {
   return [...text.matchAll(/!?\[\[([^\]\n]+)\]\]/gu)].map((match) => match[1]?.trim() ?? "");
 }
 
-async function buildWikiLinkRows(
+async function buildWikiTargetCatalog(
   root: string,
   wikiFiles: string[],
-): Promise<{
-  linkRows: JsonRow[];
-  inboundByPath: Map<string, number>;
-}> {
+): Promise<Map<string, string>> {
   const pathByTarget = new Map<string, string>();
   for (const rel of wikiFiles) {
     const target = rel.replace(/^context\/wiki\//u, "").replace(/\.md$/u, "");
@@ -135,16 +132,23 @@ async function buildWikiLinkRows(
     const title = titleFromMarkdown(rel, text);
     pathByTarget.set(title.toLowerCase(), rel);
   }
+  return pathByTarget;
+}
 
-  const inboundByPath = new Map<string, number>();
+async function buildWikiLinkRows(
+  root: string,
+  sourceFiles: string[],
+  pathByTarget: Map<string, string>,
+): Promise<{
+  linkRows: JsonRow[];
+}> {
   const linkRows: JsonRow[] = [];
-  for (const sourcePath of wikiFiles) {
+  for (const sourcePath of sourceFiles) {
     const text = await readFile(path.join(root, sourcePath), "utf8");
     for (const rawTarget of extractWikilinks(text)) {
       const normalized = normalizeTarget(rawTarget);
       if (!normalized || normalized.startsWith("#")) continue;
       const targetPath = pathByTarget.get(normalized.toLowerCase()) ?? null;
-      if (targetPath) inboundByPath.set(targetPath, (inboundByPath.get(targetPath) ?? 0) + 1);
       linkRows.push({
         schema_version: 1,
         source_path: sourcePath,
@@ -155,7 +159,25 @@ async function buildWikiLinkRows(
       });
     }
   }
-  return { linkRows, inboundByPath };
+  return { linkRows };
+}
+
+async function buildInboundCounts(
+  root: string,
+  sourceFiles: string[],
+  pathByTarget: Map<string, string>,
+): Promise<Map<string, number>> {
+  const inboundByPath = new Map<string, number>();
+  for (const sourcePath of sourceFiles) {
+    const text = await readFile(path.join(root, sourcePath), "utf8");
+    for (const rawTarget of extractWikilinks(text)) {
+      const normalized = normalizeTarget(rawTarget);
+      if (!normalized || normalized.startsWith("#")) continue;
+      const targetPath = pathByTarget.get(normalized.toLowerCase());
+      if (targetPath) inboundByPath.set(targetPath, (inboundByPath.get(targetPath) ?? 0) + 1);
+    }
+  }
+  return inboundByPath;
 }
 
 function renderConflictReport(rows: JsonRow[]): string {
@@ -225,13 +247,23 @@ function renderEvaluatorReport(rows: JsonRow[]): string {
     .join("\n\n");
 }
 
-async function buildMaximumAssimilationWikiReports(root: string): Promise<WikiReportBuildResult> {
-  const collectedWikiFiles = await collectWikiFiles(root, "context/wiki");
-  const wikiFiles = collectedWikiFiles.filter(
+async function buildMaximumAssimilationWikiReports(
+  root: string,
+  target: string,
+): Promise<WikiReportBuildResult> {
+  const collectedAllWikiFiles = await collectWikiFiles(root, "context/wiki");
+  const allWikiFiles = collectedAllWikiFiles.filter(
     (file) => file.endsWith(".md") && path.basename(file) !== "AGENTS.md",
   );
-  const { linkRows, inboundByPath } = await buildWikiLinkRows(root, wikiFiles);
-  const orphanRows = wikiFiles
+  const collectedTargetWikiFiles = await collectWikiFiles(root, target);
+  const targetWikiFiles = collectedTargetWikiFiles.filter(
+    (file) => file.endsWith(".md") && path.basename(file) !== "AGENTS.md",
+  );
+  const nonReportWikiFiles = allWikiFiles.filter((file) => !file.includes("/reports/"));
+  const pathByTarget = await buildWikiTargetCatalog(root, allWikiFiles);
+  const { linkRows } = await buildWikiLinkRows(root, targetWikiFiles, pathByTarget);
+  const inboundByPath = await buildInboundCounts(root, nonReportWikiFiles, pathByTarget);
+  const orphanRows = targetWikiFiles
     .filter((rel) => !isOrphanExempt(rel) && (inboundByPath.get(rel) ?? 0) === 0)
     .map((rel) => ({
       schema_version: 1,
@@ -303,7 +335,8 @@ export async function cmdContextWikiReport(opts: {
   parsed: { path: string };
 }): Promise<number> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
-  const result = await buildMaximumAssimilationWikiReports(root);
+  const target = await normalizeExistingWikiTarget(root, opts.parsed.path, "wiki report");
+  const result = await buildMaximumAssimilationWikiReports(root, target);
   process.stdout.write(`context wiki report: updated ${result.changed.length} artifact(s)\n`);
   for (const rel of result.changed) process.stdout.write(`- ${rel}\n`);
   return 0;

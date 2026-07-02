@@ -104,4 +104,49 @@ describe("context wiki report", () => {
       await readFile(path.join(root, "context/wiki/reports/open-questions.md"), "utf8"),
     ).toContain("question.payment");
   });
+
+  it("honors the requested wiki report path", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/wiki/entities/payment-api.md",
+      wikiPage("Payment API", "See [[Shared Term]]."),
+    );
+    await write(root, "context/wiki/entities/shared-term.md", wikiPage("Shared Term", "Shared."));
+    await write(root, "context/wiki/other/noise.md", wikiPage("Noise", "See [[Payment API]]."));
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextWikiReport({ cwd: root, parsed: { path: "context/wiki/entities" } });
+
+    out.mockRestore();
+    const linkIndex = await readFile(
+      path.join(root, ".agentplane/context/derived/wiki/link-index.jsonl"),
+      "utf8",
+    );
+    expect(linkIndex).toContain('"source_path":"context/wiki/entities/payment-api.md"');
+    expect(linkIndex).not.toContain('"source_path":"context/wiki/other/noise.md"');
+    await expect(
+      cmdContextWikiReport({ cwd: root, parsed: { path: "context/wiki/missing" } }),
+    ).rejects.toThrow(/wiki report target does not exist/u);
+  });
+
+  it("does not count report-page links as inbound links for orphan rows", async () => {
+    const root = await tempRoot();
+    await write(root, "context/wiki/entities/report-only.md", wikiPage("Report Only", "Body."));
+    await write(
+      root,
+      "context/wiki/reports/open-questions.md",
+      wikiPage("Open Questions", "Follow up on [[Report Only]]."),
+    );
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextWikiReport({ cwd: root, parsed: { path: "context/wiki" } });
+
+    out.mockRestore();
+    const orphanReport = await readFile(
+      path.join(root, ".agentplane/context/derived/wiki/orphan-report.jsonl"),
+      "utf8",
+    );
+    expect(orphanReport).toContain("context/wiki/entities/report-only.md");
+  });
 });
