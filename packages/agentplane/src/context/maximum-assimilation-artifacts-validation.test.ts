@@ -107,4 +107,39 @@ describe("maximum-assimilation artifact validation", () => {
       "context/wiki/foo/payment-api.md: wiki page is not covered by topology plan page families",
     );
   });
+
+  it("does not treat sibling path prefixes as declared topology page families", async () => {
+    const root = await tempRoot();
+    await writeMinimalReadableArtifacts(root);
+    await write(
+      root,
+      ".agentplane/context/derived/wiki/topology.plan.json",
+      JSON.stringify({
+        schema_version: 1,
+        mode: "maximum_assimilation",
+        source_shape: {
+          primary: "product_docs",
+          rationale: "Payment API source is product documentation.",
+          evidence_span_ids: ["span.payment-api.0001"],
+        },
+        canonical_page_families: [
+          {
+            family_id: "family.entities",
+            path_template: "context/wiki/entities/{slug}.md",
+            page_type: "concept",
+            source_evidence_span_ids: ["span.payment-api.0001"],
+          },
+        ],
+      }) + "\n",
+    );
+
+    const errors = await validateMaximumAssimilationArtifacts({
+      root,
+      changedPaths: ["context/wiki/entities-extra/payment-api.md"],
+    });
+
+    expect(errors).toContain(
+      "context/wiki/entities-extra/payment-api.md: wiki page is not covered by topology plan page families",
+    );
+  });
 });

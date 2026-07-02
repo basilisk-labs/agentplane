@@ -42,10 +42,14 @@ export type VerificationInput = {
 
 const DEFAULT_ALLOWED = [
   "context/wiki/",
+  ".agentplane/context/derived/claims/",
   ".agentplane/context/derived/facts/facts.jsonl",
   ".agentplane/context/derived/graph/entities.jsonl",
   ".agentplane/context/derived/graph/edges.jsonl",
   ".agentplane/context/derived/graph/provenance_edges.jsonl",
+  ".agentplane/context/derived/ontology/",
+  ".agentplane/context/derived/sources/",
+  ".agentplane/context/derived/wiki/",
   ".agentplane/context/derived/capabilities/capabilities.jsonl",
   ".agentplane/context/derived/reports/assimilation-events.jsonl",
   ".agentplane/context/derived/reports/coverage.jsonl",

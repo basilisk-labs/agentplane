@@ -37,6 +37,10 @@ function buildExpectedArtifacts(taskId: string): Record<string, unknown> {
       ".agentplane/context/derived/facts/facts.jsonl",
       ".agentplane/context/derived/graph/entities.jsonl",
       ".agentplane/context/derived/graph/edges.jsonl",
+      ".agentplane/context/derived/ontology/entity-resolution.jsonl",
+      ".agentplane/context/derived/ontology/page-creation.jsonl",
+      ".agentplane/context/derived/sources/source-spans.jsonl",
+      ".agentplane/context/derived/wiki/topology.plan.json",
       ".agentplane/context/derived/reports/coverage.jsonl",
     ],
     notes: [
@@ -107,6 +111,10 @@ export async function writeContextTaskPack(opts: {
       facts: ".agentplane/context/derived/facts/facts.jsonl",
       graph_entities: ".agentplane/context/derived/graph/entities.jsonl",
       graph_edges: ".agentplane/context/derived/graph/edges.jsonl",
+      entity_resolution: ".agentplane/context/derived/ontology/entity-resolution.jsonl",
+      page_creation: ".agentplane/context/derived/ontology/page-creation.jsonl",
+      source_spans: ".agentplane/context/derived/sources/source-spans.jsonl",
+      topology_plan: ".agentplane/context/derived/wiki/topology.plan.json",
       coverage: ".agentplane/context/derived/reports/coverage.jsonl",
     },
   });

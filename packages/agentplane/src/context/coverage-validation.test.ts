@@ -117,4 +117,83 @@ describe("maximum-assimilation coverage validation", () => {
       ".agentplane/context/derived/reports/coverage.jsonl#coverage.conflict: conflict coverage rows must reference a contradiction record",
     );
   });
+
+  it("allows an existing empty source span skeleton for non-text source sets", async () => {
+    const root = await tempRoot();
+    await write(root, ".agentplane/tasks/202605191451-CTXMAX/source-spans.skeleton.jsonl", "");
+    await write(
+      root,
+      ".agentplane/context/derived/reports/coverage.jsonl",
+      JSON.stringify({
+        id: "coverage.binary",
+        source_path: "context/raw/screens/payment-flow.png",
+        coverage_status: "out_of_scope",
+        reason: "Binary source does not produce line-addressable text spans.",
+        source_refs: ["context/raw/screens/payment-flow.png"],
+      }) + "\n",
+    );
+
+    const errors: string[] = [];
+    await validateMaximumAssimilationCoverage(
+      root,
+      {
+        mode: "maximum_assimilation",
+        task_type: "context_assimilation",
+        source_set: {
+          files: [
+            {
+              path: "context/raw/screens/payment-flow.png",
+              status: "unsupported",
+              content_type: "image/png",
+            },
+          ],
+        },
+      },
+      errors,
+      "202605191451-CTXMAX",
+    );
+
+    expect(errors).not.toContain(
+      ".agentplane/tasks/202605191451-CTXMAX/source-spans.skeleton.jsonl: maximum-assimilation requires source span skeleton rows",
+    );
+  });
+
+  it("still rejects a missing source span skeleton", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      ".agentplane/context/derived/reports/coverage.jsonl",
+      JSON.stringify({
+        id: "coverage.binary",
+        source_path: "context/raw/screens/payment-flow.png",
+        coverage_status: "out_of_scope",
+        reason: "Binary source does not produce line-addressable text spans.",
+        source_refs: ["context/raw/screens/payment-flow.png"],
+      }) + "\n",
+    );
+
+    const errors: string[] = [];
+    await validateMaximumAssimilationCoverage(
+      root,
+      {
+        mode: "maximum_assimilation",
+        task_type: "context_assimilation",
+        source_set: {
+          files: [
+            {
+              path: "context/raw/screens/payment-flow.png",
+              status: "unsupported",
+              content_type: "image/png",
+            },
+          ],
+        },
+      },
+      errors,
+      "202605191451-CTXMAX",
+    );
+
+    expect(errors).toContain(
+      ".agentplane/tasks/202605191451-CTXMAX/source-spans.skeleton.jsonl: maximum-assimilation requires source span skeleton rows",
+    );
+  });
 });

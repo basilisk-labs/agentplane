@@ -6,7 +6,7 @@ type ContextExtension = {
   mode?: string;
   task_type?: string;
   source_set?: {
-    files?: { path?: unknown }[];
+    files?: { path?: unknown; status?: unknown; content_type?: unknown }[];
   };
 };
 
@@ -50,6 +50,25 @@ function rowStringArray(row: Record<string, unknown>, field: string): string[] {
 function rowIds(rows: Record<string, unknown>[]): Set<string> {
   return new Set(
     rows.map((row) => (typeof row.id === "string" ? row.id.trim() : "")).filter((id) => id !== ""),
+  );
+}
+
+function sourceMayProduceSpans(file: {
+  path?: unknown;
+  status?: unknown;
+  content_type?: unknown;
+}): boolean {
+  if (file.status === "deleted" || file.status === "unsupported") return false;
+  const sourcePath = typeof file.path === "string" ? file.path.toLowerCase() : "";
+  const contentType = typeof file.content_type === "string" ? file.content_type.toLowerCase() : "";
+  return (
+    contentType.startsWith("text/") ||
+    contentType === "application/json" ||
+    sourcePath.endsWith(".jsonl") ||
+    sourcePath.endsWith(".json") ||
+    sourcePath.endsWith(".md") ||
+    sourcePath.endsWith(".mdx") ||
+    sourcePath.endsWith(".txt")
   );
 }
 
@@ -119,9 +138,18 @@ export async function validateMaximumAssimilationCoverage(
 
   if (taskId) {
     const skeletonRel = `.agentplane/tasks/${taskId}/source-spans.skeleton.jsonl`;
-    const skeletonRows = await loadJsonlRows(path.join(root, skeletonRel));
+    const skeletonPath = path.join(root, skeletonRel);
+    const skeletonExists = await fileExists(skeletonPath);
+    const skeletonRows = skeletonExists ? await loadJsonlRows(skeletonPath) : [];
     if (skeletonRows.length === 0) {
-      errors.push(`${skeletonRel}: maximum-assimilation requires source span skeleton rows`);
+      const sourceFiles = Array.isArray(context.source_set?.files) ? context.source_set.files : [];
+      const requiresSpanRows =
+        !skeletonExists ||
+        sourceFiles.length === 0 ||
+        sourceFiles.some((file) => sourceMayProduceSpans(file));
+      if (requiresSpanRows) {
+        errors.push(`${skeletonRel}: maximum-assimilation requires source span skeleton rows`);
+      }
     } else {
       const coveredSpanIds = new Set(
         rows
