@@ -11,7 +11,6 @@ depends_on:
   - "202607021729-8S1DF3"
 tags:
   - "code"
-  - "docs"
 task_kind: "code"
 mutation_scope: "code"
 blueprint_request: "code.branch_pr"
