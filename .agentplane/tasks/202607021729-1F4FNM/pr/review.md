@@ -13,7 +13,7 @@ Created: 2026-07-02T18:36:56.819Z
 ## Verification
 
 - State: ok
-- Note: Verified SGR v2 typed context extraction writer and prompt routing.
+- Note: Verified current implementation head 26c0d113 after review fixes.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -32,15 +32,16 @@ Created: 2026-07-02T18:36:56.819Z
  .../commands/context/extraction-apply.unit.test.ts | 134 +++++++++++-
  .../agentplane/src/commands/context/extraction.ts  |   4 +
  .../src/commands/context/release-readiness.test.ts |   5 +-
- .../src/context/extraction-writer.test.ts          |  87 ++++++++
+ .../src/context/extraction-writer.test.ts          | 140 +++++++++++++
  .../agentplane/src/context/extraction-writer.ts    | 233 ++++++++++++++++++---
- .../src/context/harvest-tasks-extraction.ts        |  22 +-
+ .../src/context/harvest-tasks-extraction.ts        |  26 ++-
  .../agentplane/src/context/ingest-task-pack.ts     |  10 +-
  .../agentplane/src/context/ingest-task-prompt.ts   |  10 +-
- .../agentplane/src/runtime/sgr/contract-types.ts   |  57 ++++-
- .../agentplane/src/runtime/sgr/contracts.test.ts   |  95 +++++++++
- packages/agentplane/src/runtime/sgr/contracts.ts   | 126 ++++++++++-
- 11 files changed, 726 insertions(+), 57 deletions(-)
+ .../agentplane/src/runtime/sgr/contract-types.ts   |  62 +++++-
+ .../agentplane/src/runtime/sgr/contracts.test.ts   | 112 +++++++++-
+ packages/agentplane/src/runtime/sgr/contracts.ts   | 140 +++++++++++--
+ packages/agentplane/src/runtime/sgr/index.ts       |   1 +
+ 12 files changed, 809 insertions(+), 68 deletions(-)
 ```
 
 </details>
