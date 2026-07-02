@@ -4,7 +4,7 @@ title: "Document and migrate maximum-assimilation v2"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -25,9 +25,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-02T21:01:37.418Z"
+  updated_at: "2026-07-02T21:02:00.492Z"
   updated_by: "CODER"
-  note: "Verified after primary tag metadata fix; source_refs review fix remains covered by tests and hosted checks."
+  note: "Verified final metadata and quality snapshot refresh."
   attempts: 0
 quality_review:
   state: "pass"
@@ -87,8 +87,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified after primary tag metadata fix; source_refs review fix remains covered by tests and hosted checks."
+  -
+    type: "verify"
+    at: "2026-07-02T21:02:00.492Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified final metadata and quality snapshot refresh."
 doc_version: 3
-doc_updated_at: "2026-07-02T21:01:37.550Z"
+doc_updated_at: "2026-07-02T21:02:00.622Z"
 doc_updated_by: "CODER"
 description: "Phase 5 from the Context Maximum Assimilation PRD. Add migration or dry-run support for legacy context modes/artifacts, preserve existing wiki/facts/graph, generate initial topology/entity/page manifests where possible, and update user/developer docs plus release notes for the single public maximum-assimilation workflow."
 sections:
@@ -251,6 +257,36 @@ sections:
     - operator_action: run_exact_argv
     - can_execute_now: true
     - safe_command: agentplane finish 202607021730-7KG1WF --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit f86bc708775327f5fba672361d8caac1a3979e6b --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-02T21:02:00.492Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified final metadata and quality snapshot refresh.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-02T21:01:37.550Z, excerpt_hash=sha256:e490475f44c7a9f4330ef94ca16fcb913db5fe345c6508a45dd4a892972cce49
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021730-7KG1WF-document-and-migrate-maximum-assimilation-v2/.agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json
+    - old_digest: b23644d04f21a13797b8ca06fae28e29acc560fdd61a9f9262f9d265d0f6334a
+    - current_digest: b23644d04f21a13797b8ca06fae28e29acc560fdd61a9f9262f9d265d0f6334a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607021730-7KG1WF
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202607021730-7KG1WF --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit f4ffe1d5e9f14dbcdd33b2b8869b5d5af25a6aeb --pre-merge-closure
     - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
@@ -437,6 +473,36 @@ DecisionContextRef:
 - operator_action: run_exact_argv
 - can_execute_now: true
 - safe_command: agentplane finish 202607021730-7KG1WF --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit f86bc708775327f5fba672361d8caac1a3979e6b --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-02T21:02:00.492Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified final metadata and quality snapshot refresh.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-02T21:01:37.550Z, excerpt_hash=sha256:e490475f44c7a9f4330ef94ca16fcb913db5fe345c6508a45dd4a892972cce49
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021730-7KG1WF-document-and-migrate-maximum-assimilation-v2/.agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json
+- old_digest: b23644d04f21a13797b8ca06fae28e29acc560fdd61a9f9262f9d265d0f6334a
+- current_digest: b23644d04f21a13797b8ca06fae28e29acc560fdd61a9f9262f9d265d0f6334a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607021730-7KG1WF
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202607021730-7KG1WF --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit f4ffe1d5e9f14dbcdd33b2b8869b5d5af25a6aeb --pre-merge-closure
 - diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
