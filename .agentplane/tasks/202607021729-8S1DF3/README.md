@@ -1,10 +1,11 @@
 ---
 id: "202607021729-8S1DF3"
 title: "Add maximum-assimilation wiki reports and evaluator scenarios"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -44,11 +45,16 @@ quality_review:
     - ".agentplane/tasks/202607021729-8S1DF3/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "8c1122745732254f9fea221ccbf9d9144d72cff7"
+  message: "🚧 8S1DF3 task: record quality review"
 comments:
   -
     author: "CODER"
     body: "Start: implement maximum-assimilation wiki reports and evaluator scenarios."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -63,8 +69,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified maximum-assimilation wiki reports and evaluator scenarios."
+  -
+    type: "status"
+    at: "2026-07-02T20:16:13.475Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-02T19:55:19.033Z"
+doc_updated_at: "2026-07-02T20:16:13.476Z"
 doc_updated_by: "CODER"
 description: "Phase 4 from the Context Maximum Assimilation PRD. Add wiki archetype templates/reports, context wiki command support where needed, link/orphan reports, and scenario-based evaluator artifacts for usefulness review without relying on raw-only entrypoints."
 sections:
@@ -127,6 +140,10 @@ sections:
     - Observation: Added context wiki report generation, required report validation, link/orphan derived reports, and evaluator scenario gates.
       Impact: Maximum-assimilation tasks now fail if the final wiki lacks practical report surfaces or evaluator scenarios that work from wiki/derived entrypoints.
       Resolution: Implemented context wiki report, updated ingest expectations and prompt guidance, and covered good/bad scenarios with context tests.
+extensions:
+  implementation_commit:
+    hash: "93fa1f00f617d244656f954e7b601e03de991f0d"
+    message: "🚧 8S1DF3 task: refresh CLI reference"
 id_source: "generated"
 ---
 ## Summary
