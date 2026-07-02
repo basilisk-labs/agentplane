@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:21eb86a916f8f4e7fa84745dd8adec537f5ec14d9e87d3624bf33ace6e9d4043",
   "pr_number": 4539,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4539",
+  "pre_merge_closure": {
+    "basis_commit": "2139509b99ecc1da84c120ce96153747ec6e7fe6",
+    "branch": "task/202607021729-1F4FNM/add-sgr-v2-typed-context-extraction-writer",
+    "pr_number": 4539,
+    "recorded_at": "2026-07-02T19:09:19.580Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607021729-1F4FNM",

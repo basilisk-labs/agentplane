@@ -1,10 +1,11 @@
 ---
 id: "202607021729-1F4FNM"
 title: "Add SGR v2 typed context extraction writer"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -44,11 +45,16 @@ quality_review:
     - ".agentplane/tasks/202607021729-1F4FNM/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "2139509b99ecc1da84c120ce96153747ec6e7fe6"
+  message: "🚧 1F4FNM task: update task evidence"
 comments:
   -
     author: "CODER"
     body: "Start: implement SGR v2 typed context extraction writer with v1-compatible extraction records, span refs, confidence vectors, and typed routing payloads."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -69,8 +75,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified current implementation head 26c0d113 after review fixes."
+  -
+    type: "status"
+    at: "2026-07-02T19:09:19.545Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-02T19:07:05.939Z"
+doc_updated_at: "2026-07-02T19:09:19.546Z"
 doc_updated_by: "CODER"
 description: "Phase 2 from the Context Maximum Assimilation PRD. Add SGR schema v2 typed context extraction records, span_refs, confidence_vector, entity_resolution/page_creation/topology_decision payloads, and writer routing for claims, ontology, sources, wiki-derived artifacts while preserving v1 compatibility."
 sections:
@@ -195,6 +208,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "26c0d113ead47c3886ba3bd9f05032eed2fc0872"
+    message: "🚧 1F4FNM task: add SGR v2 context writer"
 id_source: "generated"
 ---
 ## Summary
