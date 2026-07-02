@@ -140,9 +140,13 @@ export function createTaskNewParsed(
     MAXIMUM_ASSIMILATION_BLUEPRINT;
   const allowedOutputs = [
     "context/wiki/**",
+    ".agentplane/context/derived/claims/**",
     ".agentplane/context/derived/facts/**",
     ".agentplane/context/derived/graph/**",
+    ".agentplane/context/derived/ontology/**",
     ".agentplane/context/derived/reports/**",
+    ".agentplane/context/derived/sources/**",
+    ".agentplane/context/derived/wiki/**",
     ".agentplane/tasks/${taskId}/README.md",
     ".agentplane/tasks/${taskId}/acr.json",
     ".agentplane/tasks/${taskId}/context-pack.md",

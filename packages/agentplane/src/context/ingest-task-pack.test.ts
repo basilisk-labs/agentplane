@@ -86,8 +86,20 @@ describe("context ingest task pack", () => {
     expect(spans[0]?.span_id).toMatch(/^span\.[a-f0-9]{12}\.[a-f0-9]{12}\.1$/u);
     expect(contextPack).toContain("Generated spans: 1.");
     expect(expectedArtifacts.required).toContain(`${taskRoot}/source-spans.skeleton.jsonl`);
+    expect(expectedArtifacts.required).toEqual(
+      expect.arrayContaining([
+        ".agentplane/context/derived/ontology/entity-resolution.jsonl",
+        ".agentplane/context/derived/ontology/page-creation.jsonl",
+        ".agentplane/context/derived/sources/source-spans.jsonl",
+        ".agentplane/context/derived/wiki/topology.plan.json",
+      ]),
+    );
     expect(parsedAllowedOutputs).toEqual(
       expect.arrayContaining([
+        ".agentplane/context/derived/claims/**",
+        ".agentplane/context/derived/ontology/**",
+        ".agentplane/context/derived/sources/**",
+        ".agentplane/context/derived/wiki/**",
         ".agentplane/tasks/${taskId}/context-pack.md",
         ".agentplane/tasks/${taskId}/canonical-snapshot.json",
         ".agentplane/tasks/${taskId}/source-set.lock.json",

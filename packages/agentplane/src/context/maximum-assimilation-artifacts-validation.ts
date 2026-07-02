@@ -75,13 +75,17 @@ function hasRecordArray(row: Record<string, unknown>, field: string): boolean {
 function pathTemplatePrefix(pathTemplate: string): string {
   const marker = pathTemplate.indexOf("{");
   const prefix = marker === -1 ? pathTemplate : pathTemplate.slice(0, marker);
-  return toPosix(prefix).replace(/\/?$/u, "");
+  return toPosix(prefix);
 }
 
 function pageFamilyAllowsPath(family: Record<string, unknown>, rel: string): boolean {
   const pathTemplate = stringField(family, "path_template");
   const prefix = pathTemplatePrefix(pathTemplate);
-  return prefix !== "" && rel.startsWith(prefix);
+  if (prefix === "") return false;
+  if (!pathTemplate.includes("{"))
+    return rel === prefix || rel.startsWith(`${prefix.replace(/\/+$/u, "")}/`);
+  if (prefix.endsWith("/")) return rel.startsWith(prefix);
+  return rel === prefix || rel.startsWith(`${prefix}/`);
 }
 
 function isExemptWikiPage(rel: string): boolean {
