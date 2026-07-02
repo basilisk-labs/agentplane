@@ -4,7 +4,7 @@ title: "Add maximum-assimilation wiki reports and evaluator scenarios"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -31,22 +31,19 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-02T19:55:29.120Z"
+  updated_at: "2026-07-02T20:15:35.435Z"
   updated_by: "EVALUATOR"
-  note: "Maximum-assimilation wiki report and evaluator scenario support implemented and verified."
-  evaluated_sha: "5d79c4e2365d5c06462c865827693109444398cd"
+  note: "Quality review passed."
+  evaluated_sha: "93fa1f00f617d244656f954e7b601e03de991f0d"
   blueprint_digest: "cb07d80b7a2193ebc6538ff57d95fe3e69563e4134b8c0fa6f1313d2bd58fb3a"
   evidence_refs:
     - ".agentplane/tasks/202607021729-8S1DF3/README.md"
-    - ".agentplane/tasks/202607021729-8S1DF3/quality/20260702-195529120-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607021729-8S1DF3/quality/20260702-195529120-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607021729-8S1DF3/quality/20260702-195529120-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607021729-8S1DF3/quality/20260702-201535435-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607021729-8S1DF3/quality/20260702-201535435-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607021729-8S1DF3/quality/20260702-201535435-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607021729-8S1DF3/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/context/wiki-reports.unit.test.ts"
-    - "packages/agentplane/src/context/maximum-assimilation-artifacts-validation.test.ts"
-    - "packages/agentplane/src/commands/context/verify-task.maximum-assimilation.test.ts"
   findings:
-    - "Passed: bun test packages/agentplane/src/commands/context packages/agentplane/src/context; targeted wiki report tests; format:changed; ESLint; knip:check; check-routing; ap doctor."
+    - "No blocking findings."
 commit: null
 comments:
   -
