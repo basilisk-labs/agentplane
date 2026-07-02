@@ -151,6 +151,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [context wiki link](#context-wiki-link)
   - [context wiki lint](#context-wiki-lint)
   - [context wiki new](#context-wiki-new)
+  - [context wiki report](#context-wiki-report)
 - Evaluators
   - [evaluator list](#evaluator-list)
   - [evaluator run](#evaluator-run)
@@ -3807,6 +3808,16 @@ Options:
 - `--visibility <scope>`: Intended visibility scope for future publication metadata. (default=project)
 - `--source <source-ref>`: Repeatable markdown/source reference backing the page. (repeatable)
 - `--force`: Overwrite an existing page. (default=false)
+
+### context wiki report
+
+Generate maximum-assimilation wiki link/orphan reports and required review report pages.
+
+Usage:
+
+```text
+agentplane context wiki report [<path>]
+```
 
 ## Evaluators
 
