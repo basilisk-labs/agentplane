@@ -4,7 +4,7 @@ title: "Document and migrate maximum-assimilation v2"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,10 +26,25 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-02T20:39:22.796Z"
+  updated_at: "2026-07-02T20:42:49.559Z"
   updated_by: "CODER"
-  note: "Implemented maximum-assimilation v2 migration command and docs. Verified with targeted unit tests, full context test slice, CLI docs freshness, lint, format, policy routing, command smoke test, and doctor."
+  note: "Re-verified current implementation head after quality artifact commit. Checks remain: migrate unit tests, command catalog tests, full context test slice, CLI docs freshness, targeted lint, format, policy routing, CLI smoke test, and doctor."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-02T20:41:29.683Z"
+  updated_by: "EVALUATOR"
+  note: "Quality review passed."
+  evaluated_sha: "87d67236376321b630427b38416fac41a0b03a0e"
+  blueprint_digest: "15a32c5dda4558da5c1484ab8751c9fcc80d482fc474aa043c09472ab25b1d40"
+  evidence_refs:
+    - ".agentplane/tasks/202607021730-7KG1WF/README.md"
+    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-204129683-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-204129683-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-204129683-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json"
+  findings:
+    - "No blocking findings."
 commit: null
 comments:
   -
@@ -49,8 +64,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented maximum-assimilation v2 migration command and docs. Verified with targeted unit tests, full context test slice, CLI docs freshness, lint, format, policy routing, command smoke test, and doctor."
+  -
+    type: "verify"
+    at: "2026-07-02T20:42:49.559Z"
+    author: "CODER"
+    state: "ok"
+    note: "Re-verified current implementation head after quality artifact commit. Checks remain: migrate unit tests, command catalog tests, full context test slice, CLI docs freshness, targeted lint, format, policy routing, CLI smoke test, and doctor."
 doc_version: 3
-doc_updated_at: "2026-07-02T20:39:22.910Z"
+doc_updated_at: "2026-07-02T20:42:49.691Z"
 doc_updated_by: "CODER"
 description: "Phase 5 from the Context Maximum Assimilation PRD. Add migration or dry-run support for legacy context modes/artifacts, preserve existing wiki/facts/graph, generate initial topology/entity/page manifests where possible, and update user/developer docs plus release notes for the single public maximum-assimilation workflow."
 sections:
@@ -86,6 +107,36 @@ sections:
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021730-7KG1WF-document-and-migrate-maximum-assimilation-v2/.agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json
     - old_digest: 35388cb24ac5308a7ea0b628d6aa2417e8933cfb00fc8d0aa53798d300f6357f
     - current_digest: 35388cb24ac5308a7ea0b628d6aa2417e8933cfb00fc8d0aa53798d300f6357f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607021730-7KG1WF
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202607021730-7KG1WF
+    - diagnostic_command: agentplane pr check 202607021730-7KG1WF
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-07-02T20:42:49.559Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Re-verified current implementation head after quality artifact commit. Checks remain: migrate unit tests, command catalog tests, full context test slice, CLI docs freshness, targeted lint, format, policy routing, CLI smoke test, and doctor.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-02T20:39:22.910Z, excerpt_hash=sha256:e490475f44c7a9f4330ef94ca16fcb913db5fe345c6508a45dd4a892972cce49
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021730-7KG1WF-document-and-migrate-maximum-assimilation-v2/.agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json
+    - old_digest: 15a32c5dda4558da5c1484ab8751c9fcc80d482fc474aa043c09472ab25b1d40
+    - current_digest: 15a32c5dda4558da5c1484ab8751c9fcc80d482fc474aa043c09472ab25b1d40
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202607021730-7KG1WF
 
@@ -152,6 +203,36 @@ BlueprintSnapshotRef:
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021730-7KG1WF-document-and-migrate-maximum-assimilation-v2/.agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json
 - old_digest: 35388cb24ac5308a7ea0b628d6aa2417e8933cfb00fc8d0aa53798d300f6357f
 - current_digest: 35388cb24ac5308a7ea0b628d6aa2417e8933cfb00fc8d0aa53798d300f6357f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607021730-7KG1WF
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202607021730-7KG1WF
+- diagnostic_command: agentplane pr check 202607021730-7KG1WF
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-07-02T20:42:49.559Z — VERIFY — ok
+
+By: CODER
+
+Note: Re-verified current implementation head after quality artifact commit. Checks remain: migrate unit tests, command catalog tests, full context test slice, CLI docs freshness, targeted lint, format, policy routing, CLI smoke test, and doctor.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-02T20:39:22.910Z, excerpt_hash=sha256:e490475f44c7a9f4330ef94ca16fcb913db5fe345c6508a45dd4a892972cce49
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021730-7KG1WF-document-and-migrate-maximum-assimilation-v2/.agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json
+- old_digest: 15a32c5dda4558da5c1484ab8751c9fcc80d482fc474aa043c09472ab25b1d40
+- current_digest: 15a32c5dda4558da5c1484ab8751c9fcc80d482fc474aa043c09472ab25b1d40
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202607021730-7KG1WF
 

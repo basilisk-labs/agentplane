@@ -13,7 +13,7 @@ Created: 2026-07-02T20:30:03.849Z
 ## Verification
 
 - State: ok
-- Note: Implemented maximum-assimilation v2 migration command and docs. Verified with targeted unit tests, full context test slice, CLI docs freshness, lint, format, policy routing, command smoke test, and doctor.
+- Note: Re-verified current implementation head after quality artifact commit. Checks remain: migrate unit tests, command catalog tests, full context test slice, CLI docs freshness, targeted lint, format, policy routing, CLI smoke test, and doctor.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,18 @@ Created: 2026-07-02T20:30:03.849Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202607021729-8S1DF3/README.md    | 25 ++++++++++++++++++----
- .agentplane/tasks/202607021729-8S1DF3/pr/meta.json |  7 ++++++
- 2 files changed, 28 insertions(+), 4 deletions(-)
+ .agentplane/tasks/202607021729-8S1DF3/README.md    |  25 +-
+ .agentplane/tasks/202607021729-8S1DF3/pr/meta.json |   7 +
+ docs/context/modes.mdx                             |  15 +
+ docs/context/quickstart.mdx                        |  10 +
+ docs/context/review.mdx                            |   2 +
+ docs/releases/v0.6.21.md                           |   2 +
+ .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+ .../src/commands/context/context-runner.ts         |  13 +
+ .../src/commands/context/context.spec.ts           |  34 ++
+ .../agentplane/src/commands/context/migrate.ts     | 359 +++++++++++++++++++++
+ .../src/commands/context/migrate.unit.test.ts      | 190 +++++++++++
+ 11 files changed, 655 insertions(+), 4 deletions(-)
 ```
 
 </details>
