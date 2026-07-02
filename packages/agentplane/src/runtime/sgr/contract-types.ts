@@ -6,8 +6,11 @@ import type {
 } from "../../blueprints/model.js";
 
 export const SGR_CONTRACT_SCHEMA_VERSION = 1 as const;
+export const CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION = 2 as const;
 
-export type SgrContractSchemaVersion = typeof SGR_CONTRACT_SCHEMA_VERSION;
+export type SgrContractSchemaVersion =
+  | typeof SGR_CONTRACT_SCHEMA_VERSION
+  | typeof CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION;
 
 export type SgrSourceRef = {
   path: string;
@@ -23,12 +26,35 @@ export type SgrReasoningStep = {
   evidence_refs?: SgrSourceRef[];
 };
 
-export type ContextExtractionItemStatus = "proposed" | "accepted" | "stale" | "conflict";
+export type ContextExtractionItemStatus =
+  | "proposed"
+  | "accepted"
+  | "stale"
+  | "conflict"
+  | "unresolved";
 export type ContextExtractionItemKind =
   | "wiki_update"
+  | "claim"
   | "fact"
+  | "definition"
+  | "decision"
+  | "requirement"
+  | "constraint"
+  | "invariant"
+  | "procedure"
+  | "workflow"
+  | "api_contract"
+  | "code_symbol"
+  | "risk"
+  | "open_question"
+  | "contradiction"
+  | "example"
+  | "deprecation"
   | "graph_entity"
   | "graph_edge"
+  | "entity_resolution"
+  | "page_creation"
+  | "topology_decision"
   | "coverage"
   | "capability_note";
 
@@ -59,22 +85,48 @@ export type ContextExtractionGraphEdge = {
 
 export type ContextExtractionCoverage = {
   source_path: string;
+  span_id?: string;
   status: ContextExtractionCoverageStatus;
   reason: string;
   covered_item_ids?: string[];
+  duplicate_of_span_id?: string;
+  target_paths?: string[];
 };
+
+export type ContextExtractionConfidenceVector = {
+  extraction: number;
+  source_quality: number;
+  entity_resolution: number;
+  freshness: number;
+};
+
+export type ContextExtractionEntityResolutionRow = Record<string, unknown>;
+export type ContextExtractionPageCreationRow = Record<string, unknown>;
+export type ContextExtractionTopologyDecisionRow = Record<string, unknown>;
 
 export type ContextExtractionItem = {
   id: string;
   kind: ContextExtractionItemKind;
   summary: string;
   source_refs: SgrSourceRef[];
-  confidence: number;
+  span_refs?: string[];
+  confidence?: number;
+  confidence_vector?: ContextExtractionConfidenceVector;
   status: ContextExtractionItemStatus;
+  validity?: "current" | "historical" | "deprecated" | "conflicting" | "unknown";
+  scope?: string;
   target_path?: string;
+  canonical_refs?: string[];
+  supersedes?: string[];
+  superseded_by?: string[];
+  contradicts?: string[];
+  depends_on?: string[];
   entity?: ContextExtractionGraphEntity;
   edge?: ContextExtractionGraphEdge;
   coverage?: ContextExtractionCoverage;
+  entity_resolution?: ContextExtractionEntityResolutionRow;
+  page_creation?: ContextExtractionPageCreationRow;
+  topology_decision?: ContextExtractionTopologyDecisionRow;
   stale_markers?: string[];
   conflict_markers?: string[];
 };
@@ -100,7 +152,7 @@ export type EvaluatorFinding = {
 };
 
 export type EvaluatorSgrResult = {
-  schema_version: SgrContractSchemaVersion;
+  schema_version: typeof SGR_CONTRACT_SCHEMA_VERSION;
   kind: "evaluator_result";
   evaluator_id: string;
   verdict: EvaluatorVerdict;
@@ -134,7 +186,7 @@ export type BlueprintDecisionStopRule = {
 };
 
 export type BlueprintRouteDecisionSgrResult = {
-  schema_version: SgrContractSchemaVersion;
+  schema_version: typeof SGR_CONTRACT_SCHEMA_VERSION;
   kind: "blueprint_route_decision";
   facts: SgrReasoningStep[];
   inferences: SgrReasoningStep[];

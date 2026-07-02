@@ -2,7 +2,7 @@ import type { TaskData } from "../backends/task-backend.js";
 import type { TaskNewParsed } from "../commands/task/new.js";
 import type { PromptModule } from "../runtime/prompt-modules/index.js";
 import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "../runtime/prompt-modules/index.js";
-import { SGR_CONTRACT_SCHEMA_VERSION } from "../runtime/sgr/index.js";
+import { CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION } from "../runtime/sgr/index.js";
 import { CliError } from "../shared/errors.js";
 import { isRecord } from "./context-utils.js";
 import { taskTextDigest } from "./harvest-tasks-markers.js";
@@ -25,7 +25,7 @@ const CONTEXT_TASK_EXTRACTION_PROMPT_ADDRESS =
   "framework/template/generated.artifact/context_task_extraction/v1";
 
 const CONTEXT_EXTRACTION_SGR_EXAMPLE: ContextExtractionSgrResult = {
-  schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+  schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
   kind: "context_extraction",
   reasoning: [
     {
@@ -49,12 +49,18 @@ const CONTEXT_EXTRACTION_SGR_EXAMPLE: ContextExtractionSgrResult = {
       },
     },
     {
-      id: "fact.<stable-id>",
-      kind: "fact",
-      summary: "A reusable, source-backed project fact.",
+      id: "decision.<stable-id>",
+      kind: "decision",
+      summary: "A reusable, source-backed project decision.",
       source_refs: [{ path: ".agentplane/tasks/<source-task-id>/README.md" }],
-      confidence: 0.8,
+      confidence_vector: {
+        extraction: 0.8,
+        source_quality: 0.8,
+        entity_resolution: 0.7,
+        freshness: 0.8,
+      },
       status: "proposed",
+      validity: "current",
       stale_markers: [],
       conflict_markers: [],
     },
@@ -68,8 +74,8 @@ const CONTEXT_EXTRACTION_SGR_EXAMPLE: ContextExtractionSgrResult = {
       coverage: {
         source_path: ".agentplane/tasks/<source-task-id>/README.md",
         status: "covered",
-        reason: "Reusable entities and facts were extracted from the task README.",
-        covered_item_ids: ["entity.<stable-id>", "fact.<stable-id>"],
+        reason: "Reusable entities and typed decisions were extracted from the task README.",
+        covered_item_ids: ["entity.<stable-id>", "decision.<stable-id>"],
       },
     },
   ],
@@ -204,7 +210,7 @@ function buildExtractionPromptModule(): PromptModule {
       "Read each source task README first. Read ACR evidence when present. Treat generated raw JSON, search rows, and caches as supporting indexes, not as semantic truth.",
       "",
       "Extract durable knowledge only when it is backed by source_refs. Prefer small, reusable facts over task-summary restatement.",
-      "First return and save a `context_extraction` SGR result with entities, facts, graph edges, and coverage rows, then apply it with `agentplane context extraction apply <sgr-json> --task-id <task-id>` before writing narrative wiki pages.",
+      "First return and save a SGR v2 `context_extraction` result with entities, typed claims/decisions/requirements/risks/open questions, graph edges, entity-resolution rows, page/topology decisions, and coverage rows, then apply it with `agentplane context extraction apply <sgr-json> --task-id <task-id>` before writing narrative wiki pages.",
       "",
       "Required extraction classes:",
       "- components, commands, policies, and workflow surfaces touched by the tasks;",
@@ -222,7 +228,7 @@ function buildExtractionPromptModule(): PromptModule {
       "",
       "Write only allowed outputs from the task extension. Keep source_refs on every factual claim. Mark contradictions, stale candidates, and open questions instead of promoting them.",
       "",
-      "Return extraction reasoning in the SGR context_extraction v1 shape before writing context artifacts:",
+      "Return extraction reasoning in the SGR context_extraction v2 shape before writing context artifacts. Legacy v1 context_extraction inputs remain accepted by the writer for compatibility:",
       JSON.stringify(CONTEXT_EXTRACTION_SGR_EXAMPLE, null, 2),
     ].join("\n"),
     mutability: "replaceable",

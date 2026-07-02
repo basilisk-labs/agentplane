@@ -21,6 +21,10 @@ export async function cmdContextExtractionApply(opts: {
     [
       `context extraction apply${opts.parsed.dryRun ? " (dry-run)" : ""}: facts=${result.facts} entities=${result.entities} edges=${result.edges} provenance=${result.provenance}`,
       `coverage=${result.coverage}`,
+      `claims=${result.claims}`,
+      `ontology=${result.ontology}`,
+      `sources=${result.sources}`,
+      `wiki=${result.wiki}`,
       result.changed_paths.length > 0 ? `changed=${result.changed_paths.join(",")}` : "",
     ]
       .filter(Boolean)

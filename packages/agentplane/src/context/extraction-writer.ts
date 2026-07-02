@@ -16,8 +16,30 @@ type ApplyResult = {
   edges: number;
   provenance: number;
   coverage: number;
+  claims: number;
+  ontology: number;
+  sources: number;
+  wiki: number;
   changed_paths: string[];
 };
+
+const CLAIM_PATH_BY_KIND = {
+  claim: ".agentplane/context/derived/claims/claims.jsonl",
+  definition: ".agentplane/context/derived/claims/definitions.jsonl",
+  decision: ".agentplane/context/derived/claims/decisions.jsonl",
+  requirement: ".agentplane/context/derived/claims/requirements.jsonl",
+  constraint: ".agentplane/context/derived/claims/constraints.jsonl",
+  invariant: ".agentplane/context/derived/claims/invariants.jsonl",
+  procedure: ".agentplane/context/derived/claims/procedures.jsonl",
+  workflow: ".agentplane/context/derived/claims/workflows.jsonl",
+  api_contract: ".agentplane/context/derived/claims/api_contracts.jsonl",
+  code_symbol: ".agentplane/context/derived/claims/code_symbols.jsonl",
+  risk: ".agentplane/context/derived/claims/risks.jsonl",
+  open_question: ".agentplane/context/derived/claims/open_questions.jsonl",
+  contradiction: ".agentplane/context/derived/claims/contradictions.jsonl",
+  deprecation: ".agentplane/context/derived/claims/deprecations.jsonl",
+  example: ".agentplane/context/derived/claims/examples.jsonl",
+} as const satisfies Partial<Record<ContextExtractionItem["kind"], string>>;
 
 function sourceRefToString(ref: SgrSourceRef): string {
   if (ref.lines) return `${ref.path}#lines=${ref.lines}`;
@@ -48,24 +70,59 @@ async function writeJsonlById(
 ): Promise<boolean> {
   const sorted = [...rows.values()].toSorted((a, b) => rowId(a).localeCompare(rowId(b)));
   const text = sorted.map((row) => JSON.stringify(row)).join("\n");
-  if (dryRun) return false;
+  const next = text ? `${text}\n` : "";
+  const exists = await fileExists(filePath);
+  if (!next && !exists) return false;
+  if (dryRun) {
+    const current = exists ? await readFile(filePath, "utf8") : "";
+    return current !== next;
+  }
   await mkdir(path.dirname(filePath), { recursive: true });
-  return await writeTextIfChanged(filePath, text ? `${text}\n` : "");
+  return await writeTextIfChanged(filePath, next);
+}
+
+async function writeJsonObject(
+  filePath: string,
+  value: Record<string, unknown> | null,
+  dryRun: boolean,
+): Promise<boolean> {
+  if (value === null) return false;
+  const next = `${JSON.stringify(value, null, 2)}\n`;
+  if (dryRun) {
+    const current = (await fileExists(filePath)) ? await readFile(filePath, "utf8") : "";
+    return current !== next;
+  }
+  await mkdir(path.dirname(filePath), { recursive: true });
+  return await writeTextIfChanged(filePath, next);
+}
+
+function compactRow(row: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(row).filter(([, value]) => value !== undefined));
 }
 
 function baseRow(item: ContextExtractionItem, taskId?: string): Record<string, unknown> {
-  return {
+  return compactRow({
     id: item.id,
+    kind: item.kind,
     summary: item.summary,
     source_refs: item.source_refs.map((sourceRef) => sourceRefToString(sourceRef)),
     source_ref_objects: item.source_refs,
     confidence: item.confidence,
+    confidence_vector: item.confidence_vector,
     status: item.status,
+    validity: item.validity,
+    scope: item.scope,
+    span_refs: item.span_refs,
+    canonical_refs: item.canonical_refs,
+    supersedes: item.supersedes,
+    superseded_by: item.superseded_by,
+    contradicts: item.contradicts,
+    depends_on: item.depends_on,
     ...(taskId ? { task_id: taskId } : {}),
     ...(item.target_path ? { target_path: item.target_path } : {}),
     ...(item.stale_markers?.length ? { stale_markers: item.stale_markers } : {}),
     ...(item.conflict_markers?.length ? { conflict_markers: item.conflict_markers } : {}),
-  };
+  });
 }
 
 function provenanceRows(
@@ -87,6 +144,19 @@ function graphStatus(status?: string): string {
   return "active";
 }
 
+function slugFragment(value: string): string {
+  return value
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-|-$/g, "")
+    .slice(0, 80);
+}
+
+function stringField(record: Record<string, unknown>, key: string): string | undefined {
+  const value = record[key];
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
 export async function applyContextExtractionResult(opts: {
   root: string;
   raw: unknown;
@@ -104,22 +174,69 @@ export async function applyContextExtractionResult(opts: {
     ".agentplane/context/derived/graph/provenance_edges.jsonl",
   );
   const coveragePath = path.join(opts.root, ".agentplane/context/derived/reports/coverage.jsonl");
+  const sourceSpansPath = path.join(
+    opts.root,
+    ".agentplane/context/derived/sources/source-spans.jsonl",
+  );
+  const entityResolutionPath = path.join(
+    opts.root,
+    ".agentplane/context/derived/ontology/entity-resolution.jsonl",
+  );
+  const aliasesPath = path.join(opts.root, ".agentplane/context/derived/ontology/aliases.jsonl");
+  const pageCreationPath = path.join(
+    opts.root,
+    ".agentplane/context/derived/ontology/page-creation.jsonl",
+  );
+  const topologyChangesPath = path.join(
+    opts.root,
+    ".agentplane/context/derived/ontology/topology-changes.jsonl",
+  );
+  const topologyPlanPath = path.join(
+    opts.root,
+    ".agentplane/context/derived/wiki/topology.plan.json",
+  );
+  const pageManifestsPath = path.join(
+    opts.root,
+    ".agentplane/context/derived/wiki/page-manifests.jsonl",
+  );
   const facts = await readJsonlById(factsPath);
   const entities = await readJsonlById(entitiesPath);
   const edges = await readJsonlById(edgesPath);
   const provenance = await readJsonlById(provenancePath);
   const coverage = await readJsonlById(coveragePath);
+  const sourceSpans = await readJsonlById(sourceSpansPath);
+  const entityResolution = await readJsonlById(entityResolutionPath);
+  const aliases = await readJsonlById(aliasesPath);
+  const pageCreation = await readJsonlById(pageCreationPath);
+  const topologyChanges = await readJsonlById(topologyChangesPath);
+  const pageManifests = await readJsonlById(pageManifestsPath);
+  const claimMaps = new Map<string, Map<string, Record<string, unknown>>>();
+  for (const rel of Object.values(CLAIM_PATH_BY_KIND)) {
+    const abs = path.join(opts.root, rel);
+    claimMaps.set(abs, await readJsonlById(abs));
+  }
+  let topologyPlan: Record<string, unknown> | null = null;
+
+  function addProvenance(item: ContextExtractionItem, artifactPath: string, id = item.id): void {
+    for (const row of provenanceRows(
+      { ...item, id },
+      toPosix(path.relative(opts.root, artifactPath)),
+      taskId,
+    )) {
+      provenance.set(rowId(row), row);
+    }
+  }
 
   for (const item of result.extracted_items) {
     if (item.kind === "fact") {
       facts.set(item.id, baseRow(item, taskId));
-      for (const row of provenanceRows(
-        item,
-        toPosix(path.relative(opts.root, factsPath)),
-        taskId,
-      )) {
-        provenance.set(rowId(row), row);
-      }
+      addProvenance(item, factsPath);
+    }
+    const claimRel = CLAIM_PATH_BY_KIND[item.kind as keyof typeof CLAIM_PATH_BY_KIND];
+    if (claimRel) {
+      const claimPath = path.join(opts.root, claimRel);
+      claimMaps.get(claimPath)?.set(item.id, baseRow(item, taskId));
+      addProvenance(item, claimPath);
     }
     if (item.kind === "graph_entity" && item.entity) {
       entities.set(item.entity.id, {
@@ -130,13 +247,7 @@ export async function applyContextExtractionResult(opts: {
         status: item.entity.status ?? graphStatus(item.status),
         ...(item.entity.aliases?.length ? { aliases: item.entity.aliases } : {}),
       });
-      for (const row of provenanceRows(
-        { ...item, id: item.entity.id },
-        toPosix(path.relative(opts.root, entitiesPath)),
-        taskId,
-      )) {
-        provenance.set(rowId(row), row);
-      }
+      addProvenance(item, entitiesPath, item.entity.id);
     }
     if (item.kind === "graph_edge" && item.edge) {
       const id = item.edge.id ?? item.id;
@@ -148,24 +259,76 @@ export async function applyContextExtractionResult(opts: {
         relation: item.edge.relation,
         status: item.edge.status ?? graphStatus(item.status),
       });
-      for (const row of provenanceRows(
-        { ...item, id },
-        toPosix(path.relative(opts.root, edgesPath)),
-        taskId,
-      )) {
-        provenance.set(rowId(row), row);
+      addProvenance(item, edgesPath, id);
+    }
+    if (item.kind === "entity_resolution" && item.entity_resolution) {
+      const row = { ...item.entity_resolution, ...baseRow(item, taskId) };
+      entityResolution.set(item.id, row);
+      const sourceTerm = stringField(item.entity_resolution, "source_term");
+      const canonicalEntityId = stringField(item.entity_resolution, "canonical_entity_id");
+      if (sourceTerm && canonicalEntityId) {
+        aliases.set(`alias.${slugFragment(canonicalEntityId)}.${slugFragment(sourceTerm)}`, {
+          id: `alias.${slugFragment(canonicalEntityId)}.${slugFragment(sourceTerm)}`,
+          alias: sourceTerm,
+          canonical_entity_id: canonicalEntityId,
+          source_item_id: item.id,
+          ...(taskId ? { task_id: taskId } : {}),
+        });
       }
+      addProvenance(item, entityResolutionPath);
+    }
+    if (item.kind === "page_creation" && item.page_creation) {
+      const row = { ...item.page_creation, ...baseRow(item, taskId) };
+      pageCreation.set(item.id, row);
+      pageManifests.set(item.id, row);
+      addProvenance(item, pageCreationPath);
+    }
+    if (item.kind === "topology_decision" && item.topology_decision) {
+      const row = { ...item.topology_decision, ...baseRow(item, taskId) };
+      topologyChanges.set(item.id, row);
+      topologyPlan = compactRow({
+        ...item.topology_decision,
+        schema_version: 1,
+        mode: "maximum_assimilation",
+        updated_by_item_id: item.id,
+        ...(taskId ? { task_id: taskId } : {}),
+      });
+      addProvenance(item, topologyChangesPath);
     }
     if (item.kind === "coverage" && item.coverage) {
       coverage.set(item.id, {
         ...baseRow(item, taskId),
         source_path: item.coverage.source_path,
+        ...(item.coverage.span_id ? { span_id: item.coverage.span_id } : {}),
         coverage_status: item.coverage.status,
         reason: item.coverage.reason,
         ...(item.coverage.covered_item_ids?.length
           ? { covered_item_ids: item.coverage.covered_item_ids }
           : {}),
+        ...(item.coverage.duplicate_of_span_id
+          ? { duplicate_of_span_id: item.coverage.duplicate_of_span_id }
+          : {}),
+        ...(item.coverage.target_paths?.length ? { target_paths: item.coverage.target_paths } : {}),
       });
+      if (item.coverage.span_id) {
+        sourceSpans.set(item.id, {
+          ...baseRow(item, taskId),
+          source_path: item.coverage.source_path,
+          span_id: item.coverage.span_id,
+          coverage_status: item.coverage.status,
+          reason: item.coverage.reason,
+          ...(item.coverage.covered_item_ids?.length
+            ? { covered_item_ids: item.coverage.covered_item_ids }
+            : {}),
+          ...(item.coverage.duplicate_of_span_id
+            ? { duplicate_of_span_id: item.coverage.duplicate_of_span_id }
+            : {}),
+          ...(item.coverage.target_paths?.length
+            ? { target_paths: item.coverage.target_paths }
+            : {}),
+        });
+      }
+      addProvenance(item, coveragePath);
     }
   }
 
@@ -180,6 +343,24 @@ export async function applyContextExtractionResult(opts: {
     changed.add(toPosix(path.relative(opts.root, provenancePath)));
   if (await writeJsonlById(coveragePath, coverage, dryRun))
     changed.add(toPosix(path.relative(opts.root, coveragePath)));
+  if (await writeJsonlById(sourceSpansPath, sourceSpans, dryRun))
+    changed.add(toPosix(path.relative(opts.root, sourceSpansPath)));
+  if (await writeJsonlById(entityResolutionPath, entityResolution, dryRun))
+    changed.add(toPosix(path.relative(opts.root, entityResolutionPath)));
+  if (await writeJsonlById(aliasesPath, aliases, dryRun))
+    changed.add(toPosix(path.relative(opts.root, aliasesPath)));
+  if (await writeJsonlById(pageCreationPath, pageCreation, dryRun))
+    changed.add(toPosix(path.relative(opts.root, pageCreationPath)));
+  if (await writeJsonlById(topologyChangesPath, topologyChanges, dryRun))
+    changed.add(toPosix(path.relative(opts.root, topologyChangesPath)));
+  if (await writeJsonObject(topologyPlanPath, topologyPlan, dryRun))
+    changed.add(toPosix(path.relative(opts.root, topologyPlanPath)));
+  if (await writeJsonlById(pageManifestsPath, pageManifests, dryRun))
+    changed.add(toPosix(path.relative(opts.root, pageManifestsPath)));
+  for (const [claimPath, rows] of claimMaps) {
+    if (await writeJsonlById(claimPath, rows, dryRun))
+      changed.add(toPosix(path.relative(opts.root, claimPath)));
+  }
 
   return {
     facts: [...facts.values()].length,
@@ -187,6 +368,10 @@ export async function applyContextExtractionResult(opts: {
     edges: [...edges.values()].length,
     provenance: [...provenance.values()].length,
     coverage: [...coverage.values()].length,
+    claims: [...claimMaps.values()].reduce((sum, rows) => sum + rows.size, 0),
+    ontology: entityResolution.size + aliases.size + pageCreation.size + topologyChanges.size,
+    sources: sourceSpans.size,
+    wiki: pageManifests.size + (topologyPlan === null ? 0 : 1),
     changed_paths: [...changed].toSorted(),
   };
 }

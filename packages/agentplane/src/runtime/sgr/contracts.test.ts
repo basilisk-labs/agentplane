@@ -3,7 +3,10 @@ import { describe, expect, it } from "vitest";
 import { validateBlueprintRouteDecisionSgrResult } from "../../blueprints/sgr-decision.js";
 import { validateContextExtractionSgrResult } from "../../context/sgr-extraction.js";
 import { validateEvaluatorSgrResult } from "../../evaluators/sgr-result.js";
-import { SGR_CONTRACT_SCHEMA_VERSION } from "./index.js";
+import {
+  CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
+  SGR_CONTRACT_SCHEMA_VERSION,
+} from "./index.js";
 
 const sourceRef = {
   path: "context/raw/tasks/202605010900-ABC123.json",
@@ -13,7 +16,7 @@ const sourceRef = {
 describe("SGR reliability contracts", () => {
   it("validates source-backed context extraction results", () => {
     const result = validateContextExtractionSgrResult({
-      schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+      schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
       kind: "context_extraction",
       task_id: "202605010900-ABC123",
       reasoning: [
@@ -78,7 +81,7 @@ describe("SGR reliability contracts", () => {
   it("rejects context extraction coverage with invalid status", () => {
     expect(() =>
       validateContextExtractionSgrResult({
-        schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+        schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
         kind: "context_extraction",
         reasoning: [{ label: "coverage", summary: "Classify source coverage." }],
         source_refs: [sourceRef],
@@ -101,11 +104,106 @@ describe("SGR reliability contracts", () => {
     ).toThrow("coverage.status");
   });
 
+  it("accepts legacy v1 context extraction input and normalizes it to the current contract", () => {
+    const result = validateContextExtractionSgrResult({
+      schema_version: 1,
+      kind: "context_extraction",
+      reasoning: [{ label: "legacy", summary: "Legacy v1 extraction remains readable." }],
+      source_refs: [sourceRef],
+      extracted_items: [
+        {
+          id: "fact.legacy",
+          kind: "fact",
+          summary: "Legacy scalar-confidence fact.",
+          source_refs: [sourceRef],
+          confidence: 0.7,
+          status: "proposed",
+        },
+      ],
+    });
+
+    expect(result.schema_version).toBe(CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION);
+    expect(result.extracted_items[0]?.kind).toBe("fact");
+  });
+
+  it("validates SGR v2 typed context extraction records", () => {
+    const result = validateContextExtractionSgrResult({
+      schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
+      kind: "context_extraction",
+      reasoning: [{ label: "typed", summary: "Extract typed maximum-assimilation records." }],
+      source_refs: [sourceRef],
+      extracted_items: [
+        {
+          id: "decision.context-writer",
+          kind: "decision",
+          summary: "Context writer materializes typed records before wiki synthesis.",
+          source_refs: [sourceRef],
+          span_refs: ["span.context.0001"],
+          confidence_vector: {
+            extraction: 0.9,
+            source_quality: 0.8,
+            entity_resolution: 0.85,
+            freshness: 0.95,
+          },
+          status: "accepted",
+          validity: "current",
+          canonical_refs: ["entity.context_writer"],
+        },
+        {
+          id: "resolution.context-writer",
+          kind: "entity_resolution",
+          summary: "Context writer source term resolves to an existing entity.",
+          source_refs: [sourceRef],
+          confidence: 0.86,
+          status: "accepted",
+          entity_resolution: {
+            source_term: "context writer",
+            resolution: "alias_of",
+            canonical_entity_id: "entity.context_writer",
+          },
+        },
+        {
+          id: "page.context-writer",
+          kind: "page_creation",
+          summary: "Context writer page is justified by reusable workflow evidence.",
+          source_refs: [sourceRef],
+          confidence: 0.82,
+          status: "proposed",
+          page_creation: {
+            path: "context/wiki/workflows/context-writer.md",
+            page_type: "workflow",
+            decision: "create",
+          },
+        },
+        {
+          id: "topology.context",
+          kind: "topology_decision",
+          summary: "Context wiki uses source-shaped workflow pages.",
+          source_refs: [sourceRef],
+          confidence: 0.8,
+          status: "accepted",
+          topology_decision: {
+            source_shape: { primary: "codebase_and_task_history" },
+            canonical_page_families: [],
+          },
+        },
+      ],
+    });
+
+    expect(result.extracted_items.map((item) => item.kind)).toEqual([
+      "decision",
+      "entity_resolution",
+      "page_creation",
+      "topology_decision",
+    ]);
+    expect(result.extracted_items[0]?.confidence_vector?.entity_resolution).toBe(0.85);
+  });
+
   it.each(["duplicate", "conflict", "out_of_scope"] as const)(
     "accepts maximum-assimilation coverage status %s",
     (status) => {
       const result = validateContextExtractionSgrResult({
-        schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+        schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
         kind: "context_extraction",
         reasoning: [{ label: "coverage", summary: "Classify source coverage." }],
         source_refs: [sourceRef],
@@ -133,7 +231,7 @@ describe("SGR reliability contracts", () => {
   it("rejects context extraction items without source references", () => {
     expect(() =>
       validateContextExtractionSgrResult({
-        schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+        schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
         kind: "context_extraction",
         reasoning: [{ label: "extract", summary: "Extract a claim." }],
         source_refs: [sourceRef],
@@ -153,7 +251,7 @@ describe("SGR reliability contracts", () => {
 
   it("requires markers for stale and conflict context extraction items", () => {
     const baseResult = {
-      schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+      schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
       kind: "context_extraction",
       reasoning: [{ label: "extract", summary: "Extract a claim." }],
       source_refs: [sourceRef],
@@ -214,6 +312,7 @@ describe("SGR reliability contracts", () => {
     });
 
     expect(result.verdict).toBe("rework");
+    expect(result.schema_version).toBe(SGR_CONTRACT_SCHEMA_VERSION);
     expect(result.findings).toHaveLength(1);
   });
 
@@ -277,6 +376,7 @@ describe("SGR reliability contracts", () => {
     });
 
     expect(result.selected_route.blueprint_id).toBe("code.branch_pr");
+    expect(result.schema_version).toBe(SGR_CONTRACT_SCHEMA_VERSION);
     expect(result.rejected_routes[0]?.blueprint_id).toBe("analysis.light");
   });
 

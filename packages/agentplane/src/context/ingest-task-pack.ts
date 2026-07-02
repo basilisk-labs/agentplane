@@ -6,7 +6,7 @@ import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
 import type { ManifestEntry } from "./ingest-manifest.js";
 import { buildSourceSpanSkeleton } from "./source-spans.js";
 
-export const CONTEXT_TASK_PACK_FILES = [
+const CONTEXT_TASK_PACK_FILES = [
   "context-pack.md",
   "canonical-snapshot.json",
   "source-set.lock.json",
@@ -24,14 +24,14 @@ function taskRel(taskId: string, fileName: (typeof CONTEXT_TASK_PACK_FILES)[numb
 }
 
 function buildExpectedArtifacts(taskId: string): Record<string, unknown> {
+  const generatedTaskPackFiles = CONTEXT_TASK_PACK_FILES.filter(
+    (fileName) => fileName !== "expected-artifacts.json",
+  ).map((fileName) => taskRel(taskId, fileName));
   return {
     version: 1,
     task_id: taskId,
     required: [
-      taskRel(taskId, "context-pack.md"),
-      taskRel(taskId, "canonical-snapshot.json"),
-      taskRel(taskId, "source-set.lock.json"),
-      taskRel(taskId, "source-spans.skeleton.jsonl"),
+      ...generatedTaskPackFiles,
       "context/wiki/glossary.md",
       "context/wiki/reports/coverage.md",
       ".agentplane/context/derived/facts/facts.jsonl",

@@ -1,14 +1,21 @@
 import type {
   BlueprintRouteDecisionSgrResult,
   ContextExtractionCoverage,
+  ContextExtractionConfidenceVector,
+  ContextExtractionEntityResolutionRow,
   ContextExtractionGraphEdge,
   ContextExtractionGraphEntity,
+  ContextExtractionPageCreationRow,
   ContextExtractionSgrResult,
+  ContextExtractionTopologyDecisionRow,
   EvaluatorSgrResult,
   SgrReasoningStep,
   SgrSourceRef,
 } from "./contract-types.js";
-import { SGR_CONTRACT_SCHEMA_VERSION } from "./contract-types.js";
+import {
+  CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
+  SGR_CONTRACT_SCHEMA_VERSION,
+} from "./contract-types.js";
 import {
   invalid,
   optionalNumber,
@@ -26,6 +33,7 @@ import {
 } from "./contract-validators.js";
 
 export {
+  CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
   SGR_CONTRACT_SCHEMA_VERSION,
   type BlueprintDecisionEvidenceRequirement,
   type BlueprintDecisionStopRule,
@@ -103,6 +111,7 @@ function validateCoverage(raw: unknown, field: string): ContextExtractionCoverag
   const coverage = requireRecord(raw, field);
   return {
     source_path: requireString(coverage.source_path, `${field}.source_path`),
+    span_id: optionalString(coverage.span_id, `${field}.span_id`),
     status: requireEnum(coverage.status, `${field}.status`, [
       "covered",
       "omitted_boilerplate",
@@ -114,18 +123,85 @@ function validateCoverage(raw: unknown, field: string): ContextExtractionCoverag
     ]),
     reason: requireString(coverage.reason, `${field}.reason`),
     covered_item_ids: optionalStringArray(coverage.covered_item_ids, `${field}.covered_item_ids`),
+    duplicate_of_span_id: optionalString(
+      coverage.duplicate_of_span_id,
+      `${field}.duplicate_of_span_id`,
+    ),
+    target_paths: optionalStringArray(coverage.target_paths, `${field}.target_paths`),
   };
 }
+
+function validateConfidenceVector(
+  raw: unknown,
+  field: string,
+): ContextExtractionConfidenceVector | undefined {
+  if (raw === undefined) return undefined;
+  const vector = requireRecord(raw, field);
+  return {
+    extraction: validateConfidence(vector.extraction, `${field}.extraction`),
+    source_quality: validateConfidence(vector.source_quality, `${field}.source_quality`),
+    entity_resolution: validateConfidence(vector.entity_resolution, `${field}.entity_resolution`),
+    freshness: validateConfidence(vector.freshness, `${field}.freshness`),
+  };
+}
+
+function validateStructuredPayload<T extends Record<string, unknown>>(
+  raw: unknown,
+  field: string,
+): T {
+  const record = requireRecord(raw, field);
+  if (Object.keys(record).length === 0) throw invalid(field, "non-empty object");
+  return record as T;
+}
+
+function requireContextSchemaVersion(raw: Record<string, unknown>, field: string): void {
+  if (
+    raw.schema_version !== SGR_CONTRACT_SCHEMA_VERSION &&
+    raw.schema_version !== CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION
+  ) {
+    throw invalid(
+      `${field}.schema_version`,
+      `${SGR_CONTRACT_SCHEMA_VERSION} | ${CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION}`,
+    );
+  }
+}
+
+const CONTEXT_EXTRACTION_ITEM_KINDS = [
+  "wiki_update",
+  "claim",
+  "fact",
+  "definition",
+  "decision",
+  "requirement",
+  "constraint",
+  "invariant",
+  "procedure",
+  "workflow",
+  "api_contract",
+  "code_symbol",
+  "risk",
+  "open_question",
+  "contradiction",
+  "example",
+  "deprecation",
+  "graph_entity",
+  "graph_edge",
+  "entity_resolution",
+  "page_creation",
+  "topology_decision",
+  "coverage",
+  "capability_note",
+] as const;
 
 export function validateContextExtractionSgrResult(
   raw: unknown,
   field = "context extraction SGR result",
 ): ContextExtractionSgrResult {
   const result = requireRecord(raw, field);
-  requireSchemaVersion(result, field);
+  requireContextSchemaVersion(result, field);
   if (result.kind !== "context_extraction") throw invalid(`${field}.kind`, '"context_extraction"');
   return {
-    schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+    schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
     kind: "context_extraction",
     task_id: optionalString(result.task_id, `${field}.task_id`),
     reasoning: requireNonEmptyArray(result.reasoning, `${field}.reasoning`, validateReasoningStep),
@@ -144,6 +220,7 @@ export function validateContextExtractionSgrResult(
           "accepted",
           "stale",
           "conflict",
+          "unresolved",
         ]);
         const staleMarkers = optionalStringArray(item.stale_markers, `${itemField}.stale_markers`);
         const conflictMarkers = optionalStringArray(
@@ -156,25 +233,43 @@ export function validateContextExtractionSgrResult(
         if (status === "conflict" && !conflictMarkers?.length) {
           throw invalid(`${itemField}.conflict_markers`, "non-empty string[] for conflict status");
         }
+        const validity =
+          item.validity === undefined
+            ? undefined
+            : requireEnum(item.validity, `${itemField}.validity`, [
+                "current",
+                "historical",
+                "deprecated",
+                "conflicting",
+                "unknown",
+              ]);
         return {
           id: requireString(item.id, `${itemField}.id`),
-          kind: requireEnum(item.kind, `${itemField}.kind`, [
-            "wiki_update",
-            "fact",
-            "graph_entity",
-            "graph_edge",
-            "coverage",
-            "capability_note",
-          ]),
+          kind: requireEnum(item.kind, `${itemField}.kind`, CONTEXT_EXTRACTION_ITEM_KINDS),
           summary: requireString(item.summary, `${itemField}.summary`),
           source_refs: requireNonEmptyArray(
             item.source_refs,
             `${itemField}.source_refs`,
             validateSourceRef,
           ),
-          confidence: validateConfidence(item.confidence, `${itemField}.confidence`),
+          span_refs: optionalStringArray(item.span_refs, `${itemField}.span_refs`),
+          confidence:
+            item.confidence === undefined
+              ? undefined
+              : validateConfidence(item.confidence, `${itemField}.confidence`),
+          confidence_vector: validateConfidenceVector(
+            item.confidence_vector,
+            `${itemField}.confidence_vector`,
+          ),
           status,
+          validity,
+          scope: optionalString(item.scope, `${itemField}.scope`),
           target_path: optionalString(item.target_path, `${itemField}.target_path`),
+          canonical_refs: optionalStringArray(item.canonical_refs, `${itemField}.canonical_refs`),
+          supersedes: optionalStringArray(item.supersedes, `${itemField}.supersedes`),
+          superseded_by: optionalStringArray(item.superseded_by, `${itemField}.superseded_by`),
+          contradicts: optionalStringArray(item.contradicts, `${itemField}.contradicts`),
+          depends_on: optionalStringArray(item.depends_on, `${itemField}.depends_on`),
           entity:
             item.kind === "graph_entity"
               ? validateGraphEntity(item.entity, `${itemField}.entity`)
@@ -186,6 +281,27 @@ export function validateContextExtractionSgrResult(
           coverage:
             item.kind === "coverage"
               ? validateCoverage(item.coverage, `${itemField}.coverage`)
+              : undefined,
+          entity_resolution:
+            item.kind === "entity_resolution"
+              ? validateStructuredPayload<ContextExtractionEntityResolutionRow>(
+                  item.entity_resolution,
+                  `${itemField}.entity_resolution`,
+                )
+              : undefined,
+          page_creation:
+            item.kind === "page_creation"
+              ? validateStructuredPayload<ContextExtractionPageCreationRow>(
+                  item.page_creation,
+                  `${itemField}.page_creation`,
+                )
+              : undefined,
+          topology_decision:
+            item.kind === "topology_decision"
+              ? validateStructuredPayload<ContextExtractionTopologyDecisionRow>(
+                  item.topology_decision,
+                  `${itemField}.topology_decision`,
+                )
               : undefined,
           stale_markers: staleMarkers,
           conflict_markers: conflictMarkers,

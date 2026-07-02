@@ -878,8 +878,9 @@ describe("context release readiness guards", () => {
       "numeric notes like `[1]`",
       "Evaluation pass:",
       "self-contained wiki/fact/graph content plus line-addressed provenance",
-      "`context_extraction` SGR JSON result with `graph_entity`, `fact`, `graph_edge`, and maximum-assimilation `coverage` items",
-      "coverage rows are non-empty before wiki synthesis",
+      "SGR v2 `context_extraction` JSON result with typed records",
+      "`entity_resolution`, `page_creation`, `topology_decision`, and maximum-assimilation `coverage` items",
+      "typed claims, ontology rows, source-span rows, topology/page manifests",
     ]) {
       expect(maximumPrompt).toContain(expected);
     }
