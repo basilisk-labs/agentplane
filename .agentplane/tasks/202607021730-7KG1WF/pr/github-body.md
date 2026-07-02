@@ -16,12 +16,7 @@ Phase 5 from the Context Maximum Assimilation PRD. Add migration or dry-run supp
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verified source_refs review fix. Checks: migrate unit test, maximum-assimilation artifact validation
-tests, targeted eslint, format:changed, framework bootstrap.
-```
+- Note: Verified after primary tag metadata fix; source_refs review fix remains covered by tests and hosted checks.
 - Canonical workflow state lives in the task README.
 
 <details>

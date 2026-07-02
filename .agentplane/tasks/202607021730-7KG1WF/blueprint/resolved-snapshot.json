@@ -6,8 +6,7 @@
     "title": "Document and migrate maximum-assimilation v2",
     "description": "Phase 5 from the Context Maximum Assimilation PRD. Add migration or dry-run support for legacy context modes/artifacts, preserve existing wiki/facts/graph, generate initial topology/entity/page manifests where possible, and update user/developer docs plus release notes for the single public maximum-assimilation workflow.",
     "tags": [
-      "code",
-      "docs"
+      "code"
     ],
     "owner": "CODER",
     "taskKind": "code",
@@ -573,6 +572,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "15a32c5dda4558da5c1484ab8751c9fcc80d482fc474aa043c09472ab25b1d40"
+    "value": "b23644d04f21a13797b8ca06fae28e29acc560fdd61a9f9262f9d265d0f6334a"
   }
 }

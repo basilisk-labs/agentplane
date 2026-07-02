@@ -4,7 +4,7 @@ title: "Document and migrate maximum-assimilation v2"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -25,22 +25,22 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-02T20:55:22.165Z"
+  updated_at: "2026-07-02T21:01:37.418Z"
   updated_by: "CODER"
-  note: "Verified source_refs review fix. Checks: migrate unit test, maximum-assimilation artifact validation tests, targeted eslint, format:changed, framework bootstrap."
+  note: "Verified after primary tag metadata fix; source_refs review fix remains covered by tests and hosted checks."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-02T20:55:20.541Z"
+  updated_at: "2026-07-02T21:01:58.849Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed after source_refs review fix."
+  note: "Quality review passed after primary tag snapshot refresh."
   evaluated_sha: "4506da62508dcc376d91f3e2e547dab42c0e3e1b"
-  blueprint_digest: "15a32c5dda4558da5c1484ab8751c9fcc80d482fc474aa043c09472ab25b1d40"
+  blueprint_digest: "b23644d04f21a13797b8ca06fae28e29acc560fdd61a9f9262f9d265d0f6334a"
   evidence_refs:
     - ".agentplane/tasks/202607021730-7KG1WF/README.md"
-    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-205520541-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-205520541-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-205520541-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-210158849-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-210158849-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-210158849-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
@@ -81,8 +81,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified source_refs review fix. Checks: migrate unit test, maximum-assimilation artifact validation tests, targeted eslint, format:changed, framework bootstrap."
+  -
+    type: "verify"
+    at: "2026-07-02T21:01:37.418Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified after primary tag metadata fix; source_refs review fix remains covered by tests and hosted checks."
 doc_version: 3
-doc_updated_at: "2026-07-02T20:55:22.295Z"
+doc_updated_at: "2026-07-02T21:01:37.550Z"
 doc_updated_by: "CODER"
 description: "Phase 5 from the Context Maximum Assimilation PRD. Add migration or dry-run support for legacy context modes/artifacts, preserve existing wiki/facts/graph, generate initial topology/entity/page manifests where possible, and update user/developer docs plus release notes for the single public maximum-assimilation workflow."
 sections:
@@ -215,6 +221,36 @@ sections:
     - operator_action: run_exact_argv
     - can_execute_now: true
     - safe_command: agentplane finish 202607021730-7KG1WF --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit 1c0ec9d466b379312bbb1ecf09eac474d825870d --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-02T21:01:37.418Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified after primary tag metadata fix; source_refs review fix remains covered by tests and hosted checks.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-02T20:55:22.295Z, excerpt_hash=sha256:e490475f44c7a9f4330ef94ca16fcb913db5fe345c6508a45dd4a892972cce49
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021730-7KG1WF-document-and-migrate-maximum-assimilation-v2/.agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json
+    - old_digest: b23644d04f21a13797b8ca06fae28e29acc560fdd61a9f9262f9d265d0f6334a
+    - current_digest: b23644d04f21a13797b8ca06fae28e29acc560fdd61a9f9262f9d265d0f6334a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607021730-7KG1WF
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202607021730-7KG1WF --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit f86bc708775327f5fba672361d8caac1a3979e6b --pre-merge-closure
     - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
@@ -371,6 +407,36 @@ DecisionContextRef:
 - operator_action: run_exact_argv
 - can_execute_now: true
 - safe_command: agentplane finish 202607021730-7KG1WF --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit 1c0ec9d466b379312bbb1ecf09eac474d825870d --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-02T21:01:37.418Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified after primary tag metadata fix; source_refs review fix remains covered by tests and hosted checks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-02T20:55:22.295Z, excerpt_hash=sha256:e490475f44c7a9f4330ef94ca16fcb913db5fe345c6508a45dd4a892972cce49
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021730-7KG1WF-document-and-migrate-maximum-assimilation-v2/.agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json
+- old_digest: b23644d04f21a13797b8ca06fae28e29acc560fdd61a9f9262f9d265d0f6334a
+- current_digest: b23644d04f21a13797b8ca06fae28e29acc560fdd61a9f9262f9d265d0f6334a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607021730-7KG1WF
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202607021730-7KG1WF --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit f86bc708775327f5fba672361d8caac1a3979e6b --pre-merge-closure
 - diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
