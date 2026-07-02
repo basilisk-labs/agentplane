@@ -4,7 +4,7 @@ title: "Enforce maximum-assimilation structural validators"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -31,16 +31,16 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-02T19:25:38.094Z"
+  updated_at: "2026-07-02T19:26:19.990Z"
   updated_by: "EVALUATOR"
   note: "Quality review passed."
-  evaluated_sha: "5a0884d3658a756e8536acd53cde6e08842281a7"
+  evaluated_sha: "bea2e5d7e757cb4bce4f7ed4a2c2f316f4e3d93b"
   blueprint_digest: "25e215a9317034cd61e9fe293212cae9681cb701e1ba5ede19c4027908c1a7b3"
   evidence_refs:
     - ".agentplane/tasks/202607021729-BC11BT/README.md"
-    - ".agentplane/tasks/202607021729-BC11BT/quality/20260702-192538094-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607021729-BC11BT/quality/20260702-192538094-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607021729-BC11BT/quality/20260702-192538094-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607021729-BC11BT/quality/20260702-192619990-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607021729-BC11BT/quality/20260702-192619990-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607021729-BC11BT/quality/20260702-192619990-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607021729-BC11BT/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
