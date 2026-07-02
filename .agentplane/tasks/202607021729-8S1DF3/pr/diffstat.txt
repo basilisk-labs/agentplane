@@ -1,0 +1,13 @@
+ .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+ .../src/commands/context/context-runner.ts         |   8 +
+ .../src/commands/context/context.spec.ts           |  11 +-
+ .../verify-task.maximum-assimilation.test.ts       |  81 ++++++
+ .../verify-task.maximum-assimilation.unit.test.ts  |  30 ++
+ .../src/commands/context/wiki-reports.ts           | 310 +++++++++++++++++++++
+ .../src/commands/context/wiki-reports.unit.test.ts | 107 +++++++
+ .../src/context/ingest-task-pack.test.ts           |   6 +
+ .../agentplane/src/context/ingest-task-pack.ts     |   9 +
+ .../agentplane/src/context/ingest-task-prompt.ts   |   9 +-
+ ...ximum-assimilation-artifacts-validation.test.ts |  75 +++++
+ .../maximum-assimilation-artifacts-validation.ts   |  80 ++++++
+ 12 files changed, 724 insertions(+), 4 deletions(-)

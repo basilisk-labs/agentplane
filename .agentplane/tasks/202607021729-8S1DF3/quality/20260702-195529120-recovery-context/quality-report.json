@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607021729-8S1DF3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-02T19:55:29.120Z",
+  "verdict": "pass",
+  "summary": "Maximum-assimilation wiki report and evaluator scenario support implemented and verified.",
+  "evaluated_sha": "5d79c4e2365d5c06462c865827693109444398cd",
+  "blueprint_digest": "cb07d80b7a2193ebc6538ff57d95fe3e69563e4134b8c0fa6f1313d2bd58fb3a",
+  "findings": [
+    "Passed: bun test packages/agentplane/src/commands/context packages/agentplane/src/context; targeted wiki report tests; format:changed; ESLint; knip:check; check-routing; ap doctor."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607021729-8S1DF3/README.md",
+    "packages/agentplane/src/commands/context/wiki-reports.unit.test.ts",
+    "packages/agentplane/src/context/maximum-assimilation-artifacts-validation.test.ts",
+    "packages/agentplane/src/commands/context/verify-task.maximum-assimilation.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
