@@ -21,7 +21,11 @@ export async function collectWikiFiles(root: string, rel: string): Promise<strin
   return files.filter((item) => item.endsWith(".md"));
 }
 
-export async function normalizeWikiLintTarget(root: string, input: string): Promise<string> {
+export async function normalizeExistingWikiTarget(
+  root: string,
+  input: string,
+  label: string,
+): Promise<string> {
   const trimmed = input.trim();
   if (!trimmed) return "context/wiki";
   const scoped = toPosix(trimmed.startsWith("context/wiki") ? trimmed : `context/wiki/${trimmed}`);
@@ -31,7 +35,7 @@ export async function normalizeWikiLintTarget(root: string, input: string): Prom
     throw new CliError({
       exitCode: 3,
       code: "E_VALIDATION",
-      message: `wiki lint path must stay under context/wiki: ${input}`,
+      message: `${label} path must stay under context/wiki: ${input}`,
     });
   }
   if (await fileExists(abs)) return toPosix(path.relative(root, abs));
@@ -40,8 +44,12 @@ export async function normalizeWikiLintTarget(root: string, input: string): Prom
   throw new CliError({
     exitCode: 3,
     code: "E_VALIDATION",
-    message: `wiki lint target does not exist: ${input}`,
+    message: `${label} target does not exist: ${input}`,
   });
+}
+
+export async function normalizeWikiLintTarget(root: string, input: string): Promise<string> {
+  return normalizeExistingWikiTarget(root, input, "wiki lint");
 }
 
 export function extractFrontmatter(text: string): string | null {
