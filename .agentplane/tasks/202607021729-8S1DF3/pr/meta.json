@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:2a226d2f932f3ff6a93dea83d49bbeb3bd123d0921287dac4eda4425f2e23777",
   "pr_number": 4541,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4541",
+  "pre_merge_closure": {
+    "basis_commit": "8c1122745732254f9fea221ccbf9d9144d72cff7",
+    "branch": "task/202607021729-8S1DF3/add-maximum-assimilation-wiki-reports-and-evalua",
+    "pr_number": 4541,
+    "recorded_at": "2026-07-02T20:16:13.497Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607021729-8S1DF3",
