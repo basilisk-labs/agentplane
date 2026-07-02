@@ -145,6 +145,11 @@ export function createTaskNewParsed(
     ".agentplane/context/derived/reports/**",
     ".agentplane/tasks/${taskId}/README.md",
     ".agentplane/tasks/${taskId}/acr.json",
+    ".agentplane/tasks/${taskId}/context-pack.md",
+    ".agentplane/tasks/${taskId}/canonical-snapshot.json",
+    ".agentplane/tasks/${taskId}/source-set.lock.json",
+    ".agentplane/tasks/${taskId}/source-spans.skeleton.jsonl",
+    ".agentplane/tasks/${taskId}/expected-artifacts.json",
   ];
   if (allowCapabilities) {
     allowedOutputs.push("context/capabilities/**", ".agentplane/context/derived/capabilities/**");
