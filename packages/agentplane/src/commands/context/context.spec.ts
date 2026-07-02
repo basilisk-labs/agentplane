@@ -32,7 +32,7 @@ export const contextInitSpec: CommandSpec<{
       valueHint: "<adaptive|minimal|wiki|codebase|research|maximum-assimilation>",
       choices: ["adaptive", "minimal", "wiki", "codebase", "research", "maximum-assimilation"],
       description:
-        "Select initial context setup. Defaults to maximum-assimilation when omitted. User-facing interactive setup currently uses the default without prompting.",
+        "Select initial context setup. Defaults to maximum-assimilation when omitted; older profile names are compatibility aliases and context ingest still creates maximum-assimilation tasks.",
     },
     {
       kind: "string",

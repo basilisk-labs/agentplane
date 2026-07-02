@@ -1,0 +1,68 @@
+import { describe, expect, it } from "vitest";
+
+import { createTaskNewParsed, type ContextWorkspaceMode } from "./ingest-task.js";
+import type { ContextIngestParsed, ManifestEntry } from "./ingest.js";
+
+const parsed: ContextIngestParsed = {
+  sources: [],
+  mode: "changed",
+  dryRun: false,
+  indexOnly: false,
+};
+
+const sourceRows: ManifestEntry[] = [
+  {
+    path: "context/raw/notes.md",
+    sha256: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    size_bytes: 42,
+    mtime: "2026-07-02T00:00:00.000Z",
+    content_type: "text/markdown",
+    status: "changed",
+  },
+];
+
+describe("context ingest task creation", () => {
+  it.each<ContextWorkspaceMode | undefined>([
+    undefined,
+    "adaptive",
+    "minimal",
+    "wiki",
+    "codebase",
+    "research",
+    "maximum-assimilation",
+  ])("maps workspace mode %s to maximum-assimilation", (workspaceMode) => {
+    const task = createTaskNewParsed(parsed, sourceRows, workspaceMode);
+    const context = task.extensions?.["agentplane.context"] as {
+      mode?: string;
+      blueprint?: { id?: string; required_gates?: string[] };
+      wiki?: {
+        maintenance_mode?: string;
+        raw_deletion_resilience_required?: boolean;
+        line_refs_required?: boolean;
+        entity_relation_first?: boolean;
+        canonical_glossary_required?: boolean;
+      };
+    };
+
+    expect(task.blueprintRequest).toBe("context.maximum_assimilation");
+    expect(context.mode).toBe("maximum_assimilation");
+    expect(context.blueprint?.id).toBe("context.maximum_assimilation");
+    expect(context.blueprint?.required_gates).toContain("entity_relation_first_extraction");
+    expect(context.wiki).toMatchObject({
+      maintenance_mode: "maximum_assimilation",
+      raw_deletion_resilience_required: true,
+      line_refs_required: true,
+      entity_relation_first: true,
+      canonical_glossary_required: true,
+    });
+    expect(task.description).not.toContain("Blueprint: context.assimilation");
+  });
+
+  it("records deprecated workspace mode aliases without weakening the task", () => {
+    const task = createTaskNewParsed(parsed, sourceRows, "adaptive");
+
+    expect(task.description).toContain("Deprecated workspace mode alias: adaptive");
+    expect(task.description).toContain("Context ingest now always creates maximum-assimilation");
+    expect(task.description).toContain("context.maximum_assimilation lifecycle");
+  });
+});

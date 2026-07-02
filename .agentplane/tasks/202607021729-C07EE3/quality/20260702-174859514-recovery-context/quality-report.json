@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202607021729-C07EE3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-02T17:48:59.514Z",
+  "verdict": "pass",
+  "summary": "Quality review passed for maximum-assimilation Phase 0 at current head.",
+  "evaluated_sha": "5d743ef973d3ca2d2d2be9ffc4b018dadae7e45e",
+  "blueprint_digest": "6e4ba92fde38947ce34cec6ae7535389cdbac762a91c9598660bd4d55e1b5870",
+  "findings": [
+    "No blocking findings."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607021729-C07EE3/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

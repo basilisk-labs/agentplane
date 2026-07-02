@@ -10,7 +10,15 @@ type ContextExtension = {
   };
 };
 
-const COVERAGE_STATUSES = new Set(["covered", "omitted_boilerplate", "redacted", "unresolved"]);
+const COVERAGE_STATUSES = new Set([
+  "covered",
+  "omitted_boilerplate",
+  "redacted",
+  "duplicate",
+  "conflict",
+  "out_of_scope",
+  "unresolved",
+]);
 
 function isProfileSwitchContextTask(context: ContextExtension): boolean {
   return (

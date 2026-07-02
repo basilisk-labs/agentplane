@@ -248,7 +248,7 @@ agentplane_context:
         "# Coverage",
         "",
         "- covered: Payment API source was assimilated into graph rows.",
-        "- omitted: none; redacted: none; duplicate: none; unresolved: none.",
+        "- out_of_scope: no non-product source spans were in scope for extraction.",
         "- source_refs: context/raw/specs/payment-api.md#L1-L10",
         "",
       ].join("\n"),

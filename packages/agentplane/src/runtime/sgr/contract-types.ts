@@ -36,6 +36,9 @@ export type ContextExtractionCoverageStatus =
   | "covered"
   | "omitted_boilerplate"
   | "redacted"
+  | "duplicate"
+  | "conflict"
+  | "out_of_scope"
   | "unresolved";
 
 export type ContextExtractionGraphEntity = {
