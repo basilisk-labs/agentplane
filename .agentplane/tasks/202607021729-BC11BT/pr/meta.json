@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:c6a5d945b2d4695a4336615227613eb14fecfa0e104198e1acf46ca30efac629",
   "pr_number": 4540,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4540",
+  "pre_merge_closure": {
+    "basis_commit": "65d025a74730c6b5034eaec6a61285d3ce86f668",
+    "branch": "task/202607021729-BC11BT/enforce-maximum-assimilation-structural-validato",
+    "pr_number": 4540,
+    "recorded_at": "2026-07-02T19:30:23.419Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607021729-BC11BT",
