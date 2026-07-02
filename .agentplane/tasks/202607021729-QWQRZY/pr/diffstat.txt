@@ -1,0 +1,7 @@
+ .../src/context/ingest-task-pack.test.ts           |  93 ++++++++++++++
+ .../agentplane/src/context/ingest-task-pack.ts     | 131 +++++++++++++++++++
+ packages/agentplane/src/context/ingest-task.ts     |   5 +
+ packages/agentplane/src/context/ingest.ts          |   8 +-
+ .../agentplane/src/context/source-spans.test.ts    |  76 +++++++++++
+ packages/agentplane/src/context/source-spans.ts    | 140 +++++++++++++++++++++
+ 6 files changed, 452 insertions(+), 1 deletion(-)

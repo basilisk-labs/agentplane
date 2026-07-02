@@ -4,6 +4,7 @@ import { runTaskNewParsed } from "../commands/task/new.js";
 import { CliError } from "../shared/errors.js";
 
 import { createTaskNewParsed } from "./ingest-task.js";
+import { writeContextTaskPack } from "./ingest-task-pack.js";
 import {
   buildTaskIdHint,
   defaultWorkspaceHash,
@@ -116,9 +117,14 @@ export async function cmdContextIngest(opts: {
         message: "context ingest created no task; cannot continue to run.",
       });
     }
+    const pack = await writeContextTaskPack({
+      root,
+      taskId: contextCreated.id,
+      sources: indexModeRows,
+    });
 
     process.stdout.write(
-      `context ingestion task created: ${contextCreated.id} (${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })})\n`,
+      `context ingestion task created: ${contextCreated.id} (${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })}; task pack spans=${pack.spanCount})\n`,
     );
 
     return 0;
