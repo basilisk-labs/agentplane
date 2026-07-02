@@ -46,6 +46,21 @@ maximum-assimilation task.
 agentplane context init --profile adaptive
 ```
 
+## Migrate existing context workspaces
+
+Existing context repositories can be moved onto the v2 artifact contract without rewriting their
+legacy knowledge layer:
+
+```bash
+agentplane context migrate maximum-assimilation-v2 --dry-run
+agentplane context migrate maximum-assimilation-v2
+```
+
+The migration preserves `context/wiki/**`, facts, and graph rows. It creates missing topology,
+page-manifest, page-creation, and entity-resolution artifacts from existing wiki paths and graph
+entities. Existing raw-source span coverage remains legacy/unresolved until the workspace is
+re-verified under strict maximum-assimilation v2.
+
 Maximum-assimilation is especially useful when:
 
 - the source is a corpus, specification, book, research folder, product archive, or large task

@@ -1,0 +1,38 @@
+# PR Review
+
+Created: 2026-07-02T20:30:03.849Z
+
+## Task
+
+- Task: `202607021730-7KG1WF`
+- Title: Document and migrate maximum-assimilation v2
+- Status: DOING
+- Branch: `task/202607021730-7KG1WF/document-and-migrate-maximum-assimilation-v2`
+- Canonical task record: `.agentplane/tasks/202607021730-7KG1WF/README.md`
+
+## Verification
+
+- State: ok
+- Note: Implemented maximum-assimilation v2 migration command and docs. Verified with targeted unit tests, full context test slice, CLI docs freshness, lint, format, policy routing, command smoke test, and doctor.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-07-02T20:30:03.849Z
+- Branch: task/202607021730-7KG1WF/document-and-migrate-maximum-assimilation-v2
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .agentplane/tasks/202607021729-8S1DF3/README.md    | 25 ++++++++++++++++++----
+ .agentplane/tasks/202607021729-8S1DF3/pr/meta.json |  7 ++++++
+ 2 files changed, 28 insertions(+), 4 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

@@ -90,6 +90,40 @@ export type ContextInitParsed = {
   force: boolean;
 };
 
+export const contextMigrateSpec: CommandSpec<{
+  target: "maximum-assimilation-v2";
+  dryRun: boolean;
+}> = {
+  id: ["context", "migrate"],
+  group: "Context",
+  summary: "Migrate an existing context workspace to maximum-assimilation v2 artifacts.",
+  description:
+    "Preserves existing wiki, facts, and graph artifacts while materializing missing maximum-assimilation v2 topology, page, and entity-resolution manifests. Dry-run mode previews writes without changing files.",
+  args: [{ name: "target", required: true, valueHint: "<maximum-assimilation-v2>" }],
+  options: [
+    {
+      kind: "boolean",
+      name: "dry-run",
+      default: false,
+      description: "Preview migration writes without changing files.",
+    },
+  ],
+  examples: [
+    {
+      cmd: "agentplane context migrate maximum-assimilation-v2 --dry-run",
+      why: "Preview which v2 artifacts would be created or extended.",
+    },
+    {
+      cmd: "agentplane context migrate maximum-assimilation-v2",
+      why: "Create missing maximum-assimilation v2 artifacts without rewriting legacy wiki/facts/graph data.",
+    },
+  ],
+  parse: (raw) => ({
+    target: String(raw.args.target) as "maximum-assimilation-v2",
+    dryRun: raw.opts["dry-run"] === true,
+  }),
+};
+
 export const contextReindexSpec: CommandSpec<{
   includeTasks: boolean;
   includeRaw: boolean;

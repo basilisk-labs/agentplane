@@ -24,6 +24,16 @@ When `--profile` is omitted, `context init` uses `maximum-assimilation`. Older p
 accepted as compatibility aliases, but context ingestion still creates a
 `context.maximum_assimilation` task.
 
+For an existing context workspace, preview and apply the v2 migration before adding new sources:
+
+```bash
+agentplane context migrate maximum-assimilation-v2 --dry-run
+agentplane context migrate maximum-assimilation-v2
+```
+
+The migration preserves existing wiki, facts, and graph data, then materializes missing v2 topology
+and manifest artifacts needed by maximum-assimilation validators.
+
 ## Add the first source
 
 Use explicit files when you know what should become reusable knowledge:
