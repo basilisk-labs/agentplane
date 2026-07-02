@@ -16,7 +16,7 @@ Phase 5 from the Context Maximum Assimilation PRD. Add migration or dry-run supp
 ## Verification
 
 - State: ok
-- Note: Verified after primary tag metadata fix; source_refs review fix remains covered by tests and hosted checks.
+- Note: Verified final metadata and quality snapshot refresh.
 - Canonical workflow state lives in the task README.
 
 <details>
