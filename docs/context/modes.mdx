@@ -1,39 +1,34 @@
 ---
 title: "Choose a context mode"
-description: "Decide whether a project should use adaptive context or maximum-assimilation."
+description: "Understand the single public maximum-assimilation context mode."
 ---
 
 # Choose a context mode
 
-Context mode controls how aggressively Agentplane asks agents to turn sources into durable project
-knowledge.
+Agentplane exposes one public context ingestion mode: `maximum-assimilation`. Older profile names
+such as `adaptive`, `minimal`, `wiki`, `codebase`, and `research` are compatibility aliases only;
+context ingest still creates a `context.maximum_assimilation` task.
 
-## Quick choice
+## Public contract
 
-| Need                                                                                       | Use                    |
-| ------------------------------------------------------------------------------------------ | ---------------------- |
-| Quick repo grounding for normal agent work                                                 | `adaptive`             |
-| A small wiki that grows as work happens                                                    | `adaptive`             |
-| Low review cost                                                                            | `adaptive`             |
-| A durable semantic memory from a corpus, spec, book, or large notes set                    | `maximum-assimilation` |
-| Coverage reports, glossary discipline, and raw-deletion resilience                         | `maximum-assimilation` |
-| A project knowledge base that should be useful even when raw sources are later unavailable | `maximum-assimilation` |
+Use `maximum-assimilation` when context should become durable project memory. The mode asks the
+CURATOR task to preserve source meaning through wiki pages, fact/claim rows, graph rows, glossary
+entries, provenance, coverage, and evaluator review.
 
-## Mode selection flow
+The mode does not force every project into the same folder taxonomy. The required lifecycle and
+validators stay fixed, while the wiki topology remains source-shaped and must be justified by source
+evidence.
+
+## Ingestion flow
 
 ```mermaid
 flowchart TD
-  A[Project needs context] --> B{What must survive?}
-  B -- Repo conventions and small reusable notes --> C[adaptive]
-  B -- Full source meaning as durable memory --> D[maximum-assimilation]
-
-  C --> C1[Small wiki grows from real work]
-  C --> C2[Low review cost]
-  C --> C3[Raw sources remain the main evidence]
-
-  D --> D1[Source-shaped wiki topology]
-  D --> D2[Facts, graph rows, glossary, provenance]
-  D --> D3[Coverage and raw-deletion resilience review]
+  A[Source set] --> B[Source identity and hashes]
+  B --> C[Pre-write search and reconciliation]
+  C --> D[Entity and relation first extraction]
+  D --> E[Source-shaped topology decision]
+  E --> F[Wiki, facts, graph, glossary, coverage]
+  F --> G[Evaluator review and ACR]
 ```
 
 ## Default
@@ -44,43 +39,14 @@ flowchart TD
 agentplane context init
 ```
 
-Use the default when the context layer should become durable project memory. It creates the same
-editable context workspace as smaller profiles, but asks future context-ingestion work to preserve
-source meaning through wiki pages, facts, graph rows, glossary entries, provenance, and coverage.
-
-## Adaptive
-
-Choose `adaptive` explicitly when review cost matters more than exhaustive assimilation.
+Passing an old profile name is accepted for compatibility, but context ingest still produces a
+maximum-assimilation task.
 
 ```bash
 agentplane context init --profile adaptive
 ```
 
-Use it for ordinary software repositories that only need reusable conventions and a small wiki that
-grows as work happens. It creates a stable context contract and lets the wiki structure grow from
-actual sources. Agents should keep the smallest useful structure, cite sources, and avoid duplicating
-concepts.
-
-Adaptive mode is best when:
-
-- the project mainly needs reusable repo conventions;
-- sources arrive gradually;
-- context changes should stay small and cheap to review;
-- raw sources remain available as evidence.
-
-## Maximum assimilation
-
-`maximum-assimilation` is for turning a source set into durable semantic memory.
-
-```bash
-agentplane context init --profile maximum-assimilation
-```
-
-Use it when the next ingestion tasks should preserve all significant source meaning in wiki pages,
-facts, graph rows, glossary entries, provenance, and coverage reports. The result should remain
-understandable even if raw sources are later moved, private, or deleted.
-
-Maximum-assimilation mode is best when:
+Maximum-assimilation is especially useful when:
 
 - the source is a corpus, specification, book, research folder, product archive, or large task
   history;
@@ -111,16 +77,13 @@ flowchart LR
 ## Stop rules
 
 - Do not put secrets or private credentials into context.
-- Do not use maximum assimilation for one-off notes.
 - Do not create a page family before the source evidence justifies that topology.
 - Do not normalize ambiguous names into one entity; keep aliases, conflicts, or open questions.
 - Do not delete raw sources until coverage and raw-deletion resilience have been reviewed.
 
 ## Agent handoff
 
-For adaptive tasks, point the agent at [Agent guide](agent-guide).
-
-For maximum assimilation, also require:
+Point the agent at [Agent guide](agent-guide) and require:
 
 - source registry with hashes;
 - topology decision;

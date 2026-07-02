@@ -101,6 +101,35 @@ describe("SGR reliability contracts", () => {
     ).toThrow("coverage.status");
   });
 
+  it.each(["duplicate", "conflict", "out_of_scope"] as const)(
+    "accepts maximum-assimilation coverage status %s",
+    (status) => {
+      const result = validateContextExtractionSgrResult({
+        schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+        kind: "context_extraction",
+        reasoning: [{ label: "coverage", summary: "Classify source coverage." }],
+        source_refs: [sourceRef],
+        extracted_items: [
+          {
+            id: `coverage.${status}`,
+            kind: "coverage",
+            summary: "Coverage status is supported by the SGR contract.",
+            source_refs: [sourceRef],
+            confidence: 0.7,
+            status: "proposed",
+            coverage: {
+              source_path: sourceRef.path,
+              status,
+              reason: "Maximum-assimilation needs first-class non-covered statuses.",
+            },
+          },
+        ],
+      });
+
+      expect(result.extracted_items[0]?.coverage?.status).toBe(status);
+    },
+  );
+
   it("rejects context extraction items without source references", () => {
     expect(() =>
       validateContextExtractionSgrResult({

@@ -1,12 +1,7 @@
-import { mkdir, stat } from "node:fs/promises";
-import path from "node:path";
-
 import { mapBackendError } from "../cli/error-map.js";
-import { starterWikiPageFiles } from "../commands/context/init-wiki.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { runTaskNewParsed } from "../commands/task/new.js";
 import { CliError } from "../shared/errors.js";
-import { writeTextIfChanged } from "../shared/write-if-changed.js";
 
 import { createTaskNewParsed } from "./ingest-task.js";
 import {
@@ -29,24 +24,6 @@ import {
 import { cmdContextReindex } from "./reindex.js";
 
 export type { ContextIngestParsed, ManifestEntry } from "./ingest-manifest.js";
-
-async function ensureFirstIngestWikiScaffold(root: string): Promise<string[]> {
-  const created: string[] = [];
-  for (const file of starterWikiPageFiles()) {
-    if (file.relative === "context/wiki/index.md") continue;
-    const abs = path.join(root, file.relative);
-    try {
-      await stat(abs);
-      continue;
-    } catch (err) {
-      if ((err as { code?: string } | null)?.code !== "ENOENT") throw err;
-    }
-    await mkdir(path.dirname(abs), { recursive: true });
-    await writeTextIfChanged(abs, file.content);
-    created.push(file.relative);
-  }
-  return created;
-}
 
 export async function cmdContextIngest(opts: {
   ctx?: CommandContext;
@@ -115,22 +92,6 @@ export async function cmdContextIngest(opts: {
     }
 
     const workspaceMode = await readContextWorkspaceMode(root);
-    if (
-      workspaceMode !== "maximum-assimilation" &&
-      !sourceLockedManifest.wiki_scaffold?.starter_created_at
-    ) {
-      const createdWikiScaffold = await ensureFirstIngestWikiScaffold(root);
-      await writeManifest(root, {
-        ...sourceLockedManifest,
-        wiki_scaffold: { starter_created_at: new Date().toISOString() },
-      });
-      if (createdWikiScaffold.length > 0) {
-        process.stdout.write(
-          `context ingest wiki scaffold created: ${createdWikiScaffold.length} page(s)\n`,
-        );
-      }
-    }
-
     const beforeTasks = await ctx.taskBackend.listTasks();
     const before = new Set(beforeTasks.map((task) => task.id));
     const taskParsed = createTaskNewParsed(opts.parsed, indexModeRows, workspaceMode);

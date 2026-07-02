@@ -20,8 +20,9 @@ agentplane context check
 directory it can bootstrap an Agentplane project first. In a non-empty directory that is not already
 an Agentplane project, run `agentplane init` explicitly before context setup.
 
-When `--profile` is omitted, `context init` uses `maximum-assimilation`. Pass `--profile adaptive`
-for a smaller wiki that grows opportunistically.
+When `--profile` is omitted, `context init` uses `maximum-assimilation`. Older profile names are
+accepted as compatibility aliases, but context ingestion still creates a
+`context.maximum_assimilation` task.
 
 ## Add the first source
 
@@ -61,6 +62,6 @@ run context checks, and record verification before finishing.
 
 ## Next
 
-- Choose [adaptive or maximum-assimilation](modes).
+- Understand [maximum-assimilation mode](modes).
 - Learn [what files context writes](files).
 - Review [context changes before merging](review).

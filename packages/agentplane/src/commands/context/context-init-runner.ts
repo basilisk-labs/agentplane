@@ -33,10 +33,9 @@ async function resolveContextInitParsed(
   process.stdout.write(
     infoMessage(
       [
-        "Context init mode:",
-        "minimal = smallest workspace scaffold",
-        "adaptive = smaller llm-wiki workspace for normal project context",
-        "maximum-assimilation = default mode for preserving significant source meaning",
+        "Context init profile:",
+        "maximum-assimilation = public context ingest mode for preserving significant source meaning",
+        "minimal/adaptive = legacy initialization aliases; ingest still creates maximum-assimilation tasks",
       ].join("\n"),
     ) + "\n",
   );

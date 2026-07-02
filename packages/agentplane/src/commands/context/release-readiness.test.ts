@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -41,6 +41,16 @@ async function write(root: string, rel: string, text: string): Promise<void> {
   const target = path.join(root, rel);
   await mkdir(path.dirname(target), { recursive: true });
   await writeFile(target, text, "utf8");
+}
+
+async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await stat(filePath);
+    return true;
+  } catch (err) {
+    if ((err as { code?: string } | null)?.code === "ENOENT") return false;
+    throw err;
+  }
 }
 
 describe("context release readiness guards", () => {
@@ -173,7 +183,7 @@ describe("context release readiness guards", () => {
     expect(first.title).not.toBe(second.title);
   });
 
-  it("creates starter wiki structure on first context ingest with selected sources", async () => {
+  it("does not create fixed starter wiki folders on first context ingest with selected sources", async () => {
     const root = await tempRoot();
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
     vi.spyOn(process.stdout, "write").mockImplementation(() => true);
@@ -199,19 +209,12 @@ describe("context release readiness guards", () => {
       createTask,
     });
 
-    const wikiEntries = await readdir(path.join(root, "context/wiki"));
-    expect(wikiEntries).toEqual(
-      expect.arrayContaining(["concepts", "entities", "decisions", "modules", "reports"]),
-    );
-    await cmdContextWikiLint({
-      cwd: root,
-      parsed: { path: "context/wiki" },
-    });
+    expect(await pathExists(path.join(root, "context/wiki"))).toBe(false);
 
     const lock = JSON.parse(
       await readFile(path.join(root, ".agentplane/context/manifest.lock.json"), "utf8"),
     ) as { wiki_scaffold?: { starter_created_at?: string } };
-    expect(lock.wiki_scaffold?.starter_created_at).toEqual(expect.any(String));
+    expect(lock.wiki_scaffold).toBeUndefined();
   });
 
   it("does not create fixed starter wiki folders on maximum-assimilation first ingest", async () => {
@@ -712,7 +715,7 @@ describe("context release readiness guards", () => {
     );
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("context.assimilation");
+    ).toContain("context.maximum_assimilation");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("agentplane context reindex --include-raw");
@@ -748,7 +751,7 @@ describe("context release readiness guards", () => {
       frontmatter_required: true,
     });
     const blueprint = createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint;
-    expect(blueprint?.id).toBe("context.assimilation");
+    expect(blueprint?.id).toBe("context.maximum_assimilation");
     expect(blueprint?.required_gates).toEqual(
       expect.arrayContaining(["source_set_locked", "reindex_after_writes"]),
     );

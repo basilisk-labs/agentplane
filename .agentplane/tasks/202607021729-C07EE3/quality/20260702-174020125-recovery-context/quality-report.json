@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607021729-C07EE3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-02T17:40:20.125Z",
+  "verdict": "pass",
+  "summary": "Phase 0 single-mode context assimilation is implemented within the approved scope.",
+  "evaluated_sha": "2ea5898b969a015b547d1316d6dbc5d9b6aa532a",
+  "blueprint_digest": "6e4ba92fde38947ce34cec6ae7535389cdbac762a91c9598660bd4d55e1b5870",
+  "findings": [
+    "Context ingest task creation always resolves to context.maximum_assimilation; deprecated workspace modes are compatibility aliases; SGR coverage validation now accepts duplicate, conflict, and out_of_scope; focused and release-readiness tests pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607021729-C07EE3/README.md",
+    "bun test packages/agentplane/src/context/ingest-task.test.ts packages/agentplane/src/runtime/sgr/contracts.test.ts",
+    "bun test packages/agentplane/src/commands/context/release-readiness.test.ts",
+    "node .agentplane/policy/check-routing.mjs",
+    "ap doctor"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

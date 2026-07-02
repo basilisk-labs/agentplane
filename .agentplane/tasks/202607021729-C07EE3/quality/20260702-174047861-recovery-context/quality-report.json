@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202607021729-C07EE3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-02T17:40:47.861Z",
+  "verdict": "pass",
+  "summary": "Quality review passed for implementation head 8f2227f96.",
+  "evaluated_sha": "8f2227f961c144413751273be06b8e3815f4995e",
+  "blueprint_digest": "6e4ba92fde38947ce34cec6ae7535389cdbac762a91c9598660bd4d55e1b5870",
+  "findings": [
+    "No blocking findings: Phase 0 scope is implemented, focused tests and release-readiness tests pass, routing check passes, doctor exits 0."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607021729-C07EE3/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

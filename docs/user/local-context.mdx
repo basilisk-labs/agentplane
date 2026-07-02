@@ -9,9 +9,8 @@ import FurtherReading from "@site/src/components/FurtherReading";
 
 :::note
 The user-facing context guide now starts at [Context](../context). Use
-[Context modes](../context/modes) when you need to explain `adaptive` vs
-`maximum-assimilation`, and [Agent guide](../context/agent-guide) when handing a project to a coding
-agent.
+[Context mode](../context/modes) when you need to explain the `maximum-assimilation` contract, and
+[Agent guide](../context/agent-guide) when handing a project to a coding agent.
 :::
 
 ## Quick answer
@@ -88,11 +87,12 @@ projection is stored in the shared Agentplane cache database at `.agentplane/cac
 owns only its projection tables inside that file. Treat both the derived artifacts and the SQLite
 cache as disposable output.
 
-The initial wiki profile creates only `context/wiki/AGENTS.md` and `context/wiki/index.md`. The
-first ingest creates the starter wiki hierarchy, and the first analysis should then preserve the
-smallest project-specific structure that fits the sources. If a glossary is useful, keep it as a
-thin navigation index over canonical wiki pages and graph entities; aliases belong there, while
-factual claims and provenance stay on the backing wiki/fact/graph artifacts.
+The initial wiki profile creates only `context/wiki/AGENTS.md` and `context/wiki/index.md`.
+Ingestion tasks use the single public `maximum-assimilation` contract, so project-specific folders
+should appear from source-backed topology decisions rather than from an empty starter hierarchy. If a
+glossary is useful, keep it as a thin navigation index over canonical wiki pages and graph entities;
+aliases belong there, while factual claims and provenance stay on the backing wiki/fact/graph
+artifacts.
 
 ## Initialize and search
 
@@ -129,7 +129,10 @@ maintained wiki and derived artifacts should become the complete semantic memory
 navigable synthesis over raw files. In this mode, the next context ingestion tasks request the
 `context.maximum_assimilation` blueprint.
 
-The contract is stricter than the adaptive profile:
+Older profile names are compatibility aliases for initialization. Context ingestion still creates
+`context.maximum_assimilation` tasks and applies the same verification gates.
+
+The contract requires:
 
 - Preserve all significant source meaning in wiki, fact, graph, glossary, provenance,
   and coverage artifacts. If `context/raw/**` is deleted later, the maintained context should still

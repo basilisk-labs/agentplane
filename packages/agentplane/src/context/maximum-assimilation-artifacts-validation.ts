@@ -109,11 +109,11 @@ export async function validateMaximumAssimilationArtifacts(opts: {
   if (
     !/coverage/iu.test(coverageText) ||
     !/(covered|assimilated)/iu.test(coverageText) ||
-    !/(omitted|redacted|duplicate|unresolved|conflict)/iu.test(coverageText) ||
+    !/(omitted|redacted|duplicate|unresolved|conflict|out_of_scope)/iu.test(coverageText) ||
     !/(source_refs|source_ref|no-source|no_source)/u.test(coverageText)
   ) {
     errors.push(
-      "maximum-assimilation requires a coverage artifact covering assimilated, omitted/redacted/duplicate/unresolved spans with source refs",
+      "maximum-assimilation requires a coverage artifact covering assimilated, omitted/redacted/duplicate/conflict/unresolved/out_of_scope spans with source refs",
     );
   }
 
