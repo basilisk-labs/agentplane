@@ -19,22 +19,19 @@ Phase 5 from the Context Maximum Assimilation PRD. Add migration or dry-run supp
 - Note:
 
 ```text
-Re-verified current implementation head after quality artifact commit. Checks remain: migrate unit
-tests, command catalog tests, full context test slice, CLI docs freshness, targeted lint, format,
-policy routing, CLI smoke test, and doctor.
+Re-verified after rebase onto origin/main. Checks: migrate unit tests, command catalog tests,
+format:changed, policy routing; prior full ci:local:fast passed before force-push.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-02T20:30:03.849Z
+- Updated: 2026-07-02T20:54:00.170Z
 - Branch: task/202607021730-7KG1WF/document-and-migrate-maximum-assimilation-v2
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202607021729-8S1DF3/README.md    |  25 +-
- .agentplane/tasks/202607021729-8S1DF3/pr/meta.json |   7 +
  docs/context/modes.mdx                             |  15 +
  docs/context/quickstart.mdx                        |  10 +
  docs/context/review.mdx                            |   2 +
@@ -44,7 +41,7 @@ policy routing, CLI smoke test, and doctor.
  .../src/commands/context/context.spec.ts           |  34 ++
  .../agentplane/src/commands/context/migrate.ts     | 359 +++++++++++++++++++++
  .../src/commands/context/migrate.unit.test.ts      | 190 +++++++++++
- 11 files changed, 655 insertions(+), 4 deletions(-)
+ 9 files changed, 627 insertions(+)
 ```
 
 </details>

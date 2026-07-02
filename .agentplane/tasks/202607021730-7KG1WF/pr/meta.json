@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202607021730-7KG1WF/document-and-migrate-maximum-assimilation-v2",
   "created_at": "2026-07-02T20:30:03.849Z",
-  "diffstat_sha256": "sha256:96f6a5bf913dbc1a485eb65572126ef8a2550e3d42de37eda80b17f0a4211c50",
-  "last_verified_at": "2026-07-02T20:42:49.559Z",
-  "last_verified_diffstat_sha256": "sha256:96f6a5bf913dbc1a485eb65572126ef8a2550e3d42de37eda80b17f0a4211c50",
+  "diffstat_sha256": "sha256:8a6f3541a56dad58f3da6fbcc847c4a618238e7e758660d785a58ecd6997d7ce",
+  "last_verified_at": "2026-07-02T20:54:00.018Z",
+  "last_verified_diffstat_sha256": "sha256:8a6f3541a56dad58f3da6fbcc847c4a618238e7e758660d785a58ecd6997d7ce",
+  "pr_number": 4542,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4542",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607021730-7KG1WF",
-  "updated_at": "2026-07-02T20:30:03.849Z",
+  "updated_at": "2026-07-02T20:54:00.170Z",
   "verify": {
     "status": "pass"
   }
