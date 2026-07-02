@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607021729-BC11BT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-02T19:37:05.578Z",
+  "verdict": "pass",
+  "summary": "Review fixes verified on current HEAD: allowed output roots, topology family path boundaries, and non-text empty skeleton handling are covered by regression tests.",
+  "evaluated_sha": "1be5721e6efaa9b71adf04778314c280540f19ef",
+  "blueprint_digest": "25e215a9317034cd61e9fe293212cae9681cb701e1ba5ede19c4027908c1a7b3",
+  "findings": [
+    "Passed: focused maximum-assimilation validator tests, ingest pack test, ESLint, format:changed, knip:check, policy routing, and ap doctor."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607021729-BC11BT/README.md",
+    "packages/agentplane/src/context/verify-task-policy.test.ts",
+    "packages/agentplane/src/context/coverage-validation.test.ts",
+    "packages/agentplane/src/context/maximum-assimilation-artifacts-validation.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

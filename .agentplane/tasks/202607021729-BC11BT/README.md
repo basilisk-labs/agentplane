@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -26,25 +26,28 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-02T19:25:18.567Z"
+  updated_at: "2026-07-02T19:36:55.250Z"
   updated_by: "CODER"
-  note: "Verified maximum-assimilation structural validators."
+  note: "Verified review fixes for maximum-assimilation validators."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-02T19:26:19.990Z"
+  updated_at: "2026-07-02T19:37:05.578Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed."
-  evaluated_sha: "bea2e5d7e757cb4bce4f7ed4a2c2f316f4e3d93b"
+  note: "Review fixes verified on current HEAD: allowed output roots, topology family path boundaries, and non-text empty skeleton handling are covered by regression tests."
+  evaluated_sha: "1be5721e6efaa9b71adf04778314c280540f19ef"
   blueprint_digest: "25e215a9317034cd61e9fe293212cae9681cb701e1ba5ede19c4027908c1a7b3"
   evidence_refs:
     - ".agentplane/tasks/202607021729-BC11BT/README.md"
-    - ".agentplane/tasks/202607021729-BC11BT/quality/20260702-192619990-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607021729-BC11BT/quality/20260702-192619990-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607021729-BC11BT/quality/20260702-192619990-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607021729-BC11BT/quality/20260702-193705578-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607021729-BC11BT/quality/20260702-193705578-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607021729-BC11BT/quality/20260702-193705578-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607021729-BC11BT/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/context/verify-task-policy.test.ts"
+    - "packages/agentplane/src/context/coverage-validation.test.ts"
+    - "packages/agentplane/src/context/maximum-assimilation-artifacts-validation.test.ts"
   findings:
-    - "No blocking findings."
+    - "Passed: focused maximum-assimilation validator tests, ingest pack test, ESLint, format:changed, knip:check, policy routing, and ap doctor."
 commit:
   hash: "65d025a74730c6b5034eaec6a61285d3ce86f668"
   message: "🚧 BC11BT task: record PR metadata"
@@ -76,8 +79,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-02T19:36:55.250Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified review fixes for maximum-assimilation validators."
 doc_version: 3
-doc_updated_at: "2026-07-02T19:30:23.391Z"
+doc_updated_at: "2026-07-02T19:36:56.163Z"
 doc_updated_by: "CODER"
 description: "Phase 3 from the Context Maximum Assimilation PRD. Add validators for span-level coverage, entity-resolution ledger, page-creation ledger, structured topology.plan.json, wiki/graph coherence, and wiki archetypes. Wire them into context verify-task with failure fixtures for missing rows, regex-only topology, no graph refs, and incomplete span coverage."
 sections:
@@ -134,11 +143,44 @@ sections:
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-07-02T19:36:55.250Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified review fixes for maximum-assimilation validators.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-02T19:30:23.391Z, excerpt_hash=sha256:29a2e116cf869f01ff5e471b1de922310a9c4272617a659ffec6ab633bb38068
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021729-BC11BT-enforce-maximum-assimilation-structural-validato/.agentplane/tasks/202607021729-BC11BT/blueprint/resolved-snapshot.json
+    - old_digest: 25e215a9317034cd61e9fe293212cae9681cb701e1ba5ede19c4027908c1a7b3
+    - current_digest: 25e215a9317034cd61e9fe293212cae9681cb701e1ba5ede19c4027908c1a7b3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607021729-BC11BT
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607021729-BC11BT --branch task/202607021729-BC11BT/enforce-maximum-assimilation-structural-validato
+    - diagnostic_command: agentplane pr check 202607021729-BC11BT
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Review found missing allowed output roots, unsafe topology path-prefix matching, and empty skeleton rejection for unsupported non-text source sets.
+      Impact: Valid maximum-assimilation tasks could fail verification or let sibling wiki paths bypass topology coverage.
+      Resolution: Allowed required derived roots, preserved page-family directory boundaries, and permits existing empty skeletons only for non-span-producing source sets.
 extensions:
   implementation_commit:
     hash: "bea2e5d7e757cb4bce4f7ed4a2c2f316f4e3d93b"
@@ -207,6 +249,36 @@ DecisionContextRef:
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+### 2026-07-02T19:36:55.250Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified review fixes for maximum-assimilation validators.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-02T19:30:23.391Z, excerpt_hash=sha256:29a2e116cf869f01ff5e471b1de922310a9c4272617a659ffec6ab633bb38068
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021729-BC11BT-enforce-maximum-assimilation-structural-validato/.agentplane/tasks/202607021729-BC11BT/blueprint/resolved-snapshot.json
+- old_digest: 25e215a9317034cd61e9fe293212cae9681cb701e1ba5ede19c4027908c1a7b3
+- current_digest: 25e215a9317034cd61e9fe293212cae9681cb701e1ba5ede19c4027908c1a7b3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607021729-BC11BT
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607021729-BC11BT --branch task/202607021729-BC11BT/enforce-maximum-assimilation-structural-validato
+- diagnostic_command: agentplane pr check 202607021729-BC11BT
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -215,3 +287,7 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Review found missing allowed output roots, unsafe topology path-prefix matching, and empty skeleton rejection for unsupported non-text source sets.
+  Impact: Valid maximum-assimilation tasks could fail verification or let sibling wiki paths bypass topology coverage.
+  Resolution: Allowed required derived roots, preserved page-family directory boundaries, and permits existing empty skeletons only for non-span-producing source sets.
