@@ -4,7 +4,7 @@ title: "Document and migrate maximum-assimilation v2"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -26,22 +26,22 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-02T20:54:00.018Z"
+  updated_at: "2026-07-02T20:55:22.165Z"
   updated_by: "CODER"
-  note: "Re-verified after rebase onto origin/main. Checks: migrate unit tests, command catalog tests, format:changed, policy routing; prior full ci:local:fast passed before force-push."
+  note: "Verified source_refs review fix. Checks: migrate unit test, maximum-assimilation artifact validation tests, targeted eslint, format:changed, framework bootstrap."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-02T20:53:36.216Z"
+  updated_at: "2026-07-02T20:55:20.541Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed after rebase onto origin/main."
-  evaluated_sha: "38a972e50e634ad3b3b0696bc74481b362067f5a"
+  note: "Quality review passed after source_refs review fix."
+  evaluated_sha: "4506da62508dcc376d91f3e2e547dab42c0e3e1b"
   blueprint_digest: "15a32c5dda4558da5c1484ab8751c9fcc80d482fc474aa043c09472ab25b1d40"
   evidence_refs:
     - ".agentplane/tasks/202607021730-7KG1WF/README.md"
-    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-205336216-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-205336216-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-205336216-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-205520541-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-205520541-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607021730-7KG1WF/quality/20260702-205520541-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
@@ -76,8 +76,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Re-verified after rebase onto origin/main. Checks: migrate unit tests, command catalog tests, format:changed, policy routing; prior full ci:local:fast passed before force-push."
+  -
+    type: "verify"
+    at: "2026-07-02T20:55:22.165Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified source_refs review fix. Checks: migrate unit test, maximum-assimilation artifact validation tests, targeted eslint, format:changed, framework bootstrap."
 doc_version: 3
-doc_updated_at: "2026-07-02T20:54:00.150Z"
+doc_updated_at: "2026-07-02T20:55:22.295Z"
 doc_updated_by: "CODER"
 description: "Phase 5 from the Context Maximum Assimilation PRD. Add migration or dry-run support for legacy context modes/artifacts, preserve existing wiki/facts/graph, generate initial topology/entity/page manifests where possible, and update user/developer docs plus release notes for the single public maximum-assimilation workflow."
 sections:
@@ -186,6 +192,36 @@ sections:
     - repeat_allowed: false
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-07-02T20:55:22.165Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified source_refs review fix. Checks: migrate unit test, maximum-assimilation artifact validation tests, targeted eslint, format:changed, framework bootstrap.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-02T20:54:00.150Z, excerpt_hash=sha256:e490475f44c7a9f4330ef94ca16fcb913db5fe345c6508a45dd4a892972cce49
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021730-7KG1WF-document-and-migrate-maximum-assimilation-v2/.agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json
+    - old_digest: 15a32c5dda4558da5c1484ab8751c9fcc80d482fc474aa043c09472ab25b1d40
+    - current_digest: 15a32c5dda4558da5c1484ab8751c9fcc80d482fc474aa043c09472ab25b1d40
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607021730-7KG1WF
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202607021730-7KG1WF --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit 1c0ec9d466b379312bbb1ecf09eac474d825870d --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -312,6 +348,36 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-07-02T20:55:22.165Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified source_refs review fix. Checks: migrate unit test, maximum-assimilation artifact validation tests, targeted eslint, format:changed, framework bootstrap.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-02T20:54:00.150Z, excerpt_hash=sha256:e490475f44c7a9f4330ef94ca16fcb913db5fe345c6508a45dd4a892972cce49
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021730-7KG1WF-document-and-migrate-maximum-assimilation-v2/.agentplane/tasks/202607021730-7KG1WF/blueprint/resolved-snapshot.json
+- old_digest: 15a32c5dda4558da5c1484ab8751c9fcc80d482fc474aa043c09472ab25b1d40
+- current_digest: 15a32c5dda4558da5c1484ab8751c9fcc80d482fc474aa043c09472ab25b1d40
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607021730-7KG1WF
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202607021730-7KG1WF --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit 1c0ec9d466b379312bbb1ecf09eac474d825870d --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 

@@ -19,8 +19,8 @@ Phase 5 from the Context Maximum Assimilation PRD. Add migration or dry-run supp
 - Note:
 
 ```text
-Re-verified after rebase onto origin/main. Checks: migrate unit tests, command catalog tests,
-format:changed, policy routing; prior full ci:local:fast passed before force-push.
+Verified source_refs review fix. Checks: migrate unit test, maximum-assimilation artifact validation
+tests, targeted eslint, format:changed, framework bootstrap.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -40,8 +40,8 @@ format:changed, policy routing; prior full ci:local:fast passed before force-pus
  .../src/commands/context/context-runner.ts         |  13 +
  .../src/commands/context/context.spec.ts           |  34 ++
  .../agentplane/src/commands/context/migrate.ts     | 359 +++++++++++++++++++++
- .../src/commands/context/migrate.unit.test.ts      | 190 +++++++++++
- 9 files changed, 627 insertions(+)
+ .../src/commands/context/migrate.unit.test.ts      | 208 ++++++++++++
+ 9 files changed, 645 insertions(+)
 ```
 
 </details>
