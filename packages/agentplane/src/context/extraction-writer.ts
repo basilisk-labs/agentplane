@@ -183,11 +183,11 @@ function countSourceRefs(result: ContextExtractionSgrResult): {
 }
 
 function hasPreciseSourceRef(ref: SgrSourceRef): boolean {
-  return Boolean(ref.lines || typeof ref.line === "number" || ref.section);
+  return ref.lines !== undefined || typeof ref.line === "number" || ref.section !== undefined;
 }
 
 function qualityScope(taskId: string | undefined): string {
-  return slugFragment(taskId || "unscoped");
+  return slugFragment(taskId ?? "unscoped");
 }
 
 function qualityRow(opts: {
@@ -264,10 +264,7 @@ function buildExtractionQualityRows(
   }
 
   const impreciseItems = result.extracted_items
-    .filter(
-      (item) =>
-        item.source_refs.length === 0 || item.source_refs.every((ref) => !hasPreciseSourceRef(ref)),
-    )
+    .filter((item) => item.source_refs.every((ref) => !hasPreciseSourceRef(ref)))
     .map((item) => item.id);
   if (impreciseItems.length > 0) {
     rows.push(
@@ -414,7 +411,7 @@ export async function applyContextExtractionResult(opts: {
     claimMaps.set(abs, await readJsonlById(abs));
   }
   let topologyPlan: Record<string, unknown> | null = null;
-  for (const id of [...extractionQuality.keys()]) {
+  for (const id of extractionQuality.keys()) {
     if (id.startsWith(`quality.${qualityScope(taskId)}.`)) extractionQuality.delete(id);
   }
   for (const row of buildExtractionQualityRows(result, taskId)) {
