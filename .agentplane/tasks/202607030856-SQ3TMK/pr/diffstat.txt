@@ -1,6 +1,7 @@
- .../commands/context/extraction-apply.unit.test.ts |  7 +++++-
+ .../commands/context/extraction-apply.unit.test.ts | 49 ++++++++++++++++-
  .../agentplane/src/commands/context/extraction.ts  |  2 +-
- .../src/commands/context/release-readiness.test.ts | 10 +++++++++
- packages/agentplane/src/commands/context/wiki.ts   | 13 ++++++++++-
- .../agentplane/src/context/extraction-writer.ts    | 25 ++++++++++++++++++++++
- 5 files changed, 54 insertions(+), 3 deletions(-)
+ .../src/commands/context/release-readiness.test.ts | 10 ++++
+ .../src/commands/context/wiki-index.unit.test.ts   | 63 ++++++++++++++++++++++
+ packages/agentplane/src/commands/context/wiki.ts   | 26 ++++++++-
+ .../agentplane/src/context/extraction-writer.ts    | 29 ++++++++++
+ 6 files changed, 175 insertions(+), 4 deletions(-)

@@ -145,7 +145,49 @@ describe("context extraction apply", () => {
     expect(coverage).toContain("coverage.research-source");
     expect(coverage).toContain("context/raw/research/source.md");
     expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
-      "items=5 source_paths=1 source_refs=5 facts=1 entities=2 edges=1",
+      "items=5 input_source_paths=1 source_paths=1 source_refs=5 facts=1 entities=2 edges=1",
+    );
+  });
+
+  it("reports input source scope separately from applied extraction source paths", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/sparse-extraction.json",
+      JSON.stringify({
+        schema_version: 2,
+        kind: "context_extraction",
+        task_id: "202607030856-SQ3TMK",
+        reasoning: [{ label: "sparse", summary: "Only one input source produced rows." }],
+        source_refs: [
+          { path: "context/raw/network/a.md", lines: "1-10" },
+          { path: "context/raw/network/b.md", lines: "1-10" },
+        ],
+        extracted_items: [
+          {
+            id: "fact.only-a",
+            kind: "fact",
+            summary: "Only source A produced an applied extraction row.",
+            source_refs: [{ path: "context/raw/network/a.md", lines: "1-2" }],
+            confidence: 0.9,
+            status: "accepted",
+          },
+        ],
+      }),
+    );
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextExtractionApply({
+      cwd: root,
+      parsed: {
+        file: "context/sparse-extraction.json",
+        taskId: "202607030856-SQ3TMK",
+        dryRun: false,
+      },
+    });
+
+    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
+      "items=1 input_source_paths=2 source_paths=1 source_refs=1 facts=1",
     );
   });
 
