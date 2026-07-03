@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202607031318-BJ9MTB/remove-temporary-youtube-response-artifact",
+  "created_at": "2026-07-03T13:19:21.788Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-07-03T13:20:28.152Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "task_id": "202607031318-BJ9MTB",
+  "updated_at": "2026-07-03T13:19:21.788Z",
+  "verify": {
+    "status": "pass"
+  }
+}
