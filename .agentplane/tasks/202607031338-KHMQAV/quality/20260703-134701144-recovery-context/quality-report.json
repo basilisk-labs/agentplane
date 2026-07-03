@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607031338-KHMQAV",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-03T13:47:01.144Z",
+  "verdict": "pass",
+  "summary": "Quality review passed.",
+  "evaluated_sha": "8d8786ca0d310ed76ef7154ce4c17b70b46baac0",
+  "blueprint_digest": "9e9c51bde24185e0555b669e64d7e290bbf443efe95ba5e5778309a42586cb93",
+  "findings": [
+    "No blocking findings."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607031338-KHMQAV/README.md",
+    "packages/agentplane/src/context/extraction-writer.ts",
+    "packages/agentplane/src/commands/context/extraction-apply.unit.test.ts",
+    "bunx vitest run packages/agentplane/src/commands/context/extraction-apply.unit.test.ts packages/agentplane/src/context/extraction-writer.test.ts packages/agentplane/src/context/coverage-validation.test.ts packages/agentplane/src/commands/context/wiki-reports.unit.test.ts",
+    "bun run typecheck"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
