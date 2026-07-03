@@ -1,10 +1,11 @@
 ---
 id: "202607030856-SQ3TMK"
 title: "Fix context wiki index lint and strengthen extraction assimilation"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CURATOR"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - ".agentplane/tasks/202607030856-SQ3TMK/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings after rebase onto current main."
-commit: null
+commit:
+  hash: "0cb31e3c24a5f33b90d8260b8520fc1fa150db77"
+  message: "🚧 SQ3TMK task: refresh quality review after rebase"
 comments:
   -
     author: "CURATOR"
     body: "Start: Reproduced post-index wiki lint failure; implementation will fix generated index page validity and strengthen extraction assimilation reporting before larger network-document verification."
+  -
+    author: "CURATOR"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -58,8 +64,15 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Focused context tests, routing policy check, doctor, typecheck, lint:core, format:changed, and six-document assimilation smoke test passed."
+  -
+    type: "status"
+    at: "2026-07-03T09:25:22.639Z"
+    author: "CURATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-03T09:12:02.514Z"
+doc_updated_at: "2026-07-03T09:25:22.640Z"
 doc_updated_by: "CURATOR"
 description: "Fix the post-index wiki lint failure found during assimilation smoke testing, improve extraction apply/reporting where source-backed assimilation is weak, and verify with a larger network-document assimilation test on main."
 sections:
@@ -121,6 +134,10 @@ sections:
     - Observation: Original failure reproduced before fix: context wiki index generated subdirectory index.md pages without YAML frontmatter, making context wiki lint context/wiki fail. After fix, large smoke test passed context init, extraction apply, graph validate, wiki lint before index, wiki index, wiki report, wiki lint after index/report, reindex, and search. Large smoke metrics: documents=6 facts=6 entities=14 edges=18 tests_edges=6 provenance=68 resolved_links=25 unresolved_links=0 orphans=0 components=1 isolated_entities=0.
       Impact: Generated wiki indexes are now valid context wiki pages, and extraction apply output now reports items/source_paths/source_refs for immediate granularity diagnostics.
       Resolution: Implemented lint-valid generated index pages and extraction apply source counters with focused regression tests.
+extensions:
+  implementation_commit:
+    hash: "d3d845092ff9eaa9e367896950b9fff94f509fd6"
+    message: "✅ SQ3TMK context: fix wiki index lint"
 id_source: "generated"
 ---
 ## Summary
