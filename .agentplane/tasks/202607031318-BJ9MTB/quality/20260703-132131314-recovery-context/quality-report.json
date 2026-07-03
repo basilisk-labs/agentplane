@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202607031318-BJ9MTB",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-03T13:21:31.314Z",
+  "verdict": "pass",
+  "summary": "Quality review passed.",
+  "evaluated_sha": "64bb075cca53aed1f65017cde9075e656aa8b6ba",
+  "blueprint_digest": "373efa063079d1acae3990bee3e153647a82d55fe9e6b22b7308cc9068629e8a",
+  "findings": [
+    "No blocking findings."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607031318-BJ9MTB/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
