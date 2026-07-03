@@ -22,7 +22,7 @@ Make context wiki reports more useful after assimilation by surfacing actionable
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-03T12:41:24.469Z
+- Updated: 2026-07-03T12:53:38.009Z
 - Branch: task/202607031240-R18YKH/improve-wiki-connectivity-reports
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
