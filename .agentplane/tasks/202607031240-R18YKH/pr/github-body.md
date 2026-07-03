@@ -16,7 +16,7 @@ Make context wiki reports more useful after assimilation by surfacing actionable
 ## Verification
 
 - State: ok
-- Note: Verified actionable wiki connectivity reporting and YouTube response artifact.
+- Note: Verified lint-corrected wiki report implementation.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,8 +28,8 @@ Make context wiki reports more useful after assimilation by surfacing actionable
 
 ```text
  .../src/commands/context/wiki-reports.ts           | 174 ++++++++++++++++++---
- .../src/commands/context/wiki-reports.unit.test.ts |  84 ++++++++++
- 2 files changed, 236 insertions(+), 22 deletions(-)
+ .../src/commands/context/wiki-reports.unit.test.ts |  83 ++++++++++
+ 2 files changed, 235 insertions(+), 22 deletions(-)
 ```
 
 </details>

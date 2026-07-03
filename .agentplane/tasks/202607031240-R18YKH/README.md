@@ -4,7 +4,7 @@ title: "Improve actionable context wiki connectivity reports"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,22 +20,22 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-03T12:47:58.503Z"
+  updated_at: "2026-07-03T12:52:12.082Z"
   updated_by: "CODER"
-  note: "Verified actionable wiki connectivity reporting and YouTube response artifact."
+  note: "Verified lint-corrected wiki report implementation."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-03T12:48:40.359Z"
+  updated_at: "2026-07-03T12:52:20.871Z"
   updated_by: "EVALUATOR"
   note: "Quality review passed."
-  evaluated_sha: "ae311b52396eb802e5f376cdbab54c7980e79054"
+  evaluated_sha: "3c13e03f947f2b2ee98147e8d0f830bc0d89a6d3"
   blueprint_digest: "4e18a6052212c85037b326323da727fc1d92dd3c371b601e88ca96bee2adce32"
   evidence_refs:
     - ".agentplane/tasks/202607031240-R18YKH/README.md"
-    - ".agentplane/tasks/202607031240-R18YKH/quality/20260703-124840359-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607031240-R18YKH/quality/20260703-124840359-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607031240-R18YKH/quality/20260703-124840359-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607031240-R18YKH/quality/20260703-125220871-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607031240-R18YKH/quality/20260703-125220871-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607031240-R18YKH/quality/20260703-125220871-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607031240-R18YKH/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
@@ -58,8 +58,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified actionable wiki connectivity reporting and YouTube response artifact."
+  -
+    type: "verify"
+    at: "2026-07-03T12:52:12.082Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified lint-corrected wiki report implementation."
 doc_version: 3
-doc_updated_at: "2026-07-03T12:47:58.659Z"
+doc_updated_at: "2026-07-03T12:52:12.262Z"
 doc_updated_by: "CODER"
 description: "Make context wiki reports more useful after assimilation by surfacing actionable orphan remediation suggestions, add regression coverage, and prepare a user-facing YouTube comment response about AgentPlane context design tradeoffs."
 sections:
@@ -114,6 +120,36 @@ sections:
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-07-03T12:52:12.082Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified lint-corrected wiki report implementation.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-03T12:47:58.659Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607031240-R18YKH-improve-wiki-connectivity-reports/.agentplane/tasks/202607031240-R18YKH/blueprint/resolved-snapshot.json
+    - old_digest: 4e18a6052212c85037b326323da727fc1d92dd3c371b601e88ca96bee2adce32
+    - current_digest: 4e18a6052212c85037b326323da727fc1d92dd3c371b601e88ca96bee2adce32
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607031240-R18YKH
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane evaluator run 202607031240-R18YKH --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607031240-R18YKH/README.md
+    - diagnostic_command: agentplane evaluator run 202607031240-R18YKH --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607031240-R18YKH/README.md
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -122,6 +158,10 @@ sections:
     - Observation: Command: bunx vitest run packages/agentplane/src/commands/context/wiki-reports.unit.test.ts packages/agentplane/src/commands/context/wiki-lint.unit.test.ts packages/agentplane/src/commands/context/wiki-index.unit.test.ts packages/agentplane/src/commands/context/extraction-apply.unit.test.ts. Result: pass, 4 files and 13 tests. Command: bun run format:changed. Result: pass. Command: bun run typecheck. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Command: ap doctor. Result: pass with only pre-existing DONE-task implementation-hash warnings.
       Impact: context wiki report now indexes Markdown .md links in addition to wikilinks and emits graph-backed remediation fields for remaining orphan rows, reducing false orphan reports while making real orphan rows actionable.
       Resolution: 10-document network assimilation smoke passed: items=52 input_source_paths=10 source_paths=10 source_refs=54 facts=10 entities=11 edges=10 provenance=54 markdown_link_rows=31 orphan_rows=0 unresolved_links=0 connected_components=1 largest_component_size=11 search_results=5.
+
+    - Observation: After lint fix: bunx eslint on wiki-reports files passed; focused vitest passed 4 files / 13 tests; bun run typecheck passed; bun run format:changed passed; node .agentplane/policy/check-routing.mjs passed. Previous 10-doc smoke remains applicable to the same behavior: markdown_link_rows=31 orphan_rows=0 unresolved_links=0 connected_components=1 search_results=5.
+      Impact: The implementation remains functionally equivalent after lint rewrites and is ready for refreshed quality review.
+      Resolution: Current HEAD includes lint-safe replaceAll/new Set/await-style changes only after the verified implementation.
 id_source: "generated"
 ---
 ## Summary
@@ -184,6 +224,36 @@ DecisionContextRef:
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+### 2026-07-03T12:52:12.082Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified lint-corrected wiki report implementation.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-03T12:47:58.659Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607031240-R18YKH-improve-wiki-connectivity-reports/.agentplane/tasks/202607031240-R18YKH/blueprint/resolved-snapshot.json
+- old_digest: 4e18a6052212c85037b326323da727fc1d92dd3c371b601e88ca96bee2adce32
+- current_digest: 4e18a6052212c85037b326323da727fc1d92dd3c371b601e88ca96bee2adce32
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607031240-R18YKH
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane evaluator run 202607031240-R18YKH --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607031240-R18YKH/README.md
+- diagnostic_command: agentplane evaluator run 202607031240-R18YKH --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607031240-R18YKH/README.md
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -196,3 +266,7 @@ DecisionContextRef:
 - Observation: Command: bunx vitest run packages/agentplane/src/commands/context/wiki-reports.unit.test.ts packages/agentplane/src/commands/context/wiki-lint.unit.test.ts packages/agentplane/src/commands/context/wiki-index.unit.test.ts packages/agentplane/src/commands/context/extraction-apply.unit.test.ts. Result: pass, 4 files and 13 tests. Command: bun run format:changed. Result: pass. Command: bun run typecheck. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Command: ap doctor. Result: pass with only pre-existing DONE-task implementation-hash warnings.
   Impact: context wiki report now indexes Markdown .md links in addition to wikilinks and emits graph-backed remediation fields for remaining orphan rows, reducing false orphan reports while making real orphan rows actionable.
   Resolution: 10-document network assimilation smoke passed: items=52 input_source_paths=10 source_paths=10 source_refs=54 facts=10 entities=11 edges=10 provenance=54 markdown_link_rows=31 orphan_rows=0 unresolved_links=0 connected_components=1 largest_component_size=11 search_results=5.
+
+- Observation: After lint fix: bunx eslint on wiki-reports files passed; focused vitest passed 4 files / 13 tests; bun run typecheck passed; bun run format:changed passed; node .agentplane/policy/check-routing.mjs passed. Previous 10-doc smoke remains applicable to the same behavior: markdown_link_rows=31 orphan_rows=0 unresolved_links=0 connected_components=1 search_results=5.
+  Impact: The implementation remains functionally equivalent after lint rewrites and is ready for refreshed quality review.
+  Resolution: Current HEAD includes lint-safe replaceAll/new Set/await-style changes only after the verified implementation.
