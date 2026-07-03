@@ -1,10 +1,11 @@
 ---
 id: "202607030734-7S66KX"
 title: "Context graph: align SGR vocabulary and diagnostics"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CURATOR"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - ".agentplane/tasks/202607030734-7S66KX/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "5605b8a8359d4185a66dad18b5828b41e5d94d1d"
+  message: "🚧 7S66KX task: record opened PR metadata"
 comments:
   -
     author: "CURATOR"
     body: "Start: Implementing the primary context graph vocabulary and diagnostics task, including the related nested context help task 202607030734-6T937A in the same branch-pr change-set."
+  -
+    author: "CURATOR"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -70,8 +76,15 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/context/extraction-apply.unit.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts; Result: pass; Evidence: 2 files, 18 tests passed. Command: bun run --filter=agentplane typecheck; Result: pass; Evidence: agentplane typecheck exited 0. Command: CLI smoke for advanced context help, system/tests graph validation, and invalid graph diagnostics; Result: pass; Evidence: cli smoke passed. Scope: context graph validation and advanced context help."
+  -
+    type: "status"
+    at: "2026-07-03T07:56:12.459Z"
+    author: "CURATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-03T07:43:33.244Z"
+doc_updated_at: "2026-07-03T07:56:12.460Z"
 doc_updated_by: "CURATOR"
 description: "Fix maximum-assimilation smoke findings where context extraction apply can materialize graph rows using natural SGR terms like system/tests that context graph validate rejects, and make graph validation errors actionable."
 sections:
@@ -186,6 +199,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "8b9060b1adc130919b98c8fbbd82280e7dd6d351"
+    message: "✅ 7S66KX context: fix graph validation smoke gaps"
 id_source: "generated"
 ---
 ## Summary
