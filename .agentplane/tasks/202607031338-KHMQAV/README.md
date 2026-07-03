@@ -1,10 +1,11 @@
 ---
 id: "202607031338-KHMQAV"
 title: "Add extraction quality signals for context assimilation"
-status: "DOING"
+result_summary: "Merged via PR #4548."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "bunx vitest run packages/agentplane/src/commands/context/extraction-apply.unit.test.ts"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "26eae3207e8ee1069dabca8b6fbc966aa7b3ddb2"
+  message: "🚧 KHMQAV task: refresh quality review after lint"
 comments:
   -
     author: "CODER"
     body: "Start: implement extraction quality signals in the existing context extraction apply flow with focused unit coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4548 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Extraction quality report implemented and focused context checks passed."
+  -
+    type: "status"
+    at: "2026-07-03T14:03:52.155Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4548 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-07-03T13:46:24.880Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-03T14:03:52.161Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a derived extraction quality report that flags over-fragmentation, unsupported summaries, and risky normalization before wiki publication."
 sections:
   Summary: |-
