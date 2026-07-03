@@ -1,0 +1,33 @@
+Task: `202607031240-R18YKH`
+Title: Improve actionable context wiki connectivity reports
+Canonical task record: `.agentplane/tasks/202607031240-R18YKH/README.md`
+
+## Summary
+
+Improve actionable context wiki connectivity reports
+
+Make context wiki reports more useful after assimilation by surfacing actionable orphan remediation suggestions, add regression coverage, and prepare a user-facing YouTube comment response about AgentPlane context design tradeoffs.
+
+## Scope
+
+- In scope: Make context wiki reports more useful after assimilation by surfacing actionable orphan remediation suggestions, add regression coverage, and prepare a user-facing YouTube comment response about AgentPlane context design tradeoffs.
+- Out of scope: unrelated refactors not required for "Improve actionable context wiki connectivity reports".
+
+## Verification
+
+- State: ok
+- Note: Verified actionable wiki connectivity reporting and YouTube response artifact.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-07-03T12:41:24.469Z
+- Branch: task/202607031240-R18YKH/improve-wiki-connectivity-reports
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+No changes detected.
+```
+
+</details>

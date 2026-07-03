@@ -149,4 +149,88 @@ describe("context wiki report", () => {
     );
     expect(orphanReport).toContain("context/wiki/entities/report-only.md");
   });
+
+  it("counts Markdown wiki links as inbound links for orphan detection", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/wiki/modules/payment-api.md",
+      wikiPage("Payment API", "See [Charge Flow](../workflows/charge-flow.md)."),
+    );
+    await write(
+      root,
+      "context/wiki/workflows/charge-flow.md",
+      wikiPage("Charge Flow", "No wikilink syntax is required for inbound detection."),
+    );
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextWikiReport({ cwd: root, parsed: { path: "context/wiki" } });
+
+    out.mockRestore();
+    const linkIndex = await readFile(
+      path.join(root, ".agentplane/context/derived/wiki/link-index.jsonl"),
+      "utf8",
+    );
+    expect(linkIndex).toContain('"link_type":"markdown"');
+    expect(linkIndex).toContain('"target_path":"context/wiki/workflows/charge-flow.md"');
+    const orphanReport = await readFile(
+      path.join(root, ".agentplane/context/derived/wiki/orphan-report.jsonl"),
+      "utf8",
+    );
+    expect(orphanReport).not.toContain("context/wiki/workflows/charge-flow.md");
+  });
+
+  it("adds graph-backed remediation suggestions for remaining orphan rows", async () => {
+    const root = await tempRoot();
+    await write(root, "context/wiki/modules/payment-api.md", wikiPage("Payment API", "Body."));
+    await write(root, "context/wiki/workflows/charge-flow.md", wikiPage("Charge Flow", "Body."));
+    await write(
+      root,
+      ".agentplane/context/derived/graph/entities.jsonl",
+      [
+        JSON.stringify({
+          id: "entity.payment-api",
+          kind: "module",
+          label: "Payment API",
+        }),
+        JSON.stringify({
+          id: "entity.charge-flow",
+          kind: "workflow",
+          label: "Charge Flow",
+        }),
+      ].join("\n") + "\n",
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/graph/edges.jsonl",
+      JSON.stringify({
+        id: "edge.payment-api.implements.charge-flow",
+        from: "entity.payment-api",
+        to: "entity.charge-flow",
+        relation: "implements",
+      }) + "\n",
+    );
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextWikiReport({ cwd: root, parsed: { path: "context/wiki/workflows" } });
+
+    out.mockRestore();
+    const orphanRows = (
+      await readFile(
+        path.join(root, ".agentplane/context/derived/wiki/orphan-report.jsonl"),
+        "utf8",
+      )
+    )
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line) as Record<string, unknown>);
+    expect(orphanRows).toHaveLength(1);
+    expect(orphanRows[0]).toMatchObject({
+      path: "context/wiki/workflows/charge-flow.md",
+      suggested_source_path: "context/wiki/modules/payment-api.md",
+      suggested_anchor: "Charge Flow",
+      suggestion_evidence_type: "graph_edge",
+      suggested_edge_id: "edge.payment-api.implements.charge-flow",
+    });
+  });
 });

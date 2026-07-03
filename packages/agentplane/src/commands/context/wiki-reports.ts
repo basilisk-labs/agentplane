@@ -12,6 +12,16 @@ type WikiReportBuildResult = {
   orphanRows: JsonRow[];
 };
 
+type WikiLinkRow = JsonRow & {
+  source_path: string;
+  target_path: string | null;
+};
+
+type WikiPageInfo = {
+  rel: string;
+  title: string;
+};
+
 function normalizeTarget(value: string): string {
   return (
     toPosix(value)
@@ -23,6 +33,15 @@ function normalizeTarget(value: string): string {
       .replace(/^context\/wiki\//u, "")
       .replace(/\.md$/u, "") ?? ""
   );
+}
+
+function lookupKey(value: string): string {
+  return normalizeTarget(value)
+    .replace(/^entity\./u, "")
+    .replace(/^wiki\./u, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/gu, "-")
+    .replace(/^-|-$/gu, "");
 }
 
 function titleFromMarkdown(rel: string, text: string): string {
@@ -119,20 +138,45 @@ function extractWikilinks(text: string): string[] {
   return [...text.matchAll(/!?\[\[([^\]\n]+)\]\]/gu)].map((match) => match[1]?.trim() ?? "");
 }
 
+function extractMarkdownLinks(text: string): { label: string; href: string }[] {
+  return [...text.matchAll(/(?<!!)\[([^\]\n]+)\]\(([^)\n]+)\)/gu)]
+    .map((match) => ({ label: match[1]?.trim() ?? "", href: match[2]?.trim() ?? "" }))
+    .filter((link) => link.href.length > 0);
+}
+
+function markdownTargetPath(sourcePath: string, href: string): string | null {
+  const target = href.split("#")[0]?.trim() ?? "";
+  if (
+    !target ||
+    target.startsWith("#") ||
+    /^[a-z][a-z0-9+.-]*:/iu.test(target) ||
+    target.startsWith("/")
+  ) {
+    return null;
+  }
+  const resolved = toPosix(path.normalize(path.join(path.dirname(sourcePath), target)));
+  return resolved.endsWith(".md") ? resolved : `${resolved}.md`;
+}
+
 async function buildWikiTargetCatalog(
   root: string,
   wikiFiles: string[],
-): Promise<Map<string, string>> {
+): Promise<{ pathByTarget: Map<string, string>; pageInfoByPath: Map<string, WikiPageInfo> }> {
   const pathByTarget = new Map<string, string>();
+  const pageInfoByPath = new Map<string, WikiPageInfo>();
   for (const rel of wikiFiles) {
     const target = rel.replace(/^context\/wiki\//u, "").replace(/\.md$/u, "");
     pathByTarget.set(target.toLowerCase(), rel);
+    pathByTarget.set(lookupKey(target), rel);
     pathByTarget.set(path.basename(target).toLowerCase(), rel);
+    pathByTarget.set(lookupKey(path.basename(target)), rel);
     const text = await readFile(path.join(root, rel), "utf8");
     const title = titleFromMarkdown(rel, text);
+    pageInfoByPath.set(rel, { rel, title });
     pathByTarget.set(title.toLowerCase(), rel);
+    pathByTarget.set(lookupKey(title), rel);
   }
-  return pathByTarget;
+  return { pathByTarget, pageInfoByPath };
 }
 
 async function buildWikiLinkRows(
@@ -140,19 +184,39 @@ async function buildWikiLinkRows(
   sourceFiles: string[],
   pathByTarget: Map<string, string>,
 ): Promise<{
-  linkRows: JsonRow[];
+  linkRows: WikiLinkRow[];
 }> {
-  const linkRows: JsonRow[] = [];
+  const linkRows: WikiLinkRow[] = [];
+  const wikiPathSet = new Set([...pathByTarget.values()]);
   for (const sourcePath of sourceFiles) {
     const text = await readFile(path.join(root, sourcePath), "utf8");
     for (const rawTarget of extractWikilinks(text)) {
       const normalized = normalizeTarget(rawTarget);
       if (!normalized || normalized.startsWith("#")) continue;
-      const targetPath = pathByTarget.get(normalized.toLowerCase()) ?? null;
+      const targetPath =
+        pathByTarget.get(normalized.toLowerCase()) ??
+        pathByTarget.get(lookupKey(normalized)) ??
+        null;
       linkRows.push({
         schema_version: 1,
+        link_type: "wikilink",
         source_path: sourcePath,
         raw_target: rawTarget,
+        normalized_target: normalized,
+        target_path: targetPath,
+        status: targetPath ? "resolved" : "unresolved",
+      });
+    }
+    for (const { label, href } of extractMarkdownLinks(text)) {
+      const normalized = markdownTargetPath(sourcePath, href);
+      if (!normalized) continue;
+      const targetPath = wikiPathSet.has(normalized) ? normalized : null;
+      linkRows.push({
+        schema_version: 1,
+        link_type: "markdown",
+        source_path: sourcePath,
+        raw_target: href,
+        label,
         normalized_target: normalized,
         target_path: targetPath,
         status: targetPath ? "resolved" : "unresolved",
@@ -162,22 +226,82 @@ async function buildWikiLinkRows(
   return { linkRows };
 }
 
-async function buildInboundCounts(
-  root: string,
-  sourceFiles: string[],
-  pathByTarget: Map<string, string>,
-): Promise<Map<string, number>> {
+function buildInboundCounts(linkRows: WikiLinkRow[], sourceFiles: string[]): Map<string, number> {
   const inboundByPath = new Map<string, number>();
-  for (const sourcePath of sourceFiles) {
-    const text = await readFile(path.join(root, sourcePath), "utf8");
-    for (const rawTarget of extractWikilinks(text)) {
-      const normalized = normalizeTarget(rawTarget);
-      if (!normalized || normalized.startsWith("#")) continue;
-      const targetPath = pathByTarget.get(normalized.toLowerCase());
-      if (targetPath) inboundByPath.set(targetPath, (inboundByPath.get(targetPath) ?? 0) + 1);
-    }
+  const allowedSources = new Set(sourceFiles);
+  for (const row of linkRows) {
+    if (!allowedSources.has(row.source_path) || !row.target_path) continue;
+    inboundByPath.set(row.target_path, (inboundByPath.get(row.target_path) ?? 0) + 1);
   }
   return inboundByPath;
+}
+
+function entityPageMap(
+  entities: JsonRow[],
+  pageInfoByPath: Map<string, WikiPageInfo>,
+): Map<string, string> {
+  const pathByKey = new Map<string, string>();
+  for (const page of pageInfoByPath.values()) {
+    pathByKey.set(lookupKey(page.rel), page.rel);
+    pathByKey.set(lookupKey(path.basename(page.rel, ".md")), page.rel);
+    pathByKey.set(lookupKey(page.title), page.rel);
+  }
+  const mapped = new Map<string, string>();
+  for (const entity of entities) {
+    const id = scalar(entity.id, "");
+    if (!id) continue;
+    const keys = [
+      scalar(entity.label, ""),
+      id,
+      ...((Array.isArray(entity.aliases) ? entity.aliases : []) as unknown[]).map((alias) =>
+        scalar(alias, ""),
+      ),
+    ];
+    const page = keys.map((key) => pathByKey.get(lookupKey(key))).find(Boolean);
+    if (page) mapped.set(id, page);
+  }
+  return mapped;
+}
+
+function orphanSuggestion(opts: {
+  orphanPath: string;
+  pageInfoByPath: Map<string, WikiPageInfo>;
+  entities: JsonRow[];
+  edges: JsonRow[];
+}): JsonRow {
+  const entityToPage = entityPageMap(opts.entities, opts.pageInfoByPath);
+  const targetEntityIds = [...entityToPage.entries()]
+    .filter(([, page]) => page === opts.orphanPath)
+    .map(([entityId]) => entityId);
+  for (const targetEntityId of targetEntityIds) {
+    for (const edge of opts.edges) {
+      const from = scalar(edge.from, "");
+      const to = scalar(edge.to, "");
+      const sourceEntityId = to === targetEntityId ? from : from === targetEntityId ? to : "";
+      const sourcePath = entityToPage.get(sourceEntityId);
+      if (!sourcePath || sourcePath === opts.orphanPath) continue;
+      const targetTitle = opts.pageInfoByPath.get(opts.orphanPath)?.title ?? opts.orphanPath;
+      return {
+        suggested_source_path: sourcePath,
+        suggested_anchor: targetTitle,
+        suggestion_reason:
+          to === targetEntityId
+            ? "graph edge points to this orphan page; add an inbound semantic link from the source entity page"
+            : "graph edge starts from this orphan page; add a reciprocal semantic link from the related entity page",
+        suggestion_evidence_type: "graph_edge",
+        suggested_edge_id: scalar(edge.id, ""),
+        confidence: 0.78,
+      };
+    }
+  }
+  return {
+    suggested_source_path: null,
+    suggested_anchor: opts.pageInfoByPath.get(opts.orphanPath)?.title ?? opts.orphanPath,
+    suggestion_reason:
+      "no mapped graph edge could identify a safe inbound link source; review topology manually",
+    suggestion_evidence_type: "none",
+    confidence: 0.25,
+  };
 }
 
 function renderConflictReport(rows: JsonRow[]): string {
@@ -260,18 +384,24 @@ async function buildMaximumAssimilationWikiReports(
     (file) => file.endsWith(".md") && path.basename(file) !== "AGENTS.md",
   );
   const nonReportWikiFiles = allWikiFiles.filter((file) => !file.includes("/reports/"));
-  const pathByTarget = await buildWikiTargetCatalog(root, allWikiFiles);
+  const { pathByTarget, pageInfoByPath } = await buildWikiTargetCatalog(root, allWikiFiles);
   const { linkRows } = await buildWikiLinkRows(root, targetWikiFiles, pathByTarget);
-  const inboundByPath = await buildInboundCounts(root, nonReportWikiFiles, pathByTarget);
+  const allLinks = await buildWikiLinkRows(root, nonReportWikiFiles, pathByTarget);
+  const inboundByPath = buildInboundCounts(allLinks.linkRows, nonReportWikiFiles);
+  const entitiesRel = ".agentplane/context/derived/graph/entities.jsonl";
+  const edgesRel = ".agentplane/context/derived/graph/edges.jsonl";
+  const entities = await loadJsonl(root, entitiesRel);
+  const edges = await loadJsonl(root, edgesRel);
   const orphanRows = targetWikiFiles
     .filter((rel) => !isOrphanExempt(rel) && (inboundByPath.get(rel) ?? 0) === 0)
     .map((rel) => ({
       schema_version: 1,
       path: rel,
-      title: rel,
+      title: pageInfoByPath.get(rel)?.title ?? rel,
       inbound_count: 0,
       status: "orphan",
-      reason: "no inbound wikilinks from non-report wiki pages",
+      reason: "no inbound wiki or markdown links from non-report wiki pages",
+      ...orphanSuggestion({ orphanPath: rel, pageInfoByPath, entities, edges }),
     }));
 
   const changed: string[] = [];
