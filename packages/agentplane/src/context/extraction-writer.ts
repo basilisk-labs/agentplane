@@ -11,6 +11,9 @@ import {
 import { fileExists, parseJsonlLines, toPosix } from "./context-utils.js";
 
 type ApplyResult = {
+  items: number;
+  source_paths: number;
+  source_refs: number;
   facts: number;
   entities: number;
   edges: number;
@@ -157,6 +160,24 @@ function stringField(record: Record<string, unknown>, key: string): string | und
   return typeof value === "string" && value.trim() ? value.trim() : undefined;
 }
 
+function countSourceRefs(result: ContextExtractionSgrResult): {
+  sourcePaths: number;
+  sourceRefs: number;
+} {
+  const sourcePaths = new Set<string>();
+  let sourceRefs = 0;
+  for (const ref of result.source_refs) {
+    sourcePaths.add(ref.path);
+  }
+  for (const item of result.extracted_items) {
+    sourceRefs += item.source_refs.length;
+    for (const ref of item.source_refs) {
+      sourcePaths.add(ref.path);
+    }
+  }
+  return { sourcePaths: sourcePaths.size, sourceRefs };
+}
+
 export async function applyContextExtractionResult(opts: {
   root: string;
   raw: unknown;
@@ -166,6 +187,7 @@ export async function applyContextExtractionResult(opts: {
   const result: ContextExtractionSgrResult = validateContextExtractionSgrResult(opts.raw);
   const taskId = opts.taskId ?? result.task_id;
   const dryRun = opts.dryRun === true;
+  const sourceRefCounts = countSourceRefs(result);
   const factsPath = path.join(opts.root, ".agentplane/context/derived/facts/facts.jsonl");
   const entitiesPath = path.join(opts.root, ".agentplane/context/derived/graph/entities.jsonl");
   const edgesPath = path.join(opts.root, ".agentplane/context/derived/graph/edges.jsonl");
@@ -363,6 +385,9 @@ export async function applyContextExtractionResult(opts: {
   }
 
   return {
+    items: result.extracted_items.length,
+    source_paths: sourceRefCounts.sourcePaths,
+    source_refs: sourceRefCounts.sourceRefs,
     facts: [...facts.values()].length,
     entities: [...entities.values()].length,
     edges: [...edges.values()].length,

@@ -956,7 +956,12 @@ describe("context release readiness guards", () => {
     expect(rootIndex).toContain("<!-- agentplane-context-wiki-index:start -->");
     expect(rootIndex).toContain("[Modules](modules/index.md)");
     expect(rootIndex).toContain("[Decisions](decisions/index.md)");
+    expect(modulesIndex).toContain("agentplane_context:");
     expect(modulesIndex).toContain("[Meridian Relay](meridian-relay.md)");
+    await cmdContextWikiLint({
+      cwd: root,
+      parsed: { path: "context/wiki" },
+    });
     expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
       "context wiki index: updated",
     );
@@ -983,6 +988,11 @@ describe("context release readiness guards", () => {
     });
 
     const modulesIndex = await readFile(path.join(root, "context/wiki/modules/index.md"), "utf8");
+    expect(modulesIndex).toContain("agentplane_context:");
     expect(modulesIndex).toContain("[Meridian Relay](meridian-relay.md)");
+    await cmdContextWikiLint({
+      cwd: root,
+      parsed: { path: "context/wiki/modules" },
+    });
   });
 });

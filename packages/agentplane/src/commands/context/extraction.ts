@@ -19,7 +19,7 @@ export async function cmdContextExtractionApply(opts: {
   });
   process.stdout.write(
     [
-      `context extraction apply${opts.parsed.dryRun ? " (dry-run)" : ""}: facts=${result.facts} entities=${result.entities} edges=${result.edges} provenance=${result.provenance}`,
+      `context extraction apply${opts.parsed.dryRun ? " (dry-run)" : ""}: items=${result.items} source_paths=${result.source_paths} source_refs=${result.source_refs} facts=${result.facts} entities=${result.entities} edges=${result.edges} provenance=${result.provenance}`,
       `coverage=${result.coverage}`,
       `claims=${result.claims}`,
       `ontology=${result.ontology}`,
