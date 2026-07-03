@@ -4,7 +4,7 @@ title: "Add extraction quality signals for context assimilation"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,21 +25,21 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-03T13:47:01.144Z"
+  updated_at: "2026-07-03T13:56:40.537Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed."
-  evaluated_sha: "8d8786ca0d310ed76ef7154ce4c17b70b46baac0"
+  note: "Quality review passed after lint fix."
+  evaluated_sha: "c71e2c60c805700429defa41df056a0351227de8"
   blueprint_digest: "9e9c51bde24185e0555b669e64d7e290bbf443efe95ba5e5778309a42586cb93"
   evidence_refs:
     - ".agentplane/tasks/202607031338-KHMQAV/README.md"
-    - ".agentplane/tasks/202607031338-KHMQAV/quality/20260703-134701144-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607031338-KHMQAV/quality/20260703-134701144-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607031338-KHMQAV/quality/20260703-134701144-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607031338-KHMQAV/quality/20260703-135640537-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607031338-KHMQAV/quality/20260703-135640537-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607031338-KHMQAV/quality/20260703-135640537-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607031338-KHMQAV/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/context/extraction-writer.ts"
     - "packages/agentplane/src/commands/context/extraction-apply.unit.test.ts"
-    - "bunx vitest run packages/agentplane/src/commands/context/extraction-apply.unit.test.ts packages/agentplane/src/context/extraction-writer.test.ts packages/agentplane/src/context/coverage-validation.test.ts packages/agentplane/src/commands/context/wiki-reports.unit.test.ts"
-    - "bun run typecheck"
+    - "bunx eslint packages/agentplane/src/commands/context/extraction-apply.unit.test.ts packages/agentplane/src/commands/context/extraction.ts packages/agentplane/src/context/extraction-writer.ts"
+    - "bunx vitest run packages/agentplane/src/commands/context/extraction-apply.unit.test.ts"
   findings:
     - "No blocking findings."
 commit: null
