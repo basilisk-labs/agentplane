@@ -120,7 +120,12 @@ export async function runCli(argv: string[]): Promise<number> {
         }
         const match = matchCommandCatalog(tokens);
         if (!match) return null;
-        if (!opts?.all && !isCommandVisibleInHelp(match.entry, defaultHelpSurface)) return null;
+        if (
+          !opts?.all &&
+          !isCommandVisibleInHelp(match.entry, defaultHelpSurface) &&
+          match.entry.surface !== "advanced"
+        )
+          return null;
         return { spec: makeHelpSpecForEntry(match.entry), consumed: match.consumed };
       },
     };

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202607030734-6T937A",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-03T07:40:54.419Z",
+  "verdict": "pass",
+  "summary": "Quality review passed for included context help task.",
+  "evaluated_sha": "d53b6cf0f515b2df99c329df082d2efadedf9224",
+  "blueprint_digest": "b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a",
+  "findings": [
+    "No blocking findings. Help contract and CLI smoke cover explicit help for context migrate and context extraction apply without --all."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607030734-6T937A/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

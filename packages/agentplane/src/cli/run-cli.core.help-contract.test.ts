@@ -190,6 +190,44 @@ describe("cli help contract", () => {
     }
   });
 
+  it("renders explicit help for advanced context commands without requiring --all", async () => {
+    const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-help-outside-"));
+    const migrateIo = captureStdIO();
+    try {
+      const migrateCode = await runCli([
+        "--root",
+        outsideRoot,
+        "help",
+        "context",
+        "migrate",
+        "--compact",
+      ]);
+      expect(migrateCode).toBe(0);
+      expect(migrateIo.stdout).toContain("context migrate - Migrate an existing context workspace");
+      expect(migrateIo.stdout).toContain("agentplane context migrate <maximum-assimilation-v2>");
+    } finally {
+      migrateIo.restore();
+    }
+
+    const extractionIo = captureStdIO();
+    try {
+      const extractionCode = await runCli([
+        "--root",
+        outsideRoot,
+        "help",
+        "context",
+        "extraction",
+        "apply",
+        "--compact",
+      ]);
+      expect(extractionCode).toBe(0);
+      expect(extractionIo.stdout).toContain("context extraction apply - Apply a validated");
+      expect(extractionIo.stdout).toContain("agentplane context extraction apply <sgr-json>");
+    } finally {
+      extractionIo.restore();
+    }
+  });
+
   it("normal project help rejects explicit framework-maintainer command help", async () => {
     const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-help-outside-"));
     const io = captureStdIO();
