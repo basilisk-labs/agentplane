@@ -27,7 +27,10 @@ Add a derived extraction quality report that flags over-fragmentation, unsupport
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../commands/context/extraction-apply.unit.test.ts |  90 ++++++++++
+ .../agentplane/src/commands/context/extraction.ts  |   1 +
+ .../agentplane/src/context/extraction-writer.ts    | 182 +++++++++++++++++++++
+ 3 files changed, 273 insertions(+)
 ```
 
 </details>
