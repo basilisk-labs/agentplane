@@ -23,6 +23,10 @@ import {
 registerAgentplaneHome();
 let restoreStdIO: (() => void) | null = null;
 
+function taskSuffix(taskId: string): string {
+  return taskId.split("-").at(-1) ?? taskId;
+}
+
 beforeEach(() => {
   restoreStdIO = silenceStdIO();
 });
@@ -259,7 +263,7 @@ describe("runCli", () => {
       const { stdout: headSubject } = await execFileAsync("git", ["show", "-s", "--format=%s"], {
         cwd: root,
       });
-      expect(headSubject.trim()).toBe("task: implement resolver");
+      expect(headSubject.trim()).toBe(`✅ ${taskSuffix(taskId)} task: implement resolver`);
       expect(headSubject).not.toContain("code:");
       expect(headSubject).not.toContain("close:");
     },

@@ -135,7 +135,7 @@ describe(
       }
     });
 
-    it("pr open reports an existing GitHub PR by branch without tracking open identity", async () => {
+    it("pr open reports an existing GitHub PR by branch and tracks open identity", async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
@@ -217,9 +217,9 @@ describe(
         status?: string;
         head_sha?: string;
       };
-      expect(meta.pr_number).toBeUndefined();
-      expect(meta.pr_url).toBeUndefined();
-      expect(meta.status).toBeUndefined();
+      expect(meta.pr_number).toBe(321);
+      expect(meta.pr_url).toBe("https://github.com/example/repo/pull/321");
+      expect(meta.status).toBe("OPEN");
       expect(meta.head_sha).toBeUndefined();
 
       const rawLog = await readFile(logPath, "utf8");
@@ -329,7 +329,7 @@ describe(
       expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(githubBodyBefore);
     });
 
-    it("pr open stays commit-stable when a rerun only links a newly created remote PR", async () => {
+    it("pr open leaves only PR metadata dirty when a rerun links a newly created remote PR", async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
@@ -354,9 +354,9 @@ describe(
           "task",
           "new",
           "--title",
-          "PR open rerun stays commit-stable",
+          "PR open rerun tracks remote PR identity",
           "--description",
-          "Rerunning pr open after remote PR creation should not require a new artifact-only commit.",
+          "Rerunning pr open after remote PR creation should track remote identity without advancing HEAD.",
           "--priority",
           "med",
           "--owner",
@@ -446,9 +446,9 @@ describe(
         status?: string;
         head_sha?: string;
       };
-      expect(meta.pr_number).toBeUndefined();
-      expect(meta.pr_url).toBeUndefined();
-      expect(meta.status).toBeUndefined();
+      expect(meta.pr_number).toBe(777);
+      expect(meta.pr_url).toBe("https://github.com/example/repo/pull/777");
+      expect(meta.status).toBe("OPEN");
       expect(meta.head_sha).toBeUndefined();
 
       const { stdout: statusOut } = await execFileAsync(
@@ -456,10 +456,10 @@ describe(
         ["status", "--short", "--untracked-files=no"],
         { cwd: root },
       );
-      expect(statusOut.trim()).toBe("");
+      expect(statusOut.trim()).toBe(`M .agentplane/tasks/${taskId}/pr/meta.json`);
     });
 
-    it("pr open keeps review/body stable when a second run only observes an existing remote PR", async () => {
+    it("pr open refreshes review/body when a second run observes an existing remote PR", async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
@@ -550,10 +550,23 @@ describe(
 
       const reviewAfter = await readFile(path.join(prDir, "review.md"), "utf8");
       const githubBodyAfter = await readFile(path.join(prDir, "github-body.md"), "utf8");
-      expect(reviewAfter).toBe(reviewBefore);
-      expect(githubBodyAfter).toBe(githubBodyBefore);
+      expect(reviewAfter).not.toBe(reviewBefore);
+      expect(githubBodyAfter).not.toBe(githubBodyBefore);
+      expect(reviewAfter).toMatch(/Updated: .+Z/);
+      expect(githubBodyAfter).toMatch(/Updated: .+Z/);
       expect(reviewAfter).toContain("Head: computed live by");
       expect(githubBodyAfter).toContain("Head: computed live by");
+
+      const meta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
+        pr_number?: number;
+        pr_url?: string;
+        status?: string;
+        head_sha?: string;
+      };
+      expect(meta.pr_number).toBe(321);
+      expect(meta.pr_url).toBe("https://github.com/example/repo/pull/321");
+      expect(meta.status).toBe("OPEN");
+      expect(meta.head_sha).toBeUndefined();
     });
   },
 );

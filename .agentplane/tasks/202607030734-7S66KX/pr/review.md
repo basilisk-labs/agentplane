@@ -6,7 +6,7 @@ Created: 2026-07-03T07:34:55.967Z
 
 - Task: `202607030734-7S66KX`
 - Title: Context graph: align SGR vocabulary and diagnostics
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607030734-7S66KX/context-graph-align-sgr-vocabulary-and-diagnosti`
 - Canonical task record: `.agentplane/tasks/202607030734-7S66KX/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-07-03T07:34:55.967Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-03T07:34:55.967Z
+- Updated: 2026-07-03T07:55:11.513Z
 - Branch: task/202607030734-7S66KX/context-graph-align-sgr-vocabulary-and-diagnosti
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -34,11 +34,18 @@ Created: 2026-07-03T07:34:55.967Z
  .../evaluator-opinion.md                           |  18 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  20 +
+ .../run-cli.core.help-snap.test.ts.snap            |   9 +-
+ .../src/cli/run-cli.core.docs-cli.test.ts          |   2 +-
  .../src/cli/run-cli.core.help-contract.test.ts     |  38 ++
+ ...run-cli.core.lifecycle.finish-branch-pr.test.ts |  17 +-
+ ...-cli.core.lifecycle.finish-close-commit.test.ts |   6 +-
+ .../run-cli.core.pr-flow.pr-open.network.test.ts   |  12 +-
+ ...re.pr-flow.pr-validation.open-hydration.test.ts |  41 +-
+ ...n-cli.core.pr-flow.pr-validation.update.test.ts |  10 +-
  packages/agentplane/src/cli/run-cli.ts             |   7 +-
  .../commands/context/extraction-apply.unit.test.ts | 103 ++++
  packages/agentplane/src/commands/context/graph.ts  |   7 +-
- 9 files changed, 1019 insertions(+), 2 deletions(-)
+ 16 files changed, 1082 insertions(+), 36 deletions(-)
 ```
 
 </details>
