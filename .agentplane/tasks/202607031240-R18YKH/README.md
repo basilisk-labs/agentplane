@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -27,19 +27,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-03T12:52:20.871Z"
+  updated_at: "2026-07-03T13:02:37.788Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed."
-  evaluated_sha: "3c13e03f947f2b2ee98147e8d0f830bc0d89a6d3"
+  note: "Quality review passed after addressing PR review threads."
+  evaluated_sha: "38497b5784c656ce4896e7714bf015611c8b0ce2"
   blueprint_digest: "4e18a6052212c85037b326323da727fc1d92dd3c371b601e88ca96bee2adce32"
   evidence_refs:
     - ".agentplane/tasks/202607031240-R18YKH/README.md"
-    - ".agentplane/tasks/202607031240-R18YKH/quality/20260703-125220871-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607031240-R18YKH/quality/20260703-125220871-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607031240-R18YKH/quality/20260703-125220871-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607031240-R18YKH/quality/20260703-130237788-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607031240-R18YKH/quality/20260703-130237788-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607031240-R18YKH/quality/20260703-130237788-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607031240-R18YKH/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/context/wiki-reports.unit.test.ts"
+    - "bunx vitest run packages/agentplane/src/commands/context/wiki-reports.unit.test.ts packages/agentplane/src/commands/context/wiki-lint.unit.test.ts packages/agentplane/src/commands/context/wiki-index.unit.test.ts packages/agentplane/src/commands/context/extraction-apply.unit.test.ts"
+    - "bun run typecheck"
   findings:
-    - "No blocking findings."
+    - "Markdown source references outside context/wiki are ignored; entity target_path is honored before heuristic lookup."
 commit:
   hash: "40d53c5d848abb6b1f18240e7a2b3244664ff9af"
   message: "🧩 R18YKH task: refresh task artifacts after commit"
