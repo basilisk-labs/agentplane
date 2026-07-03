@@ -402,6 +402,96 @@ describe("context extraction apply", () => {
     expect(edges).toContain('"relation":"tests"');
   });
 
+  it("writes extraction quality signals for granularity and normalization risks", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/extraction-quality.json",
+      JSON.stringify({
+        schema_version: 2,
+        kind: "context_extraction",
+        task_id: "202607031338-KHMQAV",
+        reasoning: [{ label: "qa", summary: "Quality signals expose weak extraction shape." }],
+        source_refs: [
+          { path: "context/raw/research/a.md", lines: "1-20" },
+          { path: "context/raw/research/uncovered.md", lines: "1-20" },
+        ],
+        extracted_items: [
+          {
+            id: "entity.a",
+            kind: "graph_entity",
+            summary: "A is an extracted singleton.",
+            source_refs: [{ path: "context/raw/research/a.md" }],
+            confidence: 0.8,
+            status: "accepted",
+            entity: { id: "entity.a", kind: "concept", label: "A" },
+          },
+          {
+            id: "entity.b",
+            kind: "graph_entity",
+            summary: "B is an extracted singleton.",
+            source_refs: [{ path: "context/raw/research/a.md" }],
+            confidence: 0.8,
+            status: "accepted",
+            entity: { id: "entity.b", kind: "concept", label: "B" },
+          },
+          {
+            id: "entity.c",
+            kind: "graph_entity",
+            summary: "C is an extracted singleton.",
+            source_refs: [{ path: "context/raw/research/a.md" }],
+            confidence: 0.8,
+            status: "accepted",
+            entity: { id: "entity.c", kind: "concept", label: "C" },
+          },
+          {
+            id: "resolution.a",
+            kind: "entity_resolution",
+            summary: "A source term may resolve to entity A.",
+            source_refs: [{ path: "context/raw/research/a.md", lines: "8-9" }],
+            confidence: 0.6,
+            status: "proposed",
+            entity_resolution: {
+              source_term: "alpha",
+              resolution: "alias_of",
+              canonical_entity_id: "entity.a",
+            },
+          },
+        ],
+      }),
+    );
+
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    await cmdContextExtractionApply({
+      cwd: root,
+      parsed: {
+        file: "context/extraction-quality.json",
+        taskId: "202607031338-KHMQAV",
+        dryRun: false,
+      },
+    });
+
+    const qualityReportText = await readFile(
+      path.join(root, ".agentplane/context/derived/reports/extraction-quality.jsonl"),
+      "utf8",
+    );
+    const qualityRows = qualityReportText
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line) as Record<string, unknown>);
+    expect(qualityRows.map((row) => row.signal_type)).toEqual(
+      expect.arrayContaining([
+        "source_scope_gap",
+        "source_precision_gap",
+        "normalization_uncertainty",
+        "over_fragmentation_risk",
+      ]),
+    );
+    expect(qualityReportText).toContain("context/raw/research/uncovered.md");
+    expect(qualityReportText).toContain("resolution.a");
+    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain("quality=4");
+  });
+
   it("surfaces concrete graph validation issue lines", async () => {
     const root = await tempRoot();
     await write(
