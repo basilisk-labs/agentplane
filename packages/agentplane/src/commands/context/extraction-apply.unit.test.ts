@@ -1,7 +1,7 @@
 import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { cmdContextExtractionApply } from "./extraction.js";
 import { cmdContextGraphValidate } from "./graph.js";
@@ -15,6 +15,7 @@ async function tempRoot(): Promise<string> {
 }
 
 afterEach(async () => {
+  vi.restoreAllMocks();
   for (const root of tempRoots) {
     await rm(root, { recursive: true, force: true });
   }
@@ -108,6 +109,7 @@ describe("context extraction apply", () => {
       }),
     );
 
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
     await cmdContextExtractionApply({
       cwd: otherCwd,
       rootOverride: root,
@@ -142,6 +144,9 @@ describe("context extraction apply", () => {
     expect(provenance).toContain("context/raw/research/source.md#lines=1-6");
     expect(coverage).toContain("coverage.research-source");
     expect(coverage).toContain("context/raw/research/source.md");
+    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
+      "items=5 source_paths=1 source_refs=5 facts=1 entities=2 edges=1",
+    );
   });
 
   it("routes SGR v2 typed records to claims, ontology, sources, and wiki outputs", async () => {

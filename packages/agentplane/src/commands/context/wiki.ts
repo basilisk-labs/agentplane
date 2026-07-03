@@ -47,6 +47,17 @@ function replaceGeneratedIndexSection(text: string, generated: string): string {
   return `${trimmed}${trimmed ? "\n\n" : ""}${section}\n`;
 }
 
+function renderGeneratedIndexPage(rel: string): string {
+  return renderWikiPage({
+    rel,
+    title: titleFromPath(path.posix.dirname(rel)),
+    modality: "observation",
+    status: "sourced_claim",
+    visibility: "project",
+    sourceRefs: [],
+  });
+}
+
 export async function cmdContextWikiNew(opts: {
   cwd: string;
   rootOverride?: string;
@@ -205,7 +216,7 @@ export async function cmdContextWikiIndex(opts: {
     const indexAbs = path.join(root, indexRel);
     const existing = (await fileExists(indexAbs))
       ? await readFile(indexAbs, "utf8")
-      : `# ${titleFromPath(dir)}\n`;
+      : renderGeneratedIndexPage(indexRel);
     const next = replaceGeneratedIndexSection(existing, entries.join("\n"));
     if (next !== existing) {
       await mkdir(path.dirname(indexAbs), { recursive: true });
