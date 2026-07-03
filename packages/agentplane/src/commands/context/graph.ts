@@ -20,6 +20,7 @@ const ALLOWED_ENTITY_KINDS = new Set([
   "task",
   "source",
   "service",
+  "system",
   "module",
 ]);
 
@@ -32,6 +33,7 @@ const ALLOWED_EDGE_RELATIONS = new Set([
   "consumes",
   "owns",
   "mentions",
+  "tests",
   "contradicts",
   "supersedes",
   "part_of",
@@ -228,7 +230,10 @@ export async function cmdContextGraphValidate(opts: {
     throw new CliError({
       exitCode: 3,
       code: "E_VALIDATION",
-      message: `graph validation failed: ${errors.length} issue(s)`,
+      message: [
+        `graph validation failed: ${errors.length} issue(s)`,
+        ...errors.map((error) => `- ${error}`),
+      ].join("\n"),
     });
   }
   process.stdout.write("context graph valid\n");

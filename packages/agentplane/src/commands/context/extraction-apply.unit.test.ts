@@ -275,4 +275,107 @@ describe("context extraction apply", () => {
     expect(topologyPlan.mode).toBe("maximum_assimilation");
     expect(topologyPlan.source_shape.primary).toBe("codebase_and_task_history");
   });
+
+  it("keeps natural SGR system entities and tests relations graph-valid", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/extraction-system.json",
+      JSON.stringify({
+        schema_version: 2,
+        kind: "context_extraction",
+        task_id: "202607030734-7S66KX",
+        reasoning: [{ label: "system", summary: "Extract system tool relations." }],
+        source_refs: [{ path: "context/raw/public/tool.md", lines: "1-12" }],
+        extracted_items: [
+          {
+            id: "entity.protocol",
+            kind: "graph_entity",
+            summary: "The protocol is the target of the tool.",
+            source_refs: [{ path: "context/raw/public/tool.md", lines: "1-4" }],
+            confidence: 0.82,
+            status: "accepted",
+            entity: {
+              id: "entity.protocol",
+              kind: "concept",
+              label: "Protocol",
+            },
+          },
+          {
+            id: "entity.inspector",
+            kind: "graph_entity",
+            summary: "The inspector is a system used to test the protocol.",
+            source_refs: [{ path: "context/raw/public/tool.md", lines: "5-8" }],
+            confidence: 0.8,
+            status: "accepted",
+            entity: {
+              id: "entity.inspector",
+              kind: "system",
+              label: "Inspector",
+            },
+          },
+          {
+            id: "edge.inspector.tests.protocol",
+            kind: "graph_edge",
+            summary: "The inspector tests the protocol.",
+            source_refs: [{ path: "context/raw/public/tool.md", lines: "9-12" }],
+            confidence: 0.78,
+            status: "accepted",
+            edge: {
+              id: "edge.inspector.tests.protocol",
+              from: "entity.inspector",
+              to: "entity.protocol",
+              relation: "tests",
+            },
+          },
+        ],
+      }),
+    );
+
+    await cmdContextExtractionApply({
+      cwd: root,
+      parsed: {
+        file: "context/extraction-system.json",
+        taskId: "202607030734-7S66KX",
+        dryRun: false,
+      },
+    });
+
+    await cmdContextGraphValidate({ cwd: root, parsed: {} });
+
+    const entities = await readFile(
+      path.join(root, ".agentplane/context/derived/graph/entities.jsonl"),
+      "utf8",
+    );
+    const edges = await readFile(
+      path.join(root, ".agentplane/context/derived/graph/edges.jsonl"),
+      "utf8",
+    );
+    expect(entities).toContain('"kind":"system"');
+    expect(edges).toContain('"relation":"tests"');
+  });
+
+  it("surfaces concrete graph validation issue lines", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      ".agentplane/context/derived/graph/entities.jsonl",
+      `${JSON.stringify({ id: "entity.invalid", kind: "invalid", label: "Invalid" })}\n`,
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/graph/edges.jsonl",
+      `${JSON.stringify({
+        id: "edge.invalid",
+        from: "entity.invalid",
+        to: "entity.missing",
+        relation: "invalid",
+      })}\n`,
+    );
+    await write(root, ".agentplane/context/derived/graph/provenance_edges.jsonl", "");
+
+    await expect(cmdContextGraphValidate({ cwd: root, parsed: {} })).rejects.toThrow(
+      /graph validation failed: 3 issue\(s\)\n- entity invalid kind: entity\.invalid\n- edge invalid relation invalid: edge\.invalid\n- edge references missing entity: entity\.missing/u,
+    );
+  });
 });
