@@ -4,7 +4,7 @@ title: "Fix context wiki index lint and strengthen extraction assimilation"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,21 @@ verification:
   updated_by: "CURATOR"
   note: "Focused context tests, routing policy check, doctor, typecheck, lint:core, format:changed, and six-document assimilation smoke test passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-03T09:14:08.751Z"
+  updated_by: "EVALUATOR"
+  note: "Quality review passed."
+  evaluated_sha: "e135038e4befae6fcc0d2f034cfe70f3447c909d"
+  blueprint_digest: "5886aa9525d610fc150968b1b7a8b1ad9bb3858c264f5ab8c512763d5853f7a6"
+  evidence_refs:
+    - ".agentplane/tasks/202607030856-SQ3TMK/README.md"
+    - ".agentplane/tasks/202607030856-SQ3TMK/quality/20260703-091408751-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607030856-SQ3TMK/quality/20260703-091408751-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607030856-SQ3TMK/quality/20260703-091408751-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607030856-SQ3TMK/blueprint/resolved-snapshot.json"
+  findings:
+    - "No blocking findings."
 commit: null
 comments:
   -
