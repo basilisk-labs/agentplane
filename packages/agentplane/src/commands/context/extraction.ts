@@ -25,6 +25,7 @@ export async function cmdContextExtractionApply(opts: {
       `ontology=${result.ontology}`,
       `sources=${result.sources}`,
       `wiki=${result.wiki}`,
+      `quality=${result.quality}`,
       result.changed_paths.length > 0 ? `changed=${result.changed_paths.join(",")}` : "",
     ]
       .filter(Boolean)
