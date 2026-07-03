@@ -13,7 +13,7 @@ Created: 2026-07-03T12:41:24.469Z
 ## Verification
 
 - State: ok
-- Note: Verified actionable wiki connectivity reporting and YouTube response artifact.
+- Note: Verified lint-corrected wiki report implementation.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,8 +30,8 @@ Created: 2026-07-03T12:41:24.469Z
 
 ```text
  .../src/commands/context/wiki-reports.ts           | 174 ++++++++++++++++++---
- .../src/commands/context/wiki-reports.unit.test.ts |  84 ++++++++++
- 2 files changed, 236 insertions(+), 22 deletions(-)
+ .../src/commands/context/wiki-reports.unit.test.ts |  83 ++++++++++
+ 2 files changed, 235 insertions(+), 22 deletions(-)
 ```
 
 </details>
