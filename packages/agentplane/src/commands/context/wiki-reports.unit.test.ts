@@ -155,7 +155,10 @@ describe("context wiki report", () => {
     await write(
       root,
       "context/wiki/modules/payment-api.md",
-      wikiPage("Payment API", "See [Charge Flow](../workflows/charge-flow.md)."),
+      wikiPage(
+        "Payment API",
+        "See [Charge Flow](../workflows/charge-flow.md) and [Policy](../../../.agentplane/policy/security.must.md).",
+      ),
     );
     await write(
       root,
@@ -173,6 +176,7 @@ describe("context wiki report", () => {
     );
     expect(linkIndex).toContain('"link_type":"markdown"');
     expect(linkIndex).toContain('"target_path":"context/wiki/workflows/charge-flow.md"');
+    expect(linkIndex).not.toContain("security.must.md");
     const orphanReport = await readFile(
       path.join(root, ".agentplane/context/derived/wiki/orphan-report.jsonl"),
       "utf8",
@@ -191,12 +195,14 @@ describe("context wiki report", () => {
         JSON.stringify({
           id: "entity.payment-api",
           kind: "module",
-          label: "Payment API",
+          label: "Payments Module",
+          target_path: "context/wiki/modules/payment-api.md",
         }),
         JSON.stringify({
           id: "entity.charge-flow",
           kind: "workflow",
-          label: "Charge Flow",
+          label: "Checkout Pipeline",
+          target_path: "context/wiki/workflows/charge-flow.md",
         }),
       ].join("\n") + "\n",
     );
