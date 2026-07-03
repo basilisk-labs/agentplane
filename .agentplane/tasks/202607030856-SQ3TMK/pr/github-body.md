@@ -19,8 +19,8 @@ Fix the post-index wiki lint failure found during assimilation smoke testing, im
 - Note:
 
 ```text
-Focused context tests, routing policy check, doctor, typecheck, lint:core, format:changed, and
-six-document assimilation smoke test passed.
+Review fixes verified: legacy generated wiki index pages are healed with frontmatter; extraction
+apply reports input_source_paths separately from applied source_paths.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,12 +32,13 @@ six-document assimilation smoke test passed.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/context/extraction-apply.unit.test.ts |  7 +++++-
+ .../commands/context/extraction-apply.unit.test.ts | 49 ++++++++++++++++-
  .../agentplane/src/commands/context/extraction.ts  |  2 +-
- .../src/commands/context/release-readiness.test.ts | 10 +++++++++
- packages/agentplane/src/commands/context/wiki.ts   | 13 ++++++++++-
- .../agentplane/src/context/extraction-writer.ts    | 25 ++++++++++++++++++++++
- 5 files changed, 54 insertions(+), 3 deletions(-)
+ .../src/commands/context/release-readiness.test.ts | 10 ++++
+ .../src/commands/context/wiki-index.unit.test.ts   | 63 ++++++++++++++++++++++
+ packages/agentplane/src/commands/context/wiki.ts   | 26 ++++++++-
+ .../agentplane/src/context/extraction-writer.ts    | 29 ++++++++++
+ 6 files changed, 175 insertions(+), 4 deletions(-)
 ```
 
 </details>

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CURATOR"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-03T09:12:01.536Z"
-  updated_by: "CURATOR"
-  note: "Focused context tests, routing policy check, doctor, typecheck, lint:core, format:changed, and six-document assimilation smoke test passed."
+  updated_at: "2026-07-03T09:45:29.592Z"
+  updated_by: "CODER"
+  note: "Review fixes verified: legacy generated wiki index pages are healed with frontmatter; extraction apply reports input_source_paths separately from applied source_paths."
   attempts: 0
 quality_review:
   state: "pass"
@@ -71,8 +71,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-03T09:45:29.592Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review fixes verified: legacy generated wiki index pages are healed with frontmatter; extraction apply reports input_source_paths separately from applied source_paths."
 doc_version: 3
-doc_updated_at: "2026-07-03T09:25:22.640Z"
+doc_updated_at: "2026-07-03T09:45:30.773Z"
 doc_updated_by: "CURATOR"
 description: "Fix the post-index wiki lint failure found during assimilation smoke testing, improve extraction apply/reporting where source-backed assimilation is weak, and verify with a larger network-document assimilation test on main."
 sections:
@@ -126,6 +132,36 @@ sections:
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-07-03T09:45:29.592Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Review fixes verified: legacy generated wiki index pages are healed with frontmatter; extraction apply reports input_source_paths separately from applied source_paths.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-03T09:25:22.640Z, excerpt_hash=sha256:15d02275a157ee0e50371835818a3859e1916b4aaf493c5bcb97fe188250aad9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030856-SQ3TMK-fix-context-wiki-index-lint-and-strengthen-extra/.agentplane/tasks/202607030856-SQ3TMK/blueprint/resolved-snapshot.json
+    - old_digest: 5886aa9525d610fc150968b1b7a8b1ad9bb3858c264f5ab8c512763d5853f7a6
+    - current_digest: 5886aa9525d610fc150968b1b7a8b1ad9bb3858c264f5ab8c512763d5853f7a6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607030856-SQ3TMK
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607030856-SQ3TMK --branch task/202607030856-SQ3TMK/fix-context-wiki-index-lint-and-strengthen-extra
+    - diagnostic_command: agentplane pr check 202607030856-SQ3TMK
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -134,6 +170,10 @@ sections:
     - Observation: Original failure reproduced before fix: context wiki index generated subdirectory index.md pages without YAML frontmatter, making context wiki lint context/wiki fail. After fix, large smoke test passed context init, extraction apply, graph validate, wiki lint before index, wiki index, wiki report, wiki lint after index/report, reindex, and search. Large smoke metrics: documents=6 facts=6 entities=14 edges=18 tests_edges=6 provenance=68 resolved_links=25 unresolved_links=0 orphans=0 components=1 isolated_entities=0.
       Impact: Generated wiki indexes are now valid context wiki pages, and extraction apply output now reports items/source_paths/source_refs for immediate granularity diagnostics.
       Resolution: Implemented lint-valid generated index pages and extraction apply source counters with focused regression tests.
+
+    - Observation: Focused vitest passed: 4 files, 31 tests. format:changed passed. typecheck passed. check-routing passed. Full 8-network-document assimilation smoke passed context init, extraction apply, graph validate, wiki lint, wiki index, wiki report, reindex --include-raw, and search.
+      Impact: context wiki index no longer leaves legacy generated subdirectory indexes lint-invalid; extraction summaries no longer overstate applied source coverage when some input sources produce no extracted rows.
+      Resolution: Smoke metrics: raw_documents=8, items=42, input_source_paths=8, source_paths=8, facts=8, entities=9, edges=8, provenance_edges=44, wiki_pages_total=16, unresolved_links=0, connected_components=1, largest_component_size=9, reindex rows=331/files=42, search_results=5.
 extensions:
   implementation_commit:
     hash: "d3d845092ff9eaa9e367896950b9fff94f509fd6"
@@ -199,6 +239,36 @@ DecisionContextRef:
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+### 2026-07-03T09:45:29.592Z — VERIFY — ok
+
+By: CODER
+
+Note: Review fixes verified: legacy generated wiki index pages are healed with frontmatter; extraction apply reports input_source_paths separately from applied source_paths.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-03T09:25:22.640Z, excerpt_hash=sha256:15d02275a157ee0e50371835818a3859e1916b4aaf493c5bcb97fe188250aad9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030856-SQ3TMK-fix-context-wiki-index-lint-and-strengthen-extra/.agentplane/tasks/202607030856-SQ3TMK/blueprint/resolved-snapshot.json
+- old_digest: 5886aa9525d610fc150968b1b7a8b1ad9bb3858c264f5ab8c512763d5853f7a6
+- current_digest: 5886aa9525d610fc150968b1b7a8b1ad9bb3858c264f5ab8c512763d5853f7a6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607030856-SQ3TMK
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607030856-SQ3TMK --branch task/202607030856-SQ3TMK/fix-context-wiki-index-lint-and-strengthen-extra
+- diagnostic_command: agentplane pr check 202607030856-SQ3TMK
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -211,3 +281,7 @@ DecisionContextRef:
 - Observation: Original failure reproduced before fix: context wiki index generated subdirectory index.md pages without YAML frontmatter, making context wiki lint context/wiki fail. After fix, large smoke test passed context init, extraction apply, graph validate, wiki lint before index, wiki index, wiki report, wiki lint after index/report, reindex, and search. Large smoke metrics: documents=6 facts=6 entities=14 edges=18 tests_edges=6 provenance=68 resolved_links=25 unresolved_links=0 orphans=0 components=1 isolated_entities=0.
   Impact: Generated wiki indexes are now valid context wiki pages, and extraction apply output now reports items/source_paths/source_refs for immediate granularity diagnostics.
   Resolution: Implemented lint-valid generated index pages and extraction apply source counters with focused regression tests.
+
+- Observation: Focused vitest passed: 4 files, 31 tests. format:changed passed. typecheck passed. check-routing passed. Full 8-network-document assimilation smoke passed context init, extraction apply, graph validate, wiki lint, wiki index, wiki report, reindex --include-raw, and search.
+  Impact: context wiki index no longer leaves legacy generated subdirectory indexes lint-invalid; extraction summaries no longer overstate applied source coverage when some input sources produce no extracted rows.
+  Resolution: Smoke metrics: raw_documents=8, items=42, input_source_paths=8, source_paths=8, facts=8, entities=9, edges=8, provenance_edges=44, wiki_pages_total=16, unresolved_links=0, connected_components=1, largest_component_size=9, reindex rows=331/files=42, search_results=5.

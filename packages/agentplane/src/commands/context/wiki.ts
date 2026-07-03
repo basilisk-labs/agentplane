@@ -58,6 +58,14 @@ function renderGeneratedIndexPage(rel: string): string {
   });
 }
 
+function isLegacyGeneratedIndexPage(text: string): boolean {
+  return (
+    !extractFrontmatter(text) &&
+    text.includes("<!-- agentplane-context-wiki-index:start -->") &&
+    /^#\s+.+$/mu.test(text)
+  );
+}
+
 export async function cmdContextWikiNew(opts: {
   cwd: string;
   rootOverride?: string;
@@ -217,7 +225,10 @@ export async function cmdContextWikiIndex(opts: {
     const existing = (await fileExists(indexAbs))
       ? await readFile(indexAbs, "utf8")
       : renderGeneratedIndexPage(indexRel);
-    const next = replaceGeneratedIndexSection(existing, entries.join("\n"));
+    const base = isLegacyGeneratedIndexPage(existing)
+      ? renderGeneratedIndexPage(indexRel)
+      : existing;
+    const next = replaceGeneratedIndexSection(base, entries.join("\n"));
     if (next !== existing) {
       await mkdir(path.dirname(indexAbs), { recursive: true });
       await writeFile(indexAbs, next, "utf8");

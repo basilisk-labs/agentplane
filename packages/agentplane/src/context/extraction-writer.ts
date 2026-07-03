@@ -12,6 +12,7 @@ import { fileExists, parseJsonlLines, toPosix } from "./context-utils.js";
 
 type ApplyResult = {
   items: number;
+  input_source_paths: number;
   source_paths: number;
   source_refs: number;
   facts: number;
@@ -161,13 +162,15 @@ function stringField(record: Record<string, unknown>, key: string): string | und
 }
 
 function countSourceRefs(result: ContextExtractionSgrResult): {
+  inputSourcePaths: number;
   sourcePaths: number;
   sourceRefs: number;
 } {
+  const inputSourcePaths = new Set<string>();
   const sourcePaths = new Set<string>();
   let sourceRefs = 0;
   for (const ref of result.source_refs) {
-    sourcePaths.add(ref.path);
+    inputSourcePaths.add(ref.path);
   }
   for (const item of result.extracted_items) {
     sourceRefs += item.source_refs.length;
@@ -175,7 +178,7 @@ function countSourceRefs(result: ContextExtractionSgrResult): {
       sourcePaths.add(ref.path);
     }
   }
-  return { sourcePaths: sourcePaths.size, sourceRefs };
+  return { inputSourcePaths: inputSourcePaths.size, sourcePaths: sourcePaths.size, sourceRefs };
 }
 
 export async function applyContextExtractionResult(opts: {
@@ -386,6 +389,7 @@ export async function applyContextExtractionResult(opts: {
 
   return {
     items: result.extracted_items.length,
+    input_source_paths: sourceRefCounts.inputSourcePaths,
     source_paths: sourceRefCounts.sourcePaths,
     source_refs: sourceRefCounts.sourceRefs,
     facts: [...facts.values()].length,

@@ -6,14 +6,14 @@ Created: 2026-07-03T08:58:48.978Z
 
 - Task: `202607030856-SQ3TMK`
 - Title: Fix context wiki index lint and strengthen extraction assimilation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607030856-SQ3TMK/fix-context-wiki-index-lint-and-strengthen-extra`
 - Canonical task record: `.agentplane/tasks/202607030856-SQ3TMK/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Focused context tests, routing policy check, doctor, typecheck, lint:core, format:changed, and six-document assimilation smoke test passed.
+- Note: Review fixes verified: legacy generated wiki index pages are healed with frontmatter; extraction apply reports input_source_paths separately from applied source_paths.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,12 +29,13 @@ Created: 2026-07-03T08:58:48.978Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/context/extraction-apply.unit.test.ts |  7 +++++-
+ .../commands/context/extraction-apply.unit.test.ts | 49 ++++++++++++++++-
  .../agentplane/src/commands/context/extraction.ts  |  2 +-
- .../src/commands/context/release-readiness.test.ts | 10 +++++++++
- packages/agentplane/src/commands/context/wiki.ts   | 13 ++++++++++-
- .../agentplane/src/context/extraction-writer.ts    | 25 ++++++++++++++++++++++
- 5 files changed, 54 insertions(+), 3 deletions(-)
+ .../src/commands/context/release-readiness.test.ts | 10 ++++
+ .../src/commands/context/wiki-index.unit.test.ts   | 63 ++++++++++++++++++++++
+ packages/agentplane/src/commands/context/wiki.ts   | 26 ++++++++-
+ .../agentplane/src/context/extraction-writer.ts    | 29 ++++++++++
+ 6 files changed, 175 insertions(+), 4 deletions(-)
 ```
 
 </details>
