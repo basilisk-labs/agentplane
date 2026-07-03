@@ -40,8 +40,8 @@ function lookupKey(value: string): string {
     .replace(/^entity\./u, "")
     .replace(/^wiki\./u, "")
     .toLowerCase()
-    .replace(/[^a-z0-9]+/gu, "-")
-    .replace(/^-|-$/gu, "");
+    .replaceAll(/[^a-z0-9]+/gu, "-")
+    .replaceAll(/^-|-$/gu, "");
 }
 
 function titleFromMarkdown(rel: string, text: string): string {
@@ -187,7 +187,7 @@ async function buildWikiLinkRows(
   linkRows: WikiLinkRow[];
 }> {
   const linkRows: WikiLinkRow[] = [];
-  const wikiPathSet = new Set([...pathByTarget.values()]);
+  const wikiPathSet = new Set(pathByTarget.values());
   for (const sourcePath of sourceFiles) {
     const text = await readFile(path.join(root, sourcePath), "utf8");
     for (const rawTarget of extractWikilinks(text)) {
