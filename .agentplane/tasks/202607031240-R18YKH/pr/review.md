@@ -29,7 +29,9 @@ Created: 2026-07-03T12:41:24.469Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/context/wiki-reports.ts           | 174 ++++++++++++++++++---
+ .../src/commands/context/wiki-reports.unit.test.ts |  84 ++++++++++
+ 2 files changed, 236 insertions(+), 22 deletions(-)
 ```
 
 </details>
