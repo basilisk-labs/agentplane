@@ -27,7 +27,9 @@ Make context wiki reports more useful after assimilation by surfacing actionable
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/context/wiki-reports.ts           | 174 ++++++++++++++++++---
+ .../src/commands/context/wiki-reports.unit.test.ts |  84 ++++++++++
+ 2 files changed, 236 insertions(+), 22 deletions(-)
 ```
 
 </details>
