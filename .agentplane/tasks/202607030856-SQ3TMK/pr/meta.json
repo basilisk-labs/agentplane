@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "pr_number": 4544,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4544",
+  "pre_merge_closure": {
+    "basis_commit": "0cb31e3c24a5f33b90d8260b8520fc1fa150db77",
+    "branch": "task/202607030856-SQ3TMK/fix-context-wiki-index-lint-and-strengthen-extra",
+    "pr_number": 4544,
+    "recorded_at": "2026-07-03T09:25:22.663Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607030856-SQ3TMK",
