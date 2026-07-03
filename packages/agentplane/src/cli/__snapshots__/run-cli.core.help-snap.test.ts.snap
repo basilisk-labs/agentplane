@@ -169,12 +169,13 @@ Commands:
     context learn tasks  Create CURATOR extraction tasks from completed task history.
     context search  Search curated local context, facts, graph, and capabilities.
     context show  Resolve a context source reference and print addressed content.
-    context wiki  Create, lint, explain, link, and index local context wiki pages.
+    context wiki  Create, lint, explain, link, index, and report on local context wiki pages.
     context wiki explain  Print a wiki page's Agentplane context frontmatter.
     context wiki index  Update generated wiki index sections for pages and subdirectories.
     context wiki link  Suggest existing wiki pages that may deserve cross-links.
     context wiki lint  Validate wiki page frontmatter and source-link hygiene.
     context wiki new  Create a wiki page with Agentplane context frontmatter.
+    context wiki report  Generate maximum-assimilation wiki link/orphan reports and required review report pages.
   Evaluators:
     evaluator  List, inspect, and run evaluator quality reviews.
     evaluator list  List evaluator prompt modules from .agentplane/evaluators.
@@ -191,6 +192,12 @@ Commands:
     hermes lifecycle  Emit one Hermes Kanban lifecycle callback through the configured Hermes CLI.
     hermes reconcile  Inspect Hermes projection drift without mutating Agentplane task truth.
     hermes supervise  Compute the next safe Agentplane route step for a Hermes supervisor run.
+  Platform:
+    platform  Agent platform instruction-surface integration commands.
+    platform doctor  Print verification guidance for one platform integration surface.
+    platform explain  Explain one platform integration surface.
+    platform list  List supported platform instruction-surface integrations.
+    platform sync  Generate platform-specific instruction files from AgentPlane policy.
   Workflow:
     flow  Inspect and repair high-level task workflow routes.
     flow repair  Print or apply safe repair steps for task workflow drift.

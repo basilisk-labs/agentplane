@@ -23,6 +23,10 @@ import {
 registerAgentplaneHome();
 let restoreStdIO: (() => void) | null = null;
 
+function taskSuffix(taskId: string): string {
+  return taskId.split("-").at(-1) ?? taskId;
+}
+
 beforeEach(() => {
   restoreStdIO = silenceStdIO();
 });
@@ -149,8 +153,7 @@ describe("runCli", () => {
         cwd: root,
       },
     );
-    expect(headSubject.trim()).toBe("task: branch_pr close commit");
-    expect(headSubject).not.toContain("✅");
+    expect(headSubject.trim()).toBe(`✅ ${taskSuffix(taskId)} task: branch_pr close commit`);
   });
 
   it(
@@ -379,8 +382,9 @@ describe("runCli", () => {
           cwd: root,
         },
       );
-      expect(headSubject.trim()).toBe("task: branch_pr close commit remote default base");
-      expect(headSubject).not.toContain("✅");
+      expect(headSubject.trim()).toBe(
+        `✅ ${taskSuffix(taskId)} task: branch_pr close commit remote default base`,
+      );
     },
   );
 
@@ -475,8 +479,9 @@ describe("runCli", () => {
           cwd: root,
         },
       );
-      expect(headSubject.trim()).toBe("task: branch_pr finish explicit base override");
-      expect(headSubject).not.toContain("✅");
+      expect(headSubject.trim()).toBe(
+        `✅ ${taskSuffix(taskId)} task: branch_pr finish explicit base override`,
+      );
     },
   );
 
