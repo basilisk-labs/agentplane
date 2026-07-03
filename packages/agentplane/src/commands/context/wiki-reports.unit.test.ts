@@ -215,12 +215,11 @@ describe("context wiki report", () => {
     await cmdContextWikiReport({ cwd: root, parsed: { path: "context/wiki/workflows" } });
 
     out.mockRestore();
-    const orphanRows = (
-      await readFile(
-        path.join(root, ".agentplane/context/derived/wiki/orphan-report.jsonl"),
-        "utf8",
-      )
-    )
+    const orphanReportText = await readFile(
+      path.join(root, ".agentplane/context/derived/wiki/orphan-report.jsonl"),
+      "utf8",
+    );
+    const orphanRows = orphanReportText
       .trim()
       .split("\n")
       .map((line) => JSON.parse(line) as Record<string, unknown>);
