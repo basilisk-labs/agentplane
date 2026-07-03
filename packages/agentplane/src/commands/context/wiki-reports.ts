@@ -155,7 +155,8 @@ function markdownTargetPath(sourcePath: string, href: string): string | null {
     return null;
   }
   const resolved = toPosix(path.normalize(path.join(path.dirname(sourcePath), target)));
-  return resolved.endsWith(".md") ? resolved : `${resolved}.md`;
+  if (!resolved.startsWith("context/wiki/") || !resolved.endsWith(".md")) return null;
+  return resolved;
 }
 
 async function buildWikiTargetCatalog(
@@ -250,6 +251,12 @@ function entityPageMap(
   for (const entity of entities) {
     const id = scalar(entity.id, "");
     if (!id) continue;
+    const explicitTarget = scalar(entity.target_path ?? entity.targetPath, "");
+    const normalizedTarget = explicitTarget ? toPosix(path.normalize(explicitTarget)) : "";
+    if (normalizedTarget && pageInfoByPath.has(normalizedTarget)) {
+      mapped.set(id, normalizedTarget);
+      continue;
+    }
     const keys = [
       scalar(entity.label, ""),
       id,
