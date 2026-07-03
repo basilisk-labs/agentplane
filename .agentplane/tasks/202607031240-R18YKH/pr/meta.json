@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:d420f28e2861d14dcc4e066884cc1a2688ed7a5d3a6e08eb80c32e15886ee05e",
   "pr_number": 4545,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4545",
+  "pre_merge_closure": {
+    "basis_commit": "40d53c5d848abb6b1f18240e7a2b3244664ff9af",
+    "branch": "task/202607031240-R18YKH/improve-wiki-connectivity-reports",
+    "pr_number": 4545,
+    "recorded_at": "2026-07-03T12:57:22.738Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607031240-R18YKH",

@@ -1,10 +1,11 @@
 ---
 id: "202607031240-R18YKH"
 title: "Improve actionable context wiki connectivity reports"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +40,16 @@ quality_review:
     - ".agentplane/tasks/202607031240-R18YKH/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "40d53c5d848abb6b1f18240e7a2b3244664ff9af"
+  message: "🧩 R18YKH task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing actionable wiki orphan remediation reporting and a task-local Russian YouTube response artifact from the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -64,8 +70,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified lint-corrected wiki report implementation."
+  -
+    type: "status"
+    at: "2026-07-03T12:57:22.715Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-03T12:52:12.262Z"
+doc_updated_at: "2026-07-03T12:57:22.715Z"
 doc_updated_by: "CODER"
 description: "Make context wiki reports more useful after assimilation by surfacing actionable orphan remediation suggestions, add regression coverage, and prepare a user-facing YouTube comment response about AgentPlane context design tradeoffs."
 sections:
@@ -162,6 +175,10 @@ sections:
     - Observation: After lint fix: bunx eslint on wiki-reports files passed; focused vitest passed 4 files / 13 tests; bun run typecheck passed; bun run format:changed passed; node .agentplane/policy/check-routing.mjs passed. Previous 10-doc smoke remains applicable to the same behavior: markdown_link_rows=31 orphan_rows=0 unresolved_links=0 connected_components=1 search_results=5.
       Impact: The implementation remains functionally equivalent after lint rewrites and is ready for refreshed quality review.
       Resolution: Current HEAD includes lint-safe replaceAll/new Set/await-style changes only after the verified implementation.
+extensions:
+  implementation_commit:
+    hash: "3c13e03f947f2b2ee98147e8d0f830bc0d89a6d3"
+    message: "✅ R18YKH context: satisfy wiki report lint"
 id_source: "generated"
 ---
 ## Summary
