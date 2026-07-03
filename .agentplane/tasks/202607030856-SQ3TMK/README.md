@@ -4,7 +4,7 @@ title: "Fix context wiki index lint and strengthen extraction assimilation"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,19 +26,19 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-03T09:14:08.751Z"
+  updated_at: "2026-07-03T09:22:09.343Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed."
-  evaluated_sha: "e135038e4befae6fcc0d2f034cfe70f3447c909d"
+  note: "Quality review passed after rebase."
+  evaluated_sha: "d3d845092ff9eaa9e367896950b9fff94f509fd6"
   blueprint_digest: "5886aa9525d610fc150968b1b7a8b1ad9bb3858c264f5ab8c512763d5853f7a6"
   evidence_refs:
     - ".agentplane/tasks/202607030856-SQ3TMK/README.md"
-    - ".agentplane/tasks/202607030856-SQ3TMK/quality/20260703-091408751-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607030856-SQ3TMK/quality/20260703-091408751-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607030856-SQ3TMK/quality/20260703-091408751-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607030856-SQ3TMK/quality/20260703-092209343-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607030856-SQ3TMK/quality/20260703-092209343-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607030856-SQ3TMK/quality/20260703-092209343-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607030856-SQ3TMK/blueprint/resolved-snapshot.json"
   findings:
-    - "No blocking findings."
+    - "No blocking findings after rebase onto current main."
 commit: null
 comments:
   -
