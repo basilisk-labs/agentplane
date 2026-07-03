@@ -29,7 +29,8 @@ Created: 2026-07-03T13:19:21.788Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../youtube-context-system-response.ru.md                   | 13 -------------
+ 1 file changed, 13 deletions(-)
 ```
 
 </details>
