@@ -103,6 +103,15 @@ describe("context wiki report", () => {
     expect(
       await readFile(path.join(root, "context/wiki/reports/open-questions.md"), "utf8"),
     ).toContain("question.payment");
+    const reportState = JSON.parse(
+      await readFile(path.join(root, ".agentplane/context/derived/wiki/report-state.json"), "utf8"),
+    ) as { target: string; link_rows: number; orphan_rows: number; source_digest: string };
+    expect(reportState).toMatchObject({
+      target: "context/wiki",
+      link_rows: 1,
+      orphan_rows: 1,
+    });
+    expect(reportState.source_digest).toMatch(/^sha256:/u);
   });
 
   it("honors the requested wiki report path", async () => {

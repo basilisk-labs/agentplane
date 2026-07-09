@@ -12,6 +12,7 @@ import { parseJsonlLines, fileExists, parseSourceRef, readText, toPosix } from "
 import { readHarvestReport } from "./harvest-tasks-artifacts.js";
 import { readContextProjection } from "./reindex.js";
 import { checkSqliteProjection } from "./sqlite.js";
+import { validateContextCrossSurfaceIntegrity } from "./integrity.js";
 
 export async function cmdContextDoctor(opts: {
   cwd: string;
@@ -154,6 +155,7 @@ export async function cmdContextDoctor(opts: {
     await checkSourceRefs(path.join(root, file), manifestSources, root, warnings);
   }
   await checkHarvestReports(root, issues, warnings);
+  issues.push(...(await validateContextCrossSurfaceIntegrity(root)));
 
   if (issues.length > 0) {
     process.stderr.write(
