@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092206-Z480S9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-09T22:16:49.358Z",
+  "verdict": "pass",
+  "summary": "The executable v0.6.22 graph and maintainer plan satisfy the approved planning scope.",
+  "evaluated_sha": "2ffd40f477ea8dd8835fda0456ae1eed057d1a9c",
+  "blueprint_digest": "6765be8f23f2313d304e5b03d0f38af559bbf181163f5176ba09fd5a99734b9d",
+  "findings": [
+    "No blocking findings; the plan records verified baselines, atomic tasks, dependencies, release gates, and stop conditions."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092206-Z480S9/README.md",
+    "docs/internal/v0.6.22-refactor-plan.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

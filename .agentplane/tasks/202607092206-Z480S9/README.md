@@ -4,7 +4,7 @@ title: "Define the v0.6.22 refactor execution graph"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -31,19 +31,20 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-09T22:14:29.723Z"
+  updated_at: "2026-07-09T22:16:49.358Z"
   updated_by: "EVALUATOR"
-  note: "Final quality review passed on the task worktree head."
-  evaluated_sha: "0295bac6b6b1e1b92165a2ff7c57a8df9aaae99a"
+  note: "The executable v0.6.22 graph and maintainer plan satisfy the approved planning scope."
+  evaluated_sha: "2ffd40f477ea8dd8835fda0456ae1eed057d1a9c"
   blueprint_digest: "6765be8f23f2313d304e5b03d0f38af559bbf181163f5176ba09fd5a99734b9d"
   evidence_refs:
     - ".agentplane/tasks/202607092206-Z480S9/README.md"
-    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221429723-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221429723-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221429723-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221649358-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221649358-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221649358-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607092206-Z480S9/blueprint/resolved-snapshot.json"
+    - "docs/internal/v0.6.22-refactor-plan.md"
   findings:
-    - "No blocking findings; explicit root pins the reviewed task branch."
+    - "No blocking findings; the plan records verified baselines, atomic tasks, dependencies, release gates, and stop conditions."
 commit: null
 comments:
   -
