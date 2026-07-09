@@ -1,10 +1,11 @@
 ---
 id: "202607092206-Z480S9"
 title: "Define the v0.6.22 refactor execution graph"
-status: "DOING"
+result_summary: "approved v0.6.22 execution graph"
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -45,11 +46,16 @@ quality_review:
     - "docs/internal/v0.6.22-refactor-plan.md"
   findings:
     - "No blocking findings; the plan records verified baselines, atomic tasks, dependencies, release gates, and stop conditions."
-commit: null
+commit:
+  hash: "6121d17d5f29b393545fd010606fedcf46c6e25f"
+  message: "🧾 Z480S9 task: record final plan quality review"
 comments:
   -
     author: "PLANNER"
     body: "Start: create and persist the approved v0.6.22 refactor task graph."
+  -
+    author: "PLANNER"
+    body: "Verified: v0.6.22 refactor execution graph and maintainer plan are complete."
 events:
   -
     type: "status"
@@ -64,8 +70,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: seven approved atomic leaves target v0.6.22; dependency graph is acyclic; policy routing and diff checks pass."
+  -
+    type: "status"
+    at: "2026-07-09T22:17:07.885Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: v0.6.22 refactor execution graph and maintainer plan are complete."
 doc_version: 3
-doc_updated_at: "2026-07-09T22:16:24.581Z"
+doc_updated_at: "2026-07-09T22:17:07.885Z"
 doc_updated_by: "PLANNER"
 description: "Create and persist the atomic task graph that moves the deferred minor-release refactors into patch release 0.6.22 without changing implementation code."
 sections:
@@ -123,6 +136,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "2ffd40f477ea8dd8835fda0456ae1eed057d1a9c"
+    message: "📝 Z480S9 docs: add v0.6.22 refactor plan"
 id_source: "generated"
 ---
 ## Summary
