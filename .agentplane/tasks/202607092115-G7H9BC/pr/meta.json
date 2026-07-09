@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:879867f32ad1007e605c1f30514f88b565945d6890a093d319df313dbbe90371",
   "pr_number": 4552,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4552",
+  "pre_merge_closure": {
+    "basis_commit": "e255cdab8efef77208bd7e2605f16a5b8c778e93",
+    "branch": "task/202607092115-G7H9BC/harden-patch-release-quality-and-routing-contrac",
+    "pr_number": 4552,
+    "recorded_at": "2026-07-09T21:58:21.383Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607092115-G7H9BC",

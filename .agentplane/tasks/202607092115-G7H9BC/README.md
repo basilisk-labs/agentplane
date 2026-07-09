@@ -1,10 +1,11 @@
 ---
 id: "202607092115-G7H9BC"
 title: "Harden patch-release quality and routing contracts"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - ".agentplane/tasks/202607092115-G7H9BC/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings; verified implementation head and fresh PR artifacts satisfy the task contract."
-commit: null
+commit:
+  hash: "e255cdab8efef77208bd7e2605f16a5b8c778e93"
+  message: "🧾 G7H9BC task: record published PR metadata"
 comments:
   -
     author: "CODER"
     body: "Start: implement approved patch-release quality gates, exhaustive routing contracts, and ambiguity-safe wiki resolution in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -59,8 +65,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: ci:contract passed including clone and architecture gates; test:fast passed 359 files and 2127 tests; policy routing and doctor completed."
+  -
+    type: "status"
+    at: "2026-07-09T21:58:21.328Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-09T21:47:20.906Z"
+doc_updated_at: "2026-07-09T21:58:21.329Z"
 doc_updated_by: "CODER"
 description: "Fix jscpd v5 clone detection, align architecture Node support with declared engines, make route blockers and repairs exhaustive with surfaced local probe diagnostics, and prevent ambiguous wiki links from resolving nondeterministically."
 sections:
@@ -124,6 +137,10 @@ sections:
     - Observation: The task worktree initially lacked fresh CLI dist and package-local dependency links, and parallel full-suite execution caused unrelated Clack mock failures.
       Impact: Initial ci:contract and test:fast attempts were not valid product signals.
       Resolution: Ran bun run framework:dev:bootstrap and repeated ci:contract and test:fast sequentially; both passed.
+extensions:
+  implementation_commit:
+    hash: "3db19f908e1e1fd9b71337766dec413dfd50193a"
+    message: "🛠️ G7H9BC release: harden quality and routing contracts"
 id_source: "generated"
 ---
 ## Summary
