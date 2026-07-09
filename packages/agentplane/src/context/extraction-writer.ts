@@ -1,7 +1,6 @@
-import { mkdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { writeTextIfChanged } from "../shared/write-if-changed.js";
 import {
   validateContextExtractionSgrResult,
   type ContextExtractionItem,
@@ -9,6 +8,7 @@ import {
   type SgrSourceRef,
 } from "./sgr-extraction.js";
 import { fileExists, parseJsonlLines, toPosix } from "./context-utils.js";
+import { commitExtractionArtifacts, type ExtractionArtifact } from "./extraction-transaction.js";
 
 type ApplyResult = {
   items: number;
@@ -68,37 +68,17 @@ async function readJsonlById(filePath: string): Promise<Map<string, Record<strin
   return byId;
 }
 
-async function writeJsonlById(
+function jsonlArtifact(
   filePath: string,
   rows: Map<string, Record<string, unknown>>,
-  dryRun: boolean,
-): Promise<boolean> {
+): ExtractionArtifact {
   const sorted = [...rows.values()].toSorted((a, b) => rowId(a).localeCompare(rowId(b)));
   const text = sorted.map((row) => JSON.stringify(row)).join("\n");
-  const next = text ? `${text}\n` : "";
-  const exists = await fileExists(filePath);
-  if (!next && !exists) return false;
-  if (dryRun) {
-    const current = exists ? await readFile(filePath, "utf8") : "";
-    return current !== next;
-  }
-  await mkdir(path.dirname(filePath), { recursive: true });
-  return await writeTextIfChanged(filePath, next);
+  return { path: filePath, content: text ? `${text}\n` : "", format: "jsonl" };
 }
 
-async function writeJsonObject(
-  filePath: string,
-  value: Record<string, unknown> | null,
-  dryRun: boolean,
-): Promise<boolean> {
-  if (value === null) return false;
-  const next = `${JSON.stringify(value, null, 2)}\n`;
-  if (dryRun) {
-    const current = (await fileExists(filePath)) ? await readFile(filePath, "utf8") : "";
-    return current !== next;
-  }
-  await mkdir(path.dirname(filePath), { recursive: true });
-  return await writeTextIfChanged(filePath, next);
+function jsonArtifact(filePath: string, value: Record<string, unknown>): ExtractionArtifact {
+  return { path: filePath, content: `${JSON.stringify(value, null, 2)}\n`, format: "json" };
 }
 
 function compactRow(row: Record<string, unknown>): Record<string, unknown> {
@@ -533,37 +513,29 @@ export async function applyContextExtractionResult(opts: {
     }
   }
 
-  const changed = new Set<string>();
-  if (await writeJsonlById(factsPath, facts, dryRun))
-    changed.add(toPosix(path.relative(opts.root, factsPath)));
-  if (await writeJsonlById(entitiesPath, entities, dryRun))
-    changed.add(toPosix(path.relative(opts.root, entitiesPath)));
-  if (await writeJsonlById(edgesPath, edges, dryRun))
-    changed.add(toPosix(path.relative(opts.root, edgesPath)));
-  if (await writeJsonlById(provenancePath, provenance, dryRun))
-    changed.add(toPosix(path.relative(opts.root, provenancePath)));
-  if (await writeJsonlById(coveragePath, coverage, dryRun))
-    changed.add(toPosix(path.relative(opts.root, coveragePath)));
-  if (await writeJsonlById(extractionQualityPath, extractionQuality, dryRun))
-    changed.add(toPosix(path.relative(opts.root, extractionQualityPath)));
-  if (await writeJsonlById(sourceSpansPath, sourceSpans, dryRun))
-    changed.add(toPosix(path.relative(opts.root, sourceSpansPath)));
-  if (await writeJsonlById(entityResolutionPath, entityResolution, dryRun))
-    changed.add(toPosix(path.relative(opts.root, entityResolutionPath)));
-  if (await writeJsonlById(aliasesPath, aliases, dryRun))
-    changed.add(toPosix(path.relative(opts.root, aliasesPath)));
-  if (await writeJsonlById(pageCreationPath, pageCreation, dryRun))
-    changed.add(toPosix(path.relative(opts.root, pageCreationPath)));
-  if (await writeJsonlById(topologyChangesPath, topologyChanges, dryRun))
-    changed.add(toPosix(path.relative(opts.root, topologyChangesPath)));
-  if (await writeJsonObject(topologyPlanPath, topologyPlan, dryRun))
-    changed.add(toPosix(path.relative(opts.root, topologyPlanPath)));
-  if (await writeJsonlById(pageManifestsPath, pageManifests, dryRun))
-    changed.add(toPosix(path.relative(opts.root, pageManifestsPath)));
+  const artifacts: ExtractionArtifact[] = [
+    jsonlArtifact(factsPath, facts),
+    jsonlArtifact(entitiesPath, entities),
+    jsonlArtifact(edgesPath, edges),
+    jsonlArtifact(provenancePath, provenance),
+    jsonlArtifact(coveragePath, coverage),
+    jsonlArtifact(extractionQualityPath, extractionQuality),
+    jsonlArtifact(sourceSpansPath, sourceSpans),
+    jsonlArtifact(entityResolutionPath, entityResolution),
+    jsonlArtifact(aliasesPath, aliases),
+    jsonlArtifact(pageCreationPath, pageCreation),
+    jsonlArtifact(topologyChangesPath, topologyChanges),
+    jsonlArtifact(pageManifestsPath, pageManifests),
+  ];
+  if (topologyPlan !== null) artifacts.push(jsonArtifact(topologyPlanPath, topologyPlan));
   for (const [claimPath, rows] of claimMaps) {
-    if (await writeJsonlById(claimPath, rows, dryRun))
-      changed.add(toPosix(path.relative(opts.root, claimPath)));
+    artifacts.push(jsonlArtifact(claimPath, rows));
   }
+  const changedPaths = await commitExtractionArtifacts({
+    root: opts.root,
+    artifacts,
+    dryRun,
+  });
 
   return {
     items: result.extracted_items.length,
@@ -580,6 +552,6 @@ export async function applyContextExtractionResult(opts: {
     sources: sourceSpans.size,
     wiki: pageManifests.size + (topologyPlan === null ? 0 : 1),
     quality: extractionQuality.size,
-    changed_paths: [...changed].toSorted(),
+    changed_paths: changedPaths,
   };
 }
