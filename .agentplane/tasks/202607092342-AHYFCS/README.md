@@ -4,7 +4,7 @@ title: "Enforce cross-surface context integrity for v0.6.22"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,27 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-10T00:08:14.065Z"
+  updated_by: "CODER"
+  note: "Verified: current main-targeting PR head preserves the passing integrity tests, 2,132-test full fast suite, critical CLI suite, typecheck, lint, and ci:contract evidence."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-09T23:53:43.150Z"
+  updated_by: "EVALUATOR"
+  note: "Global context integrity now rejects disconnected or stale maximum-assimilation artifacts."
+  evaluated_sha: "1ac42ed68fef6764b464e114614fb99b02f102de"
+  blueprint_digest: "a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2"
+  evidence_refs:
+    - ".agentplane/tasks/202607092342-AHYFCS/README.md"
+    - ".agentplane/tasks/202607092342-AHYFCS/quality/20260709-235343150-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607092342-AHYFCS/quality/20260709-235343150-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607092342-AHYFCS/quality/20260709-235343150-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607092342-AHYFCS/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/context/check.unit.test.ts"
+  findings:
+    - "The validator resolves wiki graph references, enforces active entity page policy, checks raw source registration, and fingerprints connectivity reports with focused regression coverage."
 commit: null
 comments:
   -
@@ -44,8 +60,20 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement global cross-surface context integrity checks and regression coverage for v0.6.22."
+  -
+    type: "verify"
+    at: "2026-07-09T23:53:41.766Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: cross-surface graph, entity page policy, raw manifest coverage, and report freshness gates pass 40 focused tests, typecheck, lint, diff check, and ci:contract."
+  -
+    type: "verify"
+    at: "2026-07-10T00:08:14.065Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: current main-targeting PR head preserves the passing integrity tests, 2,132-test full fast suite, critical CLI suite, typecheck, lint, and ci:contract evidence."
 doc_version: 3
-doc_updated_at: "2026-07-09T23:43:35.553Z"
+doc_updated_at: "2026-07-10T00:08:14.302Z"
 doc_updated_by: "CODER"
 description: "Make global context checks validate wiki graph references, entity page policy, manifest/source coverage, and freshness of derived wiki reports so structurally valid but semantically disconnected context cannot pass."
 sections:
@@ -69,6 +97,66 @@ sections:
     4. Run git diff --check; it passes.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-09T23:53:41.766Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: cross-surface graph, entity page policy, raw manifest coverage, and report freshness gates pass 40 focused tests, typecheck, lint, diff check, and ci:contract.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-09T23:43:35.553Z, excerpt_hash=sha256:a048fab14dab3ec0b1cb44ac4e5067eb124319bc5f3d6256e3cd5dfb73d8b3d8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092342-AHYFCS-enforce-cross-surface-context-integrity-for-v0-6/.agentplane/tasks/202607092342-AHYFCS/blueprint/resolved-snapshot.json
+    - old_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+    - current_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607092342-AHYFCS
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202607092342-AHYFCS
+    - diagnostic_command: agentplane pr check 202607092342-AHYFCS
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-07-10T00:08:14.065Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: current main-targeting PR head preserves the passing integrity tests, 2,132-test full fast suite, critical CLI suite, typecheck, lint, and ci:contract evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-09T23:53:41.875Z, excerpt_hash=sha256:a048fab14dab3ec0b1cb44ac4e5067eb124319bc5f3d6256e3cd5dfb73d8b3d8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092342-AHYFCS-enforce-cross-surface-context-integrity-for-v0-6/.agentplane/tasks/202607092342-AHYFCS/blueprint/resolved-snapshot.json
+    - old_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+    - current_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607092342-AHYFCS
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202607092342-AHYFCS --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit d68187dbcaedd4e35412aec44b18c62ddc9f3e78 --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task commits.
@@ -105,6 +193,66 @@ Make global context checks validate wiki graph references, entity page policy, m
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-09T23:53:41.766Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: cross-surface graph, entity page policy, raw manifest coverage, and report freshness gates pass 40 focused tests, typecheck, lint, diff check, and ci:contract.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-09T23:43:35.553Z, excerpt_hash=sha256:a048fab14dab3ec0b1cb44ac4e5067eb124319bc5f3d6256e3cd5dfb73d8b3d8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092342-AHYFCS-enforce-cross-surface-context-integrity-for-v0-6/.agentplane/tasks/202607092342-AHYFCS/blueprint/resolved-snapshot.json
+- old_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+- current_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607092342-AHYFCS
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202607092342-AHYFCS
+- diagnostic_command: agentplane pr check 202607092342-AHYFCS
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-07-10T00:08:14.065Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: current main-targeting PR head preserves the passing integrity tests, 2,132-test full fast suite, critical CLI suite, typecheck, lint, and ci:contract evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-09T23:53:41.875Z, excerpt_hash=sha256:a048fab14dab3ec0b1cb44ac4e5067eb124319bc5f3d6256e3cd5dfb73d8b3d8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092342-AHYFCS-enforce-cross-surface-context-integrity-for-v0-6/.agentplane/tasks/202607092342-AHYFCS/blueprint/resolved-snapshot.json
+- old_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+- current_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607092342-AHYFCS
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202607092342-AHYFCS --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit d68187dbcaedd4e35412aec44b18c62ddc9f3e78 --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

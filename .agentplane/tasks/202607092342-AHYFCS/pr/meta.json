@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202607092342-AHYFCS/enforce-cross-surface-context-integrity-for-v0-6",
   "created_at": "2026-07-09T23:43:35.604Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:a84dc6ce765daedfeb02e95d919e1aa3c4eaabe7dafbbcb5989ee530127036ed",
+  "last_verified_at": "2026-07-10T00:08:14.065Z",
+  "last_verified_diffstat_sha256": "sha256:a84dc6ce765daedfeb02e95d919e1aa3c4eaabe7dafbbcb5989ee530127036ed",
+  "pr_number": 4556,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4556",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607092342-AHYFCS",
-  "updated_at": "2026-07-09T23:43:35.604Z",
+  "updated_at": "2026-07-09T23:57:04.928Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

@@ -1,0 +1,6 @@
+ .../src/commands/context/check.unit.test.ts        | 118 +++++++++++++
+ .../src/commands/context/wiki-reports.ts           |  21 ++-
+ .../src/commands/context/wiki-reports.unit.test.ts |   9 +
+ packages/agentplane/src/context/doctor.ts          |   2 +
+ packages/agentplane/src/context/integrity.ts       | 186 +++++++++++++++++++++
+ 5 files changed, 334 insertions(+), 2 deletions(-)

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092342-AHYFCS",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-09T23:53:43.150Z",
+  "verdict": "pass",
+  "summary": "Global context integrity now rejects disconnected or stale maximum-assimilation artifacts.",
+  "evaluated_sha": "1ac42ed68fef6764b464e114614fb99b02f102de",
+  "blueprint_digest": "a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2",
+  "findings": [
+    "The validator resolves wiki graph references, enforces active entity page policy, checks raw source registration, and fingerprints connectivity reports with focused regression coverage."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092342-AHYFCS/README.md",
+    "packages/agentplane/src/commands/context/check.unit.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
