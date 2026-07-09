@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { fileExists, parseJsonlLines, readText, toPosix } from "./context-utils.js";
 import { collectWikiFiles, extractFrontmatter, normalizeExistingWikiTarget } from "./wiki-lint.js";
+import { computeWikiReportSourceDigest, WIKI_REPORT_STATE_PATH } from "../../context/integrity.js";
 
 type JsonRow = Record<string, unknown>;
 
@@ -138,8 +139,9 @@ async function loadJsonl(root: string, rel: string): Promise<JsonRow[]> {
 
 async function writeTextIfChanged(root: string, rel: string, text: string): Promise<boolean> {
   const abs = path.join(root, rel);
-  const existing = (await fileExists(abs)) ? await readFile(abs, "utf8") : "";
-  if (existing === text) return false;
+  const exists = await fileExists(abs);
+  const existing = exists ? await readFile(abs, "utf8") : "";
+  if (exists && existing === text) return false;
   await mkdir(path.dirname(abs), { recursive: true });
   await writeFile(abs, text, "utf8");
   return true;
@@ -435,9 +437,24 @@ async function buildMaximumAssimilationWikiReports(
     }));
 
   const changed: string[] = [];
+  const sourceDigest = await computeWikiReportSourceDigest(root);
   const outputs: [string, string][] = [
     [".agentplane/context/derived/wiki/link-index.jsonl", jsonl(linkRows)],
     [".agentplane/context/derived/wiki/orphan-report.jsonl", jsonl(orphanRows)],
+    [
+      WIKI_REPORT_STATE_PATH,
+      `${JSON.stringify(
+        {
+          schema_version: 1,
+          target,
+          source_digest: sourceDigest,
+          link_rows: linkRows.length,
+          orphan_rows: orphanRows.length,
+        },
+        null,
+        2,
+      )}\n`,
+    ],
   ];
 
   const conflictsRel = ".agentplane/context/derived/claims/contradictions.jsonl";
