@@ -19,8 +19,8 @@ Refactor context extraction persistence so all derived artifacts are staged and 
 - Note:
 
 ```text
-Verified: transactional staging, validation-failure safety, mid-promotion rollback, focused
-extraction tests, typecheck, and the full ci:contract gate all pass.
+Verified: current task HEAD retains passing transaction rollback tests, typecheck, lint, and the
+complete ci:contract gate.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,7 +32,10 @@ extraction tests, typecheck, and the full ci:contract gate all pass.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/context/extraction-transaction.test.ts     |  78 ++++++++++
+ .../src/context/extraction-transaction.ts          | 159 +++++++++++++++++++++
+ .../agentplane/src/context/extraction-writer.ts    |  86 ++++-------
+ 3 files changed, 266 insertions(+), 57 deletions(-)
 ```
 
 </details>

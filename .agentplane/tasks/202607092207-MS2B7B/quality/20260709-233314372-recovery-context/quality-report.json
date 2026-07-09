@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092207-MS2B7B",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-09T23:33:14.372Z",
+  "verdict": "pass",
+  "summary": "Transactional extraction persistence is bounded, rollback-safe, and fully verified.",
+  "evaluated_sha": "2cc25fa696709ec090590bea064cff40d7090168",
+  "blueprint_digest": "0414733f0cd02288746d734010cdcec060bd11a5b8129524653c0e653db888b8",
+  "findings": [
+    "All changed derived artifacts are staged and validated before promotion; injected validation and mid-promotion failures leave original artifacts intact."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092207-MS2B7B/README.md",
+    "packages/agentplane/src/context/extraction-transaction.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
