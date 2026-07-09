@@ -9,20 +9,14 @@ import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.
 import { resolveBatchOwnership } from "./route-batch-ownership.js";
 import { deriveBlockers } from "./route-decision-blockers.js";
 import { deriveNextAction } from "./route-decision-next-action.js";
-import {
-  taskSummary,
-  type RouteAmbiguity,
-  type RouteRepairStep,
-  type TaskRouteDecision,
-} from "./route-decision-types.js";
+import { taskSummary, type TaskRouteDecision } from "./route-decision-types.js";
 import { deriveRouteExecutionPacket, deriveRouteOracle } from "./route-oracle.js";
-import { workStartCommand } from "./work-start-command.js";
+import { deriveRouteAmbiguities, deriveRouteRepairPlan } from "./route-decision-repair.js";
 
 import { loadBackendTask, loadCommandContext, type CommandContext } from "./task-backend.js";
 import { buildRouteSourceConfidenceBase } from "./source-confidence.js";
 import { hasClosedPreMergeClosureMarker, parsePrMeta } from "./pr-meta.js";
 import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
-import { humanInputAnswerCommand } from "../task/human-input.js";
 
 function isCliUsageOrIo(err: unknown): boolean {
   return err instanceof CliError && (err.code === "E_USAGE" || err.code === "E_IO");
@@ -72,193 +66,12 @@ function deriveApprovalContract(
 
 function deriveAmbiguities(opts: {
   decision: Omit<TaskRouteDecision, "ambiguities" | "repairPlan" | "sourceConfidence">;
-}): RouteAmbiguity[] {
-  const ambiguities: RouteAmbiguity[] = [];
-  const blockerCodes = new Set(opts.decision.blockers.map((blocker) => blocker.code));
-  if (
-    opts.decision.workflowMode === "branch_pr" &&
-    blockerCodes.has("on_base_checkout") &&
-    opts.decision.nextAction.code !== "start_or_recover_worktree" &&
-    opts.decision.nextAction.code !== "merge_close_tail" &&
-    opts.decision.nextAction.code !== "sync_hosted_close" &&
-    opts.decision.nextAction.code !== "repair_included_batch_metadata"
-  ) {
-    ambiguities.push({
-      code: "base_checkout_owner_scope",
-      summary:
-        "current checkout is the base branch while branch_pr owner-scoped work normally belongs in the task worktree",
-      resolution:
-        "use the selected next action only if it is a base-lane action; otherwise run agentplane work resume <task-id>",
-    });
-  }
-  if (opts.decision.nextAction.requiresApproval && !opts.decision.nextAction.command) {
-    ambiguities.push({
-      code: "approval_without_local_command",
-      summary: "the selected next action requires approval but has no safe local command",
-      resolution:
-        "treat this as a human/provider action and re-run task status --route after the external action completes",
-    });
-  }
-  if (blockerCodes.has("close_tail_open") && opts.decision.nextAction.code === "merge_close_tail") {
-    ambiguities.push({
-      code: "close_tail_provider_lane",
-      summary: "hosted close-tail is open, so local task mutation is not the next source of truth",
-      resolution:
-        "wait for stable hosted checks and merge the close-tail PR through the provider, then pull/reconcile base state",
-    });
-  }
-  return ambiguities;
+}) {
+  return deriveRouteAmbiguities(opts);
 }
 
-function deriveRepairPlan(
-  decision: Omit<TaskRouteDecision, "repairPlan" | "sourceConfidence">,
-): RouteRepairStep[] {
-  const steps: RouteRepairStep[] = [];
-  const id = decision.task.id;
-  if (decision.nextAction.code === "reconcile_included_task_closure") {
-    return [
-      {
-        code: "reconcile_included_task_closure",
-        command: decision.nextAction.command,
-        summary: "reconcile landed included-task closure metadata before opening new work",
-        mutates: true,
-      },
-    ];
-  }
-  for (const blocker of decision.blockers) {
-    if (blocker.code === "missing_pr_branch") {
-      steps.push({
-        code: "create_worktree",
-        command: workStartCommand(decision.task),
-        summary: "create the missing branch_pr worktree",
-        mutates: true,
-      });
-    }
-    if (blocker.code === "remote_pr_missing") {
-      steps.push({
-        code: "open_pr",
-        command: `agentplane pr open ${id} --author ${decision.task.owner}`,
-        summary: "create or relink remote PR artifacts",
-        mutates: true,
-      });
-    }
-    if (blocker.code === "pr_meta_stale") {
-      steps.push({
-        code: "update_pr_artifacts",
-        command: `agentplane pr update ${id}`,
-        summary: "refresh stale local PR metadata",
-        mutates: true,
-      });
-    }
-    if (blocker.code === "close_tail_missing") {
-      steps.push({
-        code: "open_close_tail",
-        command: `agentplane task hosted-close-pr ${id}`,
-        summary: "open the hosted close-tail PR",
-        mutates: true,
-      });
-    }
-    if (blocker.code === "runner_alive") {
-      steps.push({
-        code: "inspect_runner",
-        command: `agentplane task resume-context ${id}`,
-        summary: "inspect active runner state before reclaiming",
-        mutates: false,
-      });
-    }
-    if (blocker.code === "plan_not_approved") {
-      steps.push({
-        code: "approve_plan",
-        command: `agentplane task plan approve ${id} --by ORCHESTRATOR`,
-        summary: "approve the task plan before owner-scoped execution",
-        mutates: true,
-      });
-    }
-    if (blocker.code === "human_input_required") {
-      steps.push({
-        code: "answer_user_question",
-        command: humanInputAnswerCommand(id),
-        summary: "answer the open user question before continuing task execution",
-        mutates: true,
-      });
-    }
-    if (blocker.code === "dirty_task_artifacts") {
-      steps.push({
-        code: "commit_direct_task_artifacts",
-        command: `agentplane commit ${id} --close --unstage-others`,
-        summary: "commit the tracked direct-workflow task artifacts left by manual close handling",
-        mutates: true,
-      });
-    }
-    if (blocker.code === "quality_review_missing" || blocker.code === "quality_review_stale") {
-      steps.push({
-        code: "run_quality_review",
-        command:
-          `agentplane evaluator run ${id} --verdict pass --summary "Quality review passed." ` +
-          `--finding "No blocking findings." --evidence .agentplane/tasks/${id}/README.md`,
-        summary: "record EVALUATOR quality review before PR publication or integration",
-        mutates: true,
-      });
-    }
-    if (blocker.code === "pre_merge_closure_missing") {
-      steps.push({
-        code: "record_pre_merge_closure",
-        command:
-          `agentplane finish ${id} --author ${decision.task.owner} ` +
-          `--body "Verified: pre-merge closure packet is ready for the task PR." ` +
-          `--result "pre-merge closure" --commit HEAD --pre-merge-closure`,
-        summary: "record task DONE and pre-merge closure on the task branch before integration",
-        mutates: true,
-      });
-    }
-    if (blocker.code === "on_base_checkout") {
-      steps.push({
-        code: "resume_worktree",
-        command: `agentplane work resume ${id}`,
-        summary: "switch to or inspect the dedicated task worktree before continuing",
-        mutates: false,
-      });
-    }
-    if (blocker.code === "branch_head_missing") {
-      steps.push({
-        code: "fetch_branch",
-        command: decision.workspace.prBranch
-          ? `git fetch origin ${decision.workspace.prBranch}`
-          : null,
-        summary: "fetch or recover the recorded task branch before continuing",
-        mutates: true,
-      });
-    }
-    if (blocker.code === "close_tail_open") {
-      steps.push({
-        code: "wait_close_tail",
-        command: null,
-        summary: "wait for hosted checks and merge the open close-tail PR through the provider",
-        mutates: false,
-      });
-    }
-    if (blocker.code === "missing_included_batch_metadata") {
-      steps.push({
-        code: "repair_included_batch_metadata",
-        command: null,
-        summary:
-          "restore structured extensions.branch_pr_batch or primary PR batch metadata before reconciling the included task",
-        mutates: false,
-      });
-    }
-  }
-  if (steps.length === 0) {
-    steps.push({
-      code: decision.blockers.length === 0 ? "no_repair_needed" : "unmapped_blocker",
-      command: decision.nextAction.command,
-      summary:
-        decision.blockers.length === 0
-          ? decision.nextAction.summary
-          : "inspect blockers before continuing; no automatic repair is available",
-      mutates: false,
-    });
-  }
-  return steps;
+function deriveRepairPlan(decision: Omit<TaskRouteDecision, "repairPlan" | "sourceConfidence">) {
+  return deriveRouteRepairPlan(decision);
 }
 
 function hasRemoteProviderEvidence(prFlow: PrFlowStatusReport | null): boolean {
@@ -274,6 +87,7 @@ function hasRemoteProviderEvidence(prFlow: PrFlowStatusReport | null): boolean {
 async function resolveLocalRecordedCloseFlow(opts: {
   ctx: CommandContext;
   task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
+  onDiagnostic?: (message: string) => void;
 }): Promise<PrFlowStatusReport | null> {
   const metaPath = path.join(
     opts.ctx.resolvedProject.gitRoot,
@@ -369,25 +183,45 @@ async function resolveLocalRecordedCloseFlow(opts: {
       handoff: { present: false },
       nextAction: "pull main; task close evidence is already recorded upstream",
     };
-  } catch {
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    opts.onDiagnostic?.(`local PR metadata fallback failed: ${message}`);
     return null;
   }
 }
 
-function buildRouteSourceConfidence(opts: {
+export function buildRouteSourceConfidence(opts: {
   remoteEnabled: boolean;
   remoteResolved: boolean;
+  localDiagnostics: string[];
 }): TaskRouteDecision["sourceConfidence"] {
-  return buildRouteSourceConfidenceBase({
-    ...opts,
-    batchOwnershipSource: "pr_artifact",
-  });
+  const probeDiagnostics = [...opts.localDiagnostics];
+  if (opts.remoteEnabled && !opts.remoteResolved) {
+    probeDiagnostics.push("remote route probe produced no provider state; local fallback used");
+  }
+  return {
+    ...buildRouteSourceConfidenceBase({
+      remoteEnabled: opts.remoteEnabled,
+      remoteResolved: opts.remoteResolved,
+      batchOwnershipSource: "pr_artifact",
+    }),
+    route_probes: {
+      source: "local_git",
+      freshness: "computed_local",
+      confidence: probeDiagnostics.length > 0 ? "low" : "high",
+      note:
+        probeDiagnostics.length > 0
+          ? probeDiagnostics.join("; ")
+          : "route probes completed without suppressed diagnostics",
+    },
+  };
 }
 
 async function resolveDoneCleanupCandidateCount(opts: {
   ctx: CommandContext;
   resume: TaskResumeContext;
   task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
+  onDiagnostic?: (message: string) => void;
 }): Promise<number | null> {
   if (opts.ctx.config.workflow_mode !== "branch_pr") return null;
   if (String(opts.task.status).toUpperCase() !== "DONE") return null;
@@ -401,7 +235,9 @@ async function resolveDoneCleanupCandidateCount(opts: {
       baseBranch,
     });
     return candidates.length;
-  } catch {
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    opts.onDiagnostic?.(`cleanup candidate probe failed: ${message}`);
     return null;
   }
 }
@@ -428,6 +264,10 @@ export async function buildTaskRouteDecision(opts: {
     rootOverride: opts.rootOverride ?? null,
     task_id: opts.taskId,
   });
+  const localDiagnostics: string[] = [];
+  const recordLocalDiagnostic = (message: string): void => {
+    localDiagnostics.push(message);
+  };
   let prFlow: PrFlowStatusReport | null = null;
   const remoteEnabled = ctx.config.workflow_mode === "branch_pr" && opts.includeRemote !== false;
   if (remoteEnabled) {
@@ -439,16 +279,32 @@ export async function buildTaskRouteDecision(opts: {
         taskId: opts.taskId,
       });
     } catch (err) {
-      if (!isCliUsageOrIo(err)) throw err;
+      if (!isCliUsageOrIo(err) && !(err instanceof SyntaxError)) throw err;
+      const message = err instanceof Error ? err.message : String(err);
+      recordLocalDiagnostic(`PR flow probe failed: ${message}`);
+      prFlow = await resolveLocalRecordedCloseFlow({
+        ctx,
+        task,
+        onDiagnostic: recordLocalDiagnostic,
+      });
     }
   } else if (ctx.config.workflow_mode === "branch_pr") {
-    prFlow = await resolveLocalRecordedCloseFlow({ ctx, task });
+    prFlow = await resolveLocalRecordedCloseFlow({
+      ctx,
+      task,
+      onDiagnostic: recordLocalDiagnostic,
+    });
   }
   const batchOwnership =
     ctx.config.workflow_mode === "branch_pr"
       ? await resolveBatchOwnership({ ctx, task })
       : { role: "none" as const };
-  const cleanupCandidateCount = await resolveDoneCleanupCandidateCount({ ctx, resume, task });
+  const cleanupCandidateCount = await resolveDoneCleanupCandidateCount({
+    ctx,
+    resume,
+    task,
+    onDiagnostic: recordLocalDiagnostic,
+  });
   const blockers = await deriveBlockers({
     ctx,
     task,
@@ -522,6 +378,7 @@ export async function buildTaskRouteDecision(opts: {
     sourceConfidence: buildRouteSourceConfidence({
       remoteEnabled,
       remoteResolved: hasRemoteProviderEvidence(prFlow),
+      localDiagnostics,
     }),
   };
 }

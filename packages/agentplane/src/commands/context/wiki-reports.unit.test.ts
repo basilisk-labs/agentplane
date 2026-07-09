@@ -130,6 +130,34 @@ describe("context wiki report", () => {
     ).rejects.toThrow(/wiki report target does not exist/u);
   });
 
+  it("reports ambiguous wiki targets instead of resolving by traversal order", async () => {
+    const root = await tempRoot();
+    await write(root, "context/wiki/index.md", wikiPage("Index", "See [[Shared]]."));
+    await write(root, "context/wiki/modules/shared.md", wikiPage("Shared", "Module meaning."));
+    await write(root, "context/wiki/workflows/shared.md", wikiPage("Shared", "Workflow meaning."));
+    vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextWikiReport({ cwd: root, parsed: { path: "context/wiki" } });
+
+    const linkIndex = await readFile(
+      path.join(root, ".agentplane/context/derived/wiki/link-index.jsonl"),
+      "utf8",
+    );
+    const linkRows = linkIndex
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line) as Record<string, unknown>);
+    expect(linkRows).toContainEqual(
+      expect.objectContaining({
+        source_path: "context/wiki/index.md",
+        raw_target: "Shared",
+        target_path: null,
+        status: "ambiguous",
+        candidate_paths: ["context/wiki/modules/shared.md", "context/wiki/workflows/shared.md"],
+      }),
+    );
+  });
+
   it("does not count report-page links as inbound links for orphan rows", async () => {
     const root = await tempRoot();
     await write(root, "context/wiki/entities/report-only.md", wikiPage("Report Only", "Body."));

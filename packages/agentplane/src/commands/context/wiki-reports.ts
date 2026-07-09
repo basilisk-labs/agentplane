@@ -22,6 +22,8 @@ type WikiPageInfo = {
   title: string;
 };
 
+type WikiTargetCatalog = Map<string, Set<string>>;
+
 function normalizeTarget(value: string): string {
   return (
     toPosix(value)
@@ -42,6 +44,29 @@ function lookupKey(value: string): string {
     .toLowerCase()
     .replaceAll(/[^a-z0-9]+/gu, "-")
     .replaceAll(/^-|-$/gu, "");
+}
+
+function addWikiTarget(catalog: WikiTargetCatalog, key: string, rel: string): void {
+  const normalizedKey = key.trim();
+  if (!normalizedKey) return;
+  const paths = catalog.get(normalizedKey) ?? new Set<string>();
+  paths.add(rel);
+  catalog.set(normalizedKey, paths);
+}
+
+function resolveWikiTarget(
+  catalog: WikiTargetCatalog,
+  normalizedTarget: string,
+): { targetPath: string | null; candidatePaths: string[] } {
+  const candidatePaths = [
+    ...(catalog.get(normalizedTarget.toLowerCase()) ?? []),
+    ...(catalog.get(lookupKey(normalizedTarget)) ?? []),
+  ].filter((candidate, index, candidates) => candidates.indexOf(candidate) === index);
+  candidatePaths.sort((left, right) => left.localeCompare(right));
+  return {
+    targetPath: candidatePaths.length === 1 ? (candidatePaths[0] ?? null) : null,
+    candidatePaths,
+  };
 }
 
 function titleFromMarkdown(rel: string, text: string): string {
@@ -162,20 +187,20 @@ function markdownTargetPath(sourcePath: string, href: string): string | null {
 async function buildWikiTargetCatalog(
   root: string,
   wikiFiles: string[],
-): Promise<{ pathByTarget: Map<string, string>; pageInfoByPath: Map<string, WikiPageInfo> }> {
-  const pathByTarget = new Map<string, string>();
+): Promise<{ pathByTarget: WikiTargetCatalog; pageInfoByPath: Map<string, WikiPageInfo> }> {
+  const pathByTarget: WikiTargetCatalog = new Map();
   const pageInfoByPath = new Map<string, WikiPageInfo>();
   for (const rel of wikiFiles) {
     const target = rel.replace(/^context\/wiki\//u, "").replace(/\.md$/u, "");
-    pathByTarget.set(target.toLowerCase(), rel);
-    pathByTarget.set(lookupKey(target), rel);
-    pathByTarget.set(path.basename(target).toLowerCase(), rel);
-    pathByTarget.set(lookupKey(path.basename(target)), rel);
+    addWikiTarget(pathByTarget, target.toLowerCase(), rel);
+    addWikiTarget(pathByTarget, lookupKey(target), rel);
+    addWikiTarget(pathByTarget, path.basename(target).toLowerCase(), rel);
+    addWikiTarget(pathByTarget, lookupKey(path.basename(target)), rel);
     const text = await readFile(path.join(root, rel), "utf8");
     const title = titleFromMarkdown(rel, text);
     pageInfoByPath.set(rel, { rel, title });
-    pathByTarget.set(title.toLowerCase(), rel);
-    pathByTarget.set(lookupKey(title), rel);
+    addWikiTarget(pathByTarget, title.toLowerCase(), rel);
+    addWikiTarget(pathByTarget, lookupKey(title), rel);
   }
   return { pathByTarget, pageInfoByPath };
 }
@@ -183,21 +208,18 @@ async function buildWikiTargetCatalog(
 async function buildWikiLinkRows(
   root: string,
   sourceFiles: string[],
-  pathByTarget: Map<string, string>,
+  pathByTarget: WikiTargetCatalog,
 ): Promise<{
   linkRows: WikiLinkRow[];
 }> {
   const linkRows: WikiLinkRow[] = [];
-  const wikiPathSet = new Set(pathByTarget.values());
+  const wikiPathSet = new Set([...pathByTarget.values()].flatMap((paths) => [...paths]));
   for (const sourcePath of sourceFiles) {
     const text = await readFile(path.join(root, sourcePath), "utf8");
     for (const rawTarget of extractWikilinks(text)) {
       const normalized = normalizeTarget(rawTarget);
       if (!normalized || normalized.startsWith("#")) continue;
-      const targetPath =
-        pathByTarget.get(normalized.toLowerCase()) ??
-        pathByTarget.get(lookupKey(normalized)) ??
-        null;
+      const { targetPath, candidatePaths } = resolveWikiTarget(pathByTarget, normalized);
       linkRows.push({
         schema_version: 1,
         link_type: "wikilink",
@@ -205,7 +227,8 @@ async function buildWikiLinkRows(
         raw_target: rawTarget,
         normalized_target: normalized,
         target_path: targetPath,
-        status: targetPath ? "resolved" : "unresolved",
+        status: targetPath ? "resolved" : candidatePaths.length > 1 ? "ambiguous" : "unresolved",
+        ...(candidatePaths.length > 1 ? { candidate_paths: candidatePaths } : {}),
       });
     }
     for (const { label, href } of extractMarkdownLinks(text)) {

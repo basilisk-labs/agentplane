@@ -1,0 +1,15 @@
+ package.json                                       |   2 +-
+ .../src/cli/check-clone-baseline-script.test.ts    |  78 ++++++
+ .../src/commands/context/wiki-reports.ts           |  53 +++--
+ .../src/commands/context/wiki-reports.unit.test.ts |  28 +++
+ .../release/workflow-node-version-contract.test.ts |  14 ++
+ .../src/commands/shared/route-decision-blockers.ts |   4 +-
+ .../src/commands/shared/route-decision-repair.ts   | 169 +++++++++++++
+ .../route-decision.source-confidence.test.ts       |  21 ++
+ .../src/commands/shared/route-decision.ts          | 263 +++++----------------
+ .../agentplane/src/commands/shared/route-oracle.ts |  19 +-
+ scripts/README.md                                  |   2 +-
+ scripts/checks/check-clone-baseline.mjs            |   3 +-
+ scripts/checks/check-lifecycle-invariants.mjs      |  20 +-
+ scripts/checks/run-depcruise-arch.mjs              |   6 +-
+ 14 files changed, 449 insertions(+), 233 deletions(-)

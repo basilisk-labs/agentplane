@@ -12,10 +12,10 @@ const DEPCRUISE_NODE_HEAP_OPTION = "--max-old-space-size=4096";
 
 function assertSupportedNodeVersion() {
   const major = Number.parseInt(process.versions.node.split(".")[0] ?? "", 10);
-  if (major !== 24) {
+  if (!Number.isInteger(major) || major < 24) {
     throw new Error(
-      `dependency-cruiser arch check requires Node 24; current node=${process.version}. ` +
-        "Run this gate with the repository CI Node version before retrying release validation.",
+      `dependency-cruiser arch check requires Node >=24; current node=${process.version}. ` +
+        "Use a runtime supported by the repository engines contract before retrying release validation.",
     );
   }
 }
