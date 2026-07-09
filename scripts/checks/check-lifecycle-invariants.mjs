@@ -10,17 +10,26 @@ function read(relPath) {
 const checks = [
   {
     name: "branch_pr route blocks unapproved plans",
-    file: "packages/agentplane/src/commands/shared/route-decision.ts",
+    files: [
+      "packages/agentplane/src/commands/shared/route-decision-blockers.ts",
+      "packages/agentplane/src/commands/shared/route-decision-repair.ts",
+    ],
     patterns: ["plan_not_approved", "agentplane task plan approve"],
   },
   {
     name: "branch_pr route blocks base-checkout owner execution",
-    file: "packages/agentplane/src/commands/shared/route-decision.ts",
+    files: [
+      "packages/agentplane/src/commands/shared/route-decision-blockers.ts",
+      "packages/agentplane/src/commands/shared/route-decision-repair.ts",
+    ],
     patterns: ["on_base_checkout", "current checkout is the base branch"],
   },
   {
     name: "branch_pr route requires close-tail after merged implementation PR",
-    file: "packages/agentplane/src/commands/shared/route-decision.ts",
+    files: [
+      "packages/agentplane/src/commands/shared/route-decision-blockers.ts",
+      "packages/agentplane/src/commands/shared/route-decision-repair.ts",
+    ],
     patterns: ["close_tail_missing", "agentplane task hosted-close-pr"],
   },
   {
@@ -52,10 +61,11 @@ const checks = [
 
 const failures = [];
 for (const check of checks) {
-  const text = read(check.file);
+  const files = check.files ?? [check.file];
+  const text = files.map((file) => read(file)).join("\n");
   const missing = check.patterns.filter((pattern) => !text.includes(pattern));
   if (missing.length > 0) {
-    failures.push(`${check.name}: missing ${missing.join(", ")} in ${check.file}`);
+    failures.push(`${check.name}: missing ${missing.join(", ")} in ${files.join(", ")}`);
   }
 }
 

@@ -4,6 +4,8 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const WORKFLOWS_DIR = path.resolve(process.cwd(), ".github/workflows");
+const ROOT_PACKAGE_PATH = path.resolve(process.cwd(), "package.json");
+const DEPCRUISE_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/checks/run-depcruise-arch.mjs");
 
 async function listWorkflowFiles(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -34,5 +36,17 @@ describe("workflow Node runtime contract", () => {
       expect(workflow, workflowPath).toContain('node-version: "24"');
       expect(workflow, workflowPath).not.toContain('node-version: "20"');
     }
+  });
+
+  it("allows the architecture gate on every runtime supported by the root engines contract", async () => {
+    const rootPackage = JSON.parse(await readFile(ROOT_PACKAGE_PATH, "utf8")) as {
+      engines?: { node?: string };
+    };
+    const depcruiseScript = await readFile(DEPCRUISE_SCRIPT_PATH, "utf8");
+
+    expect(rootPackage.engines?.node).toBe(">=24");
+    expect(depcruiseScript).toContain("major < 24");
+    expect(depcruiseScript).not.toContain("major !== 24");
+    expect(depcruiseScript).toContain("requires Node >=24");
   });
 });

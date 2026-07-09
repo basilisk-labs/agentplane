@@ -2,7 +2,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { RouteBatchOwnership } from "./route-batch-ownership.js";
-import type { RouteBlocker } from "./route-oracle.js";
+import type { RouteBlocker, RouteBlockerCode } from "./route-oracle.js";
 import { isTaskLocalOnlyAdvance } from "./task-local-freshness.js";
 import type { CommandContext } from "./task-backend.js";
 import { isRecord } from "../../shared/guards.js";
@@ -11,7 +11,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { hasClosedPreMergeClosureMarker, parsePrMeta } from "./pr-meta.js";
 
-function addBlocker(blockers: RouteBlocker[], code: string, summary: string): void {
+function addBlocker(blockers: RouteBlocker[], code: RouteBlockerCode, summary: string): void {
   if (blockers.some((blocker) => blocker.code === code)) return;
   blockers.push({ code, summary });
 }

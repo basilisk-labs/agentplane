@@ -1,8 +1,25 @@
 import type { TaskData } from "../../backends/task-backend.js";
 import type { RouteBatchOwnership, RouteBatchNextAction } from "./route-batch-ownership.js";
 
+export type RouteBlockerCode =
+  | "branch_head_missing"
+  | "close_tail_missing"
+  | "close_tail_open"
+  | "dirty_task_artifacts"
+  | "human_input_required"
+  | "missing_included_batch_metadata"
+  | "missing_pr_branch"
+  | "on_base_checkout"
+  | "plan_not_approved"
+  | "pr_meta_stale"
+  | "pre_merge_closure_missing"
+  | "quality_review_missing"
+  | "quality_review_stale"
+  | "remote_pr_missing"
+  | "runner_alive";
+
 export type RouteBlocker = {
-  code: string;
+  code: RouteBlockerCode;
   summary: string;
 };
 
