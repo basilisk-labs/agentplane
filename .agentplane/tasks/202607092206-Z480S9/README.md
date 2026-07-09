@@ -4,7 +4,7 @@ title: "Define the v0.6.22 refactor execution graph"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -31,19 +31,19 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-09T22:11:17.524Z"
+  updated_at: "2026-07-09T22:12:25.197Z"
   updated_by: "EVALUATOR"
-  note: "v0.6.22 refactor task graph is executable and bounded."
+  note: "v0.6.22 task graph remains valid on the published PR head."
   evaluated_sha: "0295bac6b6b1e1b92165a2ff7c57a8df9aaae99a"
   blueprint_digest: "6765be8f23f2313d304e5b03d0f38af559bbf181163f5176ba09fd5a99734b9d"
   evidence_refs:
     - ".agentplane/tasks/202607092206-Z480S9/README.md"
-    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221117524-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221117524-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221117524-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221225197-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221225197-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221225197-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607092206-Z480S9/blueprint/resolved-snapshot.json"
   findings:
-    - "Seven approved leaves have concrete acceptance commands, one dependency chain for overlapping context work, and a release gate depending on all implementation leaves."
+    - "No blocking findings; PR #4554 contains only the approved planning artifacts and preserves the verified dependency graph."
 commit: null
 comments:
   -

@@ -27,7 +27,7 @@ and diff checks pass.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-09T22:07:43.763Z
+- Updated: 2026-07-09T22:12:06.189Z
 - Branch: task/202607092206-Z480S9/plan-v0-6-22-refactor-graph
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
