@@ -3,7 +3,7 @@
   "task_id": "202607092207-MS2B7B",
   "evaluator_id": "recovery-context",
   "evaluator_profile": "EVALUATOR",
-  "generated_at": "2026-07-09T23:33:14.372Z",
+  "generated_at": "2026-07-09T23:34:09.149Z",
   "verdict": "pass",
   "summary": "Transactional extraction persistence is bounded, rollback-safe, and fully verified.",
   "evaluated_sha": "2cc25fa696709ec090590bea064cff40d7090168",
