@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092206-Z480S9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-09T22:14:29.723Z",
+  "verdict": "pass",
+  "summary": "Final quality review passed on the task worktree head.",
+  "evaluated_sha": "0295bac6b6b1e1b92165a2ff7c57a8df9aaae99a",
+  "blueprint_digest": "6765be8f23f2313d304e5b03d0f38af559bbf181163f5176ba09fd5a99734b9d",
+  "findings": [
+    "No blocking findings; explicit root pins the reviewed task branch."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092206-Z480S9/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
