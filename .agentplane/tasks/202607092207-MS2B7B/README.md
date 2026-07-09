@@ -1,10 +1,11 @@
 ---
 id: "202607092207-MS2B7B"
 title: "Make context extraction writes transactional for v0.6.22"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -47,11 +48,16 @@ quality_review:
     - "packages/agentplane/src/context/extraction-transaction.test.ts"
   findings:
     - "All changed derived artifacts are staged and validated before promotion; injected validation and mid-promotion failures leave original artifacts intact."
-commit: null
+commit:
+  hash: "bddaff34f031a68694b3e7f2bb09e9435bd50b38"
+  message: "🚧 MS2B7B task: link GitHub pull request"
 comments:
   -
     author: "CODER"
     body: "Start: implement transactional context extraction persistence with rollback and fault-injection coverage for v0.6.22."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -72,8 +78,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: current task HEAD retains passing transaction rollback tests, typecheck, lint, and the complete ci:contract gate."
+  -
+    type: "status"
+    at: "2026-07-09T23:37:21.226Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-09T23:34:01.999Z"
+doc_updated_at: "2026-07-09T23:37:21.227Z"
 doc_updated_by: "CODER"
 description: "Refactor context extraction persistence so all derived artifacts are staged and committed as one recoverable operation, with rollback on partial write or validation failure."
 sections:
@@ -161,6 +174,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "2cc25fa696709ec090590bea064cff40d7090168"
+    message: "♻️ MS2B7B context: make extraction writes transactional"
 id_source: "generated"
 ---
 ## Summary

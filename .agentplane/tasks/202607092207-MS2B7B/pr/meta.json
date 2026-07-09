@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:ce4cfe9a55d5178d83278c2bde65c44d414107f448b965dc7e80b5e254141d89",
   "pr_number": 4555,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4555",
+  "pre_merge_closure": {
+    "basis_commit": "bddaff34f031a68694b3e7f2bb09e9435bd50b38",
+    "branch": "task/202607092207-MS2B7B/make-context-extraction-writes-transactional-for",
+    "pr_number": 4555,
+    "recorded_at": "2026-07-09T23:37:21.256Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607092207-MS2B7B",
