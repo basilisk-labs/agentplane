@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092115-G7H9BC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-09T21:49:35.688Z",
+  "verdict": "pass",
+  "summary": "Quality review passed after final PR artifact refresh.",
+  "evaluated_sha": "3db19f908e1e1fd9b71337766dec413dfd50193a",
+  "blueprint_digest": "18574fc64cca6902541a48a065e9fb64c3777473578e86a76d68e27d1775c0f1",
+  "findings": [
+    "No blocking findings; verified implementation head and fresh PR artifacts satisfy the task contract."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092115-G7H9BC/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

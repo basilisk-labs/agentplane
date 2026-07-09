@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092115-G7H9BC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-09T21:49:02.278Z",
+  "verdict": "pass",
+  "summary": "Quality review passed after PR artifact refresh.",
+  "evaluated_sha": "e146ff505dcfe152a2b1a6b95b1073d6e86e1d4c",
+  "blueprint_digest": "18574fc64cca6902541a48a065e9fb64c3777473578e86a76d68e27d1775c0f1",
+  "findings": [
+    "No blocking findings; implementation and generated PR artifacts match the verified task scope."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092115-G7H9BC/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

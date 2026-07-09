@@ -4,7 +4,7 @@ title: "Harden patch-release quality and routing contracts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -27,19 +27,19 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-09T21:49:02.278Z"
+  updated_at: "2026-07-09T21:49:35.688Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed after PR artifact refresh."
-  evaluated_sha: "e146ff505dcfe152a2b1a6b95b1073d6e86e1d4c"
+  note: "Quality review passed after final PR artifact refresh."
+  evaluated_sha: "3db19f908e1e1fd9b71337766dec413dfd50193a"
   blueprint_digest: "18574fc64cca6902541a48a065e9fb64c3777473578e86a76d68e27d1775c0f1"
   evidence_refs:
     - ".agentplane/tasks/202607092115-G7H9BC/README.md"
-    - ".agentplane/tasks/202607092115-G7H9BC/quality/20260709-214902278-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607092115-G7H9BC/quality/20260709-214902278-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607092115-G7H9BC/quality/20260709-214902278-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607092115-G7H9BC/quality/20260709-214935688-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607092115-G7H9BC/quality/20260709-214935688-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607092115-G7H9BC/quality/20260709-214935688-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607092115-G7H9BC/blueprint/resolved-snapshot.json"
   findings:
-    - "No blocking findings; implementation and generated PR artifacts match the verified task scope."
+    - "No blocking findings; verified implementation head and fresh PR artifacts satisfy the task contract."
 commit: null
 comments:
   -
