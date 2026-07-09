@@ -4,7 +4,7 @@ title: "Define the v0.6.22 refactor execution graph"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -31,19 +31,19 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-09T22:13:32.215Z"
+  updated_at: "2026-07-09T22:14:29.723Z"
   updated_by: "EVALUATOR"
-  note: "Final quality review passed on the published planning head."
+  note: "Final quality review passed on the task worktree head."
   evaluated_sha: "0295bac6b6b1e1b92165a2ff7c57a8df9aaae99a"
   blueprint_digest: "6765be8f23f2313d304e5b03d0f38af559bbf181163f5176ba09fd5a99734b9d"
   evidence_refs:
     - ".agentplane/tasks/202607092206-Z480S9/README.md"
-    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221332215-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221332215-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221332215-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221429723-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221429723-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607092206-Z480S9/quality/20260709-221429723-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607092206-Z480S9/blueprint/resolved-snapshot.json"
   findings:
-    - "No blocking findings; task graph, approvals, dependencies, and PR artifacts are consistent."
+    - "No blocking findings; explicit root pins the reviewed task branch."
 commit: null
 comments:
   -
@@ -64,7 +64,7 @@ events:
     state: "ok"
     note: "Verified: seven approved atomic leaves target v0.6.22; dependency graph is acyclic; policy routing and diff checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-09T22:10:59.456Z"
+doc_updated_at: "2026-07-09T22:16:24.581Z"
 doc_updated_by: "PLANNER"
 description: "Create and persist the atomic task graph that moves the deferred minor-release refactors into patch release 0.6.22 without changing implementation code."
 sections:
@@ -73,8 +73,8 @@ sections:
 
     Create and persist the atomic task graph that moves the deferred minor-release refactors into patch release 0.6.22 without changing implementation code.
   Scope: |-
-    - In scope: Create and persist the atomic task graph that moves the deferred minor-release refactors into patch release 0.6.22 without changing implementation code.
-    - Out of scope: unrelated refactors not required for "Define the v0.6.22 refactor execution graph".
+    - In scope: persist seven approved executable tasks, their dependency graph, concrete Verify Steps, and `docs/internal/v0.6.22-refactor-plan.md`.
+    - Out of scope: implementation of the leaf tasks and publication of v0.6.22.
   Plan: |-
     1. Create atomic CODER tasks for transactional context writes, context hotspots, routing/task hotspots, runtime/backend hotspots, Knip baseline reduction, and oversized-test decomposition.
     2. Add explicit dependency edges so context hotspot work follows transactional extraction changes where they overlap.
@@ -132,8 +132,8 @@ Create and persist the atomic task graph that moves the deferred minor-release r
 
 ## Scope
 
-- In scope: Create and persist the atomic task graph that moves the deferred minor-release refactors into patch release 0.6.22 without changing implementation code.
-- Out of scope: unrelated refactors not required for "Define the v0.6.22 refactor execution graph".
+- In scope: persist seven approved executable tasks, their dependency graph, concrete Verify Steps, and `docs/internal/v0.6.22-refactor-plan.md`.
+- Out of scope: implementation of the leaf tasks and publication of v0.6.22.
 
 ## Plan
 

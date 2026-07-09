@@ -36,7 +36,8 @@ Created: 2026-07-09T22:07:43.763Z
  .agentplane/tasks/202607092208-PC3904/README.md | 104 +++++++++++++++++++++
  .agentplane/tasks/202607092208-VQ05Q1/README.md | 104 +++++++++++++++++++++
  .agentplane/tasks/202607092209-F33MNN/README.md | 116 ++++++++++++++++++++++++
- 7 files changed, 739 insertions(+)
+ docs/internal/v0.6.22-refactor-plan.md          |  47 ++++++++++
+ 8 files changed, 786 insertions(+)
 ```
 
 </details>

@@ -10,8 +10,8 @@ Create and persist the atomic task graph that moves the deferred minor-release r
 
 ## Scope
 
-- In scope: Create and persist the atomic task graph that moves the deferred minor-release refactors into patch release 0.6.22 without changing implementation code.
-- Out of scope: unrelated refactors not required for "Define the v0.6.22 refactor execution graph".
+- In scope: persist seven approved executable tasks, their dependency graph, concrete Verify Steps, and `docs/internal/v0.6.22-refactor-plan.md`.
+- Out of scope: implementation of the leaf tasks and publication of v0.6.22.
 
 ## Verification
 
@@ -39,7 +39,8 @@ and diff checks pass.
  .agentplane/tasks/202607092208-PC3904/README.md | 104 +++++++++++++++++++++
  .agentplane/tasks/202607092208-VQ05Q1/README.md | 104 +++++++++++++++++++++
  .agentplane/tasks/202607092209-F33MNN/README.md | 116 ++++++++++++++++++++++++
- 7 files changed, 739 insertions(+)
+ docs/internal/v0.6.22-refactor-plan.md          |  47 ++++++++++
+ 8 files changed, 786 insertions(+)
 ```
 
 </details>
