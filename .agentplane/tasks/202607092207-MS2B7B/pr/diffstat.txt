@@ -1,0 +1,4 @@
+ .../src/context/extraction-transaction.test.ts     |  78 ++++++++++
+ .../src/context/extraction-transaction.ts          | 159 +++++++++++++++++++++
+ .../agentplane/src/context/extraction-writer.ts    |  86 ++++-------
+ 3 files changed, 266 insertions(+), 57 deletions(-)
