@@ -36,23 +36,26 @@ Created: 2026-07-10T01:07:58.209Z
 
 ```text
  .agentplane/tasks/202607092209-F33MNN/README.md    |   3 +
- .agentplane/tasks/202607100140-WGV79Y/README.md    | 211 ++++++++
+ .agentplane/tasks/202607100140-WGV79Y/README.md    | 279 ++++++++++
  .../blueprint/resolved-snapshot.json               | 580 +++++++++++++++++++++
  .../evaluator-opinion.md                           |  20 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  22 +
  docs/user/cli-reference.generated.mdx              |   1 +
+ .../cli/run-cli.core.route-decision.batch.test.ts  | 103 ++++
  .../src/commands/context/context-runner.ts         |   2 +
  .../src/commands/context/context.learn.spec.ts     |  10 +
  .../src/commands/context/context.spec.ts           |  10 +
  .../src/commands/context/harvest-tasks.test.ts     | 206 +++++++-
  .../src/commands/context/harvest-tasks.ts          |   4 +
+ .../src/commands/shared/route-decision-blockers.ts |  19 +-
+ .../src/commands/shared/task-local-freshness.ts    |  28 +-
  .../src/commands/task/finish-execute-close.ts      |  20 +-
  .../task/finish.pre-merge-closure.unit.test.ts     |  59 +++
  .../src/context/harvest-tasks-extraction.ts        | 131 +++--
  .../src/context/harvest-tasks-markers.ts           |  19 +-
  .../agentplane/src/context/harvest-tasks-model.ts  |  18 +
- 17 files changed, 1357 insertions(+), 33 deletions(-)
+ 20 files changed, 1562 insertions(+), 46 deletions(-)
 ```
 
 </details>

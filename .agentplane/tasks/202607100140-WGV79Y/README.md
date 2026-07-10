@@ -4,7 +4,7 @@ title: "Allow pre-merge closure to stage active task artifacts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -24,14 +24,14 @@ verify:
   - "bun run test:fast"
 plan_approval:
   state: "approved"
-  updated_at: "2026-07-10T01:41:01.428Z"
+  updated_at: "2026-07-10T01:53:58.719Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T01:50:35.724Z"
+  updated_at: "2026-07-10T01:58:57.731Z"
   updated_by: "CODER"
-  note: "Pass: focused pre-merge closure tests 3/3; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,141 tests. Active-task README and quality artifacts are accepted only for pre-merge closure; unrelated tracked paths remain blocked."
+  note: "Pass: lifecycle and batch-route tests 11/11; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,141 tests. Active closure artifacts are staged deterministically, and quality/PR freshness accepts only explicitly linked batch task artifact commits."
   attempts: 0
 quality_review:
   state: "pass"
@@ -69,8 +69,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pass: focused pre-merge closure tests 3/3; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,141 tests. Active-task README and quality artifacts are accepted only for pre-merge closure; unrelated tracked paths remain blocked."
+  -
+    type: "verify"
+    at: "2026-07-10T01:58:57.731Z"
+    author: "CODER"
+    state: "ok"
+    note: "Pass: lifecycle and batch-route tests 11/11; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,141 tests. Active closure artifacts are staged deterministically, and quality/PR freshness accepts only explicitly linked batch task artifact commits."
 doc_version: 3
-doc_updated_at: "2026-07-10T01:50:35.836Z"
+doc_updated_at: "2026-07-10T01:58:57.892Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, fix branch_pr pre-merge closure so an unstaged README or quality artifact inside the active task subtree is treated as close-commit input rather than unrelated dirty state, while unrelated tracked files and other task artifacts remain blocking."
 sections:
@@ -83,10 +89,11 @@ sections:
     - Acceptance: active task README/quality paths are allowed because deterministic close commit stages them; unrelated source files and other task paths remain blocking.
     - Out of scope: direct-mode dirty policy, broader close-tail refactors, and bypassing verification/quality gates.
   Plan: |-
-    1. Extend pre-merge close dirty classification to recognize the active task subtree as deterministic close-commit input.
-    2. Keep unrelated tracked paths blocking.
-    3. Add focused positive and negative unit coverage.
-    4. Verify and include this task in PR #4563 as the narrow lifecycle unblocker for 202607100106-YP0PYE.
+    1. Allow deterministic pre-merge closure to stage active-task README and quality artifacts while unrelated tracked paths remain blocking.
+    2. Make primary batch quality freshness treat artifact-only commits from the explicitly linked primary and included task IDs as local evidence advances.
+    3. Keep unlinked task artifacts and implementation paths freshness-invalidating.
+    4. Add focused positive and negative lifecycle and batch-route coverage.
+    5. Re-run focused tests, typecheck, lint:core, ci:contract, and test:fast; include the task in PR #4563.
   Verify Steps: |-
     1. Run bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts. Expected: active task artifacts are allowed and unrelated tracked dirt remains blocked.
     2. Run bun run --filter=agentplane typecheck. Expected: AgentPlane typechecks.
@@ -125,6 +132,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: worktree_projection_drift
 
+    ### 2026-07-10T01:58:57.731Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Pass: lifecycle and batch-route tests 11/11; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,141 tests. Active closure artifacts are staged deterministically, and quality/PR freshness accepts only explicitly linked batch task artifact commits.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T01:53:58.406Z, excerpt_hash=sha256:f21941cfb404bbe0458b0eec4e0f77c749e3b73bba27c2d27ace60d46aab2bae
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100106-YP0PYE-bound-context-extraction-batches-by-source-bytes/.agentplane/tasks/202607100140-WGV79Y/blueprint/resolved-snapshot.json
+    - old_digest: a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85
+    - current_digest: a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100140-WGV79Y
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task brief 202607100106-YP0PYE
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -138,7 +175,7 @@ extensions:
       - "202607100140-WGV79Y"
     primary_task_id: "202607100106-YP0PYE"
     role: "included"
-    updated_at: "2026-07-10T01:51:43.212Z"
+    updated_at: "2026-07-10T01:59:32.544Z"
 id_source: "generated"
 ---
 ## Summary
@@ -155,10 +192,11 @@ For v0.6.22, fix branch_pr pre-merge closure so an unstaged README or quality ar
 
 ## Plan
 
-1. Extend pre-merge close dirty classification to recognize the active task subtree as deterministic close-commit input.
-2. Keep unrelated tracked paths blocking.
-3. Add focused positive and negative unit coverage.
-4. Verify and include this task in PR #4563 as the narrow lifecycle unblocker for 202607100106-YP0PYE.
+1. Allow deterministic pre-merge closure to stage active-task README and quality artifacts while unrelated tracked paths remain blocking.
+2. Make primary batch quality freshness treat artifact-only commits from the explicitly linked primary and included task IDs as local evidence advances.
+3. Keep unlinked task artifacts and implementation paths freshness-invalidating.
+4. Add focused positive and negative lifecycle and batch-route coverage.
+5. Re-run focused tests, typecheck, lint:core, ci:contract, and test:fast; include the task in PR #4563.
 
 ## Verify Steps
 
@@ -200,6 +238,36 @@ DecisionContextRef:
 - repeat_allowed: true
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: worktree_projection_drift
+
+### 2026-07-10T01:58:57.731Z — VERIFY — ok
+
+By: CODER
+
+Note: Pass: lifecycle and batch-route tests 11/11; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,141 tests. Active closure artifacts are staged deterministically, and quality/PR freshness accepts only explicitly linked batch task artifact commits.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T01:53:58.406Z, excerpt_hash=sha256:f21941cfb404bbe0458b0eec4e0f77c749e3b73bba27c2d27ace60d46aab2bae
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100106-YP0PYE-bound-context-extraction-batches-by-source-bytes/.agentplane/tasks/202607100140-WGV79Y/blueprint/resolved-snapshot.json
+- old_digest: a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85
+- current_digest: a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100140-WGV79Y
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task brief 202607100106-YP0PYE
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
 
 <!-- END VERIFICATION RESULTS -->
 

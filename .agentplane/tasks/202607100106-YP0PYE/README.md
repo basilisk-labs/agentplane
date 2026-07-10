@@ -4,7 +4,7 @@ title: "Bound context extraction batches by source bytes and prevent duplicate i
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -37,21 +37,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T01:37:42.384Z"
+  updated_at: "2026-07-10T01:51:59.221Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed on linked PR head."
-  evaluated_sha: "188241fee1248392189b8fc48471d177b70ff3cb"
+  note: "Byte-bounded extraction batching, duplicate suppression, and the included pre-merge lifecycle fix are verified on the current PR head."
+  evaluated_sha: "89e0032d8a00fd5ac41968fef93e9d64ff525cd6"
   blueprint_digest: "2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac"
   evidence_refs:
     - ".agentplane/tasks/202607100106-YP0PYE/README.md"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-013742384-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-013742384-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-013742384-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-015159221-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-015159221-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-015159221-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100106-YP0PYE/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/context/harvest-tasks.test.ts"
+    - "packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts"
     - "docs/user/cli-reference.generated.mdx"
   findings:
-    - "No blocking findings; full-fast local CI and generated CLI reference are current."
+    - "Focused context tests 14/14 and lifecycle tests 3/3 pass; typecheck, lint:core, ci:contract, and the 2,141-test fast suite are green."
 commit: null
 comments:
   -
@@ -145,7 +146,7 @@ extensions:
       - "202607100140-WGV79Y"
     primary_task_id: "202607100106-YP0PYE"
     role: "primary"
-    updated_at: "2026-07-10T01:51:43.212Z"
+    updated_at: "2026-07-10T01:59:32.544Z"
 id_source: "generated"
 ---
 ## Summary

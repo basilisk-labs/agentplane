@@ -3,7 +3,7 @@ import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteBlocker, RouteBlockerCode } from "./route-oracle.js";
-import { isTaskLocalOnlyAdvance } from "./task-local-freshness.js";
+import { isTaskSetLocalOnlyAdvance } from "./task-local-freshness.js";
 import type { CommandContext } from "./task-backend.js";
 import { isRecord } from "../../shared/guards.js";
 import { getHumanInputState } from "../task/human-input.js";
@@ -18,17 +18,17 @@ function addBlocker(blockers: RouteBlocker[], code: RouteBlockerCode, summary: s
 
 async function isPrMetaOnlyTaskLocalAdvance(opts: {
   ctx: CommandContext;
-  taskId: string;
+  taskIds: readonly string[];
   prFlow: PrFlowStatusReport | null;
 }): Promise<boolean> {
   const branchHeadSha = opts.prFlow?.branch.headSha ?? null;
   const metaHeadSha = opts.prFlow?.branch.metaHeadSha ?? null;
   if (!branchHeadSha || !metaHeadSha || branchHeadSha === metaHeadSha) return false;
-  return isTaskLocalOnlyAdvance({
+  return isTaskSetLocalOnlyAdvance({
     gitRoot: opts.ctx.resolvedProject.gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
     tasksPath: opts.ctx.config.paths.tasks_path,
-    taskId: opts.taskId,
+    taskIds: opts.taskIds,
     fromRef: metaHeadSha,
     toRef: branchHeadSha,
   }).catch(() => false);
@@ -38,6 +38,7 @@ async function qualityReviewIsFreshForHead(opts: {
   ctx: CommandContext;
   task: TaskData;
   headSha: string | null;
+  batchOwnership: RouteBatchOwnership;
 }): Promise<boolean> {
   const review = opts.task.quality_review;
   if (review?.state !== "pass" || review.updated_by !== "EVALUATOR") return false;
@@ -45,11 +46,13 @@ async function qualityReviewIsFreshForHead(opts: {
   if (review.findings.length === 0) return false;
   if (!opts.headSha || !review.evaluated_sha) return true;
   if (review.evaluated_sha === opts.headSha) return true;
-  return isTaskLocalOnlyAdvance({
+  const taskIds =
+    opts.batchOwnership.role === "none" ? [opts.task.id] : opts.batchOwnership.allTaskIds;
+  return isTaskSetLocalOnlyAdvance({
     gitRoot: opts.ctx.resolvedProject.gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
     tasksPath: opts.ctx.config.paths.tasks_path,
-    taskId: opts.task.id,
+    taskIds,
     fromRef: review.evaluated_sha,
     toRef: opts.headSha,
   }).catch(() => false);
@@ -179,7 +182,8 @@ export async function deriveBlockers(opts: {
       opts.prFlow.branch.headSha !== opts.prFlow.branch.metaHeadSha &&
       !(await isPrMetaOnlyTaskLocalAdvance({
         ctx: opts.ctx,
-        taskId: opts.task.id,
+        taskIds:
+          opts.batchOwnership.role === "none" ? [opts.task.id] : opts.batchOwnership.allTaskIds,
         prFlow: opts.prFlow,
       }))
     ) {
@@ -206,6 +210,7 @@ export async function deriveBlockers(opts: {
           ctx: opts.ctx,
           task: opts.task,
           headSha,
+          batchOwnership: opts.batchOwnership,
         });
         if (reviewIsFresh) {
           const preMerge = await readLocalPreMergeState({ ctx: opts.ctx, taskId: opts.task.id });
