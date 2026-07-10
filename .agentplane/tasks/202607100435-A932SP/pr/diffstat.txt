@@ -1,0 +1,5 @@
+ .agentplane/tasks/202607092209-F33MNN/README.md    |  2 +
+ docs/internal/v0.6.22-refactor-plan.md             |  5 +-
+ .../src/commands/pr/flow-status.pre-merge.test.ts  | 57 ++++++++++++++++++++++
+ packages/agentplane/src/commands/pr/flow-status.ts | 22 +++++++++
+ 4 files changed, 84 insertions(+), 2 deletions(-)
