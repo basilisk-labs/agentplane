@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 import type { TaskData } from "../backends/task-backend.js";
 import type { TaskNewParsed } from "../commands/task/new.js";
 import type { PromptModule } from "../runtime/prompt-modules/index.js";
@@ -5,8 +7,13 @@ import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "../runtime/prompt-modules
 import { CONTEXT_EXTRACTION_SGR_EXAMPLE } from "../runtime/sgr/index.js";
 import { CliError } from "../shared/errors.js";
 import { isRecord } from "./context-utils.js";
-import { taskTextDigest } from "./harvest-tasks-markers.js";
+import {
+  taskSourceFingerprint,
+  taskTextDigest,
+  type TaskSourceFingerprint,
+} from "./harvest-tasks-markers.js";
 import type { ContextHarvestTasksParsed } from "./harvest-tasks-artifacts.js";
+import { parsePositiveIntegerOption } from "./harvest-tasks-model.js";
 import { validateContextExtractionSgrResult } from "./sgr-extraction.js";
 
 type ExtractionTask = TaskData & { id: string; title: string; status: string };
@@ -15,7 +22,21 @@ type ExtractionTaskPlan = {
   batch_index: number;
   batch_count: number;
   source_task_ids: string[];
+  source_bytes: number;
+  byte_budget: number;
+  oversized_source_ids: string[];
+  batch_fingerprint: string;
   parsed: TaskNewParsed;
+};
+
+type WeightedExtractionTask = {
+  task: ExtractionTask;
+  fingerprint: TaskSourceFingerprint;
+};
+
+type ExtractionBatch = {
+  entries: WeightedExtractionTask[];
+  source_bytes: number;
 };
 
 const CONTEXT_TASK_EXTRACTION_PROMPT_ADDRESS =
@@ -27,25 +48,14 @@ type TaskExtractionMarker = {
   state: "queued";
   queued_at: string;
   source_digest: string;
+  source_fingerprint_version: 1;
+  source_bytes: number;
   extraction_task_id: string;
   extraction_task_readme_path: string;
   batch_index: number;
   batch_count: number;
   prompt_module_ref: string;
 };
-
-function parseBatchSize(value: string): number {
-  if (!value.trim()) return 25;
-  const parsed = Number.parseInt(value, 10);
-  if (!Number.isFinite(parsed) || parsed <= 0) {
-    throw new CliError({
-      exitCode: 3,
-      code: "E_VALIDATION",
-      message: `Invalid --batch-size value: ${value}`,
-    });
-  }
-  return parsed;
-}
 
 function normalizeTags(value: unknown): string[] {
   return Array.isArray(value)
@@ -56,7 +66,7 @@ function normalizeTags(value: unknown): string[] {
     : [];
 }
 
-function sourceTaskRef(task: ExtractionTask) {
+function sourceTaskRef(task: ExtractionTask, fingerprint: TaskSourceFingerprint) {
   const acrPath = `.agentplane/tasks/${task.id}/acr.json`;
   const readmePath = `.agentplane/tasks/${task.id}/README.md`;
   const extensions = isRecord(task.extensions) ? task.extensions : {};
@@ -68,7 +78,9 @@ function sourceTaskRef(task: ExtractionTask) {
     tags: normalizeTags(task.tags),
     readme_path: readmePath,
     acr_path: acrPath,
-    source_digest: taskTextDigest(task),
+    source_digest: fingerprint.digest,
+    source_fingerprint_version: fingerprint.version,
+    source_bytes: fingerprint.size_bytes,
     existing_harvest_marker: marker
       ? {
           source_digest:
@@ -108,18 +120,63 @@ export function buildTaskExtractionMarker(opts: {
   batchIndex: number;
   batchCount: number;
 }): TaskExtractionMarker {
+  const fingerprint = taskSourceFingerprint(opts.task);
   return {
     schema_version: 1,
     pipeline: "context.harvest.tasks",
     state: "queued",
     queued_at: opts.queuedAt,
-    source_digest: taskTextDigest(opts.task),
+    source_digest: fingerprint.digest,
+    source_fingerprint_version: fingerprint.version,
+    source_bytes: fingerprint.size_bytes,
     extraction_task_id: opts.extractionTaskId,
     extraction_task_readme_path: `.agentplane/tasks/${opts.extractionTaskId}/README.md`,
     batch_index: opts.batchIndex,
     batch_count: opts.batchCount,
     prompt_module_ref: CONTEXT_TASK_EXTRACTION_PROMPT_ADDRESS,
   };
+}
+
+function buildBatches(
+  tasks: ExtractionTask[],
+  batchSize: number,
+  batchBytes: number,
+): ExtractionBatch[] {
+  const batches: ExtractionBatch[] = [];
+  let entries: WeightedExtractionTask[] = [];
+  let sourceBytes = 0;
+
+  const flush = () => {
+    if (entries.length === 0) return;
+    batches.push({ entries, source_bytes: sourceBytes });
+    entries = [];
+    sourceBytes = 0;
+  };
+
+  for (const task of tasks) {
+    const entry = { task, fingerprint: taskSourceFingerprint(task) };
+    if (
+      entries.length > 0 &&
+      (entries.length >= batchSize || sourceBytes + entry.fingerprint.size_bytes > batchBytes)
+    ) {
+      flush();
+    }
+    entries.push(entry);
+    sourceBytes += entry.fingerprint.size_bytes;
+    if (entry.fingerprint.size_bytes > batchBytes) flush();
+  }
+  flush();
+  return batches;
+}
+
+function batchFingerprint(entries: WeightedExtractionTask[]): string {
+  const canonical = entries
+    .map(
+      ({ task, fingerprint }) =>
+        `${task.id}\t${fingerprint.version}\t${fingerprint.digest}\t${fingerprint.size_bytes}`,
+    )
+    .join("\n");
+  return `sha256:${createHash("sha256").update(canonical).digest("hex")}`;
 }
 
 function buildExtractionPromptModule(): PromptModule {
@@ -181,10 +238,13 @@ function buildDescription(opts: {
   first: ExtractionTask;
   last: ExtractionTask;
   count: number;
+  sourceBytes: number;
+  byteBudget: number;
+  oversizedCount: number;
 }): string {
   return [
     `Semantically extract reusable context from completed task history batch ${opts.batchIndex}/${opts.batchCount}.`,
-    `Source range: ${opts.first.id} -> ${opts.last.id}; source tasks: ${opts.count}.`,
+    `Source range: ${opts.first.id} -> ${opts.last.id}; source tasks: ${opts.count}; source bytes: ${opts.sourceBytes}/${opts.byteBudget}; oversized sources: ${opts.oversizedCount}.`,
     "Read task READMEs and ACR evidence, then update sourced wiki proposals, facts, graph rows, stale markers, and conflict markers with provenance.",
   ].join(" ");
 }
@@ -202,15 +262,13 @@ export function buildExtractionTaskPlans(
   tasks: ExtractionTask[],
   parsed: ContextHarvestTasksParsed,
 ): ExtractionTaskPlan[] {
-  const batchSize = parseBatchSize(parsed.batchSize);
-  const batches: ExtractionTask[][] = [];
-  for (let index = 0; index < tasks.length; index += batchSize) {
-    batches.push(tasks.slice(index, index + batchSize));
-  }
+  const batchSize = parsePositiveIntegerOption(parsed.batchSize, 25, "--batch-size");
+  const batchBytes = parsePositiveIntegerOption(parsed.batchBytes, 131_072, "--batch-bytes");
+  const batches = buildBatches(tasks, batchSize, batchBytes);
   const promptModule = buildExtractionPromptModule();
   return batches.map((batch, index) => {
-    const first = batch[0];
-    const last = batch.at(-1);
+    const first = batch.entries[0]?.task;
+    const last = batch.entries.at(-1)?.task;
     if (!first || !last) {
       throw new CliError({
         exitCode: 3,
@@ -220,11 +278,19 @@ export function buildExtractionTaskPlans(
     }
     const batchIndex = index + 1;
     const batchCount = batches.length;
-    const sourceTasks = batch.map((task) => sourceTaskRef(task));
+    const oversizedSourceIds = batch.entries
+      .filter((entry) => entry.fingerprint.size_bytes > batchBytes)
+      .map((entry) => entry.task.id);
+    const sourceTasks = batch.entries.map((entry) => sourceTaskRef(entry.task, entry.fingerprint));
+    const fingerprint = batchFingerprint(batch.entries);
     return {
       batch_index: batchIndex,
       batch_count: batchCount,
-      source_task_ids: batch.map((task) => task.id),
+      source_task_ids: batch.entries.map((entry) => entry.task.id),
+      source_bytes: batch.source_bytes,
+      byte_budget: batchBytes,
+      oversized_source_ids: oversizedSourceIds,
+      batch_fingerprint: fingerprint,
       parsed: {
         title: `Extract task-history context ${first.id}..${last.id}`,
         description: buildDescription({
@@ -232,7 +298,10 @@ export function buildExtractionTaskPlans(
           batchCount,
           first,
           last,
-          count: batch.length,
+          count: batch.entries.length,
+          sourceBytes: batch.source_bytes,
+          byteBudget: batchBytes,
+          oversizedCount: oversizedSourceIds.length,
         }),
         owner: "CURATOR",
         priority: "med",
@@ -251,8 +320,12 @@ export function buildExtractionTaskPlans(
             batch: {
               index: batchIndex,
               count: batchCount,
-              size: batch.length,
+              size: batch.entries.length,
               batch_size: batchSize,
+              source_bytes: batch.source_bytes,
+              byte_budget: batchBytes,
+              oversized_source_ids: oversizedSourceIds,
+              fingerprint,
               first_task_id: first.id,
               last_task_id: last.id,
             },

@@ -400,6 +400,7 @@ export const contextHarvestTasksSpec: CommandSpec<{
   writeProposals: boolean;
   createExtractionTasks: boolean;
   batchSize: string;
+  batchBytes: string;
   promote: boolean;
   dryRun: boolean;
   format: "text" | "json";
@@ -477,6 +478,14 @@ export const contextHarvestTasksSpec: CommandSpec<{
       description: "Number of selected completed tasks per generated extraction task.",
     },
     {
+      kind: "string",
+      name: "batch-bytes",
+      default: "131072",
+      valueHint: "<bytes>",
+      description:
+        "Maximum UTF-8 bytes of normalized task source text per extraction task. A single oversized source is isolated.",
+    },
+    {
       kind: "boolean",
       name: "promote",
       default: false,
@@ -531,6 +540,7 @@ export const contextHarvestTasksSpec: CommandSpec<{
       createExtractionTasks:
         raw.opts["create-extraction-tasks"] === true || (!writeProposals && !promote && !dryRun),
       batchSize: typeof raw.opts["batch-size"] === "string" ? raw.opts["batch-size"] : "25",
+      batchBytes: typeof raw.opts["batch-bytes"] === "string" ? raw.opts["batch-bytes"] : "131072",
       promote,
       dryRun,
       format: (raw.opts.format as "text" | "json") ?? "text",

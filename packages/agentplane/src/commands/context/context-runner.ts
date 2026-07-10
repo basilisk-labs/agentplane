@@ -101,6 +101,7 @@ export async function runContextLearnTasks(
     afterTask: string;
     limit: string;
     batchSize: string;
+    batchBytes: string;
     dryRun: boolean;
     format: "text" | "json";
   },
@@ -119,6 +120,7 @@ export async function runContextLearnTasks(
       writeProposals: false,
       createExtractionTasks: true,
       batchSize: p.batchSize,
+      batchBytes: p.batchBytes,
       promote: false,
       dryRun: p.dryRun,
       format: p.format,
