@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { lstat, readFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -438,15 +438,26 @@ function renderTddLoopPrompt(opts: {
   ].join("\n");
 }
 
-async function gitDiffObservation(projectRoot: string) {
-  const [{ stdout: numstat }, { stdout: status }] = await Promise.all([
-    execFileAsync("git", ["diff", "--numstat", "HEAD"], { cwd: projectRoot }),
-    execFileAsync("git", ["status", "--porcelain=v1", "--untracked-files=all"], {
-      cwd: projectRoot,
-    }),
-  ]);
+function countUntrackedBudgetLines(contents: Buffer): number {
+  if (contents.byteLength === 0) return 0;
+  if (contents.includes(0)) return Math.max(1, Math.ceil(contents.byteLength / 80));
+  const text = contents.toString("utf8");
+  const lines = text.split(/\r?\n/).length;
+  return text.endsWith("\n") ? lines - 1 : lines;
+}
+
+export async function collectGitDiffObservation(projectRoot: string) {
+  const [{ stdout: numstat }, { stdout: trackedNames }, { stdout: untrackedNames }] =
+    await Promise.all([
+      execFileAsync("git", ["diff", "--numstat", "HEAD"], { cwd: projectRoot }),
+      execFileAsync("git", ["diff", "--name-only", "-z", "HEAD"], { cwd: projectRoot }),
+      execFileAsync("git", ["ls-files", "--others", "--exclude-standard", "-z"], {
+        cwd: projectRoot,
+      }),
+    ]);
   let diffLines = 0;
   const changed = new Set<string>();
+  const summaryLines = numstat.trim() ? [numstat.trim()] : [];
   for (const line of numstat.split("\n")) {
     if (!line.trim()) continue;
     const [added, deleted, file] = line.split("\t");
@@ -454,14 +465,23 @@ async function gitDiffObservation(projectRoot: string) {
     if (/^\d+$/.test(added ?? "")) diffLines += Number.parseInt(added!, 10);
     if (/^\d+$/.test(deleted ?? "")) diffLines += Number.parseInt(deleted!, 10);
   }
-  for (const line of status.split("\n")) {
-    if (line.length >= 4) changed.add(line.slice(3).trim());
+  for (const file of trackedNames.split("\0").filter(Boolean)) changed.add(file);
+  for (const file of untrackedNames.split("\0").filter(Boolean)) {
+    changed.add(file);
+    const absolutePath = path.join(projectRoot, file);
+    const stat = await lstat(absolutePath).catch(() => null);
+    if (!stat) continue;
+    const lineCount = stat.isSymbolicLink()
+      ? 1
+      : countUntrackedBudgetLines(await readFile(absolutePath));
+    diffLines += lineCount;
+    summaryLines.push(`${String(lineCount)}\t0\t${file} (untracked)`);
   }
   return {
     changedFiles: changed.size,
     diffLines,
     files: [...changed].toSorted(),
-    summary: boundedText(numstat, 6000),
+    summary: boundedText(summaryLines.join("\n"), 6000),
   };
 }
 
@@ -552,7 +572,7 @@ function executableTddLoopExecutors(opts: {
       };
     },
     "git.diff": async () => {
-      const diff = await gitDiffObservation(projectRoot);
+      const diff = await collectGitDiffObservation(projectRoot);
       return {
         status: "success",
         summary: diff.summary,
@@ -598,21 +618,27 @@ function executableTddLoopExecutors(opts: {
         data: { ok: true, commands },
       };
     },
-    "evaluator.run": ({ latestByStep }) => {
-      const check = latestByStep.get("focused_check");
-      const diff = latestByStep.get("capture_diff");
-      const pass = check?.status === "success";
-      return Promise.resolve({
-        status: "success",
-        summary: pass ? "Deterministic verification passed." : "Verification requires rework.",
-        progressScore: pass ? 1 : 0,
-        data: {
-          verdict: pass ? "pass" : "rework",
-          checkStatus: check?.status ?? "missing",
-          diffLines: diff?.diffLines ?? 0,
-          changedFiles: diff?.changedFiles ?? 0,
-        },
-      });
+    "evaluator.run": ({ latestByStep }) => Promise.resolve(evaluateTddIteration(latestByStep)),
+  };
+}
+
+export function evaluateTddIteration(
+  latestByStep: ReadonlyMap<string, LoopStepExecutionResult>,
+): LoopStepExecutionResult {
+  const agent = latestByStep.get("agent_patch");
+  const check = latestByStep.get("focused_check");
+  const diff = latestByStep.get("capture_diff");
+  const pass = agent?.status === "success" && check?.status === "success";
+  return {
+    status: "success",
+    summary: pass ? "Deterministic verification passed." : "Verification requires rework.",
+    progressScore: pass ? 1 : 0,
+    data: {
+      verdict: pass ? "pass" : "rework",
+      agentStatus: agent?.status ?? "missing",
+      checkStatus: check?.status ?? "missing",
+      diffLines: diff?.diffLines ?? 0,
+      changedFiles: diff?.changedFiles ?? 0,
     },
   };
 }

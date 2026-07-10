@@ -2,12 +2,6 @@
 
 Created: 2026-07-09T23:48:42.147Z
 
-## Batch Tasks
-
-- Primary: `202607092346-4Z7EZP`
-- Closure policy: `all_or_fail`
-- Included: `202607100026-EBQXPZ`
-
 ## Task
 
 - Task: `202607092346-4Z7EZP`
@@ -19,7 +13,7 @@ Created: 2026-07-09T23:48:42.147Z
 ## Verification
 
 - State: ok
-- Note: Loop runtime evidence remains green; the batched prerequisite normalized only acr.json and repository format:check now passes, so PR diffstat verification is refreshed.
+- Note: Addressed all three PR review defects: untracked content counts toward diff budgets, loop-step bundle persists compact task context, and evaluator requires agent_patch success. Focused suite passes 37/37, typecheck and repository format:check pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

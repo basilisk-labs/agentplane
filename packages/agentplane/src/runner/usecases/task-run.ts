@@ -172,7 +172,7 @@ function buildLoopStepRouteDecision(opts: {
   };
 }
 
-function compactLoopStepTaskContext(
+export function compactLoopStepTaskContext(
   task: RunnerContextBundle["task"],
 ): RunnerContextBundle["task"] {
   if (!task) return task;
@@ -377,15 +377,14 @@ export async function prepareTaskRunnerExecution(opts: {
     rootOverride: opts.rootOverride ?? null,
     task_id: opts.task_id,
   });
+  const runnerTask =
+    target.kind === "loop_step" ? compactLoopStepTaskContext(taskEnvelope.task) : taskEnvelope.task;
   const runnerCommand = target.kind === "recipe_scenario" ? "recipes scenario execute" : "task run";
   const base_prompts = await collectRunnerBasePrompts({
     git_root: executionContext.repo.git_root,
     owner_id: taskEnvelope.task.data.owner,
     agents_dir: executionContext.harness.workflow.paths.agents_dir,
-    task:
-      target.kind === "loop_step"
-        ? compactLoopStepTaskContext(taskEnvelope.task)
-        : taskEnvelope.task,
+    task: runnerTask,
     command: runnerCommand,
     recipe: opts.recipe,
     harness: executionContext.harness,
@@ -435,7 +434,7 @@ export async function prepareTaskRunnerExecution(opts: {
     framework_explain,
     framework_protocol,
     repository: taskEnvelope.repository,
-    task: taskEnvelope.task,
+    task: runnerTask,
     recipe: opts.recipe,
     blueprint,
     route_decision: route_decision as unknown as Record<string, unknown>,

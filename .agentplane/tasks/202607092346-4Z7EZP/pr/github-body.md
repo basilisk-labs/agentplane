@@ -2,12 +2,6 @@ Task: `202607092346-4Z7EZP`
 Title: Make AgentPlane loops executable, resumable, and token-aware
 Canonical task record: `.agentplane/tasks/202607092346-4Z7EZP/README.md`
 
-## Batch Tasks
-
-- Primary: `202607092346-4Z7EZP`
-- Closure policy: `all_or_fail`
-- Included: `202607100026-EBQXPZ`
-
 ## Summary
 
 Make AgentPlane loops executable, resumable, and token-aware
@@ -24,8 +18,9 @@ Implement only on the agentplane-loops branch family. Do not switch, merge, push
 - Note:
 
 ```text
-Loop runtime evidence remains green; the batched prerequisite normalized only acr.json and
-repository format:check now passes, so PR diffstat verification is refreshed.
+Addressed all three PR review defects: untracked content counts toward diff budgets, loop-step
+bundle persists compact task context, and evaluator requires agent_patch success. Focused suite
+passes 37/37, typecheck and repository format:check pass.
 ```
 - Canonical workflow state lives in the task README.
 

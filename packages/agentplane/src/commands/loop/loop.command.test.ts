@@ -1,10 +1,15 @@
+import { execFile } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 
 import { captureStdIO, mkTempDir } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "../../cli/run-cli.js";
+import { collectGitDiffObservation, evaluateTddIteration } from "./loop.command.js";
+
+const execFileAsync = promisify(execFile);
 
 async function mkProject(): Promise<string> {
   const root = await mkTempDir();
@@ -77,6 +82,35 @@ async function createTask(root: string): Promise<string> {
 }
 
 describe("runCli loop commands", () => {
+  it("counts untracked file contents against diff budgets", async () => {
+    const root = await mkTempDir();
+    await execFileAsync("git", ["init", "-q"], { cwd: root });
+    await execFileAsync("git", ["config", "user.email", "loop-test@example.com"], { cwd: root });
+    await execFileAsync("git", ["config", "user.name", "Loop Test"], { cwd: root });
+    await writeFile(path.join(root, "tracked.txt"), "baseline\n", "utf8");
+    await execFileAsync("git", ["add", "tracked.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-qm", "baseline"], { cwd: root });
+    await writeFile(path.join(root, "new-file.txt"), "one\ntwo\nthree\n", "utf8");
+
+    const observation = await collectGitDiffObservation(root);
+
+    expect(observation.changedFiles).toBe(1);
+    expect(observation.diffLines).toBe(3);
+    expect(observation.summary).toContain("3\t0\tnew-file.txt (untracked)");
+  });
+
+  it("requires a successful agent patch before evaluator pass", () => {
+    const result = evaluateTddIteration(
+      new Map([
+        ["agent_patch", { status: "failed" as const }],
+        ["focused_check", { status: "success" as const }],
+      ]),
+    );
+
+    expect(result.data?.verdict).toBe("rework");
+    expect(result.data?.agentStatus).toBe("failed");
+  });
+
   it("lists and shows built-in loops", async () => {
     const io = captureStdIO();
     try {
