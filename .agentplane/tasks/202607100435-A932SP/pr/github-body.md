@@ -33,11 +33,9 @@ passed.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202607092209-F33MNN/README.md    |   2 +
- docs/internal/v0.6.22-refactor-plan.md             |   5 +-
  .../src/commands/pr/flow-status.pre-merge.test.ts  | 117 +++++++++++++++++++++
  packages/agentplane/src/commands/pr/flow-status.ts |  51 +++++++++
- 4 files changed, 173 insertions(+), 2 deletions(-)
+ 2 files changed, 168 insertions(+)
 ```
 
 </details>
