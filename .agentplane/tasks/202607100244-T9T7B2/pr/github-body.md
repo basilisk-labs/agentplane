@@ -27,7 +27,7 @@ suite 361 files / 2,144 tests all passed.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-10T02:47:15.009Z
+- Updated: 2026-07-10T03:00:20.329Z
 - Branch: task/202607100244-T9T7B2/prefer-merged-pr-commit-when-reconciling-include
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -35,9 +35,9 @@ suite 361 files / 2,144 tests all passed.
  .agentplane/tasks/202607092209-F33MNN/README.md    |   1 +
  .agentplane/tasks/202607100106-YP0PYE/README.md    |  11 +-
  .agentplane/tasks/202607100106-YP0PYE/pr/meta.json |   7 +-
- .../run-cli.core.release-tasks-reconcile.test.ts   | 181 +++++++++++++++++++++
- .../commands/release/tasks-reconcile.command.ts    |   4 +-
- 5 files changed, 198 insertions(+), 6 deletions(-)
+ .../run-cli.core.release-tasks-reconcile.test.ts   | 210 +++++++++++++++++++++
+ .../commands/release/tasks-reconcile.command.ts    |  11 +-
+ 5 files changed, 232 insertions(+), 8 deletions(-)
 ```
 
 </details>

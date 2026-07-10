@@ -11,7 +11,10 @@ import { CliError } from "../../shared/errors.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { cmdTaskNormalize } from "../task/normalize.js";
 import { buildLocallySyncedTask } from "../task/hosted-merge-sync/builders.js";
-import { readPrMetaIfPresent } from "../task/hosted-merge-sync/pr-meta.js";
+import {
+  readPrMetaIfPresent,
+  resolveLocalMergedPrMeta,
+} from "../task/hosted-merge-sync/pr-meta.js";
 import type { LocalBranchPrSyncCandidate } from "../task/hosted-merge-sync/model.js";
 
 export type ReleaseTasksReconcileParsed = {
@@ -118,7 +121,7 @@ async function resolvePrimaryLandedCommit(opts: {
   primaryTaskId: string;
 }): Promise<string> {
   const primaryMeta = await readPrMetaIfPresent({ ctx: opts.ctx, taskId: opts.primaryTaskId });
-  const mergeCommit = primaryMeta?.meta.merge_commit?.trim() ?? "";
+  const mergeCommit = resolveLocalMergedPrMeta(primaryMeta?.meta ?? null)?.mergeCommit ?? "";
   if (mergeCommit) return mergeCommit;
   const primaryCommit = opts.primaryTask?.commit?.hash?.trim() ?? "";
   if (primaryCommit) return primaryCommit;

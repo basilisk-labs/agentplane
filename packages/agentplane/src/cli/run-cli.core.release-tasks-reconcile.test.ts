@@ -48,12 +48,13 @@ async function addIncludedBatchExtension(opts: {
   await writeFile(taskPath, next, "utf8");
 }
 
-async function writeMergedPrMeta(opts: {
+async function writePrMeta(opts: {
   root: string;
   taskId: string;
   branch: string;
   headSha: string;
   mergeCommit: string;
+  status: "OPEN" | "MERGED";
 }): Promise<void> {
   const prDir = path.join(opts.root, ".agentplane", "tasks", opts.taskId, "pr");
   await mkdir(prDir, { recursive: true });
@@ -67,9 +68,13 @@ async function writeMergedPrMeta(opts: {
         base: "main",
         created_at: "2026-05-23T00:00:00.000Z",
         updated_at: "2026-05-23T00:00:00.000Z",
-        status: "MERGED",
-        merge_strategy: "rebase",
-        merged_at: "2026-05-23T00:00:00.000Z",
+        status: opts.status,
+        ...(opts.status === "MERGED"
+          ? {
+              merge_strategy: "rebase",
+              merged_at: "2026-05-23T00:00:00.000Z",
+            }
+          : {}),
         merge_commit: opts.mergeCommit,
         head_sha: opts.headSha,
         verify: { status: "pass" },
@@ -169,6 +174,29 @@ describe("runCli release tasks reconcile", { timeout: RELEASE_TASKS_RECONCILE_TI
       taskId: includedTaskId,
       primaryTaskId,
       branch: `task/${primaryTaskId}/batch-owner`,
+    });
+    await execFileAsync("git", ["checkout", "-b", "stale-merge-meta"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await writeFile(path.join(root, "stale.txt"), "stale merge metadata\n", "utf8");
+    await execFileAsync("git", ["add", "stale.txt"], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["commit", "--no-verify", "-m", "test: stale merge metadata"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const { stdout: staleStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["checkout", "main"], { cwd: root, env: cleanGitEnv() });
+    await writePrMeta({
+      root,
+      taskId: primaryTaskId,
+      branch: `task/${primaryTaskId}/batch-owner`,
+      headSha: shippedHash,
+      mergeCommit: staleStdout.trim(),
+      status: "OPEN",
     });
 
     const ioReconcile = captureStdIO();
@@ -304,12 +332,13 @@ describe("runCli release tasks reconcile", { timeout: RELEASE_TASKS_RECONCILE_TI
       primaryTaskId,
       branch,
     });
-    await writeMergedPrMeta({
+    await writePrMeta({
       root,
       taskId: primaryTaskId,
       branch,
       headSha: originalTaskCommit,
       mergeCommit: landedCommit,
+      status: "MERGED",
     });
 
     const ioReconcile = captureStdIO();
