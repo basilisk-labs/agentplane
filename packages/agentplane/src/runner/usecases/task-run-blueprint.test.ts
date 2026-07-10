@@ -126,6 +126,11 @@ describe("runner blueprint guards", () => {
         step_id: "agent_patch",
         step_type: "agent.run",
         prompt_module: "tdd.fix.implement",
+        rendered_prompt: "Apply the smallest patch and run focused verification.",
+        rendered_prompt_sha: "sha256:test",
+        context_refs: ["task.approved_plan", "task.verify_steps"],
+        permissions: { canEditFiles: true, network: "disallowed" },
+        budgets: { maxIterations: 5, maxTotalTokens: 200_000 },
         contract: { outputs: [{ id: "runner_result", required: true }] },
       },
     });
@@ -164,6 +169,9 @@ describe("runner blueprint guards", () => {
     expect(bootstrap).toContain("- route_phase: loop_agent_step");
     expect(bootstrap).toContain("- route_exact_argv: none");
     expect(bootstrap).toContain("Loop-step execution contract:");
+    expect(bootstrap).toContain("- rendered_prompt_sha: sha256:test");
+    expect(bootstrap).toContain("target.rendered_prompt in bundle.json");
+    expect(bootstrap).toContain('loop_permissions: {"canEditFiles":true,"network":"disallowed"}');
     expect(bootstrap).toContain("route_exact_argv is intentionally empty");
     expect(bootstrap).toContain("do not run branch_pr lifecycle commands");
     expect(bootstrap).toContain("Do not recompute `agentplane task next-action`");

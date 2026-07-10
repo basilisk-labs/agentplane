@@ -7,6 +7,7 @@ import type {
   LoopValidationProblem,
   LoopValidationResult,
 } from "./model.js";
+import { isSupportedLoopCondition } from "./conditions.js";
 
 function hasText(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -213,13 +214,35 @@ export function validateLoopSpec(loop: LoopSpec): LoopValidationResult {
       problem("invalid_budget", "Loop budgets.maxIterations must be a positive integer."),
     );
   }
+  const positiveIntegerBudgets: (keyof typeof loop.budgets)[] = [
+    "maxWallTimeMinutes",
+    "maxChangedFiles",
+    "maxDiffLines",
+    "maxAgentRuns",
+    "maxInputTokens",
+    "maxOutputTokens",
+    "maxTotalTokens",
+    "maxNoProgressIterations",
+  ];
+  for (const budget of positiveIntegerBudgets) {
+    const value = loop.budgets[budget];
+    if (value !== undefined && (!Number.isInteger(value) || value < 1)) {
+      errors.push(
+        problem(
+          "invalid_budget",
+          `Loop budgets.${budget} must be a positive integer.`,
+          `budgets.${budget}`,
+        ),
+      );
+    }
+  }
 
   for (const duplicate of duplicates(loop.steps.map((step) => step.id))) {
     errors.push(problem("duplicate_step_id", `Duplicate loop step id: ${duplicate}`, "steps"));
   }
-  loop.steps.forEach((step, index) => {
+  for (const [index, step] of loop.steps.entries()) {
     errors.push(...validateStepContract(step, index));
-  });
+  }
   errors.push(...validateMetrics(loop));
   for (const duplicate of duplicates(loop.stopConditions.map((condition) => condition.id))) {
     errors.push(
@@ -233,6 +256,15 @@ export function validateLoopSpec(loop: LoopSpec): LoopValidationResult {
 
   const stepIds = new Set(loop.steps.map((step) => step.id));
   for (const transition of loop.transitions) {
+    if (isSupportedLoopCondition(transition.if) === false) {
+      errors.push(
+        problem(
+          "unknown_transition_condition",
+          `Transition condition is not in the deterministic condition registry: ${transition.if}`,
+          "transitions",
+        ),
+      );
+    }
     if (transition.from && !stepIds.has(transition.from)) {
       errors.push(
         problem(
@@ -242,21 +274,16 @@ export function validateLoopSpec(loop: LoopSpec): LoopValidationResult {
         ),
       );
     }
-    if (
-      transition.to !== "finish" &&
-      transition.to !== "blocked" &&
-      transition.to !== "human_review"
-    ) {
-      if (!stepIds.has(transition.to)) {
-        errors.push(
-          problem(
-            "unknown_transition_step",
-            `Transition references unknown target step: ${transition.to}`,
-            "transitions",
-          ),
-        );
-      }
-    }
+    const nonTerminalTarget =
+      transition.to !== "finish" && transition.to !== "blocked" && transition.to !== "human_review";
+    if (nonTerminalTarget === false || stepIds.has(transition.to)) continue;
+    errors.push(
+      problem(
+        "unknown_transition_step",
+        `Transition references unknown target step: ${transition.to}`,
+        "transitions",
+      ),
+    );
   }
   return { ok: errors.length === 0, errors };
 }

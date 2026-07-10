@@ -30,6 +30,10 @@ export type LoopPlanParsed = {
   blueprintId?: BlueprintId;
   tags: string[];
   verifyStepsPresent: boolean;
+  approvedPlan: boolean;
+  cleanWorktree: boolean;
+  hostedPr: boolean;
+  ciFailure: boolean;
   json: boolean;
   project: boolean;
 };
@@ -39,6 +43,8 @@ export type LoopRunParsed = {
   loopId?: LoopId;
   dryRun: boolean;
   executeAgentStep: boolean;
+  execute: boolean;
+  resumeRunId?: string;
   json: boolean;
 };
 
@@ -161,6 +167,30 @@ export const loopPlanSpec: CommandSpec<LoopPlanParsed> = {
     },
     {
       kind: "boolean",
+      name: "approved-plan",
+      default: false,
+      description: "Synthetic input has an approved plan.",
+    },
+    {
+      kind: "boolean",
+      name: "clean-worktree",
+      default: false,
+      description: "Synthetic input has a clean worktree.",
+    },
+    {
+      kind: "boolean",
+      name: "hosted-pr",
+      default: false,
+      description: "Synthetic input has a hosted pull request.",
+    },
+    {
+      kind: "boolean",
+      name: "ci-failure",
+      default: false,
+      description: "Synthetic input has a confirmed CI failure.",
+    },
+    {
+      kind: "boolean",
       name: "project",
       default: false,
       description: "Include .agentplane/loops JSON files.",
@@ -185,6 +215,10 @@ export const loopPlanSpec: CommandSpec<LoopPlanParsed> = {
     blueprintId: raw.opts.blueprint as BlueprintId | undefined,
     tags: stringList(raw.opts.tag),
     verifyStepsPresent: raw.opts["verify-steps-present"] === true,
+    approvedPlan: raw.opts["approved-plan"] === true,
+    cleanWorktree: raw.opts["clean-worktree"] === true,
+    hostedPr: raw.opts["hosted-pr"] === true,
+    ciFailure: raw.opts["ci-failure"] === true,
     project: raw.opts.project === true,
     json: raw.opts.json === true,
   }),
@@ -193,7 +227,7 @@ export const loopPlanSpec: CommandSpec<LoopPlanParsed> = {
 export const loopRunSpec: CommandSpec<LoopRunParsed> = {
   id: ["loop", "run"],
   group: "Loops",
-  summary: "Run a loop in dry-run mode or execute only the agent step.",
+  summary: "Run a loop as dry-run, one agent step, or a resumable executable cycle.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     { kind: "string", name: "loop", valueHint: "<loop-id>", description: "Loop id override." },
@@ -209,13 +243,42 @@ export const loopRunSpec: CommandSpec<LoopRunParsed> = {
       default: false,
       description: "Execute the first agent.run step through the task runner, then stop.",
     },
+    {
+      kind: "boolean",
+      name: "execute",
+      default: false,
+      description: "Execute the supported loop end-to-end with durable per-step checkpoints.",
+    },
+    {
+      kind: "string",
+      name: "resume",
+      valueHint: "<run-id>",
+      description: "Resume an executable LoopRun from its last durable cursor.",
+    },
     { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
   ],
+  validateRaw: (raw) => {
+    const modes = [
+      raw.opts["dry-run"] === true,
+      raw.opts["execute-agent-step"] === true,
+      raw.opts.execute === true,
+      typeof raw.opts.resume === "string",
+    ].filter(Boolean).length;
+    if (modes > 1) {
+      throw usageError({
+        spec: loopRunSpec,
+        command: "loop run",
+        message: "Choose exactly one of --dry-run, --execute-agent-step, --execute, or --resume.",
+      });
+    }
+  },
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     loopId: typeof raw.opts.loop === "string" ? (raw.opts.loop as LoopId) : undefined,
     dryRun: raw.opts["dry-run"] === true,
     executeAgentStep: raw.opts["execute-agent-step"] === true,
+    execute: raw.opts.execute === true,
+    resumeRunId: typeof raw.opts.resume === "string" ? raw.opts.resume : undefined,
     json: raw.opts.json === true,
   }),
 };
@@ -224,6 +287,9 @@ export const loopStepSpec: CommandSpec<LoopStepParsed> = {
   ...loopRunSpec,
   id: ["loop", "step"],
   summary: "Prepare or execute the agent step for one loop transition.",
+  options: (loopRunSpec.options ?? []).filter(
+    (option) => option.name !== "execute" && option.name !== "resume",
+  ),
 };
 
 export const loopValidateSpec: CommandSpec<LoopValidateParsed> = {

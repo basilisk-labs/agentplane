@@ -1,13 +1,17 @@
+import { createHash } from "node:crypto";
+import { execFile } from "node:child_process";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 
 import { resolveProject } from "@agentplaneorg/core/project";
 
 import {
   createDryRunLoopRun,
+  executeLoop,
   createLoopRegistry,
   getLoop,
   listLoops,
-  parseProjectLoopJsonInternal,
   planLoopForInput,
   projectLoopsDirectory,
   validateLoopSpec,
@@ -15,7 +19,10 @@ import {
   validateProjectLoopFile,
   type LoopPlanInput,
   type LoopSpec,
+  type LoopStepExecutionResult,
+  type LoopStepExecutorRegistry,
 } from "../../loops/index.js";
+import { applyTokenUsageEvent, createTokenAccumulator } from "../../harness/token-accounting.js";
 import {
   loadDirectSubcommandNames,
   throwGroupCommandUsage,
@@ -55,6 +62,50 @@ type LoopCatalogEntry = {
   source: "builtin" | "project";
   path?: string;
 };
+
+const execFileAsync = promisify(execFile);
+
+function sha256(value: string): string {
+  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+async function readRunnerTokenUsage(tracePath: string) {
+  let raw = "";
+  try {
+    raw = await readFile(tracePath, "utf8");
+  } catch {
+    return { inputTokens: 0, outputTokens: 0, totalTokens: 0 };
+  }
+  let accumulator = createTokenAccumulator();
+  for (const line of raw.split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const parsed = JSON.parse(line) as unknown;
+      if (!isRecord(parsed)) continue;
+      const payload = isRecord(parsed.payload) ? parsed.payload : parsed;
+      const threadId =
+        typeof parsed.threadId === "string"
+          ? parsed.threadId
+          : typeof parsed.thread_id === "string"
+            ? parsed.thread_id
+            : "runner";
+      const next = applyTokenUsageEvent(accumulator, { threadId, payload });
+      if (next.accepted) accumulator = next.state;
+    } catch {
+      // Runner traces may contain provider-specific non-JSON lines. Ignore them deterministically.
+    }
+  }
+  return accumulator.global;
+}
+
+function boundedText(value: unknown, max = 4000): string {
+  const text = typeof value === "string" ? value : "";
+  return text.length <= max ? text : `${text.slice(0, max)}\n[TRUNCATED]`;
+}
 
 async function runLoopRoot(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   throwGroupCommandUsage({
@@ -111,22 +162,24 @@ async function loadLoopCatalog(projectRoot: string, includeProject: boolean) {
   return loops;
 }
 
-export function makeRunLoopListHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
-  return async (ctx: CommandCtx, p: LoopListParsed): Promise<number> => {
-    const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
-    const loops = await loadLoopCatalog(resolved.gitRoot, p.project);
-    const output = loops.map((entry) => loopSummary(entry.loop, entry.source, entry.path));
-    if (p.json) {
-      process.stdout.write(`${JSON.stringify({ loops: output }, null, 2)}\n`);
-      return 0;
-    }
-    for (const loop of output) {
-      process.stdout.write(
-        `${loop.source} ${loop.id}@${loop.version} ${loop.kind} ${loop.status} steps=${loop.steps.length}\n`,
-      );
-    }
+async function runLoopList(ctx: CommandCtx, p: LoopListParsed): Promise<number> {
+  const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
+  const loops = await loadLoopCatalog(resolved.gitRoot, p.project);
+  const output = loops.map((entry) => loopSummary(entry.loop, entry.source, entry.path));
+  if (p.json) {
+    process.stdout.write(`${JSON.stringify({ loops: output }, null, 2)}\n`);
     return 0;
-  };
+  }
+  for (const loop of output) {
+    process.stdout.write(
+      `${loop.source} ${loop.id}@${loop.version} ${loop.kind} ${loop.status} steps=${loop.steps.length}\n`,
+    );
+  }
+  return 0;
+}
+
+export function makeRunLoopListHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
+  return runLoopList;
 }
 
 function requireCatalogLoop(loops: readonly LoopCatalogEntry[], id: string): LoopCatalogEntry {
@@ -141,54 +194,58 @@ function requireCatalogLoop(loops: readonly LoopCatalogEntry[], id: string): Loo
   return entry;
 }
 
-export function makeRunLoopShowHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
-  return async (ctx: CommandCtx, p: LoopShowParsed): Promise<number> => {
-    const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
-    const entry = requireCatalogLoop(await loadLoopCatalog(resolved.gitRoot, p.project), p.id);
-    if (p.json) {
-      process.stdout.write(`${JSON.stringify(entry.loop, null, 2)}\n`);
-      return 0;
-    }
-    const summary = loopSummary(entry.loop, entry.source, entry.path);
-    process.stdout.write(`${summary.id}@${summary.version} ${summary.title}\n`);
-    process.stdout.write(`kind: ${summary.kind}\n`);
-    process.stdout.write(`status: ${summary.status}\n`);
-    process.stdout.write(`source: ${summary.source}\n`);
-    process.stdout.write(
-      `steps: ${summary.steps.map((step) => `${step.id}:${step.type}`).join(" -> ")}\n`,
-    );
-    process.stdout.write(`max_iterations: ${summary.budgets.maxIterations}\n`);
+async function runLoopShow(ctx: CommandCtx, p: LoopShowParsed): Promise<number> {
+  const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
+  const entry = requireCatalogLoop(await loadLoopCatalog(resolved.gitRoot, p.project), p.id);
+  if (p.json) {
+    process.stdout.write(`${JSON.stringify(entry.loop, null, 2)}\n`);
     return 0;
-  };
+  }
+  const summary = loopSummary(entry.loop, entry.source, entry.path);
+  process.stdout.write(`${summary.id}@${summary.version} ${summary.title}\n`);
+  process.stdout.write(`kind: ${summary.kind}\n`);
+  process.stdout.write(`status: ${summary.status}\n`);
+  process.stdout.write(`source: ${summary.source}\n`);
+  process.stdout.write(
+    `steps: ${summary.steps.map((step) => `${step.id}:${step.type}`).join(" -> ")}\n`,
+  );
+  process.stdout.write(`max_iterations: ${summary.budgets.maxIterations}\n`);
+  return 0;
+}
+
+export function makeRunLoopShowHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
+  return runLoopShow;
+}
+
+async function runLoopExplain(ctx: CommandCtx, p: LoopExplainParsed): Promise<number> {
+  const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
+  const entry = requireCatalogLoop(await loadLoopCatalog(resolved.gitRoot, p.project), p.id);
+  if (p.json) {
+    process.stdout.write(
+      `${JSON.stringify(loopSummary(entry.loop, entry.source, entry.path), null, 2)}\n`,
+    );
+    return 0;
+  }
+  process.stdout.write(`Loop: ${entry.loop.id}@${entry.loop.version}\n`);
+  process.stdout.write(`Purpose: ${entry.loop.description}\n`);
+  process.stdout.write(`Permissions: ${JSON.stringify(entry.loop.permissions)}\n`);
+  process.stdout.write("Steps:\n");
+  for (const step of entry.loop.steps) {
+    process.stdout.write(`- ${step.id}: ${step.type}${step.optional ? " optional" : ""}\n`);
+  }
+  process.stdout.write("Transitions:\n");
+  for (const transition of entry.loop.transitions) {
+    process.stdout.write(`- ${transition.from ?? "*"} -> ${transition.to}: ${transition.if}\n`);
+  }
+  process.stdout.write("Stop conditions:\n");
+  for (const condition of entry.loop.stopConditions) {
+    process.stdout.write(`- ${condition.id}: ${condition.decision} (${condition.reason})\n`);
+  }
+  return 0;
 }
 
 export function makeRunLoopExplainHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
-  return async (ctx: CommandCtx, p: LoopExplainParsed): Promise<number> => {
-    const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
-    const entry = requireCatalogLoop(await loadLoopCatalog(resolved.gitRoot, p.project), p.id);
-    if (p.json) {
-      process.stdout.write(
-        `${JSON.stringify(loopSummary(entry.loop, entry.source, entry.path), null, 2)}\n`,
-      );
-      return 0;
-    }
-    process.stdout.write(`Loop: ${entry.loop.id}@${entry.loop.version}\n`);
-    process.stdout.write(`Purpose: ${entry.loop.description}\n`);
-    process.stdout.write(`Permissions: ${JSON.stringify(entry.loop.permissions)}\n`);
-    process.stdout.write("Steps:\n");
-    for (const step of entry.loop.steps) {
-      process.stdout.write(`- ${step.id}: ${step.type}${step.optional ? " optional" : ""}\n`);
-    }
-    process.stdout.write("Transitions:\n");
-    for (const transition of entry.loop.transitions) {
-      process.stdout.write(`- ${transition.from ?? "*"} -> ${transition.to}: ${transition.if}\n`);
-    }
-    process.stdout.write("Stop conditions:\n");
-    for (const condition of entry.loop.stopConditions) {
-      process.stdout.write(`- ${condition.id}: ${condition.decision} (${condition.reason})\n`);
-    }
-    return 0;
-  };
+  return runLoopExplain;
 }
 
 function syntheticLoopPlanInput(ctx: CommandContext, p: LoopPlanParsed): LoopPlanInput {
@@ -200,6 +257,10 @@ function syntheticLoopPlanInput(ctx: CommandContext, p: LoopPlanParsed): LoopPla
     workflowMode: p.workflowMode ?? workflowModeFromConfig(ctx.config),
     blueprintId: p.blueprintId,
     verifyStepsPresent: p.verifyStepsPresent,
+    approvedPlan: p.approvedPlan,
+    cleanWorktree: p.cleanWorktree,
+    hostedPr: p.hostedPr,
+    ciFailure: p.ciFailure,
   };
 }
 
@@ -223,6 +284,9 @@ export function makeRunLoopPlanHandler(getCtx: (cmd: string) => Promise<CommandC
             workflowMode: blueprintInput.workflowMode,
             blueprintId: p.blueprintId ?? blueprintInput.blueprintRequest,
             verifyStepsPresent: (task.verify ?? []).length > 0,
+            approvedPlan: task.plan_approval?.state === "approved",
+            hostedPr: false,
+            ciFailure: false,
           } satisfies LoopPlanInput;
         })()
       : syntheticLoopPlanInput(commandCtx, p);
@@ -282,6 +346,9 @@ async function resolveLoopForRun(opts: {
       workflowMode: blueprintInput.workflowMode,
       blueprintId: blueprintInput.blueprintRequest,
       verifyStepsPresent: (task.verify ?? []).length > 0,
+      approvedPlan: task.plan_approval?.state === "approved",
+      hostedPr: false,
+      ciFailure: false,
     },
   });
   if (!plan.selected) {
@@ -299,12 +366,272 @@ async function resolveLoopForRun(opts: {
   );
 }
 
+type LoadedLoopTask = Awaited<ReturnType<typeof loadTaskFromContext>>;
+
+async function assertExecutableLoopRequirements(opts: {
+  loop: LoopSpec;
+  task: LoadedLoopTask;
+  commandCtx: CommandContext;
+}): Promise<void> {
+  const missing: string[] = [];
+  if (opts.loop.requires?.approvedPlan && opts.task.plan_approval?.state !== "approved") {
+    missing.push("approved_plan");
+  }
+  if (opts.loop.requires?.verifyStepsPresent && (opts.task.verify ?? []).length === 0) {
+    missing.push("verify_steps");
+  }
+  const workflowMode = workflowModeFromConfig(opts.commandCtx.config);
+  if (
+    opts.loop.appliesTo.workflowModes &&
+    (!workflowMode || !opts.loop.appliesTo.workflowModes.includes(workflowMode))
+  ) {
+    missing.push("workflow_mode");
+  }
+  if (opts.loop.requires?.hostedPr) missing.push("hosted_pr_runtime_fact");
+  if (opts.loop.requires?.ciFailure) missing.push("ci_failure_runtime_fact");
+  if (opts.loop.requires?.cleanWorktree) {
+    const { stdout } = await execFileAsync("git", ["status", "--porcelain=v1"], {
+      cwd: opts.commandCtx.resolvedProject.gitRoot,
+    });
+    if (stdout.trim()) missing.push("clean_worktree");
+  }
+  if (missing.length > 0) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `Loop ${opts.loop.id} is not eligible for execution: ${missing.join(", ")}.`,
+    });
+  }
+}
+
+function renderTddLoopPrompt(opts: {
+  task: LoadedLoopTask;
+  loop: LoopSpec;
+  iteration: number;
+  previousCheck?: LoopStepExecutionResult;
+  previousEvaluator?: LoopStepExecutionResult;
+}): string {
+  const sections = opts.task.sections ?? {};
+  const feedback = [
+    boundedText(opts.previousCheck?.summary),
+    boundedText(opts.previousCheck?.data?.stderr),
+    boundedText(opts.previousCheck?.data?.stdout),
+    boundedText(opts.previousEvaluator?.summary),
+  ].filter(Boolean);
+  return [
+    `Loop: ${opts.loop.id}@${opts.loop.version}`,
+    `Iteration: ${String(opts.iteration)} of ${String(opts.loop.budgets.maxIterations)}`,
+    `Task: ${opts.task.id} ${opts.task.title}`,
+    "",
+    "Goal:",
+    boundedText(opts.task.description, 6000),
+    "",
+    "Approved plan:",
+    boundedText(sections.Plan, 8000),
+    "",
+    "Verification contract:",
+    (opts.task.verify ?? []).map((command) => `- ${command}`).join("\n"),
+    ...(feedback.length > 0 ? ["", "Previous iteration feedback:", ...feedback] : []),
+    "",
+    "Implement the smallest coherent change that satisfies the approved plan and verification contract.",
+    "Do not run AgentPlane lifecycle, PR, integration, or finish commands. Return control after writing the runner result manifest.",
+  ].join("\n");
+}
+
+async function gitDiffObservation(projectRoot: string) {
+  const [{ stdout: numstat }, { stdout: status }] = await Promise.all([
+    execFileAsync("git", ["diff", "--numstat", "HEAD"], { cwd: projectRoot }),
+    execFileAsync("git", ["status", "--porcelain=v1", "--untracked-files=all"], {
+      cwd: projectRoot,
+    }),
+  ]);
+  let diffLines = 0;
+  const changed = new Set<string>();
+  for (const line of numstat.split("\n")) {
+    if (!line.trim()) continue;
+    const [added, deleted, file] = line.split("\t");
+    if (file) changed.add(file);
+    if (/^\d+$/.test(added ?? "")) diffLines += Number.parseInt(added!, 10);
+    if (/^\d+$/.test(deleted ?? "")) diffLines += Number.parseInt(deleted!, 10);
+  }
+  for (const line of status.split("\n")) {
+    if (line.length >= 4) changed.add(line.slice(3).trim());
+  }
+  return {
+    changedFiles: changed.size,
+    diffLines,
+    files: [...changed].toSorted(),
+    summary: boundedText(numstat, 6000),
+  };
+}
+
+function executableTddLoopExecutors(opts: {
+  commandCtx: CommandContext;
+  task: LoadedLoopTask;
+  loop: LoopSpec;
+}): LoopStepExecutorRegistry {
+  const projectRoot = opts.commandCtx.resolvedProject.gitRoot;
+  return {
+    "context.load": () =>
+      Promise.resolve({
+        status: "success",
+        summary: "Loaded compact task intent and verification references.",
+        data: {
+          contextRefs: opts.loop.context?.include ?? [],
+          taskId: opts.task.id,
+          title: opts.task.title,
+          verifySteps: opts.task.verify ?? [],
+        },
+      }),
+    "prompt.render": ({ iteration, step, latestByStep }) => {
+      const prompt = renderTddLoopPrompt({
+        task: opts.task,
+        loop: opts.loop,
+        iteration,
+        previousCheck: latestByStep.get("focused_check"),
+        previousEvaluator: latestByStep.get("evaluator"),
+      });
+      return Promise.resolve({
+        status: "success",
+        summary: `Rendered ${step.promptModule ?? "loop"} prompt.`,
+        data: {
+          renderedPrompt: prompt,
+          renderedPromptSha: sha256(prompt),
+          promptModule: step.promptModule ?? null,
+          contextRefs: opts.loop.context?.include ?? [],
+        },
+      });
+    },
+    "agent.run": async ({ step, latestByStep }) => {
+      const prompt = latestByStep.get("render_prompt")?.data;
+      const renderedPrompt =
+        typeof prompt?.renderedPrompt === "string" ? prompt.renderedPrompt : null;
+      const renderedPromptSha =
+        typeof prompt?.renderedPromptSha === "string" ? prompt.renderedPromptSha : null;
+      const promptModule = typeof prompt?.promptModule === "string" ? prompt.promptModule : null;
+      if (!renderedPrompt || !renderedPromptSha) {
+        return { status: "blocked", summary: "agent.run requires a rendered prompt artifact" };
+      }
+      const executed = await executeTaskRunnerExecution({
+        ctx: opts.commandCtx,
+        cwd: projectRoot,
+        task_id: opts.task.id,
+        target: {
+          kind: "loop_step",
+          task_id: opts.task.id,
+          loop_id: opts.loop.id,
+          loop_version: opts.loop.version,
+          step_id: step.id,
+          step_type: step.type,
+          prompt_module: promptModule,
+          rendered_prompt: renderedPrompt,
+          rendered_prompt_sha: renderedPromptSha,
+          context_refs: [...(opts.loop.context?.include ?? [])],
+          permissions: { ...opts.loop.permissions },
+          budgets: { ...opts.loop.budgets },
+          contract: step.contract ? { ...step.contract } : null,
+        },
+      });
+      const usage = await readRunnerTokenUsage(executed.bundle.execution.artifact_paths.trace_path);
+      return {
+        status:
+          executed.result.status === "success"
+            ? "success"
+            : executed.result.status === "blocked"
+              ? "blocked"
+              : "failed",
+        summary: executed.result.summary,
+        usage,
+        changedFiles: executed.result.evidence?.files_changed_count,
+        data: {
+          runnerRunId: executed.bundle.execution.run_id,
+          runnerStatus: executed.result.status,
+          resultPath: executed.bundle.execution.artifact_paths.result_path,
+          findings: executed.result.findings ?? [],
+        },
+      };
+    },
+    "git.diff": async () => {
+      const diff = await gitDiffObservation(projectRoot);
+      return {
+        status: "success",
+        summary: diff.summary,
+        changedFiles: diff.changedFiles,
+        diffLines: diff.diffLines,
+        data: { files: diff.files, summary: diff.summary },
+      };
+    },
+    "check.run": async () => {
+      const commands = opts.task.verify ?? [];
+      if (commands.length === 0) {
+        return { status: "blocked", summary: "No runnable Verify Steps are attached to the task." };
+      }
+      for (const command of commands) {
+        try {
+          const result = await execFileAsync("/bin/sh", ["-lc", command], {
+            cwd: projectRoot,
+            timeout: Math.min((opts.loop.budgets.maxWallTimeMinutes ?? 10) * 60_000, 15 * 60_000),
+            maxBuffer: 4 * 1024 * 1024,
+          });
+          if (result.stderr.trim()) {
+            // Preserve stderr as evidence even when the command exits successfully.
+          }
+        } catch (error) {
+          const failure = error as Error & { stdout?: string; stderr?: string; code?: number };
+          return {
+            status: "failed",
+            summary: `Verification failed: ${command}`,
+            feedback: [boundedText(failure.stderr), boundedText(failure.stdout)].filter(Boolean),
+            data: {
+              ok: false,
+              command,
+              exitCode: typeof failure.code === "number" ? failure.code : null,
+              stdout: boundedText(failure.stdout),
+              stderr: boundedText(failure.stderr),
+            },
+          };
+        }
+      }
+      return {
+        status: "success",
+        summary: `${String(commands.length)} verification command(s) passed.`,
+        data: { ok: true, commands },
+      };
+    },
+    "evaluator.run": ({ latestByStep }) => {
+      const check = latestByStep.get("focused_check");
+      const diff = latestByStep.get("capture_diff");
+      const pass = check?.status === "success";
+      return Promise.resolve({
+        status: "success",
+        summary: pass ? "Deterministic verification passed." : "Verification requires rework.",
+        progressScore: pass ? 1 : 0,
+        data: {
+          verdict: pass ? "pass" : "rework",
+          checkStatus: check?.status ?? "missing",
+          diffLines: diff?.diffLines ?? 0,
+          changedFiles: diff?.changedFiles ?? 0,
+        },
+      });
+    },
+  };
+}
+
 function makeRunLoopDryRunHandler(
   commandName: string,
   getCtx: (cmd: string) => Promise<CommandContext>,
 ) {
   return async (_ctx: CommandCtx, p: LoopRunParsed): Promise<number> => {
     const commandCtx = await getCtx(commandName);
+    const executableMode = p.execute || Boolean(p.resumeRunId);
+    if (commandName === "loop step" && executableMode) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          "loop step supports --dry-run or --execute-agent-step; use loop run for --execute/--resume.",
+      });
+    }
     if (p.dryRun && p.executeAgentStep) {
       throw new CliError({
         exitCode: 2,
@@ -312,11 +639,11 @@ function makeRunLoopDryRunHandler(
         message: `${commandName} accepts either --dry-run or --execute-agent-step, not both.`,
       });
     }
-    if (!p.dryRun && !p.executeAgentStep) {
+    if (!p.dryRun && !p.executeAgentStep && !executableMode) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: `${commandName} currently requires --dry-run or --execute-agent-step.`,
+        message: `${commandName} requires --dry-run, --execute-agent-step, --execute, or --resume.`,
       });
     }
     const loop = await resolveLoopForRun({
@@ -324,6 +651,29 @@ function makeRunLoopDryRunHandler(
       taskId: p.taskId,
       loopId: p.loopId,
     });
+    if (executableMode) {
+      const task = await loadTaskFromContext({ ctx: commandCtx, taskId: p.taskId });
+      await assertExecutableLoopRequirements({ loop, task, commandCtx });
+      const state = await executeLoop({
+        projectRoot: commandCtx.resolvedProject.gitRoot,
+        workflowDir: commandCtx.config.paths.workflow_dir,
+        taskId: p.taskId,
+        loop,
+        executors: executableTddLoopExecutors({ commandCtx, task, loop }),
+        runId: p.resumeRunId,
+      });
+      if (p.json) {
+        process.stdout.write(`${JSON.stringify(state, null, 2)}\n`);
+      } else {
+        process.stdout.write(`loop_run: ${state.runId}\n`);
+        process.stdout.write(`loop: ${state.loopId}@${state.loopVersion}\n`);
+        process.stdout.write(`status: ${state.status}\n`);
+        process.stdout.write(`iteration: ${String(state.cursor.iteration)}\n`);
+        process.stdout.write(`tokens: ${String(state.usage.totalTokens)}\n`);
+        if (state.stopReason) process.stdout.write(`stop_reason: ${state.stopReason}\n`);
+      }
+      return state.status === "passed" ? 0 : 3;
+    }
     let executedAgentStep = false;
     const record = await createDryRunLoopRun({
       projectRoot: commandCtx.resolvedProject.gitRoot,

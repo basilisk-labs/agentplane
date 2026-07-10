@@ -112,12 +112,32 @@ describe("runCli loop commands", () => {
         "--tag",
         "test",
         "--verify-steps-present",
+        "--approved-plan",
         "--json",
       ]);
       expect(code).toBe(0);
       const payload = JSON.parse(io.stdout);
       expect(payload.selected.loopId).toBe("tdd.fix");
       expect(payload.selected.total).toBeGreaterThan(0.45);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("rejects executable loop modes that are combined", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "loop",
+        "run",
+        "TASK-1",
+        "--loop",
+        "tdd.fix",
+        "--dry-run",
+        "--execute",
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Choose exactly one");
     } finally {
       io.restore();
     }
@@ -142,7 +162,9 @@ describe("runCli loop commands", () => {
           permissions: { canEditFiles: true },
           budgets: { maxIterations: 2 },
           steps: [{ id: "load", type: "context.load" }],
-          transitions: [{ from: "load", if: "ready", to: "finish", decision: "finish" }],
+          transitions: [
+            { from: "load", if: "evaluator.verdict == 'pass'", to: "finish", decision: "finish" },
+          ],
           outputs: { required: ["loop-run.json"] },
           stop_conditions: [{ id: "done", reason: "Done.", decision: "finish" }],
         },

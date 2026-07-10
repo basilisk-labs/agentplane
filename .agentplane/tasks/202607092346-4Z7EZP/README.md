@@ -4,7 +4,7 @@ title: "Make AgentPlane loops executable, resumable, and token-aware"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -20,11 +20,29 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-10T00:18:38.395Z"
+  updated_by: "REVIEWER"
+  note: "Focused loop tests (34/34), typecheck, docs CLI parity, routing, targeted lint/format, schema hash parity, and git diff checks pass; repository-wide schema/format failures are pre-existing and outside this task scope."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-10T00:18:50.972Z"
+  updated_by: "EVALUATOR"
+  note: "The loop runtime matches the approved agentplane-loops scope: deterministic typed transitions, durable resume, enforced budgets and permissions, compact prompt propagation, token accounting, and fail-closed unsupported loops are covered by focused tests and synchronized docs/schemas."
+  evaluated_sha: "f8ded86e6aa097574f8b4a01f22b829da51c5830"
+  blueprint_digest: "04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137"
+  evidence_refs:
+    - ".agentplane/tasks/202607092346-4Z7EZP/README.md"
+    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-001850972-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-001850972-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-001850972-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607092346-4Z7EZP/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/loops/engine.test.ts"
+    - "packages/agentplane/src/commands/loop/loop.command.test.ts"
+  findings:
+    - "No confirmed task-scoped defect remains in the reviewed diff."
+    - "Global schemas:check and format:check residuals are pre-existing and isolated from touched loop files."
 commit: null
 comments:
   -
@@ -38,8 +56,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement the approved end-to-end loop engine on the task branch rooted at agentplane-loops; preserve main untouched and verify checkpoints, budgets, prompt propagation, retries, and resume."
+  -
+    type: "verify"
+    at: "2026-07-10T00:18:38.395Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Focused loop tests (34/34), typecheck, docs CLI parity, routing, targeted lint/format, schema hash parity, and git diff checks pass; repository-wide schema/format failures are pre-existing and outside this task scope."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:13:20.320Z"
+doc_updated_at: "2026-07-10T00:18:38.500Z"
 doc_updated_by: "CODER"
 description: "Implement an end-to-end deterministic loop engine on agentplane-loops without touching main: typed transitions, durable checkpoints and resume, step-specific prompt/context propagation, enforced eligibility/permissions/budgets, token accounting, focused checks/evaluator decisions, CLI/docs/schema alignment, and regression tests."
 sections:
@@ -82,6 +106,39 @@ sections:
     PASS: git diff --check.
     PARTIAL: bun run schemas:check remains red only on unrelated task README/tasks-export schema copies; loop-spec copies are byte-identical by SHA-256.
     PARTIAL: bun run format:check remains red only on unrelated packages/spec/examples/acr.json.
+
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-10T00:18:38.395Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Focused loop tests (34/34), typecheck, docs CLI parity, routing, targeted lint/format, schema hash parity, and git diff checks pass; repository-wide schema/format failures are pre-existing and outside this task scope.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:13:20.320Z, excerpt_hash=sha256:db0ecec4f82d546cfddd454677dcab04255605392b22bc78e32417e09e811d98
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202607092346-4Z7EZP-make-agentplane-loops-executable-resumable-and-t/.agentplane/tasks/202607092346-4Z7EZP/blueprint/resolved-snapshot.json
+    - old_digest: 04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137
+    - current_digest: 04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607092346-4Z7EZP
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202607092346-4Z7EZP
+    - diagnostic_command: agentplane pr check 202607092346-4Z7EZP
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the implementation commit(s) for task 4Z7EZP on the loop task branch. Loop execution must then return to the existing dry-run or single-agent-step behavior without changing main or shared external state."
   Findings: |-
     Initial finding: the previous prototype executes at most one agent.run and then forces human_review; loop-specific permissions, token budgets, transition evaluation, and resume are not enforced end-to-end.
@@ -93,6 +150,10 @@ sections:
     - Observation: Global format:check remains red only on pre-existing packages/spec/examples/acr.json.
       Impact: The repository-wide formatting gate is red independently of this loop runtime change.
       Resolution: All task-touched files pass targeted Prettier check; leave acr.json outside the approved loop scope.
+
+    - Observation: Repository-wide schemas:check and format:check remain red only on unrelated existing artifacts; all touched loop schemas and files pass targeted checks.
+      Impact: Global gates cannot be reported as fully green, but no task-scoped regression remains.
+      Resolution: Keep unrelated schema/task-export and acr.json cleanup outside 4Z7EZP; use focused tests, identical loop-schema hashes, and targeted formatting as closure evidence.
 id_source: "generated"
 ---
 ## Summary
@@ -145,6 +206,39 @@ PASS: git diff --check.
 PARTIAL: bun run schemas:check remains red only on unrelated task README/tasks-export schema copies; loop-spec copies are byte-identical by SHA-256.
 PARTIAL: bun run format:check remains red only on unrelated packages/spec/examples/acr.json.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-10T00:18:38.395Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Focused loop tests (34/34), typecheck, docs CLI parity, routing, targeted lint/format, schema hash parity, and git diff checks pass; repository-wide schema/format failures are pre-existing and outside this task scope.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:13:20.320Z, excerpt_hash=sha256:db0ecec4f82d546cfddd454677dcab04255605392b22bc78e32417e09e811d98
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202607092346-4Z7EZP-make-agentplane-loops-executable-resumable-and-t/.agentplane/tasks/202607092346-4Z7EZP/blueprint/resolved-snapshot.json
+- old_digest: 04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137
+- current_digest: 04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607092346-4Z7EZP
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202607092346-4Z7EZP
+- diagnostic_command: agentplane pr check 202607092346-4Z7EZP
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the implementation commit(s) for task 4Z7EZP on the loop task branch. Loop execution must then return to the existing dry-run or single-agent-step behavior without changing main or shared external state.
@@ -160,3 +254,7 @@ Initial finding: the previous prototype executes at most one agent.run and then 
 - Observation: Global format:check remains red only on pre-existing packages/spec/examples/acr.json.
   Impact: The repository-wide formatting gate is red independently of this loop runtime change.
   Resolution: All task-touched files pass targeted Prettier check; leave acr.json outside the approved loop scope.
+
+- Observation: Repository-wide schemas:check and format:check remain red only on unrelated existing artifacts; all touched loop schemas and files pass targeted checks.
+  Impact: Global gates cannot be reported as fully green, but no task-scoped regression remains.
+  Resolution: Keep unrelated schema/task-export and acr.json cleanup outside 4Z7EZP; use focused tests, identical loop-schema hashes, and targeted formatting as closure evidence.

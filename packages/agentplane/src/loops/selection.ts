@@ -32,6 +32,17 @@ export function scoreLoopCandidate(loop: LoopSpec, input: LoopPlanInput): LoopCa
   const kindScore = includesScore(input.taskKind, loop.appliesTo.taskKinds);
   const blueprintScore = includesScore(input.blueprintId, loop.appliesTo.blueprints);
   const workflowScore = includesScore(input.workflowMode, loop.appliesTo.workflowModes);
+  const requiredFacts = [
+    ["approved plan", loop.requires?.approvedPlan, input.approvedPlan],
+    ["clean worktree", loop.requires?.cleanWorktree, input.cleanWorktree],
+    ["verify steps", loop.requires?.verifyStepsPresent, input.verifyStepsPresent],
+    ["hosted PR", loop.requires?.hostedPr, input.hostedPr],
+    ["CI failure", loop.requires?.ciFailure, input.ciFailure],
+  ] as const;
+  for (const [label, required, present] of requiredFacts) {
+    if (required === true && present !== true) rejectedReasons.push(`loop requires ${label}`);
+  }
+  const eligible = rejectedReasons.length === 0 && loop.status !== "blocked";
   const specificMatchScore = Math.max(tagScore, blueprintScore);
   const applicability =
     specificMatchScore > 0 ? Math.max(specificMatchScore, kindScore) : kindScore * 0.35;
@@ -54,7 +65,7 @@ export function scoreLoopCandidate(loop: LoopSpec, input: LoopPlanInput): LoopCa
       costFit * 0.1 +
       trustFit * 0.1) *
     workflowPenalty;
-  const total = specificMatchScore === 0 ? rawTotal * 0.5 : rawTotal;
+  const total = eligible ? (specificMatchScore === 0 ? rawTotal * 0.5 : rawTotal) : 0;
 
   if (tagScore > 0) reasons.push("task tags match loop tags");
   if (kindScore > 0) reasons.push(`task kind matches ${input.taskKind}`);
@@ -67,15 +78,13 @@ export function scoreLoopCandidate(loop: LoopSpec, input: LoopPlanInput): LoopCa
     rejectedReasons.push("only broad task kind matches");
   }
   if (applicability === 0) rejectedReasons.push("no tag, task kind, or blueprint match");
-  if (loop.requires?.verifyStepsPresent && !input.verifyStepsPresent) {
-    rejectedReasons.push("loop requires verify steps");
-  }
   if (loop.status === "blocked") rejectedReasons.push("loop status is blocked");
   if (workflowPenalty < 1) rejectedReasons.push("workflow mode does not match loop");
 
   return {
     loopId: loop.id,
     loopVersion: loop.version,
+    eligible,
     applicability,
     verificationFit,
     riskFit,

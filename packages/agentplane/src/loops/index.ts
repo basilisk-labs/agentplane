@@ -1,4 +1,6 @@
 export * from "./builtins.js";
+export * from "./conditions.js";
+export * from "./engine.js";
 export * from "./metrics.js";
 export * from "./model.js";
 export * from "./project-local.js";
