@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-10T09:17:53.837Z"
+  state: "needs_rework"
+  updated_at: "2026-07-10T09:24:23.963Z"
   updated_by: "TESTER"
-  note: "Verified CI repair at 23be64c: Knip baseline 574/574, focused 3 files/12 tests, typecheck, ci:contract, and full fast 364 files/2150 tests passed."
-  attempts: 0
+  note: "Review thread identified missing task-closure and basis/head validation before queue release; implement the same validation contract as Hosted Close."
+  attempts: 1
 quality_review:
   state: "pass"
   updated_at: "2026-07-10T09:18:06.633Z"
@@ -94,8 +94,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified CI repair at 23be64c: Knip baseline 574/574, focused 3 files/12 tests, typecheck, ci:contract, and full fast 364 files/2150 tests passed."
+  -
+    type: "verify"
+    at: "2026-07-10T09:24:23.963Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Review thread identified missing task-closure and basis/head validation before queue release; implement the same validation contract as Hosted Close."
 doc_version: 3
-doc_updated_at: "2026-07-10T09:17:54.061Z"
+doc_updated_at: "2026-07-10T09:24:24.185Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, let integration queue recovery treat a merged PR with a valid pre-merge closure packet and successful no-op Hosted Close as terminal, so the handoff lane releases automatically after protected-main rebase."
 sections:
@@ -243,6 +249,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-10T09:24:23.963Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Review thread identified missing task-closure and basis/head validation before queue release; implement the same validation contract as Hosted Close.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T09:17:54.061Z, excerpt_hash=sha256:01f2f85ec787476292f3f5162a49a1566b64e9c9ec6e86178e1bbea252d04073
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100435-A932SP-release-lane-after-premerge-hosted-close/.agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json
+    - old_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+    - current_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100435-A932SP
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607100435-A932SP --branch task/202607100435-A932SP/release-lane-after-premerge-hosted-close
+    - diagnostic_command: agentplane pr check 202607100435-A932SP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -255,6 +291,10 @@ sections:
     - Observation: GitHub verify-static failed on a stale Knip baseline entry for RemotePrStatus.
       Impact: PR #4568 cannot merge while aggregate PR verification is red.
       Resolution: Remove the test-only RemotePrStatus import and keep the exported helper signature independent of that baseline-tracked type.
+
+    - Observation: Branch/PR identity alone could accept a stale pre-merge marker.
+      Impact: Queue recovery could release a handoff without terminal close evidence.
+      Resolution: Require DONE task evidence plus Hosted Close branch/PR and basis-ancestor validation before recorded_on_base.
 extensions:
   implementation_commit:
     hash: "58a98a88ccb78e4d4e40db068db7ea5b3da43e29"
@@ -414,6 +454,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-10T09:24:23.963Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Review thread identified missing task-closure and basis/head validation before queue release; implement the same validation contract as Hosted Close.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T09:17:54.061Z, excerpt_hash=sha256:01f2f85ec787476292f3f5162a49a1566b64e9c9ec6e86178e1bbea252d04073
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100435-A932SP-release-lane-after-premerge-hosted-close/.agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json
+- old_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+- current_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100435-A932SP
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607100435-A932SP --branch task/202607100435-A932SP/release-lane-after-premerge-hosted-close
+- diagnostic_command: agentplane pr check 202607100435-A932SP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -430,3 +500,7 @@ DecisionContextRef:
 - Observation: GitHub verify-static failed on a stale Knip baseline entry for RemotePrStatus.
   Impact: PR #4568 cannot merge while aggregate PR verification is red.
   Resolution: Remove the test-only RemotePrStatus import and keep the exported helper signature independent of that baseline-tracked type.
+
+- Observation: Branch/PR identity alone could accept a stale pre-merge marker.
+  Impact: Queue recovery could release a handoff without terminal close evidence.
+  Resolution: Require DONE task evidence plus Hosted Close branch/PR and basis-ancestor validation before recorded_on_base.
