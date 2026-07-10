@@ -2,6 +2,13 @@
 
 Created: 2026-07-09T23:48:42.147Z
 
+## Batch Tasks
+
+- Primary: `202607092346-4Z7EZP`
+- Closure policy: `all_or_fail`
+- Included: `202607100026-EBQXPZ`
+- Included: `202607100033-4T5V86`
+
 ## Task
 
 - Task: `202607092346-4Z7EZP`
@@ -34,6 +41,11 @@ Created: 2026-07-09T23:48:42.147Z
  .../evaluator-opinion.md                           |  19 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  21 +
+ .agentplane/tasks/202607100033-4T5V86/README.md    | 188 +++++++
+ .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
+ .../evaluator-opinion.md                           |  20 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  22 +
  docs/developer/loops.mdx                           |  49 +-
  docs/reference/loops.mdx                           |  48 +-
  docs/user/cli-reference.generated.mdx              |  12 +-
@@ -55,10 +67,16 @@ Created: 2026-07-09T23:48:42.147Z
  .../src/runner/usecases/task-run-bootstrap.ts      |   9 +
  .../agentplane/src/runner/usecases/task-run.ts     |  58 ++-
  packages/core/schemas/loop-spec.schema.json        |  41 +-
+ .../schemas/task-readme-frontmatter.schema.json    | 271 ++++++++--
+ packages/core/schemas/tasks-export.schema.json     | 264 ++++++++--
  packages/spec/examples/acr.json                    |  18 +-
  packages/spec/schemas/loop-spec.schema.json        |  41 +-
+ .../schemas/task-readme-frontmatter.schema.json    | 271 ++++++++--
+ packages/spec/schemas/tasks-export.schema.json     | 264 ++++++++--
  schemas/loop-spec.schema.json                      |  41 +-
- 29 files changed, 2647 insertions(+), 140 deletions(-)
+ schemas/task-readme-frontmatter.schema.json        | 271 ++++++++--
+ schemas/tasks-export.schema.json                   | 264 ++++++++--
+ 40 files changed, 4720 insertions(+), 338 deletions(-)
 ```
 
 </details>

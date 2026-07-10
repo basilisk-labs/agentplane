@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100033-4T5V86",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T00:33:59.624Z",
+  "verdict": "pass",
+  "summary": "Canonical schema synchronization changed only the six declared generated copies and restores schemas:check.",
+  "evaluated_sha": "b402a33be27e231c619143269a9df30b5fffa15b",
+  "blueprint_digest": "31fa5b6ffe5fba8038151ceca80bb7e17056f2a8e14961b2d9d5e9afe7005072",
+  "findings": [
+    "The generator, not hand editing, produced all schema changes; source families are synchronized."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100033-4T5V86/README.md",
+    "schemas/task-readme-frontmatter.schema.json",
+    "schemas/tasks-export.schema.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

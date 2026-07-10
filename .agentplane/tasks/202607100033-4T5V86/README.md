@@ -4,7 +4,7 @@ title: "Synchronize pre-existing schema copies for loop CI"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,23 @@ verification:
   updated_by: "REVIEWER"
   note: "Canonical schemas:sync changed only the six declared task-readme/tasks-export schema copies; schemas:check and git diff --check pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-10T00:33:59.624Z"
+  updated_by: "EVALUATOR"
+  note: "Canonical schema synchronization changed only the six declared generated copies and restores schemas:check."
+  evaluated_sha: "b402a33be27e231c619143269a9df30b5fffa15b"
+  blueprint_digest: "31fa5b6ffe5fba8038151ceca80bb7e17056f2a8e14961b2d9d5e9afe7005072"
+  evidence_refs:
+    - ".agentplane/tasks/202607100033-4T5V86/README.md"
+    - ".agentplane/tasks/202607100033-4T5V86/quality/20260710-003359624-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100033-4T5V86/quality/20260710-003359624-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100033-4T5V86/quality/20260710-003359624-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100033-4T5V86/blueprint/resolved-snapshot.json"
+    - "schemas/task-readme-frontmatter.schema.json"
+    - "schemas/tasks-export.schema.json"
+  findings:
+    - "The generator, not hand editing, produced all schema changes; source families are synchronized."
 commit: null
 comments:
   -
@@ -101,6 +118,16 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  branch_pr_batch:
+    base: "agentplane-loops"
+    branch: "task/202607092346-4Z7EZP/make-agentplane-loops-executable-resumable-and-t"
+    included_task_ids:
+      - "202607100026-EBQXPZ"
+      - "202607100033-4T5V86"
+    primary_task_id: "202607092346-4Z7EZP"
+    role: "included"
+    updated_at: "2026-07-10T00:34:11.055Z"
 id_source: "generated"
 ---
 ## Summary
