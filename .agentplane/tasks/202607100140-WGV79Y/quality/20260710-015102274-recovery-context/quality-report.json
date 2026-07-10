@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100140-WGV79Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T01:51:02.274Z",
+  "verdict": "pass",
+  "summary": "Pre-merge closure accepts only deterministic active-task artifacts and preserves unrelated-dirt blocking.",
+  "evaluated_sha": "89e0032d8a00fd5ac41968fef93e9d64ff525cd6",
+  "blueprint_digest": "a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85",
+  "findings": [
+    "Focused positive and negative tests pass; typecheck, lint:core, ci:contract, and the 2,141-test fast suite are green."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100140-WGV79Y/README.md",
+    "packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts",
+    "packages/agentplane/src/commands/task/finish-execute-close.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

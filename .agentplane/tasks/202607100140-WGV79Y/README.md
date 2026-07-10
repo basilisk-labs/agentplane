@@ -4,7 +4,7 @@ title: "Allow pre-merge closure to stage active task artifacts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -33,6 +33,23 @@ verification:
   updated_by: "CODER"
   note: "Pass: focused pre-merge closure tests 3/3; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,141 tests. Active-task README and quality artifacts are accepted only for pre-merge closure; unrelated tracked paths remain blocked."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-10T01:51:02.274Z"
+  updated_by: "EVALUATOR"
+  note: "Pre-merge closure accepts only deterministic active-task artifacts and preserves unrelated-dirt blocking."
+  evaluated_sha: "89e0032d8a00fd5ac41968fef93e9d64ff525cd6"
+  blueprint_digest: "a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85"
+  evidence_refs:
+    - ".agentplane/tasks/202607100140-WGV79Y/README.md"
+    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-015102274-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-015102274-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-015102274-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100140-WGV79Y/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts"
+    - "packages/agentplane/src/commands/task/finish-execute-close.ts"
+  findings:
+    - "Focused positive and negative tests pass; typecheck, lint:core, ci:contract, and the 2,141-test fast suite are green."
 commit: null
 comments:
   -
@@ -121,7 +138,7 @@ extensions:
       - "202607100140-WGV79Y"
     primary_task_id: "202607100106-YP0PYE"
     role: "included"
-    updated_at: "2026-07-10T01:50:40.869Z"
+    updated_at: "2026-07-10T01:51:43.212Z"
 id_source: "generated"
 ---
 ## Summary
