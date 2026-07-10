@@ -19,7 +19,7 @@ Created: 2026-07-10T01:07:58.209Z
 ## Verification
 
 - State: ok
-- Note: Pass: context extraction tests 14/14; lifecycle and batch refresh tests 19/19; AgentPlane typecheck; lint:core; ci:contract; full local fast CI including 361 files, 2,143 tests, build, bundle, cold-start, docs freshness, and critical CLI E2E.
+- Note: Pass after review fix: context harvest tests 15/15; lifecycle/batch tests 19/19; AgentPlane typecheck; lint:core; ci:contract; targeted local CI; full fast suite 361 files and 2,144 tests. Live dry-run reported source_bytes=17,873, exactly matching README plus available ACR bytes.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100106-YP0PYE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T02:32:58.454Z",
+  "verdict": "pass",
+  "summary": "The review finding is resolved: extraction byte budgets now cover the complete README and available ACR payload.",
+  "evaluated_sha": "1f37bf286561245c3fc142fed23ed7376ee5c178",
+  "blueprint_digest": "2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac",
+  "findings": [
+    "Context tests 15/15 and the 2,144-test fast suite pass; live dry-run source_bytes exactly matched filesystem byte totals; ACR changes invalidate queued v2 fingerprints."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100106-YP0PYE/README.md",
+    "packages/agentplane/src/commands/context/harvest-tasks.test.ts",
+    "packages/agentplane/src/context/harvest-tasks-markers.ts",
+    "packages/agentplane/src/context/harvest-tasks-extraction.ts",
+    "https://github.com/basilisk-labs/agentplane/pull/4563#discussion_r3555839824"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
