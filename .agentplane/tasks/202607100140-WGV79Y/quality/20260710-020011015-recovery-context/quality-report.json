@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100140-WGV79Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T02:00:11.015Z",
+  "verdict": "pass",
+  "summary": "Batch lifecycle closure and freshness handling are consistent on the current implementation head.",
+  "evaluated_sha": "631725720f4b842f70f297dea9bdba417fce5437",
+  "blueprint_digest": "a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85",
+  "findings": [
+    "Lifecycle and batch-route tests 11/11 pass; typecheck, lint:core, ci:contract, and the 2,141-test fast suite are green."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100140-WGV79Y/README.md",
+    "packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts",
+    "packages/agentplane/src/commands/shared/task-local-freshness.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

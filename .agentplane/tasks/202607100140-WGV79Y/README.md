@@ -4,7 +4,7 @@ title: "Allow pre-merge closure to stage active task artifacts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -35,21 +35,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T01:51:02.274Z"
+  updated_at: "2026-07-10T02:00:11.015Z"
   updated_by: "EVALUATOR"
-  note: "Pre-merge closure accepts only deterministic active-task artifacts and preserves unrelated-dirt blocking."
-  evaluated_sha: "89e0032d8a00fd5ac41968fef93e9d64ff525cd6"
+  note: "Batch lifecycle closure and freshness handling are consistent on the current implementation head."
+  evaluated_sha: "631725720f4b842f70f297dea9bdba417fce5437"
   blueprint_digest: "a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85"
   evidence_refs:
     - ".agentplane/tasks/202607100140-WGV79Y/README.md"
-    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-015102274-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-015102274-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-015102274-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-020011015-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-020011015-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-020011015-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100140-WGV79Y/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts"
-    - "packages/agentplane/src/commands/task/finish-execute-close.ts"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+    - "packages/agentplane/src/commands/shared/task-local-freshness.ts"
   findings:
-    - "Focused positive and negative tests pass; typecheck, lint:core, ci:contract, and the 2,141-test fast suite are green."
+    - "Lifecycle and batch-route tests 11/11 pass; typecheck, lint:core, ci:contract, and the 2,141-test fast suite are green."
 commit: null
 comments:
   -
@@ -175,7 +176,7 @@ extensions:
       - "202607100140-WGV79Y"
     primary_task_id: "202607100106-YP0PYE"
     role: "included"
-    updated_at: "2026-07-10T01:59:32.544Z"
+    updated_at: "2026-07-10T02:00:29.269Z"
 id_source: "generated"
 ---
 ## Summary
