@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100340-KW3B8P",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T03:53:17.861Z",
+  "verdict": "pass",
+  "summary": "Integration queue terminalization now follows provider PR and Hosted Close truth across recovery, normalization, and doctor paths.",
+  "evaluated_sha": "79e4606eaf86abbb7727fd0671d4febc560acf7f",
+  "blueprint_digest": "4f38b9959c9c68fa544916dcd95fa5479cf8b5793c9b594bb3d9132d59245615",
+  "findings": [
+    "No blocking findings; focused tests cover pre-merge DONE with an open PR and completion after close-tail evidence, while typecheck, lint, contract, full fast, routing, and doctor checks pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100340-KW3B8P/README.md",
+    "packages/agentplane/src/commands/integrate-queue-lane.test.ts",
+    "packages/agentplane/src/commands/integrate-queue-recovery.test.ts",
+    "scripts/checks/check-lifecycle-invariants.mjs"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

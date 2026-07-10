@@ -6,7 +6,7 @@ Created: 2026-07-10T03:40:27.439Z
 
 - Task: `202607100340-KW3B8P`
 - Title: Keep pre-merge DONE tasks in the integration queue
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607100340-KW3B8P/keep-premerge-done-in-integration-queue`
 - Canonical task record: `.agentplane/tasks/202607100340-KW3B8P/README.md`
 

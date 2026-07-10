@@ -5,6 +5,12 @@
   "diffstat_sha256": "sha256:7c4811c4c030fa9be788fa481db89016e6b29e2f08614a760042fa2428c99234",
   "last_verified_at": "2026-07-10T03:52:21.632Z",
   "last_verified_diffstat_sha256": "sha256:7c4811c4c030fa9be788fa481db89016e6b29e2f08614a760042fa2428c99234",
+  "pre_merge_closure": {
+    "basis_commit": "79e4606eaf86abbb7727fd0671d4febc560acf7f",
+    "branch": "task/202607100340-KW3B8P/keep-premerge-done-in-integration-queue",
+    "recorded_at": "2026-07-10T03:53:28.901Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "task_id": "202607100340-KW3B8P",
   "updated_at": "2026-07-10T03:40:27.439Z",

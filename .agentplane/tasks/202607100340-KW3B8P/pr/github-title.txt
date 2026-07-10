@@ -1,1 +1,1 @@
-🚧 KW3B8P task: Keep pre-merge DONE tasks in the integration queue [202607100340-KW3B8P]
+✅ KW3B8P task: Keep pre-merge DONE tasks in the integration queue [202607100340-KW3B8P]
