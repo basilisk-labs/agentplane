@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100435-A932SP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T09:27:01.572Z",
+  "verdict": "pass",
+  "summary": "Quality review passed after CI and inline-review rework.",
+  "evaluated_sha": "4963d4af67be3ab696c5b78cfe321ea2d93cd2de",
+  "blueprint_digest": "964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611",
+  "findings": [
+    "No blocking findings; queue release now reuses Hosted Close closure and basis validation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100435-A932SP/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
