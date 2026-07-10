@@ -4,7 +4,7 @@ title: "Make context extraction packs compact and schema-complete for v0.6.22"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -34,16 +34,16 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T00:43:44.263Z"
+  updated_at: "2026-07-10T00:45:03.849Z"
   updated_by: "EVALUATOR"
   note: "Extraction task packs are compact, schema-complete, and snapshot-backed."
-  evaluated_sha: "88d63682d099e95292694839124a0212ae6a5ba1"
+  evaluated_sha: "246082a578c58d4a97182651d3b1a3fb5538db1d"
   blueprint_digest: "70e4ce0b42f580f8e29f021d9d52cb431b3b936193818b0b4497717661394564"
   evidence_refs:
     - ".agentplane/tasks/202607100021-S11TCN/README.md"
-    - ".agentplane/tasks/202607100021-S11TCN/quality/20260710-004344263-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100021-S11TCN/quality/20260710-004344263-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100021-S11TCN/quality/20260710-004344263-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100021-S11TCN/quality/20260710-004503849-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100021-S11TCN/quality/20260710-004503849-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100021-S11TCN/quality/20260710-004503849-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100021-S11TCN/blueprint/resolved-snapshot.json"
   findings:
     - "SGR v2 now fails incomplete page/topology payloads before writes while legacy v1 remains compatible; generated packs expose a valid contract plus deterministic current-context candidates, and prompt size budgets are enforced."
