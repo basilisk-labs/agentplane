@@ -20,8 +20,9 @@ Make global context checks validate wiki graph references, entity page policy, m
 - Note:
 
 ```text
-Verified: current main-targeting PR head preserves the passing integrity tests, 2,132-test full fast
-suite, critical CLI suite, typecheck, lint, and ci:contract evidence.
+Verified: review fix ignores hidden .obsidian and raw archive directories; 10 focused tests,
+typecheck, lint, diff check, prior full ci:contract, 2,132-test fast suite, and critical CLI remain
+green.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -33,12 +34,12 @@ suite, critical CLI suite, typecheck, lint, and ci:contract evidence.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/context/check.unit.test.ts        | 118 +++++++++++++
+ .../src/commands/context/check.unit.test.ts        | 129 ++++++++++++++
  .../src/commands/context/wiki-reports.ts           |  21 ++-
  .../src/commands/context/wiki-reports.unit.test.ts |   9 +
  packages/agentplane/src/context/doctor.ts          |   2 +
- packages/agentplane/src/context/integrity.ts       | 186 +++++++++++++++++++++
- 5 files changed, 334 insertions(+), 2 deletions(-)
+ packages/agentplane/src/context/integrity.ts       | 188 +++++++++++++++++++++
+ 5 files changed, 347 insertions(+), 2 deletions(-)
 ```
 
 </details>

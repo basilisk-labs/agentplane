@@ -2,10 +2,10 @@
 id: "202607092342-AHYFCS"
 title: "Enforce cross-surface context integrity for v0.6.22"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -28,29 +28,27 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T00:08:14.065Z"
+  updated_at: "2026-07-10T00:13:21.353Z"
   updated_by: "CODER"
-  note: "Verified: current main-targeting PR head preserves the passing integrity tests, 2,132-test full fast suite, critical CLI suite, typecheck, lint, and ci:contract evidence."
+  note: "Verified: review fix ignores hidden .obsidian and raw archive directories; 10 focused tests, typecheck, lint, diff check, prior full ci:contract, 2,132-test fast suite, and critical CLI remain green."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-09T23:53:43.150Z"
+  updated_at: "2026-07-10T00:13:23.689Z"
   updated_by: "EVALUATOR"
-  note: "Global context integrity now rejects disconnected or stale maximum-assimilation artifacts."
-  evaluated_sha: "1ac42ed68fef6764b464e114614fb99b02f102de"
+  note: "Cross-surface integrity is strict for managed context while preserving ignored hidden directories."
+  evaluated_sha: "0c828f95913c21997368cbd31741a99dd22ed834"
   blueprint_digest: "a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2"
   evidence_refs:
     - ".agentplane/tasks/202607092342-AHYFCS/README.md"
-    - ".agentplane/tasks/202607092342-AHYFCS/quality/20260709-235343150-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607092342-AHYFCS/quality/20260709-235343150-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607092342-AHYFCS/quality/20260709-235343150-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607092342-AHYFCS/quality/20260710-001323689-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607092342-AHYFCS/quality/20260710-001323689-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607092342-AHYFCS/quality/20260710-001323689-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607092342-AHYFCS/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/context/check.unit.test.ts"
   findings:
-    - "The validator resolves wiki graph references, enforces active entity page policy, checks raw source registration, and fingerprints connectivity reports with focused regression coverage."
-commit:
-  hash: "994ea841af950ac2bf9eb93e8556627e07754595"
-  message: "✅ AHYFCS context: record integrity verification"
+    - "The final collector skips hidden and service directories consistently with ingest and wiki report traversal; focused regression coverage verifies ignored vault/plugin and raw archive paths."
+commit: null
 comments:
   -
     author: "CODER"
@@ -85,8 +83,20 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-10T00:12:59.924Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Rework: PR review identified hidden .obsidian and raw archive directories must follow existing ingest/report exclusions before merge."
+  -
+    type: "verify"
+    at: "2026-07-10T00:13:21.353Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: review fix ignores hidden .obsidian and raw archive directories; 10 focused tests, typecheck, lint, diff check, prior full ci:contract, 2,132-test fast suite, and critical CLI remain green."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:08:38.184Z"
+doc_updated_at: "2026-07-10T00:13:21.657Z"
 doc_updated_by: "CODER"
 description: "Make global context checks validate wiki graph references, entity page policy, manifest/source coverage, and freshness of derived wiki reports so structurally valid but semantically disconnected context cannot pass."
 sections:
@@ -164,6 +174,66 @@ sections:
     - can_execute_now: true
     - safe_command: agentplane finish 202607092342-AHYFCS --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit d68187dbcaedd4e35412aec44b18c62ddc9f3e78 --pre-merge-closure
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-10T00:12:59.924Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Rework: PR review identified hidden .obsidian and raw archive directories must follow existing ingest/report exclusions before merge.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:08:38.184Z, excerpt_hash=sha256:a048fab14dab3ec0b1cb44ac4e5067eb124319bc5f3d6256e3cd5dfb73d8b3d8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092342-AHYFCS-enforce-cross-surface-context-integrity-for-v0-6/.agentplane/tasks/202607092342-AHYFCS/blueprint/resolved-snapshot.json
+    - old_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+    - current_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607092342-AHYFCS
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607092342-AHYFCS --branch task/202607092342-AHYFCS/enforce-cross-surface-context-integrity-for-v0-6
+    - diagnostic_command: agentplane pr check 202607092342-AHYFCS
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-10T00:13:21.353Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: review fix ignores hidden .obsidian and raw archive directories; 10 focused tests, typecheck, lint, diff check, prior full ci:contract, 2,132-test fast suite, and critical CLI remain green.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:13:02.669Z, excerpt_hash=sha256:a048fab14dab3ec0b1cb44ac4e5067eb124319bc5f3d6256e3cd5dfb73d8b3d8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092342-AHYFCS-enforce-cross-surface-context-integrity-for-v0-6/.agentplane/tasks/202607092342-AHYFCS/blueprint/resolved-snapshot.json
+    - old_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+    - current_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607092342-AHYFCS
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607092342-AHYFCS --branch task/202607092342-AHYFCS/enforce-cross-surface-context-integrity-for-v0-6
+    - diagnostic_command: agentplane pr check 202607092342-AHYFCS
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: true
@@ -264,6 +334,66 @@ DecisionContextRef:
 - can_execute_now: true
 - safe_command: agentplane finish 202607092342-AHYFCS --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit d68187dbcaedd4e35412aec44b18c62ddc9f3e78 --pre-merge-closure
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-10T00:12:59.924Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Rework: PR review identified hidden .obsidian and raw archive directories must follow existing ingest/report exclusions before merge.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:08:38.184Z, excerpt_hash=sha256:a048fab14dab3ec0b1cb44ac4e5067eb124319bc5f3d6256e3cd5dfb73d8b3d8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092342-AHYFCS-enforce-cross-surface-context-integrity-for-v0-6/.agentplane/tasks/202607092342-AHYFCS/blueprint/resolved-snapshot.json
+- old_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+- current_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607092342-AHYFCS
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607092342-AHYFCS --branch task/202607092342-AHYFCS/enforce-cross-surface-context-integrity-for-v0-6
+- diagnostic_command: agentplane pr check 202607092342-AHYFCS
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-10T00:13:21.353Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: review fix ignores hidden .obsidian and raw archive directories; 10 focused tests, typecheck, lint, diff check, prior full ci:contract, 2,132-test fast suite, and critical CLI remain green.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:13:02.669Z, excerpt_hash=sha256:a048fab14dab3ec0b1cb44ac4e5067eb124319bc5f3d6256e3cd5dfb73d8b3d8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092342-AHYFCS-enforce-cross-surface-context-integrity-for-v0-6/.agentplane/tasks/202607092342-AHYFCS/blueprint/resolved-snapshot.json
+- old_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+- current_digest: a8361a32f0a7051b16c3aab0dd86d3e3de499bf7cfbbd6ecedff558e63c892a2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607092342-AHYFCS
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607092342-AHYFCS --branch task/202607092342-AHYFCS/enforce-cross-surface-context-integrity-for-v0-6
+- diagnostic_command: agentplane pr check 202607092342-AHYFCS
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: true
