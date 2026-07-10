@@ -12,8 +12,8 @@ Created: 2026-07-10T09:47:07.811Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Website lint restored with zero findings; Docusaurus-aware filename and generated-asset boundaries are narrow; docs typecheck, generation freshness, production build, ci:contract, test:fast, release incident gate, policy routing, and doctor passed. Doctor reports only pre-existing historical task metadata warnings.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
