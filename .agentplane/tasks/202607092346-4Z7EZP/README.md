@@ -4,7 +4,7 @@ title: "Make AgentPlane loops executable, resumable, and token-aware"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -27,23 +27,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T00:41:16.936Z"
+  updated_at: "2026-07-10T00:49:37.929Z"
   updated_by: "EVALUATOR"
-  note: "The executable loop runtime and all review fixes satisfy the approved contract; deterministic gates, compact persisted context, budgets, resume behavior, and branch CI prerequisites are reproducibly green."
-  evaluated_sha: "3497a93287063648dc75ef907209b221d004e1d0"
+  note: "Final reviewed head passes hotspot, core lint, typecheck, format, schema, docs, routing, and focused loop gates; the executable runtime was split without behavioral drift."
+  evaluated_sha: "90975934d25f02346597d7857d1d0fa3008c3dc1"
   blueprint_digest: "04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137"
   evidence_refs:
     - ".agentplane/tasks/202607092346-4Z7EZP/README.md"
-    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-004116936-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-004116936-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-004116936-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-004937929-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-004937929-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-004937929-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607092346-4Z7EZP/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/loops/engine.test.ts"
+    - "packages/agentplane/src/commands/loop/loop.execute.ts"
     - "packages/agentplane/src/commands/loop/loop.command.test.ts"
-    - "packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts"
   findings:
-    - "No confirmed task-scoped defect remains after addressing all three review threads."
-    - "Core lint, focused tests, typecheck, format, schemas, docs parity, and routing all pass on the reviewed head."
+    - "loop.command.ts is reduced from 821 to 499 lines; executable TDD runtime is isolated in loop.execute.ts."
+    - "All prior review fixes and regressions remain intact."
 commit: null
 comments:
   -
@@ -299,7 +298,16 @@ sections:
     - Observation: Repository-wide schemas:check and format:check remain red only on unrelated existing artifacts; all touched loop schemas and files pass targeted checks.
       Impact: Global gates cannot be reported as fully green, but no task-scoped regression remains.
       Resolution: Keep unrelated schema/task-export and acr.json cleanup outside 4Z7EZP; use focused tests, identical loop-schema hashes, and targeted formatting as closure evidence.
-extensions: {}
+extensions:
+  branch_pr_batch:
+    base: "agentplane-loops"
+    branch: "task/202607092346-4Z7EZP/make-agentplane-loops-executable-resumable-and-t"
+    included_task_ids:
+      - "202607100026-EBQXPZ"
+      - "202607100033-4T5V86"
+    primary_task_id: "202607092346-4Z7EZP"
+    role: "primary"
+    updated_at: "2026-07-10T00:49:48.190Z"
 id_source: "generated"
 ---
 ## Summary
