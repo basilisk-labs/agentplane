@@ -122,6 +122,7 @@ export async function checkBranchPrBatchIncludedTaskDrift(ctx?: CommandContext):
     if (includedTaskIds.length === 0) continue;
     const primaryCommit =
       resolveLocalMergedPrMeta(meta)?.mergeCommit ??
+      meta.merge_commit?.trim() ??
       primary.commit?.hash?.trim() ??
       meta.head_sha?.trim() ??
       "";

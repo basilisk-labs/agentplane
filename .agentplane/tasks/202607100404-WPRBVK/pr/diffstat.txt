@@ -1,5 +1,5 @@
  .agentplane/tasks/202607092209-F33MNN/README.md    |  1 +
  docs/internal/v0.6.22-refactor-plan.md             |  2 +-
- .../src/commands/doctor.branch-pr.batch.test.ts    | 78 ++++++++++++++++++++++
- .../agentplane/src/commands/doctor/branch-pr.ts    |  7 +-
+ .../src/commands/doctor.branch-pr.batch.test.ts    | 77 ++++++++++++++++++++++
+ .../agentplane/src/commands/doctor/branch-pr.ts    |  8 ++-
  4 files changed, 86 insertions(+), 2 deletions(-)

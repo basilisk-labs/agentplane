@@ -5,7 +5,7 @@ result_summary: "Removed the false batch-closure warning by preferring authorita
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -28,27 +28,27 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T04:11:51.449Z"
+  updated_at: "2026-07-10T04:26:46.784Z"
   updated_by: "CODER"
-  note: "Pass: focused doctor tests 14/14; typecheck; lint:core; ci:contract; full fast suite; hotspot baseline; policy routing; diff validation; live doctor exits OK without the false batch-consistency warning."
+  note: "Review fix pass: branchless MERGED metadata keeps merge_commit authoritative; focused doctor tests 14/14, typecheck, lint:core, ci:contract, and full fast suite pass."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T04:12:22.469Z"
+  updated_at: "2026-07-10T04:26:59.016Z"
   updated_by: "EVALUATOR"
-  note: "Doctor batch consistency now uses the landed commit from authoritative MERGED PR metadata after protected-main rebases."
-  evaluated_sha: "71b5fa891f5839911154cb13210f70c52645540e"
+  note: "Doctor remains rebase-aware for both current and branchless legacy MERGED PR metadata."
+  evaluated_sha: "2c964639192339d03846ae4960d533f368bf67d0"
   blueprint_digest: "394824c048ea615d12625ab64d5cb51bf8663e6b1ec9c90b3b82aa94254bee32"
   evidence_refs:
     - ".agentplane/tasks/202607100404-WPRBVK/README.md"
-    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-041222469-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-041222469-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-041222469-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-042659016-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-042659016-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-042659016-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100404-WPRBVK/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/doctor.branch-pr.batch.test.ts"
     - "packages/agentplane/src/commands/doctor/branch-pr.ts"
   findings:
-    - "No blocking findings; the real repository warning disappears, the dedicated rebase regression and existing doctor tests pass, and all contract, fast, type, lint, routing, hotspot, and doctor checks are green."
+    - "No blocking findings; direct merge_commit fallback precedes stale task/head SHA, the branchless regression passes, and focused, type, lint, contract, and full fast checks are green."
 commit:
   hash: "71b5fa891f5839911154cb13210f70c52645540e"
   message: "🐛 WPRBVK doctor: prefer landed batch commit"
@@ -80,8 +80,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: doctor resolves branch_pr batch consistency from the landed MERGED PR commit after rebase, with focused and full regression coverage."
+  -
+    type: "verify"
+    at: "2026-07-10T04:26:46.784Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review fix pass: branchless MERGED metadata keeps merge_commit authoritative; focused doctor tests 14/14, typecheck, lint:core, ci:contract, and full fast suite pass."
 doc_version: 3
-doc_updated_at: "2026-07-10T04:12:25.978Z"
+doc_updated_at: "2026-07-10T04:26:48.075Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, make branch_pr batch consistency diagnostics compare included task commits with the authoritative landed merge_commit from MERGED primary PR metadata before falling back to the primary task commit."
 sections:
@@ -138,6 +144,36 @@ sections:
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-07-10T04:26:46.784Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Review fix pass: branchless MERGED metadata keeps merge_commit authoritative; focused doctor tests 14/14, typecheck, lint:core, ci:contract, and full fast suite pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T04:12:25.978Z, excerpt_hash=sha256:ab089f6d66391fc091abe1ee79a965a181ecde23a0a987e908266d0484c4a25f
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100404-WPRBVK-make-doctor-batch-consistency-rebase-aware/.agentplane/tasks/202607100404-WPRBVK/blueprint/resolved-snapshot.json
+    - old_digest: 394824c048ea615d12625ab64d5cb51bf8663e6b1ec9c90b3b82aa94254bee32
+    - current_digest: 394824c048ea615d12625ab64d5cb51bf8663e6b1ec9c90b3b82aa94254bee32
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100404-WPRBVK
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607100404-WPRBVK --branch task/202607100404-WPRBVK/make-doctor-batch-consistency-rebase-aware
+    - diagnostic_command: agentplane pr check 202607100404-WPRBVK
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -146,6 +182,10 @@ sections:
     - Observation: Doctor preferred the primary task implementation SHA over MERGED PR metadata, so a GitHub rebase made a correctly reconciled included task look inconsistent.
       Impact: Operators received a false hosted-close recovery warning even though primary and included tasks were already closed on the landed main commit.
       Resolution: Doctor now prefers authoritative MERGED PR merge_commit, with task commit and head SHA only as fallbacks; a dedicated regression preserves the oversized-test baseline.
+
+    - Observation: MERGED metadata without branch bypassed resolveLocalMergedPrMeta and could fall back to a stale pre-rebase task SHA.
+      Impact: Legacy branchless PR metadata could still produce the same false batch-consistency warning.
+      Resolution: Added direct merge_commit fallback before task/head SHA and converted the regression to a branchless MERGED fixture.
 extensions:
   implementation_commit:
     hash: "71b5fa891f5839911154cb13210f70c52645540e"
@@ -214,6 +254,36 @@ DecisionContextRef:
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+### 2026-07-10T04:26:46.784Z — VERIFY — ok
+
+By: CODER
+
+Note: Review fix pass: branchless MERGED metadata keeps merge_commit authoritative; focused doctor tests 14/14, typecheck, lint:core, ci:contract, and full fast suite pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T04:12:25.978Z, excerpt_hash=sha256:ab089f6d66391fc091abe1ee79a965a181ecde23a0a987e908266d0484c4a25f
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100404-WPRBVK-make-doctor-batch-consistency-rebase-aware/.agentplane/tasks/202607100404-WPRBVK/blueprint/resolved-snapshot.json
+- old_digest: 394824c048ea615d12625ab64d5cb51bf8663e6b1ec9c90b3b82aa94254bee32
+- current_digest: 394824c048ea615d12625ab64d5cb51bf8663e6b1ec9c90b3b82aa94254bee32
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100404-WPRBVK
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607100404-WPRBVK --branch task/202607100404-WPRBVK/make-doctor-batch-consistency-rebase-aware
+- diagnostic_command: agentplane pr check 202607100404-WPRBVK
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -226,3 +296,7 @@ DecisionContextRef:
 - Observation: Doctor preferred the primary task implementation SHA over MERGED PR metadata, so a GitHub rebase made a correctly reconciled included task look inconsistent.
   Impact: Operators received a false hosted-close recovery warning even though primary and included tasks were already closed on the landed main commit.
   Resolution: Doctor now prefers authoritative MERGED PR merge_commit, with task commit and head SHA only as fallbacks; a dedicated regression preserves the oversized-test baseline.
+
+- Observation: MERGED metadata without branch bypassed resolveLocalMergedPrMeta and could fall back to a stale pre-rebase task SHA.
+  Impact: Legacy branchless PR metadata could still produce the same false batch-consistency warning.
+  Resolution: Added direct merge_commit fallback before task/head SHA and converted the regression to a branchless MERGED fixture.
