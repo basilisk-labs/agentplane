@@ -19,8 +19,8 @@ Persist the successful release task reconciliation that marks included task 2026
 - Note:
 
 ```text
-WGV79Y readback is DONE at ccebff98c7c9; diff check and policy routing pass; doctor exits OK with a
-known rebase-aware batch-consistency warning scheduled for follow-up.
+WGV79Y is DONE at ccebff98c7c9; v0.6.22 plan passes Prettier, diff check, and policy routing; doctor
+exits OK with the known rebase-aware batch warning recorded as a follow-up.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -33,8 +33,9 @@ known rebase-aware batch-consistency warning scheduled for follow-up.
 
 ```text
  .agentplane/tasks/202607092209-F33MNN/README.md |  1 +
- .agentplane/tasks/202607100140-WGV79Y/README.md | 18 ++++++++++++++----
- 2 files changed, 15 insertions(+), 4 deletions(-)
+ .agentplane/tasks/202607100140-WGV79Y/README.md | 18 +++++++---
+ docs/internal/v0.6.22-refactor-plan.md          | 44 +++++++++++++++++--------
+ 3 files changed, 45 insertions(+), 18 deletions(-)
 ```
 
 </details>

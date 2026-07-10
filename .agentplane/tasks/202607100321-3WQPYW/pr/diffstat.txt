@@ -1,3 +1,4 @@
  .agentplane/tasks/202607092209-F33MNN/README.md |  1 +
- .agentplane/tasks/202607100140-WGV79Y/README.md | 18 ++++++++++++++----
- 2 files changed, 15 insertions(+), 4 deletions(-)
+ .agentplane/tasks/202607100140-WGV79Y/README.md | 18 +++++++---
+ docs/internal/v0.6.22-refactor-plan.md          | 44 +++++++++++++++++--------
+ 3 files changed, 45 insertions(+), 18 deletions(-)

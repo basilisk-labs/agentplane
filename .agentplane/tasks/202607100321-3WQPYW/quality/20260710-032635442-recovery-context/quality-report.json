@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100321-3WQPYW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T03:26:35.442Z",
+  "verdict": "pass",
+  "summary": "The metadata-only closure and its evidence are complete on the current branch head.",
+  "evaluated_sha": "7872cf6e1776a864aa788a551ea97e09420c1f06",
+  "blueprint_digest": "4a2e1c3111541ccbc8fb01175380a97e30d69e98d3f3e02a43c8fbc7f1681a5e",
+  "findings": [
+    "No blocking findings; WGV79Y is DONE at ccebff98 and the remaining doctor mismatch is a separate rebase-awareness defect."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100321-3WQPYW/README.md",
+    ".agentplane/tasks/202607100140-WGV79Y/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The landed primary PR commit is authoritative for the included task closure."
+  ],
+  "residual_risks": [
+    "Doctor continues to compare the pre-rebase primary task SHA until the planned follow-up lands."
+  ]
+}
