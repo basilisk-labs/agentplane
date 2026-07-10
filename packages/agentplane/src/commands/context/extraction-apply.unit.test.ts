@@ -237,11 +237,13 @@ describe("context extraction apply", () => {
             kind: "page_creation",
             summary: "Workflow page creation is source-backed.",
             source_refs: [{ path: "context/raw/research/source.md", lines: "9-12" }],
+            span_refs: ["span.source.2"],
             confidence: 0.82,
             status: "proposed",
             page_creation: {
               path: "context/wiki/workflows/context-writer.md",
               page_type: "workflow",
+              family_id: "family.workflows",
               decision: "create",
             },
           },
@@ -253,8 +255,21 @@ describe("context extraction apply", () => {
             confidence: 0.8,
             status: "accepted",
             topology_decision: {
-              source_shape: { primary: "codebase_and_task_history" },
-              canonical_page_families: [{ family_id: "family.workflows" }],
+              source_shape: {
+                primary: "codebase_and_task_history",
+                rationale: "The source describes a reusable context-writing workflow.",
+                evidence_span_ids: ["span.source.2"],
+              },
+              canonical_page_families: [
+                {
+                  family_id: "family.workflows",
+                  path_template: "context/wiki/workflows/{slug}.md",
+                  page_type: "workflow",
+                  creation_rule: "Create pages for reusable workflows.",
+                  page_vs_heading_rule: "Keep local details under stable headings.",
+                  source_evidence_span_ids: ["span.source.2"],
+                },
+              ],
             },
           },
           {

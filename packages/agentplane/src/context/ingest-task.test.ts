@@ -35,6 +35,8 @@ describe("context ingest task creation", () => {
     const context = task.extensions?.["agentplane.context"] as {
       mode?: string;
       blueprint?: { id?: string; required_gates?: string[] };
+      prompt_modules?: { content: string }[];
+      allowed_outputs?: string[];
       wiki?: {
         maintenance_mode?: string;
         raw_deletion_resilience_required?: boolean;
@@ -56,6 +58,12 @@ describe("context ingest task creation", () => {
       canonical_glossary_required: true,
     });
     expect(task.description).not.toContain("Blueprint: context.assimilation");
+    expect(task.description.length).toBeLessThan(1500);
+    expect(context.prompt_modules?.[0]?.content.length).toBeLessThan(6500);
+    expect(context.prompt_modules?.[0]?.content).toContain("extraction-contract.json");
+    expect(context.allowed_outputs).toContain(
+      ".agentplane/tasks/${taskId}/extraction-contract.json",
+    );
   });
 
   it("records deprecated workspace mode aliases without weakening the task", () => {
@@ -63,6 +71,6 @@ describe("context ingest task creation", () => {
 
     expect(task.description).toContain("Deprecated workspace mode alias: adaptive");
     expect(task.description).toContain("Context ingest now always creates maximum-assimilation");
-    expect(task.description).toContain("context.maximum_assimilation lifecycle");
+    expect(task.description).toContain("extraction-contract.json");
   });
 });

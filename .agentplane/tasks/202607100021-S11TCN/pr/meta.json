@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202607100021-S11TCN/make-context-extraction-packs-compact-and-schema",
+  "created_at": "2026-07-10T00:22:19.195Z",
+  "diffstat_sha256": "sha256:4a2ef48acadbe773a5f2ac2bfc76582c7834e7030f30e429c5519e53af9e9fc8",
+  "last_verified_at": "2026-07-10T00:43:26.990Z",
+  "last_verified_diffstat_sha256": "sha256:4a2ef48acadbe773a5f2ac2bfc76582c7834e7030f30e429c5519e53af9e9fc8",
+  "schema_version": 1,
+  "task_id": "202607100021-S11TCN",
+  "updated_at": "2026-07-10T00:43:13.248Z",
+  "verify": {
+    "status": "pass"
+  }
+}

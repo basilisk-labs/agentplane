@@ -5,6 +5,7 @@ import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { runTaskNewParsed } from "../task/new.js";
 import { fileExists, isRecord } from "./context-utils.js";
+import { writeContextExtractionContract } from "../../context/ingest-task-pack.js";
 import {
   buildOutput,
   renderText,
@@ -93,6 +94,10 @@ async function createExtractionTasks(opts: {
       .toSorted((a, b) => a.id.localeCompare(b.id));
     const createdTaskId = createdForPlan[0]?.id;
     if (!createdTaskId) continue;
+    await writeContextExtractionContract({
+      root: opts.ctx.resolvedProject.gitRoot,
+      taskId: createdTaskId,
+    });
     createdTaskIds.push(createdTaskId);
     for (const task of createdForPlan) knownTaskIds.add(task.id);
   }
@@ -145,6 +150,7 @@ async function createExtractionTasks(opts: {
     taskIds: createdTaskIds,
     changedPaths: [
       ...createdTaskIds.map((taskId) => `.agentplane/tasks/${taskId}/README.md`),
+      ...createdTaskIds.map((taskId) => `.agentplane/tasks/${taskId}/extraction-contract.json`),
       ...sourceChangedPaths,
     ],
   };

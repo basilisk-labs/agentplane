@@ -100,9 +100,60 @@ export type ContextExtractionConfidenceVector = {
   freshness: number;
 };
 
-export type ContextExtractionEntityResolutionRow = Record<string, unknown>;
-export type ContextExtractionPageCreationRow = Record<string, unknown>;
-export type ContextExtractionTopologyDecisionRow = Record<string, unknown>;
+export type ContextExtractionCandidateEntity = {
+  entity_id: string;
+  label?: string;
+  reason?: string;
+};
+
+export type ContextExtractionEntityResolutionRow = Record<string, unknown> & {
+  source_term: string;
+  resolution: string;
+  canonical_entity_id?: string;
+  proposed_entity_id?: string;
+  candidate_entities_checked?: ContextExtractionCandidateEntity[];
+  why_not_existing?: string;
+  why_not_alias_of_existing?: string;
+};
+
+export type ContextExtractionPageCreationRow = Record<string, unknown> & {
+  path: string;
+  page_type: string;
+  family_id: string;
+  decision: string;
+  canonical_entity_ids?: string[];
+};
+
+export type ContextExtractionSourceShape = {
+  primary: string;
+  rationale: string;
+  evidence_span_ids: string[];
+};
+
+export type ContextExtractionPageFamily = {
+  family_id: string;
+  path_template: string;
+  page_type: string;
+  creation_rule: string;
+  page_vs_heading_rule: string;
+  source_evidence_span_ids: string[];
+};
+
+export type ContextExtractionCanonicalPage = {
+  path: string;
+  page_type: string;
+  canonical_entity_ids?: string[];
+  required_sections?: string[];
+  source_evidence_span_ids: string[];
+};
+
+export type ContextExtractionTopologyDecisionRow = Record<string, unknown> & {
+  source_shape: ContextExtractionSourceShape;
+  canonical_page_families: ContextExtractionPageFamily[];
+  topology_version?: number;
+  canonical_pages?: ContextExtractionCanonicalPage[];
+  forbidden_creation_patterns?: string[];
+};
 
 export type ContextExtractionItem = {
   id: string;

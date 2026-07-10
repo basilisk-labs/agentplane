@@ -35,6 +35,21 @@ describe("context ingest task pack", () => {
   it("creates task-bound source lock, canonical snapshot, span skeleton, context pack, and expected artifacts", async () => {
     const root = await tempRoot();
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nStable contract.\n");
+    await write(
+      root,
+      "context/wiki/payments.md",
+      "---\ntitle: Payments\n---\n\n# Payments\n\nSee [[payment-api|Payment API]].\n",
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/graph/entities.jsonl",
+      `${JSON.stringify({ id: "entity.payments", kind: "concept", label: "Payments" })}\n`,
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/facts/facts.jsonl",
+      `${JSON.stringify({ id: "fact.payments", summary: "Payments are documented." })}\n`,
+    );
     vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 
     const tasks: { id: string; owner: string }[] = [];
@@ -71,6 +86,23 @@ describe("context ingest task pack", () => {
       root,
       `${taskRoot}/expected-artifacts.json`,
     );
+    const extractionContract = await readJson<{
+      sgr_schema_version: number;
+      typed_payloads: Record<string, string[]>;
+      example: { extracted_items: { kind: string }[] };
+    }>(root, `${taskRoot}/extraction-contract.json`);
+    const canonicalSnapshot = await readJson<{
+      version: number;
+      surfaces: {
+        wiki: { file_count: number; sha256: string };
+        facts: { row_count: number; sha256: string };
+        graph_entities: { row_count: number; sha256: string };
+      };
+      candidates: {
+        wiki_pages: { path: string; title: string }[];
+        graph_entities: { id: string; label: string }[];
+      };
+    }>(root, `${taskRoot}/canonical-snapshot.json`);
     const skeletonText = await readFile(
       path.join(root, taskRoot, "source-spans.skeleton.jsonl"),
       "utf8",
@@ -85,7 +117,36 @@ describe("context ingest task pack", () => {
     expect(spans[0]).toMatchObject({ source_path: "context/raw/specs/payment-api.md" });
     expect(spans[0]?.span_id).toMatch(/^span\.[a-f0-9]{12}\.[a-f0-9]{12}\.1$/u);
     expect(contextPack).toContain("Generated spans: 1.");
+    expect(contextPack).toContain("exact SGR v2 payload requirements");
+    expect(extractionContract.sgr_schema_version).toBe(2);
+    expect(extractionContract.typed_payloads.topology_decision).toContain(
+      "topology_decision.source_shape.rationale",
+    );
+    expect(extractionContract.example.extracted_items.map((item) => item.kind)).toEqual(
+      expect.arrayContaining([
+        "entity_resolution",
+        "page_creation",
+        "topology_decision",
+        "coverage",
+      ]),
+    );
+    expect(canonicalSnapshot).toMatchObject({
+      version: 2,
+      surfaces: {
+        wiki: { file_count: 1 },
+        facts: { row_count: 1 },
+        graph_entities: { row_count: 1 },
+      },
+      candidates: {
+        wiki_pages: [{ path: "context/wiki/payments.md", title: "Payments" }],
+        graph_entities: [{ id: "entity.payments", label: "Payments" }],
+      },
+    });
+    expect(canonicalSnapshot.surfaces.wiki.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
+    expect(canonicalSnapshot.surfaces.facts.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
+    expect(canonicalSnapshot.surfaces.graph_entities.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
     expect(expectedArtifacts.required).toContain(`${taskRoot}/source-spans.skeleton.jsonl`);
+    expect(expectedArtifacts.required).toContain(`${taskRoot}/extraction-contract.json`);
     expect(expectedArtifacts.required).toEqual(
       expect.arrayContaining([
         ".agentplane/context/derived/ontology/entity-resolution.jsonl",
@@ -107,6 +168,7 @@ describe("context ingest task pack", () => {
         ".agentplane/context/derived/sources/**",
         ".agentplane/context/derived/wiki/**",
         ".agentplane/tasks/${taskId}/context-pack.md",
+        ".agentplane/tasks/${taskId}/extraction-contract.json",
         ".agentplane/tasks/${taskId}/canonical-snapshot.json",
         ".agentplane/tasks/${taskId}/source-set.lock.json",
         ".agentplane/tasks/${taskId}/source-spans.skeleton.jsonl",
