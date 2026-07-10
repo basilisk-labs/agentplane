@@ -13,6 +13,10 @@ import {
 } from "../shared/task-backend.js";
 import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
 import { parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
+import {
+  readPreMergeClosureMarker,
+  type PreMergeClosureMarker,
+} from "../shared/pr-meta/pre-merge-closure.js";
 import { readTaskHandoffLatest, resolveTaskHandoffPaths } from "../shared/task-handoff.js";
 import { readIntegrationQueue, type IntegrationQueueEntry } from "../pr/integrate/queue-state.js";
 import { checkGithubUnresolvedReviewThreads } from "./internal/github-review-threads.js";
@@ -89,6 +93,18 @@ type HandoffStatus =
       routeStatus: string | null;
       nextActions: string[];
     };
+
+export function matchesMergedPreMergeClosure(opts: {
+  pr: RemotePrStatus;
+  branch: string | null;
+  marker: PreMergeClosureMarker | null;
+}): boolean {
+  return (
+    opts.pr.state === "MERGED" &&
+    opts.marker?.branch === opts.branch &&
+    (opts.marker.prNumber === undefined || opts.marker.prNumber === opts.pr.prNumber)
+  );
+}
 
 async function readPrMetaIfPresent(metaPath: string, taskId: string): Promise<PrMeta | null> {
   try {
@@ -201,6 +217,7 @@ async function resolveCloseTailStatus(opts: {
   taskClosePrefix: string;
   baseBranch: string | null;
   remotePr: RemotePrStatus;
+  preMergeClosureRecorded: boolean;
 }): Promise<CloseTailStatus> {
   const base = opts.baseBranch?.trim() ?? "";
   if (base) {
@@ -211,6 +228,9 @@ async function resolveCloseTailStatus(opts: {
       baseBranch: base,
     }).catch(() => false);
     if (recorded) return { state: "recorded_on_base", base };
+    if (opts.remotePr.state === "MERGED" && opts.preMergeClosureRecorded) {
+      return { state: "recorded_on_base", base };
+    }
   }
 
   const mergeCommit = opts.remotePr.state === "MERGED" ? opts.remotePr.mergeCommit : null;
@@ -295,6 +315,7 @@ export async function resolvePrFlowStatus(opts: {
       })
     : null;
   const pr = remoteStatusFromObserved(observed, meta);
+  const preMergeClosure = readPreMergeClosureMarker(meta);
   const baseBranch =
     pr.state === "not_found"
       ? (normalizeBaseBranch(meta?.base) ?? "main")
@@ -306,6 +327,7 @@ export async function resolvePrFlowStatus(opts: {
     taskClosePrefix: config.branch.task_close_prefix,
     baseBranch,
     remotePr: pr,
+    preMergeClosureRecorded: matchesMergedPreMergeClosure({ pr, branch, marker: preMergeClosure }),
   });
   const prNumber = pr.state === "not_found" ? null : pr.prNumber;
   const [hostedChecks, reviewThreads, queue, handoff] = await Promise.all([
