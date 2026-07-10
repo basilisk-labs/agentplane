@@ -13,7 +13,7 @@ Created: 2026-07-10T11:09:07.686Z
 ## Verification
 
 - State: ok
-- Note: Focused PR-flow/queue tests passed (5 files, 17 tests); typecheck, lint:core, ci:contract, test:fast (364 files, 2150 tests), policy routing, doctor, and full-fast local CI passed. Number lookup validates head/base; queue identity fallback is conservative.
+- Note: Review follow-up verified: queue-only OPEN fallback is restricted to queued entries; handoff without authoritative PR evidence remains not_found for recovery. Focused suite passed (3 files, 14 tests), typecheck and lint:core passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,10 +31,10 @@ Created: 2026-07-10T11:09:07.686Z
 ```text
  .agentplane/tasks/202607092209-F33MNN/README.md    |   1 +
  docs/internal/v0.6.22-refactor-plan.md             |   5 +-
- .../src/cli/run-cli.core.pr-flow.status.test.ts    | 206 ++++++++++++++++++++-
- packages/agentplane/src/commands/pr/flow-status.ts |  83 ++++++---
+ .../src/cli/run-cli.core.pr-flow.status.test.ts    | 222 ++++++++++++++++++++-
+ packages/agentplane/src/commands/pr/flow-status.ts |  83 +++++---
  .../src/commands/pr/internal/sync-github.ts        |  39 ++++
- 5 files changed, 304 insertions(+), 30 deletions(-)
+ 5 files changed, 320 insertions(+), 30 deletions(-)
 ```
 
 </details>

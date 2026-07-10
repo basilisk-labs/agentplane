@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607101059-S3N0X5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T11:26:04.830Z",
+  "verdict": "pass",
+  "summary": "Review follow-up preserves queued pre-merge safety without masking stale handoff lanes.",
+  "evaluated_sha": "b594b8e9a1b29c1813b3c3dfbdbba4d8dbd97a8c",
+  "blueprint_digest": "fbb7a80b15d0ad2460b867548da199a0873c9279bc5c21640671a30ac1a6ff7d",
+  "findings": [
+    "Queue-only PR identity is trusted conservatively only while status is queued; handoff entries still require authoritative provider or task metadata and remain recoverable when absent."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607101059-S3N0X5/README.md",
+    "packages/agentplane/src/commands/pr/flow-status.ts",
+    "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
