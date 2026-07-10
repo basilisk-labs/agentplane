@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100404-WPRBVK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T04:26:59.016Z",
+  "verdict": "pass",
+  "summary": "Doctor remains rebase-aware for both current and branchless legacy MERGED PR metadata.",
+  "evaluated_sha": "2c964639192339d03846ae4960d533f368bf67d0",
+  "blueprint_digest": "394824c048ea615d12625ab64d5cb51bf8663e6b1ec9c90b3b82aa94254bee32",
+  "findings": [
+    "No blocking findings; direct merge_commit fallback precedes stale task/head SHA, the branchless regression passes, and focused, type, lint, contract, and full fast checks are green."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100404-WPRBVK/README.md",
+    "packages/agentplane/src/commands/doctor.branch-pr.batch.test.ts",
+    "packages/agentplane/src/commands/doctor/branch-pr.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
