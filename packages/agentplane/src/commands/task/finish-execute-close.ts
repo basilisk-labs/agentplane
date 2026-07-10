@@ -15,6 +15,16 @@ import { createTaskCloseCommit } from "./finish-shared.js";
 import { materializeBranchPrCloseTail } from "./finish-close.js";
 import type { FinishExecutionPlan, FinishOptions } from "./finish-types.js";
 
+function isActiveTaskArtifactPath(opts: {
+  relPath: string;
+  workflowDir: string;
+  taskId: string;
+}): boolean {
+  const relPath = opts.relPath.replaceAll("\\", "/");
+  const workflowDir = opts.workflowDir.replaceAll("\\", "/").replace(/\/+$/u, "");
+  return relPath.startsWith(`${workflowDir}/${opts.taskId}/`);
+}
+
 export async function assertCloseCommitCanMutateTaskState(opts: {
   ctx: CommandContext;
   options: FinishOptions;
@@ -76,7 +86,15 @@ export async function assertCloseCommitCanMutateTaskState(opts: {
   const ignored =
     ctx.config.workflow_mode === "direct"
       ? await resolveIgnoredDirectCloseDirtyPaths({ ctx, taskId })
-      : [];
+      : plan.preMergeClosure
+        ? unstaged.filter((relPath) =>
+            isActiveTaskArtifactPath({
+              relPath,
+              workflowDir: ctx.config.paths.workflow_dir,
+              taskId,
+            }),
+          )
+        : [];
   const blockingUnstaged = unstaged.filter((relPath) => !ignored.includes(relPath));
   if (blockingUnstaged.length === 0) return;
 
