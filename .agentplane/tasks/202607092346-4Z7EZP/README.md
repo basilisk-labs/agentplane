@@ -4,7 +4,7 @@ title: "Make AgentPlane loops executable, resumable, and token-aware"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -27,22 +27,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T00:18:50.972Z"
+  updated_at: "2026-07-10T00:19:23.024Z"
   updated_by: "EVALUATOR"
-  note: "The loop runtime matches the approved agentplane-loops scope: deterministic typed transitions, durable resume, enforced budgets and permissions, compact prompt propagation, token accounting, and fail-closed unsupported loops are covered by focused tests and synchronized docs/schemas."
-  evaluated_sha: "f8ded86e6aa097574f8b4a01f22b829da51c5830"
+  note: "The reviewed head satisfies the approved agentplane-loops loop-runtime contract and all task-scoped deterministic gates."
+  evaluated_sha: "aaf67d5127a823aaf0259770166daa824e143972"
   blueprint_digest: "04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137"
   evidence_refs:
     - ".agentplane/tasks/202607092346-4Z7EZP/README.md"
-    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-001850972-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-001850972-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-001850972-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-001923024-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-001923024-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-001923024-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607092346-4Z7EZP/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/loops/engine.test.ts"
     - "packages/agentplane/src/commands/loop/loop.command.test.ts"
   findings:
-    - "No confirmed task-scoped defect remains in the reviewed diff."
-    - "Global schemas:check and format:check residuals are pre-existing and isolated from touched loop files."
+    - "No confirmed task-scoped defect remains after PR artifact refresh."
+    - "Unsupported built-in loops remain intentionally fail-closed; tdd.fix is the only end-to-end executable slice."
 commit: null
 comments:
   -

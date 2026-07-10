@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092346-4Z7EZP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T00:18:50.972Z",
+  "verdict": "pass",
+  "summary": "The loop runtime matches the approved agentplane-loops scope: deterministic typed transitions, durable resume, enforced budgets and permissions, compact prompt propagation, token accounting, and fail-closed unsupported loops are covered by focused tests and synchronized docs/schemas.",
+  "evaluated_sha": "f8ded86e6aa097574f8b4a01f22b829da51c5830",
+  "blueprint_digest": "04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137",
+  "findings": [
+    "No confirmed task-scoped defect remains in the reviewed diff.",
+    "Global schemas:check and format:check residuals are pre-existing and isolated from touched loop files."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092346-4Z7EZP/README.md",
+    "packages/agentplane/src/loops/engine.test.ts",
+    "packages/agentplane/src/commands/loop/loop.command.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Only tdd.fix is executable end-to-end; other built-in loops intentionally remain fail-closed until dedicated executors are implemented."
+  ]
+}
