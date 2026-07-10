@@ -11,8 +11,11 @@
   "branch": "task/202607100106-YP0PYE/bound-context-extraction-batches-by-source-bytes",
   "created_at": "2026-07-10T01:07:58.209Z",
   "diffstat_sha256": "sha256:715db95f1a29b31762de91ac1d37f37116082233e15dcc300779b18bc315f44c",
+  "head_sha": "e8a84de617da0acbf36a0bc2dad18913b4dac5ae",
   "last_verified_at": "2026-07-10T02:32:40.925Z",
   "last_verified_diffstat_sha256": "sha256:715db95f1a29b31762de91ac1d37f37116082233e15dcc300779b18bc315f44c",
+  "merge_commit": "ccebff98c7c97282e46f0825af6b8c51b92a6dcb",
+  "merged_at": "2026-07-10T02:40:18Z",
   "pr_number": 4563,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4563",
   "pre_merge_closure": {
@@ -26,9 +29,9 @@
     "202607100140-WGV79Y"
   ],
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202607100106-YP0PYE",
-  "updated_at": "2026-07-10T01:29:12.616Z",
+  "updated_at": "2026-07-10T02:40:18Z",
   "verify": {
     "status": "pass"
   }

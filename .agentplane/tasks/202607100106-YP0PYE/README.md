@@ -98,9 +98,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pass after review fix: context harvest tests 15/15; lifecycle/batch tests 19/19; AgentPlane typecheck; lint:core; ci:contract; targeted local CI; full fast suite 361 files and 2,144 tests. Live dry-run reported source_bytes=17,873, exactly matching README plus available ACR bytes."
+  -
+    type: "status"
+    at: "2026-07-10T02:40:18Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Hosted PR #4563 merged on GitHub main; task projection reconciled from hosted PR artifacts."
 doc_version: 3
-doc_updated_at: "2026-07-10T02:32:42.178Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-10T02:40:18Z"
+doc_updated_by: "INTEGRATOR"
 description: "For v0.6.22, make task-history context extraction batching respect a deterministic serialized-source byte budget in addition to task count, isolate oversized single sources, surface batch byte metadata, and converge queued/ingested duplicate detection on the same versioned source fingerprint without breaking existing CLI defaults."
 sections:
   Summary: |-
