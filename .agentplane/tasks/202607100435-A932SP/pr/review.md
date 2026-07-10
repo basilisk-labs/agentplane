@@ -12,8 +12,8 @@ Created: 2026-07-10T04:36:53.058Z
 
 ## Verification
 
-- State: ok
-- Note: Verified CI repair at 23be64c: Knip baseline 574/574, focused 3 files/12 tests, typecheck, ci:contract, and full fast 364 files/2150 tests passed.
+- State: needs_rework
+- Note: Review thread identified missing task-closure and basis/head validation before queue release; implement the same validation contract as Hosted Close.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,11 +29,11 @@ Created: 2026-07-10T04:36:53.058Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202607092209-F33MNN/README.md    |  2 +
- docs/internal/v0.6.22-refactor-plan.md             |  5 +-
- .../src/commands/pr/flow-status.pre-merge.test.ts  | 53 ++++++++++++++++++++++
- packages/agentplane/src/commands/pr/flow-status.ts | 25 ++++++++++
- 4 files changed, 83 insertions(+), 2 deletions(-)
+ .agentplane/tasks/202607092209-F33MNN/README.md    |   2 +
+ docs/internal/v0.6.22-refactor-plan.md             |   5 +-
+ .../src/commands/pr/flow-status.pre-merge.test.ts  | 117 +++++++++++++++++++++
+ packages/agentplane/src/commands/pr/flow-status.ts |  51 +++++++++
+ 4 files changed, 173 insertions(+), 2 deletions(-)
 ```
 
 </details>
