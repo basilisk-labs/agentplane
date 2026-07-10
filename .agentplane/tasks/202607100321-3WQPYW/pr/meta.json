@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607100321-3WQPYW/persist-reconciled-included-batch-closure-for-v0",
   "created_at": "2026-07-10T03:22:40.715Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:c6ed9fccf2bc0ee816be460c4020832ec588b3867eee2bbb8e699c801c3a11ee",
   "last_verified_at": null,
   "schema_version": 1,
   "task_id": "202607100321-3WQPYW",

@@ -1,7 +1,8 @@
 ---
 id: "202607100140-WGV79Y"
 title: "Allow pre-merge closure to stage active task artifacts"
-status: "DOING"
+result_summary: "Shipped on main and reconciled from local branch_pr state."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 17
@@ -51,7 +52,9 @@ quality_review:
     - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
   findings:
     - "Lifecycle and batch refresh tests 19/19 pass; typecheck, lint:core, ci:contract, and the 2,143-test fast suite are green."
-commit: null
+commit:
+  hash: "ccebff98c7c97282e46f0825af6b8c51b92a6dcb"
+  message: "Shipped on main before canonical task closure"
 comments:
   -
     author: "CODER"
@@ -88,9 +91,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pass: lifecycle and batch refresh tests 19/19; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,143 tests. Automatic PR refresh preserves linked batch ownership byte-for-byte while explicit pr open can still change or clear the batch."
+  -
+    type: "status"
+    at: "2026-07-10T03:21:23.452Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Local branch_pr reconciliation detected task commit ccebff98c7c9 on base main; canonical task state normalized after shipment."
 doc_version: 3
-doc_updated_at: "2026-07-10T02:14:46.534Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-10T03:21:23.452Z"
+doc_updated_by: "INTEGRATOR"
 description: "For v0.6.22, fix branch_pr pre-merge closure so an unstaged README or quality artifact inside the active task subtree is treated as close-commit input rather than unrelated dirty state, while unrelated tracked files and other task artifacts remain blocking."
 sections:
   Summary: |-
