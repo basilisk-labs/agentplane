@@ -1163,11 +1163,11 @@ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
 
 Execution is usually owned by agents working in the repository through Codex, an IDE, or another
-human-assisted workflow. For repositories that opt into the local runner path, `agentplane task run
-<task-id>` prepares AgentPlane runner artifacts and executes the configured adapter; with the default
-Codex adapter the prompt begins with `/goal ...` before the runner bundle contract.
+human-assisted workflow. Runner execution remains outside the normal command path for ordinary
+agents; the route oracle should point agents at the current checkout unless an explicit integration
+such as `parallel-codex` or a configured custom runner owns the run.
 
-Runner observability commands are part of the same public surface:
+Runner maintenance commands are intentionally kept on the hidden help surface:
 
 ```bash
 agentplane task run status <task-id> --json
@@ -1176,7 +1176,8 @@ agentplane task run logs <task-id> --stream events --follow
 ```
 
 Use them from the parent/orchestrator context to monitor child runners without taking over their
-lifecycle authority.
+lifecycle authority. Do not introduce them into ordinary task execution unless the task route or
+recipe explicitly delegates runner control.
 
 ## Advanced task projections
 

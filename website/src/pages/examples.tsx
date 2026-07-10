@@ -47,7 +47,7 @@ const examples = [
 ];
 
 function trackExample(title: string): void {
-  const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+  const gtag = (globalThis.window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
   gtag?.("event", "view_example", { event_category: "examples", example: title });
 }
 

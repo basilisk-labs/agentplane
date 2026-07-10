@@ -16,7 +16,7 @@ function formatStars(count: number): string {
 
 function readCachedStars(): number | null {
   if (globalThis.window === undefined) return null;
-  const raw = window.localStorage.getItem(cacheKey);
+  const raw = globalThis.localStorage.getItem(cacheKey);
   if (!raw) return null;
   const parsed = JSON.parse(raw) as { value?: number; expiresAt?: number };
   if (typeof parsed.value !== "number" || typeof parsed.expiresAt !== "number") return null;
@@ -25,14 +25,14 @@ function readCachedStars(): number | null {
 }
 
 function writeCachedStars(value: number): void {
-  window.localStorage.setItem(
+  globalThis.localStorage.setItem(
     cacheKey,
     JSON.stringify({ value, expiresAt: Date.now() + cacheTtlMs }),
   );
 }
 
 function trackClick(): void {
-  const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+  const gtag = (globalThis.window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
   gtag?.("event", "navbar_github_star_click", {
     event_category: "navbar",
     location: "navbar",
@@ -59,6 +59,7 @@ export default function GitHubStarsButton(): ReactNode {
       .then((data) => {
         setStars(data.stargazers_count);
         writeCachedStars(data.stargazers_count);
+        return data.stargazers_count;
       })
       .catch(() => setStars(null));
 

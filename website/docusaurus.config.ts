@@ -19,12 +19,24 @@ function blogEditUrl(blogPath: string): string {
   return repoEditUrl(`website/blog/${blogPath}`);
 }
 
+function isDocsNavigationModule(value: unknown): value is { checkDocsNavigation: () => void } {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "checkDocsNavigation" in value &&
+    typeof value.checkDocsNavigation === "function"
+  );
+}
+
 function docsNavigationCheckPlugin() {
   return {
     name: "agentplane-docs-navigation-check",
     async postBuild() {
-      const { checkDocsNavigation } = await import("./scripts/check-navigation.mjs");
-      checkDocsNavigation();
+      const navigationModule: unknown = await import("./scripts/check-navigation.mjs");
+      if (!isDocsNavigationModule(navigationModule)) {
+        throw new TypeError("website navigation checker does not export checkDocsNavigation");
+      }
+      navigationModule.checkDocsNavigation();
     },
   };
 }

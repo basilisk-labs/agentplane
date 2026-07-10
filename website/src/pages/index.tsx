@@ -99,7 +99,7 @@ function Hero(): ReactNode {
     await navigator.clipboard.writeText(installCommand);
     setCopied(true);
     trackHomeEvent("copy_install_click", { location: "hero" });
-    window.setTimeout(() => setCopied(false), 1600);
+    globalThis.setTimeout(() => setCopied(false), 1600);
   }
 
   return (

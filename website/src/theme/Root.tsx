@@ -100,7 +100,7 @@ function NavbarScrollState(): null {
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
-      window.requestAnimationFrame(updateState);
+      globalThis.requestAnimationFrame(updateState);
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -109,8 +109,7 @@ function NavbarScrollState(): null {
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", updateState);
-      root.classList.remove("nav-scrolled");
-      root.classList.remove("nav-floating-visible");
+      root.classList.remove("nav-scrolled", "nav-floating-visible");
     };
   }, []);
 
@@ -131,7 +130,7 @@ async function copyNavbarInstallCommand(
 }
 
 function trackNavEvent(eventName: string): void {
-  const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+  const gtag = (globalThis.window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
   gtag?.("event", eventName, { event_category: "navbar", location: "nav" });
 }
 
@@ -169,7 +168,7 @@ function NavbarInstallCopy(): null {
 function NavbarGithubButton(): null {
   useEffect(() => {
     const rightItems = document.querySelector<HTMLElement>(".navbar__items--right");
-    if (!rightItems || rightItems.querySelector(".navbar-github-button-host")) return;
+    if (!rightItems || rightItems.querySelector(":scope .navbar-github-button-host")) return;
 
     const host = document.createElement("span");
     host.className = "navbar-github-button-host navbar__item";
@@ -178,13 +177,13 @@ function NavbarGithubButton(): null {
     link.className = "github-button";
     link.href = "https://github.com/basilisk-labs/agentplane";
     link.textContent = "Github";
-    link.setAttribute("data-icon", "octicon-star");
-    link.setAttribute("data-size", "large");
-    link.setAttribute("data-show-count", "true");
+    link.dataset.icon = "octicon-star";
+    link.dataset.size = "large";
+    link.dataset.showCount = "true";
     link.setAttribute("aria-label", "Open basilisk-labs/agentplane on GitHub");
 
     const handleClick = () => {
-      const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+      const gtag = (globalThis.window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
       gtag?.("event", "github_star_click", {
         event_category: "home",
         location: "nav",
@@ -193,11 +192,11 @@ function NavbarGithubButton(): null {
     };
 
     link.addEventListener("click", handleClick);
-    host.appendChild(link);
-    rightItems.appendChild(host);
+    host.append(link);
+    rightItems.append(host);
 
-    const fallbackTimer = window.setTimeout(() => {
-      if (host.querySelector("iframe")) return;
+    const fallbackTimer = globalThis.setTimeout(() => {
+      if (host.querySelector(":scope iframe")) return;
       host.replaceChildren();
       const fallbackLink = document.createElement("a");
       fallbackLink.className = "navbar-github-button-fallback";
@@ -205,27 +204,29 @@ function NavbarGithubButton(): null {
       fallbackLink.setAttribute("aria-label", "Open basilisk-labs/agentplane on GitHub");
       fallbackLink.textContent = "Github";
       fallbackLink.addEventListener("click", handleClick);
-      host.appendChild(fallbackLink);
+      host.append(fallbackLink);
     }, 2500);
 
-    if (!document.querySelector('script[src="https://buttons.github.io/buttons.js"]')) {
+    if (document.querySelector('script[src="https://buttons.github.io/buttons.js"]')) {
+      const githubButton = (
+        globalThis.window as Window & {
+          GitHubButton?: { render?: (element: HTMLElement) => void };
+        }
+      ).GitHubButton;
+      githubButton?.render?.(link);
+    } else {
       const script = document.createElement("script");
       script.async = true;
       script.defer = true;
       script.src = "https://buttons.github.io/buttons.js";
-      document.body.appendChild(script);
-    } else {
-      const githubButton = (
-        window as Window & { GitHubButton?: { render?: (element: HTMLElement) => void } }
-      ).GitHubButton;
-      githubButton?.render?.(link);
+      document.body.append(script);
     }
 
     return () => {
-      window.clearTimeout(fallbackTimer);
+      globalThis.clearTimeout(fallbackTimer);
       link.removeEventListener("click", handleClick);
       host
-        .querySelector(".navbar-github-button-fallback")
+        .querySelector(":scope .navbar-github-button-fallback")
         ?.removeEventListener("click", handleClick);
       host.remove();
     };

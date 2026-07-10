@@ -557,6 +557,14 @@
       "svgSha256": "19450fefd6ce734060060b01517f6a0a368140aa757b5ce81f49c5627935d014"
     },
     {
+      "route": "/docs/internal/v0.6.22-refactor-plan",
+      "output": "static/img/social/docs/internal/v0.6.22-refactor-plan.png",
+      "section": "Internal",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "V0.6.22 Refactor Plan",
+      "svgSha256": "1775a5d8b827bb44b5d162079d3fecda2920f0319354ceae72483b33dd42b686"
+    },
+    {
       "route": "/docs/launch/checklist",
       "output": "static/img/social/docs/launch/checklist.png",
       "section": "Launch",

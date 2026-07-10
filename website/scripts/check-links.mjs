@@ -47,7 +47,7 @@ function routeExists(route) {
   return false;
 }
 
-for (const file of walk(docsRoot).concat(walk(path.join(websiteRoot, "src")))) {
+for (const file of [...walk(docsRoot), ...walk(path.join(websiteRoot, "src"))]) {
   const content = readFileSync(file, "utf8");
   const matches = content.matchAll(/(?:to|href)=["'](?<route>\/[^"']+)["']|\]\((?<md>\/[^)]+)\)/g);
   for (const match of matches) {

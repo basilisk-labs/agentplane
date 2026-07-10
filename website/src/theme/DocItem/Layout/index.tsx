@@ -27,7 +27,6 @@ export default function DocItemLayout(props: Props): ReactNode {
         <Head
           children={
             // Docusaurus Head requires an explicit children prop under this React 19 TS config.
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             <>
               <meta property="og:image" content={socialImageUrl} />
               <meta property="og:image:width" content="1280" />
