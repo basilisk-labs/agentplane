@@ -4,7 +4,7 @@ title: "Make AgentPlane loops executable, resumable, and token-aware"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -21,28 +21,28 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T00:48:22.197Z"
+  updated_at: "2026-07-10T00:56:42.177Z"
   updated_by: "REVIEWER"
-  note: "Hotspot refactor preserves behavior: executable TDD runtime moved to loop.execute.ts; loop.command.ts is 499 lines. hotspots:check, typecheck, ESLint, and 35 focused loop/runner tests pass."
+  note: "Final static gate passes after removing unused loop exports: knip baseline, lint:core, hotspot, typecheck, focused tests, format, schemas, docs and routing are green."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T00:49:37.929Z"
+  updated_at: "2026-07-10T00:56:43.951Z"
   updated_by: "EVALUATOR"
-  note: "Final reviewed head passes hotspot, core lint, typecheck, format, schema, docs, routing, and focused loop gates; the executable runtime was split without behavioral drift."
-  evaluated_sha: "90975934d25f02346597d7857d1d0fa3008c3dc1"
+  note: "Final head satisfies all local contract and static gates, including Knip baseline; no unresolved review defect remains."
+  evaluated_sha: "c7a6251174145a9e09f1c80acd356595cfe720a9"
   blueprint_digest: "04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137"
   evidence_refs:
     - ".agentplane/tasks/202607092346-4Z7EZP/README.md"
-    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-004937929-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-004937929-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-004937929-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-005643951-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-005643951-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607092346-4Z7EZP/quality/20260710-005643951-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607092346-4Z7EZP/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/loops/model.ts"
     - "packages/agentplane/src/commands/loop/loop.execute.ts"
-    - "packages/agentplane/src/commands/loop/loop.command.test.ts"
   findings:
-    - "loop.command.ts is reduced from 821 to 499 lines; executable TDD runtime is isolated in loop.execute.ts."
-    - "All prior review fixes and regressions remain intact."
+    - "Unused loop-only exports were made internal or removed without changing runtime contracts."
+    - "All deterministic and CI-parity checks are green locally."
 commit: null
 comments:
   -
@@ -86,8 +86,14 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Hotspot refactor preserves behavior: executable TDD runtime moved to loop.execute.ts; loop.command.ts is 499 lines. hotspots:check, typecheck, ESLint, and 35 focused loop/runner tests pass."
+  -
+    type: "verify"
+    at: "2026-07-10T00:56:42.177Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Final static gate passes after removing unused loop exports: knip baseline, lint:core, hotspot, typecheck, focused tests, format, schemas, docs and routing are green."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:48:22.354Z"
+doc_updated_at: "2026-07-10T00:56:42.288Z"
 doc_updated_by: "CODER"
 description: "Implement an end-to-end deterministic loop engine on agentplane-loops without touching main: typed transitions, durable checkpoints and resume, step-specific prompt/context propagation, enforced eligibility/permissions/budgets, token accounting, focused checks/evaluator decisions, CLI/docs/schema alignment, and regression tests."
 sections:
@@ -282,6 +288,36 @@ sections:
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-07-10T00:56:42.177Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Final static gate passes after removing unused loop exports: knip baseline, lint:core, hotspot, typecheck, focused tests, format, schemas, docs and routing are green.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:48:22.354Z, excerpt_hash=sha256:db0ecec4f82d546cfddd454677dcab04255605392b22bc78e32417e09e811d98
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202607092346-4Z7EZP-make-agentplane-loops-executable-resumable-and-t/.agentplane/tasks/202607092346-4Z7EZP/blueprint/resolved-snapshot.json
+    - old_digest: 04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137
+    - current_digest: 04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607092346-4Z7EZP
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202607092346-4Z7EZP
+    - diagnostic_command: agentplane pr check 202607092346-4Z7EZP
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the implementation commit(s) for task 4Z7EZP on the loop task branch. Loop execution must then return to the existing dry-run or single-agent-step behavior without changing main or shared external state."
   Findings: |-
@@ -298,7 +334,16 @@ sections:
     - Observation: Repository-wide schemas:check and format:check remain red only on unrelated existing artifacts; all touched loop schemas and files pass targeted checks.
       Impact: Global gates cannot be reported as fully green, but no task-scoped regression remains.
       Resolution: Keep unrelated schema/task-export and acr.json cleanup outside 4Z7EZP; use focused tests, identical loop-schema hashes, and targeted formatting as closure evidence.
-extensions: {}
+extensions:
+  branch_pr_batch:
+    base: "agentplane-loops"
+    branch: "task/202607092346-4Z7EZP/make-agentplane-loops-executable-resumable-and-t"
+    included_task_ids:
+      - "202607100026-EBQXPZ"
+      - "202607100033-4T5V86"
+    primary_task_id: "202607092346-4Z7EZP"
+    role: "primary"
+    updated_at: "2026-07-10T00:56:47.733Z"
 id_source: "generated"
 ---
 ## Summary
@@ -480,6 +525,36 @@ Note: Hotspot refactor preserves behavior: executable TDD runtime moved to loop.
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:41:15.199Z, excerpt_hash=sha256:db0ecec4f82d546cfddd454677dcab04255605392b22bc78e32417e09e811d98
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202607092346-4Z7EZP-make-agentplane-loops-executable-resumable-and-t/.agentplane/tasks/202607092346-4Z7EZP/blueprint/resolved-snapshot.json
+- old_digest: 04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137
+- current_digest: 04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607092346-4Z7EZP
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202607092346-4Z7EZP
+- diagnostic_command: agentplane pr check 202607092346-4Z7EZP
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-07-10T00:56:42.177Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Final static gate passes after removing unused loop exports: knip baseline, lint:core, hotspot, typecheck, focused tests, format, schemas, docs and routing are green.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:48:22.354Z, excerpt_hash=sha256:db0ecec4f82d546cfddd454677dcab04255605392b22bc78e32417e09e811d98
 
 Details:
 
