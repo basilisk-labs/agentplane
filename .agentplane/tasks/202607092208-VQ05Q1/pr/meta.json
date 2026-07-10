@@ -3,11 +3,12 @@
   "branch": "task/202607092208-VQ05Q1/split-context-pipeline-hotspots-for-v0-6-22",
   "created_at": "2026-07-10T15:55:48.138Z",
   "diffstat_sha256": "sha256:1e2ef810081e6c27e936f017e6edf27b2b6aaa22d0c902c99e8708bfbd2d33f3",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-10T16:10:11.000Z",
+  "last_verified_diffstat_sha256": "sha256:1e2ef810081e6c27e936f017e6edf27b2b6aaa22d0c902c99e8708bfbd2d33f3",
   "schema_version": 1,
   "task_id": "202607092208-VQ05Q1",
   "updated_at": "2026-07-10T15:55:48.138Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

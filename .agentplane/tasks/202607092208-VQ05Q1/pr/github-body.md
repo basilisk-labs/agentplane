@@ -15,8 +15,13 @@ Decompose the oversized context dashboard, wiki reports, extraction writer, and 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified context behavior, artifact contracts, hotspot reduction, type safety, CI contract, and full
+fast suite.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
