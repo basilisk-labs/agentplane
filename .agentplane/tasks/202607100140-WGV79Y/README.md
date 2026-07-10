@@ -4,7 +4,7 @@ title: "Allow pre-merge closure to stage active task artifacts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -29,28 +29,28 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T02:05:18.200Z"
+  updated_at: "2026-07-10T02:14:46.368Z"
   updated_by: "CODER"
-  note: "Pass: lifecycle, batch-route, and finish quality-target tests 16/16; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,142 tests. Primary finish now separates implementation SHA from explicitly linked batch evidence commits without accepting unrelated changes."
+  note: "Pass: lifecycle and batch refresh tests 19/19; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,143 tests. Automatic PR refresh preserves linked batch ownership byte-for-byte while explicit pr open can still change or clear the batch."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T02:05:52.418Z"
+  updated_at: "2026-07-10T02:14:58.665Z"
   updated_by: "EVALUATOR"
-  note: "Batch pre-merge closure now has consistent dirty-state, route freshness, and finish commit semantics."
-  evaluated_sha: "2e9dc2e52a26c3b960150ba9fa10d51faa40202b"
+  note: "The batch lifecycle and automatic PR refresh fixes are complete on the current head."
+  evaluated_sha: "da90b1f3508f35f0f7e51d13174f71f537d6113d"
   blueprint_digest: "a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85"
   evidence_refs:
     - ".agentplane/tasks/202607100140-WGV79Y/README.md"
-    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-020552418-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-020552418-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-020552418-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-021458665-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-021458665-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-021458665-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100140-WGV79Y/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts"
+    - "packages/agentplane/src/commands/pr/internal/sync-batch-ownership.test.ts"
     - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
     - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
   findings:
-    - "Lifecycle, batch-route, and finish quality-target tests 16/16 pass; typecheck, lint:core, ci:contract, and the 2,142-test fast suite are green."
+    - "Lifecycle and batch refresh tests 19/19 pass; typecheck, lint:core, ci:contract, and the 2,143-test fast suite are green."
 commit: null
 comments:
   -
@@ -82,8 +82,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pass: lifecycle, batch-route, and finish quality-target tests 16/16; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,142 tests. Primary finish now separates implementation SHA from explicitly linked batch evidence commits without accepting unrelated changes."
+  -
+    type: "verify"
+    at: "2026-07-10T02:14:46.368Z"
+    author: "CODER"
+    state: "ok"
+    note: "Pass: lifecycle and batch refresh tests 19/19; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,143 tests. Automatic PR refresh preserves linked batch ownership byte-for-byte while explicit pr open can still change or clear the batch."
 doc_version: 3
-doc_updated_at: "2026-07-10T02:05:18.364Z"
+doc_updated_at: "2026-07-10T02:14:46.534Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, fix branch_pr pre-merge closure so an unstaged README or quality artifact inside the active task subtree is treated as close-commit input rather than unrelated dirty state, while unrelated tracked files and other task artifacts remain blocking."
 sections:
@@ -177,6 +183,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T01:58:57.892Z, excerpt_hash=sha256:f21941cfb404bbe0458b0eec4e0f77c749e3b73bba27c2d27ace60d46aab2bae
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100106-YP0PYE-bound-context-extraction-batches-by-source-bytes/.agentplane/tasks/202607100140-WGV79Y/blueprint/resolved-snapshot.json
+    - old_digest: a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85
+    - current_digest: a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100140-WGV79Y
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task brief 202607100106-YP0PYE
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-10T02:14:46.368Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Pass: lifecycle and batch refresh tests 19/19; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,143 tests. Automatic PR refresh preserves linked batch ownership byte-for-byte while explicit pr open can still change or clear the batch.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T02:05:18.364Z, excerpt_hash=sha256:f21941cfb404bbe0458b0eec4e0f77c749e3b73bba27c2d27ace60d46aab2bae
 
     Details:
 
@@ -314,6 +350,36 @@ Note: Pass: lifecycle, batch-route, and finish quality-target tests 16/16; Agent
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T01:58:57.892Z, excerpt_hash=sha256:f21941cfb404bbe0458b0eec4e0f77c749e3b73bba27c2d27ace60d46aab2bae
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100106-YP0PYE-bound-context-extraction-batches-by-source-bytes/.agentplane/tasks/202607100140-WGV79Y/blueprint/resolved-snapshot.json
+- old_digest: a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85
+- current_digest: a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100140-WGV79Y
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task brief 202607100106-YP0PYE
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-10T02:14:46.368Z — VERIFY — ok
+
+By: CODER
+
+Note: Pass: lifecycle and batch refresh tests 19/19; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,143 tests. Automatic PR refresh preserves linked batch ownership byte-for-byte while explicit pr open can still change or clear the batch.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T02:05:18.364Z, excerpt_hash=sha256:f21941cfb404bbe0458b0eec4e0f77c749e3b73bba27c2d27ace60d46aab2bae
 
 Details:
 
