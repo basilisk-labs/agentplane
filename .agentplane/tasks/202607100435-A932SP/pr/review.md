@@ -12,8 +12,8 @@ Created: 2026-07-10T04:36:53.058Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-static found a stale Knip baseline entry because the new test imported RemotePrStatus directly; keep the helper signature structurally minimal and infer the test fixture type instead.
+- State: ok
+- Note: Verified CI repair at 23be64c: Knip baseline 574/574, focused 3 files/12 tests, typecheck, ci:contract, and full fast 364 files/2150 tests passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
