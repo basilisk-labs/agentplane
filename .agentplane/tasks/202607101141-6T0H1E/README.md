@@ -1,10 +1,11 @@
 ---
 id: "202607101141-6T0H1E"
 title: "Recognize rebased pre-merge closure recorded on base"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -47,11 +48,16 @@ quality_review:
     - "packages/agentplane/src/commands/task/close-tail-state.test.ts"
   findings:
     - "Base evidence requires matching task id, DONE commit, branch, and canonical PR number; the optional duplicated marker PR number is enforced when present."
-commit: null
+commit:
+  hash: "a7be2858dfabbe4246a8461c7a7af1068da37d20"
+  message: "🧪 6T0H1E task: verify legacy closure recovery"
 comments:
   -
     author: "CODER"
     body: "Start: validate rebased pre-merge closure from artifacts recorded on protected main."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -72,8 +78,15 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Review follow-up accepted legacy closure markers without duplicated PR number only when canonical meta.pr_number matches. Focused suites 5/21, typecheck, lint, full-fast local CI 364/2153, and critical CLI E2E passed."
+  -
+    type: "status"
+    at: "2026-07-10T12:27:36.761Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-10T12:21:49.234Z"
+doc_updated_at: "2026-07-10T12:27:36.762Z"
 doc_updated_by: "CODER"
 description: "Release a protected-main integration handoff when the merged base itself contains matching DONE task and pre-merge closure metadata, even if a pre-rebase basis commit remains locally available but is no longer an ancestor of the rebased PR head. Preserve strict branch, PR, and base evidence checks."
 sections:
@@ -165,6 +178,10 @@ sections:
     Review follow-up: PR review identified the legacy marker shape without pre_merge_closure.pr_number. Added a regression test for the absent number and retained rejection of an explicit mismatch.
 
     Verification: focused suites 5 files / 21 tests; typecheck; lint:core. Earlier ci:contract, policy routing, doctor, full test:fast 364 files / 2152 tests, full-fast local CI, critical CLI E2E, and the first hosted matrix passed; the post-review commit is revalidated below.
+extensions:
+  implementation_commit:
+    hash: "712c07b655601581d0b461203a798a2af26a2e2d"
+    message: "🐛 6T0H1E task: accept legacy closure marker shape"
 id_source: "generated"
 ---
 ## Summary
