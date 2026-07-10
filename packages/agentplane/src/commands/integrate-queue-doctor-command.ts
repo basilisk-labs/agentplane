@@ -3,7 +3,6 @@ import { createCliEmitter } from "../cli/output.js";
 import { loadBackendTask, type CommandContext } from "./shared/task-backend.js";
 import { resolvePrFlowStatus } from "./pr/flow-status.js";
 import {
-  markQueueEntry,
   readIntegrationQueue,
   withIntegrationQueueMutex,
   writeIntegrationQueue,
@@ -20,27 +19,16 @@ export async function runIntegrationQueueDoctor(opts: {
   const gitRoot = opts.commandCtx.resolvedProject.gitRoot;
   const before = await readIntegrationQueue(gitRoot);
   const findings: { task_id: string; status: string; reason: string; repair: string | null }[] = [];
-  let nextQueue = before;
 
   for (const entry of before.entries) {
+    if (entry.status === "done") continue;
     const loaded = await loadBackendTask({
       ctx: opts.commandCtx,
       cwd: opts.ctx.cwd,
       rootOverride: opts.ctx.rootOverride ?? null,
       taskId: entry.task_id,
     }).catch(() => null);
-    if (loaded?.task.status === "DONE" && entry.status !== "done") {
-      const reason = "task is already DONE; queue entry is terminal stale";
-      findings.push({
-        task_id: entry.task_id,
-        status: entry.status,
-        reason,
-        repair: "mark_done",
-      });
-      nextQueue = markQueueEntry(nextQueue, entry.task_id, "done", reason);
-      continue;
-    }
-    if (entry.status !== "handoff") continue;
+    if (loaded?.task.status !== "DONE" && entry.status !== "handoff") continue;
     const report = await resolvePrFlowStatus({
       ctx: opts.commandCtx,
       cwd: opts.ctx.cwd,
@@ -56,7 +44,6 @@ export async function runIntegrationQueueDoctor(opts: {
       reason: decision.reason,
       repair: `mark_${decision.status}`,
     });
-    nextQueue = markQueueEntry(nextQueue, entry.task_id, decision.status, decision.reason);
   }
 
   if (opts.parsed.fix && !opts.parsed.dryRun) {
