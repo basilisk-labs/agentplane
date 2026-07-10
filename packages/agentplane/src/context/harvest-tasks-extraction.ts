@@ -2,15 +2,12 @@ import type { TaskData } from "../backends/task-backend.js";
 import type { TaskNewParsed } from "../commands/task/new.js";
 import type { PromptModule } from "../runtime/prompt-modules/index.js";
 import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "../runtime/prompt-modules/index.js";
-import { CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION } from "../runtime/sgr/index.js";
+import { CONTEXT_EXTRACTION_SGR_EXAMPLE } from "../runtime/sgr/index.js";
 import { CliError } from "../shared/errors.js";
 import { isRecord } from "./context-utils.js";
 import { taskTextDigest } from "./harvest-tasks-markers.js";
 import type { ContextHarvestTasksParsed } from "./harvest-tasks-artifacts.js";
-import {
-  validateContextExtractionSgrResult,
-  type ContextExtractionSgrResult,
-} from "./sgr-extraction.js";
+import { validateContextExtractionSgrResult } from "./sgr-extraction.js";
 
 type ExtractionTask = TaskData & { id: string; title: string; status: string };
 
@@ -23,63 +20,6 @@ type ExtractionTaskPlan = {
 
 const CONTEXT_TASK_EXTRACTION_PROMPT_ADDRESS =
   "framework/template/generated.artifact/context_task_extraction/v1";
-
-const CONTEXT_EXTRACTION_SGR_EXAMPLE: ContextExtractionSgrResult = {
-  schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
-  kind: "context_extraction",
-  reasoning: [
-    {
-      label: "source-classification",
-      summary: "Classify source task README and ACR evidence before extracting claims.",
-    },
-  ],
-  source_refs: [{ path: ".agentplane/tasks/<source-task-id>/README.md" }],
-  extracted_items: [
-    {
-      id: "entity.<stable-id>",
-      kind: "graph_entity",
-      summary: "A reusable, source-backed project entity.",
-      source_refs: [{ path: ".agentplane/tasks/<source-task-id>/README.md" }],
-      confidence: 0.8,
-      status: "proposed",
-      entity: {
-        id: "entity.<stable-id>",
-        kind: "concept",
-        label: "Canonical entity label",
-      },
-    },
-    {
-      id: "decision.<stable-id>",
-      kind: "decision",
-      summary: "A reusable, source-backed project decision.",
-      source_refs: [{ path: ".agentplane/tasks/<source-task-id>/README.md" }],
-      confidence_vector: {
-        extraction: 0.8,
-        source_quality: 0.8,
-        entity_resolution: 0.7,
-        freshness: 0.8,
-      },
-      status: "proposed",
-      validity: "current",
-      stale_markers: [],
-      conflict_markers: [],
-    },
-    {
-      id: "coverage.<source-task-id>.readme",
-      kind: "coverage",
-      summary: "Coverage decision for the source task README.",
-      source_refs: [{ path: ".agentplane/tasks/<source-task-id>/README.md" }],
-      confidence: 0.8,
-      status: "proposed",
-      coverage: {
-        source_path: ".agentplane/tasks/<source-task-id>/README.md",
-        status: "covered",
-        reason: "Reusable entities and typed decisions were extracted from the task README.",
-        covered_item_ids: ["entity.<stable-id>", "decision.<stable-id>"],
-      },
-    },
-  ],
-};
 
 type TaskExtractionMarker = {
   schema_version: 1;
@@ -205,31 +145,16 @@ function buildExtractionPromptModule(): PromptModule {
     content: [
       "# Context Task Extraction",
       "",
-      "You are CURATOR processing a bounded batch of completed AgentPlane tasks. This is the default semantic harvest path; raw harvest proposal artifacts are only scaffolds.",
+      "Goal: convert a bounded batch of completed task READMEs/ACRs into reusable typed context and linked wiki updates; do not restate task summaries as knowledge.",
       "",
-      "Read each source task README first. Read ACR evidence when present. Treat generated raw JSON, search rows, and caches as supporting indexes, not as semantic truth.",
+      "1. Read every source README and available ACR. Reconcile candidate terms against existing wiki/facts/graph before creating entities or pages.",
+      "2. Extract precise source-backed entities, decisions, requirements, invariants, risks, failures, mitigations, relations, conflicts, open questions, and coverage using the task-bound `extraction-contract.json`.",
+      "3. Save one SGR v2 `context_extraction` result and run `agentplane context extraction apply <sgr-json> --task-id <task-id>` before narrative wiki edits.",
+      "4. Update canonical reusable pages; keep local details under headings. Add useful first-mention wikilinks and keep the glossary a thin alias/navigation layer.",
+      "5. Preserve exact README/ACR source refs, validity/supersession, stale/conflict state, and explicit coverage reasons. Raw proposal artifacts and caches are indexes, not semantic truth.",
+      "6. Reindex, refresh wiki reports, validate graph/task context, and smoke-search exact task terminology.",
       "",
-      "Extract durable knowledge only when it is backed by source_refs. Prefer small, reusable facts over task-summary restatement.",
-      "First return and save a SGR v2 `context_extraction` result with entities, typed claims/decisions/requirements/risks/open questions, graph edges, entity-resolution rows, page/topology decisions, and coverage rows, then apply it with `agentplane context extraction apply <sgr-json> --task-id <task-id>` before writing narrative wiki pages.",
-      "",
-      "Required extraction classes:",
-      "- components, commands, policies, and workflow surfaces touched by the tasks;",
-      "- decisions and invariants that should guide future agents;",
-      "- known failures, mitigations, stale assumptions, and conflict candidates;",
-      "- graph relations between tasks, components, commands, facts, decisions, and wiki pages.",
-      "",
-      "Before writing, search existing wiki/facts/graph rows for matching entities. Update or append with provenance; do not silently overwrite unrelated knowledge.",
-      "",
-      "Preserve the project's chosen wiki hierarchy after first analysis. Use concepts/entities/decisions/modules as optional starting directories, not as a required taxonomy for every repository.",
-      "",
-      "When a glossary is useful, keep it as a thin navigation index over canonical wiki pages and graph entities. Normalize aliases there, but keep factual claims and provenance on the backing wiki/fact/graph artifacts.",
-      "",
-      "When updating wiki pages, add useful Markdown cross-links to existing wiki pages or glossary anchors on first meaningful mentions of known concepts, entities, decisions, risks, or modules. Do not link every repeated mention, and do not invent target pages just to satisfy linking.",
-      "",
-      "Write only allowed outputs from the task extension. Keep source_refs on every factual claim. Mark contradictions, stale candidates, and open questions instead of promoting them.",
-      "",
-      "Return extraction reasoning in the SGR context_extraction v2 shape before writing context artifacts. Legacy v1 context_extraction inputs remain accepted by the writer for compatibility:",
-      JSON.stringify(CONTEXT_EXTRACTION_SGR_EXAMPLE, null, 2),
+      "Stop rather than promote when identity, source precision, private-data safety, topology rationale, or conflict resolution is insufficient. Legacy SGR v1 remains readable, but new tasks must emit schema v2.",
     ].join("\n"),
     mutability: "replaceable",
     merge: {
@@ -345,6 +270,7 @@ export function buildExtractionTaskPlans(
             },
             prompt_modules: [promptModule],
             prompt_module_ref: promptModule.address.value,
+            extraction_contract_path: ".agentplane/tasks/${taskId}/extraction-contract.json",
             allowed_outputs: [
               "context/wiki/**",
               ".agentplane/context/derived/facts/**",
@@ -352,6 +278,7 @@ export function buildExtractionTaskPlans(
               ".agentplane/context/derived/reports/**",
               ".agentplane/tasks/${taskId}/README.md",
               ".agentplane/tasks/${taskId}/acr.json",
+              ".agentplane/tasks/${taskId}/extraction-contract.json",
             ],
             forbidden_outputs: [
               "context/raw/**",

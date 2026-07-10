@@ -1,0 +1,1 @@
+🚧 S11TCN task: Make context extraction packs compact and schema-complete for v0.6.22 [202607100021-S11TCN]

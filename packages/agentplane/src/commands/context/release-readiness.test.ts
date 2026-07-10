@@ -709,7 +709,7 @@ describe("context release readiness guards", () => {
         };
       };
     };
-    expect(createdArgs.parsed?.description).toContain("CURATOR contract:");
+    expect(createdArgs.parsed?.description).toContain("extraction-contract.json");
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_module_ref).toBe(
       "framework/template/generated.artifact/context_assimilation/v1",
     );
@@ -724,28 +724,22 @@ describe("context release readiness guards", () => {
     ).toContain("frontmatter");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Recommended CLI helpers:");
+    ).toContain("Reconcile: compare the source lock with the canonical snapshot");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("agentplane context wiki new <slug>");
+    ).toContain("keep local detail under stable headings");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Prefer existing canonical labels over source-local wording");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("If a small object belongs inside a broader topic");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Put meaningful wiki links inline in the narrative text");
+    ).toContain("Link first meaningful mentions");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("agentplane context wiki index context/wiki");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Final update step: refresh affected indexes, navigation pages, glossary entries");
+    ).toContain("Refresh indexes and reports");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("use the canonical term in prose and link it to the canonical page or section");
+    ).toContain("Reuse canonical pages/entities");
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.wiki).toMatchObject({
       layout_strategy: "adaptive",
       frontmatter_required: true,
@@ -823,12 +817,12 @@ describe("context release readiness guards", () => {
     };
 
     expect(createdArgs.parsed?.blueprintRequest).toBe("context.maximum_assimilation");
-    expect(createdArgs.parsed?.description).toContain("Maximum-assimilation contract:");
-    expect(createdArgs.parsed?.description).toContain(
-      "Choose wiki structure from the selected source content",
-    );
-    expect(createdArgs.parsed?.description).toContain("[[canonical-page|Display Label]]");
-    expect(createdArgs.parsed?.description).toContain("EVALUATOR quality review");
+    expect(createdArgs.parsed?.description).toContain("extraction-contract.json");
+    const prompt =
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
+    expect(prompt).toContain("source-shaped topology decision");
+    expect(prompt).toContain("[[canonical-page|Label]]");
+    expect(prompt).toContain("agentplane evaluator run");
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.mode).toBe(
       "maximum_assimilation",
     );
@@ -871,19 +865,20 @@ describe("context release readiness guards", () => {
     const maximumPrompt =
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
     for (const expected of [
-      "Maximum-assimilation workflow:",
-      "Topology pass:",
-      "Glossary pass: create or update `context/wiki/glossary.md`",
-      "[[canonical-page|Canonical Page]]",
-      "numeric notes like `[1]`",
-      "Evaluation pass:",
-      "self-contained wiki/fact/graph content plus line-addressed provenance",
-      "SGR v2 `context_extraction` JSON result with typed records",
-      "`entity_resolution`, `page_creation`, `topology_decision`, and maximum-assimilation `coverage` items",
-      "typed claims, ontology rows, source-span rows, topology/page manifests",
+      "## Task-bound inputs",
+      "canonical-snapshot.json",
+      "extraction-contract.json",
+      "source-shaped topology decision",
+      "[[canonical-page|Label]]",
+      "numeric notes",
+      "practical retrieval through wiki/derived entrypoints",
+      "SGR v2 `context_extraction` JSON file",
+      "Every significant span needs a coverage row",
+      "raw files disappear",
     ]) {
       expect(maximumPrompt).toContain(expected);
     }
+    expect(maximumPrompt.length).toBeLessThan(6500);
   });
 
   it("creates and explains wiki pages with AgentPlane context frontmatter", async () => {

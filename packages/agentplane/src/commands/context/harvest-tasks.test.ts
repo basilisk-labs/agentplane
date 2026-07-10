@@ -340,6 +340,7 @@ describe("context harvest tasks", () => {
         "agentplane.context": {
           source_set: { sources: { id: string; readme_path: string; acr_path: string }[] };
           prompt_modules: { address: { value: string }; content: string }[];
+          extraction_contract_path: string;
         };
       };
     };
@@ -373,7 +374,31 @@ describe("context harvest tasks", () => {
       "framework/template/generated.artifact/context_task_extraction/v1",
     );
     expect(first.extensions["agentplane.context"].prompt_modules[0]?.content).toContain(
-      "Read each source task README first",
+      "Read every source README and available ACR",
+    );
+    expect(first.extensions["agentplane.context"].prompt_modules[0]?.content.length).toBeLessThan(
+      3500,
+    );
+    expect(first.extensions["agentplane.context"].extraction_contract_path).toBe(
+      ".agentplane/tasks/${taskId}/extraction-contract.json",
+    );
+    const extractionContract = JSON.parse(
+      await readFile(
+        path.join(root, ".agentplane/tasks/202604040900-CURAT1/extraction-contract.json"),
+        "utf8",
+      ),
+    ) as {
+      sgr_schema_version: number;
+      example: { extracted_items: { kind: string }[] };
+    };
+    expect(extractionContract.sgr_schema_version).toBe(2);
+    expect(extractionContract.example.extracted_items.map((item) => item.kind)).toEqual(
+      expect.arrayContaining([
+        "entity_resolution",
+        "page_creation",
+        "topology_decision",
+        "coverage",
+      ]),
     );
     expect(tasks.find((row) => row.id === "202604010900-FIRST1")?.extensions).toMatchObject({
       context_task_extraction: {

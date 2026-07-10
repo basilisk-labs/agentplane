@@ -31,6 +31,11 @@ import {
   requireStringArray,
   validateConfidence,
 } from "./contract-validators.js";
+import {
+  validateEntityResolutionPayload,
+  validatePageCreationPayload,
+  validateTopologyDecisionPayload,
+} from "./context-extraction-payloads.js";
 
 export {
   CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
@@ -154,7 +159,7 @@ function validateStructuredPayload<T extends Record<string, unknown>>(
   return record as T;
 }
 
-function requireContextSchemaVersion(raw: Record<string, unknown>, field: string): void {
+function requireContextSchemaVersion(raw: Record<string, unknown>, field: string): 1 | 2 {
   if (
     raw.schema_version !== SGR_CONTRACT_SCHEMA_VERSION &&
     raw.schema_version !== CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION
@@ -164,6 +169,7 @@ function requireContextSchemaVersion(raw: Record<string, unknown>, field: string
       `${SGR_CONTRACT_SCHEMA_VERSION} | ${CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION}`,
     );
   }
+  return raw.schema_version;
 }
 
 const CONTEXT_EXTRACTION_ITEM_KINDS = [
@@ -198,7 +204,7 @@ export function validateContextExtractionSgrResult(
   field = "context extraction SGR result",
 ): ContextExtractionSgrResult {
   const result = requireRecord(raw, field);
-  requireContextSchemaVersion(result, field);
+  const inputSchemaVersion = requireContextSchemaVersion(result, field);
   if (result.kind !== "context_extraction") throw invalid(`${field}.kind`, '"context_extraction"');
   return {
     schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
@@ -243,6 +249,14 @@ export function validateContextExtractionSgrResult(
                 "conflicting",
                 "unknown",
               ]);
+        const spanRefs = optionalStringArray(item.span_refs, `${itemField}.span_refs`);
+        if (
+          inputSchemaVersion === CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION &&
+          item.kind === "page_creation" &&
+          !spanRefs?.length
+        ) {
+          throw invalid(`${itemField}.span_refs`, "non-empty string[] for page_creation");
+        }
         return {
           id: requireString(item.id, `${itemField}.id`),
           kind: requireEnum(item.kind, `${itemField}.kind`, CONTEXT_EXTRACTION_ITEM_KINDS),
@@ -252,7 +266,7 @@ export function validateContextExtractionSgrResult(
             `${itemField}.source_refs`,
             validateSourceRef,
           ),
-          span_refs: optionalStringArray(item.span_refs, `${itemField}.span_refs`),
+          span_refs: spanRefs,
           confidence:
             item.confidence === undefined
               ? undefined
@@ -284,24 +298,36 @@ export function validateContextExtractionSgrResult(
               : undefined,
           entity_resolution:
             item.kind === "entity_resolution"
-              ? validateStructuredPayload<ContextExtractionEntityResolutionRow>(
-                  item.entity_resolution,
-                  `${itemField}.entity_resolution`,
-                )
+              ? inputSchemaVersion === CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION
+                ? validateEntityResolutionPayload(
+                    item.entity_resolution,
+                    `${itemField}.entity_resolution`,
+                  )
+                : validateStructuredPayload<ContextExtractionEntityResolutionRow>(
+                    item.entity_resolution,
+                    `${itemField}.entity_resolution`,
+                  )
               : undefined,
           page_creation:
             item.kind === "page_creation"
-              ? validateStructuredPayload<ContextExtractionPageCreationRow>(
-                  item.page_creation,
-                  `${itemField}.page_creation`,
-                )
+              ? inputSchemaVersion === CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION
+                ? validatePageCreationPayload(item.page_creation, `${itemField}.page_creation`)
+                : validateStructuredPayload<ContextExtractionPageCreationRow>(
+                    item.page_creation,
+                    `${itemField}.page_creation`,
+                  )
               : undefined,
           topology_decision:
             item.kind === "topology_decision"
-              ? validateStructuredPayload<ContextExtractionTopologyDecisionRow>(
-                  item.topology_decision,
-                  `${itemField}.topology_decision`,
-                )
+              ? inputSchemaVersion === CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION
+                ? validateTopologyDecisionPayload(
+                    item.topology_decision,
+                    `${itemField}.topology_decision`,
+                  )
+                : validateStructuredPayload<ContextExtractionTopologyDecisionRow>(
+                    item.topology_decision,
+                    `${itemField}.topology_decision`,
+                  )
               : undefined,
           stale_markers: staleMarkers,
           conflict_markers: conflictMarkers,

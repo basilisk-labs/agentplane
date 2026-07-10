@@ -4,6 +4,7 @@ import { validateBlueprintRouteDecisionSgrResult } from "../../blueprints/sgr-de
 import { validateContextExtractionSgrResult } from "../../context/sgr-extraction.js";
 import { validateEvaluatorSgrResult } from "../../evaluators/sgr-result.js";
 import {
+  CONTEXT_EXTRACTION_SGR_EXAMPLE,
   CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
   SGR_CONTRACT_SCHEMA_VERSION,
 } from "./index.js";
@@ -14,6 +15,20 @@ const sourceRef = {
 };
 
 describe("SGR reliability contracts", () => {
+  it("keeps the generated extraction contract example schema-complete", () => {
+    const result = validateContextExtractionSgrResult(CONTEXT_EXTRACTION_SGR_EXAMPLE);
+
+    expect(result.schema_version).toBe(CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION);
+    expect(result.extracted_items.map((item) => item.kind)).toEqual(
+      expect.arrayContaining([
+        "entity_resolution",
+        "page_creation",
+        "topology_decision",
+        "coverage",
+      ]),
+    );
+  });
+
   it("validates source-backed context extraction results", () => {
     const result = validateContextExtractionSgrResult({
       schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
@@ -167,11 +182,13 @@ describe("SGR reliability contracts", () => {
           kind: "page_creation",
           summary: "Context writer page is justified by reusable workflow evidence.",
           source_refs: [sourceRef],
+          span_refs: ["span.context.0001"],
           confidence: 0.82,
           status: "proposed",
           page_creation: {
             path: "context/wiki/workflows/context-writer.md",
             page_type: "workflow",
+            family_id: "family.workflows",
             decision: "create",
           },
         },
@@ -183,8 +200,21 @@ describe("SGR reliability contracts", () => {
           confidence: 0.8,
           status: "accepted",
           topology_decision: {
-            source_shape: { primary: "codebase_and_task_history" },
-            canonical_page_families: [],
+            source_shape: {
+              primary: "codebase_and_task_history",
+              rationale: "The source describes a reusable context-writing workflow.",
+              evidence_span_ids: ["span.context.0001"],
+            },
+            canonical_page_families: [
+              {
+                family_id: "family.workflows",
+                path_template: "context/wiki/workflows/{slug}.md",
+                page_type: "workflow",
+                creation_rule: "Create pages for reusable workflows.",
+                page_vs_heading_rule: "Keep local details under stable headings.",
+                source_evidence_span_ids: ["span.context.0001"],
+              },
+            ],
           },
         },
       ],
@@ -197,6 +227,70 @@ describe("SGR reliability contracts", () => {
       "topology_decision",
     ]);
     expect(result.extracted_items[0]?.confidence_vector?.entity_resolution).toBe(0.85);
+  });
+
+  it("rejects incomplete SGR v2 page and topology payloads before artifact writes", () => {
+    expect(() =>
+      validateContextExtractionSgrResult({
+        schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
+        kind: "context_extraction",
+        reasoning: [{ label: "typed", summary: "Validate formal records first." }],
+        source_refs: [sourceRef],
+        extracted_items: [
+          {
+            id: "page.incomplete",
+            kind: "page_creation",
+            summary: "An incomplete page record must fail early.",
+            source_refs: [sourceRef],
+            status: "proposed",
+            page_creation: { path: "context/wiki/incomplete.md" },
+          },
+        ],
+      }),
+    ).toThrow("span_refs");
+
+    expect(() =>
+      validateContextExtractionSgrResult({
+        schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
+        kind: "context_extraction",
+        reasoning: [{ label: "typed", summary: "Validate formal records first." }],
+        source_refs: [sourceRef],
+        extracted_items: [
+          {
+            id: "topology.incomplete",
+            kind: "topology_decision",
+            summary: "An incomplete topology record must fail early.",
+            source_refs: [sourceRef],
+            status: "proposed",
+            topology_decision: {
+              source_shape: { primary: "product_docs" },
+              canonical_page_families: [],
+            },
+          },
+        ],
+      }),
+    ).toThrow("source_shape.rationale");
+  });
+
+  it("keeps open-ended legacy v1 ontology payloads compatible", () => {
+    const result = validateContextExtractionSgrResult({
+      schema_version: 1,
+      kind: "context_extraction",
+      reasoning: [{ label: "legacy", summary: "Legacy payloads remain readable." }],
+      source_refs: [sourceRef],
+      extracted_items: [
+        {
+          id: "page.legacy",
+          kind: "page_creation",
+          summary: "Legacy page payload.",
+          source_refs: [sourceRef],
+          status: "proposed",
+          page_creation: { path: "context/wiki/legacy.md" },
+        },
+      ],
+    });
+
+    expect(result.extracted_items[0]?.page_creation?.path).toBe("context/wiki/legacy.md");
   });
 
   it.each(["duplicate", "conflict", "out_of_scope"] as const)(
