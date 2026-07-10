@@ -4,7 +4,7 @@ title: "Recognize rebased pre-merge closure recorded on base"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -67,7 +67,7 @@ events:
     state: "ok"
     note: "Matching closure evidence on protected main is validated strictly by task id, DONE state, non-empty commit, branch, and PR number. Focused suites 5/20, typecheck, lint, ci:contract, policy routing, doctor, test:fast 364/2152, full-fast local CI, and critical CLI E2E passed."
 doc_version: 3
-doc_updated_at: "2026-07-10T12:08:13.391Z"
+doc_updated_at: "2026-07-10T12:16:45.849Z"
 doc_updated_by: "CODER"
 description: "Release a protected-main integration handoff when the merged base itself contains matching DONE task and pre-merge closure metadata, even if a pre-rebase basis commit remains locally available but is no longer an ancestor of the rebased PR head. Preserve strict branch, PR, and base evidence checks."
 sections:
@@ -124,9 +124,11 @@ sections:
   Findings: |-
     Root cause: close-tail recovery only accepted a pre-merge basis commit when it was still an ancestor of the final PR head. A legitimate GitHub rebase kept the old basis object locally but removed that ancestry, so the merged task remained in handoff even though protected main contained matching DONE task metadata and PR closure metadata.
 
-    Implementation: validate the task README and PR metadata directly from the configured base branch. Accept recorded_on_base only when the task is DONE with a non-empty commit and task id, branch, and PR number match exactly. Mismatched or incomplete evidence remains rejected.
+    Implementation: validate the task README and PR metadata directly from the configured base branch. Accept recorded_on_base only when the task is DONE with a non-empty commit and task id, branch, and canonical PR number match exactly. Legacy closure markers may omit their duplicated PR number when meta.pr_number matches; an explicit mismatched marker number remains rejected.
 
-    Verification: focused suites 5 files / 20 tests; typecheck; lint:core; ci:contract; policy routing; doctor; full test:fast 364 files / 2152 tests. A parallel local run exposed an unrelated build race between release-smoke and compiled-CLI tests; both passed sequentially and the isolated full run passed.
+    Review follow-up: PR review identified the legacy marker shape without pre_merge_closure.pr_number. Added a regression test for the absent number and retained rejection of an explicit mismatch.
+
+    Verification: focused suites 5 files / 21 tests; typecheck; lint:core. Earlier ci:contract, policy routing, doctor, full test:fast 364 files / 2152 tests, full-fast local CI, critical CLI E2E, and the first hosted matrix passed; the post-review commit is revalidated below.
 id_source: "generated"
 ---
 ## Summary
@@ -196,6 +198,8 @@ DecisionContextRef:
 
 Root cause: close-tail recovery only accepted a pre-merge basis commit when it was still an ancestor of the final PR head. A legitimate GitHub rebase kept the old basis object locally but removed that ancestry, so the merged task remained in handoff even though protected main contained matching DONE task metadata and PR closure metadata.
 
-Implementation: validate the task README and PR metadata directly from the configured base branch. Accept recorded_on_base only when the task is DONE with a non-empty commit and task id, branch, and PR number match exactly. Mismatched or incomplete evidence remains rejected.
+Implementation: validate the task README and PR metadata directly from the configured base branch. Accept recorded_on_base only when the task is DONE with a non-empty commit and task id, branch, and canonical PR number match exactly. Legacy closure markers may omit their duplicated PR number when meta.pr_number matches; an explicit mismatched marker number remains rejected.
 
-Verification: focused suites 5 files / 20 tests; typecheck; lint:core; ci:contract; policy routing; doctor; full test:fast 364 files / 2152 tests. A parallel local run exposed an unrelated build race between release-smoke and compiled-CLI tests; both passed sequentially and the isolated full run passed.
+Review follow-up: PR review identified the legacy marker shape without pre_merge_closure.pr_number. Added a regression test for the absent number and retained rejection of an explicit mismatch.
+
+Verification: focused suites 5 files / 21 tests; typecheck; lint:core. Earlier ci:contract, policy routing, doctor, full test:fast 364 files / 2152 tests, full-fast local CI, critical CLI E2E, and the first hosted matrix passed; the post-review commit is revalidated below.
