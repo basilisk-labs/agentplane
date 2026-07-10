@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:2c1277e1256bb7d4b7fb596f62b5e577833187a38e03a4cccec66d09737bdb7c",
   "pr_number": 4569,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4569",
+  "pre_merge_closure": {
+    "basis_commit": "b4617b09beac9479a09af3cf5ec8de8a11cba90a",
+    "branch": "task/202607100945-T0215Q/resolve-website-lint-incident",
+    "pr_number": 4569,
+    "recorded_at": "2026-07-10T10:05:48.783Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607100945-T0215Q",
