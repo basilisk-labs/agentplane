@@ -4,7 +4,7 @@ title: "Normalize pre-existing ACR example formatting for loop CI"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,22 @@ verification:
   updated_by: "REVIEWER"
   note: "Prettier-only ACR example normalization confirmed; targeted Prettier, git diff check, and repository format:check pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-10T00:28:01.181Z"
+  updated_by: "EVALUATOR"
+  note: "The change is limited to Prettier normalization of the pre-existing ACR example and clears the repository format gate without semantic changes."
+  evaluated_sha: "2157672fdabf5ddeaee4604e3ed8ba5ef3d93872"
+  blueprint_digest: "324de6711fbe60f35e26be035146dfbd4bf336883e6162804e499351b10c89ef"
+  evidence_refs:
+    - ".agentplane/tasks/202607100026-EBQXPZ/README.md"
+    - ".agentplane/tasks/202607100026-EBQXPZ/quality/20260710-002801181-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100026-EBQXPZ/quality/20260710-002801181-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100026-EBQXPZ/quality/20260710-002801181-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100026-EBQXPZ/blueprint/resolved-snapshot.json"
+    - "packages/spec/examples/acr.json"
+  findings:
+    - "No semantic JSON value or key changed; only array layout was normalized."
 commit: null
 comments:
   -
@@ -101,6 +117,15 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  branch_pr_batch:
+    base: "agentplane-loops"
+    branch: "task/202607092346-4Z7EZP/make-agentplane-loops-executable-resumable-and-t"
+    included_task_ids:
+      - "202607100026-EBQXPZ"
+    primary_task_id: "202607092346-4Z7EZP"
+    role: "included"
+    updated_at: "2026-07-10T00:28:35.005Z"
 id_source: "generated"
 ---
 ## Summary

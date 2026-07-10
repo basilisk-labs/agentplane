@@ -2,6 +2,12 @@ Task: `202607092346-4Z7EZP`
 Title: Make AgentPlane loops executable, resumable, and token-aware
 Canonical task record: `.agentplane/tasks/202607092346-4Z7EZP/README.md`
 
+## Batch Tasks
+
+- Primary: `202607092346-4Z7EZP`
+- Closure policy: `all_or_fail`
+- Included: `202607100026-EBQXPZ`
+
 ## Summary
 
 Make AgentPlane loops executable, resumable, and token-aware
@@ -18,9 +24,8 @@ Implement only on the agentplane-loops branch family. Do not switch, merge, push
 - Note:
 
 ```text
-Focused loop tests (34/34), typecheck, docs CLI parity, routing, targeted lint/format, schema hash
-parity, and git diff checks pass; repository-wide schema/format failures are pre-existing and
-outside this task scope.
+Loop runtime evidence remains green; the batched prerequisite normalized only acr.json and
+repository format:check now passes, so PR diffstat verification is refreshed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,6 +37,11 @@ outside this task scope.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/tasks/202607100026-EBQXPZ/README.md    | 196 +++++++
+ .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
+ .../evaluator-opinion.md                           |  19 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  21 +
  docs/developer/loops.mdx                           |  49 +-
  docs/reference/loops.mdx                           |  48 +-
  docs/user/cli-reference.generated.mdx              |  12 +-
@@ -53,9 +63,10 @@ outside this task scope.
  .../src/runner/usecases/task-run-bootstrap.ts      |   9 +
  .../agentplane/src/runner/usecases/task-run.ts     |  57 +-
  packages/core/schemas/loop-spec.schema.json        |  41 +-
+ packages/spec/examples/acr.json                    |  18 +-
  packages/spec/schemas/loop-spec.schema.json        |  41 +-
  schemas/loop-spec.schema.json                      |  41 +-
- 23 files changed, 1884 insertions(+), 124 deletions(-)
+ 29 files changed, 2560 insertions(+), 138 deletions(-)
 ```
 
 </details>

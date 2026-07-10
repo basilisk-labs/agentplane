@@ -4,7 +4,7 @@ title: "Make AgentPlane loops executable, resumable, and token-aware"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T00:18:38.395Z"
+  updated_at: "2026-07-10T00:28:33.414Z"
   updated_by: "REVIEWER"
-  note: "Focused loop tests (34/34), typecheck, docs CLI parity, routing, targeted lint/format, schema hash parity, and git diff checks pass; repository-wide schema/format failures are pre-existing and outside this task scope."
+  note: "Loop runtime evidence remains green; the batched prerequisite normalized only acr.json and repository format:check now passes, so PR diffstat verification is refreshed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -62,8 +62,14 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Focused loop tests (34/34), typecheck, docs CLI parity, routing, targeted lint/format, schema hash parity, and git diff checks pass; repository-wide schema/format failures are pre-existing and outside this task scope."
+  -
+    type: "verify"
+    at: "2026-07-10T00:28:33.414Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Loop runtime evidence remains green; the batched prerequisite normalized only acr.json and repository format:check now passes, so PR diffstat verification is refreshed."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:18:38.500Z"
+doc_updated_at: "2026-07-10T00:28:33.524Z"
 doc_updated_by: "CODER"
 description: "Implement an end-to-end deterministic loop engine on agentplane-loops without touching main: typed transitions, durable checkpoints and resume, step-specific prompt/context propagation, enforced eligibility/permissions/budgets, token accounting, focused checks/evaluator decisions, CLI/docs/schema alignment, and regression tests."
 sections:
@@ -138,6 +144,36 @@ sections:
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-07-10T00:28:33.414Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Loop runtime evidence remains green; the batched prerequisite normalized only acr.json and repository format:check now passes, so PR diffstat verification is refreshed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:18:38.500Z, excerpt_hash=sha256:db0ecec4f82d546cfddd454677dcab04255605392b22bc78e32417e09e811d98
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202607092346-4Z7EZP-make-agentplane-loops-executable-resumable-and-t/.agentplane/tasks/202607092346-4Z7EZP/blueprint/resolved-snapshot.json
+    - old_digest: 04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137
+    - current_digest: 04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607092346-4Z7EZP
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202607092346-4Z7EZP
+    - diagnostic_command: agentplane pr check 202607092346-4Z7EZP
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the implementation commit(s) for task 4Z7EZP on the loop task branch. Loop execution must then return to the existing dry-run or single-agent-step behavior without changing main or shared external state."
   Findings: |-
@@ -154,6 +190,15 @@ sections:
     - Observation: Repository-wide schemas:check and format:check remain red only on unrelated existing artifacts; all touched loop schemas and files pass targeted checks.
       Impact: Global gates cannot be reported as fully green, but no task-scoped regression remains.
       Resolution: Keep unrelated schema/task-export and acr.json cleanup outside 4Z7EZP; use focused tests, identical loop-schema hashes, and targeted formatting as closure evidence.
+extensions:
+  branch_pr_batch:
+    base: "agentplane-loops"
+    branch: "task/202607092346-4Z7EZP/make-agentplane-loops-executable-resumable-and-t"
+    included_task_ids:
+      - "202607100026-EBQXPZ"
+    primary_task_id: "202607092346-4Z7EZP"
+    role: "primary"
+    updated_at: "2026-07-10T00:28:35.005Z"
 id_source: "generated"
 ---
 ## Summary
@@ -215,6 +260,36 @@ Note: Focused loop tests (34/34), typecheck, docs CLI parity, routing, targeted 
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:13:20.320Z, excerpt_hash=sha256:db0ecec4f82d546cfddd454677dcab04255605392b22bc78e32417e09e811d98
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202607092346-4Z7EZP-make-agentplane-loops-executable-resumable-and-t/.agentplane/tasks/202607092346-4Z7EZP/blueprint/resolved-snapshot.json
+- old_digest: 04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137
+- current_digest: 04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607092346-4Z7EZP
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202607092346-4Z7EZP
+- diagnostic_command: agentplane pr check 202607092346-4Z7EZP
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-07-10T00:28:33.414Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Loop runtime evidence remains green; the batched prerequisite normalized only acr.json and repository format:check now passes, so PR diffstat verification is refreshed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:18:38.500Z, excerpt_hash=sha256:db0ecec4f82d546cfddd454677dcab04255605392b22bc78e32417e09e811d98
 
 Details:
 

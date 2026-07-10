@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100026-EBQXPZ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T00:28:01.181Z",
+  "verdict": "pass",
+  "summary": "The change is limited to Prettier normalization of the pre-existing ACR example and clears the repository format gate without semantic changes.",
+  "evaluated_sha": "2157672fdabf5ddeaee4604e3ed8ba5ef3d93872",
+  "blueprint_digest": "324de6711fbe60f35e26be035146dfbd4bf336883e6162804e499351b10c89ef",
+  "findings": [
+    "No semantic JSON value or key changed; only array layout was normalized."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100026-EBQXPZ/README.md",
+    "packages/spec/examples/acr.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
