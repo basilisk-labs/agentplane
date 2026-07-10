@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607101141-6T0H1E/recognize-rebased-pre-merge-closure-recorded-on",
+  "created_at": "2026-07-10T12:03:05.353Z",
+  "diffstat_sha256": "sha256:0f07d6f49e8ef20fe96bbb6dddd846dcdcdf2cc57fee98e16b68c62e73e4b33b",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607101141-6T0H1E",
+  "updated_at": "2026-07-10T12:03:05.353Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

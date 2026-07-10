@@ -11,7 +11,10 @@ import {
   loadCommandContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
+import {
+  taskCloseAlreadyRecordedOnBase,
+  taskPreMergeClosureRecordedOnBase,
+} from "../task/close-tail-state.js";
 import { parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
 import {
   preMergeClosureAllowsMissingBasisCommit,
@@ -249,6 +252,7 @@ async function resolveCloseTailStatus(opts: {
   baseBranch: string | null;
   remotePr: RemotePrStatus;
   preMergeClosureRecorded: boolean;
+  preMergeClosureRecordedOnBase: boolean;
 }): Promise<CloseTailStatus> {
   const base = opts.baseBranch?.trim() ?? "";
   if (base) {
@@ -258,7 +262,9 @@ async function resolveCloseTailStatus(opts: {
       taskId: opts.taskId,
       baseBranch: base,
     }).catch(() => false);
-    if (recorded) return { state: "recorded_on_base", base };
+    if (recorded || opts.preMergeClosureRecordedOnBase) {
+      return { state: "recorded_on_base", base };
+    }
     if (opts.remotePr.state === "MERGED" && opts.preMergeClosureRecorded) {
       return { state: "recorded_on_base", base };
     }
@@ -366,6 +372,24 @@ export async function resolvePrFlowStatus(opts: {
     pr.state === "not_found"
       ? (normalizeBaseBranch(meta?.base) ?? "main")
       : (normalizeBaseBranch(pr.base) ?? normalizeBaseBranch(meta?.base) ?? "main");
+  const preMergeClosureRecorded = await matchesMergedPreMergeClosure({
+    gitRoot: resolved.gitRoot,
+    task,
+    meta,
+    pr,
+    branch,
+  });
+  const preMergeClosureRecordedOnBase =
+    pr.state === "MERGED" && branch && pr.prNumber !== null
+      ? await taskPreMergeClosureRecordedOnBase({
+          gitRoot: resolved.gitRoot,
+          workflowDir: config.paths.workflow_dir,
+          taskId: task.id,
+          baseBranch,
+          branch,
+          prNumber: pr.prNumber,
+        })
+      : false;
   const closeTail = await resolveCloseTailStatus({
     gitRoot: resolved.gitRoot,
     workflowDir: config.paths.workflow_dir,
@@ -373,13 +397,8 @@ export async function resolvePrFlowStatus(opts: {
     taskClosePrefix: config.branch.task_close_prefix,
     baseBranch,
     remotePr: pr,
-    preMergeClosureRecorded: await matchesMergedPreMergeClosure({
-      gitRoot: resolved.gitRoot,
-      task,
-      meta,
-      pr,
-      branch,
-    }),
+    preMergeClosureRecorded,
+    preMergeClosureRecordedOnBase,
   });
   const prNumber = pr.state === "not_found" ? null : pr.prNumber;
   const [hostedChecks, reviewThreads, handoff] = await Promise.all([
