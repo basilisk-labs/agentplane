@@ -1,10 +1,11 @@
 ---
 id: "202607100033-4T5V86"
 title: "Synchronize pre-existing schema copies for loop CI"
-status: "DOING"
+result_summary: "Synchronized the pre-existing task README and tasks-export schema copies in the merged loop batch."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -41,11 +42,16 @@ quality_review:
     - "schemas/tasks-export.schema.json"
   findings:
     - "The generator, not hand editing, produced all schema changes; source families are synchronized."
-commit: null
+commit:
+  hash: "4b09dabafb1c3a75be948b79040936704196c95d"
+  message: "🔀 4Z7EZP integrate: Make AgentPlane loops executable, resumable, and token-aware"
 comments:
   -
     author: "CODER"
     body: "Start: synchronize only the known schema-copy drift blocking verify-contract on the loop branch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Included schema-sync prerequisite landed with primary PR #4558 on agentplane-loops."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Canonical schemas:sync changed only the six declared task-readme/tasks-export schema copies; schemas:check and git diff --check pass."
+  -
+    type: "status"
+    at: "2026-07-10T01:06:23.117Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Included schema-sync prerequisite landed with primary PR #4558 on agentplane-loops."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:33:47.791Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-10T01:06:23.118Z"
+doc_updated_by: "INTEGRATOR"
 description: "Run the canonical schema sync only for the already-drifted task README frontmatter and tasks export schema copies so the agentplane-loops PR can pass verify-contract; no semantic loop or main-branch changes."
 sections:
   Summary: |-
@@ -128,6 +141,9 @@ extensions:
     primary_task_id: "202607092346-4Z7EZP"
     role: "included"
     updated_at: "2026-07-10T00:56:47.733Z"
+  implementation_commit:
+    hash: "b402a33be27e231c619143269a9df30b5fffa15b"
+    message: "🔄 4T5V86 schemas: synchronize generated copies"
 id_source: "generated"
 ---
 ## Summary
