@@ -4,7 +4,7 @@ title: "Release integration lane after pre-merge Hosted Close"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -33,16 +33,16 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T09:01:39.454Z"
+  updated_at: "2026-07-10T09:03:22.999Z"
   updated_by: "EVALUATOR"
   note: "Quality review passed."
-  evaluated_sha: "0d24f75419c384d2abdfbc14a472bea2516bac44"
+  evaluated_sha: "58a98a88ccb78e4d4e40db068db7ea5b3da43e29"
   blueprint_digest: "964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611"
   evidence_refs:
     - ".agentplane/tasks/202607100435-A932SP/README.md"
-    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-090139454-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-090139454-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-090139454-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-090322999-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-090322999-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-090322999-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
