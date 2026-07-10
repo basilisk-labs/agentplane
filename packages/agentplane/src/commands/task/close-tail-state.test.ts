@@ -65,6 +65,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
       commitHash?: string;
       branch?: string;
       prNumber?: number;
+      markerPrNumber?: number | null;
     } = {},
   ): void {
     const resolvedBranch = opts.branch ?? branch;
@@ -94,7 +95,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
             state: "closed_before_merge",
             branch: resolvedBranch,
             basis_commit: "pre-rebase-basis",
-            pr_number: prNumber,
+            ...(opts.markerPrNumber === null ? {} : { pr_number: opts.markerPrNumber ?? prNumber }),
           },
         })}\n`,
         stderr: "",
@@ -128,6 +129,11 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
     );
   });
 
+  it("accepts a legacy marker without a duplicated PR number", async () => {
+    mockBaseArtifacts({ markerPrNumber: null });
+    await expect(recorded()).resolves.toBe(true);
+  });
+
   it("rejects incomplete or mismatched base evidence", async () => {
     mockBaseArtifacts({ status: "DOING" });
     await expect(recorded()).resolves.toBe(false);
@@ -139,6 +145,9 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
     await expect(recorded()).resolves.toBe(false);
 
     mockBaseArtifacts({ prNumber: 999 });
+    await expect(recorded()).resolves.toBe(false);
+
+    mockBaseArtifacts({ markerPrNumber: 999 });
     await expect(recorded()).resolves.toBe(false);
   });
 });

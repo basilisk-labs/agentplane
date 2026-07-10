@@ -29,12 +29,12 @@ Created: 2026-07-10T12:03:05.353Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202607092209-F33MNN/README.md    |  1 +
- docs/internal/v0.6.22-refactor-plan.md             |  3 +-
- packages/agentplane/src/commands/pr/flow-status.ts | 37 ++++++---
- .../src/commands/task/close-tail-state.test.ts     | 92 ++++++++++++++++++++++
- .../src/commands/task/close-tail-state.ts          | 58 ++++++++++++++
- 5 files changed, 181 insertions(+), 10 deletions(-)
+ .agentplane/tasks/202607092209-F33MNN/README.md    |   1 +
+ docs/internal/v0.6.22-refactor-plan.md             |   3 +-
+ packages/agentplane/src/commands/pr/flow-status.ts |  37 ++++++--
+ .../src/commands/task/close-tail-state.test.ts     | 101 +++++++++++++++++++++
+ .../src/commands/task/close-tail-state.ts          |  58 ++++++++++++
+ 5 files changed, 190 insertions(+), 10 deletions(-)
 ```
 
 </details>

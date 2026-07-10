@@ -54,7 +54,7 @@ export async function taskPreMergeClosureRecordedOnBase(opts: {
     const marker = readPreMergeClosureMarker(meta);
     return (
       marker?.branch === opts.branch &&
-      marker.prNumber === opts.prNumber &&
+      (marker.prNumber === undefined || marker.prNumber === opts.prNumber) &&
       meta.branch?.trim() === opts.branch &&
       meta.pr_number === opts.prNumber
     );
