@@ -1,11 +1,11 @@
 ---
 id: "202607092342-AHYFCS"
 title: "Enforce cross-surface context integrity for v0.6.22"
-result_summary: "pre-merge closure"
-status: "DOING"
+result_summary: "Merged via PR #4556."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -48,7 +48,9 @@ quality_review:
     - "packages/agentplane/src/commands/context/check.unit.test.ts"
   findings:
     - "The final collector skips hidden and service directories consistently with ingest and wiki report traversal; focused regression coverage verifies ignored vault/plugin and raw archive paths."
-commit: null
+commit:
+  hash: "b1f37543d5159dca9ae990dc947090cbaf8ae857"
+  message: "✅ AHYFCS context: record review-fix evaluation"
 comments:
   -
     author: "CODER"
@@ -56,6 +58,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4556 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -95,9 +100,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: review fix ignores hidden .obsidian and raw archive directories; 10 focused tests, typecheck, lint, diff check, prior full ci:contract, 2,132-test fast suite, and critical CLI remain green."
+  -
+    type: "status"
+    at: "2026-07-10T00:18:34.708Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4556 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:13:21.657Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-10T00:18:34.715Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make global context checks validate wiki graph references, entity page policy, manifest/source coverage, and freshness of derived wiki reports so structurally valid but semantically disconnected context cannot pass."
 sections:
   Summary: |-
