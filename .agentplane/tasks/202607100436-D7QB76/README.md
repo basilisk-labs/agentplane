@@ -1,10 +1,11 @@
 ---
 id: "202607100436-D7QB76"
 title: "Anchor evaluator reviews for metadata-only tasks"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -53,11 +54,16 @@ quality_review:
     - "Code-bearing branches still resolve to the last non-workflow implementation commit after current-task evidence commits."
     - "Pure current-task metadata work stops at the first unrelated workflow-history boundary and uses its own latest committed work unit; a branch with only unrelated task artifacts receives no evaluated SHA."
     - "Finish preserves the reviewed metadata SHA across later evaluator artifacts through the existing task-local-only advance check."
-commit: null
+commit:
+  hash: "612b12171d5c9cb942fcd573e79795d8eb0d9f4a"
+  message: "📝 D7QB76 task: record pull request metadata"
 comments:
   -
     author: "CODER"
     body: "Start: implement and verify a strict evaluator target for metadata-only task and documentation commits."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -72,8 +78,15 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Focused evaluator/finish regressions pass (2 files, 11 tests); typecheck, lint:core, ci:contract, test:fast (364 files/2153 tests), policy routing, and doctor pass. The evaluator keeps code targets, anchors the current pure metadata work unit, and rejects unrelated task artifacts."
+  -
+    type: "status"
+    at: "2026-07-10T10:53:10.994Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-10T10:47:38.540Z"
+doc_updated_at: "2026-07-10T10:53:10.995Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, give metadata-only docs and task-closure changes a fresh auditable evaluator target instead of walking past all workflow artifacts to an unrelated older code commit."
 sections:
@@ -135,6 +148,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "f6f17a1f6f44a2247a62dbf3b6fe2dd668c54804"
+    message: "🐛 D7QB76 task: anchor metadata-only evaluator targets"
 id_source: "generated"
 ---
 ## Summary

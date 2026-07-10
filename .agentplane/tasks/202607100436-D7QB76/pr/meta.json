@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:bf8622c0551e4d010e29b1e08bb751fdc0f1675e16efb0c07eb1b62e164db441",
   "pr_number": 4570,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4570",
+  "pre_merge_closure": {
+    "basis_commit": "612b12171d5c9cb942fcd573e79795d8eb0d9f4a",
+    "branch": "task/202607100436-D7QB76/anchor-evaluator-reviews-for-metadata-only-tasks",
+    "pr_number": 4570,
+    "recorded_at": "2026-07-10T10:53:11.016Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607100436-D7QB76",
