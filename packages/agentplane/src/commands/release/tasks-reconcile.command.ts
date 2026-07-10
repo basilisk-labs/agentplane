@@ -117,11 +117,11 @@ async function resolvePrimaryLandedCommit(opts: {
   primaryTask: TaskData | null;
   primaryTaskId: string;
 }): Promise<string> {
-  const primaryCommit = opts.primaryTask?.commit?.hash?.trim() ?? "";
-  if (primaryCommit) return primaryCommit;
   const primaryMeta = await readPrMetaIfPresent({ ctx: opts.ctx, taskId: opts.primaryTaskId });
   const mergeCommit = primaryMeta?.meta.merge_commit?.trim() ?? "";
   if (mergeCommit) return mergeCommit;
+  const primaryCommit = opts.primaryTask?.commit?.hash?.trim() ?? "";
+  if (primaryCommit) return primaryCommit;
   return primaryMeta?.meta.head_sha?.trim() ?? "";
 }
 

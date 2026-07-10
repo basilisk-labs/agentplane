@@ -15,8 +15,13 @@ For v0.6.22, make release task reconciliation close verified included batch task
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Focused reconciliation regression 3/3 passed; AgentPlane typecheck, lint:core, ci:contract, and fast
+suite 361 files / 2,144 tests all passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +32,12 @@ For v0.6.22, make release task reconciliation close verified included batch task
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/tasks/202607092209-F33MNN/README.md    |   1 +
+ .agentplane/tasks/202607100106-YP0PYE/README.md    |  11 +-
+ .agentplane/tasks/202607100106-YP0PYE/pr/meta.json |   7 +-
+ .../run-cli.core.release-tasks-reconcile.test.ts   | 181 +++++++++++++++++++++
+ .../commands/release/tasks-reconcile.command.ts    |   4 +-
+ 5 files changed, 198 insertions(+), 6 deletions(-)
 ```
 
 </details>
