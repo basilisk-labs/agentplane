@@ -1,0 +1,11 @@
+ .../src/commands/context/dashboard-graph.ts        | 319 ++++++++++++++
+ .../src/commands/context/dashboard-snapshot.ts     |  33 ++
+ .../src/commands/context/dashboard-wiki.ts         | 211 +++++++++
+ .../agentplane/src/commands/context/dashboard.ts   | 472 +--------------------
+ .../src/commands/context/wiki-report-links.ts      | 265 ++++++++++++
+ .../src/commands/context/wiki-reports.ts           | 318 ++------------
+ .../src/context/extraction-writer-quality.ts       | 199 +++++++++
+ .../agentplane/src/context/extraction-writer.ts    | 204 +--------
+ ...m-assimilation-artifacts-validation-ontology.ts | 235 ++++++++++
+ .../maximum-assimilation-artifacts-validation.ts   | 215 +---------
+ 10 files changed, 1315 insertions(+), 1156 deletions(-)

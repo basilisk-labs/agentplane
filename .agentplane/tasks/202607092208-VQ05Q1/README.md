@@ -1,10 +1,10 @@
 ---
 id: "202607092208-VQ05Q1"
 title: "Split context pipeline hotspots for v0.6.22"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -33,11 +33,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: split context pipeline hotspots along existing domain boundaries while preserving CLI, artifact, graph, and extraction contracts."
+events:
+  -
+    type: "status"
+    at: "2026-07-10T15:55:48.087Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split context pipeline hotspots along existing domain boundaries while preserving CLI, artifact, graph, and extraction contracts."
 doc_version: 3
-doc_updated_at: "2026-07-09T22:09:45.184Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-10T16:09:26.128Z"
+doc_updated_by: "CODER"
 description: "Decompose the oversized context dashboard, wiki reports, extraction writer, and maximum-assimilation validation modules along existing domain boundaries without changing CLI or artifact contracts."
 sections:
   Summary: |-
@@ -63,7 +73,12 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Split dashboard HTTP facade, snapshot orchestration, wiki parsing/linking, and graph assembly into focused modules while preserving buildContextDashboardSnapshot and cmdContextDashboard exports.
+    - Split wiki link analysis from generated report rendering; retained link-index, orphan-report, state, and Markdown report contracts.
+    - Extracted extraction-quality derivation and ontology/topology validation into focused helpers without changing persisted row shapes or validation messages.
+    - Hotspot warning count decreased from 18 to 14; all touched runtime modules are below 400 lines (largest: extraction-writer.ts at 366).
+    - Verification passed: context Vitest 23 files/104 tests, hotspots:check, typecheck, ci:contract, and full test:fast.
 id_source: "generated"
 ---
 ## Summary
@@ -102,3 +117,9 @@ Decompose the oversized context dashboard, wiki reports, extraction writer, and 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Split dashboard HTTP facade, snapshot orchestration, wiki parsing/linking, and graph assembly into focused modules while preserving buildContextDashboardSnapshot and cmdContextDashboard exports.
+- Split wiki link analysis from generated report rendering; retained link-index, orphan-report, state, and Markdown report contracts.
+- Extracted extraction-quality derivation and ontology/topology validation into focused helpers without changing persisted row shapes or validation messages.
+- Hotspot warning count decreased from 18 to 14; all touched runtime modules are below 400 lines (largest: extraction-writer.ts at 366).
+- Verification passed: context Vitest 23 files/104 tests, hotspots:check, typecheck, ci:contract, and full test:fast.
