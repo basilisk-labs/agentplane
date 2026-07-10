@@ -22,8 +22,10 @@ async function collectFiles(root: string, rel: string): Promise<string[]> {
     }
     for (const entry of entries) {
       const child = toPosix(path.join(current, entry.name));
-      if (entry.isDirectory()) await walk(child);
-      else if (entry.isFile()) out.push(child);
+      if (entry.isDirectory()) {
+        if (entry.name.startsWith(".") || entry.name === "service") continue;
+        await walk(child);
+      } else if (entry.isFile()) out.push(child);
     }
   }
   await walk(rel);

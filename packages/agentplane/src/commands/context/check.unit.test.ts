@@ -71,6 +71,17 @@ function wikiPage(id: string, graphEntity = ""): string {
 }
 
 describe("context cross-surface integrity", () => {
+  it("ignores hidden vault and raw archive directories", async () => {
+    const root = await tempRoot();
+    await initMaximum(root);
+    await write(root, "context/wiki/.obsidian/plugins/local.md", "not a wiki page");
+    await write(root, "context/raw/.archive/legacy.md", "# Archived\n");
+
+    await expect(
+      cmdContextDoctor({ cwd: root, parsed: { fix: false, label: "check" } }),
+    ).resolves.toBe(0);
+  });
+
   it("rejects raw files missing from the manifest and unresolved wiki graph refs", async () => {
     const root = await tempRoot();
     await initMaximum(root);
