@@ -42,11 +42,14 @@ totals, oversized ids, and batch fingerprints.
 
 ```text
  .agentplane/tasks/202607092209-F33MNN/README.md    |   3 +
- .agentplane/tasks/202607100140-WGV79Y/README.md    | 279 ++++++++++
+ .agentplane/tasks/202607100140-WGV79Y/README.md    | 280 ++++++++++
  .../blueprint/resolved-snapshot.json               | 580 +++++++++++++++++++++
  .../evaluator-opinion.md                           |  20 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  22 +
+ .../evaluator-opinion.md                           |  21 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  23 +
  docs/user/cli-reference.generated.mdx              |   1 +
  .../cli/run-cli.core.route-decision.batch.test.ts  | 103 ++++
  .../src/commands/context/context-runner.ts         |   2 +
@@ -61,7 +64,7 @@ totals, oversized ids, and batch fingerprints.
  .../src/context/harvest-tasks-extraction.ts        | 131 +++--
  .../src/context/harvest-tasks-markers.ts           |  19 +-
  .../agentplane/src/context/harvest-tasks-model.ts  |  18 +
- 20 files changed, 1562 insertions(+), 46 deletions(-)
+ 23 files changed, 1681 insertions(+), 46 deletions(-)
 ```
 
 </details>
