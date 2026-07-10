@@ -4,7 +4,7 @@ title: "Allow pre-merge closure to stage active task artifacts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T01:58:57.731Z"
+  updated_at: "2026-07-10T02:05:18.200Z"
   updated_by: "CODER"
-  note: "Pass: lifecycle and batch-route tests 11/11; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,141 tests. Active closure artifacts are staged deterministically, and quality/PR freshness accepts only explicitly linked batch task artifact commits."
+  note: "Pass: lifecycle, batch-route, and finish quality-target tests 16/16; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,142 tests. Primary finish now separates implementation SHA from explicitly linked batch evidence commits without accepting unrelated changes."
   attempts: 0
 quality_review:
   state: "pass"
@@ -76,8 +76,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pass: lifecycle and batch-route tests 11/11; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,141 tests. Active closure artifacts are staged deterministically, and quality/PR freshness accepts only explicitly linked batch task artifact commits."
+  -
+    type: "verify"
+    at: "2026-07-10T02:05:18.200Z"
+    author: "CODER"
+    state: "ok"
+    note: "Pass: lifecycle, batch-route, and finish quality-target tests 16/16; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,142 tests. Primary finish now separates implementation SHA from explicitly linked batch evidence commits without accepting unrelated changes."
 doc_version: 3
-doc_updated_at: "2026-07-10T01:58:57.892Z"
+doc_updated_at: "2026-07-10T02:05:18.364Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, fix branch_pr pre-merge closure so an unstaged README or quality artifact inside the active task subtree is treated as close-commit input rather than unrelated dirty state, while unrelated tracked files and other task artifacts remain blocking."
 sections:
@@ -163,6 +169,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-10T02:05:18.200Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Pass: lifecycle, batch-route, and finish quality-target tests 16/16; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,142 tests. Primary finish now separates implementation SHA from explicitly linked batch evidence commits without accepting unrelated changes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T01:58:57.892Z, excerpt_hash=sha256:f21941cfb404bbe0458b0eec4e0f77c749e3b73bba27c2d27ace60d46aab2bae
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100106-YP0PYE-bound-context-extraction-batches-by-source-bytes/.agentplane/tasks/202607100140-WGV79Y/blueprint/resolved-snapshot.json
+    - old_digest: a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85
+    - current_digest: a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100140-WGV79Y
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task brief 202607100106-YP0PYE
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -176,7 +212,7 @@ extensions:
       - "202607100140-WGV79Y"
     primary_task_id: "202607100106-YP0PYE"
     role: "included"
-    updated_at: "2026-07-10T02:00:29.269Z"
+    updated_at: "2026-07-10T02:05:35.819Z"
 id_source: "generated"
 ---
 ## Summary
@@ -248,6 +284,36 @@ Note: Pass: lifecycle and batch-route tests 11/11; AgentPlane typecheck; lint:co
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T01:53:58.406Z, excerpt_hash=sha256:f21941cfb404bbe0458b0eec4e0f77c749e3b73bba27c2d27ace60d46aab2bae
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100106-YP0PYE-bound-context-extraction-batches-by-source-bytes/.agentplane/tasks/202607100140-WGV79Y/blueprint/resolved-snapshot.json
+- old_digest: a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85
+- current_digest: a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100140-WGV79Y
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task brief 202607100106-YP0PYE
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-10T02:05:18.200Z — VERIFY — ok
+
+By: CODER
+
+Note: Pass: lifecycle, batch-route, and finish quality-target tests 16/16; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,142 tests. Primary finish now separates implementation SHA from explicitly linked batch evidence commits without accepting unrelated changes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T01:58:57.892Z, excerpt_hash=sha256:f21941cfb404bbe0458b0eec4e0f77c749e3b73bba27c2d27ace60d46aab2bae
 
 Details:
 

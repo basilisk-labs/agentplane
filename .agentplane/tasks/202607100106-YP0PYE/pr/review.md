@@ -36,7 +36,7 @@ Created: 2026-07-10T01:07:58.209Z
 
 ```text
  .agentplane/tasks/202607092209-F33MNN/README.md    |   3 +
- .agentplane/tasks/202607100140-WGV79Y/README.md    | 280 ++++++++++
+ .agentplane/tasks/202607100140-WGV79Y/README.md    | 346 ++++++++++++
  .../blueprint/resolved-snapshot.json               | 580 +++++++++++++++++++++
  .../evaluator-opinion.md                           |  20 +
  .../evaluator-prompt.md                            |  74 +++
@@ -54,11 +54,13 @@ Created: 2026-07-10T01:07:58.209Z
  .../src/commands/shared/route-decision-blockers.ts |  19 +-
  .../src/commands/shared/task-local-freshness.ts    |  28 +-
  .../src/commands/task/finish-execute-close.ts      |  20 +-
+ .../src/commands/task/finish-execute-commit.ts     |  51 +-
  .../task/finish.pre-merge-closure.unit.test.ts     |  59 +++
+ .../task/finish.quality-review-target.unit.test.ts |  35 ++
  .../src/context/harvest-tasks-extraction.ts        | 131 +++--
  .../src/context/harvest-tasks-markers.ts           |  19 +-
  .../agentplane/src/context/harvest-tasks-model.ts  |  18 +
- 23 files changed, 1681 insertions(+), 46 deletions(-)
+ 25 files changed, 1824 insertions(+), 55 deletions(-)
 ```
 
 </details>

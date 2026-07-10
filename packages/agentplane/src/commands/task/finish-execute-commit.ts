@@ -1,7 +1,11 @@
 import { invalidValueMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { isRecord } from "../../shared/guards.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { isTaskLocalOnlyAdvance } from "../shared/task-local-freshness.js";
+import {
+  isTaskLocalOnlyAdvance,
+  isTaskSetLocalOnlyAdvance,
+} from "../shared/task-local-freshness.js";
 import {
   defaultCommitEmojiForStatus,
   prepareTaskTransitionComment,
@@ -14,6 +18,23 @@ import {
   type ResolvedCommitInfo,
 } from "./finish-shared.js";
 import type { FinishExecutionPlan, FinishOptions } from "./finish-types.js";
+
+function resolveBatchArtifactTaskIds(loaded: LoadedFinishTask): string[] {
+  const batch = isRecord(loaded.task.extensions?.branch_pr_batch)
+    ? loaded.task.extensions.branch_pr_batch
+    : null;
+  if (
+    batch?.role !== "primary" ||
+    batch.primary_task_id !== loaded.taskId ||
+    !Array.isArray(batch.included_task_ids)
+  ) {
+    return [loaded.taskId];
+  }
+  const includedTaskIds = batch.included_task_ids.filter(
+    (value): value is string => typeof value === "string" && value.length > 0,
+  );
+  return [...new Set([loaded.taskId, ...includedTaskIds])];
+}
 
 export async function resolveTaskCommitInfo(opts: {
   ctx: CommandContext;
@@ -130,14 +151,26 @@ export async function resolveImplementationCommitInfo(opts: {
   const candidateCommitInfo = opts.taskCommitInfo ?? existingCommitInfo(loaded.task);
   if (!candidateCommitInfo) return null;
 
-  const taskLocalAdvance = await isTaskLocalOnlyAdvance({
-    gitRoot: opts.ctx.resolvedProject.gitRoot,
-    workflowDir: opts.ctx.config.paths.workflow_dir,
-    taskId: loaded.taskId,
-    tasksPath: opts.ctx.config.paths.tasks_path,
-    fromRef: reviewedSha,
-    toRef: candidateCommitInfo.hash,
-  }).catch(() => false);
+  const artifactTaskIds = resolveBatchArtifactTaskIds(loaded);
+  const taskLocalAdvance = await (
+    artifactTaskIds.length === 1
+      ? isTaskLocalOnlyAdvance({
+          gitRoot: opts.ctx.resolvedProject.gitRoot,
+          workflowDir: opts.ctx.config.paths.workflow_dir,
+          taskId: loaded.taskId,
+          tasksPath: opts.ctx.config.paths.tasks_path,
+          fromRef: reviewedSha,
+          toRef: candidateCommitInfo.hash,
+        })
+      : isTaskSetLocalOnlyAdvance({
+          gitRoot: opts.ctx.resolvedProject.gitRoot,
+          workflowDir: opts.ctx.config.paths.workflow_dir,
+          taskIds: artifactTaskIds,
+          tasksPath: opts.ctx.config.paths.tasks_path,
+          fromRef: reviewedSha,
+          toRef: candidateCommitInfo.hash,
+        })
+  ).catch(() => false);
   if (!taskLocalAdvance) return null;
 
   const commitInfo = await readCommitInfo(opts.ctx.resolvedProject.gitRoot, reviewedSha);
