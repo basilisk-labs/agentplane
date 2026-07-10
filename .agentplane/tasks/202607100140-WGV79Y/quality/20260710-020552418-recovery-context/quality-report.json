@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100140-WGV79Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T02:05:52.418Z",
+  "verdict": "pass",
+  "summary": "Batch pre-merge closure now has consistent dirty-state, route freshness, and finish commit semantics.",
+  "evaluated_sha": "2e9dc2e52a26c3b960150ba9fa10d51faa40202b",
+  "blueprint_digest": "a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85",
+  "findings": [
+    "Lifecycle, batch-route, and finish quality-target tests 16/16 pass; typecheck, lint:core, ci:contract, and the 2,142-test fast suite are green."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100140-WGV79Y/README.md",
+    "packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts",
+    "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

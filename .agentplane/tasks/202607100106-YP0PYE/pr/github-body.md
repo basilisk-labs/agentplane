@@ -50,6 +50,9 @@ totals, oversized ids, and batch fingerprints.
  .../evaluator-opinion.md                           |  21 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  23 +
+ .../evaluator-opinion.md                           |  21 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  23 +
  docs/user/cli-reference.generated.mdx              |   1 +
  .../cli/run-cli.core.route-decision.batch.test.ts  | 103 ++++
  .../src/commands/context/context-runner.ts         |   2 +
@@ -66,7 +69,7 @@ totals, oversized ids, and batch fingerprints.
  .../src/context/harvest-tasks-extraction.ts        | 131 +++--
  .../src/context/harvest-tasks-markers.ts           |  19 +-
  .../agentplane/src/context/harvest-tasks-model.ts  |  18 +
- 25 files changed, 1824 insertions(+), 55 deletions(-)
+ 28 files changed, 1942 insertions(+), 55 deletions(-)
 ```
 
 </details>
