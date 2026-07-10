@@ -116,6 +116,7 @@ async function resolveEvaluatedSha(opts: {
   const taskArtifactPrefix = `${normalizedWorkflowDir}/${opts.taskId}/`;
   const workflowArtifactPrefix = `${normalizedWorkflowDir}/`;
   let current = head;
+  let currentTaskArtifactHead: string | null = null;
 
   for (let depth = 0; depth < 20; depth += 1) {
     let parent: string;
@@ -129,6 +130,7 @@ async function resolveEvaluatedSha(opts: {
     if (changed.length === 0) {
       return current;
     }
+    const touchesCurrentTask = changed.some((name) => name.startsWith(taskArtifactPrefix));
     const touchesOnlyCurrentTask = changed.every((name) => name.startsWith(taskArtifactPrefix));
     const touchesOnlyWorkflowArtifacts = changed.every((name) =>
       name.startsWith(workflowArtifactPrefix),
@@ -136,10 +138,18 @@ async function resolveEvaluatedSha(opts: {
     if (!touchesOnlyCurrentTask && !touchesOnlyWorkflowArtifacts) {
       return current;
     }
-    current = parent;
+    if (touchesOnlyCurrentTask) {
+      currentTaskArtifactHead ??= current;
+      current = parent;
+      continue;
+    }
+    if (touchesCurrentTask) {
+      return currentTaskArtifactHead ?? current;
+    }
+    return currentTaskArtifactHead;
   }
 
-  return current;
+  return currentTaskArtifactHead ?? current;
 }
 
 function assertRunnableReviewInput(parsed: EvaluatorRunParsed): void {

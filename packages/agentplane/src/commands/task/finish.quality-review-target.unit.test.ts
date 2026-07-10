@@ -103,6 +103,39 @@ describe("finish quality review target selection", () => {
     expect(resolved).toEqual({ hash: "impl-sha", message: "feat: implement T-1" });
   });
 
+  it("preserves a metadata-only reviewed SHA across later evaluator artifacts", async () => {
+    const artifactCommit: ResolvedCommitInfo = {
+      hash: "review-artifacts-sha",
+      message: "🧪 T-1 task: record evaluator evidence",
+    };
+    mocks.isTaskLocalOnlyAdvance.mockResolvedValue(true);
+    mocks.readCommitInfo.mockResolvedValue({
+      hash: "metadata-sha",
+      message: "📝 T-1 docs: record metadata-only work unit",
+    });
+    const { resolveImplementationCommitInfo } = await import("./finish-execute-commit.js");
+
+    const resolved = await resolveImplementationCommitInfo({
+      ctx: mkCtx(),
+      options: { quiet: true } as never,
+      loadedTasks: [mkLoadedTask("metadata-sha")],
+      taskCommitInfo: artifactCommit,
+    });
+
+    expect(mocks.isTaskLocalOnlyAdvance).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      workflowDir: ".agentplane/tasks",
+      taskId: "T-1",
+      tasksPath: ".agentplane/tasks.json",
+      fromRef: "metadata-sha",
+      toRef: "review-artifacts-sha",
+    });
+    expect(resolved).toEqual({
+      hash: "metadata-sha",
+      message: "📝 T-1 docs: record metadata-only work unit",
+    });
+  });
+
   it("auto-resolves quality_review.evaluated_sha when existing task commit is task-artifact-only", async () => {
     const loaded = mkLoadedTask();
     loaded.task.commit = {
