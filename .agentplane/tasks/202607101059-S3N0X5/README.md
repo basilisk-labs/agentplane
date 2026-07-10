@@ -1,10 +1,11 @@
 ---
 id: "202607101059-S3N0X5"
 title: "Recover queue lanes after merged PR branch deletion"
-status: "DOING"
+result_summary: "Protected-main queue recovery now survives deleted merged PR branches without masking stale handoff lanes."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -48,11 +49,16 @@ quality_review:
     - "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
   findings:
     - "Queue-only PR identity is trusted conservatively only while status is queued; handoff entries still require authoritative provider or task metadata and remain recoverable when absent."
-commit: null
+commit:
+  hash: "b594b8e9a1b29c1813b3c3dfbdbba4d8dbd97a8c"
+  message: "🐛 S3N0X5 task: keep handoff recovery strict"
 comments:
   -
     author: "CODER"
     body: "Start: fix authoritative PR identity lookup and queue recovery regressions for v0.6.22."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR-number recovery, queued-task fallback, strict handoff recovery, review follow-up, local CI, hosted checks, and evaluator evidence all pass."
 events:
   -
     type: "status"
@@ -73,9 +79,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Review follow-up verified: queue-only OPEN fallback is restricted to queued entries; handoff without authoritative PR evidence remains not_found for recovery. Focused suite passed (3 files, 14 tests), typecheck and lint:core passed."
+  -
+    type: "status"
+    at: "2026-07-10T11:32:22.115Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR-number recovery, queued-task fallback, strict handoff recovery, review follow-up, local CI, hosted checks, and evaluator evidence all pass."
 doc_version: 3
-doc_updated_at: "2026-07-10T11:26:02.709Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-10T11:32:22.116Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make branch_pr queue recovery resolve authoritative GitHub PR state by persisted PR number when the remote head branch has been deleted, validate branch/base identity, and prevent false missing-PR diagnostics for queued pre-merge-closed tasks whose artifacts are not yet on main."
 sections:
   Summary: |-
@@ -168,6 +181,10 @@ sections:
     - Observation: Queue metadata fallback also applied to handoff entries when provider lookup failed.
       Impact: A missing or inaccessible handoff PR could retain the integration lane indefinitely.
       Resolution: Restrict conservative queue fallback to queued pre-merge tasks and add a handoff regression assertion.
+extensions:
+  implementation_commit:
+    hash: "b594b8e9a1b29c1813b3c3dfbdbba4d8dbd97a8c"
+    message: "🐛 S3N0X5 task: keep handoff recovery strict"
 id_source: "generated"
 ---
 ## Summary
