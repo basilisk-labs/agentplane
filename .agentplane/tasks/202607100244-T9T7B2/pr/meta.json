@@ -8,10 +8,10 @@
   "pr_number": 4564,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4564",
   "pre_merge_closure": {
-    "basis_commit": "d109fffd689028ae6cb9192d0829cb1e540f1405",
+    "basis_commit": "396b040ddc6dba0716e4db728b3b9711d598956a",
     "branch": "task/202607100244-T9T7B2/prefer-merged-pr-commit-when-reconciling-include",
     "pr_number": 4564,
-    "recorded_at": "2026-07-10T03:00:44.257Z",
+    "recorded_at": "2026-07-10T03:12:32.888Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

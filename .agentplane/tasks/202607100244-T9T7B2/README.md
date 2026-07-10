@@ -1,11 +1,11 @@
 ---
 id: "202607100244-T9T7B2"
 title: "Prefer merged PR commit when reconciling included batch tasks"
-result_summary: "Prefer merged PR commit for included-task reconciliation while preserving task commit and head SHA fallbacks."
+result_summary: "Prefer merge_commit only for MERGED PR metadata, with task commit and head SHA fallbacks preserved."
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -49,8 +49,8 @@ quality_review:
   findings:
     - "No blocking findings; OPEN stale metadata now falls back to the valid task commit, while MERGED rebase metadata still selects the landed merge commit."
 commit:
-  hash: "d109fffd689028ae6cb9192d0829cb1e540f1405"
-  message: "✅ T9T7B2 reconciliation: record quality review"
+  hash: "8efb0854e81da259886f73396b400a54e68ec459"
+  message: "🐛 T9T7B2 reconciliation: ignore stale merge metadata"
 comments:
   -
     author: "CODER"
@@ -58,6 +58,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: rebase-aware reconciliation passed focused, contract, type, lint, local CI, and 2,144-test fast-suite checks; pre-merge packet is ready."
+  -
+    author: "CODER"
+    body: "Verified: review feedback is resolved; stale OPEN merge metadata now falls back safely, and all declared checks pass."
 events:
   -
     type: "status"
@@ -85,8 +88,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review fix passed: focused reconciliation 3/3, AgentPlane typecheck, lint:core, ci:contract, and full fast suite 361 files / 2,144 tests."
+  -
+    type: "status"
+    at: "2026-07-10T03:12:32.857Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: review feedback is resolved; stale OPEN merge metadata now falls back safely, and all declared checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-10T03:11:33.466Z"
+doc_updated_at: "2026-07-10T03:12:32.857Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, make release task reconciliation close verified included batch tasks after GitHub rebase merges by preferring the primary PR merge_commit over the rewritten-away branch task commit, while preserving the task commit fallback when merged PR metadata is unavailable."
 sections:
