@@ -3,8 +3,8 @@
   "branch": "task/202607100244-T9T7B2/prefer-merged-pr-commit-when-reconciling-include",
   "created_at": "2026-07-10T02:47:15.009Z",
   "diffstat_sha256": "sha256:48a501d9f8c6a5b62a69438dde0b015112f323992f78b583608d17bda95b10ad",
-  "last_verified_at": "2026-07-10T02:56:00.745Z",
-  "last_verified_diffstat_sha256": "sha256:49069c7ad345fe1f8c714ca6373dff2c52692d3fd8763a5bcf17ecef439bdc95",
+  "last_verified_at": "2026-07-10T03:11:32.291Z",
+  "last_verified_diffstat_sha256": "sha256:48a501d9f8c6a5b62a69438dde0b015112f323992f78b583608d17bda95b10ad",
   "pr_number": 4564,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4564",
   "pre_merge_closure": {
