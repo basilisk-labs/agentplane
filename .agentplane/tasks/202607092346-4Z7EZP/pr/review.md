@@ -413,7 +413,8 @@ Created: 2026-07-09T23:48:42.147Z
  .../src/cli/run-cli/command-catalog/project.ts     |   26 +
  .../src/cli/run-cli/command-loaders/project.ts     |   29 +
  .../src/commands/loop/loop.command.test.ts         |  321 ++
- .../agentplane/src/commands/loop/loop.command.ts   |  820 +++++
+ .../agentplane/src/commands/loop/loop.command.ts   |  498 +++
+ .../agentplane/src/commands/loop/loop.execute.ts   |  336 ++
  .../agentplane/src/commands/loop/loop.specs.ts     |  323 ++
  packages/agentplane/src/loops/builtins.ts          |  485 +++
  packages/agentplane/src/loops/conditions.ts        |   58 +
@@ -457,7 +458,7 @@ Created: 2026-07-09T23:48:42.147Z
  schemas/tasks-export.schema.json                   |   58 +-
  scripts/checks/check-spec-examples.mjs             |    1 +
  scripts/generate/sync-schemas.mjs                  |   21 +-
- 428 files changed, 61914 insertions(+), 45 deletions(-)
+ 429 files changed, 61928 insertions(+), 45 deletions(-)
 ```
 
 </details>
