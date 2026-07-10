@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100106-YP0PYE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T02:18:40.059Z",
+  "verdict": "pass",
+  "summary": "The complete extraction and batch lifecycle PR is verified on its final implementation head.",
+  "evaluated_sha": "da90b1f3508f35f0f7e51d13174f71f537d6113d",
+  "blueprint_digest": "2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac",
+  "findings": [
+    "Context tests 14/14, lifecycle/batch tests 19/19, ci:contract, and full local fast CI with 2,143 tests and critical CLI E2E are green."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100106-YP0PYE/README.md",
+    "packages/agentplane/src/commands/context/harvest-tasks.test.ts",
+    "packages/agentplane/src/commands/pr/internal/sync-batch-ownership.test.ts",
+    "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+    "docs/user/cli-reference.generated.mdx"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
