@@ -1,9 +1,9 @@
- .agentplane/tasks/202607100026-EBQXPZ/README.md    | 197 +++++++
+ .agentplane/tasks/202607100026-EBQXPZ/README.md    | 188 +++++++
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
  .../evaluator-opinion.md                           |  19 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  21 +
- .agentplane/tasks/202607100033-4T5V86/README.md    | 198 +++++++
+ .agentplane/tasks/202607100033-4T5V86/README.md    | 189 +++++++
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
  .../evaluator-opinion.md                           |  20 +
  .../evaluator-prompt.md                            |  74 +++
@@ -43,4 +43,4 @@
  schemas/loop-spec.schema.json                      |  41 +-
  schemas/task-readme-frontmatter.schema.json        |  58 ++-
  schemas/tasks-export.schema.json                   |  58 ++-
- 45 files changed, 3769 insertions(+), 207 deletions(-)
+ 45 files changed, 3751 insertions(+), 207 deletions(-)

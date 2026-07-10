@@ -2,6 +2,13 @@ Task: `202607092346-4Z7EZP`
 Title: Make AgentPlane loops executable, resumable, and token-aware
 Canonical task record: `.agentplane/tasks/202607092346-4Z7EZP/README.md`
 
+## Batch Tasks
+
+- Primary: `202607092346-4Z7EZP`
+- Closure policy: `all_or_fail`
+- Included: `202607100026-EBQXPZ`
+- Included: `202607100033-4T5V86`
+
 ## Summary
 
 Make AgentPlane loops executable, resumable, and token-aware
@@ -18,9 +25,9 @@ Implement only on the agentplane-loops branch family. Do not switch, merge, push
 - Note:
 
 ```text
-Addressed all three PR review defects: untracked content counts toward diff budgets, loop-step
-bundle persists compact task context, and evaluator requires agent_patch success. Focused suite
-passes 37/37, typecheck and repository format:check pass.
+Final loop branch verification passes: lint:core; 37/37 focused tests; typecheck; repository
+format:check; schemas:check; docs:cli:check; routing; diff check. All three PR review findings are
+covered by regressions.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,12 +39,12 @@ passes 37/37, typecheck and repository format:check pass.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202607100026-EBQXPZ/README.md    | 197 +++++++
+ .agentplane/tasks/202607100026-EBQXPZ/README.md    | 188 +++++++
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
  .../evaluator-opinion.md                           |  19 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  21 +
- .agentplane/tasks/202607100033-4T5V86/README.md    | 198 +++++++
+ .agentplane/tasks/202607100033-4T5V86/README.md    | 189 +++++++
  .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
  .../evaluator-opinion.md                           |  20 +
  .../evaluator-prompt.md                            |  74 +++
@@ -77,7 +84,7 @@ passes 37/37, typecheck and repository format:check pass.
  schemas/loop-spec.schema.json                      |  41 +-
  schemas/task-readme-frontmatter.schema.json        |  58 ++-
  schemas/tasks-export.schema.json                   |  58 ++-
- 45 files changed, 3769 insertions(+), 207 deletions(-)
+ 45 files changed, 3751 insertions(+), 207 deletions(-)
 ```
 
 </details>
