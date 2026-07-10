@@ -19,7 +19,7 @@ Created: 2026-07-10T01:07:58.209Z
 ## Verification
 
 - State: ok
-- Note: Pass: focused context harvest tests 14/14; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,139 tests; live CLI help and dry-run confirmed batch-bytes, source byte totals, oversized ids, and batch fingerprints.
+- Note: Pass: context extraction tests 14/14; lifecycle and batch refresh tests 19/19; AgentPlane typecheck; lint:core; ci:contract; full local fast CI including 361 files, 2,143 tests, build, bundle, cold-start, docs freshness, and critical CLI E2E.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
