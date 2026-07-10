@@ -15,6 +15,7 @@ export type ContextHarvestTasksParsed = {
   writeProposals: boolean;
   createExtractionTasks: boolean;
   batchSize: string;
+  batchBytes: string;
   promote: boolean;
   dryRun: boolean;
   format: "text" | "json";
@@ -126,6 +127,23 @@ export function parseLimit(value: string): number | null {
       exitCode: 3,
       code: "E_VALIDATION",
       message: `Invalid --limit value: ${value}`,
+    });
+  }
+  return parsed;
+}
+
+export function parsePositiveIntegerOption(
+  value: string,
+  fallback: number,
+  optionName: string,
+): number {
+  if (!value.trim()) return fallback;
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: `Invalid ${optionName} value: ${value}`,
     });
   }
   return parsed;

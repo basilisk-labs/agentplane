@@ -9,6 +9,7 @@ export type TaskHarvestMarker = {
   state: "ingested";
   harvested_at: string;
   source_digest: string;
+  source_fingerprint_version: 1;
   raw_evidence_path: string;
   report_path: string;
   wiki_proposal_path: string;
@@ -36,6 +37,12 @@ type MarkerFact = {
   task_id: string;
 };
 
+export type TaskSourceFingerprint = {
+  version: 1;
+  digest: string;
+  size_bytes: number;
+};
+
 function sectionText(task: TaskData, section: string): string {
   const sections = isRecord(task.sections) ? task.sections : {};
   const value = sections[section];
@@ -61,7 +68,16 @@ export function taskText(task: HarvestMarkerTask): string {
 }
 
 export function taskTextDigest(task: HarvestMarkerTask): string {
-  return `sha256:${createHash("sha256").update(taskText(task)).digest("hex")}`;
+  return taskSourceFingerprint(task).digest;
+}
+
+export function taskSourceFingerprint(task: HarvestMarkerTask): TaskSourceFingerprint {
+  const text = taskText(task);
+  return {
+    version: 1,
+    digest: `sha256:${createHash("sha256").update(text).digest("hex")}`,
+    size_bytes: Buffer.byteLength(text, "utf8"),
+  };
 }
 
 function existingHarvestMarker(task: HarvestMarkerTask): TaskHarvestMarker | null {
@@ -107,6 +123,7 @@ export function buildTaskHarvestMarkers(opts: {
         state: "ingested",
         harvested_at: opts.report.generated_at,
         source_digest: row.text_digest,
+        source_fingerprint_version: 1,
         raw_evidence_path: `context/raw/tasks/${row.id}.json`,
         report_path: opts.reportPath,
         wiki_proposal_path: opts.wikiPath,
