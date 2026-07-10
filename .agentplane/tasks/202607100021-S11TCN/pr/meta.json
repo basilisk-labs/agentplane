@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:4a2ef48acadbe773a5f2ac2bfc76582c7834e7030f30e429c5519e53af9e9fc8",
   "pr_number": 4559,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4559",
+  "pre_merge_closure": {
+    "basis_commit": "9a3f81dc9ec45fd25e7d70d534882ba37298ac64",
+    "branch": "task/202607100021-S11TCN/make-context-extraction-packs-compact-and-schema",
+    "pr_number": 4559,
+    "recorded_at": "2026-07-10T00:48:53.763Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607100021-S11TCN",

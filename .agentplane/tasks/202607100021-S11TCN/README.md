@@ -1,10 +1,11 @@
 ---
 id: "202607100021-S11TCN"
 title: "Make context extraction packs compact and schema-complete for v0.6.22"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -47,11 +48,16 @@ quality_review:
     - ".agentplane/tasks/202607100021-S11TCN/blueprint/resolved-snapshot.json"
   findings:
     - "SGR v2 now fails incomplete page/topology payloads before writes while legacy v1 remains compatible; generated packs expose a valid contract plus deterministic current-context candidates, and prompt size budgets are enforced."
-commit: null
+commit:
+  hash: "9a3f81dc9ec45fd25e7d70d534882ba37298ac64"
+  message: "✅ S11TCN task: record hosted PR evidence"
 comments:
   -
     author: "CODER"
     body: "Start: tighten the SGR v2 extraction contract, generate compact self-contained task artifacts, and enrich canonical snapshots with deterministic current-context evidence for the v0.6.22 patch."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -66,8 +72,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused extraction and release-readiness suite passed (65 tests); agentplane typecheck, lint:core, formatting, architecture, schemas, policy routing, Knip baseline, coverage thresholds, and ci:contract passed. Repository-wide lint:website remains an unchanged pre-existing baseline outside this diff and is recorded in Findings."
+  -
+    type: "status"
+    at: "2026-07-10T00:48:53.738Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:43:27.100Z"
+doc_updated_at: "2026-07-10T00:48:53.739Z"
 doc_updated_by: "CODER"
 description: "Tighten the SGR v2 context_extraction contract for entity resolution, page creation, and topology decisions; generate a complete compact extraction contract; enrich canonical task snapshots with current surface counts/digests/candidates; reduce duplicated prompt prose while keeping generated CURATOR tasks portable and self-contained."
 sections:
@@ -130,6 +143,10 @@ sections:
       Resolution: Use bun run lint:core and bun run ci:contract as the scoped evidence for this task; retain the website baseline for the dedicated v0.6.22 quality backlog instead of widening this PR.
       Promotion: incident-candidate
       Fixability: repo-fixable
+extensions:
+  implementation_commit:
+    hash: "246082a578c58d4a97182651d3b1a3fb5538db1d"
+    message: "🚀 S11TCN context: tighten extraction task packs"
 id_source: "generated"
 ---
 ## Summary
