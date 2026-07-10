@@ -40,8 +40,8 @@ passes 37/37, typecheck and repository format:check pass.
  docs/developer/loops.mdx                           |  49 +-
  docs/reference/loops.mdx                           |  48 +-
  docs/user/cli-reference.generated.mdx              |  12 +-
- .../src/commands/loop/loop.command.test.ts         |  24 +-
- .../agentplane/src/commands/loop/loop.command.ts   | 468 ++++++++++++++---
+ .../src/commands/loop/loop.command.test.ts         |  58 ++-
+ .../agentplane/src/commands/loop/loop.command.ts   | 494 +++++++++++++++---
  .../agentplane/src/commands/loop/loop.specs.ts     |  68 ++-
  packages/agentplane/src/loops/builtins.ts          |  10 +-
  packages/agentplane/src/loops/conditions.ts        |  58 +++
@@ -54,14 +54,14 @@ passes 37/37, typecheck and repository format:check pass.
  packages/agentplane/src/loops/validate.test.ts     |  34 +-
  packages/agentplane/src/loops/validate.ts          |  61 ++-
  packages/agentplane/src/runner/types/target.ts     |   5 +
- .../src/runner/usecases/task-run-blueprint.test.ts |   8 +
+ .../src/runner/usecases/task-run-blueprint.test.ts |  36 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |   9 +
- .../agentplane/src/runner/usecases/task-run.ts     |  57 +-
+ .../agentplane/src/runner/usecases/task-run.ts     |  58 ++-
  packages/core/schemas/loop-spec.schema.json        |  41 +-
  packages/spec/examples/acr.json                    |  18 +-
  packages/spec/schemas/loop-spec.schema.json        |  41 +-
  schemas/loop-spec.schema.json                      |  41 +-
- 29 files changed, 2560 insertions(+), 138 deletions(-)
+ 29 files changed, 2647 insertions(+), 140 deletions(-)
 ```
 
 </details>
