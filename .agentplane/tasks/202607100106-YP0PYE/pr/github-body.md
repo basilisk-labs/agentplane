@@ -60,6 +60,9 @@ totals, oversized ids, and batch fingerprints.
  .../src/commands/context/context.spec.ts           |  10 +
  .../src/commands/context/harvest-tasks.test.ts     | 206 +++++++-
  .../src/commands/context/harvest-tasks.ts          |   4 +
+ .../pr/internal/sync-batch-ownership.test.ts       |  53 +-
+ .../commands/pr/internal/sync-batch-ownership.ts   |  19 +
+ .../agentplane/src/commands/pr/internal/sync.ts    |  14 +
  .../src/commands/shared/route-decision-blockers.ts |  19 +-
  .../src/commands/shared/task-local-freshness.ts    |  28 +-
  .../src/commands/task/finish-execute-close.ts      |  20 +-
@@ -69,7 +72,7 @@ totals, oversized ids, and batch fingerprints.
  .../src/context/harvest-tasks-extraction.ts        | 131 +++--
  .../src/context/harvest-tasks-markers.ts           |  19 +-
  .../agentplane/src/context/harvest-tasks-model.ts  |  18 +
- 28 files changed, 1942 insertions(+), 55 deletions(-)
+ 31 files changed, 2027 insertions(+), 56 deletions(-)
 ```
 
 </details>

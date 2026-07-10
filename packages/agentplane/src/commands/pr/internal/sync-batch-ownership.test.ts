@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -142,6 +142,8 @@ describe("branch_pr batch ownership sync", () => {
       root,
     ]);
     expect(openCode).toBe(0);
+    const includedReadmePath = path.join(root, ".agentplane", "tasks", includedTaskId, "README.md");
+    const includedReadmeBeforeRefresh = await readFile(includedReadmePath, "utf8");
 
     const refreshed = await ensurePrArtifactsSynced({
       cwd: root,
@@ -150,6 +152,7 @@ describe("branch_pr batch ownership sync", () => {
       branch,
     });
     expect(refreshed?.branch).toBe(branch);
+    expect(await readFile(includedReadmePath, "utf8")).toBe(includedReadmeBeforeRefresh);
     const primaryAfterRefresh = await readTask(root, primaryTaskId);
     const includedAfterRefresh = await readTask(root, includedTaskId);
     expect(primaryAfterRefresh.extensions?.branch_pr_batch).toMatchObject({
