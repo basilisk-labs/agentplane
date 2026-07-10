@@ -45,15 +45,19 @@ async function commitPath(
   return stdout.trim();
 }
 
-async function readEvaluatedSha(root: string, taskId: string): Promise<string | null> {
+async function readEvaluatedSha(
+  root: string,
+  taskId: string,
+  expectedReports = 1,
+): Promise<string | null> {
   const { stdout } = await execFileAsync(
     "find",
     [`.agentplane/tasks/${taskId}/quality`, "-name", "quality-report.json", "-print"],
     { cwd: root },
   );
-  const reportPaths = stdout.trim().split("\n");
-  expect(reportPaths).toHaveLength(1);
-  const report = JSON.parse(await readFile(path.join(root, reportPaths[0] ?? ""), "utf8")) as {
+  const reportPaths = stdout.trim().split("\n").toSorted();
+  expect(reportPaths).toHaveLength(expectedReports);
+  const report = JSON.parse(await readFile(path.join(root, reportPaths.at(-1) ?? ""), "utf8")) as {
     evaluated_sha: string | null;
   };
   return report.evaluated_sha;
@@ -181,6 +185,62 @@ describe("evaluator run command", () => {
     );
 
     expect(await readEvaluatedSha(root, taskId)).toBe(metadataSha);
+  });
+
+  it("keeps evaluator reruns anchored across committed review and PR artifacts", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV04";
+    await addTask(root, taskId);
+    await commitPath(root, "src/older-feature.txt", "older implementation", "feat: older work");
+    await commitPath(
+      root,
+      ".agentplane/tasks/202605240900-OTHER/manual-note.md",
+      "unrelated task artifact",
+      "chore: unrelated task artifact",
+    );
+    const metadataSha = await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/manual-note.md`,
+      "current metadata work unit",
+      "docs: record metadata-only work unit",
+    );
+
+    const runReview = async (summary: string): Promise<void> => {
+      await runEvaluatorRun(
+        { cwd: root, rootOverride: undefined },
+        {
+          taskId,
+          evaluator: "recovery-context",
+          verdict: "pass",
+          summary,
+          findings: ["Current task metadata is the auditable review target."],
+          evidenceRefs: [`.agentplane/tasks/${taskId}/manual-note.md`],
+          missingTests: [],
+          hiddenAssumptions: [],
+          residualRisks: [],
+          json: false,
+          record: true,
+        },
+      );
+    };
+
+    await runReview("Initial metadata review");
+    expect(await readEvaluatedSha(root, taskId)).toBe(metadataSha);
+    await execFileAsync("git", ["add", "--", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: record evaluator artifacts"], {
+      cwd: root,
+    });
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/pr/meta.json`,
+      "{}\n",
+      "test: refresh PR metadata",
+    );
+
+    await runReview("Repeated metadata review");
+
+    expect(await readEvaluatedSha(root, taskId, 2)).toBe(metadataSha);
   });
 
   it("does not anchor an unrelated task artifact when the current task has no committed work", async () => {
