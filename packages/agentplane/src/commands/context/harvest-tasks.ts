@@ -9,12 +9,15 @@ import { writeContextExtractionContract } from "../../context/ingest-task-pack.j
 import {
   buildOutput,
   renderText,
+  selectTaskCandidates,
   selectTasks,
   writeOutputs,
   type ContextHarvestTasksParsed,
 } from "./harvest-tasks-artifacts.js";
 import { buildExtractionTaskPlans, buildTaskExtractionMarker } from "./harvest-tasks-extraction.js";
 import type { TaskHarvestMarker } from "./harvest-tasks-markers.js";
+import { taskExtractionSourceFingerprints } from "../../context/harvest-tasks-markers.js";
+import type { TaskSourceFingerprint } from "../../context/harvest-tasks-markers.js";
 
 export { readHarvestReport, type ContextHarvestTasksParsed } from "./harvest-tasks-artifacts.js";
 
@@ -73,11 +76,16 @@ async function createExtractionTasks(opts: {
   rootOverride?: string;
   output: ReturnType<typeof buildOutput>;
   parsed: ContextHarvestTasksParsed;
+  sourceFingerprints: ReadonlyMap<string, TaskSourceFingerprint>;
   createTask?: typeof runTaskNewParsed;
 }) {
   const beforeTasks = await opts.ctx.taskBackend.listTasks();
   const knownTaskIds = new Set(beforeTasks.map((task) => task.id));
-  const plans = buildExtractionTaskPlans(opts.output.selected, opts.parsed);
+  const plans = buildExtractionTaskPlans(
+    opts.output.selected,
+    opts.parsed,
+    opts.sourceFingerprints,
+  );
   const createTask = opts.createTask ?? runTaskNewParsed;
   const createdTaskIds: string[] = [];
   for (const plan of plans) {
@@ -129,6 +137,7 @@ async function createExtractionTasks(opts: {
         extractionTaskId,
         batchIndex: plan.batch_index,
         batchCount: plan.batch_count,
+        fingerprint: opts.sourceFingerprints.get(sourceTaskId),
       });
       const extensions = isRecord(task.extensions) ? task.extensions : {};
       if (isRecord(extensions.context_task_extraction)) {
@@ -167,7 +176,14 @@ export async function cmdContextHarvestTasks(opts: {
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
   const root = ctx.resolvedProject.gitRoot;
-  const selected = selectTasks(await readAllTasks(ctx), opts.parsed);
+  const allTasks = await readAllTasks(ctx);
+  const extractionCandidates = opts.parsed.createExtractionTasks
+    ? selectTaskCandidates(allTasks, opts.parsed)
+    : [];
+  const sourceFingerprints = opts.parsed.createExtractionTasks
+    ? await taskExtractionSourceFingerprints(root, extractionCandidates)
+    : new Map<string, TaskSourceFingerprint>();
+  const selected = selectTasks(allTasks, opts.parsed, sourceFingerprints);
   const output = buildOutput(opts.parsed, selected);
   const shouldWrite = opts.parsed.writeProposals || opts.parsed.promote;
   const shouldCreateExtractionTasks = opts.parsed.createExtractionTasks;
@@ -187,7 +203,7 @@ export async function cmdContextHarvestTasks(opts: {
     opts.parsed.dryRun || !shouldCreateExtractionTasks
       ? {
           plans: shouldCreateExtractionTasks
-            ? buildExtractionTaskPlans(output.selected, opts.parsed)
+            ? buildExtractionTaskPlans(output.selected, opts.parsed, sourceFingerprints)
             : [],
           taskIds: [],
           changedPaths: [],
@@ -198,6 +214,7 @@ export async function cmdContextHarvestTasks(opts: {
           rootOverride: opts.rootOverride,
           output,
           parsed: opts.parsed,
+          sourceFingerprints,
           createTask: opts.createTask,
         });
   const changed = [...new Set([...written, ...extraction.changedPaths])];

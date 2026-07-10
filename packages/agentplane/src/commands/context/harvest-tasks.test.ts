@@ -4,7 +4,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import { taskSourceFingerprint } from "../../context/harvest-tasks-markers.js";
+import { taskExtractionSourceFingerprints } from "../../context/harvest-tasks-markers.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import {
   cmdContextHarvestTasks,
@@ -370,7 +370,7 @@ describe("context harvest tasks", () => {
         readme_path: ".agentplane/tasks/202604010900-FIRST1/README.md",
         acr_path: ".agentplane/tasks/202604010900-FIRST1/acr.json",
         existing_harvest_marker: null,
-        source_fingerprint_version: 1,
+        source_fingerprint_version: 2,
       },
       {
         id: "202604020900-SECOND",
@@ -380,7 +380,7 @@ describe("context harvest tasks", () => {
         readme_path: ".agentplane/tasks/202604020900-SECOND/README.md",
         acr_path: ".agentplane/tasks/202604020900-SECOND/acr.json",
         existing_harvest_marker: null,
-        source_fingerprint_version: 1,
+        source_fingerprint_version: 2,
       },
     ]);
     expect(
@@ -435,7 +435,7 @@ describe("context harvest tasks", () => {
       context_task_extraction: {
         pipeline: "context.harvest.tasks",
         state: "queued",
-        source_fingerprint_version: 1,
+        source_fingerprint_version: 2,
         extraction_task_id: "202604040900-CURAT1",
         prompt_module_ref: "framework/template/generated.artifact/context_task_extraction/v1",
       },
@@ -543,6 +543,12 @@ describe("context harvest tasks", () => {
     const tasks = [
       task({ id: "202604010900-FIRST1", title: "First context task", tags: ["workflow"] }),
     ];
+    await write(
+      root,
+      ".agentplane/tasks/202604010900-FIRST1/README.md",
+      "## Summary\n\nStable source.\n",
+    );
+    await write(root, ".agentplane/tasks/202604010900-FIRST1/acr.json", '{"evidence":"v1"}\n');
 
     await cmdContextHarvestTasks({
       ctx: ctx(root, tasks),
@@ -587,6 +593,23 @@ describe("context harvest tasks", () => {
     };
     expect(unchanged.selected_task_ids).toEqual([]);
 
+    await write(root, ".agentplane/tasks/202604010900-FIRST1/acr.json", '{"evidence":"v2"}\n');
+    out.mockClear();
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({
+        tag: ["workflow"],
+        createExtractionTasks: true,
+        dryRun: true,
+        format: "json",
+      }),
+    });
+    const changedAcr = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      selected_task_ids: string[];
+    };
+    expect(changedAcr.selected_task_ids).toEqual(["202604010900-FIRST1"]);
+
     out.mockClear();
     await cmdContextHarvestTasks({
       ctx: ctx(root, tasks),
@@ -612,12 +635,12 @@ describe("context harvest tasks", () => {
       task({ id: "202604020900-SECOND", title: "Second context task", tags: ["workflow"] }),
       task({ id: "202604030900-THIRD3", title: "Third context task", tags: ["workflow"] }),
     ];
+    const sourceFingerprints = await taskExtractionSourceFingerprints(
+      root,
+      tasks as (TaskData & { id: string; title: string; status: string })[],
+    );
     const byteBudget = Math.max(
-      ...tasks
-        .map((row) =>
-          taskSourceFingerprint(row as TaskData & { id: string; title: string; status: string }),
-        )
-        .map((fingerprint) => fingerprint.size_bytes),
+      ...tasks.map((row) => sourceFingerprints.get(row.id)?.size_bytes ?? 0),
     );
 
     await cmdContextHarvestTasks({
@@ -684,6 +707,57 @@ describe("context harvest tasks", () => {
         oversized_source_ids: ["202604020900-SECOND"],
       },
     ]);
+  });
+
+  it("counts complete README and ACR bytes when planning extraction batches", async () => {
+    const root = await tempRoot();
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    const sourceTask = task({
+      id: "202604010900-SOURCE",
+      title: "Full extraction source",
+      tags: ["workflow"],
+    });
+    const readme = `---\nid: "${sourceTask.id}"\n---\n## Summary\n\nShort.\n\n## Custom evidence\n\n${"x".repeat(2048)}\n`;
+    const acr = `${JSON.stringify({ evidence: "y".repeat(1024) })}\n`;
+    await write(root, `.agentplane/tasks/${sourceTask.id}/README.md`, readme);
+    await write(root, `.agentplane/tasks/${sourceTask.id}/acr.json`, acr);
+    const actualSourceBytes = Buffer.byteLength(readme, "utf8") + Buffer.byteLength(acr, "utf8");
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, [sourceTask]),
+      cwd: root,
+      parsed: parsed({
+        tag: ["workflow"],
+        createExtractionTasks: true,
+        batchBytes: String(actualSourceBytes - 1),
+        dryRun: true,
+        format: "json",
+      }),
+    });
+
+    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      extraction_task_batches: {
+        batch_count: number;
+        batch_fingerprint: string;
+        batch_index: number;
+        byte_budget: number;
+        created_task_id: string | null;
+        source_task_ids: string[];
+        source_bytes: number;
+        oversized_source_ids: string[];
+      }[];
+    };
+    expect(payload.extraction_task_batches).toHaveLength(1);
+    expect(payload.extraction_task_batches[0]).toMatchObject({
+      source_bytes: actualSourceBytes,
+      oversized_source_ids: [sourceTask.id],
+      batch_index: 1,
+      batch_count: 1,
+      source_task_ids: [sourceTask.id],
+      byte_budget: actualSourceBytes - 1,
+      created_task_id: null,
+    });
+    expect(payload.extraction_task_batches[0]?.batch_fingerprint).toMatch(/^sha256:/u);
   });
 
   it("rejects invalid extraction byte budgets", async () => {

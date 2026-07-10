@@ -18,8 +18,8 @@
  .../src/commands/context/context-runner.ts         |   2 +
  .../src/commands/context/context.learn.spec.ts     |  10 +
  .../src/commands/context/context.spec.ts           |  10 +
- .../src/commands/context/harvest-tasks.test.ts     | 206 +++++++-
- .../src/commands/context/harvest-tasks.ts          |   4 +
+ .../src/commands/context/harvest-tasks.test.ts     | 280 +++++++++-
+ .../src/commands/context/harvest-tasks.ts          |  27 +-
  .../pr/internal/sync-batch-ownership.test.ts       |  53 +-
  .../commands/pr/internal/sync-batch-ownership.ts   |  19 +
  .../agentplane/src/commands/pr/internal/sync.ts    |  14 +
@@ -29,7 +29,8 @@
  .../src/commands/task/finish-execute-commit.ts     |  51 +-
  .../task/finish.pre-merge-closure.unit.test.ts     |  59 +++
  .../task/finish.quality-review-target.unit.test.ts |  35 ++
- .../src/context/harvest-tasks-extraction.ts        | 131 +++--
- .../src/context/harvest-tasks-markers.ts           |  19 +-
+ .../src/context/harvest-tasks-artifacts.ts         |  19 +-
+ .../src/context/harvest-tasks-extraction.ts        | 136 +++--
+ .../src/context/harvest-tasks-markers.ts           | 104 +++-
  .../agentplane/src/context/harvest-tasks-model.ts  |  18 +
- 34 files changed, 2211 insertions(+), 56 deletions(-)
+ 35 files changed, 2405 insertions(+), 68 deletions(-)

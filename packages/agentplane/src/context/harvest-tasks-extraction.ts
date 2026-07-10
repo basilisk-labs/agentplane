@@ -7,11 +7,7 @@ import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "../runtime/prompt-modules
 import { CONTEXT_EXTRACTION_SGR_EXAMPLE } from "../runtime/sgr/index.js";
 import { CliError } from "../shared/errors.js";
 import { isRecord } from "./context-utils.js";
-import {
-  taskSourceFingerprint,
-  taskTextDigest,
-  type TaskSourceFingerprint,
-} from "./harvest-tasks-markers.js";
+import { taskSourceFingerprint, type TaskSourceFingerprint } from "./harvest-tasks-markers.js";
 import type { ContextHarvestTasksParsed } from "./harvest-tasks-artifacts.js";
 import { parsePositiveIntegerOption } from "./harvest-tasks-model.js";
 import { validateContextExtractionSgrResult } from "./sgr-extraction.js";
@@ -48,7 +44,7 @@ type TaskExtractionMarker = {
   state: "queued";
   queued_at: string;
   source_digest: string;
-  source_fingerprint_version: 1;
+  source_fingerprint_version: 1 | 2;
   source_bytes: number;
   extraction_task_id: string;
   extraction_task_readme_path: string;
@@ -106,9 +102,10 @@ function existingExtractionMarker(task: ExtractionTask): TaskExtractionMarker | 
 export function alreadyQueuedForExtractionUnchanged(
   task: ExtractionTask,
   parsed: Pick<ContextHarvestTasksParsed, "task">,
+  fingerprint = taskSourceFingerprint(task),
 ): boolean {
   const marker = existingExtractionMarker(task);
-  if (marker?.source_digest !== taskTextDigest(task)) return false;
+  if (marker?.source_digest !== fingerprint.digest) return false;
   if (parsed.task.includes(task.id)) return false;
   return true;
 }
@@ -119,8 +116,9 @@ export function buildTaskExtractionMarker(opts: {
   extractionTaskId: string;
   batchIndex: number;
   batchCount: number;
+  fingerprint?: TaskSourceFingerprint;
 }): TaskExtractionMarker {
-  const fingerprint = taskSourceFingerprint(opts.task);
+  const fingerprint = opts.fingerprint ?? taskSourceFingerprint(opts.task);
   return {
     schema_version: 1,
     pipeline: "context.harvest.tasks",
@@ -141,6 +139,7 @@ function buildBatches(
   tasks: ExtractionTask[],
   batchSize: number,
   batchBytes: number,
+  sourceFingerprints: ReadonlyMap<string, TaskSourceFingerprint>,
 ): ExtractionBatch[] {
   const batches: ExtractionBatch[] = [];
   let entries: WeightedExtractionTask[] = [];
@@ -154,7 +153,10 @@ function buildBatches(
   };
 
   for (const task of tasks) {
-    const entry = { task, fingerprint: taskSourceFingerprint(task) };
+    const entry = {
+      task,
+      fingerprint: sourceFingerprints.get(task.id) ?? taskSourceFingerprint(task),
+    };
     if (
       entries.length > 0 &&
       (entries.length >= batchSize || sourceBytes + entry.fingerprint.size_bytes > batchBytes)
@@ -261,10 +263,11 @@ function buildVerifySteps(): string[] {
 export function buildExtractionTaskPlans(
   tasks: ExtractionTask[],
   parsed: ContextHarvestTasksParsed,
+  sourceFingerprints: ReadonlyMap<string, TaskSourceFingerprint> = new Map(),
 ): ExtractionTaskPlan[] {
   const batchSize = parsePositiveIntegerOption(parsed.batchSize, 25, "--batch-size");
   const batchBytes = parsePositiveIntegerOption(parsed.batchBytes, 131_072, "--batch-bytes");
-  const batches = buildBatches(tasks, batchSize, batchBytes);
+  const batches = buildBatches(tasks, batchSize, batchBytes, sourceFingerprints);
   const promptModule = buildExtractionPromptModule();
   return batches.map((batch, index) => {
     const first = batch.entries[0]?.task;
