@@ -15,14 +15,20 @@ Make branch_pr queue recovery resolve authoritative GitHub PR state by persisted
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Focused PR-flow/queue tests passed (5 files, 17 tests); typecheck, lint:core, ci:contract, test:fast
+(364 files, 2150 tests), policy routing, doctor, and full-fast local CI passed. Number lookup
+validates head/base; queue identity fallback is conservative.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-10T11:09:07.686Z
+- Updated: 2026-07-10T11:11:44.154Z
 - Branch: task/202607101059-S3N0X5/recover-queue-lanes-after-merged-pr-branch-delet
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

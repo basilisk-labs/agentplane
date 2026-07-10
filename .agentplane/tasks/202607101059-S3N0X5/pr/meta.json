@@ -3,7 +3,8 @@
   "branch": "task/202607101059-S3N0X5/recover-queue-lanes-after-merged-pr-branch-delet",
   "created_at": "2026-07-10T11:09:07.686Z",
   "diffstat_sha256": "sha256:92f85809d5de83305844a40cbb90711c478382820cd978b855c254522ef23c00",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-10T11:17:33.373Z",
+  "last_verified_diffstat_sha256": "sha256:92f85809d5de83305844a40cbb90711c478382820cd978b855c254522ef23c00",
   "pr_number": 4571,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4571",
   "schema_version": 1,
@@ -11,6 +12,6 @@
   "task_id": "202607101059-S3N0X5",
   "updated_at": "2026-07-10T11:11:44.154Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
