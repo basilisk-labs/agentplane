@@ -36,11 +36,14 @@ Created: 2026-07-10T01:07:58.209Z
 
 ```text
  .agentplane/tasks/202607092209-F33MNN/README.md    |   3 +
- .agentplane/tasks/202607100140-WGV79Y/README.md    | 346 ++++++++++++
+ .agentplane/tasks/202607100140-WGV79Y/README.md    | 412 +++++++++++++++
  .../blueprint/resolved-snapshot.json               | 580 +++++++++++++++++++++
  .../evaluator-opinion.md                           |  20 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  22 +
+ .../evaluator-opinion.md                           |  21 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  23 +
  .../evaluator-opinion.md                           |  21 +
  .../evaluator-prompt.md                            |  74 +++
  .../quality-report.json                            |  23 +
@@ -66,7 +69,7 @@ Created: 2026-07-10T01:07:58.209Z
  .../src/context/harvest-tasks-extraction.ts        | 131 +++--
  .../src/context/harvest-tasks-markers.ts           |  19 +-
  .../agentplane/src/context/harvest-tasks-model.ts  |  18 +
- 31 files changed, 2027 insertions(+), 56 deletions(-)
+ 34 files changed, 2211 insertions(+), 56 deletions(-)
 ```
 
 </details>

@@ -10,7 +10,7 @@
   },
   "branch": "task/202607100106-YP0PYE/bound-context-extraction-batches-by-source-bytes",
   "created_at": "2026-07-10T01:07:58.209Z",
-  "diffstat_sha256": "sha256:5e688af5f96b467f385e61df0089bbab2fddaa787d6f2cb8ced269fb3c4fbbe0",
+  "diffstat_sha256": "sha256:abd8323cc7a1821c7807ddcb499a72919c4d362c18ca12c40456b6656e922e77",
   "last_verified_at": "2026-07-10T01:21:52.745Z",
   "last_verified_diffstat_sha256": "sha256:572142474feaeb32f9db55c0e936b59f79755761887329fbdb5af4aa2f39b003",
   "pr_number": 4563,

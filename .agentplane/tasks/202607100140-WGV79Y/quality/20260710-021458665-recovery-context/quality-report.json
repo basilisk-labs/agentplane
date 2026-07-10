@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100140-WGV79Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T02:14:58.665Z",
+  "verdict": "pass",
+  "summary": "The batch lifecycle and automatic PR refresh fixes are complete on the current head.",
+  "evaluated_sha": "da90b1f3508f35f0f7e51d13174f71f537d6113d",
+  "blueprint_digest": "a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85",
+  "findings": [
+    "Lifecycle and batch refresh tests 19/19 pass; typecheck, lint:core, ci:contract, and the 2,143-test fast suite are green."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100140-WGV79Y/README.md",
+    "packages/agentplane/src/commands/pr/internal/sync-batch-ownership.test.ts",
+    "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
