@@ -1,5 +1,7 @@
+import { execFile } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 
 import { describe } from "vitest";
 
@@ -13,6 +15,8 @@ import {
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit/cli-core-pr-flow";
+
+const execFileAsync = promisify(execFile);
 
 async function createTask(root: string): Promise<string> {
   const taskIo = captureStdIO();
@@ -126,6 +130,105 @@ async function addIncludedBatchExtension(opts: {
 }
 
 describe("runCli route decision batch ownership", () => {
+  it("keeps primary quality fresh across explicitly included task artifact commits", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const primaryTaskId = await createTask(root);
+    const includedTaskId = await createTask(root);
+    await approveTasks(
+      root,
+      [primaryTaskId, includedTaskId],
+      "Keep batch quality fresh across linked task evidence.",
+    );
+    for (const taskId of [primaryTaskId, includedTaskId]) {
+      await runCliSilent([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: verify batch quality freshness.",
+        "--root",
+        root,
+      ]);
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "CODER",
+        "--note",
+        "Verified: batch quality freshness fixture.",
+        "--local-only",
+        "--root",
+        root,
+      ]);
+    }
+
+    const branch = `task/${primaryTaskId}/batch-owner`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "impl.txt"), "implementation\n");
+    await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: implementation"], { cwd: root });
+    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+
+    await writeBatchMeta({
+      root,
+      primaryTaskId,
+      includedTaskId,
+      branch,
+      status: "OPEN",
+    });
+    await runCliSilent([
+      "evaluator",
+      "run",
+      primaryTaskId,
+      "--verdict",
+      "pass",
+      "--summary",
+      "Batch quality passed.",
+      "--finding",
+      "No blocking findings.",
+      "--evidence",
+      "impl.txt",
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: record batch evidence"], { cwd: root });
+
+    const statusIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "status",
+        primaryTaskId,
+        "--route",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(statusIo.stdout) as {
+        blockers: { code: string }[];
+        nextAction: { code: string };
+      };
+      expect(parsed.blockers.map((blocker) => blocker.code)).not.toContain("quality_review_stale");
+      expect(parsed.blockers.map((blocker) => blocker.code)).not.toContain("pr_meta_stale");
+      expect(parsed.nextAction.code).not.toBe("run_quality_review");
+      expect(implementationHead.trim()).toMatch(/^[0-9a-f]{40}$/u);
+    } finally {
+      statusIo.restore();
+    }
+  });
+
   it("keeps a verified batch primary with PR metadata out of included closure recovery", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

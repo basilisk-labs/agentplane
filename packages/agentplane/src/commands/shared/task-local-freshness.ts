@@ -28,6 +28,20 @@ export async function isTaskLocalOnlyAdvance(opts: {
   fromRef: string | null;
   toRef: string;
 }): Promise<boolean> {
+  return isTaskSetLocalOnlyAdvance({
+    ...opts,
+    taskIds: [opts.taskId],
+  });
+}
+
+export async function isTaskSetLocalOnlyAdvance(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  taskIds: readonly string[];
+  tasksPath?: string;
+  fromRef: string | null;
+  toRef: string;
+}): Promise<boolean> {
   if (!opts.fromRef || opts.fromRef === opts.toRef) {
     return false;
   }
@@ -35,12 +49,14 @@ export async function isTaskLocalOnlyAdvance(opts: {
   return (
     changedPaths.length > 0 &&
     changedPaths.every((relPath) =>
-      isTaskLocalAdvancePath({
-        workflowDir: opts.workflowDir,
-        taskId: opts.taskId,
-        tasksPath: opts.tasksPath,
-        relPath,
-      }),
+      opts.taskIds.some((taskId) =>
+        isTaskLocalAdvancePath({
+          workflowDir: opts.workflowDir,
+          taskId,
+          tasksPath: opts.tasksPath,
+          relPath,
+        }),
+      ),
     )
   );
 }
