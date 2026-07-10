@@ -163,7 +163,59 @@ function buildLoopStepRouteDecision(opts: {
       stepId: opts.target.step_id,
       stepType: opts.target.step_type,
       promptModule: opts.target.prompt_module ?? null,
+      renderedPromptSha: opts.target.rendered_prompt_sha ?? null,
+      contextRefs: opts.target.context_refs ?? [],
+      permissions: opts.target.permissions ?? {},
+      budgets: opts.target.budgets ?? {},
       contract: opts.target.contract ?? null,
+    },
+  };
+}
+
+export function compactLoopStepTaskContext(
+  task: RunnerContextBundle["task"],
+): RunnerContextBundle["task"] {
+  if (!task) return task;
+  const allowed = new Set(["Summary", "Scope", "Plan", "Verify Steps"]);
+  const sections = Object.fromEntries(
+    Object.entries(task.sections).filter(([section]) => allowed.has(section)),
+  );
+  const doc = Object.entries(sections)
+    .map(([section, text]) => `## ${section}\n\n${text}`)
+    .join("\n\n");
+  return {
+    ...task,
+    doc,
+    sections,
+    comments: [],
+    events: [],
+    compaction: {
+      doc: {
+        original_bytes: Buffer.byteLength(task.doc, "utf8"),
+        emitted_bytes: Buffer.byteLength(doc, "utf8"),
+        truncated: doc !== task.doc,
+      },
+      sections: {
+        original_bytes: Buffer.byteLength(JSON.stringify(task.sections), "utf8"),
+        emitted_bytes: Buffer.byteLength(JSON.stringify(sections), "utf8"),
+        original_count: Object.keys(task.sections).length,
+        emitted_count: Object.keys(sections).length,
+        truncated: Object.keys(sections).length !== Object.keys(task.sections).length,
+      },
+      comments: {
+        original_bytes: Buffer.byteLength(JSON.stringify(task.comments), "utf8"),
+        emitted_bytes: 2,
+        original_count: task.comments.length,
+        emitted_count: 0,
+        truncated: task.comments.length > 0,
+      },
+      events: {
+        original_bytes: Buffer.byteLength(JSON.stringify(task.events), "utf8"),
+        emitted_bytes: 2,
+        original_count: task.events.length,
+        emitted_count: 0,
+        truncated: task.events.length > 0,
+      },
     },
   };
 }
@@ -325,12 +377,14 @@ export async function prepareTaskRunnerExecution(opts: {
     rootOverride: opts.rootOverride ?? null,
     task_id: opts.task_id,
   });
+  const runnerTask =
+    target.kind === "loop_step" ? compactLoopStepTaskContext(taskEnvelope.task) : taskEnvelope.task;
   const runnerCommand = target.kind === "recipe_scenario" ? "recipes scenario execute" : "task run";
   const base_prompts = await collectRunnerBasePrompts({
     git_root: executionContext.repo.git_root,
     owner_id: taskEnvelope.task.data.owner,
     agents_dir: executionContext.harness.workflow.paths.agents_dir,
-    task: taskEnvelope.task,
+    task: runnerTask,
     command: runnerCommand,
     recipe: opts.recipe,
     harness: executionContext.harness,
@@ -380,7 +434,7 @@ export async function prepareTaskRunnerExecution(opts: {
     framework_explain,
     framework_protocol,
     repository: taskEnvelope.repository,
-    task: taskEnvelope.task,
+    task: runnerTask,
     recipe: opts.recipe,
     blueprint,
     route_decision: route_decision as unknown as Record<string, unknown>,

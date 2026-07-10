@@ -1,6 +1,6 @@
 import type { LoopMetricAggregate, LoopMetricDefinition, LoopMetricScore } from "./model.js";
 
-export type LoopMetricSignalValue = boolean | number | null | undefined;
+type LoopMetricSignalValue = boolean | number | null | undefined;
 
 export type LoopMetricSignals = Record<string, LoopMetricSignalValue>;
 
@@ -43,7 +43,7 @@ export function aggregateLoopMetricScores(
       source: metric.source,
       score,
       weight,
-      ...(metric.threshold !== undefined ? { threshold: metric.threshold } : {}),
+      ...(metric.threshold === undefined ? {} : { threshold: metric.threshold }),
       passed,
       missing,
       ...(missing ? { reason: "missing_signal" } : {}),

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092346-4Z7EZP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T00:41:16.936Z",
+  "verdict": "pass",
+  "summary": "The executable loop runtime and all review fixes satisfy the approved contract; deterministic gates, compact persisted context, budgets, resume behavior, and branch CI prerequisites are reproducibly green.",
+  "evaluated_sha": "3497a93287063648dc75ef907209b221d004e1d0",
+  "blueprint_digest": "04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137",
+  "findings": [
+    "No confirmed task-scoped defect remains after addressing all three review threads.",
+    "Core lint, focused tests, typecheck, format, schemas, docs parity, and routing all pass on the reviewed head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092346-4Z7EZP/README.md",
+    "packages/agentplane/src/loops/engine.test.ts",
+    "packages/agentplane/src/commands/loop/loop.command.test.ts",
+    "packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Only tdd.fix is executable end-to-end; unsupported built-ins remain intentionally fail-closed."
+  ]
+}

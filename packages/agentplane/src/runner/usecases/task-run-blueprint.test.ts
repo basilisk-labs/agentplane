@@ -3,9 +3,35 @@ import { describe, expect, it } from "vitest";
 import { makeRunnerContextBundle } from "@agentplane/testkit/runner";
 
 import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
-import { assertRunnerBlueprintPolicyModuleBudget, renderTaskRunnerBootstrap } from "./task-run.js";
+import {
+  assertRunnerBlueprintPolicyModuleBudget,
+  compactLoopStepTaskContext,
+  renderTaskRunnerBootstrap,
+} from "./task-run.js";
 
 describe("runner blueprint guards", () => {
+  it("compacts the task persisted for loop-step bundles", () => {
+    const bundle = makeRunnerContextBundle();
+    if (!bundle.task) throw new Error("expected task fixture");
+    bundle.task.sections = {
+      ...bundle.task.sections,
+      Summary: "Keep summary",
+      Plan: "Keep plan",
+      Notes: "Drop notes",
+    };
+    bundle.task.comments = [{ author: "CODER", body: "large comment" }];
+    bundle.task.events = [{ type: "status", at: "2026-01-01T00:00:00.000Z" }];
+
+    const compact = compactLoopStepTaskContext(bundle.task);
+
+    expect(compact?.sections.Summary).toBe("Keep summary");
+    expect(compact?.sections.Plan).toBe("Keep plan");
+    expect(compact?.sections).not.toHaveProperty("Notes");
+    expect(compact?.comments).toEqual([]);
+    expect(compact?.events).toEqual([]);
+    expect(compact?.doc).not.toContain("Drop notes");
+  });
+
   it("starts codex task bootstraps with the /goal slash command", () => {
     const bundle = makeRunnerContextBundle({
       adapterId: "codex",
@@ -126,6 +152,11 @@ describe("runner blueprint guards", () => {
         step_id: "agent_patch",
         step_type: "agent.run",
         prompt_module: "tdd.fix.implement",
+        rendered_prompt: "Apply the smallest patch and run focused verification.",
+        rendered_prompt_sha: "sha256:test",
+        context_refs: ["task.approved_plan", "task.verify_steps"],
+        permissions: { canEditFiles: true, network: "disallowed" },
+        budgets: { maxIterations: 5, maxTotalTokens: 200_000 },
         contract: { outputs: [{ id: "runner_result", required: true }] },
       },
     });
@@ -164,6 +195,9 @@ describe("runner blueprint guards", () => {
     expect(bootstrap).toContain("- route_phase: loop_agent_step");
     expect(bootstrap).toContain("- route_exact_argv: none");
     expect(bootstrap).toContain("Loop-step execution contract:");
+    expect(bootstrap).toContain("- rendered_prompt_sha: sha256:test");
+    expect(bootstrap).toContain("target.rendered_prompt in bundle.json");
+    expect(bootstrap).toContain('loop_permissions: {"canEditFiles":true,"network":"disallowed"}');
     expect(bootstrap).toContain("route_exact_argv is intentionally empty");
     expect(bootstrap).toContain("do not run branch_pr lifecycle commands");
     expect(bootstrap).toContain("Do not recompute `agentplane task next-action`");

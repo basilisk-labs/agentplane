@@ -1,0 +1,30 @@
+{
+  "artifact_state": "remote_failed",
+  "artifact_state_reason": "GitHub PR creation failed",
+  "artifact_state_updated_at": "2026-07-10T00:20:58.444Z",
+  "base": "agentplane-loops",
+  "batch": {
+    "closure_policy": "all_or_fail",
+    "included_task_ids": [
+      "202607100026-EBQXPZ",
+      "202607100033-4T5V86"
+    ],
+    "primary_task_id": "202607092346-4Z7EZP",
+    "schema_version": 1
+  },
+  "branch": "task/202607092346-4Z7EZP/make-agentplane-loops-executable-resumable-and-t",
+  "created_at": "2026-07-09T23:48:42.147Z",
+  "diffstat_sha256": "sha256:7bbcfd8bf3362d826108b3ba9da9911d6177f8b21909c3bad65fcb5296006578",
+  "last_verified_at": "2026-07-10T00:56:42.177Z",
+  "last_verified_diffstat_sha256": "sha256:680a33cb726d1dbdee4fe9c4216d4044c86bfb19957a5defb630812002aea35f",
+  "related_task_ids": [
+    "202607100026-EBQXPZ",
+    "202607100033-4T5V86"
+  ],
+  "schema_version": 1,
+  "task_id": "202607092346-4Z7EZP",
+  "updated_at": "2026-07-10T00:56:47.742Z",
+  "verify": {
+    "status": "pass"
+  }
+}

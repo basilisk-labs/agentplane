@@ -19,7 +19,7 @@ Project-local loops are validated before they are listed.
 
 ```bash
 agentplane loop plan <task-id>
-agentplane loop plan --kind code --tag bug --tag test --verify-steps-present
+agentplane loop plan --kind code --tag bug --tag test --verify-steps-present --approved-plan
 agentplane loop plan <task-id> --json
 ```
 
@@ -27,16 +27,31 @@ Planning is read-only. It prints the selected loop, score, reasons, and rejected
 candidates. If no candidate reaches the threshold, the command exits non-zero
 and asks for an explicit route decision.
 
-## Dry-Run Evidence
+Candidate selection applies hard `requires` gates before ranking. Synthetic
+planning must state facts such as `--approved-plan`, `--clean-worktree`,
+`--hosted-pr`, and `--ci-failure`; missing required facts make a candidate
+ineligible rather than merely lowering its score.
+
+## Execution modes
 
 ```bash
 agentplane loop run <task-id> --loop tdd.fix --dry-run
 agentplane loop step <task-id> --loop tdd.fix --dry-run
+agentplane loop step <task-id> --loop tdd.fix --execute-agent-step
+agentplane loop run <task-id> --loop tdd.fix --execute
+agentplane loop run <task-id> --loop tdd.fix --resume <run-id>
 ```
 
-The v0.1 loop runner requires `--dry-run`. Without it, the command fails closed
-because external agent adapter execution is not yet part of the trusted loop
-surface.
+- `--dry-run` prepares evidence without invoking an agent.
+- `--execute-agent-step` is the legacy one-step runner handoff and stops before
+  diff capture, checks, and evaluation.
+- `--execute` runs the supported deterministic loop to a terminal decision.
+- `--resume` reloads the durable cursor and continues without replaying
+  completed steps.
+
+The executable runtime currently supports `tdd.fix`. Other built-in and
+project-local loops remain discoverable and validatable but fail closed if
+passed to `--execute`.
 
 Dry-run output creates:
 
@@ -46,6 +61,21 @@ Dry-run output creates:
 .agentplane/tasks/<task-id>/runs/<run-id>/state.json
 .agentplane/tasks/<task-id>/runs/<run-id>/iterations/001/decision.json
 ```
+
+Executable runs use the same layout, adding per-step input/output artifacts and
+an atomically updated cursor in `state.json`. Every external step is followed by
+a checkpoint before the next transition is evaluated.
+
+## Budgets and context
+
+`tdd.fix` enforces iteration, wall-time, changed-file, diff-line, agent-run,
+token, and no-progress limits. Runner trace token usage is aggregated into the
+LoopRun state when the adapter exposes it.
+
+The agent step receives the exact rendered prompt and its digest. Its runner
+bundle keeps only `Summary`, `Scope`, `Plan`, and `Verify Steps`; previous
+iteration feedback is carried as a bounded delta rather than replaying raw task
+comments and events.
 
 ## Validation
 
@@ -58,9 +88,11 @@ agentplane loop validate --project --json
 Loop JSON may use camelCase fields or the snake_case aliases used in docs:
 `schema_version`, `applies_to`, and `stop_conditions`.
 
-## Non-Goals In v0.1
+## Current non-goals
 
-- no non-dry-run external agent invocation through `loop run`;
 - no automatic loop activation or promotion;
 - no policy weakening from loop specs;
-- no hidden mutation outside the task run artifact path during dry-run.
+- no arbitrary transition expressions outside the deterministic condition
+  registry;
+- no executable runtime for loops other than `tdd.fix` until they have their own
+  step executors and regression coverage.

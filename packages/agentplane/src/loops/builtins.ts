@@ -30,7 +30,15 @@ export const BUILTIN_LOOPS = [
       canModifyPolicy: false,
       network: "disallowed",
     },
-    budgets: { maxIterations: 5, maxWallTimeMinutes: 40, maxChangedFiles: 8, maxDiffLines: 500 },
+    budgets: {
+      maxIterations: 5,
+      maxWallTimeMinutes: 40,
+      maxChangedFiles: 8,
+      maxDiffLines: 500,
+      maxAgentRuns: 5,
+      maxTotalTokens: 200_000,
+      maxNoProgressIterations: 2,
+    },
     context: {
       include: ["task.intent", "task.approved_plan", "task.verify_steps", "git.diff"],
       exclude: ["secrets", "unrelated_raw_transcripts"],

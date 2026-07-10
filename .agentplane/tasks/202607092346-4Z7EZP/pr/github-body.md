@@ -1,0 +1,91 @@
+Task: `202607092346-4Z7EZP`
+Title: Make AgentPlane loops executable, resumable, and token-aware
+Canonical task record: `.agentplane/tasks/202607092346-4Z7EZP/README.md`
+
+## Batch Tasks
+
+- Primary: `202607092346-4Z7EZP`
+- Closure policy: `all_or_fail`
+- Included: `202607100026-EBQXPZ`
+- Included: `202607100033-4T5V86`
+
+## Summary
+
+Make AgentPlane loops executable, resumable, and token-aware
+
+Implement an end-to-end deterministic loop engine on agentplane-loops without touching main: typed transitions, durable checkpoints and resume, step-specific prompt/context propagation, enforced eligibility/permissions/budgets, token accounting, focused checks/evaluator decisions, CLI/docs/schema alignment, and regression tests.
+
+## Scope
+
+Implement only on the agentplane-loops branch family. Do not switch, merge, push, or integrate into main. Approved implementation paths: packages/agentplane/src/loops/**; packages/agentplane/src/commands/loop/**; packages/agentplane/src/runner/types/**; packages/agentplane/src/runner/usecases/task-run*.ts; packages/agentplane/src/harness/token-accounting*; schemas and packages/{spec,core}/schemas/loop-spec.schema.json; docs/{reference,developer}/loops.mdx; generated CLI reference when required; task-local artifacts. Deliver one end-to-end executable tdd.fix vertical slice with durable state, enforced gates and budgets, compact step context, deterministic verification, and resumable execution. Other built-in loops may remain experimental but must fail closed when unsupported.
+
+## Verification
+
+- State: ok
+- Note:
+
+```text
+Final static gate passes after removing unused loop exports: knip baseline, lint:core, hotspot,
+typecheck, focused tests, format, schemas, docs and routing are green.
+```
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-07-10T00:56:47.742Z
+- Branch: task/202607092346-4Z7EZP/make-agentplane-loops-executable-resumable-and-t
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .agentplane/tasks/202607100026-EBQXPZ/README.md    | 188 +++++++
+ .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
+ .../evaluator-opinion.md                           |  19 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  21 +
+ .agentplane/tasks/202607100033-4T5V86/README.md    | 189 +++++++
+ .../blueprint/resolved-snapshot.json               | 362 +++++++++++++
+ .../evaluator-opinion.md                           |  20 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  22 +
+ docs/developer/loops.mdx                           |  49 +-
+ docs/reference/loops.mdx                           |  48 +-
+ docs/user/cli-reference.generated.mdx              |  12 +-
+ .../src/commands/loop/loop.command.test.ts         | 119 ++++-
+ .../agentplane/src/commands/loop/loop.command.ts   | 172 ++++---
+ .../agentplane/src/commands/loop/loop.execute.ts   | 336 ++++++++++++
+ .../agentplane/src/commands/loop/loop.specs.ts     |  68 ++-
+ packages/agentplane/src/loops/builtins.ts          |  10 +-
+ packages/agentplane/src/loops/conditions.ts        |  58 +++
+ packages/agentplane/src/loops/engine.test.ts       | 266 ++++++++++
+ packages/agentplane/src/loops/engine.ts            | 571 +++++++++++++++++++++
+ packages/agentplane/src/loops/index.ts             |   2 +
+ packages/agentplane/src/loops/metrics.test.ts      |   2 +-
+ packages/agentplane/src/loops/metrics.ts           |   4 +-
+ packages/agentplane/src/loops/model.ts             |  91 +++-
+ packages/agentplane/src/loops/project-local.ts     |   7 +-
+ packages/agentplane/src/loops/registry.ts          |   6 -
+ .../agentplane/src/loops/run-artifacts.test.ts     |  48 +-
+ packages/agentplane/src/loops/run-artifacts.ts     |   4 +-
+ packages/agentplane/src/loops/selection.test.ts    |  47 ++
+ packages/agentplane/src/loops/selection.ts         |  17 +-
+ packages/agentplane/src/loops/validate.test.ts     |  34 +-
+ packages/agentplane/src/loops/validate.ts          | 105 ++--
+ packages/agentplane/src/runner/types/target.ts     |   5 +
+ .../src/runner/usecases/task-run-blueprint.test.ts |  36 +-
+ .../src/runner/usecases/task-run-bootstrap.ts      |   9 +
+ .../agentplane/src/runner/usecases/task-run.ts     |  58 ++-
+ packages/core/schemas/loop-spec.schema.json        |  41 +-
+ .../schemas/task-readme-frontmatter.schema.json    |  58 ++-
+ packages/core/schemas/tasks-export.schema.json     |  58 ++-
+ packages/spec/examples/acr.json                    |  18 +-
+ packages/spec/schemas/loop-spec.schema.json        |  41 +-
+ .../schemas/task-readme-frontmatter.schema.json    |  58 ++-
+ packages/spec/schemas/tasks-export.schema.json     |  58 ++-
+ schemas/loop-spec.schema.json                      |  41 +-
+ schemas/task-readme-frontmatter.schema.json        |  58 ++-
+ schemas/tasks-export.schema.json                   |  58 ++-
+ 47 files changed, 3777 insertions(+), 227 deletions(-)
+```
+
+</details>

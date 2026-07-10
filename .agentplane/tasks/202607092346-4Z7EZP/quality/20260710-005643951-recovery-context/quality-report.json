@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092346-4Z7EZP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T00:56:43.951Z",
+  "verdict": "pass",
+  "summary": "Final head satisfies all local contract and static gates, including Knip baseline; no unresolved review defect remains.",
+  "evaluated_sha": "c7a6251174145a9e09f1c80acd356595cfe720a9",
+  "blueprint_digest": "04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137",
+  "findings": [
+    "Unused loop-only exports were made internal or removed without changing runtime contracts.",
+    "All deterministic and CI-parity checks are green locally."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092346-4Z7EZP/README.md",
+    "packages/agentplane/src/loops/model.ts",
+    "packages/agentplane/src/commands/loop/loop.execute.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Only tdd.fix is executable end-to-end; other built-ins remain fail-closed."
+  ]
+}

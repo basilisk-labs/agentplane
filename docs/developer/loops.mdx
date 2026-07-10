@@ -1,4 +1,4 @@
-# AgentPlane Loop Model v0.1
+# AgentPlane Loop Model and Runtime
 
 AgentPlane loops make a controlled feedback cycle explicit. A loop is not an
 agent and not a recipe prompt. A loop is a state machine over task state, repo
@@ -17,14 +17,19 @@ state, observations, checks, evaluator output, policy, and budgets.
 - `LoopRun` is one concrete execution attempt for one task and must leave
   evidence under `.agentplane/tasks/<task-id>/runs/<run-id>/`.
 
-## MVP Boundary
+## Executable Boundary
 
-Loop support in v0.1 is intentionally conservative:
+Loop support remains intentionally conservative:
 
 - supported: built-in loop catalog, project-local loop JSON validation, route
-  planning, explanation, and dry-run LoopRun artifact creation;
-- not supported: invoking external coding agents from `agentplane loop run`
-  without `--dry-run`;
+  planning, explanation, dry-run evidence, and end-to-end `tdd.fix` execution;
+- supported: durable per-step checkpoints and `--resume` without replaying
+  completed steps;
+- supported: hard eligibility gates, deterministic transition conditions,
+  permissions, diff/iteration/time/agent/token/no-progress budgets, and compact
+  runner context;
+- not supported: executable built-in or project-local loops other than
+  `tdd.fix`; unsupported loops fail closed;
 - not supported: self-modifying trusted loops during the task that is using the
   loop;
 - not supported: weakening policy, approval, or protected-path checks from a
@@ -44,7 +49,7 @@ agents, not a black-box model provider or autonomous runtime.
   failure;
 - `permissions`, including explicit approval-required or disallowed actions;
 - `budgets` such as maximum iterations, changed files, diff lines, wall time,
-  or agent runs;
+  agent runs, tokens, or no-progress iterations;
 - ordered `steps`;
 - transition rules and stop conditions;
 - required output artifacts.
@@ -53,9 +58,9 @@ agents, not a black-box model provider or autonomous runtime.
 version, loop digest, dry-run flag, status, timestamps, stop reason, and artifact
 paths.
 
-`Iteration` is one pass through the loop. A full implementation can render a
-prompt, invoke an agent adapter, capture a diff, run checks, evaluate quality,
-and write a decision.
+`Iteration` is one pass through the loop. The executable `tdd.fix` runtime
+renders a prompt, invokes the agent adapter, captures a diff, runs declared task
+verification, computes a deterministic verdict, and writes a decision.
 
 `Observation` is structured evidence about a step result: check result, diff
 summary, evaluator finding, route state, policy violation, or hosted check
@@ -99,24 +104,29 @@ LoopRun evidence uses the existing task run directory:
           decision.json
 ```
 
-Future non-dry-run iterations can add `prompt.md`, `agent-result.json`,
-`diff.patch`, `checks/*`, and `evaluator/*` under the same iteration directory.
+Executable iterations add per-step `input.json` and `output.json` artifacts
+under the same iteration directory. `state.json` is the durable cursor and is
+written atomically after every completed step.
 
 ## Event Ledger
 
-Every run writes an append-only JSONL stream. The dry-run MVP records:
+Every run writes an append-only JSONL stream. Executable runs record:
 
 - `loop.started`;
-- `iteration.started`;
+- `step.started` and `step.completed`;
 - `decision.made`;
+- `loop.resumed` after an interrupted run continues;
 - `loop.stopped`.
 
-The ledger is the reviewer-facing reason trail. If a loop cannot explain its
-next transition, it must stop rather than invent a next action.
+The ledger is the reviewer-facing reason trail. Transition conditions come from
+a deterministic registry; unknown expressions fail validation. If a loop
+cannot explain its next transition, it stops rather than inventing a next
+action.
 
 ## Selection Model
 
-Loop planning scores candidates with six components:
+Loop planning first rejects candidates whose `requires` facts are not proven,
+then scores eligible candidates with six components:
 
 - applicability: task tags, task kind, and blueprint fit;
 - verification fit: required verification surfaces are present;
@@ -139,3 +149,8 @@ to see why a loop was selected.
   review, limited rollout, and promotion.
 - Stop conditions are the difference between controlled autonomy and runaway
   automation.
+- The controller owns routing. The model may implement or review a step but
+  cannot invent transition syntax, bypass permissions, or increase budgets.
+- Agent retries receive the rendered prompt plus bounded failure feedback;
+  task comments, events, and unrelated raw transcripts stay outside the loop
+  step bundle.

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092346-4Z7EZP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T00:49:37.929Z",
+  "verdict": "pass",
+  "summary": "Final reviewed head passes hotspot, core lint, typecheck, format, schema, docs, routing, and focused loop gates; the executable runtime was split without behavioral drift.",
+  "evaluated_sha": "90975934d25f02346597d7857d1d0fa3008c3dc1",
+  "blueprint_digest": "04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137",
+  "findings": [
+    "loop.command.ts is reduced from 821 to 499 lines; executable TDD runtime is isolated in loop.execute.ts.",
+    "All prior review fixes and regressions remain intact."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092346-4Z7EZP/README.md",
+    "packages/agentplane/src/commands/loop/loop.execute.ts",
+    "packages/agentplane/src/commands/loop/loop.command.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Only tdd.fix is executable end-to-end; other built-ins remain fail-closed."
+  ]
+}

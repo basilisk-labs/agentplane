@@ -132,7 +132,7 @@
                 "properties": {
                   "kind": {
                     "type": "string",
-                    "enum": ["task", "recipe_scenario"]
+                    "enum": ["task", "recipe_scenario", "loop_step"]
                   },
                   "task_id": {
                     "type": "string",
@@ -145,6 +145,33 @@
                   "scenario_id": {
                     "type": "string",
                     "minLength": 1
+                  },
+                  "loop_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "loop_version": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "step_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "step_type": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "prompt_module": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   }
                 },
                 "required": ["kind"],
@@ -283,7 +310,7 @@
                       "properties": {
                         "kind": {
                           "type": "string",
-                          "enum": ["task", "recipe_scenario"]
+                          "enum": ["task", "recipe_scenario", "loop_step"]
                         },
                         "task_id": {
                           "type": "string",
@@ -296,6 +323,33 @@
                         "scenario_id": {
                           "type": "string",
                           "minLength": 1
+                        },
+                        "loop_id": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "loop_version": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "step_id": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "step_type": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "prompt_module": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "required": ["kind"],

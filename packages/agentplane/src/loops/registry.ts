@@ -29,9 +29,3 @@ export function getLoop(
 ): LoopSpec | undefined {
   return registry.loops.find((loop) => loop.id === id);
 }
-
-export function requireLoop(id: LoopId, registry: LoopRegistry = createLoopRegistry()): LoopSpec {
-  const loop = getLoop(id, registry);
-  if (!loop) throw new Error(`Unknown loop: ${id}`);
-  return loop;
-}

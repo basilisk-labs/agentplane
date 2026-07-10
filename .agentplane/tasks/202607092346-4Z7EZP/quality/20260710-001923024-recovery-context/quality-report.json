@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092346-4Z7EZP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T00:19:23.024Z",
+  "verdict": "pass",
+  "summary": "The reviewed head satisfies the approved agentplane-loops loop-runtime contract and all task-scoped deterministic gates.",
+  "evaluated_sha": "aaf67d5127a823aaf0259770166daa824e143972",
+  "blueprint_digest": "04d2b34c5aea38a69205b7efc556ca976a152f605d62075306a1e26b9f0e9137",
+  "findings": [
+    "No confirmed task-scoped defect remains after PR artifact refresh.",
+    "Unsupported built-in loops remain intentionally fail-closed; tdd.fix is the only end-to-end executable slice."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092346-4Z7EZP/README.md",
+    "packages/agentplane/src/loops/engine.test.ts",
+    "packages/agentplane/src/commands/loop/loop.command.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Repository-wide schema and format gates still contain unrelated pre-existing drift documented in the task findings."
+  ]
+}

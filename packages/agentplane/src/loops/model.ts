@@ -2,7 +2,7 @@ import type { BlueprintId, TaskKind, WorkflowMode } from "../blueprints/model.js
 
 export type LoopId = BuiltinLoopId | (string & {});
 
-export type BuiltinLoopId =
+type BuiltinLoopId =
   | "tdd.fix"
   | "ci.repair"
   | "docs.sync"
@@ -12,7 +12,7 @@ export type BuiltinLoopId =
   | "evaluator.quality-gate"
   | "loop.improve";
 
-export type LoopKind =
+type LoopKind =
   | "intake"
   | "planning"
   | "implementation"
@@ -22,7 +22,7 @@ export type LoopKind =
   | "release"
   | "meta";
 
-export type LoopStatus = "experimental" | "trusted" | "deprecated" | "blocked";
+type LoopStatus = "experimental" | "trusted" | "deprecated" | "blocked";
 
 export type LoopStepType =
   | "context.load"
@@ -46,7 +46,7 @@ export type LoopStepType =
   | "decision.route"
   | "human.approval";
 
-export type LoopStopDecision =
+type LoopStopDecision =
   | "continue"
   | "retry_with_feedback"
   | "run_focused_check"
@@ -59,14 +59,18 @@ export type LoopStopDecision =
   | "rollback"
   | "reject";
 
-export type LoopPermission = boolean | "approval_required" | "disallowed" | "propose_only";
+type LoopPermission = boolean | "approval_required" | "disallowed" | "propose_only";
 
-export type LoopBudgets = {
+type LoopBudgets = {
   maxIterations: number;
   maxWallTimeMinutes?: number;
   maxChangedFiles?: number;
   maxDiffLines?: number;
   maxAgentRuns?: number;
+  maxInputTokens?: number;
+  maxOutputTokens?: number;
+  maxTotalTokens?: number;
+  maxNoProgressIterations?: number;
 };
 
 export type LoopSpec = {
@@ -127,7 +131,7 @@ export type LoopContractValueType =
   | "path"
   | "ref";
 
-export type LoopContractField = {
+type LoopContractField = {
   id: string;
   type?: LoopContractValueType;
   required?: boolean;
@@ -135,14 +139,14 @@ export type LoopContractField = {
   source?: string;
 };
 
-export type LoopArtifactContract = {
+type LoopArtifactContract = {
   id: string;
   path?: string;
   required?: boolean;
   description?: string;
 };
 
-export type LoopStepContract = {
+type LoopStepContract = {
   schemaRef?: string;
   inputs?: readonly LoopContractField[];
   outputs?: readonly LoopContractField[];
@@ -191,7 +195,7 @@ export type LoopTransition = {
   };
 };
 
-export type LoopStopCondition = {
+type LoopStopCondition = {
   id: string;
   reason: string;
   decision: Exclude<LoopStopDecision, "continue" | "retry_with_feedback">;
@@ -211,7 +215,8 @@ export type LoopValidationProblem = {
     | "duplicate_contract_id"
     | "invalid_metric"
     | "duplicate_metric_id"
-    | "unknown_transition_step";
+    | "unknown_transition_step"
+    | "unknown_transition_condition";
   message: string;
   path?: string;
 };
@@ -234,11 +239,16 @@ export type LoopPlanInput = {
   workflowMode?: WorkflowMode;
   blueprintId?: BlueprintId;
   verifyStepsPresent?: boolean;
+  approvedPlan?: boolean;
+  cleanWorktree?: boolean;
+  hostedPr?: boolean;
+  ciFailure?: boolean;
 };
 
 export type LoopCandidateScore = {
   loopId: LoopId;
   loopVersion: string;
+  eligible: boolean;
   applicability: number;
   verificationFit: number;
   riskFit: number;
@@ -257,7 +267,64 @@ export type LoopPlan = {
   input: LoopPlanInput;
 };
 
-export type LoopRunStatus = "prepared" | "running" | "passed" | "blocked" | "human_review";
+type LoopRunStatus = "prepared" | "running" | "passed" | "blocked" | "human_review";
+
+type LoopStepExecutionStatus = "success" | "failed" | "blocked" | "skipped";
+
+export type LoopTokenUsage = {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+};
+
+export type LoopStepExecutionResult = {
+  status: LoopStepExecutionStatus;
+  summary?: string;
+  data?: Record<string, unknown>;
+  feedback?: readonly string[];
+  usage?: Partial<LoopTokenUsage>;
+  changedFiles?: number;
+  diffLines?: number;
+  progressScore?: number;
+};
+
+export type LoopBudgetUsage = LoopTokenUsage & {
+  agentRuns: number;
+  changedFiles: number;
+  diffLines: number;
+  noProgressIterations: number;
+};
+
+export type LoopCompletedStep = {
+  iteration: number;
+  stepId: string;
+  attempt: number;
+  outputPath: string;
+  result: LoopStepExecutionResult;
+};
+
+export type LoopExecutionState = {
+  schemaVersion: 1;
+  taskId: string;
+  runId: string;
+  loopId: LoopId;
+  loopVersion: string;
+  loopSha: string;
+  status: LoopRunStatus;
+  startedAt: string;
+  updatedAt: string;
+  cursor: {
+    iteration: number;
+    stepId: string | null;
+    stepIndex: number;
+    attempt: number;
+  };
+  usage: LoopBudgetUsage;
+  completedSteps: readonly LoopCompletedStep[];
+  lastDecision?: LoopDecisionRecord;
+  previousProgressScore?: number | null;
+  stopReason?: string;
+};
 
 export type LoopPromptModuleIdentity = {
   id: string;

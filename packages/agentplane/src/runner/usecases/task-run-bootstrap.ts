@@ -14,6 +14,10 @@ function truncateGoalText(value: string, maxLength = 320): string {
   return `${compact.slice(0, maxLength - 3).trimEnd()}...`;
 }
 
+function renderStringList(values: readonly string[] | undefined): string {
+  return values && values.length > 0 ? values.join(", ") : "none";
+}
+
 function renderCodexGoalLine(bundle: RunnerContextBundle, targetLabel: string): string | null {
   if (bundle.execution.adapter_id !== "codex") return null;
   if (bundle.target.kind === "loop_step") {
@@ -254,7 +258,12 @@ export function renderTaskRunnerBootstrap(
           `- step_id: ${loopStepTarget.step_id}`,
           `- step_type: ${loopStepTarget.step_type}`,
           `- prompt_module: ${loopStepTarget.prompt_module ?? "none"}`,
+          `- rendered_prompt_sha: ${loopStepTarget.rendered_prompt_sha ?? "none"}`,
+          `- context_refs: ${renderStringList(loopStepTarget.context_refs)}`,
+          `- loop_permissions: ${JSON.stringify(loopStepTarget.permissions ?? {})}`,
+          `- loop_budgets: ${JSON.stringify(loopStepTarget.budgets ?? {})}`,
           "- Execute this loop step directly in route_must_run_from/current checkout.",
+          "- Treat target.rendered_prompt in bundle.json as the exact step instruction. Do not substitute a generic task prompt when it is present.",
           "- route_exact_argv is intentionally empty for loop_step targets; do not run branch_pr lifecycle commands such as `agentplane work start`, `agentplane pr open`, `agentplane integrate`, `agentplane finish`, or `agentplane cleanup`.",
           "- Do not recompute `agentplane task next-action` before doing the loop-step work. Use the task context, loop step metadata, and step contract from bundle.json as the execution input.",
           "- Keep writes inside the requested task/loop scope unless the task itself explicitly requires code changes. If the requested artifact cannot be produced, write a blocked result manifest with the reason and recommended parent action.",

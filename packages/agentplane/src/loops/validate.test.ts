@@ -16,7 +16,9 @@ const BASE_LOOP: LoopSpec = {
   permissions: { canRunCommands: true },
   budgets: { maxIterations: 2 },
   steps: [{ id: "load", type: "context.load" }],
-  transitions: [{ from: "load", if: "ready", to: "finish", decision: "finish" }],
+  transitions: [
+    { from: "load", if: "evaluator.verdict == 'pass'", to: "finish", decision: "finish" },
+  ],
   outputs: { required: ["loop-run.json"] },
   stopConditions: [{ id: "done", reason: "Done.", decision: "finish" }],
 };
@@ -45,7 +47,14 @@ describe("loop validation", () => {
           },
         },
       ],
-      transitions: [{ from: "render_prompt", if: "ready", to: "finish", decision: "finish" }],
+      transitions: [
+        {
+          from: "render_prompt",
+          if: "evaluator.verdict == 'pass'",
+          to: "finish",
+          decision: "finish",
+        },
+      ],
     });
 
     expect(result.errors).toEqual([]);
@@ -69,7 +78,14 @@ describe("loop validation", () => {
           },
         },
       ],
-      transitions: [{ from: "render_prompt", if: "ready", to: "finish", decision: "finish" }],
+      transitions: [
+        {
+          from: "render_prompt",
+          if: "evaluator.verdict == 'pass'",
+          to: "finish",
+          decision: "finish",
+        },
+      ],
     });
 
     expect(result.ok).toBe(false);
@@ -91,5 +107,17 @@ describe("loop validation", () => {
     expect(result.errors.map((error) => error.code)).toEqual(
       expect.arrayContaining(["invalid_metric", "duplicate_metric_id"]),
     );
+  });
+
+  it("rejects transition expressions outside the deterministic registry", () => {
+    const result = validateLoopSpec({
+      ...BASE_LOOP,
+      transitions: [
+        { from: "load", if: "model.decides_anything", to: "finish", decision: "finish" },
+      ],
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.errors.map((error) => error.code)).toContain("unknown_transition_condition");
   });
 });

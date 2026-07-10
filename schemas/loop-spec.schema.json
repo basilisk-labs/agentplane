@@ -55,7 +55,17 @@
         }
       }
     },
-    "requires": { "type": "object" },
+    "requires": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "approvedPlan": { "type": "boolean" },
+        "cleanWorktree": { "type": "boolean" },
+        "verifyStepsPresent": { "type": "boolean" },
+        "hostedPr": { "type": "boolean" },
+        "ciFailure": { "type": "boolean" }
+      }
+    },
     "permissions": { "type": "object" },
     "metrics": {
       "type": "array",
@@ -69,7 +79,11 @@
         "maxWallTimeMinutes": { "type": "integer", "minimum": 1 },
         "maxChangedFiles": { "type": "integer", "minimum": 1 },
         "maxDiffLines": { "type": "integer", "minimum": 1 },
-        "maxAgentRuns": { "type": "integer", "minimum": 1 }
+        "maxAgentRuns": { "type": "integer", "minimum": 1 },
+        "maxInputTokens": { "type": "integer", "minimum": 1 },
+        "maxOutputTokens": { "type": "integer", "minimum": 1 },
+        "maxTotalTokens": { "type": "integer", "minimum": 1 },
+        "maxNoProgressIterations": { "type": "integer", "minimum": 1 }
       }
     },
     "steps": {
@@ -117,7 +131,7 @@
         "required": ["if", "to", "decision"],
         "properties": {
           "from": { "type": "string" },
-          "if": { "type": "string", "minLength": 1 },
+          "if": { "$ref": "#/$defs/condition" },
           "to": { "type": "string", "minLength": 1 },
           "decision": { "type": "string", "minLength": 1 }
         }
@@ -144,6 +158,27 @@
     }
   },
   "$defs": {
+    "condition": {
+      "enum": [
+        "checks.ok && evaluator.verdict == 'pass'",
+        "checks.failed && iteration < budgets.maxIterations",
+        "budgets.exceeded",
+        "remote_check.green",
+        "local_check.failed && iteration < budgets.maxIterations",
+        "classify_failure.kind == 'infra'",
+        "docs_build.ok && evaluator.verdict == 'pass'",
+        "docs_build.failed && iteration < budgets.maxIterations",
+        "evaluator.verdict == 'pass'",
+        "evaluator.verdict == 'findings'",
+        "verify_context.ok && evaluator.verdict == 'pass'",
+        "no_reusable_knowledge",
+        "recheck.clean",
+        "classify_safety.requires_human",
+        "evaluator.verdict == 'rework'",
+        "compare.candidate_better && no_policy_regression",
+        "compare.regression_detected"
+      ]
+    },
     "contractField": {
       "type": "object",
       "additionalProperties": false,
