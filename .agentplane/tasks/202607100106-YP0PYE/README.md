@@ -4,7 +4,7 @@ title: "Bound context extraction batches by source bytes and prevent duplicate i
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -37,20 +37,21 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T01:22:57.548Z"
+  updated_at: "2026-07-10T01:28:29.954Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed: byte-bounded batching is deterministic, backward-compatible, and below hotspot thresholds."
-  evaluated_sha: "6a00b0c386edb987e9a08792bfe9082d2096cf0e"
+  note: "Quality review passed on synchronized PR metadata head."
+  evaluated_sha: "b8556a06fc488b2f577fd14789616d7f83cd9b50"
   blueprint_digest: "2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac"
   evidence_refs:
     - ".agentplane/tasks/202607100106-YP0PYE/README.md"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-012257548-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-012257548-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-012257548-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-012829954-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-012829954-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-012829954-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100106-YP0PYE/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/context/harvest-tasks.test.ts"
+    - "docs/user/cli-reference.generated.mdx"
   findings:
-    - "No blocking findings; oversized sources are isolated and legacy queued markers remain valid."
+    - "No blocking findings; implementation is unchanged and full-fast validation passed."
 commit: null
 comments:
   -
