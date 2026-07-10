@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607101059-S3N0X5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T11:17:43.155Z",
+  "verdict": "pass",
+  "summary": "Authoritative PR-number lookup and queue metadata fallback resolve the protected-main handoff blocker without weakening identity checks.",
+  "evaluated_sha": "722b67c501ae6b30a267a4dc14633967f3b3d31c",
+  "blueprint_digest": "fbb7a80b15d0ad2460b867548da199a0873c9279bc5c21640671a30ac1a6ff7d",
+  "findings": [
+    "Persisted PR numbers are resolved against GitHub and accepted only when expected head branch and base match; queued tasks without base PR artifacts remain conservatively OPEN instead of false not_found."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607101059-S3N0X5/README.md",
+    "packages/agentplane/src/commands/pr/flow-status.ts",
+    "packages/agentplane/src/commands/pr/internal/sync-github.ts",
+    "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
