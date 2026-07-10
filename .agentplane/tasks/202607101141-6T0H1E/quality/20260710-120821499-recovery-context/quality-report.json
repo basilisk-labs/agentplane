@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607101141-6T0H1E",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T12:08:21.499Z",
+  "verdict": "pass",
+  "summary": "Rebased protected-main closure is recognized only from complete matching base artifacts.",
+  "evaluated_sha": "851dc66f8ad5533128a3d345d716f599fbeb3ae9",
+  "blueprint_digest": "4f2b06a19d39733f66dbff9364510f7adfc531ad949afe01e4e0f4b032685652",
+  "findings": [
+    "The new validator fails closed and preserves existing ancestry-based recovery while covering legitimate GitHub rebase merges."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607101141-6T0H1E/README.md",
+    "packages/agentplane/src/commands/task/close-tail-state.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
