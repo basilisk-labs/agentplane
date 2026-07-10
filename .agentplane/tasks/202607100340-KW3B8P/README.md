@@ -1,10 +1,11 @@
 ---
 id: "202607100340-KW3B8P"
 title: "Keep pre-merge DONE tasks in the integration queue"
-status: "DOING"
+result_summary: "Made queue recovery, normalization, doctor, and lifecycle enforcement provider-aware for pre-merge closure."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -32,27 +33,32 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T03:52:39.383Z"
+  updated_at: "2026-07-10T03:53:17.861Z"
   updated_by: "EVALUATOR"
   note: "Integration queue terminalization now follows provider PR and Hosted Close truth across recovery, normalization, and doctor paths."
-  evaluated_sha: "a31ca979efc3154ae5dd64656cffcb1727833eea"
+  evaluated_sha: "79e4606eaf86abbb7727fd0671d4febc560acf7f"
   blueprint_digest: "4f38b9959c9c68fa544916dcd95fa5479cf8b5793c9b594bb3d9132d59245615"
   evidence_refs:
     - ".agentplane/tasks/202607100340-KW3B8P/README.md"
-    - ".agentplane/tasks/202607100340-KW3B8P/quality/20260710-035239383-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100340-KW3B8P/quality/20260710-035239383-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100340-KW3B8P/quality/20260710-035239383-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100340-KW3B8P/quality/20260710-035317861-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100340-KW3B8P/quality/20260710-035317861-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100340-KW3B8P/quality/20260710-035317861-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100340-KW3B8P/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/integrate-queue-lane.test.ts"
     - "packages/agentplane/src/commands/integrate-queue-recovery.test.ts"
     - "scripts/checks/check-lifecycle-invariants.mjs"
   findings:
     - "No blocking findings; focused tests cover pre-merge DONE with an open PR and completion after close-tail evidence, while typecheck, lint, contract, full fast, routing, and doctor checks pass."
-commit: null
+commit:
+  hash: "79e4606eaf86abbb7727fd0671d4febc560acf7f"
+  message: "🐛 KW3B8P integration-queue: retain premerge DONE entries"
 comments:
   -
     author: "CODER"
     body: "Start: make integration queue terminalization depend on provider PR and Hosted Close state instead of local pre-merge DONE status."
+  -
+    author: "CODER"
+    body: "Verified: integration queue retains pre-merge DONE tasks until provider merge and Hosted Close evidence, with focused and full regression coverage."
 events:
   -
     type: "status"
@@ -67,8 +73,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pass: focused integration-queue tests 10/10; typecheck; lint:core; ci:contract; full fast suite; policy routing; doctor; diff validation. Pre-merge DONE entries now remain queued until provider merge and Hosted Close evidence."
+  -
+    type: "status"
+    at: "2026-07-10T03:53:28.878Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: integration queue retains pre-merge DONE tasks until provider merge and Hosted Close evidence, with focused and full regression coverage."
 doc_version: 3
-doc_updated_at: "2026-07-10T03:52:21.779Z"
+doc_updated_at: "2026-07-10T03:53:28.878Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, keep branch_pr tasks that are locally DONE by pre-merge closure queued while their GitHub PR is still open, and retain merged lanes until Hosted Close evidence is complete."
 sections:
@@ -131,6 +144,10 @@ sections:
     - Observation: Queue normalization and doctor previously treated local DONE as terminal before consulting the GitHub PR and close-tail state.
       Impact: Pre-merge closure could silently remove a still-open PR from the serialized integration lane and force direct integration fallback.
       Resolution: All terminalization paths now reuse provider-aware recovery decisions; regression tests cover queue normalization and doctor before and after Hosted Close.
+extensions:
+  implementation_commit:
+    hash: "79e4606eaf86abbb7727fd0671d4febc560acf7f"
+    message: "🐛 KW3B8P integration-queue: retain premerge DONE entries"
 id_source: "generated"
 ---
 ## Summary
