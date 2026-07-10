@@ -1,11 +1,11 @@
 ---
 id: "202607100435-A932SP"
 title: "Release integration lane after pre-merge Hosted Close"
-result_summary: "pre-merge closure"
-status: "DOING"
+result_summary: "hardened pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -47,7 +47,9 @@ quality_review:
     - ".agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings; queue release now reuses Hosted Close closure and basis validation."
-commit: null
+commit:
+  hash: "4963d4af67be3ab696c5b78cfe321ea2d93cd2de"
+  message: "🐛 A932SP integration-queue: validate pre-close basis before release"
 comments:
   -
     author: "CODER"
@@ -55,6 +57,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: CI and review rework completed; refreshed pre-merge closure packet is ready."
 events:
   -
     type: "status"
@@ -106,8 +111,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified review hardening at 3fcc7b0: same Hosted Close task/marker/basis validation, focused 4 files/21 tests, typecheck, lint:core, Knip 574/574, ci:contract, and full fast 364 files/2150 tests passed."
+  -
+    type: "status"
+    at: "2026-07-10T09:27:40.354Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: CI and review rework completed; refreshed pre-merge closure packet is ready."
 doc_version: 3
-doc_updated_at: "2026-07-10T09:27:00.028Z"
+doc_updated_at: "2026-07-10T09:27:40.355Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, let integration queue recovery treat a merged PR with a valid pre-merge closure packet and successful no-op Hosted Close as terminal, so the handoff lane releases automatically after protected-main rebase."
 sections:
