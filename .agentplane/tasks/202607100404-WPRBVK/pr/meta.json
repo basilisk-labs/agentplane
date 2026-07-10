@@ -8,9 +8,10 @@
   "pr_number": 4567,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4567",
   "pre_merge_closure": {
-    "basis_commit": "71b5fa891f5839911154cb13210f70c52645540e",
+    "basis_commit": "aa92f67e7bc0968ba5298ac5e21b741b44c208f0",
     "branch": "task/202607100404-WPRBVK/make-doctor-batch-consistency-rebase-aware",
-    "recorded_at": "2026-07-10T04:12:26.001Z",
+    "pr_number": 4567,
+    "recorded_at": "2026-07-10T04:27:17.242Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
