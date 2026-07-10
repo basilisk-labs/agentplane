@@ -45,6 +45,20 @@ async function commitPath(
   return stdout.trim();
 }
 
+async function readEvaluatedSha(root: string, taskId: string): Promise<string | null> {
+  const { stdout } = await execFileAsync(
+    "find",
+    [`.agentplane/tasks/${taskId}/quality`, "-name", "quality-report.json", "-print"],
+    { cwd: root },
+  );
+  const reportPaths = stdout.trim().split("\n");
+  expect(reportPaths).toHaveLength(1);
+  const report = JSON.parse(await readFile(path.join(root, reportPaths[0] ?? ""), "utf8")) as {
+    evaluated_sha: string | null;
+  };
+  return report.evaluated_sha;
+}
+
 describe("evaluator run command", () => {
   it("parses structured review evidence and findings as repeatable fields", () => {
     const { parsed } = parseCommandArgv(evaluatorRunSpec, [
@@ -127,16 +141,78 @@ describe("evaluator run command", () => {
       },
     );
 
-    const { stdout: findStdout } = await execFileAsync(
-      "find",
-      [`.agentplane/tasks/${taskId}/quality`, "-name", "quality-report.json", "-print"],
-      { cwd: root },
+    expect(await readEvaluatedSha(root, taskId)).toBe(implementationSha);
+  });
+
+  it("anchors a task-artifact-only work unit before unrelated workflow history", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV02";
+    await addTask(root, taskId);
+    await commitPath(root, "src/older-feature.txt", "older implementation", "feat: older work");
+    await commitPath(
+      root,
+      ".agentplane/tasks/202605240900-OTHER/manual-note.md",
+      "unrelated task artifact",
+      "chore: unrelated task artifact",
     );
-    const reportPaths = findStdout.trim().split("\n");
-    expect(reportPaths).toHaveLength(1);
-    const report = JSON.parse(await readFile(path.join(root, reportPaths[0] ?? ""), "utf8")) as {
-      evaluated_sha: string | null;
-    };
-    expect(report.evaluated_sha).toBe(implementationSha);
+    const metadataSha = await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/manual-note.md`,
+      "current metadata work unit",
+      "docs: record metadata-only work unit",
+    );
+
+    await runEvaluatorRun(
+      { cwd: root, rootOverride: undefined },
+      {
+        taskId,
+        evaluator: "recovery-context",
+        verdict: "pass",
+        summary: "Metadata work unit reviewed",
+        findings: ["Current task metadata is the auditable review target."],
+        evidenceRefs: [`.agentplane/tasks/${taskId}/manual-note.md`],
+        missingTests: [],
+        hiddenAssumptions: [],
+        residualRisks: [],
+        json: false,
+        record: true,
+      },
+    );
+
+    expect(await readEvaluatedSha(root, taskId)).toBe(metadataSha);
+  });
+
+  it("does not anchor an unrelated task artifact when the current task has no committed work", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV03";
+    await addTask(root, taskId);
+    await commitPath(root, "src/older-feature.txt", "older implementation", "feat: older work");
+    await commitPath(
+      root,
+      ".agentplane/tasks/202605240900-OTHER/manual-note.md",
+      "unrelated task artifact",
+      "chore: unrelated task artifact",
+    );
+
+    await runEvaluatorRun(
+      { cwd: root, rootOverride: undefined },
+      {
+        taskId,
+        evaluator: "recovery-context",
+        verdict: "pass",
+        summary: "No current committed work unit",
+        findings: ["Unrelated workflow history is not a valid review target."],
+        evidenceRefs: [`.agentplane/tasks/${taskId}/README.md`],
+        missingTests: [],
+        hiddenAssumptions: [],
+        residualRisks: [],
+        json: false,
+        record: true,
+      },
+    );
+
+    expect(await readEvaluatedSha(root, taskId)).toBeNull();
   });
 });

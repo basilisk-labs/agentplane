@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607100436-D7QB76/anchor-evaluator-reviews-for-metadata-only-tasks",
+  "created_at": "2026-07-10T10:34:39.342Z",
+  "diffstat_sha256": "sha256:bf8622c0551e4d010e29b1e08bb751fdc0f1675e16efb0c07eb1b62e164db441",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607100436-D7QB76",
+  "updated_at": "2026-07-10T10:34:39.342Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
