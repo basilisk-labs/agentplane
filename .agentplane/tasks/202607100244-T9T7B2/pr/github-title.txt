@@ -1,1 +1,1 @@
-🚧 T9T7B2 task: Prefer merged PR commit when reconciling included batch tasks [202607100244-T9T7B2]
+✅ T9T7B2 task: Prefer merged PR commit when reconciling included batch tasks [202607100244-T9T7B2]
