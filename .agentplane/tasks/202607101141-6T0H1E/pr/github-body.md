@@ -15,14 +15,20 @@ Release a protected-main integration handoff when the merged base itself contain
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Matching closure evidence on protected main is validated strictly by task id, DONE state, non-empty
+commit, branch, and PR number. Focused suites 5/20, typecheck, lint, ci:contract, policy routing,
+doctor, test:fast 364/2152, full-fast local CI, and critical CLI E2E passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-10T12:03:05.353Z
+- Updated: 2026-07-10T12:07:19.442Z
 - Branch: task/202607101141-6T0H1E/recognize-rebased-pre-merge-closure-recorded-on
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
