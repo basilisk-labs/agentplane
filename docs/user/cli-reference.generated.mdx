@@ -3707,6 +3707,7 @@ Options:
 - `--after-task <task-id>`: Continue after a previously queued task id.
 - `--limit <n>`: Maximum number of oldest matching tasks to queue.
 - `--batch-size <n>`: Number of selected completed tasks per generated extraction task. (default=25)
+- `--batch-bytes <bytes>`: Maximum UTF-8 bytes of normalized task source text per extraction task. A single oversized source is isolated. (default=131072)
 - `--dry-run`: Preview batches without creating tasks. (default=false)
 - `--format <text|json>`: Output format. (choices=text|json, default=text)
 
