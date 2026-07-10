@@ -1,10 +1,11 @@
 ---
 id: "202607100435-A932SP"
 title: "Release integration lane after pre-merge Hosted Close"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -46,11 +47,16 @@ quality_review:
     - ".agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "8835edc1c764127642dd86264d50b9bbc8234521"
+  message: "🧪 A932SP task: record current evaluator evidence"
 comments:
   -
     author: "CODER"
     body: "Start: make queue recovery treat a successful no-op Hosted Close with a valid pre-merge closure packet as terminal after protected-main merge."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -71,8 +77,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified current implementation head 0d24f754: focused 3 files/12 tests, typecheck, lint:core, ci:contract, routing check, doctor, and full fast 364 files/2150 tests passed. Live queue release proof will use the next merged task after this change lands."
+  -
+    type: "status"
+    at: "2026-07-10T09:06:23.307Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-10T09:02:16.886Z"
+doc_updated_at: "2026-07-10T09:06:23.308Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, let integration queue recovery treat a merged PR with a valid pre-merge closure packet and successful no-op Hosted Close as terminal, so the handoff lane releases automatically after protected-main rebase."
 sections:
@@ -168,6 +181,10 @@ sections:
     - Observation: Protected-main rebase rewrites the implementation commit, so ancestry-only close-tail detection misses valid pre-merge closure evidence.
       Impact: A successful Hosted Close can leave the integration lane in handoff until an operator manually releases it.
       Resolution: Flow status now recognizes only a MERGED PR whose pre-merge closure marker matches the task branch and, when present, the PR number.
+extensions:
+  implementation_commit:
+    hash: "58a98a88ccb78e4d4e40db068db7ea5b3da43e29"
+    message: "🐛 A932SP integration-queue: release merged pre-close handoff"
 id_source: "generated"
 ---
 ## Summary
