@@ -1,1 +1,1 @@
-🚧 D7QB76 task: Anchor evaluator reviews for metadata-only tasks [202607100436-D7QB76]
+✅ D7QB76 task: Anchor evaluator reviews for metadata-only tasks [202607100436-D7QB76]

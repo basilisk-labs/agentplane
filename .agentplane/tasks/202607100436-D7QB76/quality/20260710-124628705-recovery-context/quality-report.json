@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100436-D7QB76",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T12:46:28.705Z",
+  "verdict": "pass",
+  "summary": "Metadata-only evaluator targets remain stable across committed review and PR artifacts after rebase.",
+  "evaluated_sha": "0b817152a8da33505a18974d6a3c069141345e21",
+  "blueprint_digest": "4723f7ad08c4985149e8fc1af430e49b65e5909aed7ca3d13ff9a45b7d5a656f",
+  "findings": [
+    "Two-pass regression proves a repeated review remains anchored to the original metadata work unit; explicit new work still supersedes the prior target."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100436-D7QB76/README.md",
+    "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

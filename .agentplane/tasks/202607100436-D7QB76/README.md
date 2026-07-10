@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -30,30 +30,26 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T10:47:38.387Z"
+  updated_at: "2026-07-10T12:46:22.248Z"
   updated_by: "REVIEWER"
-  note: "Focused evaluator/finish regressions pass (2 files, 11 tests); typecheck, lint:core, ci:contract, test:fast (364 files/2153 tests), policy routing, and doctor pass. The evaluator keeps code targets, anchors the current pure metadata work unit, and rejects unrelated task artifacts."
+  note: "Evaluator reruns now preserve an ancestral reviewed SHA across managed quality, PR, blueprint, and README advances while still selecting new task-local or code work. Focused 2/12, targeted 10/133, typecheck, lint, ci:contract, test:fast 364/2157, policy routing, and doctor passed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T10:47:40.192Z"
+  updated_at: "2026-07-10T12:46:28.705Z"
   updated_by: "EVALUATOR"
-  note: "Metadata-only evaluator targets are now current, auditable, and bounded without weakening code-task freshness."
-  evaluated_sha: "f6f17a1f6f44a2247a62dbf3b6fe2dd668c54804"
+  note: "Metadata-only evaluator targets remain stable across committed review and PR artifacts after rebase."
+  evaluated_sha: "0b817152a8da33505a18974d6a3c069141345e21"
   blueprint_digest: "4723f7ad08c4985149e8fc1af430e49b65e5909aed7ca3d13ff9a45b7d5a656f"
   evidence_refs:
     - ".agentplane/tasks/202607100436-D7QB76/README.md"
-    - ".agentplane/tasks/202607100436-D7QB76/quality/20260710-104740192-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100436-D7QB76/quality/20260710-104740192-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100436-D7QB76/quality/20260710-104740192-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100436-D7QB76/quality/20260710-124628705-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100436-D7QB76/quality/20260710-124628705-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100436-D7QB76/quality/20260710-124628705-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100436-D7QB76/blueprint/resolved-snapshot.json"
-    - "commit f6f17a1f6f44"
-    - "focused vitest 2 files/11 tests; typecheck; lint:core; ci:contract; test:fast 364 files/2153 tests"
-    - "node .agentplane/policy/check-routing.mjs; ap doctor"
+    - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
   findings:
-    - "Code-bearing branches still resolve to the last non-workflow implementation commit after current-task evidence commits."
-    - "Pure current-task metadata work stops at the first unrelated workflow-history boundary and uses its own latest committed work unit; a branch with only unrelated task artifacts receives no evaluated SHA."
-    - "Finish preserves the reviewed metadata SHA across later evaluator artifacts through the existing task-local-only advance check."
+    - "Two-pass regression proves a repeated review remains anchored to the original metadata work unit; explicit new work still supersedes the prior target."
 commit:
   hash: "612b12171d5c9cb942fcd573e79795d8eb0d9f4a"
   message: "📝 D7QB76 task: record pull request metadata"
@@ -85,8 +81,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-10T12:46:22.248Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Evaluator reruns now preserve an ancestral reviewed SHA across managed quality, PR, blueprint, and README advances while still selecting new task-local or code work. Focused 2/12, targeted 10/133, typecheck, lint, ci:contract, test:fast 364/2157, policy routing, and doctor passed."
 doc_version: 3
-doc_updated_at: "2026-07-10T12:40:28.157Z"
+doc_updated_at: "2026-07-10T12:46:25.777Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, give metadata-only docs and task-closure changes a fresh auditable evaluator target instead of walking past all workflow artifacts to an unrelated older code commit."
 sections:
@@ -142,6 +144,36 @@ sections:
     - repeat_allowed: false
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-07-10T12:46:22.248Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Evaluator reruns now preserve an ancestral reviewed SHA across managed quality, PR, blueprint, and README advances while still selecting new task-local or code work. Focused 2/12, targeted 10/133, typecheck, lint, ci:contract, test:fast 364/2157, policy routing, and doctor passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T12:40:28.157Z, excerpt_hash=sha256:229aa2370d990d8dc394c6783bbe065b2f3598019ed3ef2a58d73d0b7af5c382
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100436-D7QB76-anchor-evaluator-reviews-for-metadata-only-tasks/.agentplane/tasks/202607100436-D7QB76/blueprint/resolved-snapshot.json
+    - old_digest: 4723f7ad08c4985149e8fc1af430e49b65e5909aed7ca3d13ff9a45b7d5a656f
+    - current_digest: 4723f7ad08c4985149e8fc1af430e49b65e5909aed7ca3d13ff9a45b7d5a656f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100436-D7QB76
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607100436-D7QB76 --branch task/202607100436-D7QB76/anchor-evaluator-reviews-for-metadata-only-tasks
+    - diagnostic_command: agentplane pr check 202607100436-D7QB76
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -220,6 +252,36 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-07-10T12:46:22.248Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Evaluator reruns now preserve an ancestral reviewed SHA across managed quality, PR, blueprint, and README advances while still selecting new task-local or code work. Focused 2/12, targeted 10/133, typecheck, lint, ci:contract, test:fast 364/2157, policy routing, and doctor passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T12:40:28.157Z, excerpt_hash=sha256:229aa2370d990d8dc394c6783bbe065b2f3598019ed3ef2a58d73d0b7af5c382
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100436-D7QB76-anchor-evaluator-reviews-for-metadata-only-tasks/.agentplane/tasks/202607100436-D7QB76/blueprint/resolved-snapshot.json
+- old_digest: 4723f7ad08c4985149e8fc1af430e49b65e5909aed7ca3d13ff9a45b7d5a656f
+- current_digest: 4723f7ad08c4985149e8fc1af430e49b65e5909aed7ca3d13ff9a45b7d5a656f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100436-D7QB76
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607100436-D7QB76 --branch task/202607100436-D7QB76/anchor-evaluator-reviews-for-metadata-only-tasks
+- diagnostic_command: agentplane pr check 202607100436-D7QB76
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 

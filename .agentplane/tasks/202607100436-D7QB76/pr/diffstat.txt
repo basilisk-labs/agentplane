@@ -1,4 +1,4 @@
- .../evaluator/evaluator-run.command.test.ts        | 96 +++++++++++++++++++---
- .../src/commands/evaluator/evaluator.command.ts    | 14 +++-
- .../task/finish.quality-review-target.unit.test.ts | 33 ++++++++
- 3 files changed, 131 insertions(+), 12 deletions(-)
+ .../evaluator/evaluator-run.command.test.ts        | 154 +++++++++++++++++++--
+ .../src/commands/evaluator/evaluator.command.ts    |  44 +++++-
+ .../task/finish.quality-review-target.unit.test.ts |  33 +++++
+ 3 files changed, 219 insertions(+), 12 deletions(-)

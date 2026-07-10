@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202607100436-D7QB76/anchor-evaluator-reviews-for-metadata-only-tasks",
   "created_at": "2026-07-10T10:34:39.342Z",
-  "diffstat_sha256": "sha256:bf8622c0551e4d010e29b1e08bb751fdc0f1675e16efb0c07eb1b62e164db441",
-  "last_verified_at": "2026-07-10T10:47:38.387Z",
-  "last_verified_diffstat_sha256": "sha256:bf8622c0551e4d010e29b1e08bb751fdc0f1675e16efb0c07eb1b62e164db441",
+  "diffstat_sha256": "sha256:9577609c4993bb2f4393505ddb2d95b402074a161964f59334a29e4184ed778e",
+  "last_verified_at": "2026-07-10T12:46:22.248Z",
+  "last_verified_diffstat_sha256": "sha256:9577609c4993bb2f4393505ddb2d95b402074a161964f59334a29e4184ed778e",
   "pr_number": 4570,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4570",
   "pre_merge_closure": {
