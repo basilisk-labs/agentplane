@@ -15,13 +15,25 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { chmod, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { tryLookupExistingGithubPrByNumber } from "../commands/pr/internal/sync-github.js";
+
 function expectLabeledValue(output: string, label: string, expected: string): void {
   const line = output.split(/\r?\n/u).find((line) => line.trimStart().startsWith(`${label}:`));
   const separator = line?.indexOf(":") ?? -1;
   expect(separator >= 0 ? line?.slice(separator + 1).trim() : undefined).toBe(expected);
 }
 
-async function installFakeGh(root: string, opts: { checksExitCode: number }) {
+type FakePull = {
+  number: number;
+  html_url: string;
+  state: "open" | "closed";
+  merged_at: string | null;
+  merge_commit_sha: string | null;
+  head: { ref: string; sha: string };
+  base: { ref: string };
+};
+
+async function installFakeGh(root: string, opts: { checksExitCode: number; pull?: FakePull }) {
   const fakeBin = path.join(root, "fake-bin");
   await mkdir(fakeBin, { recursive: true });
   const scriptPath = path.join(fakeBin, "fake-gh.mjs");
@@ -30,6 +42,16 @@ async function installFakeGh(root: string, opts: { checksExitCode: number }) {
     scriptPath,
     [
       "const args = process.argv.slice(2);",
+      `const pull = ${JSON.stringify(opts.pull ?? null)};`,
+      'if (args[0] === "api" && /^repos\\/example\\/repo\\/pulls\\/\\d+$/.test(args[1] ?? "")) {',
+      "  if (!pull || args[1] !== `repos/example/repo/pulls/${pull.number}`) process.exit(1);",
+      "  console.log(JSON.stringify(pull));",
+      "  process.exit(0);",
+      "}",
+      'if (args[0] === "api" && (args[1] ?? "").startsWith("repos/example/repo/pulls?")) {',
+      "  console.log(JSON.stringify([]));",
+      "  process.exit(0);",
+      "}",
       'if (args[0] === "pr" && args[1] === "checks") {',
       "  console.log(JSON.stringify([",
       '    { name: "unit", state: "SUCCESS" },',
@@ -248,6 +270,188 @@ describe("runCli pr flow status", () => {
       expect(code).toBe(0);
       expectLabeledValue(io.stdout, "hosted_checks", "total=3 passing=2 pending=1 failing=0");
       expectLabeledValue(io.stdout, "review_threads", "unresolved=0");
+    } finally {
+      io.restore();
+      process.env.PATH = oldPath;
+    }
+  });
+
+  it("resolves a merged PR by persisted number after its remote head branch is deleted", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await execFileAsync("git", ["remote", "add", "origin", "git@github.com:example/repo.git"], {
+      cwd: root,
+    });
+
+    const taskIo = captureStdIO();
+    let taskId = "";
+    try {
+      expect(
+        await runCli([
+          "task",
+          "new",
+          "--title",
+          "Resolve merged PR by number",
+          "--description",
+          "Queue recovery must survive provider deletion of the merged PR head branch.",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      taskId = taskIo.stdout.trim();
+    } finally {
+      taskIo.restore();
+    }
+
+    const branch = `task/${taskId}/flow-status`;
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      branch,
+      "--sync-only",
+      "--root",
+      root,
+    ]);
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
+    await writeFile(
+      metaPath,
+      `${JSON.stringify({ ...meta, pr_number: 123, pr_url: "https://github.com/example/repo/pull/123", status: "OPEN" })}\n`,
+      "utf8",
+    );
+
+    const fakeBin = await installFakeGh(root, {
+      checksExitCode: 0,
+      pull: {
+        number: 123,
+        html_url: "https://github.com/example/repo/pull/123",
+        state: "closed",
+        merged_at: "2026-07-10T10:31:44Z",
+        merge_commit_sha: "merge123",
+        head: { ref: branch, sha: "head123" },
+        base: { ref: "main" },
+      },
+    });
+    const oldPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${oldPath ?? ""}`;
+    const io = captureStdIO();
+    try {
+      expect(await runCli(["pr", "flow", "status", taskId, "--root", root])).toBe(0);
+      expectLabeledValue(
+        io.stdout,
+        "remote_pr",
+        "github: MERGED #123 https://github.com/example/repo/pull/123 (source=lookup)",
+      );
+      await expect(
+        tryLookupExistingGithubPrByNumber({
+          gitRoot: root,
+          prNumber: 123,
+          branch: `${branch}-other`,
+          baseBranch: "main",
+        }),
+      ).resolves.toBeNull();
+      await expect(
+        tryLookupExistingGithubPrByNumber({
+          gitRoot: root,
+          prNumber: 123,
+          branch,
+          baseBranch: "release",
+        }),
+      ).resolves.toBeNull();
+    } finally {
+      io.restore();
+      process.env.PATH = oldPath;
+    }
+  });
+
+  it("uses queue identity conservatively when task PR artifacts are not on the base checkout", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await execFileAsync("git", ["remote", "add", "origin", "git@github.com:example/repo.git"], {
+      cwd: root,
+    });
+
+    const taskIo = captureStdIO();
+    let taskId = "";
+    try {
+      expect(
+        await runCli([
+          "task",
+          "new",
+          "--title",
+          "Resolve queued PR identity",
+          "--description",
+          "Queue diagnostics must not invent a missing PR before task artifacts reach main.",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      taskId = taskIo.stdout.trim();
+    } finally {
+      taskIo.restore();
+    }
+
+    const branch = `task/${taskId}/queued-work`;
+    await mkdir(path.join(root, ".agentplane", "cache"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "cache", "integration-queue.json"),
+      `${JSON.stringify({
+        schema_version: 1,
+        entries: [
+          {
+            task_id: taskId,
+            branch,
+            base: "main",
+            head_sha: "queued-head",
+            base_sha: "base",
+            changed_paths: ["file.txt"],
+            pr_number: 124,
+            pr_url: "https://github.com/example/repo/pull/124",
+            priority: 0,
+            status: "queued",
+            enqueued_at: "2026-01-01T00:00:00.000Z",
+            updated_at: "2026-01-01T00:01:00.000Z",
+          },
+        ],
+      })}\n`,
+      "utf8",
+    );
+
+    const fakeBin = await installFakeGh(root, { checksExitCode: 0 });
+    const oldPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${oldPath ?? ""}`;
+    const io = captureStdIO();
+    try {
+      expect(await runCli(["pr", "flow", "status", taskId, "--root", root])).toBe(0);
+      expectLabeledValue(io.stdout, "branch", branch);
+      expectLabeledValue(
+        io.stdout,
+        "remote_pr",
+        "github: OPEN #124 https://github.com/example/repo/pull/124 (source=metadata)",
+      );
+      expectLabeledValue(io.stdout, "queue", "queued");
     } finally {
       io.restore();
       process.env.PATH = oldPath;

@@ -25,7 +25,10 @@ import { resolveHostedChecksStatus, type HostedChecksSummary } from "./hosted-ch
 import { renderPrFlowStatusRows } from "./flow-status.render.js";
 
 import { resolvePrPaths } from "./internal/pr-paths.js";
-import { tryLookupExistingGithubPrByBranch } from "./internal/sync-github.js";
+import {
+  tryLookupExistingGithubPrByBranch,
+  tryLookupExistingGithubPrByNumber,
+} from "./internal/sync-github.js";
 
 type ProviderName = "github";
 
@@ -150,7 +153,10 @@ async function resolveBranchHeadSha(
   }
 }
 
-function remoteStatusFromMeta(meta: PrMeta | null): RemotePrStatus {
+function remoteStatusFromLocalEvidence(
+  meta: PrMeta | null,
+  queueEntry: IntegrationQueueEntry | null,
+): RemotePrStatus {
   const prNumber = Number(meta?.pr_number ?? 0);
   const status = meta?.status;
   if (status === "OPEN" || status === "CLOSED" || status === "MERGED") {
@@ -165,6 +171,18 @@ function remoteStatusFromMeta(meta: PrMeta | null): RemotePrStatus {
       mergeCommit: meta?.merge_commit ?? null,
     };
   }
+  if (queueEntry?.pr_number) {
+    return {
+      provider: "github",
+      state: "OPEN",
+      source: "metadata",
+      prNumber: queueEntry.pr_number,
+      prUrl: queueEntry.pr_url,
+      base: queueEntry.base,
+      headSha: queueEntry.head_sha,
+      mergeCommit: null,
+    };
+  }
   return { provider: "github", state: "not_found", source: "metadata" };
 }
 
@@ -175,18 +193,6 @@ async function resolveReviewThreadsStatus(opts: {
   const result = await checkGithubUnresolvedReviewThreads(opts);
   if (!result.checked) return { checked: false, reason: result.reason };
   return { checked: true, unresolved: result.unresolved.length };
-}
-
-async function resolveQueueStatus(opts: { gitRoot: string; taskId: string }): Promise<QueueStatus> {
-  const queue = await readIntegrationQueue(opts.gitRoot);
-  const entry = queue.entries.find((candidate) => candidate.task_id === opts.taskId);
-  if (!entry) return { present: false };
-  return {
-    present: true,
-    status: entry.status,
-    reason: entry.reason ?? null,
-    updatedAt: entry.updated_at ?? null,
-  };
 }
 
 async function resolveHandoffStatus(opts: {
@@ -213,8 +219,9 @@ async function resolveHandoffStatus(opts: {
 function remoteStatusFromObserved(
   observed: Awaited<ReturnType<typeof tryLookupExistingGithubPrByBranch>>,
   meta: PrMeta | null,
+  queueEntry: IntegrationQueueEntry | null,
 ): RemotePrStatus {
-  if (!observed) return remoteStatusFromMeta(meta);
+  if (!observed) return remoteStatusFromLocalEvidence(meta, queueEntry);
   return {
     provider: "github",
     state: observed.status,
@@ -328,17 +335,33 @@ export async function resolvePrFlowStatus(opts: {
   }
 
   const meta = await readPrMetaIfPresent(metaPath, task.id);
-  const rawBranch = meta?.branch?.trim() ?? "";
+  const queue = await readIntegrationQueue(resolved.gitRoot);
+  const queueEntry = queue.entries.find((candidate) => candidate.task_id === task.id) ?? null;
+  const metaBranch = meta?.branch?.trim() ?? "";
+  const rawBranch = metaBranch.length > 0 ? metaBranch : (queueEntry?.branch.trim() ?? "");
   const branch = rawBranch.length > 0 ? rawBranch : null;
   const branchHeadSha = await resolveBranchHeadSha(resolved.gitRoot, branch);
-  const observed = branch
-    ? await tryLookupExistingGithubPrByBranch({
-        gitRoot: resolved.gitRoot,
-        branch,
-        baseBranch: normalizeBaseBranch(meta?.base),
-      })
-    : null;
-  const pr = remoteStatusFromObserved(observed, meta);
+  const baseHint = normalizeBaseBranch(meta?.base) ?? normalizeBaseBranch(queueEntry?.base);
+  const storedPrNumber = Number(meta?.pr_number ?? queueEntry?.pr_number ?? 0);
+  const observedByNumber =
+    Number.isInteger(storedPrNumber) && storedPrNumber > 0
+      ? await tryLookupExistingGithubPrByNumber({
+          gitRoot: resolved.gitRoot,
+          prNumber: storedPrNumber,
+          branch,
+          baseBranch: baseHint,
+        })
+      : null;
+  const observed =
+    observedByNumber ??
+    (branch
+      ? await tryLookupExistingGithubPrByBranch({
+          gitRoot: resolved.gitRoot,
+          branch,
+          baseBranch: baseHint,
+        })
+      : null);
+  const pr = remoteStatusFromObserved(observed, meta, queueEntry);
   const baseBranch =
     pr.state === "not_found"
       ? (normalizeBaseBranch(meta?.base) ?? "main")
@@ -359,10 +382,9 @@ export async function resolvePrFlowStatus(opts: {
     }),
   });
   const prNumber = pr.state === "not_found" ? null : pr.prNumber;
-  const [hostedChecks, reviewThreads, queue, handoff] = await Promise.all([
+  const [hostedChecks, reviewThreads, handoff] = await Promise.all([
     resolveHostedChecksStatus({ gitRoot: resolved.gitRoot, prNumber }),
     resolveReviewThreadsStatus({ gitRoot: resolved.gitRoot, prNumber }),
-    resolveQueueStatus({ gitRoot: resolved.gitRoot, taskId: task.id }),
     resolveHandoffStatus({
       gitRoot: resolved.gitRoot,
       workflowDir: config.paths.workflow_dir,
@@ -384,7 +406,14 @@ export async function resolvePrFlowStatus(opts: {
     closeTail,
     hostedChecks,
     reviewThreads,
-    queue,
+    queue: queueEntry
+      ? {
+          present: true,
+          status: queueEntry.status,
+          reason: queueEntry.reason ?? null,
+          updatedAt: queueEntry.updated_at ?? null,
+        }
+      : { present: false },
     handoff,
     nextAction: "",
   };
