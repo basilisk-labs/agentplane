@@ -1,11 +1,11 @@
 ---
 id: "202607100404-WPRBVK"
 title: "Make doctor batch consistency rebase-aware"
-result_summary: "Removed the false batch-closure warning by preferring authoritative merged-PR metadata and preserving tested fallbacks."
+result_summary: "Removed false batch warnings for both current and branchless legacy merged PR metadata."
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -34,24 +34,24 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T04:26:59.016Z"
+  updated_at: "2026-07-10T04:27:12.246Z"
   updated_by: "EVALUATOR"
   note: "Doctor remains rebase-aware for both current and branchless legacy MERGED PR metadata."
-  evaluated_sha: "2c964639192339d03846ae4960d533f368bf67d0"
+  evaluated_sha: "aa92f67e7bc0968ba5298ac5e21b741b44c208f0"
   blueprint_digest: "394824c048ea615d12625ab64d5cb51bf8663e6b1ec9c90b3b82aa94254bee32"
   evidence_refs:
     - ".agentplane/tasks/202607100404-WPRBVK/README.md"
-    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-042659016-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-042659016-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-042659016-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-042712246-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-042712246-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-042712246-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100404-WPRBVK/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/doctor.branch-pr.batch.test.ts"
     - "packages/agentplane/src/commands/doctor/branch-pr.ts"
   findings:
     - "No blocking findings; direct merge_commit fallback precedes stale task/head SHA, the branchless regression passes, and focused, type, lint, contract, and full fast checks are green."
 commit:
-  hash: "71b5fa891f5839911154cb13210f70c52645540e"
-  message: "🐛 WPRBVK doctor: prefer landed batch commit"
+  hash: "aa92f67e7bc0968ba5298ac5e21b741b44c208f0"
+  message: "🐛 WPRBVK doctor: preserve branchless merge fallback"
 comments:
   -
     author: "CODER"
@@ -59,6 +59,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: doctor resolves branch_pr batch consistency from the landed MERGED PR commit after rebase, with focused and full regression coverage."
+  -
+    author: "CODER"
+    body: "Verified: review fix preserves authoritative merge_commit for branchless MERGED metadata with refreshed regression evidence."
 events:
   -
     type: "status"
@@ -86,8 +89,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review fix pass: branchless MERGED metadata keeps merge_commit authoritative; focused doctor tests 14/14, typecheck, lint:core, ci:contract, and full fast suite pass."
+  -
+    type: "status"
+    at: "2026-07-10T04:27:17.214Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: review fix preserves authoritative merge_commit for branchless MERGED metadata with refreshed regression evidence."
 doc_version: 3
-doc_updated_at: "2026-07-10T04:26:48.075Z"
+doc_updated_at: "2026-07-10T04:27:17.214Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, make branch_pr batch consistency diagnostics compare included task commits with the authoritative landed merge_commit from MERGED primary PR metadata before falling back to the primary task commit."
 sections:
@@ -188,8 +198,8 @@ sections:
       Resolution: Added direct merge_commit fallback before task/head SHA and converted the regression to a branchless MERGED fixture.
 extensions:
   implementation_commit:
-    hash: "71b5fa891f5839911154cb13210f70c52645540e"
-    message: "🐛 WPRBVK doctor: prefer landed batch commit"
+    hash: "aa92f67e7bc0968ba5298ac5e21b741b44c208f0"
+    message: "🐛 WPRBVK doctor: preserve branchless merge fallback"
 id_source: "generated"
 ---
 ## Summary
