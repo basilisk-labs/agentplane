@@ -1,6 +1,6 @@
  .agentplane/tasks/202607092209-F33MNN/README.md    |   1 +
  docs/internal/v0.6.22-refactor-plan.md             |   5 +-
- .../src/cli/run-cli.core.pr-flow.status.test.ts    | 206 ++++++++++++++++++++-
- packages/agentplane/src/commands/pr/flow-status.ts |  83 ++++++---
+ .../src/cli/run-cli.core.pr-flow.status.test.ts    | 222 ++++++++++++++++++++-
+ packages/agentplane/src/commands/pr/flow-status.ts |  83 +++++---
  .../src/commands/pr/internal/sync-github.ts        |  39 ++++
- 5 files changed, 304 insertions(+), 30 deletions(-)
+ 5 files changed, 320 insertions(+), 30 deletions(-)

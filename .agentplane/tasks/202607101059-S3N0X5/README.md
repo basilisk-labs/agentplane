@@ -4,7 +4,7 @@ title: "Recover queue lanes after merged PR branch deletion"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -27,28 +27,27 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T11:17:33.373Z"
+  updated_at: "2026-07-10T11:26:02.468Z"
   updated_by: "REVIEWER"
-  note: "Focused PR-flow/queue tests passed (5 files, 17 tests); typecheck, lint:core, ci:contract, test:fast (364 files, 2150 tests), policy routing, doctor, and full-fast local CI passed. Number lookup validates head/base; queue identity fallback is conservative."
+  note: "Review follow-up verified: queue-only OPEN fallback is restricted to queued entries; handoff without authoritative PR evidence remains not_found for recovery. Focused suite passed (3 files, 14 tests), typecheck and lint:core passed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T11:17:43.155Z"
+  updated_at: "2026-07-10T11:26:04.830Z"
   updated_by: "EVALUATOR"
-  note: "Authoritative PR-number lookup and queue metadata fallback resolve the protected-main handoff blocker without weakening identity checks."
-  evaluated_sha: "722b67c501ae6b30a267a4dc14633967f3b3d31c"
+  note: "Review follow-up preserves queued pre-merge safety without masking stale handoff lanes."
+  evaluated_sha: "b594b8e9a1b29c1813b3c3dfbdbba4d8dbd97a8c"
   blueprint_digest: "fbb7a80b15d0ad2460b867548da199a0873c9279bc5c21640671a30ac1a6ff7d"
   evidence_refs:
     - ".agentplane/tasks/202607101059-S3N0X5/README.md"
-    - ".agentplane/tasks/202607101059-S3N0X5/quality/20260710-111743155-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607101059-S3N0X5/quality/20260710-111743155-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607101059-S3N0X5/quality/20260710-111743155-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607101059-S3N0X5/quality/20260710-112604830-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607101059-S3N0X5/quality/20260710-112604830-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607101059-S3N0X5/quality/20260710-112604830-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607101059-S3N0X5/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/pr/flow-status.ts"
-    - "packages/agentplane/src/commands/pr/internal/sync-github.ts"
     - "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
   findings:
-    - "Persisted PR numbers are resolved against GitHub and accepted only when expected head branch and base match; queued tasks without base PR artifacts remain conservatively OPEN instead of false not_found."
+    - "Queue-only PR identity is trusted conservatively only while status is queued; handoff entries still require authoritative provider or task metadata and remain recoverable when absent."
 commit: null
 comments:
   -
@@ -68,8 +67,14 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Focused PR-flow/queue tests passed (5 files, 17 tests); typecheck, lint:core, ci:contract, test:fast (364 files, 2150 tests), policy routing, doctor, and full-fast local CI passed. Number lookup validates head/base; queue identity fallback is conservative."
+  -
+    type: "verify"
+    at: "2026-07-10T11:26:02.468Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Review follow-up verified: queue-only OPEN fallback is restricted to queued entries; handoff without authoritative PR evidence remains not_found for recovery. Focused suite passed (3 files, 14 tests), typecheck and lint:core passed."
 doc_version: 3
-doc_updated_at: "2026-07-10T11:17:33.613Z"
+doc_updated_at: "2026-07-10T11:26:02.709Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr queue recovery resolve authoritative GitHub PR state by persisted PR number when the remote head branch has been deleted, validate branch/base identity, and prevent false missing-PR diagnostics for queued pre-merge-closed tasks whose artifacts are not yet on main."
 sections:
@@ -119,6 +124,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-10T11:26:02.468Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Review follow-up verified: queue-only OPEN fallback is restricted to queued entries; handoff without authoritative PR evidence remains not_found for recovery. Focused suite passed (3 files, 14 tests), typecheck and lint:core passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T11:17:33.613Z, excerpt_hash=sha256:e212f9ef29de93e92c37c767f3358c8e12e651d2a154a9541fdbfaaa71d897a3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607101059-S3N0X5-recover-queue-lanes-after-merged-pr-branch-delet/.agentplane/tasks/202607101059-S3N0X5/blueprint/resolved-snapshot.json
+    - old_digest: fbb7a80b15d0ad2460b867548da199a0873c9279bc5c21640671a30ac1a6ff7d
+    - current_digest: fbb7a80b15d0ad2460b867548da199a0873c9279bc5c21640671a30ac1a6ff7d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607101059-S3N0X5
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane evaluator run 202607101059-S3N0X5 --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607101059-S3N0X5/README.md
+    - diagnostic_command: agentplane evaluator run 202607101059-S3N0X5 --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607101059-S3N0X5/README.md
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -129,6 +164,10 @@ sections:
     - Observation: Branch-only lookup lost merged PR identity after GitHub deleted the head branch, and base checkout lacked unmerged task PR metadata.
       Impact: The integration lane stayed in handoff and doctor falsely reported the next queued PR as missing.
       Resolution: Resolve persisted PR numbers authoritatively with branch/base validation and fall back to queue identity before declaring a PR missing.
+
+    - Observation: Queue metadata fallback also applied to handoff entries when provider lookup failed.
+      Impact: A missing or inaccessible handoff PR could retain the integration lane indefinitely.
+      Resolution: Restrict conservative queue fallback to queued pre-merge tasks and add a handoff regression assertion.
 id_source: "generated"
 ---
 ## Summary
@@ -187,6 +226,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-10T11:26:02.468Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Review follow-up verified: queue-only OPEN fallback is restricted to queued entries; handoff without authoritative PR evidence remains not_found for recovery. Focused suite passed (3 files, 14 tests), typecheck and lint:core passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T11:17:33.613Z, excerpt_hash=sha256:e212f9ef29de93e92c37c767f3358c8e12e651d2a154a9541fdbfaaa71d897a3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607101059-S3N0X5-recover-queue-lanes-after-merged-pr-branch-delet/.agentplane/tasks/202607101059-S3N0X5/blueprint/resolved-snapshot.json
+- old_digest: fbb7a80b15d0ad2460b867548da199a0873c9279bc5c21640671a30ac1a6ff7d
+- current_digest: fbb7a80b15d0ad2460b867548da199a0873c9279bc5c21640671a30ac1a6ff7d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607101059-S3N0X5
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane evaluator run 202607101059-S3N0X5 --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607101059-S3N0X5/README.md
+- diagnostic_command: agentplane evaluator run 202607101059-S3N0X5 --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607101059-S3N0X5/README.md
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -201,3 +270,7 @@ Confirmed root cause: GitHub deletes the merged PR head branch, while flow statu
 - Observation: Branch-only lookup lost merged PR identity after GitHub deleted the head branch, and base checkout lacked unmerged task PR metadata.
   Impact: The integration lane stayed in handoff and doctor falsely reported the next queued PR as missing.
   Resolution: Resolve persisted PR numbers authoritatively with branch/base validation and fall back to queue identity before declaring a PR missing.
+
+- Observation: Queue metadata fallback also applied to handoff entries when provider lookup failed.
+  Impact: A missing or inaccessible handoff PR could retain the integration lane indefinitely.
+  Resolution: Restrict conservative queue fallback to queued pre-merge tasks and add a handoff regression assertion.
