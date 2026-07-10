@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100404-WPRBVK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T04:12:03.156Z",
+  "verdict": "pass",
+  "summary": "Doctor batch consistency now uses the landed commit from authoritative MERGED PR metadata after protected-main rebases.",
+  "evaluated_sha": "70ac6939e8403cc1ea6c5a61730decafb8a5de1b",
+  "blueprint_digest": "394824c048ea615d12625ab64d5cb51bf8663e6b1ec9c90b3b82aa94254bee32",
+  "findings": [
+    "No blocking findings; the real repository warning disappears, the dedicated rebase regression and existing doctor tests pass, and all contract, fast, type, lint, routing, hotspot, and doctor checks are green."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100404-WPRBVK/README.md",
+    "packages/agentplane/src/commands/doctor.branch-pr.batch.test.ts",
+    "packages/agentplane/src/commands/doctor/branch-pr.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -1,1 +1,1 @@
-🚧 WPRBVK task: Make doctor batch consistency rebase-aware [202607100404-WPRBVK]
+✅ WPRBVK task: Make doctor batch consistency rebase-aware [202607100404-WPRBVK]

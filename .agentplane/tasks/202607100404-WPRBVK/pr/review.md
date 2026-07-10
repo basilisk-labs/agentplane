@@ -6,7 +6,7 @@ Created: 2026-07-10T04:04:49.139Z
 
 - Task: `202607100404-WPRBVK`
 - Title: Make doctor batch consistency rebase-aware
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607100404-WPRBVK/make-doctor-batch-consistency-rebase-aware`
 - Canonical task record: `.agentplane/tasks/202607100404-WPRBVK/README.md`
 

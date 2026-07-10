@@ -1,10 +1,11 @@
 ---
 id: "202607100404-WPRBVK"
 title: "Make doctor batch consistency rebase-aware"
-status: "DOING"
+result_summary: "Removed the false batch-closure warning by preferring authoritative merged-PR metadata and preserving tested fallbacks."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -33,26 +34,31 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T04:12:03.156Z"
+  updated_at: "2026-07-10T04:12:22.469Z"
   updated_by: "EVALUATOR"
   note: "Doctor batch consistency now uses the landed commit from authoritative MERGED PR metadata after protected-main rebases."
-  evaluated_sha: "70ac6939e8403cc1ea6c5a61730decafb8a5de1b"
+  evaluated_sha: "71b5fa891f5839911154cb13210f70c52645540e"
   blueprint_digest: "394824c048ea615d12625ab64d5cb51bf8663e6b1ec9c90b3b82aa94254bee32"
   evidence_refs:
     - ".agentplane/tasks/202607100404-WPRBVK/README.md"
-    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-041203156-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-041203156-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-041203156-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-041222469-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-041222469-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100404-WPRBVK/quality/20260710-041222469-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100404-WPRBVK/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/doctor.branch-pr.batch.test.ts"
     - "packages/agentplane/src/commands/doctor/branch-pr.ts"
   findings:
     - "No blocking findings; the real repository warning disappears, the dedicated rebase regression and existing doctor tests pass, and all contract, fast, type, lint, routing, hotspot, and doctor checks are green."
-commit: null
+commit:
+  hash: "71b5fa891f5839911154cb13210f70c52645540e"
+  message: "🐛 WPRBVK doctor: prefer landed batch commit"
 comments:
   -
     author: "CODER"
     body: "Start: make doctor compare included batch closure with the authoritative landed commit from MERGED primary PR metadata after rebase."
+  -
+    author: "CODER"
+    body: "Verified: doctor resolves branch_pr batch consistency from the landed MERGED PR commit after rebase, with focused and full regression coverage."
 events:
   -
     type: "status"
@@ -67,8 +73,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pass: focused doctor tests 14/14; typecheck; lint:core; ci:contract; full fast suite; hotspot baseline; policy routing; diff validation; live doctor exits OK without the false batch-consistency warning."
+  -
+    type: "status"
+    at: "2026-07-10T04:12:25.977Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: doctor resolves branch_pr batch consistency from the landed MERGED PR commit after rebase, with focused and full regression coverage."
 doc_version: 3
-doc_updated_at: "2026-07-10T04:11:51.654Z"
+doc_updated_at: "2026-07-10T04:12:25.978Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, make branch_pr batch consistency diagnostics compare included task commits with the authoritative landed merge_commit from MERGED primary PR metadata before falling back to the primary task commit."
 sections:
@@ -133,6 +146,10 @@ sections:
     - Observation: Doctor preferred the primary task implementation SHA over MERGED PR metadata, so a GitHub rebase made a correctly reconciled included task look inconsistent.
       Impact: Operators received a false hosted-close recovery warning even though primary and included tasks were already closed on the landed main commit.
       Resolution: Doctor now prefers authoritative MERGED PR merge_commit, with task commit and head SHA only as fallbacks; a dedicated regression preserves the oversized-test baseline.
+extensions:
+  implementation_commit:
+    hash: "71b5fa891f5839911154cb13210f70c52645540e"
+    message: "🐛 WPRBVK doctor: prefer landed batch commit"
 id_source: "generated"
 ---
 ## Summary
