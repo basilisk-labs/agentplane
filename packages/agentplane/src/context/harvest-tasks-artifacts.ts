@@ -6,6 +6,7 @@ import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if
 import { fileExists, isRecord, parseJsonlLines, readText } from "./context-utils.js";
 import { alreadyQueuedForExtractionUnchanged } from "./harvest-tasks-extraction.js";
 import { alreadyHarvestedUnchanged } from "./harvest-tasks-markers.js";
+import type { TaskSourceFingerprint } from "./harvest-tasks-markers.js";
 import {
   normalizeDateKey,
   normalizeTags,
@@ -65,13 +66,23 @@ async function mergeJsonl(filePath: string, rows: Record<string, unknown>[]): Pr
   return await writeTextIfChanged(filePath, text);
 }
 
-export function selectTasks(tasks: TaskData[], parsed: ContextHarvestTasksParsed): HarvestTask[] {
+export function selectTaskCandidates(
+  tasks: TaskData[],
+  parsed: ContextHarvestTasksParsed,
+): HarvestTask[] {
+  return asTaskList(tasks).filter((task) => taskMatches(task, parsed));
+}
+
+export function selectTasks(
+  tasks: TaskData[],
+  parsed: ContextHarvestTasksParsed,
+  extractionFingerprints: ReadonlyMap<string, TaskSourceFingerprint> = new Map(),
+): HarvestTask[] {
   const limit = parseLimit(parsed.limit);
-  const selected = asTaskList(tasks)
-    .filter((task) => taskMatches(task, parsed))
+  const selected = selectTaskCandidates(tasks, parsed)
     .filter((task) =>
       parsed.createExtractionTasks
-        ? !alreadyQueuedForExtractionUnchanged(task, parsed)
+        ? !alreadyQueuedForExtractionUnchanged(task, parsed, extractionFingerprints.get(task.id))
         : !alreadyHarvestedUnchanged(task, parsed),
     )
     .toSorted((a, b) => a.id.localeCompare(b.id));

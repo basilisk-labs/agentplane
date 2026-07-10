@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 
 import type { TaskData } from "../backends/task-backend.js";
 import { isRecord } from "./context-utils.js";
@@ -38,10 +40,42 @@ type MarkerFact = {
 };
 
 export type TaskSourceFingerprint = {
-  version: 1;
+  version: 1 | 2;
   digest: string;
   size_bytes: number;
 };
+
+async function readOptionalText(filePath: string): Promise<string | null> {
+  try {
+    return await readFile(filePath, "utf8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+function stableJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map((entry) => stableJson(entry)).join(",")}]`;
+  if (!isRecord(value)) return JSON.stringify(value) ?? "null";
+  return `{${Object.keys(value)
+    .toSorted()
+    .map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`)
+    .join(",")}}`;
+}
+
+function extractionDigestTask(task: HarvestMarkerTask): Record<string, unknown> {
+  const extensions = isRecord(task.extensions) ? { ...task.extensions } : {};
+  delete extensions.context_harvest;
+  delete extensions.context_task_extraction;
+  const {
+    dirty: _dirty,
+    doc_updated_at: _docUpdatedAt,
+    doc_updated_by: _docUpdatedBy,
+    revision: _revision,
+    ...sourceTask
+  } = task;
+  return { ...sourceTask, extensions };
+}
 
 function sectionText(task: TaskData, section: string): string {
   const sections = isRecord(task.sections) ? task.sections : {};
@@ -50,13 +84,18 @@ function sectionText(task: TaskData, section: string): string {
 }
 
 export function taskText(task: HarvestMarkerTask): string {
+  const fullDoc = typeof task.doc === "string" ? task.doc.trim() : "";
   const parts = [
     task.title,
     typeof task.description === "string" ? task.description : "",
-    sectionText(task, "Summary"),
-    sectionText(task, "Plan"),
-    sectionText(task, "Verification"),
-    sectionText(task, "Findings"),
+    fullDoc || sectionText(task, "Summary"),
+    ...(fullDoc
+      ? []
+      : [
+          sectionText(task, "Plan"),
+          sectionText(task, "Verification"),
+          sectionText(task, "Findings"),
+        ]),
     task.commit && typeof task.commit.message === "string" ? task.commit.message : "",
   ];
   if (Array.isArray(task.comments)) {
@@ -78,6 +117,44 @@ export function taskSourceFingerprint(task: HarvestMarkerTask): TaskSourceFinger
     digest: `sha256:${createHash("sha256").update(text).digest("hex")}`,
     size_bytes: Buffer.byteLength(text, "utf8"),
   };
+}
+
+async function taskExtractionSourceFingerprint(
+  root: string,
+  task: HarvestMarkerTask,
+): Promise<TaskSourceFingerprint> {
+  const taskRoot = path.join(root, ".agentplane", "tasks", task.id);
+  const [readmeText, acrText] = await Promise.all([
+    readOptionalText(path.join(taskRoot, "README.md")),
+    readOptionalText(path.join(taskRoot, "acr.json")),
+  ]);
+  const canonicalTask = stableJson(extractionDigestTask(task));
+  const readmeSource = readmeText ?? canonicalTask;
+  const acrSource = acrText ?? "";
+  const digest = createHash("sha256")
+    .update("task\0")
+    .update(canonicalTask)
+    .update("\0acr\0")
+    .update(acrSource)
+    .digest("hex");
+  return {
+    version: 2,
+    digest: `sha256:${digest}`,
+    size_bytes: Buffer.byteLength(readmeSource, "utf8") + Buffer.byteLength(acrSource, "utf8"),
+  };
+}
+
+export async function taskExtractionSourceFingerprints(
+  root: string,
+  tasks: HarvestMarkerTask[],
+): Promise<Map<string, TaskSourceFingerprint>> {
+  return new Map(
+    await Promise.all(
+      tasks.map(
+        async (task) => [task.id, await taskExtractionSourceFingerprint(root, task)] as const,
+      ),
+    ),
+  );
 }
 
 function existingHarvestMarker(task: HarvestMarkerTask): TaskHarvestMarker | null {
