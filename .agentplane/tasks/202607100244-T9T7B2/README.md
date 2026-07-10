@@ -1,10 +1,11 @@
 ---
 id: "202607100244-T9T7B2"
 title: "Prefer merged PR commit when reconciling included batch tasks"
-status: "DOING"
+result_summary: "Prefer merged PR commit for included-task reconciliation while preserving task commit and head SHA fallbacks."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -47,11 +48,16 @@ quality_review:
     - "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
   findings:
     - "No blocking findings; current HEAD preserves merge_commit priority and tested fallback order."
-commit: null
+commit:
+  hash: "d109fffd689028ae6cb9192d0829cb1e540f1405"
+  message: "✅ T9T7B2 reconciliation: record quality review"
 comments:
   -
     author: "CODER"
     body: "Start: implement rebase-aware included-task reconciliation with a regression test and preserve legacy commit fallbacks."
+  -
+    author: "CODER"
+    body: "Verified: rebase-aware reconciliation passed focused, contract, type, lint, local CI, and 2,144-test fast-suite checks; pre-merge packet is ready."
 events:
   -
     type: "status"
@@ -66,8 +72,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused reconciliation regression 3/3 passed; AgentPlane typecheck, lint:core, ci:contract, and fast suite 361 files / 2,144 tests all passed."
+  -
+    type: "status"
+    at: "2026-07-10T03:00:44.234Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: rebase-aware reconciliation passed focused, contract, type, lint, local CI, and 2,144-test fast-suite checks; pre-merge packet is ready."
 doc_version: 3
-doc_updated_at: "2026-07-10T02:56:00.861Z"
+doc_updated_at: "2026-07-10T03:00:44.235Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, make release task reconciliation close verified included batch tasks after GitHub rebase merges by preferring the primary PR merge_commit over the rewritten-away branch task commit, while preserving the task commit fallback when merged PR metadata is unavailable."
 sections:
@@ -130,6 +143,10 @@ sections:
     - Observation: Command: declared focused, typecheck, lint, contract, and fast-suite checks. Result: pass. Evidence: 3 focused tests and 2,144 fast tests passed. Scope: merged-commit selection and repository regressions.
       Impact: Included batch tasks can reconcile after GitHub rebase merges without accepting a rewritten-away branch SHA.
       Resolution: Prefer PR merge_commit, then task commit, then head_sha; retain regression coverage.
+extensions:
+  implementation_commit:
+    hash: "47e34fb44dc0d32e6f13ef40ece538bea966dc05"
+    message: "🐛 T9T7B2 reconciliation: prefer merged PR commit"
 id_source: "generated"
 ---
 ## Summary
