@@ -12,8 +12,8 @@ Created: 2026-07-10T03:22:40.715Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: WGV79Y readback is DONE at ccebff98c7c9; diff check and policy routing pass; doctor exits OK with a known rebase-aware batch-consistency warning scheduled for follow-up.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,11 +29,9 @@ Created: 2026-07-10T03:22:40.715Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202607092209-F33MNN/README.md    |  1 +
- .agentplane/tasks/202607100140-WGV79Y/README.md    | 18 ++++++++++++++----
- .agentplane/tasks/202607100244-T9T7B2/README.md    | 20 +++++++++++++++-----
- .agentplane/tasks/202607100244-T9T7B2/pr/meta.json |  4 ++--
- 4 files changed, 32 insertions(+), 11 deletions(-)
+ .agentplane/tasks/202607092209-F33MNN/README.md |  1 +
+ .agentplane/tasks/202607100140-WGV79Y/README.md | 18 ++++++++++++++----
+ 2 files changed, 15 insertions(+), 4 deletions(-)
 ```
 
 </details>
