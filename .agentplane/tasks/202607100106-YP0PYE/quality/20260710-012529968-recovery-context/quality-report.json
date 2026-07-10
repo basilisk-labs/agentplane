@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100106-YP0PYE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T01:25:29.968Z",
+  "verdict": "pass",
+  "summary": "Quality review passed on final implementation and generated CLI reference.",
+  "evaluated_sha": "7bb35797d249223677d34ce3ce2cac3d828df75d",
+  "blueprint_digest": "2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac",
+  "findings": [
+    "No blocking findings; count-plus-byte batching, oversized isolation, marker compatibility, and CLI documentation are verified."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100106-YP0PYE/README.md",
+    "packages/agentplane/src/commands/context/harvest-tasks.test.ts",
+    "docs/user/cli-reference.generated.mdx"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

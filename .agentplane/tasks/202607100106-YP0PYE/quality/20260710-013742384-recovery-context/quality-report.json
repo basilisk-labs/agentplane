@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100106-YP0PYE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T01:37:42.384Z",
+  "verdict": "pass",
+  "summary": "Quality review passed on linked PR head.",
+  "evaluated_sha": "188241fee1248392189b8fc48471d177b70ff3cb",
+  "blueprint_digest": "2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac",
+  "findings": [
+    "No blocking findings; full-fast local CI and generated CLI reference are current."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100106-YP0PYE/README.md",
+    "packages/agentplane/src/commands/context/harvest-tasks.test.ts",
+    "docs/user/cli-reference.generated.mdx"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
