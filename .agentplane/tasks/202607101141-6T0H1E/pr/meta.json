@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:393bbf5cdb672ee01551aad31a215c39b2c6815a81553d93734b0fac1a00f2e4",
   "pr_number": 4572,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4572",
+  "pre_merge_closure": {
+    "basis_commit": "a7be2858dfabbe4246a8461c7a7af1068da37d20",
+    "branch": "task/202607101141-6T0H1E/recognize-rebased-pre-merge-closure-recorded-on",
+    "pr_number": 4572,
+    "recorded_at": "2026-07-10T12:27:36.791Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607101141-6T0H1E",
