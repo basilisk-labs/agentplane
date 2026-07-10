@@ -6,11 +6,13 @@ import type { LoadedFinishTask, ResolvedCommitInfo } from "./finish-shared.js";
 
 const mocks = vi.hoisted(() => ({
   isTaskLocalOnlyAdvance: vi.fn(),
+  isTaskSetLocalOnlyAdvance: vi.fn(),
   readCommitInfo: vi.fn(),
 }));
 
 vi.mock("../shared/task-local-freshness.js", () => ({
   isTaskLocalOnlyAdvance: mocks.isTaskLocalOnlyAdvance,
+  isTaskSetLocalOnlyAdvance: mocks.isTaskSetLocalOnlyAdvance,
 }));
 vi.mock("./shared.js", async (importOriginal) => {
   const actualUnknown: unknown = await importOriginal();
@@ -55,6 +57,7 @@ function mkLoadedTask(reviewedSha = "impl-sha"): LoadedFinishTask {
 describe("finish quality review target selection", () => {
   beforeEach(() => {
     mocks.isTaskLocalOnlyAdvance.mockReset();
+    mocks.isTaskSetLocalOnlyAdvance.mockReset();
     mocks.readCommitInfo.mockReset();
   });
 
@@ -125,6 +128,38 @@ describe("finish quality review target selection", () => {
       fromRef: "impl-sha",
       toRef: "artifact-sha",
     });
+    expect(resolved).toEqual({ hash: "impl-sha", message: "feat: implement T-1" });
+  });
+
+  it("auto-resolves quality_review.evaluated_sha across linked batch task artifacts", async () => {
+    const loaded = mkLoadedTask();
+    loaded.task.extensions = {
+      branch_pr_batch: {
+        role: "primary",
+        primary_task_id: "T-1",
+        included_task_ids: ["T-2"],
+      },
+    };
+    mocks.isTaskSetLocalOnlyAdvance.mockResolvedValue(true);
+    mocks.readCommitInfo.mockResolvedValue({ hash: "impl-sha", message: "feat: implement T-1" });
+    const { resolveImplementationCommitInfo } = await import("./finish-execute-commit.js");
+
+    const resolved = await resolveImplementationCommitInfo({
+      ctx: mkCtx(),
+      options: { quiet: true } as never,
+      loadedTasks: [loaded],
+      taskCommitInfo: { hash: "artifact-sha", message: "task: record batch evidence" },
+    });
+
+    expect(mocks.isTaskSetLocalOnlyAdvance).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      workflowDir: ".agentplane/tasks",
+      taskIds: ["T-1", "T-2"],
+      tasksPath: ".agentplane/tasks.json",
+      fromRef: "impl-sha",
+      toRef: "artifact-sha",
+    });
+    expect(mocks.isTaskLocalOnlyAdvance).not.toHaveBeenCalled();
     expect(resolved).toEqual({ hash: "impl-sha", message: "feat: implement T-1" });
   });
 
