@@ -1,10 +1,11 @@
 ---
 id: "202607092346-4Z7EZP"
 title: "Make AgentPlane loops executable, resumable, and token-aware"
-status: "DOING"
+result_summary: "integrate: merge task/202607092346-4Z7EZP/make-agentplane-loops-executable-resumable-and-t"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -43,11 +44,16 @@ quality_review:
   findings:
     - "Unused loop-only exports were made internal or removed without changing runtime contracts."
     - "All deterministic and CI-parity checks are green locally."
-commit: null
+commit:
+  hash: "4b09dabafb1c3a75be948b79040936704196c95d"
+  message: "🔀 4Z7EZP integrate: Make AgentPlane loops executable, resumable, and token-aware"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved end-to-end loop engine on the task branch rooted at agentplane-loops; preserve main untouched and verify checkpoints, budgets, prompt propagation, retries, and resume."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via merge; verify=skipped(no commands); pr=.agentplane/tasks/202607092346-4Z7EZP/pr."
 events:
   -
     type: "status"
@@ -92,9 +98,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Final static gate passes after removing unused loop exports: knip baseline, lint:core, hotspot, typecheck, focused tests, format, schemas, docs and routing are green."
+  -
+    type: "status"
+    at: "2026-07-10T01:02:53.484Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via merge; verify=skipped(no commands); pr=.agentplane/tasks/202607092346-4Z7EZP/pr."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:56:42.288Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-10T01:02:53.487Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement an end-to-end deterministic loop engine on agentplane-loops without touching main: typed transitions, durable checkpoints and resume, step-specific prompt/context propagation, enforced eligibility/permissions/budgets, token accounting, focused checks/evaluator decisions, CLI/docs/schema alignment, and regression tests."
 sections:
   Summary: |-

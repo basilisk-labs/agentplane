@@ -1,7 +1,6 @@
 {
-  "artifact_state": "remote_failed",
-  "artifact_state_reason": "GitHub PR creation failed",
-  "artifact_state_updated_at": "2026-07-10T00:20:58.444Z",
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-07-10T01:02:53.427Z",
   "base": "agentplane-loops",
   "batch": {
     "closure_policy": "all_or_fail",
@@ -17,13 +16,17 @@
   "diffstat_sha256": "sha256:7bbcfd8bf3362d826108b3ba9da9911d6177f8b21909c3bad65fcb5296006578",
   "last_verified_at": "2026-07-10T00:56:42.177Z",
   "last_verified_diffstat_sha256": "sha256:680a33cb726d1dbdee4fe9c4216d4044c86bfb19957a5defb630812002aea35f",
+  "merge_commit": "4b09dabafb1c3a75be948b79040936704196c95d",
+  "merge_strategy": "merge",
+  "merged_at": "2026-07-10T01:02:53.427Z",
   "related_task_ids": [
     "202607100026-EBQXPZ",
     "202607100033-4T5V86"
   ],
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202607092346-4Z7EZP",
-  "updated_at": "2026-07-10T00:56:47.742Z",
+  "updated_at": "2026-07-10T01:02:53.427Z",
   "verify": {
     "status": "pass"
   }
