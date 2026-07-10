@@ -118,16 +118,7 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
-extensions:
-  branch_pr_batch:
-    base: "agentplane-loops"
-    branch: "task/202607092346-4Z7EZP/make-agentplane-loops-executable-resumable-and-t"
-    included_task_ids:
-      - "202607100026-EBQXPZ"
-      - "202607100033-4T5V86"
-    primary_task_id: "202607092346-4Z7EZP"
-    role: "included"
-    updated_at: "2026-07-10T00:49:48.190Z"
+extensions: {}
 id_source: "generated"
 ---
 ## Summary
