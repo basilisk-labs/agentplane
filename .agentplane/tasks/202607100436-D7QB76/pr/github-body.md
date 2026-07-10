@@ -15,8 +15,14 @@ For v0.6.22, give metadata-only docs and task-closure changes a fresh auditable 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Focused evaluator/finish regressions pass (2 files, 11 tests); typecheck, lint:core, ci:contract,
+test:fast (364 files/2153 tests), policy routing, and doctor pass. The evaluator keeps code targets,
+anchors the current pure metadata work unit, and rejects unrelated task artifacts.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100436-D7QB76",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T10:47:40.192Z",
+  "verdict": "pass",
+  "summary": "Metadata-only evaluator targets are now current, auditable, and bounded without weakening code-task freshness.",
+  "evaluated_sha": "f6f17a1f6f44a2247a62dbf3b6fe2dd668c54804",
+  "blueprint_digest": "4723f7ad08c4985149e8fc1af430e49b65e5909aed7ca3d13ff9a45b7d5a656f",
+  "findings": [
+    "Code-bearing branches still resolve to the last non-workflow implementation commit after current-task evidence commits.",
+    "Pure current-task metadata work stops at the first unrelated workflow-history boundary and uses its own latest committed work unit; a branch with only unrelated task artifacts receives no evaluated SHA.",
+    "Finish preserves the reviewed metadata SHA across later evaluator artifacts through the existing task-local-only advance check."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100436-D7QB76/README.md",
+    "commit f6f17a1f6f44",
+    "focused vitest 2 files/11 tests; typecheck; lint:core; ci:contract; test:fast 364 files/2153 tests",
+    "node .agentplane/policy/check-routing.mjs; ap doctor"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The bounded 20-commit walk remains unchanged; extremely long current-task artifact chains retain the existing depth cap."
+  ]
+}

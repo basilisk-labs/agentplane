@@ -12,8 +12,8 @@ Created: 2026-07-10T10:34:39.342Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Focused evaluator/finish regressions pass (2 files, 11 tests); typecheck, lint:core, ci:contract, test:fast (364 files/2153 tests), policy routing, and doctor pass. The evaluator keeps code targets, anchors the current pure metadata work unit, and rejects unrelated task artifacts.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
