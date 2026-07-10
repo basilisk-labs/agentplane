@@ -39,6 +39,25 @@ function withBranchPrBatchExtension(opts: {
   base: string | null;
   updatedAt: string;
 }): TaskData {
+  const current = isRecord(opts.task.extensions?.branch_pr_batch)
+    ? opts.task.extensions.branch_pr_batch
+    : null;
+  const currentIncludedTaskIds = Array.isArray(current?.included_task_ids)
+    ? normalizeRelatedTaskIds(
+        current.included_task_ids.filter((entry): entry is string => typeof entry === "string"),
+        opts.primaryTaskId,
+      )
+    : [];
+  if (
+    current?.role === opts.role &&
+    current.primary_task_id === opts.primaryTaskId &&
+    current.branch === opts.branch &&
+    (current.base ?? null) === opts.base &&
+    currentIncludedTaskIds.length === opts.includedTaskIds.length &&
+    currentIncludedTaskIds.every((taskId, index) => taskId === opts.includedTaskIds[index])
+  ) {
+    return opts.task;
+  }
   const extensions = isRecord(opts.task.extensions) ? { ...opts.task.extensions } : {};
   extensions.branch_pr_batch = {
     role: opts.role,
