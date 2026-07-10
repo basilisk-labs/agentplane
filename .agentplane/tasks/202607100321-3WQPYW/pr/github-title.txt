@@ -1,1 +1,1 @@
-🚧 3WQPYW task: Persist reconciled included batch closure for v0.6.22 [202607100321-3WQPYW]
+✅ 3WQPYW task: Persist reconciled included batch closure for v0.6.22 [202607100321-3WQPYW]

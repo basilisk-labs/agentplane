@@ -1,10 +1,11 @@
 ---
 id: "202607100321-3WQPYW"
 title: "Persist reconciled included batch closure for v0.6.22"
-status: "DOING"
+result_summary: "Persisted included-task closure and documented the completed extraction tranche plus remaining protected-main lifecycle follow-ups."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -32,26 +33,31 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T03:32:31.355Z"
+  updated_at: "2026-07-10T03:33:10.351Z"
   updated_by: "EVALUATOR"
   note: "The protected-main reconciliation closure and v0.6.22 execution plan are consistent, formatted, and auditable."
-  evaluated_sha: "7d4069755d25c97a0f574d1b15a0cedf6a47c0c2"
+  evaluated_sha: "978885a83efab1b16c15151d42fa0478432fe14c"
   blueprint_digest: "4a2e1c3111541ccbc8fb01175380a97e30d69e98d3f3e02a43c8fbc7f1681a5e"
   evidence_refs:
     - ".agentplane/tasks/202607100321-3WQPYW/README.md"
-    - ".agentplane/tasks/202607100321-3WQPYW/quality/20260710-033231355-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100321-3WQPYW/quality/20260710-033231355-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100321-3WQPYW/quality/20260710-033231355-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100321-3WQPYW/quality/20260710-033310351-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100321-3WQPYW/quality/20260710-033310351-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100321-3WQPYW/quality/20260710-033310351-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100321-3WQPYW/blueprint/resolved-snapshot.json"
     - "docs/internal/v0.6.22-refactor-plan.md"
     - ".agentplane/tasks/202607100140-WGV79Y/README.md"
   findings:
     - "No blocking findings; WGV79Y is DONE at ccebff98, the extraction tranche is documented, and the doctor rebase warning is isolated as a separate lifecycle follow-up."
-commit: null
+commit:
+  hash: "978885a83efab1b16c15151d42fa0478432fe14c"
+  message: "📝 3WQPYW docs: align v0.6.22 closure plan"
 comments:
   -
     author: "CODER"
     body: "Start: persist the reconciled WGV79Y DONE state and primary reconciliation event through a metadata-only protected-main PR."
+  -
+    author: "CODER"
+    body: "Verified: reconciled WGV79Y closure and the updated v0.6.22 extraction/lifecycle plan pass documented checks."
 events:
   -
     type: "status"
@@ -72,8 +78,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "WGV79Y is DONE at ccebff98c7c9; v0.6.22 plan passes Prettier, diff check, and policy routing; doctor exits OK with the known rebase-aware batch warning recorded as a follow-up."
+  -
+    type: "status"
+    at: "2026-07-10T03:33:27.160Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: reconciled WGV79Y closure and the updated v0.6.22 extraction/lifecycle plan pass documented checks."
 doc_version: 3
-doc_updated_at: "2026-07-10T03:32:22.240Z"
+doc_updated_at: "2026-07-10T03:33:27.161Z"
 doc_updated_by: "CODER"
 description: "Persist the successful release task reconciliation that marks included task 202607100140-WGV79Y DONE on landed commit ccebff98c7c97282e46f0825af6b8c51b92a6dcb through protected main."
 sections:
@@ -169,6 +182,10 @@ sections:
     - Observation: The persisted closure and updated release plan match current main; doctor still compares the primary pre-rebase task SHA with the included landed SHA.
       Impact: Extraction closure is valid, while doctor emits one false-positive batch consistency warning after a protected-main rebase.
       Resolution: Merge this docs closure and implement the documented rebase-aware doctor follow-up before v0.6.22.
+extensions:
+  implementation_commit:
+    hash: "978885a83efab1b16c15151d42fa0478432fe14c"
+    message: "📝 3WQPYW docs: align v0.6.22 closure plan"
 id_source: "generated"
 ---
 ## Summary
