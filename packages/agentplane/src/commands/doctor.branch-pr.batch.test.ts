@@ -13,7 +13,7 @@ describe("doctor branch_pr batch consistency", () => {
     await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
   });
 
-  it("accepts an included task closed on the landed commit after a primary PR rebase", async () => {
+  it("accepts a landed included-task commit from branchless MERGED metadata", async () => {
     const root = await mkdtemp(path.join(tmpdir(), "agentplane-doctor-batch-rebase-"));
     roots.push(root);
     const primaryTaskId = "202604051200-PRIMARY";
@@ -29,7 +29,6 @@ describe("doctor branch_pr batch consistency", () => {
         {
           schema_version: 1,
           task_id: primaryTaskId,
-          branch: `task/${primaryTaskId}/batch`,
           batch: {
             schema_version: 1,
             primary_task_id: primaryTaskId,
