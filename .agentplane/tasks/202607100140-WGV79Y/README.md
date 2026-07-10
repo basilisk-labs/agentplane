@@ -4,7 +4,7 @@ title: "Allow pre-merge closure to stage active task artifacts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -35,22 +35,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T02:00:11.015Z"
+  updated_at: "2026-07-10T02:05:52.418Z"
   updated_by: "EVALUATOR"
-  note: "Batch lifecycle closure and freshness handling are consistent on the current implementation head."
-  evaluated_sha: "631725720f4b842f70f297dea9bdba417fce5437"
+  note: "Batch pre-merge closure now has consistent dirty-state, route freshness, and finish commit semantics."
+  evaluated_sha: "2e9dc2e52a26c3b960150ba9fa10d51faa40202b"
   blueprint_digest: "a1c4904fb9c7391cf4514d602bf2f4d7a7b286366b4f62c53bec2a77b1263e85"
   evidence_refs:
     - ".agentplane/tasks/202607100140-WGV79Y/README.md"
-    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-020011015-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-020011015-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-020011015-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-020552418-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-020552418-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100140-WGV79Y/quality/20260710-020552418-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100140-WGV79Y/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts"
+    - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
     - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
-    - "packages/agentplane/src/commands/shared/task-local-freshness.ts"
   findings:
-    - "Lifecycle and batch-route tests 11/11 pass; typecheck, lint:core, ci:contract, and the 2,141-test fast suite are green."
+    - "Lifecycle, batch-route, and finish quality-target tests 16/16 pass; typecheck, lint:core, ci:contract, and the 2,142-test fast suite are green."
 commit: null
 comments:
   -
@@ -212,7 +212,7 @@ extensions:
       - "202607100140-WGV79Y"
     primary_task_id: "202607100106-YP0PYE"
     role: "included"
-    updated_at: "2026-07-10T02:05:35.819Z"
+    updated_at: "2026-07-10T02:06:06.845Z"
 id_source: "generated"
 ---
 ## Summary
