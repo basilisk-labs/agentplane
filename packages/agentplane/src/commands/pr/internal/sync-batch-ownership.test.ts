@@ -18,6 +18,7 @@ import {
 
 import { createIncidentRegistrySkeleton } from "../../../runtime/incidents/index.js";
 import { runCli as runAgentplaneCli } from "../../../cli/run-cli.js";
+import { ensurePrArtifactsSynced } from "./sync.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -116,6 +117,53 @@ async function readTask(
 }
 
 describe("branch_pr batch ownership sync", () => {
+  it("preserves recorded batch ownership during automatic PR artifact refresh", async () => {
+    const root = await setupBranchPrRoot();
+    expect(await runCliSilent(["branch", "base", "set", "main", "--root", root])).toBe(0);
+    const primaryTaskId = "202603271940-BATCH0";
+    const includedTaskId = "202603271940-BATC00";
+    for (const taskId of [primaryTaskId, includedTaskId]) {
+      await createVerifiedTask(root, taskId);
+    }
+
+    const branch = `task/${primaryTaskId}/batch-refresh`;
+    const openCode = await runCliSilent([
+      "pr",
+      "open",
+      primaryTaskId,
+      "--branch",
+      branch,
+      "--include-task",
+      includedTaskId,
+      "--sync-only",
+      "--author",
+      "CODER",
+      "--root",
+      root,
+    ]);
+    expect(openCode).toBe(0);
+
+    const refreshed = await ensurePrArtifactsSynced({
+      cwd: root,
+      rootOverride: root,
+      taskId: primaryTaskId,
+      branch,
+    });
+    expect(refreshed?.branch).toBe(branch);
+    const primaryAfterRefresh = await readTask(root, primaryTaskId);
+    const includedAfterRefresh = await readTask(root, includedTaskId);
+    expect(primaryAfterRefresh.extensions?.branch_pr_batch).toMatchObject({
+      role: "primary",
+      primary_task_id: primaryTaskId,
+      included_task_ids: [includedTaskId],
+    });
+    expect(includedAfterRefresh.extensions?.branch_pr_batch).toMatchObject({
+      role: "included",
+      primary_task_id: primaryTaskId,
+      included_task_ids: [includedTaskId],
+    });
+  });
+
   it("persists included-task ownership for route fallback and clears stale ownership", async () => {
     const root = await setupBranchPrRoot();
     const primaryTaskId = "202603271940-BATCH1";

@@ -147,6 +147,18 @@ export async function ensurePrArtifactsSynced(opts: {
     return null;
   }
 
+  const existingMeta = (await fileExists(metaPath))
+    ? parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId)
+    : null;
+  const primaryTask = await ctx.taskBackend.getTask(opts.taskId);
+  const preservedIncludedTaskIds = normalizeRelatedTaskIds(
+    [
+      ...(existingMeta?.batch?.included_task_ids ?? []),
+      ...(primaryTask ? normalizeBranchPrBatchIncludedTaskIds(primaryTask, opts.taskId) : []),
+    ],
+    opts.taskId,
+  );
+
   const reviewPath = path.join(prDir, "review.md");
   const artifactsExist = (await fileExists(metaPath)) && (await fileExists(reviewPath));
   if (!artifactsExist) {
@@ -156,6 +168,7 @@ export async function ensurePrArtifactsSynced(opts: {
       mode: "open",
       author: opts.author,
       branch,
+      includeTaskIds: preservedIncludedTaskIds,
       remoteMode: "sync-only",
     });
   }
@@ -164,6 +177,7 @@ export async function ensurePrArtifactsSynced(opts: {
     ctx,
     mode: "update",
     branch,
+    includeTaskIds: preservedIncludedTaskIds,
   });
   return { ...result, branch };
 }

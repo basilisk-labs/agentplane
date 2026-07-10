@@ -12,7 +12,7 @@ Created: 2026-07-10T01:07:58.209Z
 
 - Task: `202607100106-YP0PYE`
 - Title: Bound context extraction batches by source bytes and prevent duplicate ingestion
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607100106-YP0PYE/bound-context-extraction-batches-by-source-bytes`
 - Canonical task record: `.agentplane/tasks/202607100106-YP0PYE/README.md`
 
