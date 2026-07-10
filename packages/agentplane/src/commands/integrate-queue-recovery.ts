@@ -23,17 +23,13 @@ export function decideIntegrationQueueRecovery(opts: {
       reason: "integration claim is still active; waiting for claim owner or lease expiry",
     };
   }
-  if (report.task.status === "DONE") {
-    return {
-      action: "mark",
-      status: "done",
-      reason: "task is already DONE; queue entry is terminal stale",
-    };
-  }
   if (report.pr.state === "OPEN") {
     return {
       action: "keep",
-      reason: "remote PR is still open; keeping live integration lane occupied",
+      reason:
+        report.task.status === "DONE"
+          ? "task has pre-merge closure but remote PR is still open; keeping integration pending"
+          : "remote PR is still open; keeping live integration lane occupied",
     };
   }
   if (report.pr.state === "not_found") {

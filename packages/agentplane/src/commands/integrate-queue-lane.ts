@@ -146,16 +146,7 @@ export async function normalizeTerminalQueueEntries(opts: {
       rootOverride: opts.rootOverride ?? null,
       taskId: entry.task_id,
     }).catch(() => null);
-    if (loaded?.task.status === "DONE") {
-      decisions.push({
-        taskId: entry.task_id,
-        fromStatus: entry.status,
-        reason: "task is already DONE; queue entry is terminal stale",
-      });
-      continue;
-    }
-
-    if (entry.status !== "handoff") continue;
+    if (loaded?.task.status !== "DONE" && entry.status !== "handoff") continue;
     const report = await resolvePrFlowStatus({
       ctx: opts.ctx,
       cwd: opts.cwd,

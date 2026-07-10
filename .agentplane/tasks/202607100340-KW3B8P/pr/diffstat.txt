@@ -1,0 +1,9 @@
+ .agentplane/tasks/202607092209-F33MNN/README.md    |   1 +
+ docs/internal/v0.6.22-refactor-plan.md             |   2 +-
+ .../src/commands/integrate-queue-doctor-command.ts |  17 +--
+ .../src/commands/integrate-queue-lane.test.ts      | 164 +++++++++++++++++++++
+ .../src/commands/integrate-queue-lane.ts           |  11 +-
+ .../src/commands/integrate-queue-recovery.test.ts  |  29 +++-
+ .../src/commands/integrate-queue-recovery.ts       |  12 +-
+ scripts/checks/check-lifecycle-invariants.mjs      |  14 +-
+ 8 files changed, 209 insertions(+), 41 deletions(-)

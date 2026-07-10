@@ -48,9 +48,17 @@ const checks = [
     patterns: ["makeRunIntegrateQueueDoctorHandler", "runIntegrationQueueDoctor"],
   },
   {
-    name: "integration queue can diagnose stale terminal entries",
-    file: "packages/agentplane/src/commands/integrate-queue-doctor-command.ts",
-    patterns: ["task is already DONE; queue entry is terminal stale"],
+    name: "integration queue terminalization follows provider PR and close-tail evidence",
+    files: [
+      "packages/agentplane/src/commands/integrate-queue-recovery.ts",
+      "packages/agentplane/src/commands/integrate-queue-doctor-command.ts",
+      "packages/agentplane/src/commands/integrate-queue-lane.ts",
+    ],
+    patterns: [
+      "task has pre-merge closure but remote PR is still open",
+      'report.closeTail.state === "recorded_on_base"',
+      "decideIntegrationQueueRecovery({ entry, report })",
+    ],
   },
   {
     name: "PR checks can wait for hosted required-check rollup",

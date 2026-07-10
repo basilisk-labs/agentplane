@@ -74,7 +74,7 @@ describe("integration queue recovery decisions", () => {
     ).toMatchObject({ action: "keep" });
   });
 
-  it("marks non-claimed DONE task entries as terminal stale", () => {
+  it("keeps pre-merge DONE task entries queued while the provider PR is open", () => {
     expect(
       decideIntegrationQueueRecovery({
         entry: queueEntry("queued"),
@@ -83,10 +83,31 @@ describe("integration queue recovery decisions", () => {
         }),
       }),
     ).toMatchObject({
-      action: "mark",
-      status: "done",
-      reason: "task is already DONE; queue entry is terminal stale",
+      action: "keep",
+      reason: "task has pre-merge closure but remote PR is still open; keeping integration pending",
     });
+  });
+
+  it("marks DONE task entries complete only after the provider PR and close tail finish", () => {
+    expect(
+      decideIntegrationQueueRecovery({
+        entry: queueEntry("queued"),
+        report: report({
+          task: { id: "T-1", status: "DONE", verification: "ok" },
+          pr: {
+            provider: "github",
+            state: "MERGED",
+            source: "lookup",
+            prNumber: 101,
+            prUrl: "https://example.invalid/pull/101",
+            base: "main",
+            headSha: "head",
+            mergeCommit: "merge",
+          },
+          closeTail: { state: "recorded_on_base", base: "main" },
+        }),
+      }),
+    ).toMatchObject({ action: "mark", status: "done" });
   });
 
   it("marks stale handoff lanes done only after close-tail evidence is recorded", () => {
