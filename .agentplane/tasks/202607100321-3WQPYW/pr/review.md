@@ -6,7 +6,7 @@ Created: 2026-07-10T03:22:40.715Z
 
 - Task: `202607100321-3WQPYW`
 - Title: Persist reconciled included batch closure for v0.6.22
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607100321-3WQPYW/persist-reconciled-included-batch-closure-for-v0`
 - Canonical task record: `.agentplane/tasks/202607100321-3WQPYW/README.md`
 
