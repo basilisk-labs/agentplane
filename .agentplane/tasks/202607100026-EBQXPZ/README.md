@@ -1,10 +1,11 @@
 ---
 id: "202607100026-EBQXPZ"
 title: "Normalize pre-existing ACR example formatting for loop CI"
-status: "DOING"
+result_summary: "Normalized the pre-existing ACR example formatting blocker in the merged loop batch."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "packages/spec/examples/acr.json"
   findings:
     - "No semantic JSON value or key changed; only array layout was normalized."
-commit: null
+commit:
+  hash: "4b09dabafb1c3a75be948b79040936704196c95d"
+  message: "🔀 4Z7EZP integrate: Make AgentPlane loops executable, resumable, and token-aware"
 comments:
   -
     author: "CODER"
     body: "Start: normalize only the pre-existing ACR example formatting blocker so loop PR CI can reach the contract checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Included formatting prerequisite landed with primary PR #4558 on agentplane-loops."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Prettier-only ACR example normalization confirmed; targeted Prettier, git diff check, and repository format:check pass."
+  -
+    type: "status"
+    at: "2026-07-10T01:05:57.394Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Included formatting prerequisite landed with primary PR #4558 on agentplane-loops."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:27:30.352Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-10T01:05:57.394Z"
+doc_updated_by: "INTEGRATOR"
 description: "Format only packages/spec/examples/acr.json so the agentplane-loops PR can pass the repository Format (check) gate; no semantic schema or main-branch changes."
 sections:
   Summary: |-
@@ -127,6 +140,9 @@ extensions:
     primary_task_id: "202607092346-4Z7EZP"
     role: "included"
     updated_at: "2026-07-10T00:56:47.733Z"
+  implementation_commit:
+    hash: "2157672fdabf5ddeaee4604e3ed8ba5ef3d93872"
+    message: "🎨 EBQXPZ formatting: normalize ACR example"
 id_source: "generated"
 ---
 ## Summary
