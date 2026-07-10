@@ -1,10 +1,11 @@
 ---
 id: "202607092342-AHYFCS"
 title: "Enforce cross-surface context integrity for v0.6.22"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -47,11 +48,16 @@ quality_review:
     - "packages/agentplane/src/commands/context/check.unit.test.ts"
   findings:
     - "The validator resolves wiki graph references, enforces active entity page policy, checks raw source registration, and fingerprints connectivity reports with focused regression coverage."
-commit: null
+commit:
+  hash: "994ea841af950ac2bf9eb93e8556627e07754595"
+  message: "✅ AHYFCS context: record integrity verification"
 comments:
   -
     author: "CODER"
     body: "Start: implement global cross-surface context integrity checks and regression coverage for v0.6.22."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -72,8 +78,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: current main-targeting PR head preserves the passing integrity tests, 2,132-test full fast suite, critical CLI suite, typecheck, lint, and ci:contract evidence."
+  -
+    type: "status"
+    at: "2026-07-10T00:08:38.183Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:08:14.302Z"
+doc_updated_at: "2026-07-10T00:08:38.184Z"
 doc_updated_by: "CODER"
 description: "Make global context checks validate wiki graph references, entity page policy, manifest/source coverage, and freshness of derived wiki reports so structurally valid but semantically disconnected context cannot pass."
 sections:
@@ -162,6 +175,10 @@ sections:
     - Revert the task commits.
     - Re-run the focused context checks and ci:contract to confirm the previous validation behavior is restored.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "1ac42ed68fef6764b464e114614fb99b02f102de"
+    message: "🛡️ AHYFCS context: enforce cross-surface integrity"
 id_source: "generated"
 ---
 ## Summary
