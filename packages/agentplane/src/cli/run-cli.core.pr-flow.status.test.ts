@@ -454,6 +454,22 @@ describe("runCli pr flow status", () => {
       expectLabeledValue(io.stdout, "queue", "queued");
     } finally {
       io.restore();
+    }
+
+    const queuePath = path.join(root, ".agentplane", "cache", "integration-queue.json");
+    const queue = JSON.parse(await readFile(queuePath, "utf8")) as {
+      entries: Record<string, unknown>[];
+    };
+    queue.entries[0] = { ...queue.entries[0], status: "handoff" };
+    await writeFile(queuePath, `${JSON.stringify(queue)}\n`, "utf8");
+
+    const handoffIo = captureStdIO();
+    try {
+      expect(await runCli(["pr", "flow", "status", taskId, "--root", root])).toBe(0);
+      expectLabeledValue(handoffIo.stdout, "remote_pr", "github: not_found (source=metadata)");
+      expectLabeledValue(handoffIo.stdout, "queue", "handoff");
+    } finally {
+      handoffIo.restore();
       process.env.PATH = oldPath;
     }
   });

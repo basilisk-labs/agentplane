@@ -171,7 +171,7 @@ function remoteStatusFromLocalEvidence(
       mergeCommit: meta?.merge_commit ?? null,
     };
   }
-  if (queueEntry?.pr_number) {
+  if (queueEntry?.status === "queued" && queueEntry.pr_number) {
     return {
       provider: "github",
       state: "OPEN",
