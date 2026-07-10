@@ -5,6 +5,8 @@
   "diffstat_sha256": "sha256:7fe62f86aaf977a2f088ce5bbec674873c3d8a7e0e27683ac34f4b67c39c826a",
   "last_verified_at": "2026-07-10T04:11:51.449Z",
   "last_verified_diffstat_sha256": "sha256:7fe62f86aaf977a2f088ce5bbec674873c3d8a7e0e27683ac34f4b67c39c826a",
+  "pr_number": 4567,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4567",
   "pre_merge_closure": {
     "basis_commit": "71b5fa891f5839911154cb13210f70c52645540e",
     "branch": "task/202607100404-WPRBVK/make-doctor-batch-consistency-rebase-aware",
@@ -12,8 +14,9 @@
     "state": "closed_before_merge"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607100404-WPRBVK",
-  "updated_at": "2026-07-10T04:04:49.139Z",
+  "updated_at": "2026-07-10T04:14:34.556Z",
   "verify": {
     "status": "pass"
   }
