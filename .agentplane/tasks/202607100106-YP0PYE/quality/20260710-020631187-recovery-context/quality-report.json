@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100106-YP0PYE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T02:06:31.187Z",
+  "verdict": "pass",
+  "summary": "The context extraction and batch lifecycle package is ready for pre-merge closure.",
+  "evaluated_sha": "2e9dc2e52a26c3b960150ba9fa10d51faa40202b",
+  "blueprint_digest": "2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac",
+  "findings": [
+    "Context tests 14/14 and lifecycle/batch tests 16/16 pass; typecheck, lint:core, ci:contract, and the 2,142-test fast suite are green."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100106-YP0PYE/README.md",
+    "packages/agentplane/src/commands/context/harvest-tasks.test.ts",
+    "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts",
+    "docs/user/cli-reference.generated.mdx"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -1,10 +1,11 @@
 ---
 id: "202607100106-YP0PYE"
 title: "Bound context extraction batches by source bytes and prevent duplicate ingestion"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -37,28 +38,33 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T02:00:44.946Z"
+  updated_at: "2026-07-10T02:06:31.187Z"
   updated_by: "EVALUATOR"
-  note: "Context extraction batching and linked lifecycle fixes are ready for the shared PR."
-  evaluated_sha: "631725720f4b842f70f297dea9bdba417fce5437"
+  note: "The context extraction and batch lifecycle package is ready for pre-merge closure."
+  evaluated_sha: "2e9dc2e52a26c3b960150ba9fa10d51faa40202b"
   blueprint_digest: "2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac"
   evidence_refs:
     - ".agentplane/tasks/202607100106-YP0PYE/README.md"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-020044946-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-020044946-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-020044946-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-020631187-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-020631187-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-020631187-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100106-YP0PYE/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/context/harvest-tasks.test.ts"
-    - "packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts"
+    - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
     - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
     - "docs/user/cli-reference.generated.mdx"
   findings:
-    - "Context tests 14/14 and lifecycle/batch-route tests 11/11 pass; typecheck, lint:core, ci:contract, and the 2,141-test fast suite are green."
-commit: null
+    - "Context tests 14/14 and lifecycle/batch tests 16/16 pass; typecheck, lint:core, ci:contract, and the 2,142-test fast suite are green."
+commit:
+  hash: "6cd63b6e757f1993196a625f7ec076836099d016"
+  message: "🚧 YP0PYE task: finalize lifecycle quality evidence"
 comments:
   -
     author: "CODER"
     body: "Start: implement count-plus-byte bounded context extraction batches, deterministic source sizing, and cross-marker duplicate suppression for v0.6.22."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -73,8 +79,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pass: focused context harvest tests 14/14; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,139 tests; live CLI help and dry-run confirmed batch-bytes, source byte totals, oversized ids, and batch fingerprints."
+  -
+    type: "status"
+    at: "2026-07-10T02:06:57.001Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-10T01:41:56.117Z"
+doc_updated_at: "2026-07-10T02:06:57.002Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, make task-history context extraction batching respect a deterministic serialized-source byte budget in addition to task count, isolate oversized single sources, surface batch byte metadata, and converge queued/ingested duplicate detection on the same versioned source fingerprint without breaking existing CLI defaults."
 sections:
@@ -147,7 +160,10 @@ extensions:
       - "202607100140-WGV79Y"
     primary_task_id: "202607100106-YP0PYE"
     role: "primary"
-    updated_at: "2026-07-10T02:06:06.845Z"
+    updated_at: "2026-07-10T02:09:49.638Z"
+  implementation_commit:
+    hash: "2e9dc2e52a26c3b960150ba9fa10d51faa40202b"
+    message: "🚧 YP0PYE task: resolve batch evidence commits at finish"
 id_source: "generated"
 ---
 ## Summary
