@@ -2,10 +2,10 @@
 id: "202607100021-S11TCN"
 title: "Make context extraction packs compact and schema-complete for v0.6.22"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-10T00:43:26.990Z"
+  state: "needs_rework"
+  updated_at: "2026-07-10T00:53:39.992Z"
   updated_by: "CODER"
-  note: "Focused extraction and release-readiness suite passed (65 tests); agentplane typecheck, lint:core, formatting, architecture, schemas, policy routing, Knip baseline, coverage thresholds, and ci:contract passed. Repository-wide lint:website remains an unchanged pre-existing baseline outside this diff and is recorded in Findings."
-  attempts: 0
+  note: "PR review found that extraction-contract.json omitted conditional new_entity_proposal requirements enforced by the SGR v2 validator; update the contract/example and regression coverage before integration."
+  attempts: 1
 quality_review:
   state: "pass"
   updated_at: "2026-07-10T00:45:03.849Z"
@@ -48,9 +48,7 @@ quality_review:
     - ".agentplane/tasks/202607100021-S11TCN/blueprint/resolved-snapshot.json"
   findings:
     - "SGR v2 now fails incomplete page/topology payloads before writes while legacy v1 remains compatible; generated packs expose a valid contract plus deterministic current-context candidates, and prompt size budgets are enforced."
-commit:
-  hash: "9a3f81dc9ec45fd25e7d70d534882ba37298ac64"
-  message: "✅ S11TCN task: record hosted PR evidence"
+commit: null
 comments:
   -
     author: "CODER"
@@ -79,8 +77,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-10T00:53:39.992Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "PR review found that extraction-contract.json omitted conditional new_entity_proposal requirements enforced by the SGR v2 validator; update the contract/example and regression coverage before integration."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:48:53.739Z"
+doc_updated_at: "2026-07-10T00:53:41.133Z"
 doc_updated_by: "CODER"
 description: "Tighten the SGR v2 context_extraction contract for entity resolution, page creation, and topology decisions; generate a complete compact extraction contract; enrich canonical task snapshots with current surface counts/digests/candidates; reduce duplicated prompt prose while keeping generated CURATOR tasks portable and self-contained."
 sections:
@@ -132,6 +136,36 @@ sections:
     - repeat_allowed: false
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-07-10T00:53:39.992Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: PR review found that extraction-contract.json omitted conditional new_entity_proposal requirements enforced by the SGR v2 validator; update the contract/example and regression coverage before integration.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:48:53.739Z, excerpt_hash=sha256:ea04f8b33d1e5fe807e9106c6e20c8bcd847d4b537041052b262345d5e824e0e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100021-S11TCN-make-context-extraction-packs-compact-and-schema/.agentplane/tasks/202607100021-S11TCN/blueprint/resolved-snapshot.json
+    - old_digest: 70e4ce0b42f580f8e29f021d9d52cb431b3b936193818b0b4497717661394564
+    - current_digest: 70e4ce0b42f580f8e29f021d9d52cb431b3b936193818b0b4497717661394564
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100021-S11TCN
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607100021-S11TCN --branch task/202607100021-S11TCN/make-context-extraction-packs-compact-and-schema
+    - diagnostic_command: agentplane pr check 202607100021-S11TCN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -207,6 +241,36 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-07-10T00:53:39.992Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: PR review found that extraction-contract.json omitted conditional new_entity_proposal requirements enforced by the SGR v2 validator; update the contract/example and regression coverage before integration.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:48:53.739Z, excerpt_hash=sha256:ea04f8b33d1e5fe807e9106c6e20c8bcd847d4b537041052b262345d5e824e0e
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100021-S11TCN-make-context-extraction-packs-compact-and-schema/.agentplane/tasks/202607100021-S11TCN/blueprint/resolved-snapshot.json
+- old_digest: 70e4ce0b42f580f8e29f021d9d52cb431b3b936193818b0b4497717661394564
+- current_digest: 70e4ce0b42f580f8e29f021d9d52cb431b3b936193818b0b4497717661394564
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100021-S11TCN
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607100021-S11TCN --branch task/202607100021-S11TCN/make-context-extraction-packs-compact-and-schema
+- diagnostic_command: agentplane pr check 202607100021-S11TCN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 

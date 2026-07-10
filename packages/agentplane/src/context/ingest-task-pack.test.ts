@@ -89,6 +89,7 @@ describe("context ingest task pack", () => {
     const extractionContract = await readJson<{
       sgr_schema_version: number;
       typed_payloads: Record<string, string[]>;
+      conditional_required: { when: { equals: string }; required: string[] }[];
       example: { extracted_items: { kind: string }[] };
     }>(root, `${taskRoot}/extraction-contract.json`);
     const canonicalSnapshot = await readJson<{
@@ -122,6 +123,17 @@ describe("context ingest task pack", () => {
     expect(extractionContract.typed_payloads.topology_decision).toContain(
       "topology_decision.source_shape.rationale",
     );
+    expect(extractionContract.conditional_required).toContainEqual({
+      when: {
+        field: "entity_resolution.resolution",
+        equals: "new_entity_proposal",
+      },
+      required: [
+        "entity_resolution.proposed_entity_id",
+        "entity_resolution.candidate_entities_checked[].entity_id",
+        "entity_resolution.why_not_existing|why_not_alias_of_existing",
+      ],
+    });
     expect(extractionContract.example.extracted_items.map((item) => item.kind)).toEqual(
       expect.arrayContaining([
         "entity_resolution",

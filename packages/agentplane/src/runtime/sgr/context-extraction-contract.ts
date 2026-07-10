@@ -36,8 +36,15 @@ export const CONTEXT_EXTRACTION_SGR_EXAMPLE: ContextExtractionSgrResult = {
       status: "accepted",
       entity_resolution: {
         source_term: "Example",
-        resolution: "canonical_entity",
-        canonical_entity_id: "entity.example",
+        resolution: "new_entity_proposal",
+        proposed_entity_id: "entity.example",
+        candidate_entities_checked: [
+          {
+            entity_id: "entity.existing-example",
+            reason: "The existing candidate has a different source-backed scope.",
+          },
+        ],
+        why_not_existing: "No existing candidate represents this source-backed concept.",
       },
     },
     {
@@ -149,5 +156,18 @@ export const CONTEXT_EXTRACTION_CONTRACT = {
     ],
     coverage: ["coverage.source_path", "coverage.status", "coverage.reason"],
   },
+  conditional_required: [
+    {
+      when: {
+        field: "entity_resolution.resolution",
+        equals: "new_entity_proposal",
+      },
+      required: [
+        "entity_resolution.proposed_entity_id",
+        "entity_resolution.candidate_entities_checked[].entity_id",
+        "entity_resolution.why_not_existing|why_not_alias_of_existing",
+      ],
+    },
+  ],
   example: CONTEXT_EXTRACTION_SGR_EXAMPLE,
 } as const;

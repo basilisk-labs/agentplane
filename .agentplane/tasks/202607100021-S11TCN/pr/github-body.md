@@ -15,25 +15,26 @@ Tighten the SGR v2 context_extraction contract for entity resolution, page creat
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Focused extraction and release-readiness suite passed (65 tests); agentplane typecheck, lint:core,
-formatting, architecture, schemas, policy routing, Knip baseline, coverage thresholds, and
-ci:contract passed. Repository-wide lint:website remains an unchanged pre-existing baseline outside
-this diff and is recorded in Findings.
+PR review found that extraction-contract.json omitted conditional new_entity_proposal requirements
+enforced by the SGR v2 validator; update the contract/example and regression coverage before
+integration.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-10T00:43:13.248Z
+- Updated: 2026-07-10T00:48:03.176Z
 - Branch: task/202607100021-S11TCN/make-context-extraction-packs-compact-and-schema
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../commands/context/extraction-apply.unit.test.ts |  19 +-
  .../src/commands/context/harvest-tasks.test.ts     |  27 ++-
  .../src/commands/context/harvest-tasks.ts          |   6 +
@@ -50,7 +51,7 @@ this diff and is recorded in Findings.
  .../agentplane/src/runtime/sgr/contracts.test.ts   |  98 +++++++-
  packages/agentplane/src/runtime/sgr/contracts.ts   |  56 +++--
  packages/agentplane/src/runtime/sgr/index.ts       |   4 +
- 16 files changed, 942 insertions(+), 288 deletions(-)
+ 18 files changed, 944 insertions(+), 288 deletions(-)
 ```
 
 </details>

@@ -27,6 +27,13 @@ describe("SGR reliability contracts", () => {
         "coverage",
       ]),
     );
+    expect(
+      result.extracted_items.find((item) => item.kind === "entity_resolution")?.entity_resolution,
+    ).toMatchObject({
+      resolution: "new_entity_proposal",
+      proposed_entity_id: "entity.example",
+      candidate_entities_checked: [{ entity_id: "entity.existing-example" }],
+    });
   });
 
   it("validates source-backed context extraction results", () => {
