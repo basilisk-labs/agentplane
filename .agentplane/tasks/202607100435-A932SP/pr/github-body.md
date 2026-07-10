@@ -15,12 +15,13 @@ For v0.6.22, let integration queue recovery treat a merged PR with a valid pre-m
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Review thread identified missing task-closure and basis/head validation before queue release;
-implement the same validation contract as Hosted Close.
+Verified review hardening at 3fcc7b0: same Hosted Close task/marker/basis validation, focused 4
+files/21 tests, typecheck, lint:core, Knip 574/574, ci:contract, and full fast 364 files/2150 tests
+passed.
 ```
 - Canonical workflow state lives in the task README.
 

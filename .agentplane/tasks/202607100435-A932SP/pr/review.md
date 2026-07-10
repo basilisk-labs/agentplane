@@ -12,8 +12,8 @@ Created: 2026-07-10T04:36:53.058Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Review thread identified missing task-closure and basis/head validation before queue release; implement the same validation contract as Hosted Close.
+- State: ok
+- Note: Verified review hardening at 3fcc7b0: same Hosted Close task/marker/basis validation, focused 4 files/21 tests, typecheck, lint:core, Knip 574/574, ci:contract, and full fast 364 files/2150 tests passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
