@@ -33,6 +33,6 @@ describe("loop metrics", () => {
 
     expect(aggregate.scores.find((score) => score.id === "verification_score")?.missing).toBe(true);
     expect(aggregate.missingRequired).toEqual(["verification_score"]);
-    expect(aggregate.normalized).toBe(0.333333);
+    expect(aggregate.normalized).toBe(0.333_333);
   });
 });

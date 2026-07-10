@@ -11,6 +11,28 @@ import { collectGitDiffObservation, evaluateTddIteration } from "./loop.command.
 
 const execFileAsync = promisify(execFile);
 
+function parseJson<T>(value: string): T {
+  return JSON.parse(value) as T;
+}
+
+type DryRunPayload = {
+  taskId: string;
+  loopId: string;
+  dryRun: boolean;
+  runId: string;
+  artifacts: {
+    loopRunPath: string;
+    eventsPath: string;
+    iterationsDir: string;
+    stepArtifacts: {
+      stepId: string;
+      inputPath: string;
+      outputPath: string;
+      promptModule: { id: string };
+    }[];
+  };
+};
+
 async function mkProject(): Promise<string> {
   const root = await mkTempDir();
   await mkdir(path.join(root, ".git"));
@@ -116,7 +138,7 @@ describe("runCli loop commands", () => {
     try {
       const code = await runCli(["loop", "list", "--json"]);
       expect(code).toBe(0);
-      const payload = JSON.parse(io.stdout);
+      const payload = parseJson<{ loops: { id: string }[] }>(io.stdout);
       expect(payload.loops.map((loop: { id: string }) => loop.id)).toContain("tdd.fix");
     } finally {
       io.restore();
@@ -150,7 +172,7 @@ describe("runCli loop commands", () => {
         "--json",
       ]);
       expect(code).toBe(0);
-      const payload = JSON.parse(io.stdout);
+      const payload = parseJson<{ selected: { loopId: string; total: number } }>(io.stdout);
       expect(payload.selected.loopId).toBe("tdd.fix");
       expect(payload.selected.total).toBeGreaterThan(0.45);
     } finally {
@@ -235,7 +257,7 @@ describe("runCli loop commands", () => {
         root,
       ]);
       expect(code).toBe(0);
-      const payload = JSON.parse(io.stdout);
+      const payload = parseJson<DryRunPayload>(io.stdout);
       expect(payload.taskId).toBe(taskId);
       expect(payload.loopId).toBe("tdd.fix");
       expect(payload.dryRun).toBe(true);
@@ -248,26 +270,45 @@ describe("runCli loop commands", () => {
       const agentPatchStep = payload.artifacts.stepArtifacts.find(
         (step: { stepId: string }) => step.stepId === "agent_patch",
       );
+      if (!renderPromptStep || !agentPatchStep) throw new Error("expected loop step artifacts");
       expect(renderPromptStep.promptModule.id).toBe("tdd.fix.implement");
       const stepInputPath = path.join(root, renderPromptStep.inputPath);
       const stepOutputPath = path.join(root, renderPromptStep.outputPath);
       const agentPatchOutputPath = path.join(root, agentPatchStep.outputPath);
-      expect(JSON.parse(await readFile(loopRunPath, "utf8")).runId).toBe(payload.runId);
+      expect(parseJson<{ runId: string }>(await readFile(loopRunPath, "utf8")).runId).toBe(
+        payload.runId,
+      );
       const events = await readFile(eventsPath, "utf8");
       expect(events).toContain("loop.started");
       expect(events).toContain("step.prepared");
-      expect(JSON.parse(await readFile(stepInputPath, "utf8")).contract).toBeTruthy();
-      expect(JSON.parse(await readFile(stepOutputPath, "utf8")).promptModule.id).toBe(
-        "tdd.fix.implement",
-      );
-      const agentPatchOutput = JSON.parse(await readFile(agentPatchOutputPath, "utf8"));
+      expect(
+        parseJson<{ contract: unknown }>(await readFile(stepInputPath, "utf8")).contract,
+      ).toBeTruthy();
+      expect(
+        parseJson<{ promptModule: { id: string } }>(await readFile(stepOutputPath, "utf8"))
+          .promptModule.id,
+      ).toBe("tdd.fix.implement");
+      const agentPatchOutput = parseJson<{
+        runnerHandoff: {
+          adapterId: string;
+          mode: string;
+          runId: string;
+          bundlePath: string;
+          bootstrapPath: string;
+          resultPath: string;
+        };
+      }>(await readFile(agentPatchOutputPath, "utf8"));
       expect(agentPatchOutput.runnerHandoff.adapterId).toBe("codex");
       expect(agentPatchOutput.runnerHandoff.mode).toBe("dry_run");
       expect(agentPatchOutput.runnerHandoff.runId).toBeTruthy();
       expect(agentPatchOutput.runnerHandoff.bundlePath).toContain("bundle.json");
       expect(agentPatchOutput.runnerHandoff.bootstrapPath).toContain("bootstrap.md");
       expect(agentPatchOutput.runnerHandoff.resultPath).toContain("result.json");
-      const decision = JSON.parse(await readFile(decisionPath, "utf8"));
+      const decision = parseJson<{
+        scores: { missingRequired: string[] };
+        failedContracts: string[];
+        nextStepReason: string;
+      }>(await readFile(decisionPath, "utf8"));
       expect(decision.scores.missingRequired).toContain("verification_score");
       expect(decision.failedContracts).toContain("verification_score");
       expect(decision.nextStepReason).toBe(

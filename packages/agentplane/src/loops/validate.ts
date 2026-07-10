@@ -67,27 +67,25 @@ function validateContractEntries(opts: {
       errors.push(problem("invalid_step_contract", "Contract entry must be an object.", entryPath));
       continue;
     }
-    if (!hasText(entry.id)) {
+    if (hasText(entry.id)) {
+      ids.push(entry.id);
+    } else {
       errors.push(
         problem("invalid_step_contract", "Contract entry id must be non-empty.", entryPath),
       );
-    } else {
-      ids.push(entry.id);
     }
     const entryType = entry.type;
-    if (entryType !== undefined) {
-      if (
-        !hasText(entryType) ||
-        !VALID_CONTRACT_VALUE_TYPES.has(entryType as LoopContractValueType)
-      ) {
-        errors.push(
-          problem(
-            "invalid_step_contract",
-            `Contract entry type must be one of: ${[...VALID_CONTRACT_VALUE_TYPES].join(", ")}.`,
-            entryPath,
-          ),
-        );
-      }
+    if (
+      entryType !== undefined &&
+      (!hasText(entryType) || !VALID_CONTRACT_VALUE_TYPES.has(entryType as LoopContractValueType))
+    ) {
+      errors.push(
+        problem(
+          "invalid_step_contract",
+          `Contract entry type must be one of: ${[...VALID_CONTRACT_VALUE_TYPES].join(", ")}.`,
+          entryPath,
+        ),
+      );
     }
     if (opts.kind === "artifacts" && entry.path !== undefined && !hasText(entry.path)) {
       errors.push(
@@ -120,9 +118,11 @@ function validateStepContract(step: LoopStep, stepIndex: number): LoopValidation
       problem("invalid_step_contract", "Step contract schemaRef must be non-empty.", path),
     );
   }
-  errors.push(...validateContractEntries({ entries: contract.inputs, path, kind: "inputs" }));
-  errors.push(...validateContractEntries({ entries: contract.outputs, path, kind: "outputs" }));
-  errors.push(...validateContractEntries({ entries: contract.artifacts, path, kind: "artifacts" }));
+  errors.push(
+    ...validateContractEntries({ entries: contract.inputs, path, kind: "inputs" }),
+    ...validateContractEntries({ entries: contract.outputs, path, kind: "outputs" }),
+    ...validateContractEntries({ entries: contract.artifacts, path, kind: "artifacts" }),
+  );
   return errors;
 }
 
@@ -140,10 +140,10 @@ function validateMetrics(loop: LoopSpec): LoopValidationProblem[] {
       errors.push(problem("invalid_metric", "Metric definition must be an object.", metricPath));
       continue;
     }
-    if (!hasText(metric.id)) {
-      errors.push(problem("invalid_metric", "Metric id must be non-empty.", metricPath));
-    } else {
+    if (hasText(metric.id)) {
       ids.push(metric.id);
+    } else {
+      errors.push(problem("invalid_metric", "Metric id must be non-empty.", metricPath));
     }
     const source = metric.source;
     if (!hasText(source) || !VALID_METRIC_SOURCES.has(source as LoopMetricSource)) {

@@ -100,9 +100,8 @@ async function listJsonFiles(directory: string): Promise<string[]> {
 export async function validateProjectLoopDirectory(
   directory: string,
 ): Promise<ProjectLoopDirectoryResult> {
-  const files = await Promise.all(
-    (await listJsonFiles(directory)).map((filePath) => validateProjectLoopFile(filePath)),
-  );
+  const jsonFiles = await listJsonFiles(directory);
+  const files = await Promise.all(jsonFiles.map((filePath) => validateProjectLoopFile(filePath)));
   const errors = files.flatMap((file) => file.errors);
   return { ok: errors.length === 0, directory, files, errors };
 }

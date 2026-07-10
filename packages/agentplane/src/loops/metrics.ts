@@ -43,7 +43,7 @@ export function aggregateLoopMetricScores(
       source: metric.source,
       score,
       weight,
-      ...(metric.threshold !== undefined ? { threshold: metric.threshold } : {}),
+      ...(metric.threshold === undefined ? {} : { threshold: metric.threshold }),
       passed,
       missing,
       ...(missing ? { reason: "missing_signal" } : {}),

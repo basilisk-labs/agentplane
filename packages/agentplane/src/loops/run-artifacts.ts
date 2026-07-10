@@ -233,7 +233,7 @@ export async function createDryRunLoopRun(opts: {
     { ...eventBase, type: "decision.made", details: decision },
     { ...eventBase, type: "loop.stopped", details: { stop_reason: record.stopReason } },
   ];
-  await writeFile(eventsPath, events.map(jsonLine).join(""));
+  await writeFile(eventsPath, events.map((event) => jsonLine(event)).join(""));
   await writeFile(
     statePath,
     `${JSON.stringify(
