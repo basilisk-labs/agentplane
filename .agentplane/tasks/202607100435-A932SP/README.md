@@ -2,10 +2,10 @@
 id: "202607100435-A932SP"
 title: "Release integration lane after pre-merge Hosted Close"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-10T09:02:16.777Z"
+  state: "needs_rework"
+  updated_at: "2026-07-10T09:15:22.716Z"
   updated_by: "TESTER"
-  note: "Verified current implementation head 0d24f754: focused 3 files/12 tests, typecheck, lint:core, ci:contract, routing check, doctor, and full fast 364 files/2150 tests passed. Live queue release proof will use the next merged task after this change lands."
-  attempts: 0
+  note: "Hosted verify-static found a stale Knip baseline entry because the new test imported RemotePrStatus directly; keep the helper signature structurally minimal and infer the test fixture type instead."
+  attempts: 1
 quality_review:
   state: "pass"
   updated_at: "2026-07-10T09:03:22.999Z"
@@ -47,9 +47,7 @@ quality_review:
     - ".agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit:
-  hash: "8835edc1c764127642dd86264d50b9bbc8234521"
-  message: "🧪 A932SP task: record current evaluator evidence"
+commit: null
 comments:
   -
     author: "CODER"
@@ -84,8 +82,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-10T09:15:22.716Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted verify-static found a stale Knip baseline entry because the new test imported RemotePrStatus directly; keep the helper signature structurally minimal and infer the test fixture type instead."
 doc_version: 3
-doc_updated_at: "2026-07-10T09:06:23.308Z"
+doc_updated_at: "2026-07-10T09:15:23.991Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, let integration queue recovery treat a merged PR with a valid pre-merge closure packet and successful no-op Hosted Close as terminal, so the handoff lane releases automatically after protected-main rebase."
 sections:
@@ -173,6 +177,36 @@ sections:
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-07-10T09:15:22.716Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted verify-static found a stale Knip baseline entry because the new test imported RemotePrStatus directly; keep the helper signature structurally minimal and infer the test fixture type instead.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T09:06:23.308Z, excerpt_hash=sha256:01f2f85ec787476292f3f5162a49a1566b64e9c9ec6e86178e1bbea252d04073
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100435-A932SP-release-lane-after-premerge-hosted-close/.agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json
+    - old_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+    - current_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100435-A932SP
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607100435-A932SP --branch task/202607100435-A932SP/release-lane-after-premerge-hosted-close
+    - diagnostic_command: agentplane pr check 202607100435-A932SP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -181,6 +215,10 @@ sections:
     - Observation: Protected-main rebase rewrites the implementation commit, so ancestry-only close-tail detection misses valid pre-merge closure evidence.
       Impact: A successful Hosted Close can leave the integration lane in handoff until an operator manually releases it.
       Resolution: Flow status now recognizes only a MERGED PR whose pre-merge closure marker matches the task branch and, when present, the PR number.
+
+    - Observation: GitHub verify-static failed on a stale Knip baseline entry for RemotePrStatus.
+      Impact: PR #4568 cannot merge while aggregate PR verification is red.
+      Resolution: Remove the test-only RemotePrStatus import and keep the exported helper signature independent of that baseline-tracked type.
 extensions:
   implementation_commit:
     hash: "58a98a88ccb78e4d4e40db068db7ea5b3da43e29"
@@ -280,6 +318,36 @@ DecisionContextRef:
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+### 2026-07-10T09:15:22.716Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted verify-static found a stale Knip baseline entry because the new test imported RemotePrStatus directly; keep the helper signature structurally minimal and infer the test fixture type instead.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T09:06:23.308Z, excerpt_hash=sha256:01f2f85ec787476292f3f5162a49a1566b64e9c9ec6e86178e1bbea252d04073
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100435-A932SP-release-lane-after-premerge-hosted-close/.agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json
+- old_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+- current_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100435-A932SP
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607100435-A932SP --branch task/202607100435-A932SP/release-lane-after-premerge-hosted-close
+- diagnostic_command: agentplane pr check 202607100435-A932SP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -292,3 +360,7 @@ DecisionContextRef:
 - Observation: Protected-main rebase rewrites the implementation commit, so ancestry-only close-tail detection misses valid pre-merge closure evidence.
   Impact: A successful Hosted Close can leave the integration lane in handoff until an operator manually releases it.
   Resolution: Flow status now recognizes only a MERGED PR whose pre-merge closure marker matches the task branch and, when present, the PR number.
+
+- Observation: GitHub verify-static failed on a stale Knip baseline entry for RemotePrStatus.
+  Impact: PR #4568 cannot merge while aggregate PR verification is red.
+  Resolution: Remove the test-only RemotePrStatus import and keep the exported helper signature independent of that baseline-tracked type.

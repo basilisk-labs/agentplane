@@ -95,7 +95,10 @@ type HandoffStatus =
     };
 
 export function matchesMergedPreMergeClosure(opts: {
-  pr: RemotePrStatus;
+  pr: {
+    state: "not_found" | "OPEN" | "CLOSED" | "MERGED";
+    prNumber?: number | null;
+  };
   branch: string | null;
   marker: PreMergeClosureMarker | null;
 }): boolean {
