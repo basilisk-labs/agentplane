@@ -13,7 +13,7 @@ Created: 2026-07-10T12:03:05.353Z
 ## Verification
 
 - State: ok
-- Note: Matching closure evidence on protected main is validated strictly by task id, DONE state, non-empty commit, branch, and PR number. Focused suites 5/20, typecheck, lint, ci:contract, policy routing, doctor, test:fast 364/2152, full-fast local CI, and critical CLI E2E passed.
+- Note: Review follow-up accepted legacy closure markers without duplicated PR number only when canonical meta.pr_number matches. Focused suites 5/21, typecheck, lint, full-fast local CI 364/2153, and critical CLI E2E passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

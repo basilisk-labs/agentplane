@@ -19,9 +19,9 @@ Release a protected-main integration handoff when the merged base itself contain
 - Note:
 
 ```text
-Matching closure evidence on protected main is validated strictly by task id, DONE state, non-empty
-commit, branch, and PR number. Focused suites 5/20, typecheck, lint, ci:contract, policy routing,
-doctor, test:fast 364/2152, full-fast local CI, and critical CLI E2E passed.
+Review follow-up accepted legacy closure markers without duplicated PR number only when canonical
+meta.pr_number matches. Focused suites 5/21, typecheck, lint, full-fast local CI 364/2153, and
+critical CLI E2E passed.
 ```
 - Canonical workflow state lives in the task README.
 
