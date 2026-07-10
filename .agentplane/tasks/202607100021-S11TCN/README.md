@@ -1,11 +1,11 @@
 ---
 id: "202607100021-S11TCN"
 title: "Make context extraction packs compact and schema-complete for v0.6.22"
-result_summary: "pre-merge closure"
-status: "DOING"
+result_summary: "Merged via PR #4559."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -48,7 +48,9 @@ quality_review:
     - ".agentplane/tasks/202607100021-S11TCN/blueprint/resolved-snapshot.json"
   findings:
     - "new_entity_proposal now declares proposed_entity_id, candidate_entities_checked, and why-not rationale requirements and the canonical example exercises the conditional branch."
-commit: null
+commit:
+  hash: "b7943e1eea10a5103c04c0c81ab8531bf557a425"
+  message: "✅ S11TCN task: record review-fix verification"
 comments:
   -
     author: "CODER"
@@ -56,6 +58,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4559 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -89,9 +94,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review fix passed schema contract tests, task-pack tests, task-harvest tests, agentplane typecheck, lint:core, and ci:contract; extraction-contract.json now declares and exemplifies every conditional new_entity_proposal field enforced by the validator."
+  -
+    type: "status"
+    at: "2026-07-10T01:05:20.108Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4559 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:56:56.729Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-10T01:05:20.114Z"
+doc_updated_by: "INTEGRATOR"
 description: "Tighten the SGR v2 context_extraction contract for entity resolution, page creation, and topology decisions; generate a complete compact extraction contract; enrich canonical task snapshots with current surface counts/digests/candidates; reduce duplicated prompt prose while keeping generated CURATOR tasks portable and self-contained."
 sections:
   Summary: |-
