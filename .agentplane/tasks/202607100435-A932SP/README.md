@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -27,26 +27,26 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-10T09:15:22.716Z"
+  state: "ok"
+  updated_at: "2026-07-10T09:17:53.837Z"
   updated_by: "TESTER"
-  note: "Hosted verify-static found a stale Knip baseline entry because the new test imported RemotePrStatus directly; keep the helper signature structurally minimal and infer the test fixture type instead."
-  attempts: 1
+  note: "Verified CI repair at 23be64c: Knip baseline 574/574, focused 3 files/12 tests, typecheck, ci:contract, and full fast 364 files/2150 tests passed."
+  attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T09:03:22.999Z"
+  updated_at: "2026-07-10T09:18:06.633Z"
   updated_by: "EVALUATOR"
   note: "Quality review passed."
-  evaluated_sha: "58a98a88ccb78e4d4e40db068db7ea5b3da43e29"
+  evaluated_sha: "96e269e8d717a166ad65db03fc69b3f2c7916592"
   blueprint_digest: "964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611"
   evidence_refs:
     - ".agentplane/tasks/202607100435-A932SP/README.md"
-    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-090322999-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-090322999-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-090322999-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-091806633-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-091806633-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-091806633-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json"
   findings:
-    - "No blocking findings."
+    - "No blocking findings; Knip baseline behavior is preserved without widening the public helper contract."
 commit: null
 comments:
   -
@@ -88,8 +88,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Hosted verify-static found a stale Knip baseline entry because the new test imported RemotePrStatus directly; keep the helper signature structurally minimal and infer the test fixture type instead."
+  -
+    type: "verify"
+    at: "2026-07-10T09:17:53.837Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified CI repair at 23be64c: Knip baseline 574/574, focused 3 files/12 tests, typecheck, ci:contract, and full fast 364 files/2150 tests passed."
 doc_version: 3
-doc_updated_at: "2026-07-10T09:15:23.991Z"
+doc_updated_at: "2026-07-10T09:17:54.061Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, let integration queue recovery treat a merged PR with a valid pre-merge closure packet and successful no-op Hosted Close as terminal, so the handoff lane releases automatically after protected-main rebase."
 sections:
@@ -185,6 +191,36 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T09:06:23.308Z, excerpt_hash=sha256:01f2f85ec787476292f3f5162a49a1566b64e9c9ec6e86178e1bbea252d04073
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100435-A932SP-release-lane-after-premerge-hosted-close/.agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json
+    - old_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+    - current_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100435-A932SP
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607100435-A932SP --branch task/202607100435-A932SP/release-lane-after-premerge-hosted-close
+    - diagnostic_command: agentplane pr check 202607100435-A932SP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-10T09:17:53.837Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified CI repair at 23be64c: Knip baseline 574/574, focused 3 files/12 tests, typecheck, ci:contract, and full fast 364 files/2150 tests passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T09:15:23.991Z, excerpt_hash=sha256:01f2f85ec787476292f3f5162a49a1566b64e9c9ec6e86178e1bbea252d04073
 
     Details:
 
@@ -326,6 +362,36 @@ Note: Hosted verify-static found a stale Knip baseline entry because the new tes
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T09:06:23.308Z, excerpt_hash=sha256:01f2f85ec787476292f3f5162a49a1566b64e9c9ec6e86178e1bbea252d04073
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100435-A932SP-release-lane-after-premerge-hosted-close/.agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json
+- old_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+- current_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100435-A932SP
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607100435-A932SP --branch task/202607100435-A932SP/release-lane-after-premerge-hosted-close
+- diagnostic_command: agentplane pr check 202607100435-A932SP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-10T09:17:53.837Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified CI repair at 23be64c: Knip baseline 574/574, focused 3 files/12 tests, typecheck, ci:contract, and full fast 364 files/2150 tests passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T09:15:23.991Z, excerpt_hash=sha256:01f2f85ec787476292f3f5162a49a1566b64e9c9ec6e86178e1bbea252d04073
 
 Details:
 
