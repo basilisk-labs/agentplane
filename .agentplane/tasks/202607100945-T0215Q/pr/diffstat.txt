@@ -1,0 +1,28 @@
+ .agentplane/policy/incidents.md                    |   1 -
+ .agentplane/tasks/202607092209-F33MNN/README.md    |   3 +
+ .agentplane/tasks/202607100404-WPRBVK/README.md    |  34 ++++++----
+ .agentplane/tasks/202607100404-WPRBVK/pr/meta.json |   5 +-
+ .../evaluator-opinion.md                           |  20 ++++++
+ .../evaluator-prompt.md                            |  74 +++++++++++++++++++++
+ .../quality-report.json                            |  22 ++++++
+ .../evaluator-opinion.md                           |  20 ++++++
+ .../evaluator-prompt.md                            |  74 +++++++++++++++++++++
+ .../quality-report.json                            |  22 ++++++
+ docs/developer/incident-archive.mdx                |   4 ++
+ docs/internal/v0.6.22-refactor-plan.md             |  10 ++-
+ eslint.config.cjs                                  |   7 +-
+ packages/agentplane/assets/policy/incidents.md     |   1 -
+ website/docusaurus.config.ts                       |  16 ++++-
+ website/scripts/check-links.mjs                    |   2 +-
+ website/scripts/check-navigation.mjs               |   2 +-
+ website/src/components/GitHubStarsButton.tsx       |   7 +-
+ website/src/components/RedirectTo.tsx              |   2 +-
+ website/src/pages/examples.tsx                     |   2 +-
+ website/src/pages/index.tsx                        |   2 +-
+ website/src/theme/DocItem/Layout/index.tsx         |   1 -
+ website/src/theme/DocSidebar/Desktop/index.tsx     |   9 +--
+ website/src/theme/Root.tsx                         |  47 ++++++-------
+ .../social/docs/internal/v0.6.22-refactor-plan.png | Bin 0 -> 60132 bytes
+ website/static/img/social/manifest.json            |   8 +++
+ website/static/llms-full.txt                       |  11 +--
+ 27 files changed, 341 insertions(+), 65 deletions(-)

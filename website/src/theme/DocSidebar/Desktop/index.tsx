@@ -9,12 +9,9 @@ import type { Props } from "@theme/DocSidebar/Desktop";
 import styles from "./styles.module.css";
 
 function DocSidebarDesktop({ path, sidebar, onCollapse, isHidden }: Props) {
-  const {
-    navbar: { hideOnScroll },
-    docs: {
-      sidebar: { hideable },
-    },
-  } = useThemeConfig();
+  const { navbar, docs } = useThemeConfig();
+  const { hideOnScroll } = navbar;
+  const { hideable } = docs.sidebar;
 
   return (
     <div

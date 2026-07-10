@@ -280,6 +280,7 @@ module.exports = [
       "agentplane-recipes/**",
       "website/.docusaurus/**",
       "website/build/**",
+      "website/static/presentation/aimindset20260325/**",
       "**/*.d.ts",
     ],
   },
@@ -448,7 +449,11 @@ module.exports = [
   },
 
   {
-    files: ["website/src/theme/*.tsx"],
+    files: [
+      "website/src/components/**/*.{ts,tsx}",
+      "website/src/data/**/*.{ts,tsx}",
+      "website/src/theme/**/*.{ts,tsx}",
+    ],
     rules: {
       "unicorn/filename-case": "off",
     },

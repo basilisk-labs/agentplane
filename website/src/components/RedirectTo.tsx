@@ -8,7 +8,7 @@ type RedirectToProps = {
 
 export default function RedirectTo({ to }: RedirectToProps): ReactNode {
   useEffect(() => {
-    window.location.replace(to);
+    globalThis.location.replace(to);
   }, [to]);
 
   return (
