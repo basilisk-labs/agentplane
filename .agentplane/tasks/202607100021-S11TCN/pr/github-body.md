@@ -15,20 +15,20 @@ Tighten the SGR v2 context_extraction contract for entity resolution, page creat
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-PR review found that extraction-contract.json omitted conditional new_entity_proposal requirements
-enforced by the SGR v2 validator; update the contract/example and regression coverage before
-integration.
+Review fix passed schema contract tests, task-pack tests, task-harvest tests, agentplane typecheck,
+lint:core, and ci:contract; extraction-contract.json now declares and exemplifies every conditional
+new_entity_proposal field enforced by the validator.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-10T00:48:03.176Z
+- Updated: 2026-07-10T00:57:24.641Z
 - Branch: task/202607100021-S11TCN/make-context-extraction-packs-compact-and-schema
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -40,18 +40,18 @@ integration.
  .../src/commands/context/harvest-tasks.ts          |   6 +
  .../src/commands/context/release-readiness.test.ts |  51 ++---
  .../src/context/harvest-tasks-extraction.ts        |  97 +-------
- .../src/context/ingest-task-pack.test.ts           |  62 +++++
+ .../src/context/ingest-task-pack.test.ts           |  74 ++++++
  .../agentplane/src/context/ingest-task-pack.ts     | 254 ++++++++++++++++++---
  .../agentplane/src/context/ingest-task-prompt.ts   | 130 ++++-------
  .../agentplane/src/context/ingest-task.test.ts     |  10 +-
  packages/agentplane/src/context/ingest-task.ts     |  41 +---
- .../src/runtime/sgr/context-extraction-contract.ts | 153 +++++++++++++
+ .../src/runtime/sgr/context-extraction-contract.ts | 173 ++++++++++++++
  .../src/runtime/sgr/context-extraction-payloads.ts | 165 +++++++++++++
  .../agentplane/src/runtime/sgr/contract-types.ts   |  57 ++++-
- .../agentplane/src/runtime/sgr/contracts.test.ts   |  98 +++++++-
+ .../agentplane/src/runtime/sgr/contracts.test.ts   | 105 ++++++++-
  packages/agentplane/src/runtime/sgr/contracts.ts   |  56 +++--
  packages/agentplane/src/runtime/sgr/index.ts       |   4 +
- 18 files changed, 944 insertions(+), 288 deletions(-)
+ 18 files changed, 983 insertions(+), 288 deletions(-)
 ```
 
 </details>

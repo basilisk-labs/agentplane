@@ -5,15 +5,15 @@
  .../src/commands/context/harvest-tasks.ts          |   6 +
  .../src/commands/context/release-readiness.test.ts |  51 ++---
  .../src/context/harvest-tasks-extraction.ts        |  97 +-------
- .../src/context/ingest-task-pack.test.ts           |  62 +++++
+ .../src/context/ingest-task-pack.test.ts           |  74 ++++++
  .../agentplane/src/context/ingest-task-pack.ts     | 254 ++++++++++++++++++---
  .../agentplane/src/context/ingest-task-prompt.ts   | 130 ++++-------
  .../agentplane/src/context/ingest-task.test.ts     |  10 +-
  packages/agentplane/src/context/ingest-task.ts     |  41 +---
- .../src/runtime/sgr/context-extraction-contract.ts | 153 +++++++++++++
+ .../src/runtime/sgr/context-extraction-contract.ts | 173 ++++++++++++++
  .../src/runtime/sgr/context-extraction-payloads.ts | 165 +++++++++++++
  .../agentplane/src/runtime/sgr/contract-types.ts   |  57 ++++-
- .../agentplane/src/runtime/sgr/contracts.test.ts   |  98 +++++++-
+ .../agentplane/src/runtime/sgr/contracts.test.ts   | 105 ++++++++-
  packages/agentplane/src/runtime/sgr/contracts.ts   |  56 +++--
  packages/agentplane/src/runtime/sgr/index.ts       |   4 +
- 18 files changed, 944 insertions(+), 288 deletions(-)
+ 18 files changed, 983 insertions(+), 288 deletions(-)
