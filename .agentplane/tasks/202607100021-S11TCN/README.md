@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -28,26 +28,26 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-10T00:53:39.992Z"
+  state: "ok"
+  updated_at: "2026-07-10T00:56:56.494Z"
   updated_by: "CODER"
-  note: "PR review found that extraction-contract.json omitted conditional new_entity_proposal requirements enforced by the SGR v2 validator; update the contract/example and regression coverage before integration."
-  attempts: 1
+  note: "Review fix passed schema contract tests, task-pack tests, task-harvest tests, agentplane typecheck, lint:core, and ci:contract; extraction-contract.json now declares and exemplifies every conditional new_entity_proposal field enforced by the validator."
+  attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T00:45:03.849Z"
+  updated_at: "2026-07-10T00:56:58.371Z"
   updated_by: "EVALUATOR"
-  note: "Extraction task packs are compact, schema-complete, and snapshot-backed."
-  evaluated_sha: "246082a578c58d4a97182651d3b1a3fb5538db1d"
+  note: "Review fix aligns the generated extraction contract with runtime validation."
+  evaluated_sha: "f74e60ce27b18807006d7ca0604a3bc5a11b0eef"
   blueprint_digest: "70e4ce0b42f580f8e29f021d9d52cb431b3b936193818b0b4497717661394564"
   evidence_refs:
     - ".agentplane/tasks/202607100021-S11TCN/README.md"
-    - ".agentplane/tasks/202607100021-S11TCN/quality/20260710-004503849-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100021-S11TCN/quality/20260710-004503849-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100021-S11TCN/quality/20260710-004503849-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100021-S11TCN/quality/20260710-005658371-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100021-S11TCN/quality/20260710-005658371-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100021-S11TCN/quality/20260710-005658371-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100021-S11TCN/blueprint/resolved-snapshot.json"
   findings:
-    - "SGR v2 now fails incomplete page/topology payloads before writes while legacy v1 remains compatible; generated packs expose a valid contract plus deterministic current-context candidates, and prompt size budgets are enforced."
+    - "new_entity_proposal now declares proposed_entity_id, candidate_entities_checked, and why-not rationale requirements and the canonical example exercises the conditional branch."
 commit: null
 comments:
   -
@@ -83,8 +83,14 @@ events:
     author: "CODER"
     state: "needs_rework"
     note: "PR review found that extraction-contract.json omitted conditional new_entity_proposal requirements enforced by the SGR v2 validator; update the contract/example and regression coverage before integration."
+  -
+    type: "verify"
+    at: "2026-07-10T00:56:56.494Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review fix passed schema contract tests, task-pack tests, task-harvest tests, agentplane typecheck, lint:core, and ci:contract; extraction-contract.json now declares and exemplifies every conditional new_entity_proposal field enforced by the validator."
 doc_version: 3
-doc_updated_at: "2026-07-10T00:53:41.133Z"
+doc_updated_at: "2026-07-10T00:56:56.729Z"
 doc_updated_by: "CODER"
 description: "Tighten the SGR v2 context_extraction contract for entity resolution, page creation, and topology decisions; generate a complete compact extraction contract; enrich canonical task snapshots with current surface counts/digests/candidates; reduce duplicated prompt prose while keeping generated CURATOR tasks portable and self-contained."
 sections:
@@ -145,6 +151,36 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:48:53.739Z, excerpt_hash=sha256:ea04f8b33d1e5fe807e9106c6e20c8bcd847d4b537041052b262345d5e824e0e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100021-S11TCN-make-context-extraction-packs-compact-and-schema/.agentplane/tasks/202607100021-S11TCN/blueprint/resolved-snapshot.json
+    - old_digest: 70e4ce0b42f580f8e29f021d9d52cb431b3b936193818b0b4497717661394564
+    - current_digest: 70e4ce0b42f580f8e29f021d9d52cb431b3b936193818b0b4497717661394564
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100021-S11TCN
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607100021-S11TCN --branch task/202607100021-S11TCN/make-context-extraction-packs-compact-and-schema
+    - diagnostic_command: agentplane pr check 202607100021-S11TCN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-10T00:56:56.494Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Review fix passed schema contract tests, task-pack tests, task-harvest tests, agentplane typecheck, lint:core, and ci:contract; extraction-contract.json now declares and exemplifies every conditional new_entity_proposal field enforced by the validator.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:53:41.133Z, excerpt_hash=sha256:ea04f8b33d1e5fe807e9106c6e20c8bcd847d4b537041052b262345d5e824e0e
 
     Details:
 
@@ -250,6 +286,36 @@ Note: PR review found that extraction-contract.json omitted conditional new_enti
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:48:53.739Z, excerpt_hash=sha256:ea04f8b33d1e5fe807e9106c6e20c8bcd847d4b537041052b262345d5e824e0e
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100021-S11TCN-make-context-extraction-packs-compact-and-schema/.agentplane/tasks/202607100021-S11TCN/blueprint/resolved-snapshot.json
+- old_digest: 70e4ce0b42f580f8e29f021d9d52cb431b3b936193818b0b4497717661394564
+- current_digest: 70e4ce0b42f580f8e29f021d9d52cb431b3b936193818b0b4497717661394564
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100021-S11TCN
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607100021-S11TCN --branch task/202607100021-S11TCN/make-context-extraction-packs-compact-and-schema
+- diagnostic_command: agentplane pr check 202607100021-S11TCN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-10T00:56:56.494Z — VERIFY — ok
+
+By: CODER
+
+Note: Review fix passed schema contract tests, task-pack tests, task-harvest tests, agentplane typecheck, lint:core, and ci:contract; extraction-contract.json now declares and exemplifies every conditional new_entity_proposal field enforced by the validator.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T00:53:41.133Z, excerpt_hash=sha256:ea04f8b33d1e5fe807e9106c6e20c8bcd847d4b537041052b262345d5e824e0e
 
 Details:
 

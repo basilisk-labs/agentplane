@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100021-S11TCN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T00:56:58.371Z",
+  "verdict": "pass",
+  "summary": "Review fix aligns the generated extraction contract with runtime validation.",
+  "evaluated_sha": "f74e60ce27b18807006d7ca0604a3bc5a11b0eef",
+  "blueprint_digest": "70e4ce0b42f580f8e29f021d9d52cb431b3b936193818b0b4497717661394564",
+  "findings": [
+    "new_entity_proposal now declares proposed_entity_id, candidate_entities_checked, and why-not rationale requirements and the canonical example exercises the conditional branch."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100021-S11TCN/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
