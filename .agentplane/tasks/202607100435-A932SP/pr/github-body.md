@@ -19,9 +19,9 @@ For v0.6.22, let integration queue recovery treat a merged PR with a valid pre-m
 - Note:
 
 ```text
-Verified review hardening at 3fcc7b0: same Hosted Close task/marker/basis validation, focused 4
-files/21 tests, typecheck, lint:core, Knip 574/574, ci:contract, and full fast 364 files/2150 tests
-passed.
+Verified after rebase onto main 0f96e043: focused flow-status and integration-queue tests (12),
+typecheck, lint:core, ci:contract, test:fast (364 files/2150 tests), policy routing, and doctor
+passed. Release incident gate is cleared on the rebased base.
 ```
 - Canonical workflow state lives in the task README.
 

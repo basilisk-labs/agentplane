@@ -13,7 +13,7 @@ Created: 2026-07-10T04:36:53.058Z
 ## Verification
 
 - State: ok
-- Note: Verified review hardening at 3fcc7b0: same Hosted Close task/marker/basis validation, focused 4 files/21 tests, typecheck, lint:core, Knip 574/574, ci:contract, and full fast 364 files/2150 tests passed.
+- Note: Verified after rebase onto main 0f96e043: focused flow-status and integration-queue tests (12), typecheck, lint:core, ci:contract, test:fast (364 files/2150 tests), policy routing, and doctor passed. Release incident gate is cleared on the rebased base.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

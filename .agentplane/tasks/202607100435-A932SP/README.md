@@ -5,7 +5,7 @@ result_summary: "hardened pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -28,25 +28,29 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T09:26:59.847Z"
-  updated_by: "TESTER"
-  note: "Verified review hardening at 3fcc7b0: same Hosted Close task/marker/basis validation, focused 4 files/21 tests, typecheck, lint:core, Knip 574/574, ci:contract, and full fast 364 files/2150 tests passed."
+  updated_at: "2026-07-10T10:18:31.693Z"
+  updated_by: "REVIEWER"
+  note: "Verified after rebase onto main 0f96e043: focused flow-status and integration-queue tests (12), typecheck, lint:core, ci:contract, test:fast (364 files/2150 tests), policy routing, and doctor passed. Release incident gate is cleared on the rebased base."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T09:27:01.572Z"
+  updated_at: "2026-07-10T10:18:59.677Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed after CI and inline-review rework."
-  evaluated_sha: "4963d4af67be3ab696c5b78cfe321ea2d93cd2de"
+  note: "Rebased integration-lane release logic remains correct and release-ready after the website incident was cleared on main."
+  evaluated_sha: "94d1fa98261ac67808b6e18210293a5f4cf7b8c4"
   blueprint_digest: "964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611"
   evidence_refs:
     - ".agentplane/tasks/202607100435-A932SP/README.md"
-    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-092701572-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-092701572-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-092701572-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-101859677-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-101859677-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100435-A932SP/quality/20260710-101859677-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json"
+    - "rebased HEAD 3b15898d2906"
+    - "focused vitest 3 files/12 tests; typecheck; lint:core; ci:contract; test:fast 364 files/2150 tests"
+    - "policy routing; doctor; main incident gate cleared by 0f96e043"
   findings:
-    - "No blocking findings; queue release now reuses Hosted Close closure and basis validation."
+    - "Merged PRs release from handoff only when DONE task state, task/PR identity, pre-merge closure evidence, and basis ancestry or the guarded rebase fallback all validate."
+    - "Open PRs, mismatched task or PR metadata, and divergent existing basis commits remain rejected by focused regression tests."
 commit:
   hash: "4963d4af67be3ab696c5b78cfe321ea2d93cd2de"
   message: "🐛 A932SP integration-queue: validate pre-close basis before release"
@@ -118,8 +122,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: CI and review rework completed; refreshed pre-merge closure packet is ready."
+  -
+    type: "verify"
+    at: "2026-07-10T10:18:31.693Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Verified after rebase onto main 0f96e043: focused flow-status and integration-queue tests (12), typecheck, lint:core, ci:contract, test:fast (364 files/2150 tests), policy routing, and doctor passed. Release incident gate is cleared on the rebased base."
 doc_version: 3
-doc_updated_at: "2026-07-10T09:27:40.355Z"
+doc_updated_at: "2026-07-10T10:18:33.130Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, let integration queue recovery treat a merged PR with a valid pre-merge closure packet and successful no-op Hosted Close as terminal, so the handoff lane releases automatically after protected-main rebase."
 sections:
@@ -305,6 +315,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T09:24:24.185Z, excerpt_hash=sha256:01f2f85ec787476292f3f5162a49a1566b64e9c9ec6e86178e1bbea252d04073
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100435-A932SP-release-lane-after-premerge-hosted-close/.agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json
+    - old_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+    - current_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100435-A932SP
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607100435-A932SP --branch task/202607100435-A932SP/release-lane-after-premerge-hosted-close
+    - diagnostic_command: agentplane pr check 202607100435-A932SP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-10T10:18:31.693Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Verified after rebase onto main 0f96e043: focused flow-status and integration-queue tests (12), typecheck, lint:core, ci:contract, test:fast (364 files/2150 tests), policy routing, and doctor passed. Release incident gate is cleared on the rebased base.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T09:27:40.355Z, excerpt_hash=sha256:01f2f85ec787476292f3f5162a49a1566b64e9c9ec6e86178e1bbea252d04073
 
     Details:
 
@@ -540,6 +580,36 @@ Note: Verified review hardening at 3fcc7b0: same Hosted Close task/marker/basis 
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T09:24:24.185Z, excerpt_hash=sha256:01f2f85ec787476292f3f5162a49a1566b64e9c9ec6e86178e1bbea252d04073
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100435-A932SP-release-lane-after-premerge-hosted-close/.agentplane/tasks/202607100435-A932SP/blueprint/resolved-snapshot.json
+- old_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+- current_digest: 964681ba05503b0eb186864846a3938b514d7d678ebad7141c02b04d1a0a7611
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100435-A932SP
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607100435-A932SP --branch task/202607100435-A932SP/release-lane-after-premerge-hosted-close
+- diagnostic_command: agentplane pr check 202607100435-A932SP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-10T10:18:31.693Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Verified after rebase onto main 0f96e043: focused flow-status and integration-queue tests (12), typecheck, lint:core, ci:contract, test:fast (364 files/2150 tests), policy routing, and doctor passed. Release incident gate is cleared on the rebased base.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T09:27:40.355Z, excerpt_hash=sha256:01f2f85ec787476292f3f5162a49a1566b64e9c9ec6e86178e1bbea252d04073
 
 Details:
 
