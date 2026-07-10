@@ -15,8 +15,15 @@ For v0.6.22, remove the current website lint failures with Docusaurus-aware rule
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Website lint restored with zero findings; Docusaurus-aware filename and generated-asset boundaries
+are narrow; docs typecheck, generation freshness, production build, ci:contract, test:fast, release
+incident gate, policy routing, and doctor passed. Doctor reports only pre-existing historical task
+metadata warnings.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
