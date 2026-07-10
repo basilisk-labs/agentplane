@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -86,7 +86,7 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-10T10:53:10.995Z"
+doc_updated_at: "2026-07-10T12:40:28.157Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, give metadata-only docs and task-closure changes a fresh auditable evaluator target instead of walking past all workflow artifacts to an unrelated older code commit."
 sections:
@@ -147,7 +147,12 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    Root cause: metadata-only evaluator resolution skipped all task artifacts and could fall through to unrelated workflow history. The first fix retained the latest current-task artifact commit, but a repeated evaluator run could then mistake its own committed quality artifacts or refreshed PR metadata for newly reviewed work.
+
+    Implementation: retain the previous evaluated SHA when it is still an ancestor of HEAD and intervening current-task commits contain only managed quality, PR, blueprint, or README artifacts. A new task-local work unit outside those managed derived paths still supersedes the previous target, and code commits continue to target their implementation SHA.
+
+    Review follow-up: added a two-pass evaluator regression that commits the first quality report and a later PR metadata refresh, then proves the second report remains anchored to the original metadata work unit. Focused suites pass 2 files / 12 tests; typecheck and lint pass.
 extensions:
   implementation_commit:
     hash: "f6f17a1f6f44a2247a62dbf3b6fe2dd668c54804"
@@ -224,3 +229,9 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Root cause: metadata-only evaluator resolution skipped all task artifacts and could fall through to unrelated workflow history. The first fix retained the latest current-task artifact commit, but a repeated evaluator run could then mistake its own committed quality artifacts or refreshed PR metadata for newly reviewed work.
+
+Implementation: retain the previous evaluated SHA when it is still an ancestor of HEAD and intervening current-task commits contain only managed quality, PR, blueprint, or README artifacts. A new task-local work unit outside those managed derived paths still supersedes the previous target, and code commits continue to target their implementation SHA.
+
+Review follow-up: added a two-pass evaluator regression that commits the first quality report and a later PR metadata refresh, then proves the second report remains anchored to the original metadata work unit. Focused suites pass 2 files / 12 tests; typecheck and lint pass.

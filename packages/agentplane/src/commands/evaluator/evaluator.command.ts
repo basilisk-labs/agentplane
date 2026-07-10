@@ -11,7 +11,7 @@ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { CliError, GitError } from "../../shared/errors.js";
 import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
-import { gitDiffNames, gitRevParse } from "@agentplaneorg/core/git";
+import { gitDiffNames, gitIsAncestor, gitRevParse } from "@agentplaneorg/core/git";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
@@ -108,6 +108,7 @@ async function resolveEvaluatedSha(opts: {
   gitRoot: string;
   workflowDir: string;
   taskId: string;
+  previousEvaluatedSha?: string | null;
 }): Promise<string | null> {
   const head = await gitRevParse(opts.gitRoot, ["HEAD"]).catch(() => null);
   if (!head) return null;
@@ -115,10 +116,20 @@ async function resolveEvaluatedSha(opts: {
   const normalizedWorkflowDir = opts.workflowDir.replaceAll("\\", "/").replaceAll(/\/+$/g, "");
   const taskArtifactPrefix = `${normalizedWorkflowDir}/${opts.taskId}/`;
   const workflowArtifactPrefix = `${normalizedWorkflowDir}/`;
+  const previousEvaluatedSha = await (async (): Promise<string | null> => {
+    const candidate = opts.previousEvaluatedSha?.trim();
+    if (!candidate) return null;
+    const resolved = await gitRevParse(opts.gitRoot, [`${candidate}^{commit}`]).catch(() => null);
+    if (!resolved) return null;
+    return (await gitIsAncestor(opts.gitRoot, resolved, head)) ? resolved : null;
+  })();
   let current = head;
   let currentTaskArtifactHead: string | null = null;
 
   for (let depth = 0; depth < 20; depth += 1) {
+    if (current === previousEvaluatedSha) {
+      return currentTaskArtifactHead ?? current;
+    }
     let parent: string;
     try {
       parent = await gitRevParse(opts.gitRoot, [`${current}^`]);
@@ -139,6 +150,22 @@ async function resolveEvaluatedSha(opts: {
       return current;
     }
     if (touchesOnlyCurrentTask) {
+      const taskRelativePaths = changed.map((name) => name.slice(taskArtifactPrefix.length));
+      const touchesDerivedArtifacts = taskRelativePaths.some(
+        (name) =>
+          name.startsWith("quality/") || name.startsWith("pr/") || name.startsWith("blueprint/"),
+      );
+      const touchesOnlyManagedArtifacts = taskRelativePaths.every(
+        (name) =>
+          name === "README.md" ||
+          name.startsWith("quality/") ||
+          name.startsWith("pr/") ||
+          name.startsWith("blueprint/"),
+      );
+      if (previousEvaluatedSha && touchesDerivedArtifacts && touchesOnlyManagedArtifacts) {
+        current = parent;
+        continue;
+      }
       currentTaskArtifactHead ??= current;
       current = parent;
       continue;
@@ -280,6 +307,7 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
     gitRoot,
     workflowDir: command.config.paths.workflow_dir,
     taskId: p.taskId,
+    previousEvaluatedSha: task.quality_review?.evaluated_sha ?? null,
   });
   const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: command, task }).catch(() => null);
   const reportPath = path.join(reviewDir, QUALITY_REPORT_FILE);
