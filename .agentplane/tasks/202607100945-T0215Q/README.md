@@ -1,10 +1,11 @@
 ---
 id: "202607100945-T0215Q"
 title: "Resolve release incident INC-20260710-01 website lint"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -44,11 +45,16 @@ quality_review:
   findings:
     - "Framework-specific filename exceptions are limited to React components, data modules, and Docusaurus theme paths; the generated exclusion is limited to one presentation subtree."
     - "Actionable source findings were corrected and verified by the production site build; the active incident was preserved in the durable archive before canonical and projected registries were cleared."
-commit: null
+commit:
+  hash: "b4617b09beac9479a09af3cf5ec8de8a11cba90a"
+  message: "📝 T0215Q task: record pull request metadata"
 comments:
   -
     author: "CODER"
     body: "Start: resolve INC-20260710-01 by making website lint clean with Docusaurus-aware rule boundaries and verified source fixes."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -63,8 +69,15 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Website lint restored with zero findings; Docusaurus-aware filename and generated-asset boundaries are narrow; docs typecheck, generation freshness, production build, ci:contract, test:fast, release incident gate, policy routing, and doctor passed. Doctor reports only pre-existing historical task metadata warnings."
+  -
+    type: "status"
+    at: "2026-07-10T10:05:48.762Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-10T09:57:04.100Z"
+doc_updated_at: "2026-07-10T10:05:48.763Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, remove the current website lint failures with Docusaurus-aware rule boundaries and targeted code fixes, verify the website build/lint surfaces, archive the resolved incident with evidence, and unblock the release-ready manifest."
 sections:
@@ -126,6 +139,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "5a8b4d0ef6401f4b65bfecf5edab25374aafe733"
+    message: "🚧 T0215Q task: fix website lint release incident"
 id_source: "generated"
 ---
 ## Summary
