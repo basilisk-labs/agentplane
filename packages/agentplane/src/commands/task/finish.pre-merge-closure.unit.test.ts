@@ -1,5 +1,6 @@
 import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { defaultConfig } from "@agentplaneorg/core/config";
+import { execFileSync } from "node:child_process";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -38,6 +39,8 @@ function mkCtx(root: string): CommandContext {
     git: {
       headCommit: vi.fn().mockResolvedValue("implementation-head"),
       invalidateStatus: vi.fn(),
+      statusStagedPaths: vi.fn().mockResolvedValue([]),
+      statusUnstagedTrackedPaths: vi.fn().mockResolvedValue([]),
     } as unknown as GitContext,
   } as CommandContext;
 }
@@ -68,6 +71,62 @@ function mkOptions(cwd: string): FinishOptions {
 }
 
 describe("finish pre-merge closure", () => {
+  it("allows dirty artifacts inside the active task subtree", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-pre-merge-dirt-"));
+    try {
+      execFileSync("git", ["init", "--quiet"], { cwd: root });
+      const ctx = mkCtx(root);
+      vi.spyOn(ctx.git, "statusUnstagedTrackedPaths").mockResolvedValue([
+        ".agentplane/tasks/T-1/README.md",
+        ".agentplane/tasks/T-1/quality/review/quality-report.json",
+      ]);
+      const { assertCloseCommitCanMutateTaskState } = await import("./finish-execute-close.js");
+
+      await expect(
+        assertCloseCommitCanMutateTaskState({
+          ctx,
+          options: mkOptions(root),
+          plan: {
+            shouldCloseCommit: true,
+            preMergeClosure: true,
+            primaryTaskId: "T-1",
+            closeAdditionalTaskIds: [],
+          } as FinishExecutionPlan,
+        }),
+      ).resolves.toBeUndefined();
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("keeps unrelated tracked paths blocking", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-pre-merge-dirt-"));
+    try {
+      execFileSync("git", ["init", "--quiet"], { cwd: root });
+      const ctx = mkCtx(root);
+      vi.spyOn(ctx.git, "statusUnstagedTrackedPaths").mockResolvedValue([
+        ".agentplane/tasks/T-1/README.md",
+        "packages/agentplane/src/unrelated.ts",
+      ]);
+      const { assertCloseCommitCanMutateTaskState } = await import("./finish-execute-close.js");
+
+      await expect(
+        assertCloseCommitCanMutateTaskState({
+          ctx,
+          options: mkOptions(root),
+          plan: {
+            shouldCloseCommit: true,
+            preMergeClosure: true,
+            primaryTaskId: "T-1",
+            closeAdditionalTaskIds: [],
+          } as FinishExecutionPlan,
+        }),
+      ).rejects.toThrow(/packages\/agentplane\/src\/unrelated\.ts/u);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
   it("records closure on the task branch without materializing a task-close branch", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-pre-merge-close-"));
     try {

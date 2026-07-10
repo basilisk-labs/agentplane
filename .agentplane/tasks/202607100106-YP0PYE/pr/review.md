@@ -2,6 +2,12 @@
 
 Created: 2026-07-10T01:07:58.209Z
 
+## Batch Tasks
+
+- Primary: `202607100106-YP0PYE`
+- Closure policy: `all_or_fail`
+- Included: `202607100140-WGV79Y`
+
 ## Task
 
 - Task: `202607100106-YP0PYE`
@@ -29,17 +35,21 @@ Created: 2026-07-10T01:07:58.209Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202607092209-F33MNN/README.md    |   2 +
+ .agentplane/tasks/202607092209-F33MNN/README.md    |   3 +
+ .agentplane/tasks/202607100140-WGV79Y/README.md    | 119 +++++
+ .../blueprint/resolved-snapshot.json               | 580 +++++++++++++++++++++
  docs/user/cli-reference.generated.mdx              |   1 +
  .../src/commands/context/context-runner.ts         |   2 +
  .../src/commands/context/context.learn.spec.ts     |  10 +
  .../src/commands/context/context.spec.ts           |  10 +
- .../src/commands/context/harvest-tasks.test.ts     | 206 ++++++++++++++++++++-
+ .../src/commands/context/harvest-tasks.test.ts     | 206 +++++++-
  .../src/commands/context/harvest-tasks.ts          |   4 +
- .../src/context/harvest-tasks-extraction.ts        | 131 ++++++++++---
+ .../src/commands/task/finish-execute-close.ts      |  20 +-
+ .../task/finish.pre-merge-closure.unit.test.ts     |  59 +++
+ .../src/context/harvest-tasks-extraction.ts        | 131 +++--
  .../src/context/harvest-tasks-markers.ts           |  19 +-
- .../agentplane/src/context/harvest-tasks-model.ts  |  18 ++
- 10 files changed, 371 insertions(+), 32 deletions(-)
+ .../agentplane/src/context/harvest-tasks-model.ts  |  18 +
+ 14 files changed, 1149 insertions(+), 33 deletions(-)
 ```
 
 </details>
