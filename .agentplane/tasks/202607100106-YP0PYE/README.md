@@ -4,7 +4,7 @@ title: "Bound context extraction batches by source bytes and prevent duplicate i
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -26,7 +26,7 @@ verify:
   - "bun run test:fast"
 plan_approval:
   state: "approved"
-  updated_at: "2026-07-10T01:07:41.769Z"
+  updated_at: "2026-07-10T01:49:17.177Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
@@ -37,21 +37,21 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T01:28:29.954Z"
+  updated_at: "2026-07-10T01:37:42.384Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed on synchronized PR metadata head."
-  evaluated_sha: "b8556a06fc488b2f577fd14789616d7f83cd9b50"
+  note: "Quality review passed on linked PR head."
+  evaluated_sha: "188241fee1248392189b8fc48471d177b70ff3cb"
   blueprint_digest: "2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac"
   evidence_refs:
     - ".agentplane/tasks/202607100106-YP0PYE/README.md"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-012829954-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-012829954-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-012829954-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-013742384-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-013742384-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-013742384-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100106-YP0PYE/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/context/harvest-tasks.test.ts"
     - "docs/user/cli-reference.generated.mdx"
   findings:
-    - "No blocking findings; implementation is unchanged and full-fast validation passed."
+    - "No blocking findings; full-fast local CI and generated CLI reference are current."
 commit: null
 comments:
   -
@@ -72,7 +72,7 @@ events:
     state: "ok"
     note: "Pass: focused context harvest tests 14/14; AgentPlane typecheck; lint:core; ci:contract; full fast suite 361 files and 2,139 tests; live CLI help and dry-run confirmed batch-bytes, source byte totals, oversized ids, and batch fingerprints."
 doc_version: 3
-doc_updated_at: "2026-07-10T01:21:52.858Z"
+doc_updated_at: "2026-07-10T01:41:56.117Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, make task-history context extraction batching respect a deterministic serialized-source byte budget in addition to task count, isolate oversized single sources, surface batch byte metadata, and converge queued/ingested duplicate detection on the same versioned source fingerprint without breaking existing CLI defaults."
 sections:
@@ -89,9 +89,10 @@ sections:
     1. Define one backward-compatible task-source fingerprint/byte-size helper and use it for queued and ingested markers.
     2. Add a validated --batch-bytes option while preserving --batch-size behavior and default.
     3. Replace fixed-count slicing with stable oldest-first packing constrained by both count and bytes; isolate oversized sources and report exact batch metadata.
-    4. Suppress unchanged extraction work when either a queued or ingested marker already covers the source, while explicit --task remains a force path.
-    5. Add focused boundary/compatibility tests, then run the declared package, contract, lint, and full fast checks.
-    6. Publish through a protected-main PR and include the merged task as a v0.6.22 release dependency.
+    4. Suppress unchanged extraction work when a queued marker already covers the source, while explicit --task remains a force path.
+    5. Add focused boundary/compatibility tests, generated CLI reference, and run package, contract, lint, and full-fast checks.
+    6. Include related lifecycle task 202607100140-WGV79Y in this primary PR to allow deterministic pre-merge closure to stage the active task artifacts it owns.
+    7. Publish both task records through PR #4563 and include them as v0.6.22 release dependencies.
   Verify Steps: |-
     1. Run bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts. Expected: count and byte boundaries, oversized isolation, metadata, legacy marker compatibility, and duplicate suppression pass.
     2. Run bun run --filter=agentplane typecheck. Expected: the AgentPlane package typechecks.
@@ -156,9 +157,10 @@ For v0.6.22, make task-history context extraction batching respect a determinist
 1. Define one backward-compatible task-source fingerprint/byte-size helper and use it for queued and ingested markers.
 2. Add a validated --batch-bytes option while preserving --batch-size behavior and default.
 3. Replace fixed-count slicing with stable oldest-first packing constrained by both count and bytes; isolate oversized sources and report exact batch metadata.
-4. Suppress unchanged extraction work when either a queued or ingested marker already covers the source, while explicit --task remains a force path.
-5. Add focused boundary/compatibility tests, then run the declared package, contract, lint, and full fast checks.
-6. Publish through a protected-main PR and include the merged task as a v0.6.22 release dependency.
+4. Suppress unchanged extraction work when a queued marker already covers the source, while explicit --task remains a force path.
+5. Add focused boundary/compatibility tests, generated CLI reference, and run package, contract, lint, and full-fast checks.
+6. Include related lifecycle task 202607100140-WGV79Y in this primary PR to allow deterministic pre-merge closure to stage the active task artifacts it owns.
+7. Publish both task records through PR #4563 and include them as v0.6.22 release dependencies.
 
 ## Verify Steps
 
