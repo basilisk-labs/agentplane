@@ -4,7 +4,7 @@ title: "Recognize rebased pre-merge closure recorded on base"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -27,26 +27,26 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T12:08:13.160Z"
+  updated_at: "2026-07-10T12:21:49.067Z"
   updated_by: "REVIEWER"
-  note: "Matching closure evidence on protected main is validated strictly by task id, DONE state, non-empty commit, branch, and PR number. Focused suites 5/20, typecheck, lint, ci:contract, policy routing, doctor, test:fast 364/2152, full-fast local CI, and critical CLI E2E passed."
+  note: "Review follow-up accepted legacy closure markers without duplicated PR number only when canonical meta.pr_number matches. Focused suites 5/21, typecheck, lint, full-fast local CI 364/2153, and critical CLI E2E passed."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T12:08:21.499Z"
+  updated_at: "2026-07-10T12:21:51.290Z"
   updated_by: "EVALUATOR"
-  note: "Rebased protected-main closure is recognized only from complete matching base artifacts."
-  evaluated_sha: "851dc66f8ad5533128a3d345d716f599fbeb3ae9"
+  note: "Rebased closure recovery now supports both current and legacy marker shapes while failing closed on explicit mismatches."
+  evaluated_sha: "712c07b655601581d0b461203a798a2af26a2e2d"
   blueprint_digest: "4f2b06a19d39733f66dbff9364510f7adfc531ad949afe01e4e0f4b032685652"
   evidence_refs:
     - ".agentplane/tasks/202607101141-6T0H1E/README.md"
-    - ".agentplane/tasks/202607101141-6T0H1E/quality/20260710-120821499-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607101141-6T0H1E/quality/20260710-120821499-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607101141-6T0H1E/quality/20260710-120821499-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607101141-6T0H1E/quality/20260710-122151290-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607101141-6T0H1E/quality/20260710-122151290-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607101141-6T0H1E/quality/20260710-122151290-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607101141-6T0H1E/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/task/close-tail-state.test.ts"
   findings:
-    - "The new validator fails closed and preserves existing ancestry-based recovery while covering legitimate GitHub rebase merges."
+    - "Base evidence requires matching task id, DONE commit, branch, and canonical PR number; the optional duplicated marker PR number is enforced when present."
 commit: null
 comments:
   -
@@ -66,8 +66,14 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Matching closure evidence on protected main is validated strictly by task id, DONE state, non-empty commit, branch, and PR number. Focused suites 5/20, typecheck, lint, ci:contract, policy routing, doctor, test:fast 364/2152, full-fast local CI, and critical CLI E2E passed."
+  -
+    type: "verify"
+    at: "2026-07-10T12:21:49.067Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Review follow-up accepted legacy closure markers without duplicated PR number only when canonical meta.pr_number matches. Focused suites 5/21, typecheck, lint, full-fast local CI 364/2153, and critical CLI E2E passed."
 doc_version: 3
-doc_updated_at: "2026-07-10T12:16:45.849Z"
+doc_updated_at: "2026-07-10T12:21:49.234Z"
 doc_updated_by: "CODER"
 description: "Release a protected-main integration handoff when the merged base itself contains matching DONE task and pre-merge closure metadata, even if a pre-rebase basis commit remains locally available but is no longer an ancestor of the rebased PR head. Preserve strict branch, PR, and base evidence checks."
 sections:
@@ -116,6 +122,36 @@ sections:
     - repeat_allowed: true
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
+
+    ### 2026-07-10T12:21:49.067Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Review follow-up accepted legacy closure markers without duplicated PR number only when canonical meta.pr_number matches. Focused suites 5/21, typecheck, lint, full-fast local CI 364/2153, and critical CLI E2E passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T12:16:45.849Z, excerpt_hash=sha256:e77b4bb6fa5f6a907b7132d18945e0287039f3d5fd91f297e3788fa9d9d59203
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607101141-6T0H1E-recognize-rebased-pre-merge-closure-recorded-on/.agentplane/tasks/202607101141-6T0H1E/blueprint/resolved-snapshot.json
+    - old_digest: 4f2b06a19d39733f66dbff9364510f7adfc531ad949afe01e4e0f4b032685652
+    - current_digest: 4f2b06a19d39733f66dbff9364510f7adfc531ad949afe01e4e0f4b032685652
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607101141-6T0H1E
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane evaluator run 202607101141-6T0H1E --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607101141-6T0H1E/README.md
+    - diagnostic_command: agentplane evaluator run 202607101141-6T0H1E --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607101141-6T0H1E/README.md
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -186,6 +222,36 @@ DecisionContextRef:
 - repeat_allowed: true
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
+
+### 2026-07-10T12:21:49.067Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Review follow-up accepted legacy closure markers without duplicated PR number only when canonical meta.pr_number matches. Focused suites 5/21, typecheck, lint, full-fast local CI 364/2153, and critical CLI E2E passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T12:16:45.849Z, excerpt_hash=sha256:e77b4bb6fa5f6a907b7132d18945e0287039f3d5fd91f297e3788fa9d9d59203
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607101141-6T0H1E-recognize-rebased-pre-merge-closure-recorded-on/.agentplane/tasks/202607101141-6T0H1E/blueprint/resolved-snapshot.json
+- old_digest: 4f2b06a19d39733f66dbff9364510f7adfc531ad949afe01e4e0f4b032685652
+- current_digest: 4f2b06a19d39733f66dbff9364510f7adfc531ad949afe01e4e0f4b032685652
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607101141-6T0H1E
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane evaluator run 202607101141-6T0H1E --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607101141-6T0H1E/README.md
+- diagnostic_command: agentplane evaluator run 202607101141-6T0H1E --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607101141-6T0H1E/README.md
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
 
 <!-- END VERIFICATION RESULTS -->
 
