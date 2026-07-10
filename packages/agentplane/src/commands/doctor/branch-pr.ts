@@ -16,6 +16,7 @@ import {
   findDoneBranchPrTasksWithOpenPrArtifacts,
   findLocallyShippedBranchPrTasks,
 } from "../task/hosted-merge-sync.js";
+import { resolveLocalMergedPrMeta } from "../task/hosted-merge-sync/pr-meta.js";
 
 export async function checkBranchPrShippedTaskDrift(ctx?: CommandContext): Promise<string[]> {
   if (!ctx || !backendUsesLocalTaskStore(ctx) || ctx.config.workflow_mode !== "branch_pr") {
@@ -119,7 +120,11 @@ export async function checkBranchPrBatchIncludedTaskDrift(ctx?: CommandContext):
     if (meta?.status !== "MERGED") continue;
     const includedTaskIds = resolvePrBatchIncludedTaskIds(meta);
     if (includedTaskIds.length === 0) continue;
-    const primaryCommit = primary.commit?.hash?.trim() ?? meta.merge_commit?.trim() ?? "";
+    const primaryCommit =
+      resolveLocalMergedPrMeta(meta)?.mergeCommit ??
+      primary.commit?.hash?.trim() ??
+      meta.head_sha?.trim() ??
+      "";
     for (const includedTaskId of includedTaskIds) {
       const included = byId.get(includedTaskId) ?? null;
       const includedStatus = String(included?.status ?? "MISSING").toUpperCase();

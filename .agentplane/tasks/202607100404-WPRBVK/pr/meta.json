@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202607100404-WPRBVK/make-doctor-batch-consistency-rebase-aware",
+  "created_at": "2026-07-10T04:04:49.139Z",
+  "diffstat_sha256": "sha256:7fe62f86aaf977a2f088ce5bbec674873c3d8a7e0e27683ac34f4b67c39c826a",
+  "last_verified_at": "2026-07-10T04:11:51.449Z",
+  "last_verified_diffstat_sha256": "sha256:7fe62f86aaf977a2f088ce5bbec674873c3d8a7e0e27683ac34f4b67c39c826a",
+  "schema_version": 1,
+  "task_id": "202607100404-WPRBVK",
+  "updated_at": "2026-07-10T04:04:49.139Z",
+  "verify": {
+    "status": "pass"
+  }
+}
