@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:1e2ef810081e6c27e936f017e6edf27b2b6aaa22d0c902c99e8708bfbd2d33f3",
   "pr_number": 4573,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4573",
+  "pre_merge_closure": {
+    "basis_commit": "769584e516b046c88823b97dd039aa480d3a69f7",
+    "branch": "task/202607092208-VQ05Q1/split-context-pipeline-hotspots-for-v0-6-22",
+    "pr_number": 4573,
+    "recorded_at": "2026-07-10T16:15:31.434Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607092208-VQ05Q1",
