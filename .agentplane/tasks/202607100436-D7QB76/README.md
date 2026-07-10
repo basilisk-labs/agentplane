@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -51,8 +51,8 @@ quality_review:
   findings:
     - "Two-pass regression proves a repeated review remains anchored to the original metadata work unit; explicit new work still supersedes the prior target."
 commit:
-  hash: "612b12171d5c9cb942fcd573e79795d8eb0d9f4a"
-  message: "📝 D7QB76 task: record pull request metadata"
+  hash: "6b28d0fc5273bd6f22e6b502ebc393fb463dbfca"
+  message: "🧪 D7QB76 task: verify stable evaluator reruns"
 comments:
   -
     author: "CODER"
@@ -60,6 +60,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure after rebase and review fix."
 events:
   -
     type: "status"
@@ -87,8 +90,15 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Evaluator reruns now preserve an ancestral reviewed SHA across managed quality, PR, blueprint, and README advances while still selecting new task-local or code work. Focused 2/12, targeted 10/133, typecheck, lint, ci:contract, test:fast 364/2157, policy routing, and doctor passed."
+  -
+    type: "status"
+    at: "2026-07-10T12:47:50.847Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure after rebase and review fix."
 doc_version: 3
-doc_updated_at: "2026-07-10T12:46:25.777Z"
+doc_updated_at: "2026-07-10T12:47:50.848Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, give metadata-only docs and task-closure changes a fresh auditable evaluator target instead of walking past all workflow artifacts to an unrelated older code commit."
 sections:
@@ -187,8 +197,8 @@ sections:
     Review follow-up: added a two-pass evaluator regression that commits the first quality report and a later PR metadata refresh, then proves the second report remains anchored to the original metadata work unit. Focused suites pass 2 files / 12 tests; typecheck and lint pass.
 extensions:
   implementation_commit:
-    hash: "f6f17a1f6f44a2247a62dbf3b6fe2dd668c54804"
-    message: "🐛 D7QB76 task: anchor metadata-only evaluator targets"
+    hash: "0b817152a8da33505a18974d6a3c069141345e21"
+    message: "🐛 D7QB76 task: preserve evaluator rerun targets"
 id_source: "generated"
 ---
 ## Summary
