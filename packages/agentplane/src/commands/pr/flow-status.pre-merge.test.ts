@@ -1,16 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { matchesMergedPreMergeClosure, type RemotePrStatus } from "./flow-status.js";
+import { matchesMergedPreMergeClosure } from "./flow-status.js";
+
+type RemotePrStatus = Parameters<typeof matchesMergedPreMergeClosure>[0]["pr"];
 
 const mergedPr: RemotePrStatus = {
-  provider: "github",
   state: "MERGED",
-  source: "lookup",
   prNumber: 4567,
-  prUrl: "https://example.invalid/pull/4567",
-  base: "main",
-  headSha: "head",
-  mergeCommit: "landed",
 };
 
 describe("pre-merge closure flow status", () => {
