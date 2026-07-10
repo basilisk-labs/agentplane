@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -32,29 +32,29 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T02:18:17.531Z"
+  updated_at: "2026-07-10T02:32:40.925Z"
   updated_by: "CODER"
-  note: "Pass: context extraction tests 14/14; lifecycle and batch refresh tests 19/19; AgentPlane typecheck; lint:core; ci:contract; full local fast CI including 361 files, 2,143 tests, build, bundle, cold-start, docs freshness, and critical CLI E2E."
+  note: "Pass after review fix: context harvest tests 15/15; lifecycle/batch tests 19/19; AgentPlane typecheck; lint:core; ci:contract; targeted local CI; full fast suite 361 files and 2,144 tests. Live dry-run reported source_bytes=17,873, exactly matching README plus available ACR bytes."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T02:18:40.059Z"
+  updated_at: "2026-07-10T02:32:58.454Z"
   updated_by: "EVALUATOR"
-  note: "The complete extraction and batch lifecycle PR is verified on its final implementation head."
-  evaluated_sha: "da90b1f3508f35f0f7e51d13174f71f537d6113d"
+  note: "The review finding is resolved: extraction byte budgets now cover the complete README and available ACR payload."
+  evaluated_sha: "1f37bf286561245c3fc142fed23ed7376ee5c178"
   blueprint_digest: "2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac"
   evidence_refs:
     - ".agentplane/tasks/202607100106-YP0PYE/README.md"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-021840059-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-021840059-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-021840059-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-023258454-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-023258454-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100106-YP0PYE/quality/20260710-023258454-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100106-YP0PYE/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/context/harvest-tasks.test.ts"
-    - "packages/agentplane/src/commands/pr/internal/sync-batch-ownership.test.ts"
-    - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
-    - "docs/user/cli-reference.generated.mdx"
+    - "packages/agentplane/src/context/harvest-tasks-markers.ts"
+    - "packages/agentplane/src/context/harvest-tasks-extraction.ts"
+    - "https://github.com/basilisk-labs/agentplane/pull/4563#discussion_r3555839824"
   findings:
-    - "Context tests 14/14, lifecycle/batch tests 19/19, ci:contract, and full local fast CI with 2,143 tests and critical CLI E2E are green."
+    - "Context tests 15/15 and the 2,144-test fast suite pass; live dry-run source_bytes exactly matched filesystem byte totals; ACR changes invalidate queued v2 fingerprints."
 commit:
   hash: "6cd63b6e757f1993196a625f7ec076836099d016"
   message: "🚧 YP0PYE task: finalize lifecycle quality evidence"
@@ -92,8 +92,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pass: context extraction tests 14/14; lifecycle and batch refresh tests 19/19; AgentPlane typecheck; lint:core; ci:contract; full local fast CI including 361 files, 2,143 tests, build, bundle, cold-start, docs freshness, and critical CLI E2E."
+  -
+    type: "verify"
+    at: "2026-07-10T02:32:40.925Z"
+    author: "CODER"
+    state: "ok"
+    note: "Pass after review fix: context harvest tests 15/15; lifecycle/batch tests 19/19; AgentPlane typecheck; lint:core; ci:contract; targeted local CI; full fast suite 361 files and 2,144 tests. Live dry-run reported source_bytes=17,873, exactly matching README plus available ACR bytes."
 doc_version: 3
-doc_updated_at: "2026-07-10T02:18:18.648Z"
+doc_updated_at: "2026-07-10T02:32:42.178Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, make task-history context extraction batching respect a deterministic serialized-source byte budget in addition to task count, isolate oversized single sources, surface batch byte metadata, and converge queued/ingested duplicate detection on the same versioned source fingerprint without breaking existing CLI defaults."
 sections:
@@ -161,6 +167,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T02:06:57.002Z, excerpt_hash=sha256:83bed1d8d40cd7f1f2a9136e12e13f6166e9a7dc5cdf4f57bcdc6f7da58606e1
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100106-YP0PYE-bound-context-extraction-batches-by-source-bytes/.agentplane/tasks/202607100106-YP0PYE/blueprint/resolved-snapshot.json
+    - old_digest: 2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac
+    - current_digest: 2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100106-YP0PYE
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607100106-YP0PYE --branch task/202607100106-YP0PYE/bound-context-extraction-batches-by-source-bytes
+    - diagnostic_command: agentplane pr check 202607100106-YP0PYE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-10T02:32:40.925Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Pass after review fix: context harvest tests 15/15; lifecycle/batch tests 19/19; AgentPlane typecheck; lint:core; ci:contract; targeted local CI; full fast suite 361 files and 2,144 tests. Live dry-run reported source_bytes=17,873, exactly matching README plus available ACR bytes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T02:18:18.648Z, excerpt_hash=sha256:83bed1d8d40cd7f1f2a9136e12e13f6166e9a7dc5cdf4f57bcdc6f7da58606e1
 
     Details:
 
@@ -275,6 +311,36 @@ Note: Pass: context extraction tests 14/14; lifecycle and batch refresh tests 19
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T02:06:57.002Z, excerpt_hash=sha256:83bed1d8d40cd7f1f2a9136e12e13f6166e9a7dc5cdf4f57bcdc6f7da58606e1
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100106-YP0PYE-bound-context-extraction-batches-by-source-bytes/.agentplane/tasks/202607100106-YP0PYE/blueprint/resolved-snapshot.json
+- old_digest: 2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac
+- current_digest: 2a7a503eb9503139894d593dd213142afbf4363b66d63dfc62ebe0a05130d6ac
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100106-YP0PYE
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607100106-YP0PYE --branch task/202607100106-YP0PYE/bound-context-extraction-batches-by-source-bytes
+- diagnostic_command: agentplane pr check 202607100106-YP0PYE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-10T02:32:40.925Z — VERIFY — ok
+
+By: CODER
+
+Note: Pass after review fix: context harvest tests 15/15; lifecycle/batch tests 19/19; AgentPlane typecheck; lint:core; ci:contract; targeted local CI; full fast suite 361 files and 2,144 tests. Live dry-run reported source_bytes=17,873, exactly matching README plus available ACR bytes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T02:18:18.648Z, excerpt_hash=sha256:83bed1d8d40cd7f1f2a9136e12e13f6166e9a7dc5cdf4f57bcdc6f7da58606e1
 
 Details:
 
