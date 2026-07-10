@@ -2,28 +2,15 @@
   "artifact_state": "remote_failed",
   "artifact_state_reason": "GitHub PR creation failed",
   "artifact_state_updated_at": "2026-07-10T00:20:58.444Z",
-  "base": "agentplane-loops",
-  "batch": {
-    "closure_policy": "all_or_fail",
-    "included_task_ids": [
-      "202607100026-EBQXPZ",
-      "202607100033-4T5V86"
-    ],
-    "primary_task_id": "202607092346-4Z7EZP",
-    "schema_version": 1
-  },
+  "base": "main",
   "branch": "task/202607092346-4Z7EZP/make-agentplane-loops-executable-resumable-and-t",
   "created_at": "2026-07-09T23:48:42.147Z",
-  "diffstat_sha256": "sha256:5a4affe8c809a41f3a4f6590feed93b2d9a36d4383c59b69b16e7fb4397546d3",
-  "last_verified_at": "2026-07-10T00:41:15.012Z",
-  "last_verified_diffstat_sha256": "sha256:5a4affe8c809a41f3a4f6590feed93b2d9a36d4383c59b69b16e7fb4397546d3",
-  "related_task_ids": [
-    "202607100026-EBQXPZ",
-    "202607100033-4T5V86"
-  ],
+  "diffstat_sha256": "sha256:813f4f5be9185d4ccb56cf6e925f94f75e5dab4f6f35716dbd9a3884762bb0ff",
+  "last_verified_at": "2026-07-10T00:48:22.197Z",
+  "last_verified_diffstat_sha256": "sha256:813f4f5be9185d4ccb56cf6e925f94f75e5dab4f6f35716dbd9a3884762bb0ff",
   "schema_version": 1,
   "task_id": "202607092346-4Z7EZP",
-  "updated_at": "2026-07-10T00:22:38.789Z",
+  "updated_at": "2026-07-10T00:48:22.383Z",
   "verify": {
     "status": "pass"
   }
