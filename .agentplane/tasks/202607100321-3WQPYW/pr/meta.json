@@ -5,6 +5,8 @@
   "diffstat_sha256": "sha256:ef23b173890d423c98c0f67fa9b41076fc298868b53ccdf0336f3c11083455db",
   "last_verified_at": "2026-07-10T03:32:22.063Z",
   "last_verified_diffstat_sha256": "sha256:ef23b173890d423c98c0f67fa9b41076fc298868b53ccdf0336f3c11083455db",
+  "pr_number": 4565,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4565",
   "pre_merge_closure": {
     "basis_commit": "978885a83efab1b16c15151d42fa0478432fe14c",
     "branch": "task/202607100321-3WQPYW/persist-reconciled-included-batch-closure-for-v0",
@@ -12,8 +14,9 @@
     "state": "closed_before_merge"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607100321-3WQPYW",
-  "updated_at": "2026-07-10T03:22:40.715Z",
+  "updated_at": "2026-07-10T03:34:41.564Z",
   "verify": {
     "status": "pass"
   }
