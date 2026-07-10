@@ -1,10 +1,11 @@
 ---
 id: "202607092208-VQ05Q1"
 title: "Split context pipeline hotspots for v0.6.22"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -47,11 +48,16 @@ quality_review:
     - ".agentplane/tasks/202607092208-VQ05Q1/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings; module boundaries are cohesive and behavior remains covered by focused and full suites."
-commit: null
+commit:
+  hash: "769584e516b046c88823b97dd039aa480d3a69f7"
+  message: "📌 VQ05Q1 task: record pull request"
 comments:
   -
     author: "CODER"
     body: "Start: split context pipeline hotspots along existing domain boundaries while preserving CLI, artifact, graph, and extraction contracts."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -66,8 +72,15 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Verified context behavior, artifact contracts, hotspot reduction, type safety, CI contract, and full fast suite."
+  -
+    type: "status"
+    at: "2026-07-10T16:15:31.414Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-10T16:10:11.112Z"
+doc_updated_at: "2026-07-10T16:15:31.414Z"
 doc_updated_by: "CODER"
 description: "Decompose the oversized context dashboard, wiki reports, extraction writer, and maximum-assimilation validation modules along existing domain boundaries without changing CLI or artifact contracts."
 sections:
@@ -134,6 +147,10 @@ sections:
     - Observation: Four context runtime hotspots were decomposed into focused modules with unchanged public exports and persisted artifact formats.
       Impact: Runtime hotspot warning count decreased from 18 to 14; all touched modules are below 400 lines.
       Resolution: Context tests 23/104, hotspots:check, typecheck, ci:contract, and test:fast passed.
+extensions:
+  implementation_commit:
+    hash: "a3de317575ac256bc196923d9d89d9a487cdb771"
+    message: "🚧 VQ05Q1 task: split context pipeline hotspots"
 id_source: "generated"
 ---
 ## Summary
