@@ -2,7 +2,7 @@ import type { BlueprintId, TaskKind, WorkflowMode } from "../blueprints/model.js
 
 export type LoopId = BuiltinLoopId | (string & {});
 
-export type BuiltinLoopId =
+type BuiltinLoopId =
   | "tdd.fix"
   | "ci.repair"
   | "docs.sync"
@@ -12,7 +12,7 @@ export type BuiltinLoopId =
   | "evaluator.quality-gate"
   | "loop.improve";
 
-export type LoopKind =
+type LoopKind =
   | "intake"
   | "planning"
   | "implementation"
@@ -22,7 +22,7 @@ export type LoopKind =
   | "release"
   | "meta";
 
-export type LoopStatus = "experimental" | "trusted" | "deprecated" | "blocked";
+type LoopStatus = "experimental" | "trusted" | "deprecated" | "blocked";
 
 export type LoopStepType =
   | "context.load"
@@ -46,7 +46,7 @@ export type LoopStepType =
   | "decision.route"
   | "human.approval";
 
-export type LoopStopDecision =
+type LoopStopDecision =
   | "continue"
   | "retry_with_feedback"
   | "run_focused_check"
@@ -59,9 +59,9 @@ export type LoopStopDecision =
   | "rollback"
   | "reject";
 
-export type LoopPermission = boolean | "approval_required" | "disallowed" | "propose_only";
+type LoopPermission = boolean | "approval_required" | "disallowed" | "propose_only";
 
-export type LoopBudgets = {
+type LoopBudgets = {
   maxIterations: number;
   maxWallTimeMinutes?: number;
   maxChangedFiles?: number;
@@ -131,7 +131,7 @@ export type LoopContractValueType =
   | "path"
   | "ref";
 
-export type LoopContractField = {
+type LoopContractField = {
   id: string;
   type?: LoopContractValueType;
   required?: boolean;
@@ -139,14 +139,14 @@ export type LoopContractField = {
   source?: string;
 };
 
-export type LoopArtifactContract = {
+type LoopArtifactContract = {
   id: string;
   path?: string;
   required?: boolean;
   description?: string;
 };
 
-export type LoopStepContract = {
+type LoopStepContract = {
   schemaRef?: string;
   inputs?: readonly LoopContractField[];
   outputs?: readonly LoopContractField[];
@@ -195,7 +195,7 @@ export type LoopTransition = {
   };
 };
 
-export type LoopStopCondition = {
+type LoopStopCondition = {
   id: string;
   reason: string;
   decision: Exclude<LoopStopDecision, "continue" | "retry_with_feedback">;
@@ -267,9 +267,9 @@ export type LoopPlan = {
   input: LoopPlanInput;
 };
 
-export type LoopRunStatus = "prepared" | "running" | "passed" | "blocked" | "human_review";
+type LoopRunStatus = "prepared" | "running" | "passed" | "blocked" | "human_review";
 
-export type LoopStepExecutionStatus = "success" | "failed" | "blocked" | "skipped";
+type LoopStepExecutionStatus = "success" | "failed" | "blocked" | "skipped";
 
 export type LoopTokenUsage = {
   inputTokens: number;

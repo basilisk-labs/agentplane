@@ -18,7 +18,7 @@ import type {
   LoopTransition,
 } from "./model.js";
 
-export type LoopStepExecutionContext = {
+type LoopStepExecutionContext = {
   projectRoot: string;
   taskId: string;
   runId: string;
@@ -31,9 +31,7 @@ export type LoopStepExecutionContext = {
   latestByStep: ReadonlyMap<string, LoopStepExecutionResult>;
 };
 
-export type LoopStepExecutor = (
-  context: LoopStepExecutionContext,
-) => Promise<LoopStepExecutionResult>;
+type LoopStepExecutor = (context: LoopStepExecutionContext) => Promise<LoopStepExecutionResult>;
 
 export type LoopStepExecutorRegistry = Partial<Record<LoopStepType, LoopStepExecutor>>;
 

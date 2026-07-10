@@ -13,7 +13,7 @@ import type {
   LoopStepArtifactRecord,
 } from "./model.js";
 
-export type LoopRunnerHandoffRecord = {
+type LoopRunnerHandoffRecord = {
   adapterId: string;
   mode: "dry_run" | "execute";
   runId: string;

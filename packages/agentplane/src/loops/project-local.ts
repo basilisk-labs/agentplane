@@ -44,7 +44,7 @@ function normalizeLoopSpec(value: Record<string, unknown>): LoopSpec {
   } as LoopSpec;
 }
 
-export function parseProjectLoopJsonInternal(raw: string, filePath: string): ProjectLoopFileResult {
+function parseProjectLoopJsonInternal(raw: string, filePath: string): ProjectLoopFileResult {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);

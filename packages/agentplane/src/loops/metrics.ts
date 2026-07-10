@@ -1,6 +1,6 @@
 import type { LoopMetricAggregate, LoopMetricDefinition, LoopMetricScore } from "./model.js";
 
-export type LoopMetricSignalValue = boolean | number | null | undefined;
+type LoopMetricSignalValue = boolean | number | null | undefined;
 
 export type LoopMetricSignals = Record<string, LoopMetricSignalValue>;
 
