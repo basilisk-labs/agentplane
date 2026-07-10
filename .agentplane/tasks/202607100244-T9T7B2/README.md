@@ -4,7 +4,7 @@ title: "Prefer merged PR commit when reconciling included batch tasks"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -33,20 +33,20 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T02:56:13.171Z"
+  updated_at: "2026-07-10T02:56:39.385Z"
   updated_by: "EVALUATOR"
-  note: "Rebase-aware included-task reconciliation is narrowly implemented and fully verified."
-  evaluated_sha: "cb4b22e56e09309b5449f3495747f3610c55b74b"
+  note: "Rebase-aware reconciliation remains correct after refreshed task and PR evidence."
+  evaluated_sha: "47e34fb44dc0d32e6f13ef40ece538bea966dc05"
   blueprint_digest: "a4d3d7ec5606f10f24b3fbb9c4be4a101ffa4c367e85eccff37c412d9ab1c9c8"
   evidence_refs:
     - ".agentplane/tasks/202607100244-T9T7B2/README.md"
-    - ".agentplane/tasks/202607100244-T9T7B2/quality/20260710-025613171-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100244-T9T7B2/quality/20260710-025613171-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100244-T9T7B2/quality/20260710-025613171-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100244-T9T7B2/quality/20260710-025639385-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100244-T9T7B2/quality/20260710-025639385-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100244-T9T7B2/quality/20260710-025639385-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100244-T9T7B2/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
   findings:
-    - "No blocking findings; merge_commit now wins while task commit and head_sha fallbacks remain covered."
+    - "No blocking findings; current HEAD preserves merge_commit priority and tested fallback order."
 commit: null
 comments:
   -

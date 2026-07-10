@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100244-T9T7B2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T02:56:13.171Z",
+  "verdict": "pass",
+  "summary": "Rebase-aware included-task reconciliation is narrowly implemented and fully verified.",
+  "evaluated_sha": "cb4b22e56e09309b5449f3495747f3610c55b74b",
+  "blueprint_digest": "a4d3d7ec5606f10f24b3fbb9c4be4a101ffa4c367e85eccff37c412d9ab1c9c8",
+  "findings": [
+    "No blocking findings; merge_commit now wins while task commit and head_sha fallbacks remain covered."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100244-T9T7B2/README.md",
+    "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A recorded PR merge_commit is authoritative landed history when present."
+  ],
+  "residual_risks": [
+    "Malformed or stale PR metadata remains rejected by existing commit presence and ancestry validation."
+  ]
+}
