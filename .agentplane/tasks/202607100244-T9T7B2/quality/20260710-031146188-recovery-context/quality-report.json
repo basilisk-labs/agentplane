@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607100244-T9T7B2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-10T03:11:46.188Z",
+  "verdict": "pass",
+  "summary": "Review fix correctly restricts merge_commit authority to merged PR metadata.",
+  "evaluated_sha": "8efb0854e81da259886f73396b400a54e68ec459",
+  "blueprint_digest": "a4d3d7ec5606f10f24b3fbb9c4be4a101ffa4c367e85eccff37c412d9ab1c9c8",
+  "findings": [
+    "No blocking findings; OPEN stale metadata now falls back to the valid task commit, while MERGED rebase metadata still selects the landed merge commit."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607100244-T9T7B2/README.md",
+    "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Only status MERGED makes PR merge_commit authoritative."
+  ],
+  "residual_risks": [
+    "Invalid merged metadata remains guarded by commit-existence and base-ancestry checks."
+  ]
+}

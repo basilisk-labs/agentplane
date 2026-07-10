@@ -5,7 +5,7 @@ result_summary: "Prefer merged PR commit for included-task reconciliation while 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -28,26 +28,26 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-10T02:56:00.745Z"
+  updated_at: "2026-07-10T03:11:32.291Z"
   updated_by: "CODER"
-  note: "Focused reconciliation regression 3/3 passed; AgentPlane typecheck, lint:core, ci:contract, and fast suite 361 files / 2,144 tests all passed."
+  note: "Review fix passed: focused reconciliation 3/3, AgentPlane typecheck, lint:core, ci:contract, and full fast suite 361 files / 2,144 tests."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-10T02:56:39.385Z"
+  updated_at: "2026-07-10T03:11:46.188Z"
   updated_by: "EVALUATOR"
-  note: "Rebase-aware reconciliation remains correct after refreshed task and PR evidence."
-  evaluated_sha: "47e34fb44dc0d32e6f13ef40ece538bea966dc05"
+  note: "Review fix correctly restricts merge_commit authority to merged PR metadata."
+  evaluated_sha: "8efb0854e81da259886f73396b400a54e68ec459"
   blueprint_digest: "a4d3d7ec5606f10f24b3fbb9c4be4a101ffa4c367e85eccff37c412d9ab1c9c8"
   evidence_refs:
     - ".agentplane/tasks/202607100244-T9T7B2/README.md"
-    - ".agentplane/tasks/202607100244-T9T7B2/quality/20260710-025639385-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607100244-T9T7B2/quality/20260710-025639385-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607100244-T9T7B2/quality/20260710-025639385-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607100244-T9T7B2/quality/20260710-031146188-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607100244-T9T7B2/quality/20260710-031146188-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607100244-T9T7B2/quality/20260710-031146188-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607100244-T9T7B2/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
   findings:
-    - "No blocking findings; current HEAD preserves merge_commit priority and tested fallback order."
+    - "No blocking findings; OPEN stale metadata now falls back to the valid task commit, while MERGED rebase metadata still selects the landed merge commit."
 commit:
   hash: "d109fffd689028ae6cb9192d0829cb1e540f1405"
   message: "✅ T9T7B2 reconciliation: record quality review"
@@ -79,8 +79,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: rebase-aware reconciliation passed focused, contract, type, lint, local CI, and 2,144-test fast-suite checks; pre-merge packet is ready."
+  -
+    type: "verify"
+    at: "2026-07-10T03:11:32.291Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review fix passed: focused reconciliation 3/3, AgentPlane typecheck, lint:core, ci:contract, and full fast suite 361 files / 2,144 tests."
 doc_version: 3
-doc_updated_at: "2026-07-10T03:00:44.235Z"
+doc_updated_at: "2026-07-10T03:11:33.466Z"
 doc_updated_by: "CODER"
 description: "For v0.6.22, make release task reconciliation close verified included batch tasks after GitHub rebase merges by preferring the primary PR merge_commit over the rewritten-away branch task commit, while preserving the task commit fallback when merged PR metadata is unavailable."
 sections:
@@ -135,6 +141,36 @@ sections:
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-07-10T03:11:32.291Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Review fix passed: focused reconciliation 3/3, AgentPlane typecheck, lint:core, ci:contract, and full fast suite 361 files / 2,144 tests.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T03:00:44.235Z, excerpt_hash=sha256:9b2dcf35871d87c5706c394b36ea3e822b46b123bf355b32d9f9c12488d3eb64
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100244-T9T7B2-prefer-merged-pr-commit-when-reconciling-include/.agentplane/tasks/202607100244-T9T7B2/blueprint/resolved-snapshot.json
+    - old_digest: a4d3d7ec5606f10f24b3fbb9c4be4a101ffa4c367e85eccff37c412d9ab1c9c8
+    - current_digest: a4d3d7ec5606f10f24b3fbb9c4be4a101ffa4c367e85eccff37c412d9ab1c9c8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607100244-T9T7B2
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607100244-T9T7B2 --branch task/202607100244-T9T7B2/prefer-merged-pr-commit-when-reconciling-include
+    - diagnostic_command: agentplane pr check 202607100244-T9T7B2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -143,6 +179,10 @@ sections:
     - Observation: Command: declared focused, typecheck, lint, contract, and fast-suite checks. Result: pass. Evidence: 3 focused tests and 2,144 fast tests passed. Scope: merged-commit selection and repository regressions.
       Impact: Included batch tasks can reconcile after GitHub rebase merges without accepting a rewritten-away branch SHA.
       Resolution: Prefer PR merge_commit, then task commit, then head_sha; retain regression coverage.
+
+    - Observation: Command: focused reconcile tests, typecheck, lint:core, ci:contract, and test:fast. Result: pass. Evidence: OPEN stale merge metadata falls back to task commit; MERGED rebase metadata uses merge_commit. Scope: review thread PRRT_kwDORCLmJM6PwtIc.
+      Impact: Stale non-merged PR metadata can no longer override a valid landed task commit.
+      Resolution: Gate merge_commit preference through resolveLocalMergedPrMeta and retain task/head fallbacks.
 extensions:
   implementation_commit:
     hash: "47e34fb44dc0d32e6f13ef40ece538bea966dc05"
@@ -209,6 +249,36 @@ DecisionContextRef:
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+### 2026-07-10T03:11:32.291Z — VERIFY — ok
+
+By: CODER
+
+Note: Review fix passed: focused reconciliation 3/3, AgentPlane typecheck, lint:core, ci:contract, and full fast suite 361 files / 2,144 tests.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-10T03:00:44.235Z, excerpt_hash=sha256:9b2dcf35871d87c5706c394b36ea3e822b46b123bf355b32d9f9c12488d3eb64
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100244-T9T7B2-prefer-merged-pr-commit-when-reconciling-include/.agentplane/tasks/202607100244-T9T7B2/blueprint/resolved-snapshot.json
+- old_digest: a4d3d7ec5606f10f24b3fbb9c4be4a101ffa4c367e85eccff37c412d9ab1c9c8
+- current_digest: a4d3d7ec5606f10f24b3fbb9c4be4a101ffa4c367e85eccff37c412d9ab1c9c8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607100244-T9T7B2
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607100244-T9T7B2 --branch task/202607100244-T9T7B2/prefer-merged-pr-commit-when-reconciling-include
+- diagnostic_command: agentplane pr check 202607100244-T9T7B2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -221,3 +291,7 @@ DecisionContextRef:
 - Observation: Command: declared focused, typecheck, lint, contract, and fast-suite checks. Result: pass. Evidence: 3 focused tests and 2,144 fast tests passed. Scope: merged-commit selection and repository regressions.
   Impact: Included batch tasks can reconcile after GitHub rebase merges without accepting a rewritten-away branch SHA.
   Resolution: Prefer PR merge_commit, then task commit, then head_sha; retain regression coverage.
+
+- Observation: Command: focused reconcile tests, typecheck, lint:core, ci:contract, and test:fast. Result: pass. Evidence: OPEN stale merge metadata falls back to task commit; MERGED rebase metadata uses merge_commit. Scope: review thread PRRT_kwDORCLmJM6PwtIc.
+  Impact: Stale non-merged PR metadata can no longer override a valid landed task commit.
+  Resolution: Gate merge_commit preference through resolveLocalMergedPrMeta and retain task/head fallbacks.
