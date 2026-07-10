@@ -27,7 +27,11 @@ Persist the successful release task reconciliation that marks included task 2026
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/tasks/202607092209-F33MNN/README.md    |  1 +
+ .agentplane/tasks/202607100140-WGV79Y/README.md    | 18 ++++++++++++++----
+ .agentplane/tasks/202607100244-T9T7B2/README.md    | 20 +++++++++++++++-----
+ .agentplane/tasks/202607100244-T9T7B2/pr/meta.json |  4 ++--
+ 4 files changed, 32 insertions(+), 11 deletions(-)
 ```
 
 </details>
