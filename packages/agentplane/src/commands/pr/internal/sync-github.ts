@@ -129,6 +129,45 @@ export async function tryLookupExistingGithubPrByBranch(opts: {
   }
 }
 
+export async function tryLookupExistingGithubPrByNumber(opts: {
+  gitRoot: string;
+  prNumber: number;
+  branch?: string | null;
+  baseBranch?: string | null;
+}): Promise<ObservedGithubPr | null> {
+  if (!Number.isInteger(opts.prNumber) || opts.prNumber <= 0) return null;
+  const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
+  if (!repo) return null;
+  const endpoint = `repos/${repo}/pulls/${opts.prNumber}`;
+  const gh = resolveGhCommand();
+
+  try {
+    const { stdout } = await withGhTransportRetry(
+      () =>
+        execFileAsync(gh.command, [...gh.argsPrefix, "api", endpoint], {
+          cwd: opts.gitRoot,
+          env: ghEnv(),
+          maxBuffer: 10 * 1024 * 1024,
+        }),
+      { label: `running gh api ${endpoint}` },
+    );
+    const record = JSON.parse(stdout) as GithubPullLookupRecord;
+    const expectedBranch = opts.branch?.trim() ?? "";
+    const observedBranch = record.head?.ref?.trim() ?? "";
+    if (expectedBranch && observedBranch !== expectedBranch) return null;
+    const expectedBase = opts.baseBranch?.trim() ?? "";
+    const observedBase = record.base?.ref?.trim() ?? "";
+    if (expectedBase && observedBase !== expectedBase) return null;
+    return normalizeObservedGithubPr(record);
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code === "ENOENT") return null;
+    const message = normalizeGhTransportError(err);
+    if (message.trim().length > 0) return null;
+    return null;
+  }
+}
+
 export async function tryLookupExistingGithubPrByBranchPrefix(opts: {
   gitRoot: string;
   branchPrefix: string;
