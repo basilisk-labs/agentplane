@@ -4,7 +4,7 @@ title: "Fix release evidence task attribution"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,11 +19,27 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-11T14:48:41.280Z"
+  updated_by: "CODER"
+  note: "Version-matched release-task resolver, ambiguity guard, evidence preservation/idempotence, and corrected v0.6.22 attribution verified: 17/17 focused tests, agentplane typecheck, format:check, and full ci:contract pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-11T14:48:43.150Z"
+  updated_by: "EVALUATOR"
+  note: "Hosted publish evidence now resolves to the unique DONE release task matching the published version, preserves prior verification history, and corrects v0.6.22 attribution."
+  evaluated_sha: "0e557961a2fa30c79ef75642ebdbfdd4c32f93e2"
+  blueprint_digest: "f0622fc8e731607c3ab0c8967e2e4fce27927ad547feba62bea4439e4fb952f6"
+  evidence_refs:
+    - ".agentplane/tasks/202607111438-5DXKKR/README.md"
+    - ".agentplane/tasks/202607111438-5DXKKR/quality/20260711-144843150-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607111438-5DXKKR/quality/20260711-144843150-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607111438-5DXKKR/quality/20260711-144843150-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607111438-5DXKKR/blueprint/resolved-snapshot.json"
+    - "bunx vitest run packages/agentplane/src/commands/release/release-task-evidence-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts; bun run --filter=agentplane typecheck; bun run format:check; bun run ci:contract"
+  findings:
+    - "Regression covers unrelated task commits and ambiguous release matches; repeated apply is idempotent; 6T937A evidence restored and F33MNN holds v0.6.22 publish proof."
 commit: null
 comments:
   -
@@ -37,8 +53,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: fix deterministic release-task evidence attribution, add regression coverage, and correct v0.6.22 task evidence."
+  -
+    type: "verify"
+    at: "2026-07-11T14:48:41.280Z"
+    author: "CODER"
+    state: "ok"
+    note: "Version-matched release-task resolver, ambiguity guard, evidence preservation/idempotence, and corrected v0.6.22 attribution verified: 17/17 focused tests, agentplane typecheck, format:check, and full ci:contract pass."
 doc_version: 3
-doc_updated_at: "2026-07-11T14:38:57.305Z"
+doc_updated_at: "2026-07-11T14:48:41.476Z"
 doc_updated_by: "CODER"
 description: "Resolve hosted publish evidence to the matching release task instead of whichever task README happens to be changed by the exact publish SHA; add regression coverage and correct v0.6.22 evidence attribution."
 sections:
@@ -58,6 +80,36 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-11T14:48:41.280Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Version-matched release-task resolver, ambiguity guard, evidence preservation/idempotence, and corrected v0.6.22 attribution verified: 17/17 focused tests, agentplane typecheck, format:check, and full ci:contract pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-11T14:38:57.305Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607111438-5DXKKR-post-release-fix-evidence-attribution/.agentplane/tasks/202607111438-5DXKKR/blueprint/resolved-snapshot.json
+    - old_digest: f0622fc8e731607c3ab0c8967e2e4fce27927ad547feba62bea4439e4fb952f6
+    - current_digest: f0622fc8e731607c3ab0c8967e2e4fce27927ad547feba62bea4439e4fb952f6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607111438-5DXKKR
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202607111438-5DXKKR
+    - diagnostic_command: agentplane pr check 202607111438-5DXKKR
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -91,6 +143,36 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-11T14:48:41.280Z — VERIFY — ok
+
+By: CODER
+
+Note: Version-matched release-task resolver, ambiguity guard, evidence preservation/idempotence, and corrected v0.6.22 attribution verified: 17/17 focused tests, agentplane typecheck, format:check, and full ci:contract pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-11T14:38:57.305Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607111438-5DXKKR-post-release-fix-evidence-attribution/.agentplane/tasks/202607111438-5DXKKR/blueprint/resolved-snapshot.json
+- old_digest: f0622fc8e731607c3ab0c8967e2e4fce27927ad547feba62bea4439e4fb952f6
+- current_digest: f0622fc8e731607c3ab0c8967e2e4fce27927ad547feba62bea4439e4fb952f6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607111438-5DXKKR
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202607111438-5DXKKR
+- diagnostic_command: agentplane pr check 202607111438-5DXKKR
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

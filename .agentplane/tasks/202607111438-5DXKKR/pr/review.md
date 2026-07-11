@@ -12,8 +12,8 @@ Created: 2026-07-11T14:38:57.348Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Version-matched release-task resolver, ambiguity guard, evidence preservation/idempotence, and corrected v0.6.22 attribution verified: 17/17 focused tests, agentplane typecheck, format:check, and full ci:contract pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,12 +24,16 @@ Created: 2026-07-11T14:38:57.348Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-11T14:38:57.348Z
+- Updated: 2026-07-11T14:49:13.478Z
 - Branch: task/202607111438-5DXKKR/post-release-fix-evidence-attribution
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/tasks/202607030734-6T937A/README.md    | 159 ++++++++++++++++-----
+ .agentplane/tasks/202607092209-F33MNN/README.md    |  47 +++++-
+ .../release/release-task-evidence-script.test.ts   | 124 +++++++++++++++-
+ scripts/release/release-task-evidence.mjs          | 116 ++++++++++++++-
+ 4 files changed, 399 insertions(+), 47 deletions(-)
 ```
 
 </details>
