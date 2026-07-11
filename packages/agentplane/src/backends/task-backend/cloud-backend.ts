@@ -221,7 +221,7 @@ export class CloudBackend implements TaskBackend {
       autoSyncEnabled: this.autoSyncEnabled,
       autoSyncPullOnStartReady: this.autoSyncPullOnStartReady,
       autoSyncNetworkAllowed: this.autoSyncNetworkAllowed,
-      missingConfigKeys: this.missingConfigKeys.bind(this),
+      missingConfigKeys: () => missingCloudConfigKeys(this.configSnapshot()),
       projectId: this.projectId,
       statePath: this.statePath,
       requestCloudSyncState: this.requestCloudSyncState.bind(this),
@@ -237,7 +237,7 @@ export class CloudBackend implements TaskBackend {
     timeoutMs?: number;
     syncStateTimeoutMs?: number;
   }): Promise<void> {
-    this.assertConfigured();
+    assertCloudBackendConfigured(this.configSnapshot());
     await performCloudBackendSync(
       {
         provider: this.provider,
@@ -304,7 +304,7 @@ export class CloudBackend implements TaskBackend {
         autoSyncPullOnWrite: this.autoSyncPullOnWrite,
         projectId: this.projectId,
         staleAfterSeconds: this.staleAfterSeconds,
-        missingConfigKeys: this.missingConfigKeys.bind(this),
+        missingConfigKeys: () => missingCloudConfigKeys(this.configSnapshot()),
         readState: this.readState.bind(this),
         clearPendingPush: this.clearPendingPush.bind(this),
         maybeAutoPull: this.maybeAutoPull.bind(this),
@@ -319,7 +319,7 @@ export class CloudBackend implements TaskBackend {
     if (opts.mode === "read" && !this.autoSyncPullOnRead) return;
     if (opts.mode === "write" && !this.autoSyncPullOnWrite) return;
     if (!this.autoSyncNetworkAllowed) return;
-    if (this.missingConfigKeys().length > 0) return;
+    if (missingCloudConfigKeys(this.configSnapshot()).length > 0) return;
     const state = await this.readState();
     if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
     await this.sync({
@@ -335,7 +335,7 @@ export class CloudBackend implements TaskBackend {
   private async maybeAutoPush(): Promise<void> {
     if (!this.autoSyncEnabled || !this.autoSyncPushOnWrite) return;
     if (!this.autoSyncNetworkAllowed) return;
-    if (this.missingConfigKeys().length > 0) return;
+    if (missingCloudConfigKeys(this.configSnapshot()).length > 0) return;
     try {
       await this.sync({
         direction: "push",
@@ -376,14 +376,6 @@ export class CloudBackend implements TaskBackend {
       last_start_ready_pull_at: state.last_start_ready_pull_at,
       pending_push: null,
     });
-  }
-
-  private assertConfigured(): void {
-    assertCloudBackendConfigured(this.configSnapshot());
-  }
-
-  private missingConfigKeys(): string[] {
-    return missingCloudConfigKeys(this.configSnapshot());
   }
 
   private configSnapshot() {

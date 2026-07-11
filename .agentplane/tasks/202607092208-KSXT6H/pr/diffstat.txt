@@ -1,0 +1,17 @@
+ .../backends/task-backend/cloud-backend-utils.ts   |  37 +--
+ .../src/backends/task-backend/cloud-backend.ts     |  18 +-
+ .../task-backend/cloud-config-overrides.ts         |  34 +++
+ .../src/commands/hermes/hermes-environment.ts      |  64 ++++++
+ .../src/commands/hermes/hermes-runtime.ts          | 164 +-------------
+ .../agentplane/src/commands/hermes/hermes-specs.ts | 230 +++++++++++++++++++
+ .../agentplane/src/commands/hermes/hermes-state.ts |  93 ++++++++
+ .../src/commands/hermes/hermes.command.ts          | 252 ++-------------------
+ .../commands/insights/insights-report-render.ts    |  69 ++++++
+ .../src/commands/insights/insights-report.ts       |  89 +-------
+ .../src/commands/insights/insights-task-loader.ts  |  19 ++
+ .../src/runner/result-manifest-artifacts.ts        | 149 ++++++++++++
+ packages/agentplane/src/runner/result-manifest.ts  | 165 ++------------
+ .../src/runtime/sgr/contract-evaluator-routing.ts  | 143 ++++++++++++
+ .../src/runtime/sgr/contract-shared-validation.ts  |  37 +++
+ packages/agentplane/src/runtime/sgr/contracts.ts   | 170 +-------------
+ 16 files changed, 901 insertions(+), 832 deletions(-)

@@ -1,10 +1,10 @@
 ---
 id: "202607092208-KSXT6H"
 title: "Split runtime and backend hotspots for v0.6.22"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +33,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: split runtime and backend hotspots behind existing public APIs and schemas."
+events:
+  -
+    type: "status"
+    at: "2026-07-11T11:31:25.595Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split runtime and backend hotspots behind existing public APIs and schemas."
 doc_version: 3
-doc_updated_at: "2026-07-09T22:09:46.427Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-11T11:46:41.305Z"
+doc_updated_by: "CODER"
 description: "Decompose Hermes command/runtime, result manifest, insights report, SGR contracts, and cloud backend modules into cohesive helpers while retaining public APIs, schemas, and backend behavior."
 sections:
   Summary: |-
@@ -63,7 +73,7 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: "Extracted cohesive internal modules for Hermes command/runtime, result-manifest artifacts, insights loading/rendering, SGR validation/routing, and cloud configuration overrides. All seven scoped >400-line runtime hotspots are now below the threshold; the repository-wide runtime hotspot count fell from 9 to 2, with the remaining PR flow-status and evaluator command files outside this task scope. Verification passed: focused suites 33 files / 246 tests, full suite 364 files / 2157 tests, build, typecheck, arch:check, hotspots:check, ci:contract, Knip baseline 574/574, and coverage thresholds."
 id_source: "generated"
 ---
 ## Summary
@@ -102,3 +112,5 @@ Decompose Hermes command/runtime, result manifest, insights report, SGR contract
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Extracted cohesive internal modules for Hermes command/runtime, result-manifest artifacts, insights loading/rendering, SGR validation/routing, and cloud configuration overrides. All seven scoped >400-line runtime hotspots are now below the threshold; the repository-wide runtime hotspot count fell from 9 to 2, with the remaining PR flow-status and evaluator command files outside this task scope. Verification passed: focused suites 33 files / 246 tests, full suite 364 files / 2157 tests, build, typecheck, arch:check, hotspots:check, ci:contract, Knip baseline 574/574, and coverage thresholds.
