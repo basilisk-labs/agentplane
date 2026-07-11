@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-07-11T14:54:29Z",
   "base": "main",
   "branch": "task/202607111438-5DXKKR/post-release-fix-evidence-attribution",
   "created_at": "2026-07-11T14:38:57.348Z",
   "diffstat_sha256": "sha256:bf30a03c36ed784c29e85db5466fb230feb8f7701abbcaf86f1febbcbbf3dd9b",
   "last_verified_at": "2026-07-11T14:48:41.280Z",
   "last_verified_diffstat_sha256": "sha256:bf30a03c36ed784c29e85db5466fb230feb8f7701abbcaf86f1febbcbbf3dd9b",
+  "merge_commit": "544382702f1e8a83db89e8947323286a374aefb3",
+  "merge_strategy": "merge",
+  "merged_at": "2026-07-11T14:54:29Z",
   "pr_number": 4583,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4583",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202607111438-5DXKKR",
-  "updated_at": "2026-07-11T14:49:13.478Z",
+  "updated_at": "2026-07-11T14:54:29Z",
   "verify": {
     "status": "pass"
   }
