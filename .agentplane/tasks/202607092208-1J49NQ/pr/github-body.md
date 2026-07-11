@@ -15,8 +15,8 @@ Decompose route-oracle, hosted-close, task new, platform CLI, and close-message 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified route/task behavior, lifecycle invariants, hotspot reduction, CI contract, and full fast suite.
 - Canonical workflow state lives in the task README.
 
 <details>

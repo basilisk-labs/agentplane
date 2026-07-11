@@ -3,11 +3,12 @@
   "branch": "task/202607092208-1J49NQ/split-routing-and-task-command-hotspots-for-v0-6",
   "created_at": "2026-07-10T16:21:23.441Z",
   "diffstat_sha256": "sha256:cb9a0562cc4ac3c4282224ecd72b583677ea40f05520101741f36dcbdf97d6da",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-11T11:16:27.677Z",
+  "last_verified_diffstat_sha256": "sha256:cb9a0562cc4ac3c4282224ecd72b583677ea40f05520101741f36dcbdf97d6da",
   "schema_version": 1,
   "task_id": "202607092208-1J49NQ",
   "updated_at": "2026-07-10T16:21:23.441Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
