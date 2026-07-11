@@ -1,10 +1,11 @@
 ---
 id: "202607092208-PC3904"
 title: "Decompose oversized test suites for v0.6.22"
-status: "DOING"
+result_summary: "Split the oversized doc-write suite into two focused files and reduced the oversized baseline to 10 files / 11424 lines."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -51,11 +52,16 @@ quality_review:
     - "typecheck,coverage,ci-contract:pass"
   findings:
     - "No blocking defects found; no cases were lost and the baseline decreases by one file and 1014 lines."
-commit: null
+commit:
+  hash: "074a5fb769b38408171a1a74fa4258fdc2983629"
+  message: "🧪 PC3904 task: split oversized doc-write tests"
 comments:
   -
     author: "CODER"
     body: "Start: split one oversized suite along existing describe boundaries without changing cases or assertions."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: test cases are preserved and all local/hosted checks pass."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "All 16 cases are preserved across two sub-1000-line files; oversized baseline is 10/11424 and focused, coverage, contract, type, and full 364/2157 checks pass."
+  -
+    type: "status"
+    at: "2026-07-11T12:42:42.836Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: test cases are preserved and all local/hosted checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-11T12:35:09.734Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-11T12:42:42.837Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split the 11 test files above 1000 lines by behavior and fixture boundary, centralize only stable helpers, and reduce the oversized-test baseline without weakening assertions or coverage."
 sections:
   Summary: |-
