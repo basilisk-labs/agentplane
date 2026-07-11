@@ -1,10 +1,11 @@
 ---
 id: "202607111438-5DXKKR"
 title: "Fix release evidence task attribution"
-status: "DOING"
+result_summary: "Merged via PR #4583."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "bunx vitest run packages/agentplane/src/commands/release/release-task-evidence-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts; bun run --filter=agentplane typecheck; bun run format:check; bun run ci:contract"
   findings:
     - "Regression covers unrelated task commits and ambiguous release matches; repeated apply is idempotent; 6T937A evidence restored and F33MNN holds v0.6.22 publish proof."
-commit: null
+commit:
+  hash: "544382702f1e8a83db89e8947323286a374aefb3"
+  message: "✅ 5DXKKR task: verify release evidence attribution"
 comments:
   -
     author: "CODER"
     body: "Start: fix deterministic release-task evidence attribution, add regression coverage, and correct v0.6.22 task evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4583 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Version-matched release-task resolver, ambiguity guard, evidence preservation/idempotence, and corrected v0.6.22 attribution verified: 17/17 focused tests, agentplane typecheck, format:check, and full ci:contract pass."
+  -
+    type: "status"
+    at: "2026-07-11T14:55:17.619Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4583 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-07-11T14:48:41.476Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-11T14:55:17.625Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve hosted publish evidence to the matching release task instead of whichever task README happens to be changed by the exact publish SHA; add regression coverage and correct v0.6.22 evidence attribution."
 sections:
   Summary: |-
