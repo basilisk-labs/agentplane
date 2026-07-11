@@ -14,7 +14,7 @@ export type ResolvedPrSyncBranch = {
   source: "explicit" | "meta" | "current" | "none";
 };
 
-export function isUnknownRevisionError(err: unknown): boolean {
+function isUnknownRevisionError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
   return (
     /unknown revision or path not in the working tree/i.test(message) ||
@@ -24,7 +24,7 @@ export function isUnknownRevisionError(err: unknown): boolean {
   );
 }
 
-export async function resolveBranchHeadSha(opts: {
+async function resolveBranchHeadSha(opts: {
   gitRoot: string;
   branch: string;
 }): Promise<string | null> {
@@ -68,7 +68,7 @@ export async function resolveRenderableBranchHead(opts: {
   }
 }
 
-export async function resolvePrDiffBaseRef(opts: {
+async function resolvePrDiffBaseRef(opts: {
   gitRoot: string;
   baseBranch: string;
 }): Promise<string> {

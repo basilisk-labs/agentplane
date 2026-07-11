@@ -7,11 +7,7 @@ function resolveDcoConfig(config: AgentplaneConfig): DcoConfig | undefined {
   return dco;
 }
 
-export function dcoIsEnabled(config: AgentplaneConfig): boolean {
-  return resolveDcoConfig(config)?.enabled === true;
-}
-
-export function resolveDcoSignoff(config: AgentplaneConfig): string | null {
+function resolveDcoSignoff(config: AgentplaneConfig): string | null {
   const dco = resolveDcoConfig(config);
   if (dco?.enabled !== true) return null;
   const name = dco.name?.trim() ?? "";
@@ -34,7 +30,7 @@ export function appendDcoSignoff(opts: {
   return body ? `${body}\n\n${signoff}` : signoff;
 }
 
-export function hasDcoSignoff(message: string): boolean {
+function hasDcoSignoff(message: string): boolean {
   return message.split("\n").some((line) => {
     const trimmed = line.trim();
     if (!trimmed.startsWith("Signed-off-by:")) return false;

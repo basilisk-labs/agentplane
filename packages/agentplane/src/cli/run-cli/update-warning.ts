@@ -19,7 +19,7 @@ const UPDATE_CHECK_PACKAGE = "agentplane";
 const UPDATE_CHECK_URL = `https://registry.npmjs.org/${UPDATE_CHECK_PACKAGE}/latest`;
 const AGENTPLANE_HOME_ENV = "AGENTPLANE_HOME";
 
-export function resolveAgentplaneHome(): string {
+function resolveAgentplaneHome(): string {
   const overridden = process.env[AGENTPLANE_HOME_ENV]?.trim();
   if (overridden) return overridden;
   return path.join(os.homedir(), ".agentplane");

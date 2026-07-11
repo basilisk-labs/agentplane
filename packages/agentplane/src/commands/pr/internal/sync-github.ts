@@ -225,7 +225,7 @@ export function shouldPersistObservedGithubPrIdentity(observed: ObservedGithubPr
   return observed?.status === "OPEN" || observed?.status === "MERGED";
 }
 
-export function formatUnpublishedRemoteHeadReason(branch: string): string {
+function formatUnpublishedRemoteHeadReason(branch: string): string {
   return (
     `task branch ${branch} is not yet published on origin; push it with ` +
     `\`git push -u origin ${branch}\` and rerun \`agentplane pr open\``

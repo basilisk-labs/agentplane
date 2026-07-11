@@ -1,10 +1,10 @@
 ---
 id: "202607092208-NGVXDD"
 title: "Reduce the Knip baseline for v0.6.22"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +33,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: classify and remove safe Knip findings, then lower the accepted baseline without broader ignores."
+events:
+  -
+    type: "status"
+    at: "2026-07-11T12:02:25.721Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: classify and remove safe Knip findings, then lower the accepted baseline without broader ignores."
 doc_version: 3
-doc_updated_at: "2026-07-09T22:09:47.057Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-11T12:09:53.872Z"
+doc_updated_by: "CODER"
 description: "Classify current Knip findings into public API, intentional framework entry points, and removable dead code; delete or export correctly so the accepted baseline shrinks materially without hiding new debt."
 sections:
   Summary: |-
@@ -63,7 +73,7 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: "Reduced the accepted Knip baseline from 574 to 554 findings without changing knip.json or adding ignores: unused files 1 to 0 and unused exports 204 to 185, with unused types unchanged at 369. Removed the unreferenced critical CLI runner, deleted three unreachable helpers, and made sixteen internal helpers file-local. Remaining findings are deterministically classified in knip-classification.md as public contracts (312), dynamic entry points (168), or visible accepted debt (74). Verification passed: Knip 554/554, typecheck, lint, focused 8 files / 36 tests, ci:contract, and full 364 files / 2157 tests. One initial full-test attempt exposed an unstaged-deletion/index mismatch in git-index-lock-guard; after staging the intentional deletion, the complete suite passed."
 id_source: "generated"
 ---
 ## Summary
@@ -102,3 +112,5 @@ Classify current Knip findings into public API, intentional framework entry poin
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Reduced the accepted Knip baseline from 574 to 554 findings without changing knip.json or adding ignores: unused files 1 to 0 and unused exports 204 to 185, with unused types unchanged at 369. Removed the unreferenced critical CLI runner, deleted three unreachable helpers, and made sixteen internal helpers file-local. Remaining findings are deterministically classified in knip-classification.md as public contracts (312), dynamic entry points (168), or visible accepted debt (74). Verification passed: Knip 554/554, typecheck, lint, focused 8 files / 36 tests, ci:contract, and full 364 files / 2157 tests. One initial full-test attempt exposed an unstaged-deletion/index mismatch in git-index-lock-guard; after staging the intentional deletion, the complete suite passed.

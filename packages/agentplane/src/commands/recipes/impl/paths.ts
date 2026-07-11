@@ -13,7 +13,7 @@ import {
   RECIPES_REMOTE_INDEX_SIG_NAME,
 } from "./constants.js";
 
-export function resolveAgentplaneHome(): string {
+function resolveAgentplaneHome(): string {
   const overridden = process.env[AGENTPLANE_HOME_ENV]?.trim();
   if (overridden) return overridden;
   return path.join(os.homedir(), ".agentplane");
@@ -69,7 +69,7 @@ export function resolveProjectRecipesCacheDir(resolved: { agentplaneDir: string 
   return path.join(resolved.agentplaneDir, PROJECT_RECIPES_CACHE_DIR_NAME);
 }
 
-export function resolveProjectGeneratedDir(resolved: { agentplaneDir: string }): string {
+function resolveProjectGeneratedDir(resolved: { agentplaneDir: string }): string {
   return path.join(resolved.agentplaneDir, "generated");
 }
 
