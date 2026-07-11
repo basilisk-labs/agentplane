@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202607030734-6T937A/post-merge-close-included-context-help",
+  "created_at": "2026-07-11T14:17:44.105Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-07-11T14:17:43.940Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pr_number": 4580,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4580",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202607030734-6T937A",
+  "updated_at": "2026-07-11T14:18:38.012Z",
+  "verify": {
+    "status": "pass"
+  }
+}
