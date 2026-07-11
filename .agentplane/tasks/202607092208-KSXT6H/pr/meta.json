@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:8660cc0ad4190fa3651eaa56e7bf1d354f9745871eeabfcef45717238e0fa3a8",
   "pr_number": 4575,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4575",
+  "pre_merge_closure": {
+    "basis_commit": "81d3c0c4bf1b9ae3da051cf7579c6bbfda8e6c01",
+    "branch": "task/202607092208-KSXT6H/split-runtime-and-backend-hotspots-for-v0-6-22",
+    "pr_number": 4575,
+    "recorded_at": "2026-07-11T11:54:39.391Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607092208-KSXT6H",
