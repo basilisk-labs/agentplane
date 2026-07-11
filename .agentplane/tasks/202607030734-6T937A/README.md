@@ -4,7 +4,7 @@ title: "Context help: expose nested v2 commands"
 status: "DOING"
 priority: "med"
 owner: "CURATOR"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,25 +20,26 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-03T07:38:56.455Z"
+  updated_at: "2026-07-11T14:17:43.940Z"
   updated_by: "CURATOR"
-  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.help-contract.test.ts; Result: pass; Evidence: explicit help for context migrate and context extraction apply works without --all. Command: repo-local CLI help smoke; Result: pass; Evidence: compact help rendered for both advanced context commands. Scope: nested context command help discoverability."
+  note: "Included implementation was merged by PR #4543; rebased patch-id matches d53b6cf, current help contract is 14/14 passing, and agentplane typecheck passes."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-03T07:40:54.419Z"
+  updated_at: "2026-07-11T14:17:46.445Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed for included context help task."
-  evaluated_sha: "d53b6cf0f515b2df99c329df082d2efadedf9224"
+  note: "Included context-help implementation is present on main and current focused validation passes; only stale child-task closure metadata remained."
+  evaluated_sha: null
   blueprint_digest: "b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a"
   evidence_refs:
     - ".agentplane/tasks/202607030734-6T937A/README.md"
-    - ".agentplane/tasks/202607030734-6T937A/quality/20260703-074054419-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607030734-6T937A/quality/20260703-074054419-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607030734-6T937A/quality/20260703-074054419-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607030734-6T937A/quality/20260711-141746445-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607030734-6T937A/quality/20260711-141746445-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607030734-6T937A/quality/20260711-141746445-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607030734-6T937A/blueprint/resolved-snapshot.json"
+    - "https://github.com/basilisk-labs/agentplane/pull/4543; patch-id 5533f127c720861355410def020aa169caa891ea; bunx vitest run packages/agentplane/src/cli/run-cli.core.help-contract.test.ts; bun run --filter=agentplane typecheck"
   findings:
-    - "No blocking findings. Help contract and CLI smoke cover explicit help for context migrate and context extraction apply without --all."
+    - "PR #4543 merged the identical patch; help contract 14/14 and agentplane typecheck pass on current main-derived branch."
 commit: null
 comments:
   -
@@ -58,8 +59,14 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.help-contract.test.ts; Result: pass; Evidence: explicit help for context migrate and context extraction apply works without --all. Command: repo-local CLI help smoke; Result: pass; Evidence: compact help rendered for both advanced context commands. Scope: nested context command help discoverability."
+  -
+    type: "verify"
+    at: "2026-07-11T14:17:43.940Z"
+    author: "CURATOR"
+    state: "ok"
+    note: "Included implementation was merged by PR #4543; rebased patch-id matches d53b6cf, current help contract is 14/14 passing, and agentplane typecheck passes."
 doc_version: 3
-doc_updated_at: "2026-07-03T07:38:56.559Z"
+doc_updated_at: "2026-07-11T14:17:44.078Z"
 doc_updated_by: "CURATOR"
 description: "Fix smoke finding where context migrate and context extraction apply execute but are not discoverable through agentplane help, so users cannot inspect fresh context v2 command syntax reliably."
 sections:
@@ -93,6 +100,36 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030734-7S66KX-context-graph-align-sgr-vocabulary-and-diagnosti/.agentplane/tasks/202607030734-6T937A/blueprint/resolved-snapshot.json
+    - old_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
+    - current_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607030734-6T937A
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane work start 202607030734-6T937A --agent CURATOR --slug context-help-expose-nested-v2-commands --worktree
+    - diagnostic_command: agentplane work resume 202607030734-6T937A
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: worktree_projection_drift
+
+    ### 2026-07-11T14:17:43.940Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Included implementation was merged by PR #4543; rebased patch-id matches d53b6cf, current help contract is 14/14 passing, and agentplane typecheck passes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-03T07:38:56.559Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030734-6T937A-post-merge-close-included-context-help/.agentplane/tasks/202607030734-6T937A/blueprint/resolved-snapshot.json
     - old_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
     - current_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
     - route_changed: no
@@ -156,6 +193,36 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030734-7S66KX-context-graph-align-sgr-vocabulary-and-diagnosti/.agentplane/tasks/202607030734-6T937A/blueprint/resolved-snapshot.json
+- old_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
+- current_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607030734-6T937A
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane work start 202607030734-6T937A --agent CURATOR --slug context-help-expose-nested-v2-commands --worktree
+- diagnostic_command: agentplane work resume 202607030734-6T937A
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: worktree_projection_drift
+
+### 2026-07-11T14:17:43.940Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Included implementation was merged by PR #4543; rebased patch-id matches d53b6cf, current help contract is 14/14 passing, and agentplane typecheck passes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-03T07:38:56.559Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030734-6T937A-post-merge-close-included-context-help/.agentplane/tasks/202607030734-6T937A/blueprint/resolved-snapshot.json
 - old_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
 - current_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
 - route_changed: no
