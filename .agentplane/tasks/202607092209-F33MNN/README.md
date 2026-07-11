@@ -5,7 +5,7 @@ result_summary: "v0.6.22 release candidate validated and ready for protected-mai
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -51,28 +51,26 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-11T14:00:21.354Z"
+  updated_at: "2026-07-11T14:04:06.411Z"
   updated_by: "INTEGRATOR"
-  note: "Reverified after hosted format repair: packages/spec/examples/acr.json was normalized by Prettier; full format check and v0.6.22 release parity pass."
+  note: "Regenerated v0.6.22 README header artifacts; docs:readme-header:check, format:check, release:parity, and ci:contract pass."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-11T14:00:24.334Z"
+  updated_at: "2026-07-11T14:04:10.012Z"
   updated_by: "EVALUATOR"
-  note: "Hosted format repair preserves the validated v0.6.22 release candidate."
-  evaluated_sha: "6432a754aac480de9e897f3b8807ef6f481d4d4c"
+  note: "v0.6.22 release candidate and regenerated README headers satisfy release, formatting, and CI contracts."
+  evaluated_sha: "b24ec1b31f5ce24f3bf0d7b1f8338b61c09d796f"
   blueprint_digest: "782bcbef11c00cc3b8a548c896ef0a0aa74f290eeb8196024ba91631e9941af7"
   evidence_refs:
     - ".agentplane/tasks/202607092209-F33MNN/README.md"
-    - ".agentplane/tasks/202607092209-F33MNN/quality/20260711-140024334-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607092209-F33MNN/quality/20260711-140024334-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607092209-F33MNN/quality/20260711-140024334-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607092209-F33MNN/quality/20260711-140410012-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607092209-F33MNN/quality/20260711-140410012-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607092209-F33MNN/quality/20260711-140410012-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607092209-F33MNN/blueprint/resolved-snapshot.json"
-    - "packages/spec/examples/acr.json"
-    - "bun run format:check"
-    - "bun run release:parity"
+    - "bun run docs:readme-header:check; bun run format:check; bun run release:parity; bun run ci:contract"
   findings:
-    - "The only change after pre-merge closure is deterministic Prettier normalization of the version-bumped ACR example; format check and package parity pass, with no release behavior or scope change."
+    - "README header artifacts are fresh for v0.6.22; full ci:contract passes."
 commit:
   hash: "4461bb0c3eb3824c5cad689434545299f2179b44"
   message: "📝 F33MNN release: sync workflow recovery snapshot"
@@ -126,8 +124,14 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "Reverified after hosted format repair: packages/spec/examples/acr.json was normalized by Prettier; full format check and v0.6.22 release parity pass."
+  -
+    type: "verify"
+    at: "2026-07-11T14:04:06.411Z"
+    author: "INTEGRATOR"
+    state: "ok"
+    note: "Regenerated v0.6.22 README header artifacts; docs:readme-header:check, format:check, release:parity, and ci:contract pass."
 doc_version: 3
-doc_updated_at: "2026-07-11T14:00:22.984Z"
+doc_updated_at: "2026-07-11T14:04:08.205Z"
 doc_updated_by: "INTEGRATOR"
 description: "Integrate the approved refactor leaves, resolve only release-blocking drift, generate the patch release plan and notes, publish v0.6.22 through the protected main workflow, and verify package/tag parity."
 sections:
@@ -185,6 +189,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-11T13:56:42.758Z, excerpt_hash=sha256:284f1aca3d0425e6baf701e81168901db387d5ef4e5349379bfef80ef5a76fb1
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092209-F33MNN-prepare-and-publish-patch-release-v0-6-22/.agentplane/tasks/202607092209-F33MNN/blueprint/resolved-snapshot.json
+    - old_digest: 782bcbef11c00cc3b8a548c896ef0a0aa74f290eeb8196024ba91631e9941af7
+    - current_digest: 782bcbef11c00cc3b8a548c896ef0a0aa74f290eeb8196024ba91631e9941af7
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607092209-F33MNN
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607092209-F33MNN --branch task/202607092209-F33MNN/prepare-and-publish-patch-release-v0-6-22
+    - diagnostic_command: agentplane pr check 202607092209-F33MNN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-11T14:04:06.411Z — VERIFY — ok
+
+    By: INTEGRATOR
+
+    Note: Regenerated v0.6.22 README header artifacts; docs:readme-header:check, format:check, release:parity, and ci:contract pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-11T14:00:22.984Z, excerpt_hash=sha256:284f1aca3d0425e6baf701e81168901db387d5ef4e5349379bfef80ef5a76fb1
 
     Details:
 
@@ -278,6 +312,36 @@ Note: Reverified after hosted format repair: packages/spec/examples/acr.json was
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-11T13:56:42.758Z, excerpt_hash=sha256:284f1aca3d0425e6baf701e81168901db387d5ef4e5349379bfef80ef5a76fb1
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092209-F33MNN-prepare-and-publish-patch-release-v0-6-22/.agentplane/tasks/202607092209-F33MNN/blueprint/resolved-snapshot.json
+- old_digest: 782bcbef11c00cc3b8a548c896ef0a0aa74f290eeb8196024ba91631e9941af7
+- current_digest: 782bcbef11c00cc3b8a548c896ef0a0aa74f290eeb8196024ba91631e9941af7
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607092209-F33MNN
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607092209-F33MNN --branch task/202607092209-F33MNN/prepare-and-publish-patch-release-v0-6-22
+- diagnostic_command: agentplane pr check 202607092209-F33MNN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-11T14:04:06.411Z — VERIFY — ok
+
+By: INTEGRATOR
+
+Note: Regenerated v0.6.22 README header artifacts; docs:readme-header:check, format:check, release:parity, and ci:contract pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-11T14:00:22.984Z, excerpt_hash=sha256:284f1aca3d0425e6baf701e81168901db387d5ef4e5349379bfef80ef5a76fb1
 
 Details:
 

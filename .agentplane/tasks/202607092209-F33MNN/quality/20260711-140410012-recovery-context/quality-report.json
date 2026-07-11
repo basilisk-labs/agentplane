@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092209-F33MNN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-11T14:04:10.012Z",
+  "verdict": "pass",
+  "summary": "v0.6.22 release candidate and regenerated README headers satisfy release, formatting, and CI contracts.",
+  "evaluated_sha": "b24ec1b31f5ce24f3bf0d7b1f8338b61c09d796f",
+  "blueprint_digest": "782bcbef11c00cc3b8a548c896ef0a0aa74f290eeb8196024ba91631e9941af7",
+  "findings": [
+    "README header artifacts are fresh for v0.6.22; full ci:contract passes."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092209-F33MNN/README.md",
+    "bun run docs:readme-header:check; bun run format:check; bun run release:parity; bun run ci:contract"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
