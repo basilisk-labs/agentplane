@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:3d970d39bdf7d566ad1d02bedd758c36b8a822cb6d82fe948c81cc2afafd9ba9",
   "pr_number": 4576,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4576",
+  "pre_merge_closure": {
+    "basis_commit": "ffbcbd118d339acefda33f4e8d4c4029e0442163",
+    "branch": "task/202607092208-NGVXDD/reduce-the-knip-baseline-for-v0-6-22",
+    "pr_number": 4576,
+    "recorded_at": "2026-07-11T12:22:50.487Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607092208-NGVXDD",
