@@ -1,10 +1,11 @@
 ---
 id: "202607092208-NGVXDD"
 title: "Reduce the Knip baseline for v0.6.22"
-status: "DOING"
+result_summary: "Reduced Knip baseline from 574 to 555; classified the remaining surface and preserved the dynamically launched CLI runner."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -51,11 +52,16 @@ quality_review:
     - "typecheck,lint,ci-contract:pass"
   findings:
     - "No blocking defects found; 19 unused exports were eliminated, the runner false positive is explicitly classified, and all gates pass."
-commit: null
+commit:
+  hash: "b0eefc7a252b9f9cdf7c5b6ffed65b8949617dad"
+  message: "🧹 NGVXDD task: retain dynamic CLI runner"
 comments:
   -
     author: "CODER"
     body: "Start: classify and remove safe Knip findings, then lower the accepted baseline without broader ignores."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Knip baseline is lower without hidden debt and all local/hosted checks pass."
 events:
   -
     type: "status"
@@ -76,9 +82,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Knip debt decreases from 574 to 555 with no ignore expansion. Critical-init verification identified and preserved the path-launched CLI runner; all focused, critical, contract, type, lint, and full 364/2157 tests pass."
+  -
+    type: "status"
+    at: "2026-07-11T12:22:50.446Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Knip baseline is lower without hidden debt and all local/hosted checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-11T12:13:47.144Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-11T12:22:50.447Z"
+doc_updated_by: "INTEGRATOR"
 description: "Classify current Knip findings into public API, intentional framework entry points, and removable dead code; delete or export correctly so the accepted baseline shrinks materially without hiding new debt."
 sections:
   Summary: |-
