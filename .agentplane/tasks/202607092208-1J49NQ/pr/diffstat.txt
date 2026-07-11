@@ -1,0 +1,11 @@
+ .../cli/run-cli/commands/platform-role-guides.ts   |  84 +++++++
+ .../src/cli/run-cli/commands/platform.ts           |  84 +------
+ .../commands/guard/impl/close-message-render.ts    |  74 +-----
+ .../guard/impl/close-message-verification.ts       |  83 +++++++
+ .../src/commands/shared/route-execution-packet.ts  | 261 ++++++++++++++++++++
+ .../agentplane/src/commands/shared/route-oracle.ts | 262 +--------------------
+ .../src/commands/task/hosted-close-premerge.ts     | 143 +++++++++++
+ .../src/commands/task/hosted-close.command.ts      | 156 ++----------
+ .../agentplane/src/commands/task/new-duplicates.ts | 108 +++++++++
+ packages/agentplane/src/commands/task/new.ts       | 109 +--------
+ 10 files changed, 703 insertions(+), 661 deletions(-)
