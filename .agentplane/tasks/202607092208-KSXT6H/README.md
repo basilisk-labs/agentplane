@@ -1,10 +1,11 @@
 ---
 id: "202607092208-KSXT6H"
 title: "Split runtime and backend hotspots for v0.6.22"
-status: "DOING"
+result_summary: "Split seven runtime/backend hotspots into cohesive helpers; runtime hotspot count reduced from 9 to 2."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -51,11 +52,16 @@ quality_review:
     - "build,typecheck,arch,hotspots,ci-contract,knip,coverage:pass"
   findings:
     - "No blocking defects found; seven scoped runtime/backend hotspots were decomposed and repository runtime hotspot count is now two."
-commit: null
+commit:
+  hash: "d63ebfd6171436ff0c84a8feec6c02fb736e86a2"
+  message: "🚧 KSXT6H task: split runtime and backend hotspots"
 comments:
   -
     author: "CODER"
     body: "Start: split runtime and backend hotspots behind existing public APIs and schemas."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: scoped refactor preserves APIs and all local/hosted checks passed."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Public APIs and serialized contracts are preserved; all seven scoped hotspots are decomposed. Focused 33/246 and full 364/2157 tests, build, typecheck, architecture, hotspot, contract, Knip, and coverage checks passed."
+  -
+    type: "status"
+    at: "2026-07-11T11:54:39.352Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: scoped refactor preserves APIs and all local/hosted checks passed."
 doc_version: 3
-doc_updated_at: "2026-07-11T11:46:54.123Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-11T11:54:39.353Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decompose Hermes command/runtime, result manifest, insights report, SGR contracts, and cloud backend modules into cohesive helpers while retaining public APIs, schemas, and backend behavior."
 sections:
   Summary: |-
