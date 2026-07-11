@@ -1,8 +1,9 @@
 import * as net from "node:net";
 
 import { BackendError, type TaskData } from "./shared.js";
-import { isDotEnvLoadedKey } from "../../shared/env.js";
 import { isRecord } from "../../shared/guards.js";
+
+export { cloudConfigOverrides, type CloudConfigOverride } from "./cloud-config-overrides.js";
 
 export type CloudSyncResponse = {
   data?: unknown;
@@ -46,12 +47,6 @@ export type CloudSyncStateDiagnostics = {
     status: string | null;
     error: string | null;
   } | null;
-};
-
-export type CloudConfigOverride = {
-  key: string;
-  configured: string | null;
-  effective: string;
 };
 
 export class CloudHttpError extends BackendError {
@@ -312,25 +307,6 @@ export function readCloudSyncStateDiagnostics(
   };
 }
 
-export function cloudConfigOverrides(
-  settings: { endpoint?: string; project_id?: string; provider?: string },
-  effective: Record<string, string>,
-): CloudConfigOverride[] {
-  const configured: Record<string, string | null> = {
-    AGENTPLANE_CLOUD_ENDPOINT: normalizeEndpoint(settings.endpoint),
-    AGENTPLANE_CLOUD_PROJECT_ID: normalizedString(settings.project_id),
-    AGENTPLANE_CLOUD_PROVIDER: normalizedString(settings.provider),
-  };
-  const out: CloudConfigOverride[] = [];
-  for (const [key, value] of Object.entries(effective)) {
-    if (!isDotEnvLoadedKey(key)) continue;
-    const configuredValue = configured[key] ?? null;
-    if (configuredValue === value) continue;
-    out.push({ key, configured: configuredValue, effective: value });
-  }
-  return out;
-}
-
 function readLatestCloudSyncJob(
   data: Record<string, unknown>,
 ): CloudSyncStateDiagnostics["latestJob"] {
@@ -361,15 +337,6 @@ function readNumber(input: unknown, key: string): number | null {
   const value = input[key];
   if (typeof value !== "number" || !Number.isFinite(value)) return null;
   return Math.trunc(value);
-}
-
-function normalizedString(value: unknown): string | null {
-  return typeof value === "string" && value.trim() ? value.trim() : null;
-}
-
-function normalizeEndpoint(value: unknown): string | null {
-  const normalized = normalizedString(value);
-  return normalized ? normalized.replaceAll(/\/+$/gu, "") : null;
 }
 
 function readString(input: unknown, key: string): string | null {

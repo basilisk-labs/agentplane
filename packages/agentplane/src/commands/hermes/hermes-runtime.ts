@@ -1,9 +1,6 @@
 import { execFile } from "node:child_process";
-import { readFile } from "node:fs/promises";
 import { promisify } from "node:util";
 
-import { isRecord } from "../../shared/guards.js";
-import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import {
@@ -12,11 +9,21 @@ import {
 } from "../shared/route-guidance.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
+import { currentAgentplaneCommand } from "./hermes-environment.js";
+export {
+  currentAgentplaneCommand,
+  hermesEnvSnapshot,
+  loadLaneRegistry,
+} from "./hermes-environment.js";
+export { loadHermesStateSnapshot, reconcileHermesState } from "./hermes-state.js";
+
 const execFileAsync = promisify(execFile);
 
 export const HERMES_LIFECYCLE_ACTIONS = ["comment", "block", "complete", "heartbeat"] as const;
 
 export type HermesLifecycleAction = (typeof HERMES_LIFECYCLE_ACTIONS)[number];
+
+export type HermesLocalProjection = Awaited<ReturnType<typeof routePacket>>;
 
 export type HermesRoutePacketForExecution = {
   task: {
@@ -38,67 +45,6 @@ function taskTerminalForHermesComplete(task: {
   const statusDone = task.status.trim().toUpperCase() === "DONE";
   const verificationState = task.verification?.trim().toLowerCase() ?? "";
   return statusDone && verificationState === "ok";
-}
-
-export function hermesEnvSnapshot() {
-  return {
-    task_id: process.env.HERMES_KANBAN_TASK ?? null,
-    board: process.env.HERMES_KANBAN_BOARD ?? null,
-    db: process.env.HERMES_KANBAN_DB ?? null,
-    run_id: process.env.HERMES_KANBAN_RUN_ID ?? null,
-    workspace: process.env.HERMES_KANBAN_WORKSPACE ?? null,
-    claim_lock_present: Boolean(process.env.HERMES_KANBAN_CLAIM_LOCK),
-  };
-}
-
-export async function loadLaneRegistry() {
-  const rawRegistryPath = process.env.AGENTPLANE_HERMES_LANE_REGISTRY?.trim();
-  const registryPath = rawRegistryPath && rawRegistryPath.length > 0 ? rawRegistryPath : null;
-  if (!registryPath) {
-    return {
-      path: null,
-      loaded: false,
-      error: null,
-      agentplane_lanes: [] as unknown[],
-    };
-  }
-  try {
-    const parsed = JSON.parse(await readFile(registryPath, "utf8")) as unknown;
-    const lanes = isRecord(parsed) ? parsed.lanes : null;
-    const agentplaneLanes = Array.isArray(lanes)
-      ? lanes.filter((lane) => isRecord(lane) && lane.kind === "agentplane")
-      : [];
-    return {
-      path: registryPath,
-      loaded: true,
-      error: null,
-      agentplane_lanes: agentplaneLanes,
-    };
-  } catch (err) {
-    return {
-      path: registryPath,
-      loaded: false,
-      error: err instanceof Error ? err.message : String(err),
-      agentplane_lanes: [] as unknown[],
-    };
-  }
-}
-
-export function currentAgentplaneCommand(): { command: string; argsPrefix: string[] } {
-  const rawAgentplaneBin = process.env.AGENTPLANE_BIN?.trim();
-  const command =
-    rawAgentplaneBin && rawAgentplaneBin.length > 0 ? rawAgentplaneBin : resolveAgentplaneBinPath();
-  const rawArgsPrefix = process.env.AGENTPLANE_BIN_ARGS?.trim();
-  if (!rawArgsPrefix) return { command, argsPrefix: [] };
-  try {
-    const parsed = JSON.parse(rawArgsPrefix) as unknown;
-    const argsPrefix = Array.isArray(parsed)
-      ? parsed.map((entry) => String(entry ?? "").trim()).filter(Boolean)
-      : [];
-    return { command, argsPrefix };
-  } catch {
-    return { command, argsPrefix: [] };
-  }
 }
 
 async function runnerVisibilityPacket(opts: {
@@ -445,94 +391,4 @@ export async function runHermesLifecycle(
   if (opts.dryRun) return { executed: false, command: [hermesCliCommand(), ...args] };
   const result = await execFileAsync(hermesCliCommand(), args, { maxBuffer: 1024 * 1024 });
   return { executed: true, command: [hermesCliCommand(), ...args], stdout: result.stdout };
-}
-
-function hermesCardAgentplaneTaskId(card: Record<string, unknown>): string | null {
-  const direct = card.agentplane_task_id ?? card.agentplaneTaskId;
-  if (typeof direct === "string" && direct.trim().length > 0) return direct.trim();
-  const metadata = isRecord(card.metadata) ? card.metadata : null;
-  const agentplane = metadata && isRecord(metadata.agentplane) ? metadata.agentplane : null;
-  for (const key of ["task_id", "taskId", "id"]) {
-    const value = agentplane?.[key];
-    if (typeof value === "string" && value.trim().length > 0) return value.trim();
-  }
-  return null;
-}
-
-export async function loadHermesStateSnapshot(path: string) {
-  const parsed = JSON.parse(await readFile(path, "utf8")) as unknown;
-  if (Array.isArray(parsed)) return parsed.filter(isRecord);
-  if (isRecord(parsed)) {
-    const cards = parsed.cards ?? parsed.tasks ?? parsed.items;
-    if (Array.isArray(cards)) return cards.filter(isRecord);
-    return [parsed];
-  }
-  return [];
-}
-
-export function reconcileHermesState(
-  localProjection: Awaited<ReturnType<typeof routePacket>> | null,
-  cards: Record<string, unknown>[],
-  taskId: string | null,
-) {
-  const relevantCards = taskId
-    ? cards.filter((card) => hermesCardAgentplaneTaskId(card) === taskId)
-    : cards;
-  const findings: { code: string; severity: "info" | "warn"; message: string }[] = [];
-  if (taskId && relevantCards.length === 0) {
-    findings.push({
-      code: "missing_hermes_card",
-      severity: "warn",
-      message: `No Hermes card in state snapshot maps to Agentplane task ${taskId}.`,
-    });
-  }
-  const duplicateGroups = new Map<string, number>();
-  for (const card of relevantCards) {
-    const cardTaskId = hermesCardAgentplaneTaskId(card);
-    if (!cardTaskId) continue;
-    duplicateGroups.set(cardTaskId, (duplicateGroups.get(cardTaskId) ?? 0) + 1);
-  }
-  for (const [cardTaskId, count] of duplicateGroups) {
-    if (count <= 1) continue;
-    findings.push({
-      code: "duplicate_hermes_cards",
-      severity: "warn",
-      message: `${count} Hermes cards map to Agentplane task ${cardTaskId}.`,
-    });
-  }
-  const first = relevantCards[0];
-  const rawStatus = first?.status ?? first?.state;
-  const status = typeof rawStatus === "string" ? rawStatus.trim().toLowerCase() : "";
-  if (
-    localProjection?.terminal.hermes_root_complete_allowed === true &&
-    status &&
-    !["done", "complete", "completed"].includes(status)
-  ) {
-    findings.push({
-      code: "agentplane_done_hermes_open",
-      severity: "warn",
-      message: "Agentplane is terminal and verified, but the Hermes card is not complete.",
-    });
-  }
-  if (
-    localProjection?.terminal.hermes_root_complete_allowed === false &&
-    ["done", "complete", "completed"].includes(status)
-  ) {
-    findings.push({
-      code: "hermes_complete_agentplane_open",
-      severity: "warn",
-      message: "Hermes card is complete, but Agentplane task truth is not terminal verified.",
-    });
-  }
-  return {
-    state_card_count: cards.length,
-    matched_card_count: relevantCards.length,
-    matched_cards: relevantCards.map((card) => ({
-      id: typeof card.id === "string" ? card.id : null,
-      status: typeof card.status === "string" ? card.status : (card.state ?? null),
-      assignee: typeof card.assignee === "string" ? card.assignee : null,
-      agentplane_task_id: hermesCardAgentplaneTaskId(card),
-    })),
-    findings,
-  };
 }
