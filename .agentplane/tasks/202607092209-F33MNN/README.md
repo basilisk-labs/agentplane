@@ -4,7 +4,7 @@ title: "Prepare and publish patch release v0.6.22"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -62,6 +62,9 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Release-blocking drift: heavy prepublish exposed six stale pre-push task-binding fixture expectations after the bounded full-fast hook contract. Updated the tests to preserve task-binding bypass assertions while accepting the subsequent bounded-hook gate; focused 15/15 passes."
+  -
+    author: "INTEGRATOR"
+    body: "Release-blocking drift: multi-task finish reviews can legitimately target later task-artifact-only commits for sibling tasks. Finish now accepts those reviewed SHAs only when they descend from the declared implementation commit and the entire delta is confined to the same task set; focused lifecycle 11/11 and quality-target 6/6 pass."
 events:
   -
     type: "status"
@@ -75,8 +78,13 @@ events:
     at: "2026-07-11T13:07:54.626Z"
     author: "INTEGRATOR"
     body: "Release-blocking drift: heavy prepublish exposed six stale pre-push task-binding fixture expectations after the bounded full-fast hook contract. Updated the tests to preserve task-binding bypass assertions while accepting the subsequent bounded-hook gate; focused 15/15 passes."
+  -
+    type: "comment"
+    at: "2026-07-11T13:21:10.246Z"
+    author: "INTEGRATOR"
+    body: "Release-blocking drift: multi-task finish reviews can legitimately target later task-artifact-only commits for sibling tasks. Finish now accepts those reviewed SHAs only when they descend from the declared implementation commit and the entire delta is confined to the same task set; focused lifecycle 11/11 and quality-target 6/6 pass."
 doc_version: 3
-doc_updated_at: "2026-07-11T13:07:54.626Z"
+doc_updated_at: "2026-07-11T13:21:10.246Z"
 doc_updated_by: "INTEGRATOR"
 description: "Integrate the approved refactor leaves, resolve only release-blocking drift, generate the patch release plan and notes, publish v0.6.22 through the protected main workflow, and verify package/tag parity."
 sections:
