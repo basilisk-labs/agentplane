@@ -1,10 +1,11 @@
 ---
 id: "202607092208-1J49NQ"
 title: "Split routing and task-command hotspots for v0.6.22"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -47,11 +48,16 @@ quality_review:
     - ".agentplane/tasks/202607092208-1J49NQ/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings; extracted boundaries preserve public APIs and deterministic route behavior."
-commit: null
+commit:
+  hash: "05037fa9edf56d5348d91aea2b68a68972a446f3"
+  message: "📌 1J49NQ task: record pull request"
 comments:
   -
     author: "CODER"
     body: "Start: split routing and task-command hotspots along existing domain boundaries while preserving lifecycle and CLI contracts."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -66,8 +72,15 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Verified route/task behavior, lifecycle invariants, hotspot reduction, CI contract, and full fast suite."
+  -
+    type: "status"
+    at: "2026-07-11T11:24:40.840Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-11T11:16:27.922Z"
+doc_updated_at: "2026-07-11T11:24:40.841Z"
 doc_updated_by: "CODER"
 description: "Decompose route-oracle, hosted-close, task new, platform CLI, and close-message rendering modules into typed domain helpers while preserving route decisions, exit codes, and task lifecycle contracts."
 sections:
@@ -133,6 +146,10 @@ sections:
     - Observation: Five routing and task-command hotspots were split behind their existing public facades.
       Impact: Runtime hotspot count decreased from 14 to 9 without route-code or lifecycle-contract changes.
       Resolution: Focused 62/440, lifecycle invariants, hotspots, typecheck, ci:contract, and full 364/2157 passed.
+extensions:
+  implementation_commit:
+    hash: "ffe86ed87114321894e79bf7bf0f5a017d7b60a1"
+    message: "🚧 1J49NQ task: split routing and task hotspots"
 id_source: "generated"
 ---
 ## Summary
