@@ -1,10 +1,11 @@
 ---
 id: "202607030734-6T937A"
 title: "Context help: expose nested v2 commands"
-status: "DOING"
+result_summary: "Merged via PR #4580."
+status: "DONE"
 priority: "med"
 owner: "CURATOR"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -40,11 +41,16 @@ quality_review:
     - "https://github.com/basilisk-labs/agentplane/pull/4543; patch-id 5533f127c720861355410def020aa169caa891ea; bunx vitest run packages/agentplane/src/cli/run-cli.core.help-contract.test.ts; bun run --filter=agentplane typecheck"
   findings:
     - "PR #4543 merged the identical patch; help contract 14/14 and agentplane typecheck pass on current main-derived branch."
-commit: null
+commit:
+  hash: "bd3a19c29cf2e3696943871f9edd92beef2b2226"
+  message: "✅ 6T937A task: verify included context help on main"
 comments:
   -
     author: "CURATOR"
     body: "Start: Implementing nested context command help discoverability as an included task in primary worktree 202607030734-7S66KX."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4580 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -65,9 +71,16 @@ events:
     author: "CURATOR"
     state: "ok"
     note: "Included implementation was merged by PR #4543; rebased patch-id matches d53b6cf, current help contract is 14/14 passing, and agentplane typecheck passes."
+  -
+    type: "status"
+    at: "2026-07-11T14:21:58.867Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4580 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-07-11T14:17:44.078Z"
-doc_updated_by: "CURATOR"
+doc_updated_at: "2026-07-11T14:21:58.873Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix smoke finding where context migrate and context extraction apply execute but are not discoverable through agentplane help, so users cannot inspect fresh context v2 command syntax reliably."
 sections:
   Summary: |-
