@@ -1,10 +1,10 @@
 ---
 id: "202607092208-1J49NQ"
 title: "Split routing and task-command hotspots for v0.6.22"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +33,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: split routing and task-command hotspots along existing domain boundaries while preserving lifecycle and CLI contracts."
+events:
+  -
+    type: "status"
+    at: "2026-07-10T16:21:23.394Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split routing and task-command hotspots along existing domain boundaries while preserving lifecycle and CLI contracts."
 doc_version: 3
-doc_updated_at: "2026-07-09T22:09:45.808Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-11T11:16:05.227Z"
+doc_updated_by: "CODER"
 description: "Decompose route-oracle, hosted-close, task new, platform CLI, and close-message rendering modules into typed domain helpers while preserving route decisions, exit codes, and task lifecycle contracts."
 sections:
   Summary: |-
@@ -63,7 +73,11 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Split route execution packets from route phase selection while preserving exported route-oracle APIs, blocker codes, argv safety, and exact recovery commands.
+    - Split hosted-close pre-merge validation, task-new duplicate detection, platform role-guide rendering, and close-message verification normalization into focused helpers.
+    - All touched runtime modules are below 400 lines; runtime hotspot count decreased from 14 to 9 (18 before the v0.6.22 refactor tranche).
+    - Verification passed: focused route/task/guard suite 62 files/440 tests, lifecycle invariants, hotspots:check, typecheck, ci:contract, and full test:fast 364 files/2157 tests.
 id_source: "generated"
 ---
 ## Summary
@@ -102,3 +116,8 @@ Decompose route-oracle, hosted-close, task new, platform CLI, and close-message 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Split route execution packets from route phase selection while preserving exported route-oracle APIs, blocker codes, argv safety, and exact recovery commands.
+- Split hosted-close pre-merge validation, task-new duplicate detection, platform role-guide rendering, and close-message verification normalization into focused helpers.
+- All touched runtime modules are below 400 lines; runtime hotspot count decreased from 14 to 9 (18 before the v0.6.22 refactor tranche).
+- Verification passed: focused route/task/guard suite 62 files/440 tests, lifecycle invariants, hotspots:check, typecheck, ci:contract, and full test:fast 364 files/2157 tests.
