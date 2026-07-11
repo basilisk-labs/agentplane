@@ -1,5 +1,19 @@
  .agentplane/WORKFLOW.md                            |   3 +-
  .agentplane/workflows/last-known-good.md           |   3 +-
+ docs/assets/header.svg                             |   4 +-
+ docs/assets/readme-headers/adr.svg                 |   4 +-
+ docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
+ docs/assets/readme-headers/agentplane.svg          |   4 +-
+ docs/assets/readme-headers/core.svg                |   4 +-
+ docs/assets/readme-headers/docs.svg                |   4 +-
+ docs/assets/readme-headers/humanizer.svg           |   4 +-
+ docs/assets/readme-headers/recipes.svg             |   4 +-
+ docs/assets/readme-headers/releases.svg            |   4 +-
+ docs/assets/readme-headers/schemas.svg             |   4 +-
+ docs/assets/readme-headers/scripts.svg             |   4 +-
+ docs/assets/readme-headers/skills.svg              |   4 +-
+ docs/assets/readme-headers/spec.svg                |   4 +-
+ docs/assets/readme-headers/testkit.svg             |   4 +-
  docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.6.22.md                           | 210 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +-
@@ -12,4 +26,4 @@
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.22.png    | Bin 0 -> 54603 bytes
  website/static/img/social/manifest.json            |   8 +
- 14 files changed, 379 insertions(+), 103 deletions(-)
+ 28 files changed, 407 insertions(+), 131 deletions(-)

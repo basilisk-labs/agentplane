@@ -13,7 +13,7 @@ Created: 2026-07-11T12:50:46.498Z
 ## Verification
 
 - State: ok
-- Note: Reverified after hosted format repair: packages/spec/examples/acr.json was normalized by Prettier; full format check and v0.6.22 release parity pass.
+- Note: Regenerated v0.6.22 README header artifacts; docs:readme-header:check, format:check, release:parity, and ci:contract pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,6 +31,20 @@ Created: 2026-07-11T12:50:46.498Z
 ```text
  .agentplane/WORKFLOW.md                            |   3 +-
  .agentplane/workflows/last-known-good.md           |   3 +-
+ docs/assets/header.svg                             |   4 +-
+ docs/assets/readme-headers/adr.svg                 |   4 +-
+ docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
+ docs/assets/readme-headers/agentplane.svg          |   4 +-
+ docs/assets/readme-headers/core.svg                |   4 +-
+ docs/assets/readme-headers/docs.svg                |   4 +-
+ docs/assets/readme-headers/humanizer.svg           |   4 +-
+ docs/assets/readme-headers/recipes.svg             |   4 +-
+ docs/assets/readme-headers/releases.svg            |   4 +-
+ docs/assets/readme-headers/schemas.svg             |   4 +-
+ docs/assets/readme-headers/scripts.svg             |   4 +-
+ docs/assets/readme-headers/skills.svg              |   4 +-
+ docs/assets/readme-headers/spec.svg                |   4 +-
+ docs/assets/readme-headers/testkit.svg             |   4 +-
  docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.6.22.md                           | 210 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +-
@@ -43,7 +57,7 @@ Created: 2026-07-11T12:50:46.498Z
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.22.png    | Bin 0 -> 54603 bytes
  website/static/img/social/manifest.json            |   8 +
- 14 files changed, 379 insertions(+), 103 deletions(-)
+ 28 files changed, 407 insertions(+), 131 deletions(-)
 ```
 
 </details>
