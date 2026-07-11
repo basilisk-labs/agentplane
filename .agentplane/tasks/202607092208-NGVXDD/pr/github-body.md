@@ -19,8 +19,9 @@ Classify current Knip findings into public API, intentional framework entry poin
 - Note:
 
 ```text
-Knip debt decreases from 574 to 554 with no ignore expansion; each remaining entry is classified and
-all declared checks pass, including full 364/2157 tests.
+Knip debt decreases from 574 to 555 with no ignore expansion. Critical-init verification identified
+and preserved the path-launched CLI runner; all focused, critical, contract, type, lint, and full
+364/2157 tests pass.
 ```
 - Canonical workflow state lives in the task README.
 

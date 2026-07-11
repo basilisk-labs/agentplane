@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092208-NGVXDD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-11T12:13:48.910Z",
+  "verdict": "pass",
+  "summary": "The revised reduction preserves the dynamically launched CLI runner and removes only proven dead or unnecessary export surface.",
+  "evaluated_sha": "b0eefc7a252b9f9cdf7c5b6ffed65b8949617dad",
+  "blueprint_digest": "7c05baa832e06acc612f0dcf7a01d5f9f46c89f777222a2c6bebfcaaa139bac7",
+  "findings": [
+    "No blocking defects found; 19 unused exports were eliminated, the runner false positive is explicitly classified, and all gates pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092208-NGVXDD/README.md",
+    "b0eefc7a252b9f9cdf7c5b6ffed65b8949617dad",
+    ".agentplane/tasks/202607092208-NGVXDD/knip-classification.md",
+    "knip:555/555;critical-cli:5-files-14-tests;full:364-files-2157-tests",
+    "typecheck,lint,ci-contract:pass"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
