@@ -15,8 +15,13 @@ Split the 11 test files above 1000 lines by behavior and fixture boundary, centr
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+All 16 cases are preserved across two sub-1000-line files; oversized baseline is 10/11424 and
+focused, coverage, contract, type, and full 364/2157 checks pass.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
