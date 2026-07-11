@@ -15,8 +15,15 @@ Integrate the approved refactor leaves, resolve only release-blocking drift, gen
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Release candidate verified: all 18 dependencies DONE; v0.6.22 plan frozen from v0.6.21; release
+parity, contract CI, test:fast, 78/78 release-ci chunks, workflow/significant coverage,
+release-critical, tarball/install smoke, notes, incident, package availability, and protected
+candidate preparation passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
