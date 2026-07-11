@@ -51,10 +51,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-11T14:04:06.411Z"
-  updated_by: "INTEGRATOR"
-  note: "Regenerated v0.6.22 README header artifacts; docs:readme-header:check, format:check, release:parity, and ci:contract pass."
-  attempts: 0
+  updated_at: "2026-07-11T14:30:35.714Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.22."
 quality_review:
   state: "pass"
   updated_at: "2026-07-11T14:04:10.012Z"
@@ -131,8 +130,8 @@ events:
     state: "ok"
     note: "Regenerated v0.6.22 README header artifacts; docs:readme-header:check, format:check, release:parity, and ci:contract pass."
 doc_version: 3
-doc_updated_at: "2026-07-11T14:04:08.205Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-07-11T14:30:35.714Z"
+doc_updated_by: "DEUS"
 description: "Integrate the approved refactor leaves, resolve only release-blocking drift, generate the patch release plan and notes, publish v0.6.22 through the protected main workflow, and verify package/tag parity."
 sections:
   Summary: |-
@@ -241,6 +240,23 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    <!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+    ### Hosted publish
+
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.22.
+    - Details:
+      - release_sha: bd61ef4982f29cd0909587d0034cf6e35a62a03d
+      - version: 0.6.22
+      - tag: v0.6.22
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.22
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/29156079982
+    <!-- END HOSTED PUBLISH EVIDENCE -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -364,6 +380,23 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+<!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+### Hosted publish
+
+- State: ok
+- Note: Hosted publish confirmed for v0.6.22.
+- Details:
+  - release_sha: bd61ef4982f29cd0909587d0034cf6e35a62a03d
+  - version: 0.6.22
+  - tag: v0.6.22
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.22
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/29156079982
+<!-- END HOSTED PUBLISH EVIDENCE -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

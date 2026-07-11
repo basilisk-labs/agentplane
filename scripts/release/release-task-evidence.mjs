@@ -112,7 +112,7 @@ async function resolveReleaseTaskIdsFromCommit(releaseSha) {
 }
 
 function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+  return String(value).replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
 
 async function resolveReleaseTaskIdsFromRegistry(manifest) {
@@ -429,13 +429,18 @@ async function runPrepare(argv) {
   });
 }
 
-function renderVerificationSection(manifest, repo) {
+const HOSTED_PUBLISH_EVIDENCE_BEGIN = "<!-- BEGIN HOSTED PUBLISH EVIDENCE -->";
+const HOSTED_PUBLISH_EVIDENCE_END = "<!-- END HOSTED PUBLISH EVIDENCE -->";
+
+function renderHostedPublishEvidence(manifest, repo) {
   const releaseUrl = `https://github.com/${repo}/releases/tag/${manifest.tag}`;
   const publishRunUrl = manifest.job.runId
     ? `https://github.com/${repo}/actions/runs/${manifest.job.runId}`
     : null;
   const lines = [
-    "<!-- BEGIN VERIFICATION RESULTS -->",
+    HOSTED_PUBLISH_EVIDENCE_BEGIN,
+    "### Hosted publish",
+    "",
     "- State: ok",
     `- Note: Hosted publish confirmed for ${manifest.tag}.`,
     "- Details:",
@@ -452,8 +457,37 @@ function renderVerificationSection(manifest, repo) {
   if (publishRunUrl) {
     lines.push(`  - publish_run: ${publishRunUrl}`);
   }
-  lines.push("<!-- END VERIFICATION RESULTS -->");
+  lines.push(HOSTED_PUBLISH_EVIDENCE_END);
   return lines.join("\n");
+}
+
+function renderVerificationSection(manifest, repo, existingVerification) {
+  const hostedEvidence = renderHostedPublishEvidence(manifest, repo);
+  const existing = String(existingVerification ?? "")
+    .replaceAll(
+      new RegExp(
+        `${escapeRegExp(HOSTED_PUBLISH_EVIDENCE_BEGIN)}[\\s\\S]*?${escapeRegExp(HOSTED_PUBLISH_EVIDENCE_END)}`,
+        "gu",
+      ),
+      "",
+    )
+    .trim();
+  if (!existing) {
+    return [
+      "<!-- BEGIN VERIFICATION RESULTS -->",
+      hostedEvidence,
+      "<!-- END VERIFICATION RESULTS -->",
+    ].join("\n");
+  }
+  const closingMarker = "<!-- END VERIFICATION RESULTS -->";
+  const closingIndex = existing.indexOf(closingMarker);
+  if (closingIndex !== -1) {
+    const beforeClosing = existing.slice(0, closingIndex).trimEnd();
+    const afterClosing = existing.slice(closingIndex + closingMarker.length).trimStart();
+    const closingSection = afterClosing ? `${closingMarker}\n\n${afterClosing}` : closingMarker;
+    return `${beforeClosing}\n\n${hostedEvidence}\n${closingSection}`;
+  }
+  return `${existing}\n\n${hostedEvidence}`;
 }
 
 async function runApply(argv) {
@@ -470,9 +504,14 @@ async function runApply(argv) {
     throw new Error(`Task README id mismatch at ${readmePath}`);
   }
 
-  const verificationText = renderVerificationSection(manifest, args.repo);
+  const currentSections = taskDocToSectionMap(taskReadmeDocBody(parsed.frontmatter, parsed.body));
+  const verificationText = renderVerificationSection(
+    manifest,
+    args.repo,
+    currentSections.Verification,
+  );
   const sections = {
-    ...taskDocToSectionMap(taskReadmeDocBody(parsed.frontmatter, parsed.body)),
+    ...currentSections,
     Verification: verificationText,
   };
   const body = renderTaskDocFromSections(sections);

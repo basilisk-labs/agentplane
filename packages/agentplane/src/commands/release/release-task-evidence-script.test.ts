@@ -439,7 +439,16 @@ describe("release-task-evidence script", () => {
   it("writes hosted publish evidence into the release task README", async () => {
     const root = await initRepo();
     const taskId = "202604191130-JWBEB7";
-    const readmePath = await writeTaskReadme(root, taskId);
+    const readmePath = await writeTaskReadme(root, taskId, {
+      verificationText: [
+        "<!-- BEGIN VERIFICATION RESULTS -->",
+        "### Candidate validation",
+        "",
+        "- State: ok",
+        "- Note: Candidate checks passed.",
+        "<!-- END VERIFICATION RESULTS -->",
+      ].join("\n"),
+    });
     await commitAll(root, "seed release task");
     const publishResultPath = await writePublishResult(root, buildPublishResult(true));
 
@@ -466,6 +475,9 @@ describe("release-task-evidence script", () => {
     const updated = await readFile(readmePath, "utf8");
 
     expect(payload.changed).toBe(true);
+    expect(updated).toContain("Candidate checks passed.");
+    expect(updated).toContain("<!-- BEGIN HOSTED PUBLISH EVIDENCE -->");
+    expect(updated).toContain("### Hosted publish");
     expect(updated).toContain("Hosted publish confirmed for v0.3.15.");
     expect(updated).toContain(
       "release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.3.15",
@@ -475,6 +487,29 @@ describe("release-task-evidence script", () => {
     );
     expect(updated).toContain('updated_by: "DEUS"');
     expect(updated).toContain('state: "ok"');
+
+    const repeated = await execFileAsync(
+      "bun",
+      [
+        SCRIPT_PATH,
+        "apply",
+        "--task-id",
+        taskId,
+        "--publish-result",
+        publishResultPath,
+        "--repo",
+        "basilisk-labs/agentplane",
+        "--author",
+        "DEUS",
+        "--at",
+        "2026-04-19T12:00:00.000Z",
+      ],
+      { cwd: root, env: process.env },
+    );
+    const repeatedPayload = JSON.parse(String(repeated.stdout ?? "")) as { changed: boolean };
+    const repeatedReadme = await readFile(readmePath, "utf8");
+    expect(repeatedPayload.changed).toBe(false);
+    expect(repeatedReadme.match(/BEGIN HOSTED PUBLISH EVIDENCE/gu)).toHaveLength(2);
   });
 
   it("audits only scoped recent DONE tasks with closure evidence and pending verification", async () => {

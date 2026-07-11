@@ -21,9 +21,10 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-11T14:30:35.714Z"
-  updated_by: "DEUS"
-  note: "Hosted publish confirmed for v0.6.22."
+  updated_at: "2026-07-11T14:17:43.940Z"
+  updated_by: "CURATOR"
+  note: "Included implementation was merged by PR #4543; rebased patch-id matches d53b6cf, current help contract is 14/14 passing, and agentplane typecheck passes."
+  attempts: 0
 quality_review:
   state: "pass"
   updated_at: "2026-07-11T14:17:46.445Z"
@@ -78,8 +79,8 @@ events:
     to: "DONE"
     note: "Verified: PR #4580 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-07-11T14:30:35.714Z"
-doc_updated_by: "DEUS"
+doc_updated_at: "2026-07-11T14:21:58.873Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix smoke finding where context migrate and context extraction apply execute but are not discoverable through agentplane help, so users cannot inspect fresh context v2 command syntax reliably."
 sections:
   Summary: |-
@@ -98,19 +99,66 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    - State: ok
-    - Note: Hosted publish confirmed for v0.6.22.
-    - Details:
-      - release_sha: bd61ef4982f29cd0909587d0034cf6e35a62a03d
-      - version: 0.6.22
-      - tag: v0.6.22
-      - @agentplaneorg/core: published_in_run
-      - @agentplaneorg/recipes: published_in_run
-      - agentplane: published_in_run
-      - npm_smoke: pass
-      - github_release: created
-      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.22
-      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/29156079982
+    ### 2026-07-03T07:38:56.455Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.help-contract.test.ts; Result: pass; Evidence: explicit help for context migrate and context extraction apply works without --all. Command: repo-local CLI help smoke; Result: pass; Evidence: compact help rendered for both advanced context commands. Scope: nested context command help discoverability.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-03T07:34:58.046Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030734-7S66KX-context-graph-align-sgr-vocabulary-and-diagnosti/.agentplane/tasks/202607030734-6T937A/blueprint/resolved-snapshot.json
+    - old_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
+    - current_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607030734-6T937A
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane work start 202607030734-6T937A --agent CURATOR --slug context-help-expose-nested-v2-commands --worktree
+    - diagnostic_command: agentplane work resume 202607030734-6T937A
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: worktree_projection_drift
+
+    ### 2026-07-11T14:17:43.940Z — VERIFY — ok
+
+    By: CURATOR
+
+    Note: Included implementation was merged by PR #4543; rebased patch-id matches d53b6cf, current help contract is 14/14 passing, and agentplane typecheck passes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-03T07:38:56.559Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030734-6T937A-post-merge-close-included-context-help/.agentplane/tasks/202607030734-6T937A/blueprint/resolved-snapshot.json
+    - old_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
+    - current_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607030734-6T937A
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane work start 202607030734-6T937A --agent CURATOR --slug context-help-expose-nested-v2-commands --worktree
+    - diagnostic_command: agentplane work resume 202607030734-6T937A
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: worktree_projection_drift
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -144,19 +192,66 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-- State: ok
-- Note: Hosted publish confirmed for v0.6.22.
-- Details:
-  - release_sha: bd61ef4982f29cd0909587d0034cf6e35a62a03d
-  - version: 0.6.22
-  - tag: v0.6.22
-  - @agentplaneorg/core: published_in_run
-  - @agentplaneorg/recipes: published_in_run
-  - agentplane: published_in_run
-  - npm_smoke: pass
-  - github_release: created
-  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.22
-  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/29156079982
+### 2026-07-03T07:38:56.455Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.help-contract.test.ts; Result: pass; Evidence: explicit help for context migrate and context extraction apply works without --all. Command: repo-local CLI help smoke; Result: pass; Evidence: compact help rendered for both advanced context commands. Scope: nested context command help discoverability.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-03T07:34:58.046Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030734-7S66KX-context-graph-align-sgr-vocabulary-and-diagnosti/.agentplane/tasks/202607030734-6T937A/blueprint/resolved-snapshot.json
+- old_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
+- current_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607030734-6T937A
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane work start 202607030734-6T937A --agent CURATOR --slug context-help-expose-nested-v2-commands --worktree
+- diagnostic_command: agentplane work resume 202607030734-6T937A
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: worktree_projection_drift
+
+### 2026-07-11T14:17:43.940Z — VERIFY — ok
+
+By: CURATOR
+
+Note: Included implementation was merged by PR #4543; rebased patch-id matches d53b6cf, current help contract is 14/14 passing, and agentplane typecheck passes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-03T07:38:56.559Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030734-6T937A-post-merge-close-included-context-help/.agentplane/tasks/202607030734-6T937A/blueprint/resolved-snapshot.json
+- old_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
+- current_digest: b65e4399cbf3ca9ce1d4997993a0684edaf01d841d77bd7e4d6269fe798ea67a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607030734-6T937A
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane work start 202607030734-6T937A --agent CURATOR --slug context-help-expose-nested-v2-commands --worktree
+- diagnostic_command: agentplane work resume 202607030734-6T937A
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: worktree_projection_drift
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
