@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:cb9a0562cc4ac3c4282224ecd72b583677ea40f05520101741f36dcbdf97d6da",
   "pr_number": 4574,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4574",
+  "pre_merge_closure": {
+    "basis_commit": "05037fa9edf56d5348d91aea2b68a68972a446f3",
+    "branch": "task/202607092208-1J49NQ/split-routing-and-task-command-hotspots-for-v0-6",
+    "pr_number": 4574,
+    "recorded_at": "2026-07-11T11:24:40.870Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607092208-1J49NQ",
