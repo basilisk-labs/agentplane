@@ -15,8 +15,13 @@ Classify current Knip findings into public API, intentional framework entry poin
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Knip debt decreases from 574 to 554 with no ignore expansion; each remaining entry is classified and
+all declared checks pass, including full 364/2157 tests.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
