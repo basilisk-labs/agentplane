@@ -19,10 +19,8 @@ Integrate the approved refactor leaves, resolve only release-blocking drift, gen
 - Note:
 
 ```text
-Release candidate verified: all 18 dependencies DONE; v0.6.22 plan frozen from v0.6.21; release
-parity, contract CI, test:fast, 78/78 release-ci chunks, workflow/significant coverage,
-release-critical, tarball/install smoke, notes, incident, package availability, and protected
-candidate preparation passed.
+Reverified after hosted format repair: packages/spec/examples/acr.json was normalized by Prettier;
+full format check and v0.6.22 release parity pass.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -44,11 +42,11 @@ candidate preparation passed.
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
- packages/spec/examples/acr.json                    |  22 ++-
+ packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.22.png    | Bin 0 -> 54603 bytes
  website/static/img/social/manifest.json            |   8 +
- 14 files changed, 393 insertions(+), 107 deletions(-)
+ 14 files changed, 379 insertions(+), 103 deletions(-)
 ```
 
 </details>

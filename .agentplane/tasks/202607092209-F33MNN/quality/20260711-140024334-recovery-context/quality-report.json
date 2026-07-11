@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092209-F33MNN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-11T14:00:24.334Z",
+  "verdict": "pass",
+  "summary": "Hosted format repair preserves the validated v0.6.22 release candidate.",
+  "evaluated_sha": "6432a754aac480de9e897f3b8807ef6f481d4d4c",
+  "blueprint_digest": "782bcbef11c00cc3b8a548c896ef0a0aa74f290eeb8196024ba91631e9941af7",
+  "findings": [
+    "The only change after pre-merge closure is deterministic Prettier normalization of the version-bumped ACR example; format check and package parity pass, with no release behavior or scope change."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092209-F33MNN/README.md",
+    "packages/spec/examples/acr.json",
+    "bun run format:check",
+    "bun run release:parity"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Final package and tag parity remains gated on protected-main publication."
+  ]
+}
