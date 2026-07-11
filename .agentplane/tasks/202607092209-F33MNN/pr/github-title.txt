@@ -1,1 +1,1 @@
-🚧 F33MNN task: Prepare and publish patch release v0.6.22 [202607092209-F33MNN]
+✅ F33MNN task: Prepare and publish patch release v0.6.22 [202607092209-F33MNN]

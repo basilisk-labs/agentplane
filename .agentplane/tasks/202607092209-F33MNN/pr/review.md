@@ -6,14 +6,14 @@ Created: 2026-07-11T12:50:46.498Z
 
 - Task: `202607092209-F33MNN`
 - Title: Prepare and publish patch release v0.6.22
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607092209-F33MNN/prepare-and-publish-patch-release-v0-6-22`
 - Canonical task record: `.agentplane/tasks/202607092209-F33MNN/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Release candidate verified: all 18 dependencies DONE; v0.6.22 plan frozen from v0.6.21; release parity, contract CI, test:fast, 78/78 release-ci chunks, workflow/significant coverage, release-critical, tarball/install smoke, notes, incident, package availability, and protected candidate preparation passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

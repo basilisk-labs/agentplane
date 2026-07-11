@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092209-F33MNN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-11T13:56:29.294Z",
+  "verdict": "pass",
+  "summary": "v0.6.22 release candidate is publishable after full local release validation.",
+  "evaluated_sha": "4461bb0c3eb3824c5cad689434545299f2179b44",
+  "blueprint_digest": "782bcbef11c00cc3b8a548c896ef0a0aa74f290eeb8196024ba91631e9941af7",
+  "findings": [
+    "Version, notes, task scope, release-candidate routing, package availability, generated recovery artifacts, and the complete heavy prepublish matrix are consistent; the two discovered release blockers have focused and full-suite regression coverage."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092209-F33MNN/README.md",
+    "docs/releases/v0.6.22.md",
+    ".agentplane/.release/apply/2026-07-11T13-54-04-064Z.json",
+    "bun run release:prepublish (78/78 release-ci chunks plus coverage and release-critical)"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Final npm and tag parity still depends on protected-main merge and the hosted Publish to npm workflow."
+  ]
+}
