@@ -1,0 +1,5 @@
+ .agentplane/tasks/202607030734-6T937A/README.md    | 159 ++++++++++++++++-----
+ .agentplane/tasks/202607092209-F33MNN/README.md    |  47 +++++-
+ .../release/release-task-evidence-script.test.ts   | 124 +++++++++++++++-
+ scripts/release/release-task-evidence.mjs          | 116 ++++++++++++++-
+ 4 files changed, 399 insertions(+), 47 deletions(-)

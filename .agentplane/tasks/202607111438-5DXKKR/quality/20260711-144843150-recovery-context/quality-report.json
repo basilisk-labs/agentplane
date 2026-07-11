@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607111438-5DXKKR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-11T14:48:43.150Z",
+  "verdict": "pass",
+  "summary": "Hosted publish evidence now resolves to the unique DONE release task matching the published version, preserves prior verification history, and corrects v0.6.22 attribution.",
+  "evaluated_sha": "0e557961a2fa30c79ef75642ebdbfdd4c32f93e2",
+  "blueprint_digest": "f0622fc8e731607c3ab0c8967e2e4fce27927ad547feba62bea4439e4fb952f6",
+  "findings": [
+    "Regression covers unrelated task commits and ambiguous release matches; repeated apply is idempotent; 6T937A evidence restored and F33MNN holds v0.6.22 publish proof."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607111438-5DXKKR/README.md",
+    "bunx vitest run packages/agentplane/src/commands/release/release-task-evidence-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts; bun run --filter=agentplane typecheck; bun run format:check; bun run ci:contract"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
