@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092208-NGVXDD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-11T12:10:12.877Z",
+  "verdict": "pass",
+  "summary": "The baseline reduction removes proven dead surface without hiding findings and passes the full quality matrix.",
+  "evaluated_sha": "0bb9768cb797ec342562af24103b47d428a01a4d",
+  "blueprint_digest": "7c05baa832e06acc612f0dcf7a01d5f9f46c89f777222a2c6bebfcaaa139bac7",
+  "findings": [
+    "No blocking defects found; 20 findings were eliminated and all 554 remaining findings stay visible and classified."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092208-NGVXDD/README.md",
+    "0bb9768cb797ec342562af24103b47d428a01a4d",
+    ".agentplane/tasks/202607092208-NGVXDD/knip-classification.md",
+    "knip:554/554,typecheck,lint,ci-contract:pass",
+    "focused:8-files-36-tests;full:364-files-2157-tests"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
