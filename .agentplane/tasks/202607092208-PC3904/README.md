@@ -4,7 +4,7 @@ title: "Decompose oversized test suites for v0.6.22"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,30 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-11T12:35:09.544Z"
+  updated_by: "REVIEWER"
+  note: "All 16 cases are preserved across two sub-1000-line files; oversized baseline is 10/11424 and focused, coverage, contract, type, and full 364/2157 checks pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-11T12:35:11.294Z"
+  updated_by: "EVALUATOR"
+  note: "The test-only split preserves assertions and routing while tightening the oversized-suite budget."
+  evaluated_sha: "074a5fb769b38408171a1a74fa4258fdc2983629"
+  blueprint_digest: "3c44ab7cdcc64a64d29e38365780c53a1f390e7255d2a20dd26386449e039315"
+  evidence_refs:
+    - ".agentplane/tasks/202607092208-PC3904/README.md"
+    - ".agentplane/tasks/202607092208-PC3904/quality/20260711-123511294-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607092208-PC3904/quality/20260711-123511294-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607092208-PC3904/quality/20260711-123511294-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607092208-PC3904/blueprint/resolved-snapshot.json"
+    - "074a5fb769b38408171a1a74fa4258fdc2983629"
+    - "focused:2-files-16-tests;full:364-files-2157-tests"
+    - "oversized:10-files-11424-lines;max-file:1281"
+    - "typecheck,coverage,ci-contract:pass"
+  findings:
+    - "No blocking defects found; no cases were lost and the baseline decreases by one file and 1014 lines."
 commit: null
 comments:
   -
@@ -45,8 +64,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: split one oversized suite along existing describe boundaries without changing cases or assertions."
+  -
+    type: "verify"
+    at: "2026-07-11T12:35:09.544Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "All 16 cases are preserved across two sub-1000-line files; oversized baseline is 10/11424 and focused, coverage, contract, type, and full 364/2157 checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-11T12:34:53.782Z"
+doc_updated_at: "2026-07-11T12:35:09.734Z"
 doc_updated_by: "CODER"
 description: "Split the 11 test files above 1000 lines by behavior and fixture boundary, centralize only stable helpers, and reduce the oversized-test baseline without weakening assertions or coverage."
 sections:
@@ -69,6 +94,36 @@ sections:
     4. Run `bun run typecheck` and `bun run ci:contract`; both pass.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-11T12:35:09.544Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: All 16 cases are preserved across two sub-1000-line files; oversized baseline is 10/11424 and focused, coverage, contract, type, and full 364/2157 checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-11T12:34:53.782Z, excerpt_hash=sha256:e7fb19f5121d492b1afdd37f4185872d75ba32c449e9227fed0f833307fc8396
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092208-PC3904-decompose-oversized-test-suites-for-v0-6-22/.agentplane/tasks/202607092208-PC3904/blueprint/resolved-snapshot.json
+    - old_digest: 3c44ab7cdcc64a64d29e38365780c53a1f390e7255d2a20dd26386449e039315
+    - current_digest: 3c44ab7cdcc64a64d29e38365780c53a1f390e7255d2a20dd26386449e039315
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607092208-PC3904
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202607092208-PC3904
+    - diagnostic_command: agentplane pr check 202607092208-PC3904
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -104,6 +159,36 @@ Split the 11 test files above 1000 lines by behavior and fixture boundary, centr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-11T12:35:09.544Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: All 16 cases are preserved across two sub-1000-line files; oversized baseline is 10/11424 and focused, coverage, contract, type, and full 364/2157 checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-11T12:34:53.782Z, excerpt_hash=sha256:e7fb19f5121d492b1afdd37f4185872d75ba32c449e9227fed0f833307fc8396
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092208-PC3904-decompose-oversized-test-suites-for-v0-6-22/.agentplane/tasks/202607092208-PC3904/blueprint/resolved-snapshot.json
+- old_digest: 3c44ab7cdcc64a64d29e38365780c53a1f390e7255d2a20dd26386449e039315
+- current_digest: 3c44ab7cdcc64a64d29e38365780c53a1f390e7255d2a20dd26386449e039315
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607092208-PC3904
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202607092208-PC3904
+- diagnostic_command: agentplane pr check 202607092208-PC3904
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

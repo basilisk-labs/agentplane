@@ -12,8 +12,8 @@ Created: 2026-07-11T12:30:11.362Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: All 16 cases are preserved across two sub-1000-line files; oversized baseline is 10/11424 and focused, coverage, contract, type, and full 364/2157 checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
