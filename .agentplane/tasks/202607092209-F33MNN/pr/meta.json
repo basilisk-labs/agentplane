@@ -1,0 +1,16 @@
+{
+  "base": "main",
+  "branch": "task/202607092209-F33MNN/prepare-and-publish-patch-release-v0-6-22",
+  "created_at": "2026-07-11T12:50:46.498Z",
+  "diffstat_sha256": "sha256:c5c0bba739beb934fc648ea18400ad152e091544c05b0072e0c06f8f6ae18a0e",
+  "last_verified_at": null,
+  "pr_number": 4578,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4578",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202607092209-F33MNN",
+  "updated_at": "2026-07-11T13:55:40.698Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
