@@ -1,0 +1,14 @@
+ packages/agentplane/src/cli/critical/cli-runner.ts |  14 --
+ .../agentplane/src/cli/run-cli/update-warning.ts   |   2 +-
+ packages/agentplane/src/commands/guard/impl/dco.ts |   8 +-
+ .../src/commands/pr/integrate/queue-state.ts       |   2 +-
+ .../src/commands/pr/internal/note-store.ts         |   2 +-
+ .../commands/pr/internal/pr-artifact-snapshot.ts   |   2 +-
+ .../src/commands/pr/internal/review-template.ts    |  31 +--
+ .../src/commands/pr/internal/sync-branch.ts        |   6 +-
+ .../src/commands/pr/internal/sync-github.ts        |   2 +-
+ .../agentplane/src/commands/recipes/impl/paths.ts  |   4 +-
+ .../src/commands/recipes/impl/resolver.ts          |   4 +-
+ .../src/commands/recipes/impl/version.ts           |   2 +-
+ scripts/baselines/knip-baseline.json               | 239 ++++-----------------
+ 13 files changed, 59 insertions(+), 259 deletions(-)

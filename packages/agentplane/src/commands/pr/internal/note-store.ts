@@ -32,7 +32,7 @@ export function buildPrHandoffNote(opts: {
   };
 }
 
-export function parsePrHandoffNotes(raw: string): PrHandoffNote[] {
+function parsePrHandoffNotes(raw: string): PrHandoffNote[] {
   if (!raw.trim()) return [];
   return raw
     .split(/\r?\n/)

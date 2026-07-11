@@ -29,7 +29,7 @@ import {
 } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
-export function isUnknownRevisionError(err: unknown): boolean {
+function isUnknownRevisionError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
   return /unknown revision or path not in the working tree/i.test(message);
 }

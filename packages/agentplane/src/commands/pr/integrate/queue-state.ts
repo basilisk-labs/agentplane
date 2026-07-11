@@ -49,7 +49,7 @@ function integrationQueuePath(gitRoot: string): string {
   return path.join(gitRoot, ".agentplane", "cache", "integration-queue.json");
 }
 
-export function resolveIntegrationQueueMutexContext(gitRoot: string): IntegrationQueueMutexContext {
+function resolveIntegrationQueueMutexContext(gitRoot: string): IntegrationQueueMutexContext {
   const locksDir = path.join(gitRoot, ".agentplane", "cache", "locks");
   return {
     gitRoot,

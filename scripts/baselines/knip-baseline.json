@@ -602,14 +602,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/cli/critical/cli-runner.ts",
-      "files": [
-        {
-          "name": "packages/agentplane/src/cli/critical/cli-runner.ts"
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/cli/critical/harness.ts",
       "exports": [
         {
@@ -696,12 +688,12 @@
       "types": [
         {
           "name": "InitEffectKind",
-          "line": 60,
+          "line": 71,
           "col": 13
         },
         {
           "name": "InitEffectRisk",
-          "line": 73,
+          "line": 84,
           "col": 13
         }
       ]
@@ -713,16 +705,6 @@
           "name": "ParsedArgs",
           "line": 5,
           "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/cli/run-cli/update-warning.ts",
-      "exports": [
-        {
-          "name": "resolveAgentplaneHome",
-          "line": 22,
-          "col": 17
         }
       ]
     },
@@ -831,7 +813,7 @@
       "exports": [
         {
           "name": "buildTaskReadmeMigrationFindings",
-          "line": 61,
+          "line": 69,
           "col": 17
         }
       ]
@@ -843,26 +825,6 @@
           "name": "buildTaskReadmeMigrationFindings",
           "line": 16,
           "col": 3
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/guard/impl/dco.ts",
-      "exports": [
-        {
-          "name": "dcoIsEnabled",
-          "line": 10,
-          "col": 17
-        },
-        {
-          "name": "hasDcoSignoff",
-          "line": 37,
-          "col": 17
-        },
-        {
-          "name": "resolveDcoSignoff",
-          "line": 14,
-          "col": 17
         }
       ]
     },
@@ -901,93 +863,13 @@
       "types": [
         {
           "name": "CloseTailStatus",
-          "line": 40,
+          "line": 51,
           "col": 13
         },
         {
           "name": "RemotePrStatus",
-          "line": 27,
+          "line": 38,
           "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/pr/integrate/queue-state.ts",
-      "exports": [
-        {
-          "name": "resolveIntegrationQueueMutexContext",
-          "line": 52,
-          "col": 17
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/pr/internal/note-store.ts",
-      "exports": [
-        {
-          "name": "parsePrHandoffNotes",
-          "line": 35,
-          "col": 17
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.ts",
-      "exports": [
-        {
-          "name": "isUnknownRevisionError",
-          "line": 32,
-          "col": 17
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/pr/internal/review-template.ts",
-      "exports": [
-        {
-          "name": "renderPrHandoffNotes",
-          "line": 187,
-          "col": 17
-        },
-        {
-          "name": "updateAutoSummaryBlock",
-          "line": 165,
-          "col": 17
-        },
-        {
-          "name": "updateHandoffNotesBlock",
-          "line": 196,
-          "col": 17
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/pr/internal/sync-branch.ts",
-      "exports": [
-        {
-          "name": "isUnknownRevisionError",
-          "line": 17,
-          "col": 17
-        },
-        {
-          "name": "resolveBranchHeadSha",
-          "line": 27,
-          "col": 23
-        },
-        {
-          "name": "resolvePrDiffBaseRef",
-          "line": 71,
-          "col": 23
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/pr/internal/sync-github.ts",
-      "exports": [
-        {
-          "name": "formatUnpublishedRemoteHeadReason",
-          "line": 182,
-          "col": 17
         }
       ]
     },
@@ -1025,16 +907,6 @@
       "file": "packages/agentplane/src/commands/recipes/impl/paths.ts",
       "exports": [
         {
-          "name": "resolveAgentplaneHome",
-          "line": 16,
-          "col": 17
-        },
-        {
-          "name": "resolveProjectGeneratedDir",
-          "line": 72,
-          "col": 17
-        },
-        {
           "name": "resolveProjectRecipesCacheDir",
           "line": 68,
           "col": 17
@@ -1053,21 +925,6 @@
           "name": "upsertProjectRecipeRegistryEntry",
           "line": 156,
           "col": 23
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/recipes/impl/resolver.ts",
-      "exports": [
-        {
-          "name": "normalizeResolvedRecipeRunProfile",
-          "line": 174,
-          "col": 17
-        },
-        {
-          "name": "resolveRecipeCompatibility",
-          "line": 71,
-          "col": 17
         }
       ]
     },
@@ -1307,16 +1164,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/commands/recipes/impl/version.ts",
-      "exports": [
-        {
-          "name": "compareRecipeVersions",
-          "line": 3,
-          "col": 17
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/commands/release/apply.pipeline.ts",
       "types": [
         {
@@ -1346,7 +1193,7 @@
       "exports": [
         {
           "name": "applyReleaseMutation",
-          "line": 25,
+          "line": 27,
           "col": 23
         }
       ]
@@ -1391,12 +1238,12 @@
       "exports": [
         {
           "name": "findLatestPlanDir",
-          "line": 56,
+          "line": 57,
           "col": 23
         },
         {
           "name": "parseVersionPlan",
-          "line": 30,
+          "line": 31,
           "col": 17
         }
       ]
@@ -2213,12 +2060,12 @@
       "exports": [
         {
           "name": "RUNNER_RESULT_MANIFEST_SCHEMA_VERSION",
-          "line": 16,
+          "line": 13,
           "col": 14
         },
         {
           "name": "sourceRunnerResultManifestPath",
-          "line": 286,
+          "line": 25,
           "col": 17
         }
       ]
@@ -2243,7 +2090,7 @@
         },
         {
           "name": "stripRunnerHistory",
-          "line": 76,
+          "line": 86,
           "col": 17
         }
       ]
@@ -2263,7 +2110,7 @@
       "types": [
         {
           "name": "RunnerTimeoutPolicy",
-          "line": 94,
+          "line": 98,
           "col": 13
         }
       ]
@@ -3162,57 +3009,57 @@
       "types": [
         {
           "name": "BlueprintDecisionEvidenceRequirement",
-          "line": 121,
+          "line": 227,
           "col": 13
         },
         {
           "name": "BlueprintDecisionStopRule",
-          "line": 127,
+          "line": 233,
           "col": 13
         },
         {
           "name": "BlueprintRejectedRoute",
-          "line": 110,
+          "line": 216,
           "col": 13
         },
         {
           "name": "BlueprintSelectedRoute",
-          "line": 115,
+          "line": 221,
           "col": 13
         },
         {
           "name": "ContextExtractionCoverageStatus",
-          "line": 35,
+          "line": 61,
           "col": 13
         },
         {
           "name": "ContextExtractionItemKind",
-          "line": 27,
+          "line": 35,
           "col": 13
         },
         {
           "name": "ContextExtractionItemStatus",
-          "line": 26,
+          "line": 29,
           "col": 13
         },
         {
           "name": "EvaluatorFinding",
-          "line": 91,
+          "line": 197,
           "col": 13
         },
         {
           "name": "EvaluatorFindingSeverity",
-          "line": 89,
+          "line": 195,
           "col": 13
         },
         {
           "name": "EvaluatorVerdict",
-          "line": 88,
+          "line": 194,
           "col": 13
         },
         {
           "name": "SgrContractSchemaVersion",
-          "line": 10,
+          "line": 11,
           "col": 13
         }
       ]
@@ -3222,77 +3069,77 @@
       "types": [
         {
           "name": "BlueprintDecisionEvidenceRequirement",
-          "line": 30,
-          "col": 8
-        },
-        {
-          "name": "BlueprintDecisionStopRule",
-          "line": 31,
-          "col": 8
-        },
-        {
-          "name": "BlueprintRejectedRoute",
-          "line": 32,
-          "col": 8
-        },
-        {
-          "name": "BlueprintSelectedRoute",
-          "line": 34,
-          "col": 8
-        },
-        {
-          "name": "ContextExtractionCoverage",
-          "line": 35,
-          "col": 8
-        },
-        {
-          "name": "ContextExtractionCoverageStatus",
-          "line": 36,
-          "col": 8
-        },
-        {
-          "name": "ContextExtractionGraphEdge",
-          "line": 37,
-          "col": 8
-        },
-        {
-          "name": "ContextExtractionGraphEntity",
-          "line": 38,
-          "col": 8
-        },
-        {
-          "name": "ContextExtractionItemKind",
           "line": 40,
           "col": 8
         },
         {
-          "name": "ContextExtractionItemStatus",
+          "name": "BlueprintDecisionStopRule",
           "line": 41,
           "col": 8
         },
         {
-          "name": "EvaluatorFinding",
-          "line": 43,
+          "name": "BlueprintRejectedRoute",
+          "line": 42,
           "col": 8
         },
         {
-          "name": "EvaluatorFindingSeverity",
+          "name": "BlueprintSelectedRoute",
           "line": 44,
           "col": 8
         },
         {
-          "name": "EvaluatorVerdict",
+          "name": "ContextExtractionCoverage",
+          "line": 45,
+          "col": 8
+        },
+        {
+          "name": "ContextExtractionCoverageStatus",
           "line": 46,
           "col": 8
         },
         {
-          "name": "SgrContractSchemaVersion",
+          "name": "ContextExtractionGraphEdge",
           "line": 47,
           "col": 8
         },
         {
-          "name": "SgrReasoningStep",
+          "name": "ContextExtractionGraphEntity",
           "line": 48,
+          "col": 8
+        },
+        {
+          "name": "ContextExtractionItemKind",
+          "line": 50,
+          "col": 8
+        },
+        {
+          "name": "ContextExtractionItemStatus",
+          "line": 51,
+          "col": 8
+        },
+        {
+          "name": "EvaluatorFinding",
+          "line": 53,
+          "col": 8
+        },
+        {
+          "name": "EvaluatorFindingSeverity",
+          "line": 54,
+          "col": 8
+        },
+        {
+          "name": "EvaluatorVerdict",
+          "line": 56,
+          "col": 8
+        },
+        {
+          "name": "SgrContractSchemaVersion",
+          "line": 57,
+          "col": 8
+        },
+        {
+          "name": "SgrReasoningStep",
+          "line": 58,
           "col": 8
         }
       ]
@@ -3635,12 +3482,12 @@
       "exports": [
         {
           "name": "TASK_HANDOFF_ROUTE_ZOD_SCHEMA",
-          "line": 41,
+          "line": 42,
           "col": 14
         },
         {
           "name": "TASK_HANDOFF_RUNNER_STATE_ZOD_SCHEMA",
-          "line": 54,
+          "line": 55,
           "col": 14
         }
       ]
@@ -3702,11 +3549,11 @@
     }
   ],
   "counts": {
-    "files": 1,
-    "exports": 204,
+    "files": 0,
+    "exports": 185,
     "types": 369,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 574
+    "total": 554
   }
 }

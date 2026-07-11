@@ -68,7 +68,7 @@ function pushCompatibilityFailure(
   failures.push({ field, expected, actual, reason });
 }
 
-export function resolveRecipeCompatibility(opts: {
+function resolveRecipeCompatibility(opts: {
   compatibility?: RecipeCompatibility;
   context: RecipeResolverContext;
 }): RecipeResolverCompatibility {
@@ -171,7 +171,7 @@ export function resolveRecipeCompatibility(opts: {
   return { ok: failures.length === 0, reasons, failures };
 }
 
-export function normalizeResolvedRecipeRunProfile(
+function normalizeResolvedRecipeRunProfile(
   scenario: RecipeScenarioDescriptor,
 ): ResolvedRecipeRunProfile {
   const declaredProfile: RecipeRunProfile = scenario.run_profile;
