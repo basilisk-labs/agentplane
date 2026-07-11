@@ -15,8 +15,14 @@ Decompose Hermes command/runtime, result manifest, insights report, SGR contract
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Public APIs and serialized contracts are preserved; all seven scoped hotspots are decomposed.
+Focused 33/246 and full 364/2157 tests, build, typecheck, architecture, hotspot, contract, Knip, and
+coverage checks passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

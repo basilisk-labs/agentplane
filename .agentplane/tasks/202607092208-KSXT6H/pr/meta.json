@@ -3,11 +3,12 @@
   "branch": "task/202607092208-KSXT6H/split-runtime-and-backend-hotspots-for-v0-6-22",
   "created_at": "2026-07-11T11:31:25.645Z",
   "diffstat_sha256": "sha256:8660cc0ad4190fa3651eaa56e7bf1d354f9745871eeabfcef45717238e0fa3a8",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-11T11:46:53.934Z",
+  "last_verified_diffstat_sha256": "sha256:8660cc0ad4190fa3651eaa56e7bf1d354f9745871eeabfcef45717238e0fa3a8",
   "schema_version": 1,
   "task_id": "202607092208-KSXT6H",
   "updated_at": "2026-07-11T11:31:25.645Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
