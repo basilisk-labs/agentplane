@@ -602,6 +602,14 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/cli/critical/cli-runner.ts",
+      "files": [
+        {
+          "name": "packages/agentplane/src/cli/critical/cli-runner.ts"
+        }
+      ]
+    },
+    {
       "file": "packages/agentplane/src/cli/critical/harness.ts",
       "exports": [
         {
@@ -3549,11 +3557,11 @@
     }
   ],
   "counts": {
-    "files": 0,
+    "files": 1,
     "exports": 185,
     "types": 369,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 554
+    "total": 555
   }
 }

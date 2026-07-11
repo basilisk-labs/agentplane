@@ -29,7 +29,6 @@ Created: 2026-07-11T12:02:25.769Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- packages/agentplane/src/cli/critical/cli-runner.ts |  14 --
  .../agentplane/src/cli/run-cli/update-warning.ts   |   2 +-
  packages/agentplane/src/commands/guard/impl/dco.ts |   8 +-
  .../src/commands/pr/integrate/queue-state.ts       |   2 +-
@@ -41,8 +40,8 @@ Created: 2026-07-11T12:02:25.769Z
  .../agentplane/src/commands/recipes/impl/paths.ts  |   4 +-
  .../src/commands/recipes/impl/resolver.ts          |   4 +-
  .../src/commands/recipes/impl/version.ts           |   2 +-
- scripts/baselines/knip-baseline.json               | 239 ++++-----------------
- 13 files changed, 59 insertions(+), 259 deletions(-)
+ scripts/baselines/knip-baseline.json               | 229 ++++-----------------
+ 12 files changed, 58 insertions(+), 236 deletions(-)
 ```
 
 </details>

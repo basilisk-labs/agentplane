@@ -4,7 +4,7 @@ title: "Reduce the Knip baseline for v0.6.22"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -71,7 +71,7 @@ events:
     state: "ok"
     note: "Knip debt decreases from 574 to 554 with no ignore expansion; each remaining entry is classified and all declared checks pass, including full 364/2157 tests."
 doc_version: 3
-doc_updated_at: "2026-07-11T12:10:11.261Z"
+doc_updated_at: "2026-07-11T12:13:30.563Z"
 doc_updated_by: "CODER"
 description: "Classify current Knip findings into public API, intentional framework entry points, and removable dead code; delete or export correctly so the accepted baseline shrinks materially without hiding new debt."
 sections:
@@ -128,7 +128,7 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: "Reduced the accepted Knip baseline from 574 to 554 findings without changing knip.json or adding ignores: unused files 1 to 0 and unused exports 204 to 185, with unused types unchanged at 369. Removed the unreferenced critical CLI runner, deleted three unreachable helpers, and made sixteen internal helpers file-local. Remaining findings are deterministically classified in knip-classification.md as public contracts (312), dynamic entry points (168), or visible accepted debt (74). Verification passed: Knip 554/554, typecheck, lint, focused 8 files / 36 tests, ci:contract, and full 364 files / 2157 tests. One initial full-test attempt exposed an unstaged-deletion/index mismatch in git-index-lock-guard; after staging the intentional deletion, the complete suite passed."
+  Findings: "Reduced the accepted Knip baseline from 574 to 555 findings without changing knip.json or adding ignores: unused exports 204 to 185, unused files unchanged at 1, and unused types unchanged at 369. Deleted three unreachable helpers and made sixteen internal helpers file-local. The critical CLI runner initially appeared removable but critical-init verification proved it is launched by filesystem path; it was restored and explicitly classified as a dynamic entry point. Remaining findings are deterministically classified in knip-classification.md as public contracts (312), dynamic entry points (169), or visible accepted debt (74). Verification passed: Knip 555/555, typecheck, lint, focused 8 files / 36 tests, critical CLI 5 files / 14 tests, ci:contract, and full 364 files / 2157 tests."
 id_source: "generated"
 ---
 ## Summary
@@ -198,4 +198,4 @@ DecisionContextRef:
 
 ## Findings
 
-Reduced the accepted Knip baseline from 574 to 554 findings without changing knip.json or adding ignores: unused files 1 to 0 and unused exports 204 to 185, with unused types unchanged at 369. Removed the unreferenced critical CLI runner, deleted three unreachable helpers, and made sixteen internal helpers file-local. Remaining findings are deterministically classified in knip-classification.md as public contracts (312), dynamic entry points (168), or visible accepted debt (74). Verification passed: Knip 554/554, typecheck, lint, focused 8 files / 36 tests, ci:contract, and full 364 files / 2157 tests. One initial full-test attempt exposed an unstaged-deletion/index mismatch in git-index-lock-guard; after staging the intentional deletion, the complete suite passed.
+Reduced the accepted Knip baseline from 574 to 555 findings without changing knip.json or adding ignores: unused exports 204 to 185, unused files unchanged at 1, and unused types unchanged at 369. Deleted three unreachable helpers and made sixteen internal helpers file-local. The critical CLI runner initially appeared removable but critical-init verification proved it is launched by filesystem path; it was restored and explicitly classified as a dynamic entry point. Remaining findings are deterministically classified in knip-classification.md as public contracts (312), dynamic entry points (169), or visible accepted debt (74). Verification passed: Knip 555/555, typecheck, lint, focused 8 files / 36 tests, critical CLI 5 files / 14 tests, ci:contract, and full 364 files / 2157 tests.
