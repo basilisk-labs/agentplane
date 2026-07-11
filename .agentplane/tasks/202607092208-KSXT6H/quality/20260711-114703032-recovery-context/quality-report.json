@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607092208-KSXT6H",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-11T11:47:03.032Z",
+  "verdict": "pass",
+  "summary": "Scoped hotspot decomposition preserves external contracts and passes the declared verification matrix.",
+  "evaluated_sha": "d63ebfd6171436ff0c84a8feec6c02fb736e86a2",
+  "blueprint_digest": "11a67e840a3589f825ce9d568a614c9f7ee9947d245095dc1808f41ac1aca91d",
+  "findings": [
+    "No blocking defects found; seven scoped runtime/backend hotspots were decomposed and repository runtime hotspot count is now two."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607092208-KSXT6H/README.md",
+    "d63ebfd6171436ff0c84a8feec6c02fb736e86a2",
+    "focused:33-files-246-tests",
+    "full:364-files-2157-tests",
+    "build,typecheck,arch,hotspots,ci-contract,knip,coverage:pass"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
