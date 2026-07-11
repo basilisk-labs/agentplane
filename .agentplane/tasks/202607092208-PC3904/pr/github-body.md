@@ -1,0 +1,36 @@
+Task: `202607092208-PC3904`
+Title: Decompose oversized test suites for v0.6.22
+Canonical task record: `.agentplane/tasks/202607092208-PC3904/README.md`
+
+## Summary
+
+Decompose oversized test suites for v0.6.22
+
+Split the 11 test files above 1000 lines by behavior and fixture boundary, centralize only stable helpers, and reduce the oversized-test baseline without weakening assertions or coverage.
+
+## Scope
+
+- In scope: Split the 11 test files above 1000 lines by behavior and fixture boundary, centralize only stable helpers, and reduce the oversized-test baseline without weakening assertions or coverage.
+- Out of scope: unrelated refactors not required for "Decompose oversized test suites for v0.6.22".
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-07-11T12:30:11.362Z
+- Branch: task/202607092208-PC3904/decompose-oversized-test-suites-for-v0-6-22
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .../src/cli/run-cli.core.tasks.doc-write.test.ts   | 462 +-------------------
+ ...run-cli.core.tasks.doc-write.validation.test.ts | 476 +++++++++++++++++++++
+ scripts/oversized-test-baseline.json               |   8 +-
+ 3 files changed, 479 insertions(+), 467 deletions(-)
+```
+
+</details>

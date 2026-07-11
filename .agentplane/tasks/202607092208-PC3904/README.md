@@ -1,10 +1,10 @@
 ---
 id: "202607092208-PC3904"
 title: "Decompose oversized test suites for v0.6.22"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +33,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: split one oversized suite along existing describe boundaries without changing cases or assertions."
+events:
+  -
+    type: "status"
+    at: "2026-07-11T12:30:11.316Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split one oversized suite along existing describe boundaries without changing cases or assertions."
 doc_version: 3
-doc_updated_at: "2026-07-09T22:09:47.678Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-11T12:34:53.782Z"
+doc_updated_by: "CODER"
 description: "Split the 11 test files above 1000 lines by behavior and fixture boundary, centralize only stable helpers, and reduce the oversized-test baseline without weakening assertions or coverage."
 sections:
   Summary: |-
@@ -63,7 +73,7 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: "Split run-cli.core.tasks.doc-write.test.ts at an existing test boundary into 557-line content/update coverage and 476-line validation/error coverage. All 16 original cases remain and pass across the two files. The oversized-test baseline falls from 11 files / 12438 current lines to 10 files / 11424 lines; no test exceeds 1300 lines and both split files are below 1000. Verification passed: focused 2 files / 16 tests, hotspots:check, typecheck, coverage thresholds, ci:contract, and full 364 files / 2157 tests."
 id_source: "generated"
 ---
 ## Summary
@@ -102,3 +112,5 @@ Split the 11 test files above 1000 lines by behavior and fixture boundary, centr
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Split run-cli.core.tasks.doc-write.test.ts at an existing test boundary into 557-line content/update coverage and 476-line validation/error coverage. All 16 original cases remain and pass across the two files. The oversized-test baseline falls from 11 files / 12438 current lines to 10 files / 11424 lines; no test exceeds 1300 lines and both split files are below 1000. Verification passed: focused 2 files / 16 tests, hotspots:check, typecheck, coverage thresholds, ci:contract, and full 364 files / 2157 tests.

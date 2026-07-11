@@ -1,0 +1,4 @@
+ .../src/cli/run-cli.core.tasks.doc-write.test.ts   | 462 +-------------------
+ ...run-cli.core.tasks.doc-write.validation.test.ts | 476 +++++++++++++++++++++
+ scripts/oversized-test-baseline.json               |   8 +-
+ 3 files changed, 479 insertions(+), 467 deletions(-)
