@@ -111,6 +111,49 @@ async function resolveReleaseTaskIdsFromCommit(releaseSha) {
   return [...new Set(taskIds)];
 }
 
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+}
+
+async function resolveReleaseTaskIdsFromRegistry(manifest) {
+  const version = String(manifest.version ?? "").trim();
+  if (!version) return [];
+  const versionPattern = new RegExp(
+    `(^|[^0-9A-Za-z])v?${escapeRegExp(version)}($|[^0-9A-Za-z])`,
+    "iu",
+  );
+  const tasksDir = path.join(process.cwd(), ".agentplane", "tasks");
+  const entries = await readdir(tasksDir, { withFileTypes: true }).catch(() => []);
+  const taskIds = [];
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const readmePath = path.join(tasksDir, entry.name, "README.md");
+    let frontmatter;
+    try {
+      frontmatter = parseTaskReadme(await readFile(readmePath, "utf8")).frontmatter;
+    } catch {
+      continue;
+    }
+    if (String(frontmatter.status ?? "").toUpperCase() !== "DONE") continue;
+    const tags = Array.isArray(frontmatter.tags)
+      ? frontmatter.tags.map((tag) => String(tag).trim()).filter(Boolean)
+      : [];
+    const releaseMarked =
+      String(frontmatter.task_kind ?? "").toLowerCase() === "release" ||
+      String(frontmatter.mutation_scope ?? "").toLowerCase() === "release" ||
+      tags.some((tag) => tag.toLowerCase() === "release");
+    if (!releaseMarked) continue;
+    const releaseRefs = [frontmatter.title, frontmatter.description, ...tags]
+      .map((value) => String(value ?? "").trim())
+      .filter(Boolean);
+    if (!releaseRefs.some((value) => versionPattern.test(value))) continue;
+    taskIds.push(String(frontmatter.id ?? entry.name).trim());
+  }
+
+  return [...new Set(taskIds.filter(Boolean))];
+}
+
 function buildPrepareOutcome({
   actionable,
   reason,
@@ -326,6 +369,30 @@ async function runPrepare(argv) {
       releaseSha: args.releaseSha,
       baseRef: args.baseRef,
       repo: args.repo,
+      taskCloseBranchPrefix,
+    });
+  }
+  const registryTaskIds = await resolveReleaseTaskIdsFromRegistry(manifest);
+  if (registryTaskIds.length > 1) {
+    return buildPrepareOutcome({
+      actionable: false,
+      reason: `multiple DONE release tasks match ${manifest.tag}: ${registryTaskIds.join(", ")}`,
+      manifest,
+      releaseSha: args.releaseSha,
+      baseRef: args.baseRef,
+      repo: args.repo,
+      taskCloseBranchPrefix,
+    });
+  }
+  if (registryTaskIds.length === 1) {
+    return buildPrepareOutcome({
+      actionable: true,
+      reason: null,
+      manifest,
+      releaseSha: args.releaseSha,
+      baseRef: args.baseRef,
+      repo: args.repo,
+      taskId: registryTaskIds[0],
       taskCloseBranchPrefix,
     });
   }
