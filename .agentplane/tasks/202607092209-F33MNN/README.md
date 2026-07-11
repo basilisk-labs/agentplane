@@ -1,10 +1,10 @@
 ---
 id: "202607092209-F33MNN"
 title: "Prepare and publish patch release v0.6.22"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -45,7 +45,7 @@ verify:
   - "bun run test:fast"
 plan_approval:
   state: "approved"
-  updated_at: "2026-07-09T22:09:58.003Z"
+  updated_at: "2026-07-11T12:51:59.006Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
@@ -55,11 +55,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Start: prepare, publish, and verify patch release v0.6.22 from protected main."
+events:
+  -
+    type: "status"
+    at: "2026-07-11T12:50:46.433Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: prepare, publish, and verify patch release v0.6.22 from protected main."
 doc_version: 3
-doc_updated_at: "2026-07-09T22:09:48.294Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-11T12:51:58.760Z"
+doc_updated_by: "INTEGRATOR"
 description: "Integrate the approved refactor leaves, resolve only release-blocking drift, generate the patch release plan and notes, publish v0.6.22 through the protected main workflow, and verify package/tag parity."
 sections:
   Summary: |-
@@ -69,11 +79,7 @@ sections:
   Scope: |-
     - In scope: Integrate the approved refactor leaves, resolve only release-blocking drift, generate the patch release plan and notes, publish v0.6.22 through the protected main workflow, and verify package/tag parity.
     - Out of scope: unrelated refactors not required for "Prepare and publish patch release v0.6.22".
-  Plan: |-
-    1. Confirm every dependency is merged into protected main and the worktree is clean.
-    2. Generate the v0.6.22 patch plan and release notes; resolve only release-blocking drift.
-    3. Run release parity, contract CI, fast tests, and prepublish checks.
-    4. Publish through the protected release workflow, then verify the GitHub tag, packages, and main commit agree.
+  Plan: "Release plan: version=0.6.22, tag=v0.6.22, base=main@fc8684b43093e51f9353495c0c2ca039d20458dd, scope=all 18 verified release dependencies plus the complete post-v0.6.21 context-extraction, lifecycle, CI, maintainability, and test-suite changes enumerated by .agentplane/.release/plan/2026-07-11T12-51-10-037Z; publish route=branch_pr release candidate, protected-main merge, then Publish to npm from the exact merged release SHA."
   Verify Steps: |-
     1. Confirm tasks 202607092207-MS2B7B, 202607092208-VQ05Q1, 202607092208-1J49NQ, 202607092208-KSXT6H, 202607092208-NGVXDD, and 202607092208-PC3904 are merged and verified.
     2. Run `bun run release:parity`, `bun run ci:contract`, and `bun run test:fast`; all pass.
@@ -102,10 +108,7 @@ Integrate the approved refactor leaves, resolve only release-blocking drift, gen
 
 ## Plan
 
-1. Confirm every dependency is merged into protected main and the worktree is clean.
-2. Generate the v0.6.22 patch plan and release notes; resolve only release-blocking drift.
-3. Run release parity, contract CI, fast tests, and prepublish checks.
-4. Publish through the protected release workflow, then verify the GitHub tag, packages, and main commit agree.
+Release plan: version=0.6.22, tag=v0.6.22, base=main@fc8684b43093e51f9353495c0c2ca039d20458dd, scope=all 18 verified release dependencies plus the complete post-v0.6.21 context-extraction, lifecycle, CI, maintainability, and test-suite changes enumerated by .agentplane/.release/plan/2026-07-11T12-51-10-037Z; publish route=branch_pr release candidate, protected-main merge, then Publish to npm from the exact merged release SHA.
 
 ## Verify Steps
 
