@@ -71,6 +71,13 @@ function runPrePush(
   }
 }
 
+function expectTaskBindingAcceptedBeforeBoundedHook(result: ReturnType<typeof runPrePush>): void {
+  expect(result.failure).not.toBeNull();
+  const stderr = String(result.failure?.stderr ?? "");
+  expect(stderr).toContain("pre-push blocked: changed files require the full-fast local CI lane");
+  expect(stderr).not.toContain("mutating commits require a valid task id");
+}
+
 describe("pre-push task binding audit", () => {
   it("dispatches the real script from hooks run pre-push", async () => {
     const root = await mkGitRepoRoot();
@@ -162,7 +169,7 @@ describe("pre-push task binding audit", () => {
     expect(String(result.failure?.stderr ?? "")).toContain("src/app.ts");
   });
 
-  it("does not apply upgraded task-binding policy to pre-upgrade historical commits", async () => {
+  it("passes pre-upgrade historical commits through task binding before the bounded-hook gate", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
     await writeDefaultConfig(root);
@@ -200,8 +207,7 @@ describe("pre-push task binding audit", () => {
     );
     const result = runPrePush(root, baseSha, head(root));
 
-    expect(result.failure).toBeNull();
-    expect(result.stdout).toContain("Running pre-push checks in standard mode.");
+    expectTaskBindingAcceptedBeforeBoundedHook(result);
   });
 
   it("does not let a linear upgrade-like commit bypass task binding", async () => {
@@ -249,6 +255,9 @@ describe("pre-push task binding audit", () => {
     await commitAll(root, "chore: base");
     const baseSha = head(root);
 
+    await writeFile(path.join(root, "README.md"), "# Hook fixture\n", "utf8");
+    await commitAll(root, "docs: update hook fixture");
+
     const result = runPrePush(root, baseSha, head(root));
 
     expect(result.failure).toBeNull();
@@ -274,31 +283,34 @@ describe("pre-push task binding audit", () => {
     expect(result.stdout).not.toContain("Skipping format:check");
   });
 
-  it("accepts managed initial install commits", { timeout: 180_000 }, async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    await configureGitUser(root);
-    await writeFastHookPackage(root);
-    await commitAll(root, "chore: base");
-    const baseSha = head(root);
+  it(
+    "passes managed install task binding before the bounded-hook gate",
+    { timeout: 180_000 },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await configureGitUser(root);
+      await writeFastHookPackage(root);
+      await commitAll(root, "chore: base");
+      const baseSha = head(root);
 
-    await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
-    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
-    await mkdir(path.join(root, ".cursor", "rules"), { recursive: true });
-    await writeFile(path.join(root, "AGENTS.md"), "# Policy gateway\n", "utf8");
-    await writeFile(path.join(root, ".gitignore"), ".agentplane/tasks.json\n", "utf8");
-    await writeFile(path.join(root, ".agentplane", "agents", "CODER.json"), "{}\n", "utf8");
-    await writeFile(path.join(root, ".agentplane", "policy", "dod.core.md"), "# DoD\n", "utf8");
-    await writeFile(
-      path.join(root, ".cursor", "rules", "agentplane.mdc"),
-      "Use AGENTS.md.\n",
-      "utf8",
-    );
-    await commitAll(root, "chore: install agentplane 0.6.0");
-    const result = runPrePush(root, baseSha, head(root));
+      await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+      await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+      await mkdir(path.join(root, ".cursor", "rules"), { recursive: true });
+      await writeFile(path.join(root, "AGENTS.md"), "# Policy gateway\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), ".agentplane/tasks.json\n", "utf8");
+      await writeFile(path.join(root, ".agentplane", "agents", "CODER.json"), "{}\n", "utf8");
+      await writeFile(path.join(root, ".agentplane", "policy", "dod.core.md"), "# DoD\n", "utf8");
+      await writeFile(
+        path.join(root, ".cursor", "rules", "agentplane.mdc"),
+        "Use AGENTS.md.\n",
+        "utf8",
+      );
+      await commitAll(root, "chore: install agentplane 0.6.0");
+      const result = runPrePush(root, baseSha, head(root));
 
-    expect(result.failure).toBeNull();
-    expect(result.stdout).toContain("Running pre-push checks in standard mode.");
-  });
+      expectTaskBindingAcceptedBeforeBoundedHook(result);
+    },
+  );
 
   it("does not let install-like subjects bypass task binding for non-install paths", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -319,58 +331,61 @@ describe("pre-push task binding audit", () => {
     expect(String(result.failure?.stderr ?? "")).toContain("src/app.ts");
   });
 
-  it("accepts managed context init bootstrap commits", { timeout: 180_000 }, async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    await configureGitUser(root);
-    await writeFastHookPackage(root);
-    await commitAll(root, "chore: base");
-    const baseSha = head(root);
+  it(
+    "passes context bootstrap task binding before the bounded-hook gate",
+    { timeout: 180_000 },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await configureGitUser(root);
+      await writeFastHookPackage(root);
+      await commitAll(root, "chore: base");
+      const baseSha = head(root);
 
-    await mkdir(path.join(root, ".agentplane", "context", "derived", "facts"), {
-      recursive: true,
-    });
-    await mkdir(path.join(root, ".agentplane", "context", "policies"), { recursive: true });
-    await mkdir(path.join(root, "context", "wiki"), { recursive: true });
-    await writeFile(path.join(root, ".gitignore"), ".agentplane/cache.sqlite\n", "utf8");
-    await writeFile(
-      path.join(root, ".agentplane", "context", "agentplane.context.yaml"),
-      "version: 1\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, ".agentplane", "context", "derived", "facts", "facts.jsonl"),
-      "{}\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, ".agentplane", "context", "policies", "sync.rules.yaml"),
-      "version: 1\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, ".agentplane", "context", "manifest.lock.json"),
-      "{}\n",
-      "utf8",
-    );
-    await writeFile(path.join(root, "context", "wiki", "index.md"), "# Wiki\n", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", ".gitignore", ".agentplane", "context"], { cwd: root });
-    await execFileAsync(
-      "git",
-      [
-        "commit",
-        "-m",
-        "✅ CTX1NT task: initialize AgentPlane context",
-        "-m",
-        ["Context-Bootstrap: true", "Context-Bootstrap-Task: 202601010101-CTX1NT"].join("\n"),
-      ],
-      { cwd: root },
-    );
-    const result = runPrePush(root, baseSha, head(root));
+      await mkdir(path.join(root, ".agentplane", "context", "derived", "facts"), {
+        recursive: true,
+      });
+      await mkdir(path.join(root, ".agentplane", "context", "policies"), { recursive: true });
+      await mkdir(path.join(root, "context", "wiki"), { recursive: true });
+      await writeFile(path.join(root, ".gitignore"), ".agentplane/cache.sqlite\n", "utf8");
+      await writeFile(
+        path.join(root, ".agentplane", "context", "agentplane.context.yaml"),
+        "version: 1\n",
+        "utf8",
+      );
+      await writeFile(
+        path.join(root, ".agentplane", "context", "derived", "facts", "facts.jsonl"),
+        "{}\n",
+        "utf8",
+      );
+      await writeFile(
+        path.join(root, ".agentplane", "context", "policies", "sync.rules.yaml"),
+        "version: 1\n",
+        "utf8",
+      );
+      await writeFile(
+        path.join(root, ".agentplane", "context", "manifest.lock.json"),
+        "{}\n",
+        "utf8",
+      );
+      await writeFile(path.join(root, "context", "wiki", "index.md"), "# Wiki\n", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", ".gitignore", ".agentplane", "context"], { cwd: root });
+      await execFileAsync(
+        "git",
+        [
+          "commit",
+          "-m",
+          "✅ CTX1NT task: initialize AgentPlane context",
+          "-m",
+          ["Context-Bootstrap: true", "Context-Bootstrap-Task: 202601010101-CTX1NT"].join("\n"),
+        ],
+        { cwd: root },
+      );
+      const result = runPrePush(root, baseSha, head(root));
 
-    expect(result.failure).toBeNull();
-    expect(result.stdout).toContain("Running pre-push checks in standard mode.");
-  });
+      expectTaskBindingAcceptedBeforeBoundedHook(result);
+    },
+  );
 
   it("requires context-bootstrap trailers for the managed context init bypass", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -455,7 +470,7 @@ describe("pre-push task binding audit", () => {
     expect(String(result.failure?.stderr ?? "")).toContain("src/app.ts");
   });
 
-  it("accepts emergency hotfix commits with backfill evidence", async () => {
+  it("passes emergency hotfix commits through task binding before the bounded-hook gate", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
     await writeDefaultConfig(root);
@@ -484,11 +499,10 @@ describe("pre-push task binding audit", () => {
     );
     const result = runPrePush(root, baseSha, head(root));
 
-    expect(result.failure).toBeNull();
-    expect(result.stdout).toContain("Running pre-push checks in standard mode.");
+    expectTaskBindingAcceptedBeforeBoundedHook(result);
   });
 
-  it("accepts deploy-fix commits with evidence without requiring a task id", async () => {
+  it("passes deploy-fix commits through task binding before the bounded-hook gate", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
     await writeDefaultConfig(root);
@@ -516,7 +530,6 @@ describe("pre-push task binding audit", () => {
     );
     const result = runPrePush(root, baseSha, head(root));
 
-    expect(result.failure).toBeNull();
-    expect(result.stdout).toContain("Running pre-push checks in standard mode.");
+    expectTaskBindingAcceptedBeforeBoundedHook(result);
   });
 });

@@ -4,7 +4,7 @@ title: "Prepare and publish patch release v0.6.22"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -59,6 +59,9 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Start: prepare, publish, and verify patch release v0.6.22 from protected main."
+  -
+    author: "INTEGRATOR"
+    body: "Release-blocking drift: heavy prepublish exposed six stale pre-push task-binding fixture expectations after the bounded full-fast hook contract. Updated the tests to preserve task-binding bypass assertions while accepting the subsequent bounded-hook gate; focused 15/15 passes."
 events:
   -
     type: "status"
@@ -67,8 +70,13 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: prepare, publish, and verify patch release v0.6.22 from protected main."
+  -
+    type: "comment"
+    at: "2026-07-11T13:07:54.626Z"
+    author: "INTEGRATOR"
+    body: "Release-blocking drift: heavy prepublish exposed six stale pre-push task-binding fixture expectations after the bounded full-fast hook contract. Updated the tests to preserve task-binding bypass assertions while accepting the subsequent bounded-hook gate; focused 15/15 passes."
 doc_version: 3
-doc_updated_at: "2026-07-11T12:51:58.760Z"
+doc_updated_at: "2026-07-11T13:07:54.626Z"
 doc_updated_by: "INTEGRATOR"
 description: "Integrate the approved refactor leaves, resolve only release-blocking drift, generate the patch release plan and notes, publish v0.6.22 through the protected main workflow, and verify package/tag parity."
 sections:
