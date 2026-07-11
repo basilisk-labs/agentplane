@@ -46,6 +46,10 @@ async function writeTaskReadme(
     verificationState?: "pending" | "ok" | "needs_rework";
     verificationText?: string;
     docUpdatedAt?: string;
+    title?: string;
+    tags?: string[];
+    taskKind?: string;
+    mutationScope?: string;
   } = {},
 ) {
   const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
@@ -86,14 +90,16 @@ async function writeTaskReadme(
   const text = renderTaskReadme(
     {
       id: taskId,
-      title: "Release task",
+      title: opts.title ?? "Release task",
       status: "DONE",
       priority: "high",
       owner: "CODER",
       revision: 1,
       origin: { system: "manual" },
       depends_on: [],
-      tags: ["release"],
+      tags: opts.tags ?? ["release"],
+      ...(opts.taskKind ? { task_kind: opts.taskKind } : {}),
+      ...(opts.mutationScope ? { mutation_scope: opts.mutationScope } : {}),
       verify: [],
       plan_approval: {
         state: "approved",
@@ -320,6 +326,83 @@ describe("release-task-evidence script", () => {
     expect(payload.actionable).toBe(true);
     expect(payload.task_id).toBe(taskId);
   }, 60_000);
+
+  it("prefers the unique version-matched release task over an unrelated task changed by the publish SHA", async () => {
+    const root = await initRepo();
+    const releaseTaskId = "202604191130-RELEASE";
+    await writeTaskReadme(root, releaseTaskId, {
+      title: "Prepare and publish patch release v0.3.15",
+      tags: ["patch-0.3.15", "release"],
+      taskKind: "release",
+      mutationScope: "release",
+    });
+    await commitAll(root, "merge release task");
+    await writeTaskReadme(root, "202604191131-UNRELATED", {
+      title: "Close unrelated task",
+      tags: ["maintenance"],
+    });
+    const releaseSha = await commitAll(root, "close unrelated task before publish");
+    const publishResultPath = await writePublishResult(root, buildPublishResult(true));
+
+    const result = await execFileAsync(
+      "bun",
+      [
+        SCRIPT_PATH,
+        "prepare",
+        "--release-sha",
+        releaseSha,
+        "--publish-result",
+        publishResultPath,
+        "--repo",
+        "basilisk-labs/agentplane",
+      ],
+      { cwd: root, env: process.env },
+    );
+
+    const payload = JSON.parse(String(result.stdout ?? "")) as {
+      actionable: boolean;
+      task_id: string;
+    };
+    expect(payload.actionable).toBe(true);
+    expect(payload.task_id).toBe(releaseTaskId);
+  });
+
+  it("refuses ambiguous version-matched release tasks instead of attributing publish evidence", async () => {
+    const root = await initRepo();
+    for (const taskId of ["202604191130-RELEASE", "202604191131-RELEASE"]) {
+      await writeTaskReadme(root, taskId, {
+        title: "Prepare and publish patch release v0.3.15",
+        tags: ["patch-0.3.15", "release"],
+        taskKind: "release",
+      });
+    }
+    const releaseSha = await commitAll(root, "ambiguous release tasks");
+    const publishResultPath = await writePublishResult(root, buildPublishResult(true));
+
+    let stdout = "";
+    try {
+      await execFileAsync(
+        "bun",
+        [
+          SCRIPT_PATH,
+          "prepare",
+          "--release-sha",
+          releaseSha,
+          "--publish-result",
+          publishResultPath,
+          "--repo",
+          "basilisk-labs/agentplane",
+        ],
+        { cwd: root, env: process.env },
+      );
+    } catch (error) {
+      stdout = String((error as { stdout?: string }).stdout ?? "");
+    }
+
+    const payload = JSON.parse(stdout) as { actionable: boolean; reason: string };
+    expect(payload.actionable).toBe(false);
+    expect(payload.reason).toContain("multiple DONE release tasks match v0.3.15");
+  });
 
   it("marks prepare as non-actionable when publish-result is incomplete", async () => {
     const root = await initRepo();
