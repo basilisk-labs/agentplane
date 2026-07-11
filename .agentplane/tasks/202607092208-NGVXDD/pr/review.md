@@ -13,7 +13,7 @@ Created: 2026-07-11T12:02:25.769Z
 ## Verification
 
 - State: ok
-- Note: Knip debt decreases from 574 to 554 with no ignore expansion; each remaining entry is classified and all declared checks pass, including full 364/2157 tests.
+- Note: Knip debt decreases from 574 to 555 with no ignore expansion. Critical-init verification identified and preserved the path-launched CLI runner; all focused, critical, contract, type, lint, and full 364/2157 tests pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
