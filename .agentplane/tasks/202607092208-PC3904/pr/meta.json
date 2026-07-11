@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:d507cbfad2734efed5face96721dd0eb119a3a33a079c4afa55e6a2e8ffd415c",
   "pr_number": 4577,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4577",
+  "pre_merge_closure": {
+    "basis_commit": "6e463dc31c0401bc2076e251dbc8ca7f5fe8df92",
+    "branch": "task/202607092208-PC3904/decompose-oversized-test-suites-for-v0-6-22",
+    "pr_number": 4577,
+    "recorded_at": "2026-07-11T12:42:42.872Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607092208-PC3904",
