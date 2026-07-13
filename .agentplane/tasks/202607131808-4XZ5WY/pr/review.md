@@ -12,8 +12,8 @@ Created: 2026-07-13T18:11:52.210Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Passed on candidate HEAD fc1a82c67633: release:check; docs:readme-header:check via release gate; ci:local:fast (365 files, 2163 tests, 5/5 critical CLI chunks); policy routing; doctor; full release prepublish heavy (81/81 release-ci-base chunks, workflow/significant coverage, 16 release-critical tests). Doctor reported only historical DONE-task commit warnings unrelated to this change.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -53,12 +53,12 @@ Created: 2026-07-13T18:11:52.210Z
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
- packages/spec/examples/acr.json                    |  22 +++-
+ packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
  scripts/lib/test-route-registry.mjs                |   1 +
  .../static/img/social/docs/releases/v0.6.23.png    | Bin 0 -> 54823 bytes
  website/static/img/social/manifest.json            |   8 ++
- 29 files changed, 241 insertions(+), 143 deletions(-)
+ 29 files changed, 227 insertions(+), 139 deletions(-)
 ```
 
 </details>
