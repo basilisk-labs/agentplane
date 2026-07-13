@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607131641-Z7NE99",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-13T17:27:23.950Z",
+  "verdict": "pass",
+  "summary": "Hosted static-gate rework is resolved on commit d32febeedcf6.",
+  "evaluated_sha": "d32febeedcf6838f206ca8f97de43348363b2137",
+  "blueprint_digest": "77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9",
+  "findings": [
+    "GPT-5.6 diagnostic code and result types are internal implementation details; the public function remains exported and compatible, while Knip baseline, typecheck, and all 24 targeted tests pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607131641-Z7NE99/README.md",
+    "bun run knip:check 555/555; bun run typecheck; targeted prompt tests 24/24"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Full hosted Core CI must rerun on the new PR head before auto-merge."
+  ]
+}

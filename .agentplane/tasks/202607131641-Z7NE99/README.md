@@ -1,11 +1,11 @@
 ---
 id: "202607131641-Z7NE99"
 title: "Align master and agent prompts with GPT-5.6 guidance"
-result_summary: "pre-merge closure"
-status: "DOING"
+result_summary: "pre-merge closure after static-gate rework"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -36,17 +36,24 @@ verification:
   note: "Rework passed: Knip baseline 555/555, typecheck, and 24 targeted prompt tests are green after keeping GPT-5.6 diagnostic types internal."
   attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-07-13T17:24:48.146Z"
+  state: "pass"
+  updated_at: "2026-07-13T17:27:23.950Z"
   updated_by: "EVALUATOR"
-  note: "Hosted verify-static failed: export Gpt56PromptContractDiagnosticCode through the public prompt-modules entrypoint, then rerun knip and hosted checks."
-  evaluated_sha: "312d8a4ba067924e56b4480fc60bac2c78951c7d"
+  note: "Hosted static-gate rework is resolved on commit d32febeedcf6."
+  evaluated_sha: "d32febeedcf6838f206ca8f97de43348363b2137"
   blueprint_digest: "77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9"
   evidence_refs:
     - ".agentplane/tasks/202607131641-Z7NE99/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131641-Z7NE99-align-master-and-agent-prompts-with-gpt-5-6-guid/.agentplane/tasks/202607131641-Z7NE99/blueprint/resolved-snapshot.json"
-  findings: []
-commit: null
+    - ".agentplane/tasks/202607131641-Z7NE99/quality/20260713-172723950-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607131641-Z7NE99/quality/20260713-172723950-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607131641-Z7NE99/quality/20260713-172723950-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607131641-Z7NE99/blueprint/resolved-snapshot.json"
+    - "bun run knip:check 555/555; bun run typecheck; targeted prompt tests 24/24"
+  findings:
+    - "GPT-5.6 diagnostic code and result types are internal implementation details; the public function remains exported and compatible, while Knip baseline, typecheck, and all 24 targeted tests pass."
+commit:
+  hash: "d32febeedcf6838f206ca8f97de43348363b2137"
+  message: "🧭 Z7NE99 agents: satisfy prompt contract static gate"
 comments:
   -
     author: "CODER"
@@ -54,6 +61,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: hosted static-gate rework is resolved and the updated pre-merge closure packet is ready."
 events:
   -
     type: "status"
@@ -87,8 +97,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rework passed: Knip baseline 555/555, typecheck, and 24 targeted prompt tests are green after keeping GPT-5.6 diagnostic types internal."
+  -
+    type: "status"
+    at: "2026-07-13T17:27:45.020Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: hosted static-gate rework is resolved and the updated pre-merge closure packet is ready."
 doc_version: 3
-doc_updated_at: "2026-07-13T17:26:48.600Z"
+doc_updated_at: "2026-07-13T17:27:45.020Z"
 doc_updated_by: "CODER"
 description: "Update canonical master and agent prompts on main using official GPT-5.6 guidance; preserve diagnostic compatibility, sync managed mirrors, document the contract, validate changes, and do not touch agentplane-loops."
 sections:
