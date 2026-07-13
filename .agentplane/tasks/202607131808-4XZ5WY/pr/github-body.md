@@ -27,9 +27,11 @@ Release v0.6.23 from main at base SHA eb05aa537e11518c9b3542a43f46e0cbdcc35260. 
 
 ```text
  docs/releases/v0.6.23.md                           |  39 +++++++++++++++++++++
+ .../commands/release/release-ci-contract.test.ts   |   5 +++
+ scripts/lib/test-route-registry.mjs                |   1 +
  .../static/img/social/docs/releases/v0.6.23.png    | Bin 0 -> 54823 bytes
  website/static/img/social/manifest.json            |   8 +++++
- 3 files changed, 47 insertions(+)
+ 5 files changed, 53 insertions(+)
 ```
 
 </details>
