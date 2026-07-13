@@ -1,0 +1,4 @@
+ docs/releases/v0.6.23.md                           |  39 +++++++++++++++++++++
+ .../static/img/social/docs/releases/v0.6.23.png    | Bin 0 -> 54823 bytes
+ website/static/img/social/manifest.json            |   8 +++++
+ 3 files changed, 47 insertions(+)
