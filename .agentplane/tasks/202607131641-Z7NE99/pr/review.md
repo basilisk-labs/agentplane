@@ -6,14 +6,14 @@ Created: 2026-07-13T16:44:03.525Z
 
 - Task: `202607131641-Z7NE99`
 - Title: Align master and agent prompts with GPT-5.6 guidance
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid`
 - Canonical task record: `.agentplane/tasks/202607131641-Z7NE99/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Passed task-scoped verification: agents:check; 24 targeted prompt tests; lint:core; typecheck; routing check; ap doctor; diff review. Full fast lane passed 2162 tests and hit one reproducible pre-existing release-packaging npm ci timeout under local Node 26/npm 11; hosted CI is the authoritative follow-up.
+- Note: Rework passed: Knip baseline 555/555, typecheck, and 24 targeted prompt tests are green after keeping GPT-5.6 diagnostic types internal.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
