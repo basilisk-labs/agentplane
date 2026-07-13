@@ -33,10 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-13T21:34:57.792Z"
-  updated_by: "CODER"
-  note: "Release follow-up verified: Bun workspace metadata is aligned to 0.6.23; frozen install, release:check, policy routing, and ci:local:fast pass."
-  attempts: 0
+  updated_at: "2026-07-13T21:54:48.274Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.23."
 quality_review:
   state: "pass"
   updated_at: "2026-07-13T21:35:06.815Z"
@@ -93,8 +92,8 @@ events:
     state: "ok"
     note: "Release follow-up verified: Bun workspace metadata is aligned to 0.6.23; frozen install, release:check, policy routing, and ci:local:fast pass."
 doc_version: 3
-doc_updated_at: "2026-07-13T21:34:59.597Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-13T21:54:48.274Z"
+doc_updated_by: "DEUS"
 description: "Prepare release notes and the v0.6.23 release candidate from current main, pass release and hosted verification, merge through protected main, dispatch Publish to npm for the merged release SHA, and verify GitHub Release, tag, and npm package parity. Do not touch agentplane-loops."
 sections:
   Summary: |-
@@ -175,6 +174,23 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    <!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+    ### Hosted publish
+
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.23.
+    - Details:
+      - release_sha: 4e77400c02a6e427512649cec97c960c04cac6e3
+      - version: 0.6.23
+      - tag: v0.6.23
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.23
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/29287787166
+    <!-- END HOSTED PUBLISH EVIDENCE -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Before publication, revert the release-candidate commits or close the PR. After npm publication, do not rewrite or delete the published version; prepare a corrective patch release from main, document the defect, and leave v0.6.23 immutable."
   Findings: |-
@@ -278,6 +294,23 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+<!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+### Hosted publish
+
+- State: ok
+- Note: Hosted publish confirmed for v0.6.23.
+- Details:
+  - release_sha: 4e77400c02a6e427512649cec97c960c04cac6e3
+  - version: 0.6.23
+  - tag: v0.6.23
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.23
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/29287787166
+<!-- END HOSTED PUBLISH EVIDENCE -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
