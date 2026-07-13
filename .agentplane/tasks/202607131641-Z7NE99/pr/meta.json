@@ -8,10 +8,10 @@
   "pr_number": 4587,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4587",
   "pre_merge_closure": {
-    "basis_commit": "263dda18920b0cae26603917507d53c017a95c90",
+    "basis_commit": "d32febeedcf6838f206ca8f97de43348363b2137",
     "branch": "task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid",
     "pr_number": 4587,
-    "recorded_at": "2026-07-13T17:16:46.412Z",
+    "recorded_at": "2026-07-13T17:27:45.051Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

@@ -6,7 +6,7 @@ Created: 2026-07-13T16:44:03.525Z
 
 - Task: `202607131641-Z7NE99`
 - Title: Align master and agent prompts with GPT-5.6 guidance
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid`
 - Canonical task record: `.agentplane/tasks/202607131641-Z7NE99/README.md`
 
