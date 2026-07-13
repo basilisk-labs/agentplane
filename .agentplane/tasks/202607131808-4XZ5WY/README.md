@@ -1,10 +1,11 @@
 ---
 id: "202607131808-4XZ5WY"
 title: "Prepare and publish patch release v0.6.23"
-status: "DOING"
+result_summary: "Prepared verified v0.6.23 release candidate with deterministic release test isolation and refreshed generated artifacts."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -38,24 +39,29 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-13T21:11:04.011Z"
+  updated_at: "2026-07-13T21:13:52.227Z"
   updated_by: "EVALUATOR"
   note: "Quality review passed."
-  evaluated_sha: "d24979a1d87ade1ef1233003596dab522d06eb0a"
+  evaluated_sha: "4dfd01a05f1f8b36324d8bcc5566591c3b7cc354"
   blueprint_digest: "f7592d55cf319ef94b40ae927911789360127f9fbf866f976bba23189535824c"
   evidence_refs:
     - ".agentplane/tasks/202607131808-4XZ5WY/README.md"
-    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-211104011-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-211104011-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-211104011-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-211352227-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-211352227-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-211352227-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607131808-4XZ5WY/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "4dfd01a05f1f8b36324d8bcc5566591c3b7cc354"
+  message: "📝 4XZ5WY release: format v0.6.23 ACR example"
 comments:
   -
     author: "CODER"
     body: "Start: prepare v0.6.23 release notes and AgentPlane release candidate, verify locally and on GitHub, merge to main, publish npm packages, and record registry evidence without touching agentplane-loops."
+  -
+    author: "CODER"
+    body: "Verified: v0.6.23 candidate passes release:check, full prepublish heavy, ci:local:fast, routing, doctor, and EVALUATOR review; ready for protected-main merge and post-merge npm publication."
 events:
   -
     type: "status"
@@ -70,8 +76,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Passed on candidate HEAD fc1a82c67633: release:check; docs:readme-header:check via release gate; ci:local:fast (365 files, 2163 tests, 5/5 critical CLI chunks); policy routing; doctor; full release prepublish heavy (81/81 release-ci-base chunks, workflow/significant coverage, 16 release-critical tests). Doctor reported only historical DONE-task commit warnings unrelated to this change."
+  -
+    type: "status"
+    at: "2026-07-13T21:14:48.636Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: v0.6.23 candidate passes release:check, full prepublish heavy, ci:local:fast, routing, doctor, and EVALUATOR review; ready for protected-main merge and post-merge npm publication."
 doc_version: 3
-doc_updated_at: "2026-07-13T21:09:48.960Z"
+doc_updated_at: "2026-07-13T21:14:48.637Z"
 doc_updated_by: "CODER"
 description: "Prepare release notes and the v0.6.23 release candidate from current main, pass release and hosted verification, merge through protected main, dispatch Publish to npm for the merged release SHA, and verify GitHub Release, tag, and npm package parity. Do not touch agentplane-loops."
 sections:
@@ -131,6 +144,10 @@ sections:
     - Observation: The release candidate initially exposed worker contention and post-bump generated artifact drift; intake and rebase-race tests are now process-isolated, v0.6.23 headers regenerated, and the ACR example formatted.
       Impact: Release certification is deterministic on the final tree; no tag or npm publication has occurred before main merge.
       Resolution: All declared local checks pass and the task branch is ready for quality review and protected-main integration.
+extensions:
+  implementation_commit:
+    hash: "4dfd01a05f1f8b36324d8bcc5566591c3b7cc354"
+    message: "📝 4XZ5WY release: format v0.6.23 ACR example"
 id_source: "generated"
 ---
 ## Summary
