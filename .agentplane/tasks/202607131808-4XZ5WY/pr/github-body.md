@@ -26,12 +26,14 @@ Release v0.6.23 from main at base SHA eb05aa537e11518c9b3542a43f46e0cbdcc35260. 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/releases/v0.6.23.md                           |  39 +++++++++++++++++++++
- .../commands/release/release-ci-contract.test.ts   |   5 +++
+ docs/releases/v0.6.23.md                           |  39 ++++++
+ ...-cli.core.pr-flow.integrate-rebase-race.test.ts | 132 +++++++++++++++++++++
+ ...n-cli.core.pr-flow.integrate-strategies.test.ts |  98 ---------------
+ .../commands/release/release-ci-contract.test.ts   |   5 +
  scripts/lib/test-route-registry.mjs                |   1 +
  .../static/img/social/docs/releases/v0.6.23.png    | Bin 0 -> 54823 bytes
- website/static/img/social/manifest.json            |   8 +++++
- 5 files changed, 53 insertions(+)
+ website/static/img/social/manifest.json            |   8 ++
+ 7 files changed, 185 insertions(+), 98 deletions(-)
 ```
 
 </details>
