@@ -65,6 +65,11 @@ describe("release CI contract", () => {
         pattern.test("packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts"),
       ),
     ).toBe(true);
+    expect(
+      SUITES["release-ci-base"]?.isolatedPatterns?.some((pattern) =>
+        pattern.test("packages/agentplane/src/cli/run-cli.core.intake.test.ts"),
+      ),
+    ).toBe(true);
     expect(VITEST_CHUNK_TIMEOUT_MS).toBe(10 * 60 * 1000);
   });
 

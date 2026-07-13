@@ -372,6 +372,7 @@ export const VITEST_SUITES = {
       /\/run-cli\.core\.branch-meta\.workflow-profile\.test\.ts$/,
       /\/run-cli\.core\.context-init\.test\.ts$/,
       /\/run-cli\.core\.demo\.test\.ts$/,
+      /\/run-cli\.core\.intake\.test\.ts$/,
       /\/run-cli\.core\.lifecycle\.finish-close-commit\.test\.ts$/,
       /\/run-cli\.core\.lifecycle\.finish-validation\.test\.ts$/,
       /\/run-cli\.core\.lifecycle\.start-commit\./,
