@@ -6,7 +6,7 @@ Created: 2026-07-13T18:11:52.210Z
 
 - Task: `202607131808-4XZ5WY`
 - Title: Prepare and publish patch release v0.6.23
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607131808-4XZ5WY/prepare-and-publish-patch-release-v0-6-23`
 - Canonical task record: `.agentplane/tasks/202607131808-4XZ5WY/README.md`
 

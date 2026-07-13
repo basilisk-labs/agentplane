@@ -1,1 +1,1 @@
-🚧 4XZ5WY task: Prepare and publish patch release v0.6.23 [202607131808-4XZ5WY]
+✅ 4XZ5WY task: Prepare and publish patch release v0.6.23 [202607131808-4XZ5WY]
