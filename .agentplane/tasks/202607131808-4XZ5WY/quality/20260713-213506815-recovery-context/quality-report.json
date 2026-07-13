@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607131808-4XZ5WY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-13T21:35:06.815Z",
+  "verdict": "pass",
+  "summary": "v0.6.23 lockfile metadata follow-up is correct and fully verified",
+  "evaluated_sha": "f8fe117336311c3c005047a845bde2e35d11ce3d",
+  "blueprint_digest": "f7592d55cf319ef94b40ae927911789360127f9fbf866f976bba23189535824c",
+  "findings": [
+    "bun.lock now matches the 0.6.23 workspace manifests and dependency pins; frozen install plus release and full-fast local gates pass"
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607131808-4XZ5WY/README.md",
+    "bun.lock",
+    "bun run release:check",
+    "bun run ci:local:fast"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -18,10 +18,8 @@ Release v0.6.23 from main at base SHA eb05aa537e11518c9b3542a43f46e0cbdcc35260. 
 - Note:
 
 ```text
-Passed on candidate HEAD fc1a82c67633: release:check; docs:readme-header:check via release gate;
-ci:local:fast (365 files, 2163 tests, 5/5 critical CLI chunks); policy routing; doctor; full release
-prepublish heavy (81/81 release-ci-base chunks, workflow/significant coverage, 16 release-critical
-tests). Doctor reported only historical DONE-task commit warnings unrelated to this change.
+Release follow-up verified: Bun workspace metadata is aligned to 0.6.23; frozen install,
+release:check, policy routing, and ci:local:fast pass.
 ```
 - Canonical workflow state lives in the task README.
 
