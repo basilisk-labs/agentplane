@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607131641-Z7NE99",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-13T17:16:29.703Z",
+  "verdict": "pass",
+  "summary": "GPT-5.6 prompt alignment is complete and task-scoped verification passes.",
+  "evaluated_sha": "263dda18920b0cae26603917507d53c017a95c90",
+  "blueprint_digest": "77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9",
+  "findings": [
+    "The master contract centralizes shared outcome, autonomy, tool, response, and persistence rules; all 15 role profiles retain role-specific constraints without repeating gateway scaffolding; GPT-5.5 diagnostic compatibility remains exported."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607131641-Z7NE99/README.md",
+    "bun run agents:check; targeted prompt tests 24/24; bun run lint:core; bun run typecheck; node .agentplane/policy/check-routing.mjs; ap doctor"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Local full-fast CI has one environment-specific release npm ci timeout under Node 26/npm 11; hosted CI remains required before integration."
+  ]
+}

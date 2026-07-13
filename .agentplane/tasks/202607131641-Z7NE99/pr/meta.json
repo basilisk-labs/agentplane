@@ -3,11 +3,22 @@
   "branch": "task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid",
   "created_at": "2026-07-13T16:44:03.525Z",
   "diffstat_sha256": "sha256:0406e542352dd058b177a94a5199b72d76a695548bed8057264ae092d1f38749",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-13T17:16:18.066Z",
+  "last_verified_diffstat_sha256": "sha256:0406e542352dd058b177a94a5199b72d76a695548bed8057264ae092d1f38749",
+  "pr_number": 4587,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4587",
+  "pre_merge_closure": {
+    "basis_commit": "263dda18920b0cae26603917507d53c017a95c90",
+    "branch": "task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid",
+    "pr_number": 4587,
+    "recorded_at": "2026-07-13T17:16:46.412Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607131641-Z7NE99",
-  "updated_at": "2026-07-13T16:44:03.525Z",
+  "updated_at": "2026-07-13T17:15:20.048Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
