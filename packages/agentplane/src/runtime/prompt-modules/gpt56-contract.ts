@@ -5,13 +5,13 @@ import {
   type Gpt55PromptContractDiagnosticCode,
 } from "./gpt55-contract.js";
 
-export type Gpt56PromptContractDiagnosticCode =
+type Gpt56PromptContractDiagnosticCode =
   | "gpt56_missing_outcome_contract"
   | "gpt56_absolute_rule_in_role_prompt"
   | "gpt56_missing_referenced_role"
   | "gpt56_repeated_gateway_contract";
 
-export type Gpt56PromptContractDiagnostic = Omit<Gpt55PromptContractDiagnostic, "code"> & {
+type Gpt56PromptContractDiagnostic = Omit<Gpt55PromptContractDiagnostic, "code"> & {
   code: Gpt56PromptContractDiagnosticCode;
 };
 

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607131641-Z7NE99",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-13T17:24:30.503Z",
+  "verdict": "rework",
+  "summary": "Hosted verify-static failed on a task-introduced Knip unused-export diagnostic.",
+  "evaluated_sha": "263dda18920b0cae26603917507d53c017a95c90",
+  "blueprint_digest": "77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9",
+  "findings": [
+    "Gpt56PromptContractDiagnosticCode is exported from gpt56-contract.ts but is not re-exported by the public prompt-modules entrypoint."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607131641-Z7NE99/README.md",
+    "GitHub Actions Core CI run 29269831345 job 86884572178: knip:check new unused-code entry"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Auto-merge remains blocked until a corrected head passes hosted checks."
+  ]
+}

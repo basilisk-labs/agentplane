@@ -18,10 +18,8 @@ In scope: packages/agentplane/assets/AGENTS.md; all packages/agentplane/assets/a
 - Note:
 
 ```text
-Passed task-scoped verification: agents:check; 24 targeted prompt tests; lint:core; typecheck;
-routing check; ap doctor; diff review. Full fast lane passed 2162 tests and hit one reproducible
-pre-existing release-packaging npm ci timeout under local Node 26/npm 11; hosted CI is the
-authoritative follow-up.
+Rework passed: Knip baseline 555/555, typecheck, and 24 targeted prompt tests are green after
+keeping GPT-5.6 diagnostic types internal.
 ```
 - Canonical workflow state lives in the task README.
 

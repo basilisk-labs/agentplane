@@ -2,10 +2,10 @@
 id: "202607131641-Z7NE99"
 title: "Align master and agent prompts with GPT-5.6 guidance"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -31,29 +31,22 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-13T17:16:18.066Z"
+  updated_at: "2026-07-13T17:26:48.302Z"
   updated_by: "CODER"
-  note: "Passed task-scoped verification: agents:check; 24 targeted prompt tests; lint:core; typecheck; routing check; ap doctor; diff review. Full fast lane passed 2162 tests and hit one reproducible pre-existing release-packaging npm ci timeout under local Node 26/npm 11; hosted CI is the authoritative follow-up."
+  note: "Rework passed: Knip baseline 555/555, typecheck, and 24 targeted prompt tests are green after keeping GPT-5.6 diagnostic types internal."
   attempts: 0
 quality_review:
-  state: "pass"
-  updated_at: "2026-07-13T17:16:29.703Z"
+  state: "rework"
+  updated_at: "2026-07-13T17:24:48.146Z"
   updated_by: "EVALUATOR"
-  note: "GPT-5.6 prompt alignment is complete and task-scoped verification passes."
-  evaluated_sha: "263dda18920b0cae26603917507d53c017a95c90"
+  note: "Hosted verify-static failed: export Gpt56PromptContractDiagnosticCode through the public prompt-modules entrypoint, then rerun knip and hosted checks."
+  evaluated_sha: "312d8a4ba067924e56b4480fc60bac2c78951c7d"
   blueprint_digest: "77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9"
   evidence_refs:
     - ".agentplane/tasks/202607131641-Z7NE99/README.md"
-    - ".agentplane/tasks/202607131641-Z7NE99/quality/20260713-171629703-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607131641-Z7NE99/quality/20260713-171629703-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607131641-Z7NE99/quality/20260713-171629703-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607131641-Z7NE99/blueprint/resolved-snapshot.json"
-    - "bun run agents:check; targeted prompt tests 24/24; bun run lint:core; bun run typecheck; node .agentplane/policy/check-routing.mjs; ap doctor"
-  findings:
-    - "The master contract centralizes shared outcome, autonomy, tool, response, and persistence rules; all 15 role profiles retain role-specific constraints without repeating gateway scaffolding; GPT-5.5 diagnostic compatibility remains exported."
-commit:
-  hash: "263dda18920b0cae26603917507d53c017a95c90"
-  message: "🧭 Z7NE99 agents: align prompts with GPT-5.6"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131641-Z7NE99-align-master-and-agent-prompts-with-gpt-5-6-guid/.agentplane/tasks/202607131641-Z7NE99/blueprint/resolved-snapshot.json"
+  findings: []
+commit: null
 comments:
   -
     author: "CODER"
@@ -82,8 +75,20 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-13T17:24:48.146Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Hosted verify-static failed: export Gpt56PromptContractDiagnosticCode through the public prompt-modules entrypoint, then rerun knip and hosted checks."
+  -
+    type: "verify"
+    at: "2026-07-13T17:26:48.302Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rework passed: Knip baseline 555/555, typecheck, and 24 targeted prompt tests are green after keeping GPT-5.6 diagnostic types internal."
 doc_version: 3
-doc_updated_at: "2026-07-13T17:16:46.379Z"
+doc_updated_at: "2026-07-13T17:26:48.600Z"
 doc_updated_by: "CODER"
 description: "Update canonical master and agent prompts on main using official GPT-5.6 guidance; preserve diagnostic compatibility, sync managed mirrors, document the contract, validate changes, and do not touch agentplane-loops."
 sections:
@@ -134,6 +139,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-13T17:24:48.146Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Hosted verify-static failed: export Gpt56PromptContractDiagnosticCode through the public prompt-modules entrypoint, then rerun knip and hosted checks.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-13T17:16:46.379Z, excerpt_hash=sha256:b2208c0bfb359129f45beb907e9278b96846007d89f5ec54df0afe58319f36b5
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131641-Z7NE99-align-master-and-agent-prompts-with-gpt-5-6-guid/.agentplane/tasks/202607131641-Z7NE99/blueprint/resolved-snapshot.json
+    - old_digest: 77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9
+    - current_digest: 77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607131641-Z7NE99
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607131641-Z7NE99 --branch task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid
+    - diagnostic_command: agentplane pr check 202607131641-Z7NE99
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-13T17:26:48.302Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Rework passed: Knip baseline 555/555, typecheck, and 24 targeted prompt tests are green after keeping GPT-5.6 diagnostic types internal.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-13T17:24:52.136Z, excerpt_hash=sha256:b2208c0bfb359129f45beb907e9278b96846007d89f5ec54df0afe58319f36b5
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131641-Z7NE99-align-master-and-agent-prompts-with-gpt-5-6-guid/.agentplane/tasks/202607131641-Z7NE99/blueprint/resolved-snapshot.json
+    - old_digest: 77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9
+    - current_digest: 77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607131641-Z7NE99
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607131641-Z7NE99 --branch task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid
+    - diagnostic_command: agentplane pr check 202607131641-Z7NE99
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the task implementation commit and regenerate managed agent mirrors from the prior canonical assets. The compatibility alias prevents an immediate downstream API break during rollback or upgrade."
   Findings: |-
@@ -142,6 +207,14 @@ sections:
     - Observation: GPT-5.6 master and all 15 bundled role prompts are aligned, mirrors are synchronized, and compatibility diagnostics pass.
       Impact: Prompt assembly is leaner and role contracts remain enforcement-compatible.
       Resolution: Proceed through EVALUATOR and hosted GitHub checks; do not alter unrelated release packaging.
+
+    - Observation: Knip reports one new unused exported type in gpt56-contract.ts.
+      Impact: PR #4587 cannot auto-merge.
+      Resolution: Apply the in-scope public type re-export and repeat verification.
+
+    - Observation: Hosted unused-export failure is removed without widening the public API.
+      Impact: PR can rerun full hosted verification.
+      Resolution: Commit the in-scope correction, rerun EVALUATOR on the new head, refresh PR artifacts, and restore pre-merge closure.
 id_source: "generated"
 ---
 ## Summary
@@ -202,6 +275,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-13T17:24:48.146Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Hosted verify-static failed: export Gpt56PromptContractDiagnosticCode through the public prompt-modules entrypoint, then rerun knip and hosted checks.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-13T17:16:46.379Z, excerpt_hash=sha256:b2208c0bfb359129f45beb907e9278b96846007d89f5ec54df0afe58319f36b5
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131641-Z7NE99-align-master-and-agent-prompts-with-gpt-5-6-guid/.agentplane/tasks/202607131641-Z7NE99/blueprint/resolved-snapshot.json
+- old_digest: 77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9
+- current_digest: 77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607131641-Z7NE99
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607131641-Z7NE99 --branch task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid
+- diagnostic_command: agentplane pr check 202607131641-Z7NE99
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-13T17:26:48.302Z — VERIFY — ok
+
+By: CODER
+
+Note: Rework passed: Knip baseline 555/555, typecheck, and 24 targeted prompt tests are green after keeping GPT-5.6 diagnostic types internal.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-13T17:24:52.136Z, excerpt_hash=sha256:b2208c0bfb359129f45beb907e9278b96846007d89f5ec54df0afe58319f36b5
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131641-Z7NE99-align-master-and-agent-prompts-with-gpt-5-6-guid/.agentplane/tasks/202607131641-Z7NE99/blueprint/resolved-snapshot.json
+- old_digest: 77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9
+- current_digest: 77b0e89151b16a8e05effcc7664c73a7ddf0acebf22e86f81d62886269be76e9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607131641-Z7NE99
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607131641-Z7NE99 --branch task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid
+- diagnostic_command: agentplane pr check 202607131641-Z7NE99
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -215,3 +348,11 @@ Initial audit: main matches origin/main at 507940f05; agentplane-loops is exclud
 - Observation: GPT-5.6 master and all 15 bundled role prompts are aligned, mirrors are synchronized, and compatibility diagnostics pass.
   Impact: Prompt assembly is leaner and role contracts remain enforcement-compatible.
   Resolution: Proceed through EVALUATOR and hosted GitHub checks; do not alter unrelated release packaging.
+
+- Observation: Knip reports one new unused exported type in gpt56-contract.ts.
+  Impact: PR #4587 cannot auto-merge.
+  Resolution: Apply the in-scope public type re-export and repeat verification.
+
+- Observation: Hosted unused-export failure is removed without widening the public API.
+  Impact: PR can rerun full hosted verification.
+  Resolution: Commit the in-scope correction, rerun EVALUATOR on the new head, refresh PR artifacts, and restore pre-merge closure.
