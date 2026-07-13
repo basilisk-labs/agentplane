@@ -4,7 +4,7 @@ title: "Prepare and publish patch release v0.6.23"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,26 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-13T21:09:48.793Z"
+  updated_by: "CODER"
+  note: "Passed on candidate HEAD fc1a82c67633: release:check; docs:readme-header:check via release gate; ci:local:fast (365 files, 2163 tests, 5/5 critical CLI chunks); policy routing; doctor; full release prepublish heavy (81/81 release-ci-base chunks, workflow/significant coverage, 16 release-critical tests). Doctor reported only historical DONE-task commit warnings unrelated to this change."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-13T21:11:04.011Z"
+  updated_by: "EVALUATOR"
+  note: "Quality review passed."
+  evaluated_sha: "d24979a1d87ade1ef1233003596dab522d06eb0a"
+  blueprint_digest: "f7592d55cf319ef94b40ae927911789360127f9fbf866f976bba23189535824c"
+  evidence_refs:
+    - ".agentplane/tasks/202607131808-4XZ5WY/README.md"
+    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-211104011-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-211104011-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-211104011-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607131808-4XZ5WY/blueprint/resolved-snapshot.json"
+  findings:
+    - "No blocking findings."
 commit: null
 comments:
   -
@@ -49,8 +64,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: prepare v0.6.23 release notes and AgentPlane release candidate, verify locally and on GitHub, merge to main, publish npm packages, and record registry evidence without touching agentplane-loops."
+  -
+    type: "verify"
+    at: "2026-07-13T21:09:48.793Z"
+    author: "CODER"
+    state: "ok"
+    note: "Passed on candidate HEAD fc1a82c67633: release:check; docs:readme-header:check via release gate; ci:local:fast (365 files, 2163 tests, 5/5 critical CLI chunks); policy routing; doctor; full release prepublish heavy (81/81 release-ci-base chunks, workflow/significant coverage, 16 release-critical tests). Doctor reported only historical DONE-task commit warnings unrelated to this change."
 doc_version: 3
-doc_updated_at: "2026-07-13T18:11:52.085Z"
+doc_updated_at: "2026-07-13T21:09:48.960Z"
 doc_updated_by: "CODER"
 description: "Prepare release notes and the v0.6.23 release candidate from current main, pass release and hosted verification, merge through protected main, dispatch Publish to npm for the merged release SHA, and verify GitHub Release, tag, and npm package parity. Do not touch agentplane-loops."
 sections:
@@ -72,9 +93,44 @@ sections:
     9. Run final GitHub Release/tag and git status readbacks. Expected: v0.6.23 is non-draft/non-prerelease, main matches origin/main, and agentplane-loops is unchanged.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-13T21:09:48.793Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Passed on candidate HEAD fc1a82c67633: release:check; docs:readme-header:check via release gate; ci:local:fast (365 files, 2163 tests, 5/5 critical CLI chunks); policy routing; doctor; full release prepublish heavy (81/81 release-ci-base chunks, workflow/significant coverage, 16 release-critical tests). Doctor reported only historical DONE-task commit warnings unrelated to this change.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-13T18:11:52.085Z, excerpt_hash=sha256:3c2346d226a2445b14fc75725319bd71d5376195780008eba6dca84eec75fa85
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131808-4XZ5WY-prepare-and-publish-patch-release-v0-6-23/.agentplane/tasks/202607131808-4XZ5WY/blueprint/resolved-snapshot.json
+    - old_digest: f7592d55cf319ef94b40ae927911789360127f9fbf866f976bba23189535824c
+    - current_digest: f7592d55cf319ef94b40ae927911789360127f9fbf866f976bba23189535824c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607131808-4XZ5WY
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202607131808-4XZ5WY
+    - diagnostic_command: agentplane pr check 202607131808-4XZ5WY
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Before publication, revert the release-candidate commits or close the PR. After npm publication, do not rewrite or delete the published version; prepare a corrective patch release from main, document the defect, and leave v0.6.23 immutable."
-  Findings: "Initial release truth: main and origin/main are eb05aa537e11518c9b3542a43f46e0cbdcc35260; active incident registry is empty; GitHub Latest, git tag, agentplane, @agentplaneorg/core, and @agentplaneorg/recipes all report 0.6.22; frozen next target is v0.6.23; agentplane-loops is excluded."
+  Findings: |-
+    Initial release truth: main and origin/main are eb05aa537e11518c9b3542a43f46e0cbdcc35260; active incident registry is empty; GitHub Latest, git tag, agentplane, @agentplaneorg/core, and @agentplaneorg/recipes all report 0.6.22; frozen next target is v0.6.23; agentplane-loops is excluded.
+
+    - Observation: The release candidate initially exposed worker contention and post-bump generated artifact drift; intake and rebase-race tests are now process-isolated, v0.6.23 headers regenerated, and the ACR example formatted.
+      Impact: Release certification is deterministic on the final tree; no tag or npm publication has occurred before main merge.
+      Resolution: All declared local checks pass and the task branch is ready for quality review and protected-main integration.
 id_source: "generated"
 ---
 ## Summary
@@ -106,6 +162,36 @@ Release v0.6.23 from main at base SHA eb05aa537e11518c9b3542a43f46e0cbdcc35260. 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-13T21:09:48.793Z — VERIFY — ok
+
+By: CODER
+
+Note: Passed on candidate HEAD fc1a82c67633: release:check; docs:readme-header:check via release gate; ci:local:fast (365 files, 2163 tests, 5/5 critical CLI chunks); policy routing; doctor; full release prepublish heavy (81/81 release-ci-base chunks, workflow/significant coverage, 16 release-critical tests). Doctor reported only historical DONE-task commit warnings unrelated to this change.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-13T18:11:52.085Z, excerpt_hash=sha256:3c2346d226a2445b14fc75725319bd71d5376195780008eba6dca84eec75fa85
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131808-4XZ5WY-prepare-and-publish-patch-release-v0-6-23/.agentplane/tasks/202607131808-4XZ5WY/blueprint/resolved-snapshot.json
+- old_digest: f7592d55cf319ef94b40ae927911789360127f9fbf866f976bba23189535824c
+- current_digest: f7592d55cf319ef94b40ae927911789360127f9fbf866f976bba23189535824c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607131808-4XZ5WY
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202607131808-4XZ5WY
+- diagnostic_command: agentplane pr check 202607131808-4XZ5WY
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -115,3 +201,7 @@ Before publication, revert the release-candidate commits or close the PR. After 
 ## Findings
 
 Initial release truth: main and origin/main are eb05aa537e11518c9b3542a43f46e0cbdcc35260; active incident registry is empty; GitHub Latest, git tag, agentplane, @agentplaneorg/core, and @agentplaneorg/recipes all report 0.6.22; frozen next target is v0.6.23; agentplane-loops is excluded.
+
+- Observation: The release candidate initially exposed worker contention and post-bump generated artifact drift; intake and rebase-race tests are now process-isolated, v0.6.23 headers regenerated, and the ACR example formatted.
+  Impact: Release certification is deterministic on the final tree; no tag or npm publication has occurred before main merge.
+  Resolution: All declared local checks pass and the task branch is ready for quality review and protected-main integration.
