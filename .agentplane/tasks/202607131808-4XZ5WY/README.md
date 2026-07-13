@@ -5,7 +5,7 @@ result_summary: "Prepared verified v0.6.23 release candidate with deterministic 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -33,25 +33,28 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-13T21:09:48.793Z"
+  updated_at: "2026-07-13T21:34:57.792Z"
   updated_by: "CODER"
-  note: "Passed on candidate HEAD fc1a82c67633: release:check; docs:readme-header:check via release gate; ci:local:fast (365 files, 2163 tests, 5/5 critical CLI chunks); policy routing; doctor; full release prepublish heavy (81/81 release-ci-base chunks, workflow/significant coverage, 16 release-critical tests). Doctor reported only historical DONE-task commit warnings unrelated to this change."
+  note: "Release follow-up verified: Bun workspace metadata is aligned to 0.6.23; frozen install, release:check, policy routing, and ci:local:fast pass."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-13T21:13:52.227Z"
+  updated_at: "2026-07-13T21:35:06.815Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed."
-  evaluated_sha: "4dfd01a05f1f8b36324d8bcc5566591c3b7cc354"
+  note: "v0.6.23 lockfile metadata follow-up is correct and fully verified"
+  evaluated_sha: "f8fe117336311c3c005047a845bde2e35d11ce3d"
   blueprint_digest: "f7592d55cf319ef94b40ae927911789360127f9fbf866f976bba23189535824c"
   evidence_refs:
     - ".agentplane/tasks/202607131808-4XZ5WY/README.md"
-    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-211352227-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-211352227-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-211352227-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-213506815-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-213506815-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607131808-4XZ5WY/quality/20260713-213506815-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607131808-4XZ5WY/blueprint/resolved-snapshot.json"
+    - "bun.lock"
+    - "bun run release:check"
+    - "bun run ci:local:fast"
   findings:
-    - "No blocking findings."
+    - "bun.lock now matches the 0.6.23 workspace manifests and dependency pins; frozen install plus release and full-fast local gates pass"
 commit:
   hash: "4dfd01a05f1f8b36324d8bcc5566591c3b7cc354"
   message: "📝 4XZ5WY release: format v0.6.23 ACR example"
@@ -83,8 +86,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: v0.6.23 candidate passes release:check, full prepublish heavy, ci:local:fast, routing, doctor, and EVALUATOR review; ready for protected-main merge and post-merge npm publication."
+  -
+    type: "verify"
+    at: "2026-07-13T21:34:57.792Z"
+    author: "CODER"
+    state: "ok"
+    note: "Release follow-up verified: Bun workspace metadata is aligned to 0.6.23; frozen install, release:check, policy routing, and ci:local:fast pass."
 doc_version: 3
-doc_updated_at: "2026-07-13T21:14:48.637Z"
+doc_updated_at: "2026-07-13T21:34:59.597Z"
 doc_updated_by: "CODER"
 description: "Prepare release notes and the v0.6.23 release candidate from current main, pass release and hosted verification, merge through protected main, dispatch Publish to npm for the merged release SHA, and verify GitHub Release, tag, and npm package parity. Do not touch agentplane-loops."
 sections:
@@ -135,6 +144,36 @@ sections:
     - repeat_allowed: false
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-07-13T21:34:57.792Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Release follow-up verified: Bun workspace metadata is aligned to 0.6.23; frozen install, release:check, policy routing, and ci:local:fast pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-13T21:14:48.637Z, excerpt_hash=sha256:3c2346d226a2445b14fc75725319bd71d5376195780008eba6dca84eec75fa85
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131808-4XZ5WY-prepare-and-publish-patch-release-v0-6-23/.agentplane/tasks/202607131808-4XZ5WY/blueprint/resolved-snapshot.json
+    - old_digest: f7592d55cf319ef94b40ae927911789360127f9fbf866f976bba23189535824c
+    - current_digest: f7592d55cf319ef94b40ae927911789360127f9fbf866f976bba23189535824c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607131808-4XZ5WY
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607131808-4XZ5WY --branch task/202607131808-4XZ5WY/prepare-and-publish-patch-release-v0-6-23
+    - diagnostic_command: agentplane pr check 202607131808-4XZ5WY
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Before publication, revert the release-candidate commits or close the PR. After npm publication, do not rewrite or delete the published version; prepare a corrective patch release from main, document the defect, and leave v0.6.23 immutable."
@@ -208,6 +247,36 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-07-13T21:34:57.792Z — VERIFY — ok
+
+By: CODER
+
+Note: Release follow-up verified: Bun workspace metadata is aligned to 0.6.23; frozen install, release:check, policy routing, and ci:local:fast pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-13T21:14:48.637Z, excerpt_hash=sha256:3c2346d226a2445b14fc75725319bd71d5376195780008eba6dca84eec75fa85
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131808-4XZ5WY-prepare-and-publish-patch-release-v0-6-23/.agentplane/tasks/202607131808-4XZ5WY/blueprint/resolved-snapshot.json
+- old_digest: f7592d55cf319ef94b40ae927911789360127f9fbf866f976bba23189535824c
+- current_digest: f7592d55cf319ef94b40ae927911789360127f9fbf866f976bba23189535824c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607131808-4XZ5WY
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607131808-4XZ5WY --branch task/202607131808-4XZ5WY/prepare-and-publish-patch-release-v0-6-23
+- diagnostic_command: agentplane pr check 202607131808-4XZ5WY
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 
