@@ -27,6 +27,20 @@ Release v0.6.23 from main at base SHA eb05aa537e11518c9b3542a43f46e0cbdcc35260. 
 
 ```text
  .agentplane/WORKFLOW.md                            |   3 +-
+ docs/assets/header.svg                             |   4 +-
+ docs/assets/readme-headers/adr.svg                 |   4 +-
+ docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
+ docs/assets/readme-headers/agentplane.svg          |   4 +-
+ docs/assets/readme-headers/core.svg                |   4 +-
+ docs/assets/readme-headers/docs.svg                |   4 +-
+ docs/assets/readme-headers/humanizer.svg           |   4 +-
+ docs/assets/readme-headers/recipes.svg             |   4 +-
+ docs/assets/readme-headers/releases.svg            |   4 +-
+ docs/assets/readme-headers/schemas.svg             |   4 +-
+ docs/assets/readme-headers/scripts.svg             |   4 +-
+ docs/assets/readme-headers/skills.svg              |   4 +-
+ docs/assets/readme-headers/spec.svg                |   4 +-
+ docs/assets/readme-headers/testkit.svg             |   4 +-
  docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.6.23.md                           |  39 ++++++
  packages/agentplane/package.json                   |   6 +-
@@ -41,7 +55,7 @@ Release v0.6.23 from main at base SHA eb05aa537e11518c9b3542a43f46e0cbdcc35260. 
  scripts/lib/test-route-registry.mjs                |   1 +
  .../static/img/social/docs/releases/v0.6.23.png    | Bin 0 -> 54823 bytes
  website/static/img/social/manifest.json            |   8 ++
- 15 files changed, 213 insertions(+), 115 deletions(-)
+ 29 files changed, 241 insertions(+), 143 deletions(-)
 ```
 
 </details>
