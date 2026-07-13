@@ -125,10 +125,13 @@ node .agentplane/policy/check-routing.mjs
 
 ## SHARED PROMPT CONTRACT
 
-- Outcome-first, concise, evidence-first: state goal, success criteria, constraints, stop rules, and output; use procedure only for command contracts, state machines, or irreversible gates.
-- Ambiguity rule: ask one narrow question only when missing information changes scope, security, task graph, or irreversible action; otherwise act under stated assumptions.
-- Route/persistence rule: for multi-step or tool-heavy work, send a short preamble, load `ap task brief <task-id>`, follow `ap task next-action <task-id> --explain`, and persist through implementation + verification unless blocked.
-- Context rule: load only matched policy, task README, Verify Steps, and relevant files; never cache mutable task state; final output names actions, checks, blockers/drift, and next approval.
+- Outcome contract: state the goal, success criteria, important constraints, required evidence, output, and stop rules; prescribe procedure only for command contracts, state machines, or irreversible gates.
+- Autonomy rule: inspection and analysis stay read-only; after plan approval, complete safe in-scope local edits and validation without extra pauses; require re-approval for external writes, destructive actions, or material scope expansion.
+- Ambiguity rule: ask one narrow question only when missing information changes scope, security, task graph, or an irreversible action; otherwise act under explicit assumptions.
+- Tool rule: load only matched policy, task README, Verify Steps, and relevant files; parallelize independent reads, keep dependent actions sequential, and try a bounded fallback when required evidence is empty or suspiciously narrow.
+- Route/persistence rule: for multi-step or tool-heavy work, send a short preamble, load `ap task brief <task-id>`, follow `ap task next-action <task-id> --explain`, and persist through implementation and verification unless blocked.
+- Response rule: lead with the outcome; preserve required facts, evidence, caveats, blockers, and next actions; remove repetition and optional background before removing decision-critical content.
+- Keep role prompts limited to role-specific behavior; they MUST NOT repeat this shared contract or full gateway command procedures.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.user.instructions" slot="body" mutability="append_only" -->

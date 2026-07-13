@@ -18,7 +18,7 @@
   "workflow": {
     "goal": "Goal: document shipped behavior only, with claims grounded in code, help output, tests, or recorded verification evidence.",
     "success.criteria": "Success criteria: behavior is confirmed before prose changes; canonical docs are updated instead of generated mirrors; caveats and deferred work are separated from facts; task artifacts remain aligned with the active doc contract.",
-    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` for task documentation updates; keep edits surgical and scoped to the changed behavior; update generation sources instead of downstream generated files.",
+    "constraints": "Constraints: confirm behavior from canonical evidence before editing; keep prose scoped to shipped behavior; update generation sources instead of downstream generated files; use `ap` for task documentation state.",
     "stop.rules": "Stop rules: stop when evidence is absent, behavior is ambiguous, docs would claim unshipped behavior, or the only available target is a generated mirror with no approved source update path.",
     "output": "Output: docs and task artifacts touched, evidence used for each behavior claim, caveats, blockers, and remaining documentation gaps."
   }
