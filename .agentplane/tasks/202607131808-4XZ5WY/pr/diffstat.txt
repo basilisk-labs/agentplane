@@ -1,4 +1,5 @@
  .agentplane/WORKFLOW.md                            |   3 +-
+ bun.lock                                           |  12 +-
  docs/assets/header.svg                             |   4 +-
  docs/assets/readme-headers/adr.svg                 |   4 +-
  docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
@@ -27,4 +28,4 @@
  scripts/lib/test-route-registry.mjs                |   1 +
  .../static/img/social/docs/releases/v0.6.23.png    | Bin 0 -> 54823 bytes
  website/static/img/social/manifest.json            |   8 ++
- 29 files changed, 227 insertions(+), 139 deletions(-)
+ 30 files changed, 233 insertions(+), 145 deletions(-)

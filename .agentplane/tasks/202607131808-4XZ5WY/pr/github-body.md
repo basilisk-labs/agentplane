@@ -28,12 +28,13 @@ tests). Doctor reported only historical DONE-task commit warnings unrelated to t
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-13T18:11:52.210Z
+- Updated: 2026-07-13T21:34:20.334Z
 - Branch: task/202607131808-4XZ5WY/prepare-and-publish-patch-release-v0-6-23
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
  .agentplane/WORKFLOW.md                            |   3 +-
+ bun.lock                                           |  12 +-
  docs/assets/header.svg                             |   4 +-
  docs/assets/readme-headers/adr.svg                 |   4 +-
  docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
@@ -62,7 +63,7 @@ tests). Doctor reported only historical DONE-task commit warnings unrelated to t
  scripts/lib/test-route-registry.mjs                |   1 +
  .../static/img/social/docs/releases/v0.6.23.png    | Bin 0 -> 54823 bytes
  website/static/img/social/manifest.json            |   8 ++
- 29 files changed, 227 insertions(+), 139 deletions(-)
+ 30 files changed, 233 insertions(+), 145 deletions(-)
 ```
 
 </details>
