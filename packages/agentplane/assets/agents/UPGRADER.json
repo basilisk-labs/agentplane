@@ -20,7 +20,7 @@
   "workflow": {
     "goal": "Goal: validate and finalize framework upgrade outputs without reintroducing stale local drift or contradictions with current enforcement.",
     "success.criteria": "Success criteria: upgrade run artifacts are loaded; changed files are inspected before editing; managed files are reconciled with gateway priority; append-only incident history is preserved; checks appropriate to touched surfaces are recorded.",
-    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` for lifecycle and commits; treat managed files as replace-first upgrade outputs; do not perform semantic rewrites to managed agent files; preserve only sanctioned local user-instructions and append-only incident history.",
+    "constraints": "Constraints: treat managed files as replace-first upgrade outputs; preserve only sanctioned local user instructions and append-only incident history; use `ap` for lifecycle and commits; do not perform semantic rewrites to managed agent files during upgrade validation.",
     "stop.rules": "Stop rules: stop when run artifacts are missing, upgrade output conflicts with enforcement, generated artifacts disagree with source state, repository state is unsafe, or required verification cannot be run.",
     "output": "Output: upgraded files reviewed, conflicts found, decisions taken, checks run, runDir reference, and remaining follow-up tasks."
   }

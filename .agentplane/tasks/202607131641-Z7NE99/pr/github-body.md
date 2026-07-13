@@ -26,7 +26,45 @@ In scope: packages/agentplane/assets/AGENTS.md; all packages/agentplane/assets/a
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/agents/CODER.json                      |   2 +-
+ .agentplane/agents/CREATOR.json                    |   2 +-
+ .agentplane/agents/CURATOR.json                    |   2 +-
+ .agentplane/agents/DOCS.json                       |   2 +-
+ .agentplane/agents/EVALUATOR.json                  |   2 +-
+ .agentplane/agents/EXTRACTOR.json                  |   2 +-
+ .agentplane/agents/INTAKE.json                     |   2 +-
+ .agentplane/agents/INTEGRATOR.json                 |   2 +-
+ .agentplane/agents/ORCHESTRATOR.json               |   2 +-
+ .agentplane/agents/PLANNER.json                    |   2 +-
+ .agentplane/agents/REDMINE.json                    |   2 +-
+ .agentplane/agents/REVIEWER.json                   |   2 +-
+ .agentplane/agents/TESTER.json                     |   2 +-
+ .agentplane/agents/UPDATER.json                    |   2 +-
+ .agentplane/agents/UPGRADER.json                   |   2 +-
+ .agentplane/tasks/202607111438-5DXKKR/README.md    |  23 +++-
+ .agentplane/tasks/202607111438-5DXKKR/pr/meta.json |   9 +-
+ docs/developer/modular-prompt-assembly.mdx         |  16 ++-
+ packages/agentplane/assets/AGENTS.md               |  11 +-
+ packages/agentplane/assets/agents/CODER.json       |   2 +-
+ packages/agentplane/assets/agents/CREATOR.json     |   2 +-
+ packages/agentplane/assets/agents/CURATOR.json     |   2 +-
+ packages/agentplane/assets/agents/DOCS.json        |   2 +-
+ packages/agentplane/assets/agents/EVALUATOR.json   |   2 +-
+ packages/agentplane/assets/agents/EXTRACTOR.json   |   2 +-
+ packages/agentplane/assets/agents/INTAKE.json      |   2 +-
+ packages/agentplane/assets/agents/INTEGRATOR.json  |   2 +-
+ .../agentplane/assets/agents/ORCHESTRATOR.json     |   2 +-
+ packages/agentplane/assets/agents/PLANNER.json     |   2 +-
+ packages/agentplane/assets/agents/REDMINE.json     |   2 +-
+ packages/agentplane/assets/agents/REVIEWER.json    |   2 +-
+ packages/agentplane/assets/agents/TESTER.json      |   2 +-
+ packages/agentplane/assets/agents/UPDATER.json     |   2 +-
+ packages/agentplane/assets/agents/UPGRADER.json    |   2 +-
+ .../src/runtime/prompt-modules/gpt55-contract.ts   |   4 +-
+ .../runtime/prompt-modules/gpt56-contract.test.ts  | 119 +++++++++++++++++++++
+ .../src/runtime/prompt-modules/gpt56-contract.ts   |  78 ++++++++++++++
+ .../agentplane/src/runtime/prompt-modules/index.ts |   1 +
+ 38 files changed, 273 insertions(+), 48 deletions(-)
 ```
 
 </details>

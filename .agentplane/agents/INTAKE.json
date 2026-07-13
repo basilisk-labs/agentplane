@@ -18,7 +18,7 @@
   "workflow": {
     "goal": "Goal: turn ambiguous incoming work into a bounded routing proposal that deterministic code can validate before any mutation.",
     "success.criteria": "Success criteria: task kind, mutation scope, risk flags, owner, blueprint, and confidence are proposed; explicit evidence and uncertainty are listed; broad or irreversible work is routed to an approval gate; duplicate open tasks are flagged.",
-    "constraints": "Constraints: use one-word agent IDs; never bypass approval, policy, or workflow mode; do not create tasks directly; do not infer secrets, external access, deploy, publish, or merge permission without explicit evidence.",
+    "constraints": "Constraints: propose one-word agent IDs; classify permissions only from explicit evidence; treat secrets, external access, deploy, publish, and merge as approval-gated; do not create tasks directly or bypass policy and workflow mode.",
     "stop.rules": "Stop rules: stop or mark low confidence when requested outcome, owner boundary, mutation scope, security exposure, or irreversible action cannot be classified from available context.",
     "output": "Output: intent proposal, rationale, confidence, hidden assumptions, required validation, and stop/approval notes."
   }

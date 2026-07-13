@@ -45,15 +45,19 @@ The core contracts are:
 - `PromptModuleMutationSet`: recipe-owned operations such as add, replace, patch, disable, bind, and validator changes.
 - `PromptModuleCompiledGraph`: compiled nodes plus bindings, validators, diagnostics, and `ok`.
 
-## GPT-5.5 prompt contract
+## GPT-5.6 prompt contract
 
-Framework-owned prompts should stay outcome-first. Agent profiles define the target result,
-success criteria, binding constraints, stop rules, and output shape. Detailed workflow gates remain
-in `AGENTS.md` and policy modules so role prompts do not duplicate command procedures.
+This contract tracks the official [GPT-5.6 prompting guidance](https://developers.openai.com/api/docs/guides/prompt-guidance-gpt-5p6).
+
+Framework-owned prompts stay outcome-first and lean. Agent profiles define the target result,
+success criteria, role-specific constraints, stop rules, and output shape. Shared autonomy, tool,
+response, and workflow gates remain in `AGENTS.md` and policy modules so role prompts state each
+behavioral rule once instead of duplicating gateway procedures.
 
 Use absolute language only for true invariants: safety, approval gates, side effects, required
 fields, irreversible actions, and output contracts. Express judgment calls as decision rules or
-preferences. This keeps model behavior extensible while preserving enforcement-backed constraints.
+preferences. Keep examples only when they encode a product requirement or fix a measured gap.
+This preserves enforcement-backed constraints without over-prescribing the model path.
 
 The shipped profile shape is:
 
@@ -69,6 +73,8 @@ Runtime-specific behavior belongs in config and runner context, not in duplicate
 - Retrieval budgets live in gateway/runner rules: load matched policy, task README, Verify Steps,
   and relevant files; use incidents only for analogous scope or tags; stop when evidence is enough
   to satisfy the acceptance contract.
+- Independent retrieval may run in parallel; dependent actions stay sequential; empty or
+  suspiciously narrow required evidence gets a bounded fallback before a no-result conclusion.
 - Tool-heavy work should have a short visible preamble and meaningful progress updates, while the
   final answer should report actions, evidence/checks, blockers or drift, and next approval.
 
