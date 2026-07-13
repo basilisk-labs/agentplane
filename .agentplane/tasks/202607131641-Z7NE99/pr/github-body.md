@@ -14,14 +14,21 @@ In scope: packages/agentplane/assets/AGENTS.md; all packages/agentplane/assets/a
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Passed task-scoped verification: agents:check; 24 targeted prompt tests; lint:core; typecheck;
+routing check; ap doctor; diff review. Full fast lane passed 2162 tests and hit one reproducible
+pre-existing release-packaging npm ci timeout under local Node 26/npm 11; hosted CI is the
+authoritative follow-up.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-13T16:44:03.525Z
+- Updated: 2026-07-13T17:15:20.048Z
 - Branch: task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
