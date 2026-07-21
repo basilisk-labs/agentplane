@@ -4,7 +4,7 @@ title: "Repair maximum assimilation context lifecycle"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -20,11 +20,28 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-21T21:33:12.799Z"
+  updated_by: "EVALUATOR"
+  note: "Focused context tests, full AgentPlane suite, smoke gate, typecheck, formatting, routing, CLI help, and doctor all passed; only unrelated historical doctor warnings remain."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-21T21:34:06.213Z"
+  updated_by: "EVALUATOR"
+  note: "Quality review remains valid after committing evaluator and verification artifacts."
+  evaluated_sha: "63e998521c6c6e82b63f3525adab65044d7471e3"
+  blueprint_digest: "230c818d37ab56b7e97f3c6e57c02a387ebf20b89a707c0c3449544dfdae11ef"
+  evidence_refs:
+    - ".agentplane/tasks/202607211645-TQ70WD/README.md"
+    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260721-213406213-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260721-213406213-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260721-213406213-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607211645-TQ70WD/blueprint/resolved-snapshot.json"
+    - "bun run test:project agentplane: 338 files, 1924 tests passed"
+    - "bun run ci:local:smoke: passed"
+  findings:
+    - "No blocking findings; the implementation commit and all recorded checks remain unchanged."
 commit: null
 comments:
   -
@@ -38,8 +55,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement the approved maximum-assimilation lifecycle fixes and regression coverage from the dedicated main-based task worktree."
+  -
+    type: "verify"
+    at: "2026-07-21T21:33:12.799Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Focused context tests, full AgentPlane suite, smoke gate, typecheck, formatting, routing, CLI help, and doctor all passed; only unrelated historical doctor warnings remain."
 doc_version: 3
-doc_updated_at: "2026-07-21T21:31:16.902Z"
+doc_updated_at: "2026-07-21T21:33:13.032Z"
 doc_updated_by: "CODER"
 description: "Fix the evaluator-to-context verification contract, Wiki frontmatter generation and linting, modality and expected-artifact consistency, and add end-to-end regression coverage for maximum assimilation including raw-deletion resilience."
 sections:
@@ -61,6 +84,39 @@ sections:
     Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: repository policy graph.
 
     Command: bun packages/agentplane/bin/agentplane.js help context finalize-task. Result: pass. Evidence: CLI exposes context finalize-task <task-id> with the expected contract. Scope: new operator surface.
+
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-21T21:33:12.799Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Focused context tests, full AgentPlane suite, smoke gate, typecheck, formatting, routing, CLI help, and doctor all passed; only unrelated historical doctor warnings remain.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-21T21:33:09.691Z, excerpt_hash=sha256:3dce42a7dd8c071ce5916b5cc05fea64d41f70ad2d75e99a4bc037a283d17c41
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607211645-TQ70WD-repair-maximum-assimilation-context-lifecycle/.agentplane/tasks/202607211645-TQ70WD/blueprint/resolved-snapshot.json
+    - old_digest: 230c818d37ab56b7e97f3c6e57c02a387ebf20b89a707c0c3449544dfdae11ef
+    - current_digest: 230c818d37ab56b7e97f3c6e57c02a387ebf20b89a707c0c3449544dfdae11ef
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607211645-TQ70WD
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202607211645-TQ70WD
+    - diagnostic_command: agentplane pr check 202607211645-TQ70WD
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the task commits. No persisted user data migration is planned; any new derived evaluator/report projection must be reconstructible from task-local evaluator evidence or existing canonical context inputs."
   Findings: |-
     - Observation: Maximum-assimilation verification consumed .agentplane/context/derived/reports/evaluator.jsonl while evaluator run only wrote task-local quality-report.json.
@@ -86,6 +142,10 @@ sections:
       Resolution: Added a regression covering curated-only reindex and search after raw removal; evaluator scenarios now require passing raw-deletion evidence.
       Promotion: incident-candidate
       Fixability: repo-fixable
+
+    - Observation: ap doctor completed with zero errors and two warnings for historical DONE tasks 202606040927-KSESDS and 202606041702-TVTSM2 missing implementation hashes.
+      Impact: No impact on this task; warnings predate and are outside the approved context lifecycle scope.
+      Resolution: Recorded as baseline drift; no unrelated historical task mutation performed.
 id_source: "generated"
 ---
 ## Summary
@@ -120,6 +180,39 @@ Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: poli
 
 Command: bun packages/agentplane/bin/agentplane.js help context finalize-task. Result: pass. Evidence: CLI exposes context finalize-task <task-id> with the expected contract. Scope: new operator surface.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-21T21:33:12.799Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Focused context tests, full AgentPlane suite, smoke gate, typecheck, formatting, routing, CLI help, and doctor all passed; only unrelated historical doctor warnings remain.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-21T21:33:09.691Z, excerpt_hash=sha256:3dce42a7dd8c071ce5916b5cc05fea64d41f70ad2d75e99a4bc037a283d17c41
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607211645-TQ70WD-repair-maximum-assimilation-context-lifecycle/.agentplane/tasks/202607211645-TQ70WD/blueprint/resolved-snapshot.json
+- old_digest: 230c818d37ab56b7e97f3c6e57c02a387ebf20b89a707c0c3449544dfdae11ef
+- current_digest: 230c818d37ab56b7e97f3c6e57c02a387ebf20b89a707c0c3449544dfdae11ef
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607211645-TQ70WD
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202607211645-TQ70WD
+- diagnostic_command: agentplane pr check 202607211645-TQ70WD
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the task commits. No persisted user data migration is planned; any new derived evaluator/report projection must be reconstructible from task-local evaluator evidence or existing canonical context inputs.
@@ -149,3 +242,7 @@ Revert the task commits. No persisted user data migration is planned; any new de
   Resolution: Added a regression covering curated-only reindex and search after raw removal; evaluator scenarios now require passing raw-deletion evidence.
   Promotion: incident-candidate
   Fixability: repo-fixable
+
+- Observation: ap doctor completed with zero errors and two warnings for historical DONE tasks 202606040927-KSESDS and 202606041702-TVTSM2 missing implementation hashes.
+  Impact: No impact on this task; warnings predate and are outside the approved context lifecycle scope.
+  Resolution: Recorded as baseline drift; no unrelated historical task mutation performed.
