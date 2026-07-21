@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607211645-TQ70WD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-21T21:33:11.476Z",
+  "verdict": "pass",
+  "summary": "Maximum-assimilation lifecycle fixes are covered by focused, full-project, and smoke quality gates.",
+  "evaluated_sha": "63e998521c6c6e82b63f3525adab65044d7471e3",
+  "blueprint_digest": "230c818d37ab56b7e97f3c6e57c02a387ebf20b89a707c0c3449544dfdae11ef",
+  "findings": [
+    "Evaluator-to-context projection closes the previous manual derived-report gap and requires passing raw-deletion evidence.",
+    "Shared YAML parsing and serialization prevent the first-index corruption and make lint/check diagnostics consistent.",
+    "CLI finalization, generated topology and coverage reports, aligned modalities, and regression coverage satisfy the approved scope."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607211645-TQ70WD/README.md",
+    "bun run test:project agentplane: 338 files, 1924 tests passed",
+    "bun run ci:local:smoke: passed",
+    "node .agentplane/policy/check-routing.mjs: policy routing OK"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
