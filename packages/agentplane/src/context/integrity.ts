@@ -51,7 +51,12 @@ function stringValue(value: unknown, fallback = ""): string {
 function wikiGraphRefs(text: string): { entities: string[]; edges: string[] } {
   const frontmatter = /^---\n([\s\S]*?)\n---/u.exec(text.replaceAll("\r\n", "\n"))?.[1];
   if (!frontmatter) return { entities: [], edges: [] };
-  const parsed = parseYaml(frontmatter) as unknown;
+  let parsed: unknown;
+  try {
+    parsed = parseYaml(frontmatter) as unknown;
+  } catch {
+    return { entities: [], edges: [] };
+  }
   if (!isRecord(parsed)) return { entities: [], edges: [] };
   const context = isRecord(parsed.agentplane_context) ? parsed.agentplane_context : parsed;
   if (!isRecord(context.graph_refs)) return { entities: [], edges: [] };

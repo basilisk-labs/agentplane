@@ -64,6 +64,13 @@ describe("context ingest task creation", () => {
     expect(context.allowed_outputs).toContain(
       ".agentplane/tasks/${taskId}/extraction-contract.json",
     );
+    expect(task.verify).toEqual(
+      expect.arrayContaining([
+        "agentplane context wiki report context/wiki",
+        expect.stringContaining("agentplane evaluator run <created-task-id>"),
+        "agentplane context finalize-task <created-task-id>",
+      ]),
+    );
   });
 
   it("records deprecated workspace mode aliases without weakening the task", () => {

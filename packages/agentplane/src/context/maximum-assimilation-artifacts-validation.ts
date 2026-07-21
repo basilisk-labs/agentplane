@@ -118,6 +118,7 @@ async function validateEvaluatorScenarios(root: string, errors: string[]): Promi
     const verdict = stringField(row, "verdict");
     const entrypoints = arrayField(row, "entrypoints");
     const evidenceRefs = arrayField(row, "evidence_refs");
+    const rawDeletionResilience = stringField(row, "raw_deletion_resilience");
     if (entrypoints.length === 0) errors.push(`${rel}#${id}: scenario requires entrypoints`);
     if (!hasWikiOrDerivedEntrypoint(entrypoints)) {
       errors.push(`${rel}#${id}: scenario must use wiki or derived entrypoints, not raw-only`);
@@ -127,6 +128,9 @@ async function validateEvaluatorScenarios(root: string, errors: string[]): Promi
       errors.push(`${rel}#${id}: failed evaluator scenario requires rework verdict`);
     }
     if (!verdict) errors.push(`${rel}#${id}: scenario requires verdict`);
+    if (!["pass", "passed", "verified"].includes(rawDeletionResilience.toLowerCase())) {
+      errors.push(`${rel}#${id}: scenario requires passing raw_deletion_resilience evidence`);
+    }
   }
 }
 

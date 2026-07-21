@@ -43,10 +43,17 @@ function wikiPage(opts: { title: string; body: string }): string {
     `  title: "${opts.title}"`,
     "  modality: decision",
     "  epistemic_status: sourced_claim",
+    "  visibility: project",
     "  source_refs:",
     '    - path: "context/raw/specs/payment-api.md"',
     '      ref: "context/raw/specs/payment-api.md"',
     '      label: "context/raw/specs/payment-api.md"',
+    "  claims: []",
+    "  graph_refs:",
+    "    entities: []",
+    "    edges: []",
+    "  conflicts: []",
+    "  updated_by: TESTER",
     "---",
     "",
     `# ${opts.title}`,
@@ -140,6 +147,8 @@ describe("context wiki Obsidian compatibility", () => {
       [
         "---",
         'aliases: ["Concept Hub"]',
+        "tags:",
+        "  - agentplane/context",
         "agentplane_context:",
         "  schema_version: 1",
         "  artifact_type: wiki_page",
@@ -147,7 +156,14 @@ describe("context wiki Obsidian compatibility", () => {
         '  title: "Concepts"',
         "  modality: definition",
         "  epistemic_status: sourced_claim",
+        "  visibility: project",
         "  source_refs: []",
+        "  claims: []",
+        "  graph_refs:",
+        "    entities: []",
+        "    edges: []",
+        "  conflicts: []",
+        "  updated_by: TESTER",
         "---",
         "",
         "# Concepts",
@@ -175,6 +191,27 @@ describe("context wiki Obsidian compatibility", () => {
 
     expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
       "context wiki lint: ok (2 page(s))",
+    );
+  });
+
+  it("accepts workflow as a shared page modality", async () => {
+    const root = await tempRoot();
+
+    await cmdContextWikiNew({
+      cwd: root,
+      parsed: {
+        page: "workflows/context-writer",
+        title: "Context Writer",
+        modality: "workflow",
+        status: "reviewed_claim",
+        visibility: "project",
+        source: ["context/raw/specs/context-writer.md"],
+        force: false,
+      },
+    });
+
+    await expect(cmdContextWikiLint({ cwd: root, parsed: { path: "context/wiki" } })).resolves.toBe(
+      0,
     );
   });
 });

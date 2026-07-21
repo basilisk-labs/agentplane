@@ -10,6 +10,7 @@ import {
 import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { CliError, GitError } from "../../shared/errors.js";
 import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
+import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { gitDiffNames, gitIsAncestor, gitRevParse } from "@agentplaneorg/core/git";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
@@ -344,6 +345,15 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
   await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
   await writeFile(opinionPath, renderOpinionMarkdown(report), "utf8");
 
+  const contextEvaluatorReportPath = p.record
+    ? await projectEvaluatorQualityReportToContext({
+        root: gitRoot,
+        task,
+        report,
+        reportPath: rel(reportPath),
+      })
+    : null;
+
   const evidenceRefs = [
     rel(taskReadmePath),
     rel(reportPath),
@@ -353,6 +363,7 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
       ? [path.isAbsolute(snapshot.path) ? rel(snapshot.path) : snapshot.path]
       : []),
     ...p.evidenceRefs,
+    ...(contextEvaluatorReportPath ? [contextEvaluatorReportPath] : []),
   ];
   if (p.record) {
     await applyTaskMutation({
@@ -385,6 +396,7 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
     report_path: rel(reportPath),
     prompt_path: rel(promptPath),
     opinion_path: rel(opinionPath),
+    context_evaluator_report_path: contextEvaluatorReportPath,
   };
   if (p.json) {
     process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
@@ -397,6 +409,9 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
         `report: ${payload.report_path}`,
         `prompt: ${payload.prompt_path}`,
         `opinion: ${payload.opinion_path}`,
+        ...(contextEvaluatorReportPath
+          ? [`context evaluator report: ${contextEvaluatorReportPath}`]
+          : []),
       ].join("\n") + "\n",
     );
   }

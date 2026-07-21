@@ -233,7 +233,15 @@ async function checkWikiSourceRefs(
   for (const file of await collectWikiFiles(root)) {
     const rel = toPosix(path.relative(root, file));
     const text = await readText(file);
-    for (const sourceRef of extractWikiSourceRefs(text)) {
+    let sourceRefs: string[];
+    try {
+      sourceRefs = extractWikiSourceRefs(text);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      issues.push(`invalid wiki frontmatter YAML: ${rel}: ${message}`);
+      continue;
+    }
+    for (const sourceRef of sourceRefs) {
       if (sourceRef.startsWith("context/raw/") && !sourceRefExists(sourceRef, manifestSources)) {
         issues.push(`wiki source missing from manifest lock: ${sourceRef} (${rel})`);
       }

@@ -103,6 +103,7 @@ import {
   contextCapabilityValidateSpec,
   contextDashboardSpec,
   contextDoctorSpec,
+  contextFinalizeTaskSpec,
   contextExtractionApplySpec,
   contextGraphNeighborsSpec,
   contextGraphExportSpec,
@@ -302,6 +303,7 @@ export const PROJECT_COMMANDS = [
   fromCommandsContextCommand(contextWikiIndexSpec, "runContextWikiIndex"),
   fromCommandsContextCommand(contextWikiReportSpec, "runContextWikiReport"),
   fromCommandsContextCommand(contextDoctorSpec, "runContextDoctor", { surface: "advanced" }),
+  fromCommandsContextCommand(contextFinalizeTaskSpec, "runContextFinalizeTask"),
   fromCommandsContextCommand(contextVerifyTaskSpec, "runContextVerifyTask", {
     surface: "advanced",
   }),

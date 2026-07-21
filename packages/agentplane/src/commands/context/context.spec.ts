@@ -298,7 +298,7 @@ export const contextWikiNewSpec: CommandSpec<{
       default: "factual_claim",
       valueHint: "<modality>",
       description:
-        "Primary page modality: factual_claim, observation, assumption, hypothesis, decision, policy, preference, requirement, risk, capability, definition, or deprecation.",
+        "Primary page modality: factual_claim, observation, assumption, hypothesis, decision, policy, preference, requirement, risk, capability, definition, workflow, or deprecation.",
     },
     {
       kind: "string",
@@ -648,6 +648,15 @@ export const contextVerifyTaskSpec: CommandSpec<{ taskId: string }> = {
   id: ["context", "verify-task"],
   group: "Context",
   summary: "Validate mutations for a context_assimilation task.",
+  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+  parse: (raw) => ({ taskId: String(raw.args["task-id"]) }),
+};
+
+export const contextFinalizeTaskSpec: CommandSpec<{ taskId: string }> = {
+  id: ["context", "finalize-task"],
+  group: "Context",
+  summary:
+    "Generate context reports and indexes, rebuild curated projection, validate the graph and task, and run context doctor.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   parse: (raw) => ({ taskId: String(raw.args["task-id"]) }),
 };
