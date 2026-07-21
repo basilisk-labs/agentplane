@@ -2,20 +2,9 @@ import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
 import { toPosix } from "./context-utils.js";
+import { renderWikiFrontmatter, WIKI_MODALITIES, type WikiModality } from "./wiki-frontmatter.js";
 
-export type WikiModality =
-  | "factual_claim"
-  | "observation"
-  | "assumption"
-  | "hypothesis"
-  | "decision"
-  | "policy"
-  | "preference"
-  | "requirement"
-  | "risk"
-  | "capability"
-  | "definition"
-  | "deprecation";
+export type { WikiModality } from "./wiki-frontmatter.js";
 
 export type WikiStatus =
   | "mention"
@@ -25,6 +14,7 @@ export type WikiStatus =
   | "reviewed_claim"
   | "accepted_team_knowledge"
   | "canonical_org_knowledge"
+  | "generated_report"
   | "assumption"
   | "hypothesis"
   | "disputed"
@@ -32,20 +22,7 @@ export type WikiStatus =
   | "superseded"
   | "forbidden_for_use";
 
-export const MODALITIES = new Set<WikiModality>([
-  "factual_claim",
-  "observation",
-  "assumption",
-  "hypothesis",
-  "decision",
-  "policy",
-  "preference",
-  "requirement",
-  "risk",
-  "capability",
-  "definition",
-  "deprecation",
-]);
+export const MODALITIES = new Set<WikiModality>(WIKI_MODALITIES);
 
 export const STATUSES = new Set<WikiStatus>([
   "mention",
@@ -55,6 +32,7 @@ export const STATUSES = new Set<WikiStatus>([
   "reviewed_claim",
   "accepted_team_knowledge",
   "canonical_org_knowledge",
+  "generated_report",
   "assumption",
   "hypothesis",
   "disputed",
@@ -112,29 +90,6 @@ export function assertChoice<T extends string>(value: string, choices: Set<T>, l
   });
 }
 
-function yamlString(value: string): string {
-  return JSON.stringify(value);
-}
-
-function renderYamlList(values: string[]): string {
-  if (values.length === 0) return "[]";
-  return `\n${values.map((value) => `  - ${yamlString(value)}`).join("\n")}`;
-}
-
-function renderSourceRefs(sourceRefs: string[]): string {
-  if (sourceRefs.length === 0) return "  []";
-  return sourceRefs
-    .map((source) => {
-      const label = source.includes("#") ? source.split("#")[0] : source;
-      return [
-        "  - path: " + yamlString(source),
-        "    ref: " + yamlString(source),
-        "    label: " + yamlString(label),
-      ].join("\n");
-    })
-    .join("\n");
-}
-
 function renderSourceNotes(sourceRefs: string[]): string {
   if (sourceRefs.length === 0) {
     return "- no-source: add a source reference before promotion";
@@ -151,29 +106,17 @@ export function renderWikiPage(opts: {
   sourceRefs: string[];
 }): string {
   const canonicalId = `wiki.${slug(opts.rel.replace(/^context\/wiki\//u, "").replace(/\.md$/u, ""))}`;
-  return `---
-aliases:${renderYamlList([opts.title])}
-tags:
-  - agentplane/context
-cssclasses:
-  - agentplane-context
-agentplane_context:
-  schema_version: 1
-  artifact_type: wiki_page
-  canonical_id: ${yamlString(canonicalId)}
-  title: ${yamlString(opts.title)}
-  modality: ${opts.modality}
-  epistemic_status: ${opts.status}
-  visibility: ${opts.visibility}
-  source_refs:
-${renderSourceRefs(opts.sourceRefs)}
-  claims: []
-  graph_refs:
-    entities: []
-    edges: []
-  conflicts: []
-  updated_by: CURATOR
----
+  const frontmatter = renderWikiFrontmatter({
+    canonicalId,
+    title: opts.title,
+    modality: opts.modality,
+    status: opts.status,
+    visibility: opts.visibility,
+    sourceRefs: opts.sourceRefs,
+    updatedBy: "CURATOR",
+    noGraphRefReason: "No graph reference has been assigned yet; update during synthesis.",
+  });
+  return `${frontmatter}
 
 # ${opts.title}
 

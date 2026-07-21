@@ -78,6 +78,29 @@ describe("context wiki report", () => {
         raw_deletion_resilience: "pass",
       }) + "\n",
     );
+    await write(
+      root,
+      ".agentplane/context/derived/reports/coverage.jsonl",
+      JSON.stringify({
+        id: "coverage.payment-api",
+        coverage_status: "covered",
+        summary: "Payment API is covered.",
+        source_refs: ["context/raw/specs/payment-api.md#L1-L10"],
+      }) + "\n",
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/wiki/topology.plan.json",
+      JSON.stringify({
+        source_shape: { primary: "product_docs" },
+        canonical_page_families: [
+          {
+            family_id: "family.entities",
+            page_vs_heading_rule: "Create pages for reusable entities.",
+          },
+        ],
+      }) + "\n",
+    );
     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 
     await cmdContextWikiReport({ cwd: root, parsed: { path: "context/wiki" } });
@@ -100,6 +123,12 @@ describe("context wiki report", () => {
     );
     expect(evaluatorReview).toContain("Verdict: pass");
     expect(evaluatorReview).toContain("Scenario coverage: scenario.payment_api_recall");
+    expect(await readFile(path.join(root, "context/wiki/reports/topology.md"), "utf8")).toContain(
+      "source_shape: product_docs",
+    );
+    expect(await readFile(path.join(root, "context/wiki/reports/coverage.md"), "utf8")).toContain(
+      "coverage coverage.payment-api: covered",
+    );
     expect(
       await readFile(path.join(root, "context/wiki/reports/open-questions.md"), "utf8"),
     ).toContain("question.payment");

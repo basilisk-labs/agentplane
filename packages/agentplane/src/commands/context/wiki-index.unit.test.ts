@@ -56,8 +56,14 @@ describe("context wiki index", () => {
 
     const modulesIndex = await readFile(path.join(root, "context/wiki/modules/index.md"), "utf8");
     expect(modulesIndex).toContain("agentplane_context:");
+    expect(modulesIndex).toContain("source_refs: []");
     expect(modulesIndex).toContain("[Meridian Relay](meridian-relay.md)");
     expect(modulesIndex).not.toContain("[Stale](stale.md)");
     await cmdContextWikiLint({ cwd: root, parsed: { path: "context/wiki" } });
+
+    await cmdContextWikiIndex({ cwd: root, parsed: { path: "context/wiki" } });
+    expect(await readFile(path.join(root, "context/wiki/modules/index.md"), "utf8")).toBe(
+      modulesIndex,
+    );
   });
 });

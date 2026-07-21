@@ -109,6 +109,20 @@ describe("context cross-surface integrity", () => {
     ).rejects.toThrow(/active graph entity requires target_path or no_page_reason/u);
   });
 
+  it("reports invalid wiki YAML as a validation issue instead of an internal error", async () => {
+    const root = await tempRoot();
+    await initMaximum(root);
+    await write(
+      root,
+      "context/wiki/reports/index.md",
+      "---\nagentplane_context:\n  source_refs: [\n---\n\n# Reports\n",
+    );
+
+    await expect(
+      cmdContextDoctor({ cwd: root, parsed: { fix: false, label: "check" } }),
+    ).rejects.toThrow(/context check failed.*invalid wiki frontmatter YAML/isu);
+  });
+
   it("detects connectivity reports that became stale after wiki changes", async () => {
     const root = await tempRoot();
     await initMaximum(root);

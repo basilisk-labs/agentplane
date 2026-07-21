@@ -217,4 +217,27 @@ describe("maximum-assimilation artifact validation", () => {
       ".agentplane/context/derived/reports/evaluator.jsonl#scenario.raw_only: scenario must use wiki or derived entrypoints, not raw-only",
     );
   });
+
+  it("requires a passing raw-deletion assessment on evaluator scenarios", async () => {
+    const root = await tempRoot();
+    await writeMinimalReadableArtifacts(root);
+    await write(
+      root,
+      ".agentplane/context/derived/reports/evaluator.jsonl",
+      JSON.stringify({
+        schema_version: 1,
+        scenario_id: "scenario.missing_raw_deletion",
+        entrypoints: ["context/wiki/glossary.md"],
+        verdict: "pass",
+        evidence_refs: ["context/wiki/glossary.md"],
+        raw_deletion_resilience: "not_recorded",
+      }) + "\n",
+    );
+
+    const errors = await validateMaximumAssimilationArtifacts({ root, changedPaths: [] });
+
+    expect(errors).toContain(
+      ".agentplane/context/derived/reports/evaluator.jsonl#scenario.missing_raw_deletion: scenario requires passing raw_deletion_resilience evidence",
+    );
+  });
 });

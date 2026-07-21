@@ -7,6 +7,7 @@ import { cmdContextSearch } from "./search.js";
 import { cmdContextShow } from "./show.js";
 import { cmdContextDoctor } from "./doctor.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
+import { cmdContextFinalizeTask } from "./finalize.js";
 import {
   cmdContextWikiExplain,
   cmdContextWikiIndex,
@@ -190,6 +191,17 @@ export async function runContextVerifyTask(
   p: { taskId: string },
 ): Promise<number> {
   return await cmdContextVerifyTask({
+    cwd: _ctx.cwd,
+    rootOverride: _ctx.rootOverride,
+    parsed: p,
+  });
+}
+
+export async function runContextFinalizeTask(
+  _ctx: CommandCtx,
+  p: { taskId: string },
+): Promise<number> {
+  return await cmdContextFinalizeTask({
     cwd: _ctx.cwd,
     rootOverride: _ctx.rootOverride,
     parsed: p,

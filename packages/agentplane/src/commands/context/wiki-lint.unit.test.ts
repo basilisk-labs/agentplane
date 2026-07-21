@@ -35,6 +35,9 @@ describe("context wiki lint", () => {
       "context/wiki/decisions/crlf-page.md",
       [
         "---",
+        'aliases: ["CRLF Page"]',
+        "tags:",
+        "  - agentplane/context",
         "agentplane_context:",
         "  schema_version: 1",
         "  artifact_type: wiki_page",
@@ -42,7 +45,14 @@ describe("context wiki lint", () => {
         '  title: "CRLF Page"',
         "  modality: decision",
         "  epistemic_status: sourced_claim",
+        "  visibility: project",
         "  source_refs: []",
+        "  claims: []",
+        "  graph_refs:",
+        "    entities: []",
+        "    edges: []",
+        "  conflicts: []",
+        "  updated_by: TESTER",
         "---",
         "",
         "# CRLF Page",
@@ -82,5 +92,30 @@ describe("context wiki lint", () => {
         parsed: { path: "context/wiki" },
       }),
     ).rejects.toThrow(/missing YAML frontmatter/u);
+  });
+
+  it("rejects YAML that the runtime parser cannot read", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/wiki/reports/index.md",
+      [
+        "---",
+        "aliases: []",
+        "tags: []",
+        "agentplane_context:",
+        "  schema_version: 1",
+        "  source_refs: [",
+        "---",
+        "",
+        "# Reports",
+        "",
+        "- no-source: invalid fixture",
+      ].join("\n"),
+    );
+
+    await expect(
+      cmdContextWikiLint({ cwd: root, parsed: { path: "context/wiki" } }),
+    ).rejects.toThrow(/invalid YAML frontmatter.*line.*column/isu);
   });
 });

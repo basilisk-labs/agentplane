@@ -26,6 +26,7 @@ agentplane_context:
   graph_refs:
     entities: []
     edges: []
+  no_graph_ref_reason: "Generated navigation or policy page has no semantic graph reference yet."
   conflicts: []
   updated_by: context_init
 ---`;

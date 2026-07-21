@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../shared/task-backend.js";
+import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
 
 let tempRoots: string[] = [];
@@ -388,19 +389,23 @@ agentplane_context:
       "context/wiki/reports/evaluator-review.md",
       "source_refs: x\nVerdict: pass. Scenario coverage: scenario.glossary. Failures: none. Raw-deletion resilience assessment: pass.\n",
     );
-    await write(
+    await projectEvaluatorQualityReportToContext({
       root,
-      ".agentplane/context/derived/reports/evaluator.jsonl",
-      `${JSON.stringify({
-        schema_version: 1,
-        scenario_id: "scenario.glossary",
-        summary: "Future agent can use glossary and derived rows.",
-        entrypoints: ["context/wiki/glossary.md"],
+      task,
+      report: {
+        task_id: task.id,
+        evaluator_id: "recovery-context",
+        generated_at: "2026-07-21T16:20:00.000Z",
         verdict: "pass",
-        evidence_refs: [".agentplane/context/derived/graph/entities.jsonl"],
-        raw_deletion_resilience: "pass",
-      })}\n`,
-    );
+        summary: "Future agent can use glossary and derived rows.",
+        findings: ["Context lifecycle verified."],
+        evidence_refs: [
+          "context/wiki/glossary.md",
+          "raw-deletion-resilience: curated-only search passed",
+        ],
+      },
+      reportPath: `.agentplane/tasks/${task.id}/quality/run/quality-report.json`,
+    });
 
     await expect(
       cmdContextVerifyTask({

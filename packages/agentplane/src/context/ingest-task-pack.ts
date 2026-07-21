@@ -247,6 +247,7 @@ function buildExpectedArtifacts(taskId: string): Record<string, unknown> {
     required: [
       ...generatedTaskPackFiles,
       "context/wiki/glossary.md",
+      "context/wiki/reports/topology.md",
       "context/wiki/reports/coverage.md",
       "context/wiki/reports/conflicts.md",
       "context/wiki/reports/open-questions.md",

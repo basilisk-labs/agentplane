@@ -2,7 +2,9 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { computeWikiReportSourceDigest, WIKI_REPORT_STATE_PATH } from "../../context/integrity.js";
+import { isRecord } from "../../shared/guards.js";
 import { fileExists, parseJsonlLines, readText } from "./context-utils.js";
+import { renderWikiFrontmatter } from "./wiki-frontmatter.js";
 import {
   buildInboundCounts,
   buildWikiLinkRows,
@@ -20,38 +22,24 @@ type WikiReportBuildResult = {
   orphanRows: WikiReportRow[];
 };
 
-function sourceRefsBlock(sourceRefs: string[]): string[] {
-  if (sourceRefs.length === 0) return ["  source_refs: []"];
-  return [
-    "  source_refs:",
-    ...sourceRefs.map((ref) => `    - path: "${ref.replaceAll('"', '\\"')}"`),
-  ];
-}
-
 function reportPage(opts: {
   canonicalId: string;
   title: string;
   body: string[];
   sourceRefs: string[];
 }): string {
+  const frontmatter = renderWikiFrontmatter({
+    canonicalId: opts.canonicalId,
+    title: opts.title,
+    modality: "observation",
+    status: "generated_report",
+    visibility: "project",
+    sourceRefs: opts.sourceRefs,
+    tags: ["agentplane/context", "agentplane/context-report"],
+    updatedBy: "context_wiki_report",
+  });
   return [
-    "---",
-    "aliases:",
-    `  - "${opts.title}"`,
-    "tags:",
-    "  - agentplane/context",
-    "  - agentplane/context-report",
-    "cssclasses:",
-    "  - agentplane-context",
-    "agentplane_context:",
-    "  schema_version: 1",
-    "  artifact_type: wiki_page",
-    `  canonical_id: "${opts.canonicalId}"`,
-    `  title: "${opts.title}"`,
-    "  modality: observation",
-    "  epistemic_status: generated_report",
-    ...sourceRefsBlock(opts.sourceRefs),
-    "---",
+    frontmatter,
     "",
     `# ${opts.title}`,
     "",
@@ -70,6 +58,17 @@ async function loadJsonl(root: string, rel: string): Promise<WikiReportRow[]> {
   const abs = path.join(root, rel);
   if (!(await fileExists(abs))) return [];
   return parseJsonlLines(await readText(abs)) as WikiReportRow[];
+}
+
+async function loadJsonRecord(root: string, rel: string): Promise<Record<string, unknown> | null> {
+  const abs = path.join(root, rel);
+  if (!(await fileExists(abs))) return null;
+  try {
+    const parsed = JSON.parse(await readText(abs)) as unknown;
+    return isRecord(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
 }
 
 async function writeTextIfChanged(root: string, rel: string, text: string): Promise<boolean> {
@@ -159,6 +158,67 @@ function renderEvaluatorReport(rows: WikiReportRow[]): string {
     .join("\n\n");
 }
 
+const COVERAGE_STATUSES = [
+  "covered",
+  "omitted",
+  "redacted",
+  "duplicate",
+  "unresolved",
+  "conflict",
+  "out_of_scope",
+] as const;
+
+function rowSourceRefs(row: WikiReportRow): string[] {
+  const refs: string[] = [];
+  if (typeof row.source_ref === "string") refs.push(row.source_ref);
+  if (typeof row.source === "string") refs.push(row.source);
+  if (Array.isArray(row.source_refs)) {
+    refs.push(...row.source_refs.filter((value): value is string => typeof value === "string"));
+  }
+  return refs;
+}
+
+function renderCoverageReport(rows: WikiReportRow[]): string {
+  const counts = new Map<string, number>();
+  for (const row of rows) {
+    const status = wikiReportScalar(row.coverage_status, "unresolved");
+    counts.set(status, (counts.get(status) ?? 0) + 1);
+  }
+  const lines = [
+    "Coverage status summary:",
+    ...COVERAGE_STATUSES.map((status) => `- ${status}: ${counts.get(status) ?? 0}`),
+  ];
+  for (const row of rows) {
+    const id = wikiReportScalar(row.id ?? row.span_id, "<unknown>");
+    const status = wikiReportScalar(row.coverage_status, "unresolved");
+    const summary = wikiReportScalar(row.summary ?? row.reason, "No summary recorded");
+    const refs = rowSourceRefs(row);
+    lines.push(
+      `- coverage ${id}: ${status}; ${summary}; source_refs: ${refs.join(", ") || "no-source"}.`,
+    );
+  }
+  return lines.join("\n");
+}
+
+function renderTopologyReport(plan: Record<string, unknown> | null): string {
+  const sourceShape = isRecord(plan?.source_shape)
+    ? wikiReportScalar(plan.source_shape.primary, "unresolved")
+    : "unresolved";
+  const families = Array.isArray(plan?.canonical_page_families)
+    ? plan.canonical_page_families.filter(isRecord)
+    : [];
+  const familyIds = families.map((family) => wikiReportScalar(family.family_id, "<unknown>"));
+  const granularity = families.map((family) =>
+    wikiReportScalar(family.page_vs_heading_rule, "not recorded"),
+  );
+  return [
+    `- source_shape: ${sourceShape}`,
+    `- canonical_families: ${familyIds.join(", ") || "none"}`,
+    `- page_vs_heading granularity: ${granularity.join("; ") || "not recorded"}`,
+    "- source_refs: .agentplane/context/derived/wiki/topology.plan.json",
+  ].join("\n");
+}
+
 async function buildMaximumAssimilationWikiReports(
   root: string,
   target: string,
@@ -217,13 +277,33 @@ async function buildMaximumAssimilationWikiReports(
   const openQuestionsRel = ".agentplane/context/derived/claims/open_questions.jsonl";
   const coverageRel = ".agentplane/context/derived/reports/coverage.jsonl";
   const evaluatorRel = ".agentplane/context/derived/reports/evaluator.jsonl";
+  const topologyRel = ".agentplane/context/derived/wiki/topology.plan.json";
   const conflicts = await loadJsonl(root, conflictsRel);
   const openQuestions = await loadJsonl(root, openQuestionsRel);
   const coverage = await loadJsonl(root, coverageRel);
   const evaluatorRows = await loadJsonl(root, evaluatorRel);
+  const topologyPlan = await loadJsonRecord(root, topologyRel);
   const unresolvedCoverage = coverage.filter((row) => row.coverage_status === "unresolved");
 
   outputs.push(
+    [
+      "context/wiki/reports/topology.md",
+      reportPage({
+        canonicalId: "report.topology",
+        title: "Topology",
+        body: [renderTopologyReport(topologyPlan)],
+        sourceRefs: topologyPlan ? [topologyRel] : [],
+      }),
+    ],
+    [
+      "context/wiki/reports/coverage.md",
+      reportPage({
+        canonicalId: "report.coverage",
+        title: "Coverage",
+        body: [renderCoverageReport(coverage)],
+        sourceRefs: coverage.length > 0 ? [coverageRel] : [],
+      }),
+    ],
     [
       "context/wiki/reports/conflicts.md",
       reportPage({

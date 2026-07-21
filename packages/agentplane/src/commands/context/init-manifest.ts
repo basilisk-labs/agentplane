@@ -81,6 +81,7 @@ wiki:
     - risk
     - capability
     - definition
+    - workflow
     - deprecation
 agentplane:
   tasks_root: .agentplane/tasks

@@ -2,8 +2,12 @@ import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
+import { isRecord } from "../../shared/guards.js";
 import { collectMatchingFiles, fileExists, toPosix } from "./context-utils.js";
-import { normalizeWikiPath } from "./wiki-page.js";
+import { parseWikiFrontmatter } from "./wiki-frontmatter.js";
+import { MODALITIES, normalizeWikiPath, STATUSES } from "./wiki-page.js";
+
+export { extractWikiFrontmatter as extractFrontmatter } from "./wiki-frontmatter.js";
 
 type WikiLinkCatalogEntry = {
   canonical: string;
@@ -52,46 +56,14 @@ export async function normalizeWikiLintTarget(root: string, input: string): Prom
   return normalizeExistingWikiTarget(root, input, "wiki lint");
 }
 
-export function extractFrontmatter(text: string): string | null {
-  const normalized = text.replaceAll("\r\n", "\n");
-  if (!normalized.startsWith("---\n")) return null;
-  const end = normalized.indexOf("\n---", 4);
-  if (end === -1) return null;
-  return normalized.slice(4, end).trim();
+function stringList(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string" && item.trim() !== "")
+    : [];
 }
 
-function extractYamlScalar(frontmatter: string, key: string): string | null {
-  const escaped = key.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
-  const match = new RegExp(String.raw`(?:^|\n)\s*${escaped}:\s*"?([^"\n]+)"?`, "u").exec(
-    frontmatter,
-  );
-  return match?.[1]?.trim() ?? null;
-}
-
-function extractYamlList(frontmatter: string, key: string): string[] {
-  const escaped = key.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
-  const flow = new RegExp(String.raw`(?:^|\n)\s*${escaped}:\s*\[([^\]\n]*)\]`, "u").exec(
-    frontmatter,
-  )?.[1];
-  if (flow !== undefined) {
-    return flow
-      .split(",")
-      .map((value) =>
-        value
-          .trim()
-          .replaceAll(/^["']|["']$/gu, "")
-          .trim(),
-      )
-      .filter(Boolean);
-  }
-  const block = new RegExp(String.raw`(?:^|\n)\s*${escaped}:\s*\n((?:\s+-\s*.+\n?)+)`, "u").exec(
-    frontmatter,
-  )?.[1];
-  if (!block) return [];
-  return block.split("\n").flatMap((line) => {
-    const value = /^\s*-\s*"?([^"\n]+)"?\s*$/u.exec(line)?.[1]?.trim();
-    return value ? [value] : [];
-  });
+function isChoice<T extends string>(value: unknown, choices: ReadonlySet<T>): value is T {
+  return typeof value === "string" && choices.has(value as T);
 }
 
 function normalizeObsidianTarget(value: string): string {
@@ -121,9 +93,10 @@ export async function buildWikiLinkCatalog(root: string): Promise<WikiLinkCatalo
   )) {
     const wikiTarget = rel.replace(/^context\/wiki\//u, "").replace(/\.md$/u, "");
     const text = await readFile(path.join(root, rel), "utf8");
-    const frontmatter = extractFrontmatter(text);
-    const title = frontmatter ? extractYamlScalar(frontmatter, "title") : null;
-    const aliases = frontmatter ? extractYamlList(frontmatter, "aliases") : [];
+    const frontmatter = parseWikiFrontmatter(rel, text);
+    const title =
+      typeof frontmatter.context?.title === "string" ? frontmatter.context.title.trim() : null;
+    const aliases = stringList(frontmatter.root?.aliases);
     registerWikiTarget(catalog, wikiTarget, wikiTarget);
     if (path.basename(wikiTarget) !== "index") {
       registerWikiTarget(catalog, path.basename(wikiTarget), wikiTarget);
@@ -166,21 +139,84 @@ function lintObsidianLinks(rel: string, text: string, catalog?: WikiLinkCatalog)
 
 export function lintWikiText(rel: string, text: string, catalog?: WikiLinkCatalog): string[] {
   const errors: string[] = [];
-  const frontmatter = extractFrontmatter(text);
-  if (!frontmatter) {
+  const parsed = parseWikiFrontmatter(rel, text);
+  if (!parsed.raw) {
     errors.push(`${rel}: missing YAML frontmatter`);
     return errors;
   }
+  if (parsed.errors.length > 0) return parsed.errors;
+  if (!parsed.root || !parsed.context) {
+    errors.push(`${rel}: missing agentplane_context mapping`);
+    return errors;
+  }
+
+  const ctx = parsed.context;
   for (const required of [
-    "agentplane_context:",
-    "schema_version:",
-    "artifact_type:",
-    "canonical_id:",
-    "modality:",
-    "epistemic_status:",
-    "source_refs:",
+    "schema_version",
+    "artifact_type",
+    "canonical_id",
+    "title",
+    "modality",
+    "epistemic_status",
+    "visibility",
+    "source_refs",
+    "claims",
+    "graph_refs",
+    "conflicts",
+    "updated_by",
   ]) {
-    if (!frontmatter.includes(required)) errors.push(`${rel}: missing ${required}`);
+    if (!(required in ctx)) errors.push(`${rel}: missing agentplane_context.${required}`);
+  }
+  for (const field of ["artifact_type", "canonical_id", "title", "visibility", "updated_by"]) {
+    if (typeof ctx[field] !== "string" || !ctx[field].trim()) {
+      errors.push(`${rel}: agentplane_context.${field} must be a non-empty string`);
+    }
+  }
+  if (ctx.schema_version !== 1) {
+    errors.push(`${rel}: agentplane_context.schema_version must be 1`);
+  }
+  if (!isChoice(ctx.modality, MODALITIES)) {
+    errors.push(
+      `${rel}: agentplane_context.modality must be one of: ${[...MODALITIES].join(", ")}`,
+    );
+  }
+  if (!isChoice(ctx.epistemic_status, STATUSES)) {
+    errors.push(
+      `${rel}: agentplane_context.epistemic_status must be one of: ${[...STATUSES].join(", ")}`,
+    );
+  }
+  for (const field of ["aliases", "tags"]) {
+    const value = parsed.root[field];
+    if (!Array.isArray(value) || value.some((item) => typeof item !== "string")) {
+      errors.push(`${rel}: ${field} must be an array of strings`);
+    }
+  }
+  for (const field of ["source_refs", "claims", "conflicts"]) {
+    if (!Array.isArray(ctx[field])) {
+      errors.push(`${rel}: agentplane_context.${field} must be an array`);
+    }
+  }
+  if (Array.isArray(ctx.source_refs)) {
+    for (const [index, sourceRef] of ctx.source_refs.entries()) {
+      if (
+        typeof sourceRef !== "string" &&
+        (!isRecord(sourceRef) || typeof sourceRef.path !== "string" || !sourceRef.path.trim())
+      ) {
+        errors.push(
+          `${rel}: agentplane_context.source_refs[${index}] must be a string or mapping with path`,
+        );
+      }
+    }
+  }
+  if (isRecord(ctx.graph_refs)) {
+    for (const field of ["entities", "edges"]) {
+      const value = ctx.graph_refs[field];
+      if (!Array.isArray(value) || value.some((item) => typeof item !== "string")) {
+        errors.push(`${rel}: agentplane_context.graph_refs.${field} must be an array of strings`);
+      }
+    }
+  } else {
+    errors.push(`${rel}: agentplane_context.graph_refs must be a mapping`);
   }
   if (!/\[[^\]]+\]\([^)]+\)/u.test(text) && !text.includes("no-source:")) {
     errors.push(`${rel}: missing markdown source/cross-link or explicit no-source marker`);

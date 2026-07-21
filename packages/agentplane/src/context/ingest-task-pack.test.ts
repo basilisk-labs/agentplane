@@ -168,6 +168,8 @@ describe("context ingest task pack", () => {
         ".agentplane/context/derived/wiki/link-index.jsonl",
         ".agentplane/context/derived/wiki/orphan-report.jsonl",
         ".agentplane/context/derived/reports/evaluator.jsonl",
+        "context/wiki/reports/topology.md",
+        "context/wiki/reports/coverage.md",
         "context/wiki/reports/conflicts.md",
         "context/wiki/reports/open-questions.md",
         "context/wiki/reports/evaluator-review.md",
