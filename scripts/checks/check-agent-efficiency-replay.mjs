@@ -14,7 +14,9 @@ import {
   assertFrozenReplayBaseline,
   buildReplayBaseline,
   createReplayHarnessManifest,
+  readReplayEvidenceRecords,
   readReplayEnvelopeRecords,
+  replayDriverIdentityFromEnvelopeRecords,
   replayBaselineBytes,
 } from "../lib/agent-efficiency-replay.mjs";
 import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
@@ -34,6 +36,12 @@ const DEFAULT_SOURCE_DIRECTORY = path.join(
   "bench",
   "agent-efficiency-replay-envelopes",
 );
+const DEFAULT_EVIDENCE_DIRECTORY = path.join(
+  repoRoot,
+  "scripts",
+  "bench",
+  "agent-efficiency-replay-evidence",
+);
 const DEFAULT_BASELINE_PATH = path.join(
   repoRoot,
   "scripts",
@@ -51,6 +59,7 @@ function helpText() {
     "Options:",
     "  --registry <path>    RF-04 fixture registry.",
     "  --source-dir <path>  Canonical replay envelopes.",
+    "  --evidence-dir <path> Canonical sanitized evidence bundles.",
     "  --baseline <path>    Frozen replay baseline.",
     `  --runs <count>       Runs per scenario. Minimum/default: ${MINIMUM_REPLAY_RUNS}`,
     "  --help               Show this help text.",
@@ -59,7 +68,7 @@ function helpText() {
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["registry", "source-dir", "baseline", "runs"],
+    valueFlags: ["registry", "source-dir", "evidence-dir", "baseline", "runs"],
     booleanFlags: ["help"],
     aliases: { h: "help" },
   });
@@ -68,6 +77,7 @@ function parseArgs(argv) {
   }
   return {
     baselinePath: path.resolve(flags.baseline ?? DEFAULT_BASELINE_PATH),
+    evidenceDirectory: path.resolve(flags["evidence-dir"] ?? DEFAULT_EVIDENCE_DIRECTORY),
     help: flags.help === true,
     registryPath: path.resolve(flags.registry ?? DEFAULT_REGISTRY_PATH),
     runs: Number.parseInt(flags.runs ?? String(MINIMUM_REPLAY_RUNS), 10),
@@ -121,18 +131,25 @@ export function checkAgentEfficiencyReplay(options) {
   assertAnchorAvailable();
   assertInsideRepository(options.registryPath, "RF-04 fixture registry");
   assertInsideRepository(options.sourceDirectory, "replay source directory");
+  assertInsideRepository(options.evidenceDirectory, "replay evidence directory");
   assertInsideRepository(options.baselinePath, "replay baseline");
   const registry = readFixtureRegistry(options.registryPath, { historicalBaseline: true });
-  const harnessManifest = createReplayHarnessManifest(repoRoot);
   const records = readReplayEnvelopeRecords(repoRoot, options.sourceDirectory);
+  const evidenceRecords = readReplayEvidenceRecords(repoRoot, options.evidenceDirectory);
+  const driverIdentity = replayDriverIdentityFromEnvelopeRecords(repoRoot, records);
+  const harnessManifest = createReplayHarnessManifest(repoRoot, driverIdentity);
   const first = buildReplayBaseline({
+    driverIdentity,
     envelopeRecords: records,
+    evidenceRecords,
     harnessManifest,
     registry,
     runs: options.runs,
   });
   const second = buildReplayBaseline({
+    driverIdentity,
     envelopeRecords: records,
+    evidenceRecords,
     harnessManifest,
     registry,
     runs: options.runs,
