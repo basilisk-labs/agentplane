@@ -1,10 +1,10 @@
 ---
 id: "202607221846-ZAENM6"
 title: "Add trust-boundary architecture ratchets"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,9 +25,9 @@ verify:
   - "bun run guards:check"
   - "bun run test:critical"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-22T21:26:45.488Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -36,11 +36,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: implement trust-boundary architecture ratchets from the approved alpha.1 plan."
+events:
+  -
+    type: "status"
+    at: "2026-07-22T21:28:08.834Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: implement trust-boundary architecture ratchets from the approved alpha.1 plan."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:46:40.254Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-22T21:28:08.834Z"
+doc_updated_by: "CODER"
 description: "RF-27a: baseline and prohibit new automatic semantic verdicts, agent-writable observed fields, implicit danger sandboxes, untyped durable boundaries, shell-string orchestration, and duplicate runner task representations."
 sections:
   Summary: |-
