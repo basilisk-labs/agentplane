@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607211645-TQ70WD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T11:11:29.723Z",
+  "verdict": "pass",
+  "summary": "Oversized regression suite split without reducing coverage.",
+  "evaluated_sha": "2e697aa67d55833146023d216b6d3267d36c2a54",
+  "blueprint_digest": "230c818d37ab56b7e97f3c6e57c02a387ebf20b89a707c0c3449544dfdae11ef",
+  "findings": [
+    "Raw-deletion resilience remains covered in a focused file; targeted tests and hotspot baseline pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607211645-TQ70WD/README.md",
+    "packages/agentplane/src/commands/context/release-readiness.raw-deletion.test.ts",
+    "2 test files, 22 tests passed",
+    "oversized test baseline: pass"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

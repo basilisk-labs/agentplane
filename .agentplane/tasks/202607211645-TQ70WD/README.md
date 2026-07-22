@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -28,22 +28,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-22T11:05:29.024Z"
+  updated_at: "2026-07-22T11:11:29.723Z"
   updated_by: "EVALUATOR"
-  note: "Hosted format failure resolved without semantic changes."
-  evaluated_sha: "39ccf842ab17a1ff637a55f625a46c691676e04f"
+  note: "Oversized regression suite split without reducing coverage."
+  evaluated_sha: "2e697aa67d55833146023d216b6d3267d36c2a54"
   blueprint_digest: "230c818d37ab56b7e97f3c6e57c02a387ebf20b89a707c0c3449544dfdae11ef"
   evidence_refs:
     - ".agentplane/tasks/202607211645-TQ70WD/README.md"
-    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260722-110529024-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260722-110529024-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260722-110529024-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260722-111129723-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260722-111129723-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260722-111129723-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607211645-TQ70WD/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/assets/policy/incidents.md"
-    - "prettier check: pass"
-    - "CLI docs freshness: pass"
+    - "packages/agentplane/src/commands/context/release-readiness.raw-deletion.test.ts"
+    - "2 test files, 22 tests passed"
+    - "oversized test baseline: pass"
   findings:
-    - "Promoted incident asset now matches Prettier; CLI docs freshness and focused tests remain green."
+    - "Raw-deletion resilience remains covered in a focused file; targeted tests and hotspot baseline pass."
 commit:
   hash: "28d61bee90050bf2869313d497922f3cfb5fd738"
   message: "✅ TQ70WD task: record verified context lifecycle"
