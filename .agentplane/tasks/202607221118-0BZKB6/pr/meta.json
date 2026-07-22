@@ -5,9 +5,18 @@
   "diffstat_sha256": "sha256:f8902d9df7fc5ec3c9ad74cdce1e9c4626ed62b5feb56300675ea822f9cc3bc4",
   "last_verified_at": "2026-07-22T12:27:07.231Z",
   "last_verified_diffstat_sha256": "sha256:f8902d9df7fc5ec3c9ad74cdce1e9c4626ed62b5feb56300675ea822f9cc3bc4",
+  "pr_number": 4591,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4591",
+  "pre_merge_closure": {
+    "basis_commit": "4f6e73b99146dce7ee05d3c1924700dc98650b22",
+    "branch": "task/202607221118-0BZKB6/compile-atomic-linked-wiki-during-context-assimi",
+    "recorded_at": "2026-07-22T12:41:46.229Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607221118-0BZKB6",
-  "updated_at": "2026-07-22T11:19:23.196Z",
+  "updated_at": "2026-07-22T12:41:46.571Z",
   "verify": {
     "status": "pass"
   }

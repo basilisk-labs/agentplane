@@ -6,7 +6,7 @@ Created: 2026-07-22T11:19:23.196Z
 
 - Task: `202607221118-0BZKB6`
 - Title: Compile atomic linked wiki during context assimilation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221118-0BZKB6/compile-atomic-linked-wiki-during-context-assimi`
 - Canonical task record: `.agentplane/tasks/202607221118-0BZKB6/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-07-22T11:19:23.196Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-22T11:19:23.196Z
+- Updated: 2026-07-22T12:41:46.571Z
 - Branch: task/202607221118-0BZKB6/compile-atomic-linked-wiki-during-context-assimi
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

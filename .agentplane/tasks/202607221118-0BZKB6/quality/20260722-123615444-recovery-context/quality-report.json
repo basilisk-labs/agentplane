@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221118-0BZKB6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T12:36:15.444Z",
+  "verdict": "pass",
+  "summary": "Quality review passed for published PR snapshot.",
+  "evaluated_sha": "4f6e73b99146dce7ee05d3c1924700dc98650b22",
+  "blueprint_digest": "dff6a0df0d14b136f572165d92f43cfd73b7a6276d969d275735147244bdbcc1",
+  "findings": [
+    "No blocking findings; verified implementation unchanged by PR metadata refresh."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221118-0BZKB6/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
