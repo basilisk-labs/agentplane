@@ -77,8 +77,8 @@ function buildIngestMetadata(
     `Owner: CURATOR; prompt: ${promptRef}; blueprint: ${blueprintId}.`,
     ...deprecatedModeNote(workspaceMode),
     "",
-    "Read the task-bound `context-pack.md`, `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `extraction-contract.json`, and `expected-artifacts.json` before mutation.",
-    "Execute reconciliation -> SGR extraction -> atomic formal+wiki compilation -> coverage/reports -> verification. Raw sources are read-only; unresolved identity or conflict must remain explicit.",
+    "Read the task-bound `context-pack.md`, `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json` before mutation.",
+    "Execute semantic entity reconciliation -> SGR extraction -> atomic formal+wiki compilation -> coverage/reports -> verification. CURATOR owns every identity decision; deterministic code only prepares evidence, validates the decision record, and applies canonical identifiers. Raw sources are read-only; unresolved identity or conflict must remain explicit.",
   ].join("\n");
   return {
     title,
@@ -94,6 +94,31 @@ function buildIngestMetadata(
       "agentplane acr generate <created-task-id> --write",
       "agentplane acr check <created-task-id>",
     ],
+  };
+}
+
+function buildContextTaskDocSections(): NonNullable<TaskNewParsed["taskDocSections"]> {
+  return {
+    Plan: [
+      "1. Read every task-bound input and lock the selected source/canonical baseline before writing.",
+      "2. Let CURATOR reconcile each entity-bearing term against the complete canonical catalog and record evidence-bearing same_as, alias_of, distinct_entity, possibly_same_as, or new_entity_proposal decisions.",
+      "3. Classify source spans and produce one schema-valid SGR extraction containing semantic decisions, atomic claims, graph relations, topology/page decisions, and coverage.",
+      "4. Apply the extraction atomically with wiki synthesis; review preserved human prose, canonical identifiers, links, aliases, conflicts, and open questions.",
+      "5. Refresh reports/indexes, prove curated-only retrieval and raw-deletion resilience, run evaluator and task verification, and record residual uncertainty.",
+    ].join("\n"),
+    "Verify Steps": [
+      "1. Inspect `context-pack.md`, `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json`. Expected: inputs are task-bound, complete, and hashes/counts agree with the selected source set and canonical layer.",
+      "2. Validate the SGR extraction before apply. Expected: every entity-bearing term has exactly one supported semantic resolution with candidates checked, comparison dimensions, evidence for and against, rationale, and explicit unresolved questions where needed; same_as/alias_of reuse an existing canonical ID and add no duplicate graph entity.",
+      "3. Run `agentplane context extraction apply <sgr-json> --task-id <task-id> --synthesize-wiki`. Expected: formal and Wiki artifacts commit atomically and stay within allowed_outputs.",
+      "4. Run `agentplane context reindex --include-raw`, `agentplane context wiki report context/wiki`, `agentplane context wiki index context/wiki`, `agentplane context wiki lint context/wiki`, and `agentplane context graph validate`. Expected: indexes, topology, links, entity references, and reports are valid.",
+      '5. Run `agentplane context verify-task <task-id>` and a task-specific `agentplane context search "<smoke-query>" --format json`. Expected: task contract passes and exact source terminology retrieves the canonical entity/page.',
+      "6. Reindex without relying on raw source content and repeat the smoke search. Expected: significant meaning and canonical identity remain retrievable; private content does not leak.",
+      "7. Run the declared evaluator command, `agentplane context finalize-task <task-id>`, `agentplane acr generate <task-id> --write`, and `agentplane acr check <task-id>`. Expected: evaluator evidence covers semantic reconciliation, topology, provenance, coverage, uncertainty, and raw-deletion resilience; closure artifacts pass.",
+    ].join("\n"),
+    "Rollback Plan":
+      "Revert only this task's context and task-artifact commit, restore the previous canonical/derived files, reindex, and rerun the smoke search. Never reverse an accepted semantic merge by inventing a new identity; restore the prior evidence-backed resolution or record a new CURATOR correction task.",
+    Findings:
+      "Semantic identity is agent-owned. Deterministic AgentPlane surfaces candidate evidence, validates the decision record, and applies canonical identifiers; it must not infer equivalence from IDs, spelling, search rank, or heuristics.",
   };
 }
 
@@ -122,6 +147,7 @@ export function createTaskNewParsed(
     ".agentplane/tasks/${taskId}/context-pack.md",
     ".agentplane/tasks/${taskId}/extraction-contract.json",
     ".agentplane/tasks/${taskId}/canonical-snapshot.json",
+    ".agentplane/tasks/${taskId}/canonical-entity-catalog.json",
     ".agentplane/tasks/${taskId}/source-set.lock.json",
     ".agentplane/tasks/${taskId}/source-spans.skeleton.jsonl",
     ".agentplane/tasks/${taskId}/expected-artifacts.json",
@@ -135,7 +161,7 @@ export function createTaskNewParsed(
     description: metadata.description,
     owner: "CURATOR",
     priority: "med",
-    tags: ["context", "assimilation"],
+    tags: ["meta", "context", "assimilation"],
     taskKind: "context",
     mutationScope: "context",
     blueprintRequest: blueprintId,
@@ -162,6 +188,8 @@ export function createTaskNewParsed(
           required_gates: [
             "source_set_locked",
             "prewrite_context_search",
+            "semantic_entity_reconciliation_recorded",
+            "semantic_resolution_evidence_validated",
             "entity_relation_first_extraction",
             "source_shaped_wiki_topology_recorded",
             "topology_page_family_evidence_recorded",
@@ -184,6 +212,10 @@ export function createTaskNewParsed(
             "empty_source_set",
             "pipeline_order_skipped",
             "missing_source_refs",
+            "semantic_resolution_missing",
+            "semantic_merge_without_comparative_evidence",
+            "semantic_merge_target_missing",
+            "forced_semantic_merge_under_uncertainty",
             "missing_line_refs",
             "fixed_starter_scaffold_used_without_source_rationale",
             "missing_source_shaped_topology_decision",
@@ -246,6 +278,7 @@ export function createTaskNewParsed(
     },
     dependsOn: [],
     verify: metadata.verify,
+    taskDocSections: buildContextTaskDocSections(),
     showBlueprint: false,
     allowDuplicate: true,
     riskFlags: [],

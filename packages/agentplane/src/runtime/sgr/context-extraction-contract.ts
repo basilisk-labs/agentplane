@@ -42,8 +42,15 @@ export const CONTEXT_EXTRACTION_SGR_EXAMPLE: ContextExtractionSgrResult = {
           {
             entity_id: "entity.existing-example",
             reason: "The existing candidate has a different source-backed scope.",
+            evidence_for: ["Both are reusable concepts."],
+            evidence_against: ["The existing candidate describes a different bounded scope."],
           },
         ],
+        comparison_dimensions: ["kind", "scope", "defining_properties", "graph_neighborhood"],
+        evidence_for: ["The source consistently names one reusable concept."],
+        evidence_against: ["No catalog candidate shares its defining scope."],
+        decision_rationale:
+          "The source concept is distinct from the checked canonical candidate and needs a new canonical identity.",
         why_not_existing: "No existing candidate represents this source-backed concept.",
       },
     },
@@ -127,7 +134,7 @@ export const CONTEXT_EXTRACTION_SGR_EXAMPLE: ContextExtractionSgrResult = {
 };
 
 export const CONTEXT_EXTRACTION_CONTRACT = {
-  version: 1,
+  version: 2,
   sgr_schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
   kind: "context_extraction",
   apply_command: "agentplane context extraction apply <sgr-json> --task-id <task-id>",
@@ -135,7 +142,15 @@ export const CONTEXT_EXTRACTION_CONTRACT = {
   typed_payloads: {
     graph_entity: ["entity.id", "entity.kind", "entity.label"],
     graph_edge: ["edge.from", "edge.to", "edge.relation"],
-    entity_resolution: ["entity_resolution.source_term", "entity_resolution.resolution"],
+    entity_resolution: [
+      "entity_resolution.source_term",
+      "entity_resolution.resolution",
+      "entity_resolution.candidate_entities_checked[]",
+      "entity_resolution.comparison_dimensions[]",
+      "entity_resolution.evidence_for[]",
+      "entity_resolution.evidence_against[]",
+      "entity_resolution.decision_rationale",
+    ],
     page_creation: [
       "span_refs[]",
       "page_creation.path",
@@ -160,11 +175,31 @@ export const CONTEXT_EXTRACTION_CONTRACT = {
     {
       when: {
         field: "entity_resolution.resolution",
+        equals: "same_as|alias_of",
+      },
+      required: [
+        "entity_resolution.canonical_entity_id",
+        "entity_resolution.candidate_entities_checked[].entity_id=canonical_entity_id",
+        "entity_resolution.evidence_for[]",
+      ],
+    },
+    {
+      when: {
+        field: "entity_resolution.resolution",
+        equals: "possibly_same_as",
+      },
+      required: [
+        "entity_resolution.candidate_entities_checked[]",
+        "entity_resolution.unresolved_questions[]",
+      ],
+    },
+    {
+      when: {
+        field: "entity_resolution.resolution",
         equals: "new_entity_proposal",
       },
       required: [
         "entity_resolution.proposed_entity_id",
-        "entity_resolution.candidate_entities_checked[].entity_id",
         "entity_resolution.why_not_existing|why_not_alias_of_existing",
       ],
     },

@@ -16,6 +16,10 @@ agentplane context check
 
 Read matching wiki pages and source refs before creating new terms, pages, facts, or graph edges.
 
+For a generated context-assimilation task, first read its `context-pack.md`,
+`source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`,
+`canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json`.
+
 ## When writing context
 
 - Keep claims source-backed.
@@ -24,6 +28,24 @@ Read matching wiki pages and source refs before creating new terms, pages, facts
 - Keep ambiguous identities as conflicts or open questions.
 - Use Markdown links for source refs and wiki links where they help later readers.
 - Do not copy secrets or private credentials into context.
+
+## Semantic entity reconciliation
+
+Entity identity is an agent judgment, not a stable-ID or string-deduplication operation. For every
+entity-bearing source term:
+
+1. Inspect plausible candidates in the complete canonical entity catalog, then confirm them with
+   context search, graph neighbors, Wiki use, and source refs.
+2. Compare kind, scope, validity period, ownership, defining properties, aliases, provenance, and
+   graph neighborhood.
+3. Record `same_as`, `alias_of`, `distinct_entity`, `possibly_same_as`, or
+   `new_entity_proposal` with candidates checked, comparison dimensions, evidence for and against,
+   rationale, and unresolved questions.
+4. Reuse `canonical_entity_id` for `same_as` and `alias_of`; do not create a second graph entity.
+5. Keep both identities when decisive evidence is missing. Similar spelling is not proof.
+
+Deterministic Agentplane code prepares the catalog, validates the decision record, and applies the
+chosen identifier. It must not choose the semantic resolution itself.
 
 ## Page granularity
 

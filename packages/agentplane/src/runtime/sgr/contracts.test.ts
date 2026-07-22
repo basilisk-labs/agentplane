@@ -14,6 +14,32 @@ const sourceRef = {
   sha256: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 };
 
+function resolutionResult(entityResolution: Record<string, unknown>) {
+  return {
+    schema_version: CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
+    kind: "context_extraction",
+    reasoning: [{ label: "resolve", summary: "Compare source meaning with canonical entities." }],
+    source_refs: [sourceRef],
+    extracted_items: [
+      {
+        id: "resolution.term",
+        kind: "entity_resolution",
+        summary: "Semantic identity decision.",
+        source_refs: [sourceRef],
+        status: "accepted",
+        entity_resolution: entityResolution,
+      },
+    ],
+  };
+}
+
+const semanticEvidence = {
+  comparison_dimensions: ["kind", "scope", "validity", "defining_properties"],
+  evidence_for: ["The source-backed scope matches."],
+  evidence_against: [],
+  decision_rationale: "The compared identity dimensions support this decision.",
+};
+
 describe("SGR reliability contracts", () => {
   it("keeps the generated extraction contract example schema-complete", () => {
     const result = validateContextExtractionSgrResult(CONTEXT_EXTRACTION_SGR_EXAMPLE);
@@ -126,6 +152,74 @@ describe("SGR reliability contracts", () => {
     ).toThrow("coverage.status");
   });
 
+  it.each([
+    {
+      resolution: "same_as",
+      canonical_entity_id: "entity.existing",
+      candidate_entities_checked: [
+        { entity_id: "entity.existing", reason: "All defining dimensions match." },
+      ],
+      ...semanticEvidence,
+    },
+    {
+      resolution: "alias_of",
+      canonical_entity_id: "entity.existing",
+      candidate_entities_checked: [
+        { entity_id: "entity.existing", reason: "Only the surface label differs." },
+      ],
+      ...semanticEvidence,
+    },
+    {
+      resolution: "distinct_entity",
+      proposed_entity_id: "entity.distinct",
+      candidate_entities_checked: [
+        { entity_id: "entity.existing", reason: "The defining scope conflicts." },
+      ],
+      ...semanticEvidence,
+    },
+    {
+      resolution: "possibly_same_as",
+      candidate_entities_checked: [
+        { entity_id: "entity.existing", reason: "The available scope is incomplete." },
+      ],
+      unresolved_questions: ["Does the source refer to the same validity period?"],
+      ...semanticEvidence,
+    },
+    {
+      resolution: "new_entity_proposal",
+      proposed_entity_id: "entity.new",
+      candidate_entities_checked: [],
+      why_not_existing: "The canonical catalog contains no plausible candidates.",
+      ...semanticEvidence,
+    },
+  ])("accepts evidence-bearing $resolution semantic decisions", (entityResolution) => {
+    const result = validateContextExtractionSgrResult(
+      resolutionResult({ source_term: "Source term", ...entityResolution }),
+    );
+    expect(result.extracted_items[0]?.entity_resolution?.resolution).toBe(
+      entityResolution.resolution,
+    );
+  });
+
+  it("rejects same-entity decisions without comparative evidence", () => {
+    expect(() =>
+      validateContextExtractionSgrResult(
+        resolutionResult({
+          source_term: "Source term",
+          resolution: "same_as",
+          canonical_entity_id: "entity.existing",
+          candidate_entities_checked: [
+            { entity_id: "entity.existing", reason: "Candidate selected without evidence." },
+          ],
+          comparison_dimensions: ["label"],
+          evidence_for: [],
+          evidence_against: [],
+          decision_rationale: "The labels are similar.",
+        }),
+      ),
+    ).toThrow("evidence_for");
+  });
+
   it("accepts legacy v1 context extraction input and normalizes it to the current contract", () => {
     const result = validateContextExtractionSgrResult({
       schema_version: 1,
@@ -182,6 +276,16 @@ describe("SGR reliability contracts", () => {
             source_term: "context writer",
             resolution: "alias_of",
             canonical_entity_id: "entity.context_writer",
+            candidate_entities_checked: [
+              {
+                entity_id: "entity.context_writer",
+                reason: "The canonical entity has the same workflow scope and behavior.",
+              },
+            ],
+            comparison_dimensions: ["kind", "scope", "defining_properties"],
+            evidence_for: ["Both terms identify the same context-writing workflow."],
+            evidence_against: [],
+            decision_rationale: "The source wording is an alias of the canonical workflow entity.",
           },
         },
         {

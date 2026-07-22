@@ -195,6 +195,16 @@ describe("context extraction apply", () => {
     const root = await tempRoot();
     await write(
       root,
+      ".agentplane/context/derived/graph/entities.jsonl",
+      `${JSON.stringify({
+        id: "entity.context_writer",
+        kind: "workflow",
+        label: "Context writer",
+        status: "active",
+      })}\n`,
+    );
+    await write(
+      root,
       "context/extraction-v2.json",
       JSON.stringify({
         schema_version: 2,
@@ -230,6 +240,16 @@ describe("context extraction apply", () => {
               source_term: "context writer",
               resolution: "alias_of",
               canonical_entity_id: "entity.context_writer",
+              candidate_entities_checked: [
+                {
+                  entity_id: "entity.context_writer",
+                  reason: "The term has the same workflow scope and behavior.",
+                },
+              ],
+              comparison_dimensions: ["kind", "scope", "defining_properties"],
+              evidence_for: ["Both terms denote the context writer workflow."],
+              evidence_against: [],
+              decision_rationale: "The source-local wording is a canonical entity alias.",
             },
           },
           {
@@ -470,6 +490,16 @@ describe("context extraction apply", () => {
               source_term: "alpha",
               resolution: "alias_of",
               canonical_entity_id: "entity.a",
+              candidate_entities_checked: [
+                {
+                  entity_id: "entity.a",
+                  reason: "The source term may denote entity A.",
+                },
+              ],
+              comparison_dimensions: ["kind", "scope"],
+              evidence_for: ["The term and entity share the same source scope."],
+              evidence_against: [],
+              decision_rationale: "Proposed alias mapping pending stronger confidence.",
             },
           },
         ],

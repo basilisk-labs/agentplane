@@ -49,6 +49,7 @@ export type TaskNewParsed = {
   extensions?: TaskData["extensions"];
   dependsOn: string[];
   verify: string[];
+  taskDocSections?: Partial<Record<"Plan" | "Verify Steps" | "Rollback Plan" | "Findings", string>>;
   showBlueprint: boolean;
   allowDuplicate: boolean;
 };
@@ -149,6 +150,7 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
     riskFlags,
     blueprintRequest,
     ...(p.extensions ? { extensions: structuredClone(p.extensions) } : {}),
+    ...(p.taskDocSections ? { taskDocSections: structuredClone(p.taskDocSections) } : {}),
     dependsOn,
     verify,
   };
@@ -193,6 +195,11 @@ export async function runTaskNewParsed(opts: {
     const executionContext = await makeReadOnlyExecutionContext(ctx);
     const createdAt = nowIso();
     let taskDoc = defaultTaskDocV3({ title: p.title, description: p.description });
+    for (const [section, text] of Object.entries(p.taskDocSections ?? {})) {
+      if (typeof text === "string" && text.trim()) {
+        taskDoc = setMarkdownSection(taskDoc, section, text.trim());
+      }
+    }
 
     const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
     const primary = resolvePrimaryTag(p.tags, ctx);
@@ -210,7 +217,7 @@ export async function runTaskNewParsed(opts: {
       taskId,
       dependsOn: p.dependsOn,
     });
-    if (requiresVerifySteps) {
+    if (requiresVerifySteps && !p.taskDocSections?.["Verify Steps"]?.trim()) {
       taskDoc = setMarkdownSection(
         taskDoc,
         "Verify Steps",

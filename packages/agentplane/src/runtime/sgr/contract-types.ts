@@ -103,15 +103,29 @@ export type ContextExtractionConfidenceVector = {
 export type ContextExtractionCandidateEntity = {
   entity_id: string;
   label?: string;
-  reason?: string;
+  reason: string;
+  evidence_for?: string[];
+  evidence_against?: string[];
 };
+
+export type ContextExtractionEntityResolutionDecision =
+  | "same_as"
+  | "alias_of"
+  | "distinct_entity"
+  | "possibly_same_as"
+  | "new_entity_proposal";
 
 export type ContextExtractionEntityResolutionRow = Record<string, unknown> & {
   source_term: string;
-  resolution: string;
+  resolution: ContextExtractionEntityResolutionDecision;
   canonical_entity_id?: string;
   proposed_entity_id?: string;
-  candidate_entities_checked?: ContextExtractionCandidateEntity[];
+  candidate_entities_checked: ContextExtractionCandidateEntity[];
+  comparison_dimensions: string[];
+  evidence_for: string[];
+  evidence_against: string[];
+  decision_rationale: string;
+  unresolved_questions?: string[];
   why_not_existing?: string;
   why_not_alias_of_existing?: string;
 };

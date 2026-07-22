@@ -19,16 +19,23 @@ The mode does not force every project into the same folder taxonomy. The require
 validators stay fixed, while the wiki topology remains source-shaped and must be justified by source
 evidence.
 
+Agentplane does not decide semantic identity in deterministic CLI code. Every ingest creates a
+formal CURATOR task with a source lock, addressable spans, a complete canonical entity catalog,
+the extraction schema, stop rules, expected artifacts, and verification commands. The CURATOR
+compares meaning and records the decision; Agentplane validates and applies the selected canonical
+identifier.
+
 ## Ingestion flow
 
 ```mermaid
 flowchart TD
   A[Source set] --> B[Source identity and hashes]
   B --> C[Pre-write search and reconciliation]
-  C --> D[Entity and relation first extraction]
-  D --> E[Source-shaped topology decision]
-  E --> F[Wiki, facts, graph, glossary, coverage]
-  F --> G[Evaluator review and ACR]
+  C --> D[CURATOR semantic entity reconciliation]
+  D --> E[Entity and relation first extraction]
+  E --> F[Source-shaped topology decision]
+  F --> G[Wiki, facts, graph, glossary, coverage]
+  G --> H[Evaluator review and ACR]
 ```
 
 ## Default
@@ -94,6 +101,8 @@ flowchart LR
 - Do not put secrets or private credentials into context.
 - Do not create a page family before the source evidence justifies that topology.
 - Do not normalize ambiguous names into one entity; keep aliases, conflicts, or open questions.
+- Do not treat equal stable IDs, similar spelling, or lexical search rank as semantic proof. Compare
+  kind, scope, validity, ownership, defining properties, provenance, and graph neighborhood.
 - Do not delete raw sources until coverage and raw-deletion resilience have been reviewed.
 
 ## Agent handoff
@@ -101,6 +110,7 @@ flowchart LR
 Point the agent at [Agent guide](agent-guide) and require:
 
 - source registry with hashes;
+- complete canonical entity catalog and evidence-bearing resolution rows;
 - topology decision;
 - glossary and alias review;
 - line-addressed provenance;
