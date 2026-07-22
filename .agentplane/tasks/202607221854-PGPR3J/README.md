@@ -4,13 +4,10 @@ title: "Complete typed use-case and CLI rendering boundaries"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 10
 origin:
   system: "manual"
 depends_on:
-  - "202607221850-8HBF4J"
-  - "202607221850-R7WS01"
-  - "202607221852-71SCSW"
   - "202607221854-SDPFN0"
 tags:
   - "cli"
@@ -44,35 +41,35 @@ commit: null
 comments: []
 events: []
 doc_version: 3
-doc_updated_at: "2026-07-22T18:54:23.295Z"
+doc_updated_at: "2026-07-22T19:12:11.698Z"
 doc_updated_by: "PLANNER"
-description: "RF-25e: finish migrating remaining operations to typed in-process results and centralized human/plain/JSON renderers so supervisors never execute AgentPlane subprocesses or parse rendered output."
+description: "RF-25e fan-in: integrate the typed-result/rendering work proven by every command-family slice, remove remaining internal subprocess/stdout orchestration, and validate centralized output/error/exit compatibility."
 sections:
   Summary: |-
     Complete typed use-case and CLI rendering boundaries
 
-    RF-25e: finish migrating remaining operations to typed in-process results and centralized human/plain/JSON renderers so supervisors never execute AgentPlane subprocesses or parse rendered output.
+    Integrate the typed-result and renderer contracts from all command-family vertical slices, remove the last internal subprocess/stdout orchestration paths, and validate centralized human/plain/JSON/error compatibility.
   Scope: |-
-    - In scope: remaining task/lifecycle/context/evaluator/runner/Hermes/release use cases, result/error unions, output/exit renderers, stdio isolation, compatibility snapshots, and removal of internal subprocess/stdout parsing.
-    - Out of scope: eliminating CLI rendering for human users.
+    - In scope: integrate typed result/error and renderer contracts from all five command-family slices, resolve only shared renderer/casing/exit conflicts, remove remaining internal AgentPlane subprocess or stdout parsing, and run repository-wide compatibility snapshots.
+    - Out of scope: performing family-specific use-case migrations inside this fan-in task.
   Plan: |-
-    1. Inventory remaining business logic coupled to stdout/stderr/process exit.
-    2. Extract typed results/errors and keep rendering in the CLI adapter.
-    3. Replace internal subprocess or rendered-output parsing with in-process ports.
-    4. Centralize casing, error, guidance, and exit mapping.
-    5. Ratchet forbidden stdout orchestration and run compatibility snapshots.
+    1. Confirm CommandSession fan-in and all five vertical slices are DONE.
+    2. Integrate shared result/error unions, casing transforms, renderers, and exit mappings.
+    3. Remove the final internal subprocess/stdout parsing paths and ratchet them in architecture guards.
+    4. Run repository-wide human/plain/JSON/error compatibility snapshots.
+    5. Treat any remaining family-local migration as rework for its owning slice.
   Verify Steps: |-
-    1. Trace all supervisor operations. Expected: no AgentPlane subprocess invocation, stdout capture, or shell-string parse remains.
-    2. Invoke each migrated use case directly and render human/plain/JSON outputs. Expected: typed results are reusable and snapshots match approved contracts.
-    3. Exercise structured errors and remediation. Expected: one renderer maps them consistently to output and exit code.
-    4. Run critical tests, guards, contract CI, and typecheck.
+    1. Resolve dependency closure. Expected: all five vertical slices and CommandSession fan-in are DONE.
+    2. Trace every supervisor/internal operation. Expected: no AgentPlane subprocess, rendered shell command, or stdout parse remains.
+    3. Render representative results/errors through human, plain, and JSON modes. Expected: centralized casing, guidance, remediation, exit, and compatibility snapshots pass.
+    4. Run critical tests, guards, contract CI, typecheck, and a repository search for forbidden orchestration.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
-    - Revert one result/renderer vertical slice while preserving the shared typed contracts.
-    - Restore only explicit compatibility adapters; do not reintroduce untracked subprocess parsing.
-    - Re-run snapshots and supervisor parity tests.
+    - Revert the cross-family renderer integration while preserving independently merged typed use cases.
+    - Restore only centralized compatibility renderers, never internal subprocess/stdout parsing.
+    - Re-run family and repository-wide snapshots before retry.
   Findings: ""
 id_source: "generated"
 ---
@@ -80,27 +77,27 @@ id_source: "generated"
 
 Complete typed use-case and CLI rendering boundaries
 
-RF-25e: finish migrating remaining operations to typed in-process results and centralized human/plain/JSON renderers so supervisors never execute AgentPlane subprocesses or parse rendered output.
+Integrate the typed-result and renderer contracts from all command-family vertical slices, remove the last internal subprocess/stdout orchestration paths, and validate centralized human/plain/JSON/error compatibility.
 
 ## Scope
 
-- In scope: remaining task/lifecycle/context/evaluator/runner/Hermes/release use cases, result/error unions, output/exit renderers, stdio isolation, compatibility snapshots, and removal of internal subprocess/stdout parsing.
-- Out of scope: eliminating CLI rendering for human users.
+- In scope: integrate typed result/error and renderer contracts from all five command-family slices, resolve only shared renderer/casing/exit conflicts, remove remaining internal AgentPlane subprocess or stdout parsing, and run repository-wide compatibility snapshots.
+- Out of scope: performing family-specific use-case migrations inside this fan-in task.
 
 ## Plan
 
-1. Inventory remaining business logic coupled to stdout/stderr/process exit.
-2. Extract typed results/errors and keep rendering in the CLI adapter.
-3. Replace internal subprocess or rendered-output parsing with in-process ports.
-4. Centralize casing, error, guidance, and exit mapping.
-5. Ratchet forbidden stdout orchestration and run compatibility snapshots.
+1. Confirm CommandSession fan-in and all five vertical slices are DONE.
+2. Integrate shared result/error unions, casing transforms, renderers, and exit mappings.
+3. Remove the final internal subprocess/stdout parsing paths and ratchet them in architecture guards.
+4. Run repository-wide human/plain/JSON/error compatibility snapshots.
+5. Treat any remaining family-local migration as rework for its owning slice.
 
 ## Verify Steps
 
-1. Trace all supervisor operations. Expected: no AgentPlane subprocess invocation, stdout capture, or shell-string parse remains.
-2. Invoke each migrated use case directly and render human/plain/JSON outputs. Expected: typed results are reusable and snapshots match approved contracts.
-3. Exercise structured errors and remediation. Expected: one renderer maps them consistently to output and exit code.
-4. Run critical tests, guards, contract CI, and typecheck.
+1. Resolve dependency closure. Expected: all five vertical slices and CommandSession fan-in are DONE.
+2. Trace every supervisor/internal operation. Expected: no AgentPlane subprocess, rendered shell command, or stdout parse remains.
+3. Render representative results/errors through human, plain, and JSON modes. Expected: centralized casing, guidance, remediation, exit, and compatibility snapshots pass.
+4. Run critical tests, guards, contract CI, typecheck, and a repository search for forbidden orchestration.
 
 ## Verification
 
@@ -109,8 +106,8 @@ RF-25e: finish migrating remaining operations to typed in-process results and ce
 
 ## Rollback Plan
 
-- Revert one result/renderer vertical slice while preserving the shared typed contracts.
-- Restore only explicit compatibility adapters; do not reintroduce untracked subprocess parsing.
-- Re-run snapshots and supervisor parity tests.
+- Revert the cross-family renderer integration while preserving independently merged typed use cases.
+- Restore only centralized compatibility renderers, never internal subprocess/stdout parsing.
+- Re-run family and repository-wide snapshots before retry.
 
 ## Findings

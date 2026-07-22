@@ -8,9 +8,7 @@ revision: 5
 origin:
   system: "manual"
 depends_on:
-  - "202607221854-4FNZPG"
-  - "202607221854-K7799B"
-  - "202607221854-YMYYQ8"
+  - "202607221908-83Y4AF"
 tags:
   - "final"
   - "publish"

@@ -16,8 +16,15 @@ The graph now contains 43 implementation/release leaves covering RF-00 through R
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified 43 executable leaves plus the planning task: RF-00 through RF-27 coverage is complete,
+task-state and dependency integrity pass, roadmap/task Markdown is formatted, policy routing passes,
+and doctor has no new errors. Bun is unavailable locally, so the exact task-state script was run
+directly with Node; hosted PR verification must still exercise the Bun wrapper.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

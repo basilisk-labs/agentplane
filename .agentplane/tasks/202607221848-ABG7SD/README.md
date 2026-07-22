@@ -8,8 +8,7 @@ revision: 5
 origin:
   system: "manual"
 depends_on:
-  - "202607221846-SXJ75T"
-  - "202607221846-ZAENM6"
+  - "202607221907-DK2CJF"
 tags:
   - "cli"
   - "contract-drift"

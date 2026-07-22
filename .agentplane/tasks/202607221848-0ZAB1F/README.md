@@ -8,9 +8,7 @@ revision: 5
 origin:
   system: "manual"
 depends_on:
-  - "202607221846-4VB97J"
-  - "202607221846-9XC1H0"
-  - "202607221846-SXJ75T"
+  - "202607221907-DK2CJF"
 tags:
   - "fingerprint"
   - "milestone-alpha2"

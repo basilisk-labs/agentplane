@@ -8,10 +8,7 @@ revision: 5
 origin:
   system: "manual"
 depends_on:
-  - "202607221846-Y89CFB"
-  - "202607221848-VC4VVS"
-  - "202607221849-NWVCAG"
-  - "202607221852-01ACZ9"
+  - "202607221908-0JP0ZZ"
 tags:
   - "authority"
   - "milestone-rc1"

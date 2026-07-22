@@ -8,9 +8,7 @@ revision: 5
 origin:
   system: "manual"
 depends_on:
-  - "202607221846-4VB97J"
-  - "202607221848-ABG7SD"
-  - "202607221854-K7799B"
+  - "202607221908-PWFH5K"
 tags:
   - "migration"
   - "milestone-rc2"
