@@ -156,12 +156,11 @@ describe("context extraction writer", () => {
       source_term: "context writer",
       canonical_entity_id: "entity.context_writer",
     });
-    const graphEntities = (
-      await readFile(path.join(root, ".agentplane/context/derived/graph/entities.jsonl"), "utf8")
-    )
-      .trim()
-      .split("\n")
-      .filter(Boolean);
+    const graphEntitiesText = await readFile(
+      path.join(root, ".agentplane/context/derived/graph/entities.jsonl"),
+      "utf8",
+    );
+    const graphEntities = graphEntitiesText.trim().split("\n").filter(Boolean);
     expect(graphEntities).toHaveLength(1);
     expect(
       await readFile(path.join(root, ".agentplane/context/derived/ontology/aliases.jsonl"), "utf8"),

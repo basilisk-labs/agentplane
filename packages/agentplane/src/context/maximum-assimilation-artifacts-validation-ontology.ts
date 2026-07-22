@@ -128,22 +128,29 @@ export async function validateEntityResolution(root: string, errors: string[]): 
         errors.push(`${rel}#${id}: new_entity_proposal requires why_not_existing`);
       }
     }
-    if (resolution !== "canonical_entity") {
-      if (stringArray(row, "comparison_dimensions").length === 0) {
-        errors.push(`${rel}#${id}: semantic decision requires comparison_dimensions`);
+    switch (resolution) {
+      case "canonical_entity": {
+        break;
       }
-      if (!Array.isArray(row.evidence_for) || !Array.isArray(row.evidence_against)) {
-        errors.push(`${rel}#${id}: semantic decision requires evidence_for and evidence_against`);
-      }
-      if (!stringField(row, "decision_rationale")) {
-        errors.push(`${rel}#${id}: semantic decision requires decision_rationale`);
+      default: {
+        if (stringArray(row, "comparison_dimensions").length === 0) {
+          errors.push(`${rel}#${id}: semantic decision requires comparison_dimensions`);
+        }
+        const missingEvidenceArrays =
+          Array.isArray(row.evidence_for) === false ||
+          Array.isArray(row.evidence_against) === false;
+        if (missingEvidenceArrays) {
+          errors.push(`${rel}#${id}: semantic decision requires evidence_for and evidence_against`);
+        }
+        if (!stringField(row, "decision_rationale")) {
+          errors.push(`${rel}#${id}: semantic decision requires decision_rationale`);
+        }
+        break;
       }
     }
     const candidates = recordArray(row, "candidate_entities_checked");
     if (resolution === "same_as" || resolution === "alias_of") {
-      if (!canonicalEntityId) {
-        errors.push(`${rel}#${id}: ${resolution} requires canonical_entity_id`);
-      } else {
+      if (canonicalEntityId) {
         if (!graphEntityIds.has(canonicalEntityId)) {
           errors.push(`${rel}#${id}: canonical entity ${canonicalEntityId} does not exist`);
         }
@@ -154,6 +161,8 @@ export async function validateEntityResolution(root: string, errors: string[]): 
             `${rel}#${id}: ${resolution} must compare canonical_entity_id as a candidate`,
           );
         }
+      } else {
+        errors.push(`${rel}#${id}: ${resolution} requires canonical_entity_id`);
       }
       if (stringArray(row, "evidence_for").length === 0) {
         errors.push(`${rel}#${id}: ${resolution} requires positive identity evidence`);

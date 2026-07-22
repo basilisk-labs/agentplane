@@ -4,7 +4,7 @@ title: "Delegate semantic entity reconciliation to the context executor"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -30,30 +30,32 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-22T16:24:25.330Z"
+  updated_at: "2026-07-22T16:33:19.849Z"
   updated_by: "CODER"
-  note: "Verified current implementation HEAD 3f02dab0bdaf: focused 119/119, complete fast suite 2185/2185, typecheck, agent templates, routing, doctor, and temporary-project semantic reconciliation E2E passed."
+  note: "Verified current implementation: ci:local:fast passed, including lint, budgets, 370 files/2185 tests, five critical CLI E2E chunks, typecheck, routing, doctor, and the temporary-project semantic reconciliation E2E."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-22T16:25:48.450Z"
+  updated_at: "2026-07-22T16:33:31.970Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed for current implementation HEAD de4c6997c7d2."
-  evaluated_sha: "de4c6997c7d2733e06563be70437f663f4285da4"
+  note: "Quality review passed for implementation HEAD ab1d7e68c662 after the complete local CI lane."
+  evaluated_sha: "ab1d7e68c66289b2d767d0af734019587d419a14"
   blueprint_digest: "6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c"
   evidence_refs:
     - ".agentplane/tasks/202607221555-JSEZ5E/README.md"
-    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-162548450-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-162548450-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-162548450-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-163331970-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-163331970-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-163331970-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221555-JSEZ5E/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/context/ingest-task-pack.ts"
     - "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts"
     - "packages/agentplane/src/context/extraction-writer.ts"
     - "packages/agentplane/src/context/maximum-assimilation-artifacts-validation-ontology.test.ts"
-    - "test:fast 370 files 2185 tests passed"
+    - "ci:local:fast passed: 370 files 2185 tests plus 5 critical CLI E2E chunks"
+    - "manual-e2e:/tmp/agentplane-semantic-e2e2.pt2VHA task=202607221613-Q8B3XW entities=2 alias=Billing->entity.payments"
   findings:
-    - "CURATOR owns all semantic identity decisions; the CLI supplies a self-contained canonical catalog and enforces reproducible evidence without semantic heuristics."
+    - "CURATOR receives a self-contained canonical catalog, semantic comparison protocol, explicit uncertainty states, and task-specific acceptance criteria."
+    - "Deterministic AgentPlane code never infers semantic equivalence; it rejects missing targets or evidence and atomically applies the executor decision."
 commit: null
 comments:
   -
@@ -79,8 +81,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified current implementation HEAD 3f02dab0bdaf: focused 119/119, complete fast suite 2185/2185, typecheck, agent templates, routing, doctor, and temporary-project semantic reconciliation E2E passed."
+  -
+    type: "verify"
+    at: "2026-07-22T16:33:19.849Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified current implementation: ci:local:fast passed, including lint, budgets, 370 files/2185 tests, five critical CLI E2E chunks, typecheck, routing, doctor, and the temporary-project semantic reconciliation E2E."
 doc_version: 3
-doc_updated_at: "2026-07-22T16:24:25.451Z"
+doc_updated_at: "2026-07-22T16:33:20.082Z"
 doc_updated_by: "CODER"
 description: "Improve context assimilation so every generated CURATOR task contains a self-sufficient semantic entity-reconciliation brief, canonical entity catalog, explicit decision protocol, and machine-validated evidence contract. The executor must decide semantic identity; deterministic AgentPlane code may only prepare candidates, validate the decision, and apply the chosen canonical identifiers. Same-meaning terms must reuse canonical entities instead of creating stable-ID duplicates; ambiguous and distinct entities must remain explicit."
 sections:
@@ -189,6 +197,36 @@ sections:
     - repeat_allowed: false
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-07-22T16:33:19.849Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified current implementation: ci:local:fast passed, including lint, budgets, 370 files/2185 tests, five critical CLI E2E chunks, typecheck, routing, doctor, and the temporary-project semantic reconciliation E2E.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T16:24:25.451Z, excerpt_hash=sha256:7c4a1b25376e295ec1fd7aff6108a73d334c61744ca701ed926e183a7f68ce3d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221555-JSEZ5E-delegate-semantic-entity-reconciliation-to-the-c/.agentplane/tasks/202607221555-JSEZ5E/blueprint/resolved-snapshot.json
+    - old_digest: 6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c
+    - current_digest: 6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221555-JSEZ5E
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane evaluator run 202607221555-JSEZ5E --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607221555-JSEZ5E/README.md
+    - diagnostic_command: agentplane evaluator run 202607221555-JSEZ5E --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607221555-JSEZ5E/README.md
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the task branch before integration. After integration, revert the implementation commit through a new follow-up task. Existing context artifacts remain compatible because the change governs newly produced extraction payloads and task packs; do not rewrite historical semantic decisions automatically."
@@ -326,6 +364,36 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-07-22T16:33:19.849Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified current implementation: ci:local:fast passed, including lint, budgets, 370 files/2185 tests, five critical CLI E2E chunks, typecheck, routing, doctor, and the temporary-project semantic reconciliation E2E.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T16:24:25.451Z, excerpt_hash=sha256:7c4a1b25376e295ec1fd7aff6108a73d334c61744ca701ed926e183a7f68ce3d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221555-JSEZ5E-delegate-semantic-entity-reconciliation-to-the-c/.agentplane/tasks/202607221555-JSEZ5E/blueprint/resolved-snapshot.json
+- old_digest: 6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c
+- current_digest: 6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221555-JSEZ5E
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane evaluator run 202607221555-JSEZ5E --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607221555-JSEZ5E/README.md
+- diagnostic_command: agentplane evaluator run 202607221555-JSEZ5E --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607221555-JSEZ5E/README.md
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
 
 <!-- END VERIFICATION RESULTS -->
 

@@ -229,12 +229,13 @@ export async function applyContextExtractionResult(opts: {
     const resolution = stringField(item.entity_resolution, "resolution");
     if (resolution !== "same_as" && resolution !== "alias_of") continue;
     const canonicalEntityId = stringField(item.entity_resolution, "canonical_entity_id");
+    const displayedCanonicalEntityId = canonicalEntityId === "" ? "<missing>" : canonicalEntityId;
     if (
       !canonicalEntityId ||
       (!entities.has(canonicalEntityId) && !declaredEntityIds.has(canonicalEntityId))
     ) {
       throw new Error(
-        `Entity resolution ${item.id} cannot apply ${resolution}: canonical entity ${canonicalEntityId || "<missing>"} is absent from the pre-write canonical graph`,
+        `Entity resolution ${item.id} cannot apply ${resolution}: canonical entity ${displayedCanonicalEntityId} is absent from the pre-write canonical graph`,
       );
     }
   }
