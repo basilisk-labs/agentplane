@@ -5,7 +5,7 @@ result_summary: "Prepared and locally verified v0.6.24 release candidate with co
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -25,20 +25,20 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-22T14:32:36.789Z"
+  updated_at: "2026-07-22T14:44:32.393Z"
   updated_by: "EVALUATOR"
-  note: "v0.6.24 release candidate remains ready after generated-artifact normalization."
-  evaluated_sha: "f1ab68eaa9a377caa76571ed8ac65784e90c218d"
+  note: "v0.6.24 release candidate is ready after the hosted lockfile review fix."
+  evaluated_sha: "0ceb9703e0470c672153ea8c461d391df5608121"
   blueprint_digest: "e77ff3804f61ca6e5bc784823f05f7ec8c4a484ce8bef7b48894a007df5e1a1e"
   evidence_refs:
     - ".agentplane/tasks/202607221344-D9JTEY/README.md"
-    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-143236789-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-143236789-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-143236789-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-144432393-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-144432393-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-144432393-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221344-D9JTEY/blueprint/resolved-snapshot.json"
-    - ".agentplane/.release/apply/2026-07-22T14-28-33-962Z.json"
+    - "bun.lock"
   findings:
-    - "The current implementation head adds only the evaluator packet and Prettier normalization for the release-bumped ACR example; all 82 release groups, focused help snapshot, parity, release check, routing, doctor, and generated artifact checks remain satisfied."
+    - "bun.lock now records 0.6.24 for all publishable workspaces and internal workspace dependencies; frozen install, release parity, two focused release mutation files with 5 tests, and release:check pass."
 commit:
   hash: "9698f5602cb621128dbf7262287ee09ecdd4d4e6"
   message: "✅ D9JTEY task: refresh quality review"
