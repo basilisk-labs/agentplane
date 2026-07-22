@@ -8,9 +8,10 @@
   "pr_number": 4591,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4591",
   "pre_merge_closure": {
-    "basis_commit": "4f6e73b99146dce7ee05d3c1924700dc98650b22",
+    "basis_commit": "8e23f7efb8f7c4c97877c15ac19e0d44ffe83235",
     "branch": "task/202607221118-0BZKB6/compile-atomic-linked-wiki-during-context-assimi",
-    "recorded_at": "2026-07-22T12:41:46.229Z",
+    "pr_number": 4591,
+    "recorded_at": "2026-07-22T13:04:30.201Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
