@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607211645-TQ70WD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T11:02:00.134Z",
+  "verdict": "pass",
+  "summary": "CLI reference regenerated after hosted freshness failure.",
+  "evaluated_sha": "846bcce2b2bab3b15a576cb425b2af13b078ba3e",
+  "blueprint_digest": "230c818d37ab56b7e97f3c6e57c02a387ebf20b89a707c0c3449544dfdae11ef",
+  "findings": [
+    "Generated docs now include context finalize-task and workflow modality; focused CLI docs tests and freshness check pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607211645-TQ70WD/README.md",
+    "docs/user/cli-reference.generated.mdx",
+    "CLI docs freshness: pass",
+    "cli-core docs/help tests: 2 files, 15 tests passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

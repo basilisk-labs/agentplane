@@ -24,11 +24,14 @@ and doctor all passed; only unrelated historical doctor warnings remain.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-21T16:46:59.883Z
+- Updated: 2026-07-22T10:57:22.306Z
 - Branch: task/202607211645-TQ70WD/repair-maximum-assimilation-context-lifecycle
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   3 +-
+ docs/user/cli-reference.generated.mdx              |  13 +-
+ packages/agentplane/assets/policy/incidents.md     |   3 +-
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
  .../src/commands/context/check.unit.test.ts        |  14 ++
  .../src/commands/context/context-runner.ts         |  12 ++
@@ -58,7 +61,7 @@ and doctor all passed; only unrelated historical doctor warnings remain.
  packages/agentplane/src/context/integrity.ts       |   7 +-
  ...ximum-assimilation-artifacts-validation.test.ts |  23 ++++
  .../maximum-assimilation-artifacts-validation.ts   |   4 +
- 29 files changed, 990 insertions(+), 168 deletions(-)
+ 32 files changed, 1006 insertions(+), 171 deletions(-)
 ```
 
 </details>

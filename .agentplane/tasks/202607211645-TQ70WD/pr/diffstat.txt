@@ -1,3 +1,6 @@
+ .agentplane/policy/incidents.md                    |   3 +-
+ docs/user/cli-reference.generated.mdx              |  13 +-
+ packages/agentplane/assets/policy/incidents.md     |   3 +-
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
  .../src/commands/context/check.unit.test.ts        |  14 ++
  .../src/commands/context/context-runner.ts         |  12 ++
@@ -27,4 +30,4 @@
  packages/agentplane/src/context/integrity.ts       |   7 +-
  ...ximum-assimilation-artifacts-validation.test.ts |  23 ++++
  .../maximum-assimilation-artifacts-validation.ts   |   4 +
- 29 files changed, 990 insertions(+), 168 deletions(-)
+ 32 files changed, 1006 insertions(+), 171 deletions(-)
