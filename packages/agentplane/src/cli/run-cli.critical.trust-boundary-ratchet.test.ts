@@ -24,6 +24,7 @@ type Violation = {
   owner_task_ids: string[];
   path: string;
   locator: string;
+  line: number;
   message: string;
 };
 
@@ -36,6 +37,12 @@ type RatchetLibrary = {
   }[];
   baselineViolationEntry: (violation: Violation) => Record<string, unknown>;
   collectTrustBoundaryViolations: (root: string) => Violation[];
+  readTrustBoundaryReferenceBaseline: (options: {
+    root: string;
+    reference: string;
+    baselineRelativePath: string;
+    allowedMissingAtCommit: string;
+  }) => { baseline: Record<string, unknown> | null; referenceCommit: string };
   trustBoundaryOriginDigest: (ids: string[]) => string;
   validateTrustBoundaryBaseline: (options: {
     baseline: Record<string, unknown>;
@@ -66,6 +73,24 @@ async function writeFixture(root: string, relativePath: string, text: string): P
   await writeFile(filePath, text, "utf8");
 }
 
+async function git(root: string, args: string[]): Promise<string> {
+  const result = await execFileAsync("git", args, { cwd: root, encoding: "utf8" });
+  return String(result.stdout).trim();
+}
+
+function shellClassSource(className: string, padding: string): string {
+  return [
+    `declare function startProcess(value: unknown): void;`,
+    padding,
+    `export class ${className} {`,
+    `  dispatch(command: string) {`,
+    `    startProcess({ command: "sh", args: ["-lc", command] });`,
+    `  }`,
+    `}`,
+    ``,
+  ].join("\n");
+}
+
 async function writeUnsafeFixtures(root: string): Promise<void> {
   await writeFixture(
     root,
@@ -75,7 +100,13 @@ async function writeUnsafeFixtures(root: string): Promise<void> {
   await writeFixture(
     root,
     "packages/agentplane/src/runner/types/invocation.ts",
-    `export type RunnerResultManifest = { schema_version: 1; exit_code?: number | null };\n`,
+    [
+      `interface ObservedClaims { exit_code?: number | null }`,
+      `type ClaimsAlias = ObservedClaims;`,
+      `export interface RunnerResultManifest extends ClaimsAlias { schema_version: 1 }`,
+      `export type RunnerResult = { status?: string; exit_code?: number | null; metrics?: unknown; evidence?: unknown };`,
+      ``,
+    ].join("\n"),
   );
   await writeFixture(
     root,
@@ -88,7 +119,8 @@ async function writeUnsafeFixtures(root: string): Promise<void> {
     [
       `type TaskData = { doc?: string };`,
       `type RouteDecision = { kind: string };`,
-      `export type RunnerTaskContext = { data: TaskData; doc: string };`,
+      `type TaskProjection = { data: TaskData; doc: string };`,
+      `export interface RunnerTaskContext extends TaskProjection { task_id: string }`,
       `export type RunnerContextBundle = { route_decision?: Record<string, unknown> };`,
       `export type SafeBundle = { route: RouteDecision };`,
       ``,
@@ -103,14 +135,69 @@ async function writeUnsafeFixtures(root: string): Promise<void> {
     root,
     "packages/agentplane/src/runner/result-manifest-reader.ts",
     [
-      `type SyntheticManifest = { status?: string; metrics?: { duration_ms?: number }; evidence?: unknown };`,
-      `export function decodeResultEnvelope(raw: Record<string, unknown>): SyntheticManifest {`,
-      `  return { status: raw.status as string, metrics: raw.metrics as { duration_ms?: number } };`,
+      `import type { RunnerResult, RunnerResultManifest as Claims } from "./types/invocation.js";`,
+      `const STATUS = "status";`,
+      `const identity = <T>(value: T): T => value;`,
+      `export function decodeAnything(raw: Record<string, unknown>): Claims {`,
+      `  const accepted = identity(raw);`,
+      `  const { [STATUS]: status } = accepted;`,
+      `  return { ...accepted, [STATUS]: status } as Claims;`,
       `}`,
-      `export function mergeResultManifest(base: Record<string, unknown>, manifest: SyntheticManifest) {`,
-      `  const accepted = manifest;`,
-      `  return { ...base, status: accepted.status, evidence: accepted.evidence };`,
+      `export function combineAnything(base: RunnerResult, claims: Claims): RunnerResult {`,
+      `  const accepted = identity(claims);`,
+      `  const { [STATUS]: status } = accepted;`,
+      `  return { ...base, ...accepted, [STATUS]: status };`,
       `}`,
+      `type NestedClaims = { manifest: Claims };`,
+      `export function combineNested(base: RunnerResult, options: NestedClaims): RunnerResult {`,
+      `  const { manifest: claims } = options;`,
+      `  return { ...base, ...claims };`,
+      `}`,
+      `export function negativeParser(raw: Record<string, unknown>): Claims {`,
+      `  return { schema_version: 1, summary: String(raw.summary ?? "") } as Claims;`,
+      `}`,
+      `export function negativeMerge(base: RunnerResult, claims: Claims): RunnerResult {`,
+      `  return { ...base, status: "failed", summary: String(claims.summary ?? "") };`,
+      `}`,
+      ``,
+    ].join("\n"),
+  );
+  await writeFixture(
+    root,
+    "packages/agentplane/src/runner/types/decoy.ts",
+    [
+      `export type RunnerResultManifest = { summary: string };`,
+      `export type RunnerTaskContext = { task_id: string };`,
+      ``,
+    ].join("\n"),
+  );
+  await writeFixture(
+    root,
+    "packages/agentplane/src/shadow/runner/types/invocation.ts",
+    `export type RunnerResultManifest = { summary: string };\n`,
+  );
+  await writeFixture(
+    root,
+    "packages/agentplane/src/commands/task/agent-work-context-contract.ts",
+    [
+      `interface NominalContract { kind: "agentplane"; version: 1 }`,
+      `export type AgentWorkContextContract = NominalContract;`,
+      ``,
+    ].join("\n"),
+  );
+  await writeFixture(
+    root,
+    "packages/agentplane/src/commands/task/brief-model.ts",
+    [
+      `import type { AgentWorkContextContract as Contract } from "./agent-work-context-contract.js";`,
+      `interface DurableBrief {`,
+      `  contract: Contract;`,
+      `  task: { id: string };`,
+      `  workflow: { mode: string };`,
+      `  route: { next: string };`,
+      `  execution_packet: { argv: string[] };`,
+      `}`,
+      `export type TaskBrief = DurableBrief;`,
       ``,
     ].join("\n"),
   );
@@ -118,18 +205,19 @@ async function writeUnsafeFixtures(root: string): Promise<void> {
     root,
     "packages/agentplane/src/commands/task/work-context.ts",
     [
-      `export type AgentWorkContextContract = { kind: "agentplane"; version: 1 };`,
-      `export type TaskBrief = {`,
-      `  contract: AgentWorkContextContract;`,
-      `  task: { id: string };`,
-      `  workflow: { mode: string };`,
-      `  route: { next: string };`,
-      `  execution_packet: { argv: string[] };`,
-      `};`,
       `export function bootstrap(bundle: { route_decision: unknown }) {`,
       `  const route = bundle.route_decision as { oracle?: { nextCommand?: string } };`,
       `  return route?.oracle?.nextCommand ?? "route_decision.oracle.nextCommand";`,
       `}`,
+      ``,
+    ].join("\n"),
+  );
+  await writeFixture(
+    root,
+    "packages/agentplane/src/commands/task/decoy.ts",
+    [
+      `export type AgentWorkContextContract = { payload: string };`,
+      `export type TaskBrief = { summary: string };`,
       ``,
     ].join("\n"),
   );
@@ -194,9 +282,19 @@ describeCritical("critical: trust-boundary architecture ratchet", () => {
         `type RunnerResultManifest = { schema_version: 1; summary: string };`,
         `type RunnerTaskContext = { task_id: string; doc: string };`,
         `type RunnerContextBundle = { route_decision: RouteDecision };`,
-        `const sandbox = (explicitDangerApproved: boolean) =>`,
-        `  explicitDangerApproved ? "danger-full-access" : "workspace-write";`,
+        `type SandboxAuthority = { danger_full_access_approved: boolean };`,
+        `const sandbox = (authority: SandboxAuthority) =>`,
+        `  Boolean(authority.danger_full_access_approved)`,
+        `    ? "danger-full-access"`,
+        `    : "workspace-write";`,
         `export { sandbox };`,
+        `type NestedAuthority = { sandbox: { danger_full_access_authorized: boolean } };`,
+        `export function guarded(authority: NestedAuthority) {`,
+        `  if (!Boolean(!!authority.sandbox.danger_full_access_authorized)) {`,
+        `    return "workspace-write";`,
+        `  }`,
+        `  return "danger-full-access";`,
+        `}`,
         ``,
       ].join("\n"),
     );
@@ -210,14 +308,41 @@ describeCritical("critical: trust-boundary architecture ratchet", () => {
         `  value === null ? "danger-full-access" : value;`,
         `export const empty = (value: string) =>`,
         `  value.trim() ? value : "danger-full-access";`,
+        `export const coerced = (value?: string) =>`,
+        `  Boolean(value) ? "danger-full-access" : "workspace-write";`,
+        `export const doubleBang = (value?: string) =>`,
+        `  !!value ? "danger-full-access" : "workspace-write";`,
+        `export function early(value?: string) {`,
+        `  if (value) return "danger-full-access";`,
+        `  return "workspace-write";`,
+        `}`,
+        `export const named = (requestedSandbox?: string) =>`,
+        `  Boolean(requestedSandbox) ? "danger-full-access" : "workspace-write";`,
+        `export const record = (authority: Record<string, unknown>) =>`,
+        `  authority.danger_full_access_approved ? "danger-full-access" : "workspace-write";`,
+        `export const arrayExecution = () => ["danger-full-access"][0];`,
         ``,
       ].join("\n"),
     );
-    expect(
-      module
-        .collectTrustBoundaryViolations(safeRoot)
-        .filter((entry) => entry.rule_id === "trust.no-implicit-danger-sandbox"),
-    ).toHaveLength(3);
+    const sandboxViolations = module
+      .collectTrustBoundaryViolations(safeRoot)
+      .filter((entry) => entry.rule_id === "trust.no-implicit-danger-sandbox");
+    expect(sandboxViolations).toHaveLength(9);
+    for (const name of [
+      "missing",
+      "nullish",
+      "empty",
+      "coerced",
+      "doubleBang",
+      "early",
+      "named",
+      "record",
+      "arrayExecution",
+    ]) {
+      expect(sandboxViolations.some((entry) => entry.locator.startsWith(`fallback:${name}:`))).toBe(
+        true,
+      );
+    }
 
     const unsafeRoot = await makeFixtureRoot();
     await writeUnsafeFixtures(unsafeRoot);
@@ -248,16 +373,128 @@ describeCritical("critical: trust-boundary architecture ratchet", () => {
           entry.locator.startsWith("type:RunnerTaskContext.data+doc:ast:"),
       ),
     ).toBe(true);
-    for (const locator of [
-      /^parser:decodeResultEnvelope\.status:ast:/u,
-      /^override:mergeResultManifest\.status:ast:/u,
+    const requiredLocators = [
+      /^parser:decodeAnything\.status:ast:/u,
+      /^parser:decodeAnything\.spread:ast:/u,
+      /^override:combineAnything\.status:ast:/u,
+      /^override:combineAnything\.spread:ast:/u,
+      /^override:combineNested\.spread:ast:/u,
       /^contract:AgentWorkContextContract:nominal-only:ast:/u,
       /^contract:TaskBrief:duplicated-durable-shape:ast:/u,
       /^assertion:route:route-decision-inline-shape:ast:/u,
       /^builder:buildTaskContext\.data\+doc:ast:/u,
-    ]) {
-      expect(violations.some((entry) => locator.test(entry.locator))).toBe(true);
-    }
+    ];
+    expect(
+      requiredLocators
+        .filter((locator) => !violations.some((entry) => locator.test(entry.locator)))
+        .map((locator) => locator.source),
+    ).toEqual([]);
+    expect(
+      violations.some((entry) => /(?:negativeParser|negativeMerge)/u.test(entry.locator)),
+    ).toBe(false);
+  });
+
+  it("fails closed on ambiguous canonical declarations", async () => {
+    const module = await library();
+    const root = await makeFixtureRoot();
+    await writeFixture(
+      root,
+      "packages/agentplane/src/runner/types/invocation.ts",
+      [
+        `export type RunnerResultManifest = { exit_code?: number };`,
+        `export interface RunnerResultManifest { summary?: string }`,
+        ``,
+      ].join("\n"),
+    );
+    await writeFixture(
+      root,
+      "packages/agentplane/src/runner/types/context.ts",
+      [
+        `export type RunnerTaskContext = { data: unknown; doc: string };`,
+        `export interface RunnerTaskContext { task_id: string }`,
+        ``,
+      ].join("\n"),
+    );
+    const resolutionLocators = module
+      .collectTrustBoundaryViolations(root)
+      .filter((entry) => entry.locator.startsWith("resolution:"));
+    expect(
+      resolutionLocators.filter((entry) =>
+        entry.locator.startsWith("resolution:RunnerResultManifest:ambiguous_type_declaration:ast:"),
+      ),
+    ).toHaveLength(2);
+    expect(
+      resolutionLocators.filter((entry) =>
+        entry.locator.startsWith("resolution:RunnerTaskContext:ambiguous_type_declaration:ast:"),
+      ),
+    ).toHaveLength(2);
+    expect(new Set(resolutionLocators.map((entry) => entry.violation_id)).size).toBe(
+      resolutionLocators.length,
+    );
+  });
+
+  it("rejects a false shrink when renamed observed flows are reintroduced", async () => {
+    const module = await library();
+    const root = await makeFixtureRoot();
+    await writeUnsafeFixtures(root);
+    const original = module.collectTrustBoundaryViolations(root);
+    const baseline = makeBaseline(module, original);
+    await writeFixture(
+      root,
+      "packages/agentplane/src/runner/result-manifest-reader.ts",
+      [
+        `import type { RunnerResult, RunnerResultManifest as Claims } from "./types/invocation.js";`,
+        `export const decodeSafe = (raw: Record<string, unknown>): Claims =>`,
+        `  ({ schema_version: 1, summary: String(raw.summary ?? "") }) as Claims;`,
+        `export const mergeSafe = (base: RunnerResult): RunnerResult =>`,
+        `  ({ ...base, status: "failed" });`,
+        ``,
+      ].join("\n"),
+    );
+    const reduced = module.collectTrustBoundaryViolations(root);
+    const shrunkBaseline = structuredClone(baseline);
+    shrunkBaseline.violations = reduced.map((violation) =>
+      module.baselineViolationEntry(violation),
+    );
+    expect(
+      module.validateTrustBoundaryBaseline({
+        baseline: shrunkBaseline,
+        violations: reduced,
+        expectedOriginDigest: baseline.origin.violation_ids_sha256,
+      }),
+    ).toEqual([]);
+
+    await writeFixture(
+      root,
+      "packages/agentplane/src/runner/result-manifest-reader.ts",
+      [
+        `import type { RunnerResult, RunnerResultManifest as Claims } from "./types/invocation.js";`,
+        `const EXIT = "exit_code";`,
+        `const relay = <T>(value: T): T => value;`,
+        `export function decodeRenamed(raw: Record<string, unknown>): Claims {`,
+        `  const source = relay(raw);`,
+        `  return { schema_version: 1, [EXIT]: source[EXIT] } as Claims;`,
+        `}`,
+        `export function mergeRenamed(base: RunnerResult, claims: Claims): RunnerResult {`,
+        `  const source = relay(claims);`,
+        `  return { ...base, ...source };`,
+        `}`,
+        ``,
+      ].join("\n"),
+    );
+    const reintroduced = module.collectTrustBoundaryViolations(root);
+    const errors = module.validateTrustBoundaryBaseline({
+      baseline: shrunkBaseline,
+      violations: reintroduced,
+      expectedOriginDigest: baseline.origin.violation_ids_sha256,
+    });
+    expect(errors.join("\n")).toContain("new violation trust.no-agent-writable-observed-fields");
+    expect(
+      reintroduced.some((entry) => entry.locator.startsWith("parser:decodeRenamed.exit_code:")),
+    ).toBe(true);
+    expect(
+      reintroduced.some((entry) => entry.locator.startsWith("override:mergeRenamed.spread:")),
+    ).toBe(true);
   });
 
   it("fails new violations and stale entries, then accepts an explicit baseline shrink", async () => {
@@ -339,7 +576,7 @@ describeCritical("critical: trust-boundary architecture ratchet", () => {
     expect(errors.join("\n")).toContain("baseline growth is forbidden");
   });
 
-  it("allows debt shrink but rejects reactivation relative to the checked-out base", async () => {
+  it("allows debt shrink but rejects reactivation relative to the current base reference", async () => {
     const module = await library();
     const root = await makeFixtureRoot();
     await writeUnsafeFixtures(root);
@@ -368,7 +605,7 @@ describeCritical("critical: trust-boundary architecture ratchet", () => {
       expectedCapturedFromCommit: REVIEWED_CAPTURE_COMMIT,
     });
     expect(reactivationErrors.join("\n")).toContain(
-      "baseline reactivation or growth is forbidden relative to the checked-out base",
+      "baseline reactivation or growth is forbidden relative to the current base reference",
     );
   });
 
@@ -446,6 +683,77 @@ describeCritical("critical: trust-boundary architecture ratchet", () => {
     ).toContain("captured_from_commit must remain");
   });
 
+  it("uses the current origin/main baseline even when the checked-out branch is stale", async () => {
+    const module = await library();
+    const root = await makeFixtureRoot();
+    await writeUnsafeFixtures(root);
+    await git(root, ["init", "-b", "main"]);
+    await git(root, ["config", "user.name", "Ratchet Test"]);
+    await git(root, ["config", "user.email", "ratchet@example.test"]);
+    await git(root, ["add", "."]);
+    await git(root, ["commit", "-m", "initial reviewed code"]);
+    const initialCommit = await git(root, ["rev-parse", "HEAD"]);
+    await git(root, ["branch", "stale"]);
+    await git(root, ["update-ref", "refs/remotes/origin/main", initialCommit]);
+
+    expect(
+      module.readTrustBoundaryReferenceBaseline({
+        root,
+        reference: "origin/main",
+        baselineRelativePath: "scripts/baselines/trust-boundary-violations.json",
+        allowedMissingAtCommit: initialCommit,
+      }),
+    ).toEqual({ baseline: null, referenceCommit: initialCommit });
+
+    await writeFixture(root, "README.md", "origin advanced without the ratchet\n");
+    await git(root, ["add", "README.md"]);
+    await git(root, ["commit", "-m", "advance main"]);
+    const advancedWithoutBaseline = await git(root, ["rev-parse", "HEAD"]);
+    await git(root, ["update-ref", "refs/remotes/origin/main", advancedWithoutBaseline]);
+    expect(() =>
+      module.readTrustBoundaryReferenceBaseline({
+        root,
+        reference: "origin/main",
+        baselineRelativePath: "scripts/baselines/trust-boundary-violations.json",
+        allowedMissingAtCommit: initialCommit,
+      }),
+    ).toThrow("refusing to run without the monotonic base");
+
+    const violations = module.collectTrustBoundaryViolations(root);
+    const fullBaseline = makeBaseline(module, violations);
+    const reducedBaseline = structuredClone(fullBaseline);
+    reducedBaseline.violations = reducedBaseline.violations.slice(1);
+    await writeFixture(
+      root,
+      "scripts/baselines/trust-boundary-violations.json",
+      `${JSON.stringify(reducedBaseline, null, 2)}\n`,
+    );
+    await git(root, ["add", "scripts/baselines/trust-boundary-violations.json"]);
+    await git(root, ["commit", "-m", "shrink reviewed debt"]);
+    const currentOriginMain = await git(root, ["rev-parse", "HEAD"]);
+    await git(root, ["update-ref", "refs/remotes/origin/main", currentOriginMain]);
+    await git(root, ["checkout", "stale"]);
+    expect(await git(root, ["rev-parse", "HEAD"])).toBe(initialCommit);
+    expect(await git(root, ["merge-base", "HEAD", "origin/main"])).toBe(initialCommit);
+
+    const loaded = module.readTrustBoundaryReferenceBaseline({
+      root,
+      reference: "origin/main",
+      baselineRelativePath: "scripts/baselines/trust-boundary-violations.json",
+      allowedMissingAtCommit: initialCommit,
+    });
+    expect(loaded.referenceCommit).toBe(currentOriginMain);
+    const reactivationErrors = module.validateTrustBoundaryBaseline({
+      baseline: fullBaseline,
+      baseBaseline: loaded.baseline,
+      violations,
+      expectedOriginDigest: fullBaseline.origin.violation_ids_sha256,
+    });
+    expect(reactivationErrors.join("\n")).toContain(
+      "baseline reactivation or growth is forbidden relative to the current base reference",
+    );
+  });
+
   it("assigns distinct stable IDs to equivalent shell dispatches in one function", async () => {
     const module = await library();
     const root = await makeFixtureRoot();
@@ -466,12 +774,40 @@ describeCritical("critical: trust-boundary architecture ratchet", () => {
       .filter((entry) => entry.rule_id === "trust.no-rendered-command-orchestration");
     expect(violations).toHaveLength(2);
     expect(new Set(violations.map((entry) => entry.violation_id)).size).toBe(2);
-    expect(violations.map((entry) => entry.locator)).toEqual(
-      expect.arrayContaining([
-        expect.stringMatching(/:ast:CallExpression:[a-f0-9]{12}:1$/u),
-        expect.stringMatching(/:ast:CallExpression:[a-f0-9]{12}:2$/u),
-      ]),
-    );
+    expect(
+      violations.some((entry) =>
+        /:ast:FunctionDeclaration:dispatch:1:CallExpression:[a-f0-9]{12}:1$/u.test(entry.locator),
+      ),
+    ).toBe(true);
+    expect(
+      violations.some((entry) =>
+        /:ast:FunctionDeclaration:dispatch:1:CallExpression:[a-f0-9]{12}:2$/u.test(entry.locator),
+      ),
+    ).toBe(true);
+  });
+
+  it("keeps IDs stable across line shifts and changes them across class relocation", async () => {
+    const module = await library();
+    const root = await makeFixtureRoot();
+    const relativePath = "packages/agentplane/src/harness/relocated-shell.ts";
+    await writeFixture(root, relativePath, shellClassSource("Alpha", ""));
+    const alpha = module
+      .collectTrustBoundaryViolations(root)
+      .find((entry) => entry.rule_id === "trust.no-rendered-command-orchestration")!;
+    await writeFixture(root, relativePath, shellClassSource("Alpha", "\n\n"));
+    const shifted = module
+      .collectTrustBoundaryViolations(root)
+      .find((entry) => entry.rule_id === "trust.no-rendered-command-orchestration")!;
+    expect(shifted.line).not.toBe(alpha.line);
+    expect(shifted.violation_id).toBe(alpha.violation_id);
+    expect(shifted.locator).toContain("ClassDeclaration:Alpha:1/MethodDeclaration:dispatch:1");
+
+    await writeFixture(root, relativePath, shellClassSource("Beta", "\n\n"));
+    const beta = module
+      .collectTrustBoundaryViolations(root)
+      .find((entry) => entry.rule_id === "trust.no-rendered-command-orchestration")!;
+    expect(beta.violation_id).not.toBe(alpha.violation_id);
+    expect(beta.locator).toContain("ClassDeclaration:Beta:1/MethodDeclaration:dispatch:1");
   });
 
   it("accepts the reviewed repository baseline through the executable checker", async () => {
