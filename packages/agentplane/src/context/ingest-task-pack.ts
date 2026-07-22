@@ -12,6 +12,7 @@ const CONTEXT_TASK_PACK_FILES = [
   "context-pack.md",
   "extraction-contract.json",
   "canonical-snapshot.json",
+  "canonical-entity-catalog.json",
   "source-set.lock.json",
   "source-spans.skeleton.jsonl",
   "expected-artifacts.json",
@@ -198,6 +199,143 @@ async function entityCandidates(root: string) {
   return rows.toSorted((left, right) => left.id.localeCompare(right.id)).slice(0, CANDIDATE_LIMIT);
 }
 
+async function jsonlRecords(
+  root: string,
+  relativePath: string,
+): Promise<Record<string, unknown>[]> {
+  const content = await readFileOrNull(path.join(root, relativePath));
+  if (!content) return [];
+  const rows: Record<string, unknown>[] = [];
+  for (const line of content.toString("utf8").split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const parsed = JSON.parse(line) as unknown;
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        rows.push(parsed as Record<string, unknown>);
+      }
+    } catch {
+      continue;
+    }
+  }
+  return rows;
+}
+
+function optionalText(row: Record<string, unknown>, field: string): string | undefined {
+  const value = row[field];
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+function textArray(row: Record<string, unknown>, field: string): string[] {
+  const value = row[field];
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+    : [];
+}
+
+function addGroupedValue(map: Map<string, Set<string>>, key: string, value: string): void {
+  if (!key || !value) return;
+  const values = map.get(key) ?? new Set<string>();
+  values.add(value);
+  map.set(key, values);
+}
+
+async function buildCanonicalEntityCatalog(opts: {
+  root: string;
+  taskId: string;
+  generatedAt: string;
+}): Promise<Record<string, unknown>> {
+  const [entities, aliases, edges, pageManifests] = await Promise.all([
+    jsonlRecords(opts.root, ".agentplane/context/derived/graph/entities.jsonl"),
+    jsonlRecords(opts.root, ".agentplane/context/derived/ontology/aliases.jsonl"),
+    jsonlRecords(opts.root, ".agentplane/context/derived/graph/edges.jsonl"),
+    jsonlRecords(opts.root, ".agentplane/context/derived/wiki/page-manifests.jsonl"),
+  ]);
+  const aliasesByEntity = new Map<string, Set<string>>();
+  for (const alias of aliases) {
+    const canonicalId = optionalText(alias, "canonical_entity_id");
+    const label = optionalText(alias, "alias");
+    if (canonicalId && label) addGroupedValue(aliasesByEntity, canonicalId, label);
+  }
+  const pagesByEntity = new Map<string, Set<string>>();
+  for (const page of pageManifests) {
+    const pagePath = optionalText(page, "path") ?? optionalText(page, "target_path");
+    if (!pagePath) continue;
+    for (const entityId of textArray(page, "canonical_entity_ids")) {
+      addGroupedValue(pagesByEntity, entityId, pagePath);
+    }
+  }
+  const relationsByEntity = new Map<
+    string,
+    { direction: "outgoing" | "incoming"; relation: string; entity_id: string; edge_id?: string }[]
+  >();
+  for (const edge of edges) {
+    const from = optionalText(edge, "from");
+    const to = optionalText(edge, "to");
+    const relation = optionalText(edge, "relation");
+    const edgeId = optionalText(edge, "id");
+    if (!from || !to || !relation) continue;
+    const outgoing = relationsByEntity.get(from) ?? [];
+    outgoing.push({
+      direction: "outgoing",
+      relation,
+      entity_id: to,
+      ...(edgeId ? { edge_id: edgeId } : {}),
+    });
+    relationsByEntity.set(from, outgoing);
+    const incoming = relationsByEntity.get(to) ?? [];
+    incoming.push({
+      direction: "incoming",
+      relation,
+      entity_id: from,
+      ...(edgeId ? { edge_id: edgeId } : {}),
+    });
+    relationsByEntity.set(to, incoming);
+  }
+  const catalogEntities = entities
+    .flatMap((entity) => {
+      const id = optionalText(entity, "id");
+      if (!id) return [];
+      const combinedAliases = new Set([
+        ...textArray(entity, "aliases"),
+        ...(aliasesByEntity.get(id) ?? []),
+      ]);
+      return [
+        {
+          id,
+          ...(optionalText(entity, "kind") ? { kind: optionalText(entity, "kind") } : {}),
+          ...(optionalText(entity, "label") ? { label: optionalText(entity, "label") } : {}),
+          ...(optionalText(entity, "summary") ? { summary: optionalText(entity, "summary") } : {}),
+          ...(optionalText(entity, "scope") ? { scope: optionalText(entity, "scope") } : {}),
+          ...(optionalText(entity, "validity")
+            ? { validity: optionalText(entity, "validity") }
+            : {}),
+          ...(optionalText(entity, "status") ? { status: optionalText(entity, "status") } : {}),
+          aliases: [...combinedAliases].toSorted((left, right) => left.localeCompare(right)),
+          source_refs: textArray(entity, "source_refs").toSorted((left, right) =>
+            left.localeCompare(right),
+          ),
+          wiki_paths: [...(pagesByEntity.get(id) ?? [])].toSorted((left, right) =>
+            left.localeCompare(right),
+          ),
+          relations: (relationsByEntity.get(id) ?? []).toSorted((left, right) =>
+            `${left.direction}:${left.relation}:${left.entity_id}`.localeCompare(
+              `${right.direction}:${right.relation}:${right.entity_id}`,
+            ),
+          ),
+        },
+      ];
+    })
+    .toSorted((left, right) => left.id.localeCompare(right.id));
+  return {
+    version: 1,
+    task_id: opts.taskId,
+    generated_at: opts.generatedAt,
+    entity_count: catalogEntities.length,
+    catalog_sha256: digest(JSON.stringify(catalogEntities)),
+    entities: catalogEntities,
+  };
+}
+
 async function buildCanonicalSnapshot(opts: { root: string; taskId: string; generatedAt: string }) {
   const wikiFiles = await collectWikiFiles(opts.root);
   const surfaceEntries = await Promise.all(
@@ -267,7 +405,7 @@ function buildExpectedArtifacts(taskId: string): Record<string, unknown> {
     ],
     notes: [
       "Task-bound pack files are CLI-generated scaffolds.",
-      "CURATOR owns semantic classification, extraction, topology decisions, coverage rows, and evaluator review; extraction apply compiles writer-owned formal and wiki artifacts atomically.",
+      "CURATOR owns semantic classification, entity identity decisions, extraction, topology decisions, coverage rows, and evaluator review; deterministic code prepares evidence, validates decisions, and compiles writer-owned formal and wiki artifacts atomically.",
     ],
   };
 }
@@ -291,6 +429,7 @@ function buildContextPackMarkdown(opts: {
     "- `source-set.lock.json`: selected source identity, hashes, status, type, and size.",
     "- `extraction-contract.json`: exact SGR v2 payload requirements plus a valid example.",
     "- `canonical-snapshot.json`: current surface counts, digests, and bounded page/entity candidates for reconciliation.",
+    "- `canonical-entity-catalog.json`: complete canonical entity inventory with aliases, provenance, wiki targets, and graph neighborhoods.",
     "- `source-spans.skeleton.jsonl`: deterministic addressable source spans for semantic classification.",
     "- `expected-artifacts.json`: required output contract for this task.",
     "",
@@ -303,6 +442,18 @@ function buildContextPackMarkdown(opts: {
     `Generated spans: ${opts.spanCount}.`,
     "",
     "CURATOR must classify spans semantically and produce coverage rows before claiming semantic completeness.",
+    "",
+    "## Semantic Entity Reconciliation",
+    "",
+    "For every source term that may denote an entity, CURATOR must decide meaning before creating or updating graph rows. Deterministic AgentPlane code must not make this decision.",
+    "",
+    "1. Search the complete canonical entity catalog, then use context search and graph neighbors for plausible lexical and semantic candidates.",
+    "2. Compare kind, scope, time/validity, ownership, defining properties, aliases, source evidence, wiki use, and graph neighborhood. Similar spelling alone is insufficient.",
+    "3. Emit one evidence-bearing entity_resolution row: same_as, alias_of, distinct_entity, possibly_same_as, or new_entity_proposal.",
+    "4. For same_as or alias_of, reuse canonical_entity_id and do not emit a second graph_entity. For ambiguity, preserve both identities and list evidence still needed. Propose a new entity only after documenting the candidates and why none match.",
+    "5. Record candidate comparisons, decision dimensions, evidence for and against, rationale, and unresolved questions. Stop rather than merging across conflicting scope, validity, ownership, or defining properties.",
+    "",
+    "Success means a future executor can reproduce every merge/no-merge decision from task-bound evidence without relying on stable ID equality or hidden conversation context.",
     "",
   ].join("\n");
 }
@@ -323,6 +474,11 @@ export async function writeContextTaskPack(opts: {
     taskId: opts.taskId,
     generatedAt,
   });
+  const canonicalEntityCatalog = await buildCanonicalEntityCatalog({
+    root: opts.root,
+    taskId: opts.taskId,
+    generatedAt,
+  });
   await writeJsonStableIfChanged(path.join(taskDir, "source-set.lock.json"), {
     version: 1,
     task_id: opts.taskId,
@@ -331,6 +487,10 @@ export async function writeContextTaskPack(opts: {
   });
   await writeContextExtractionContract({ root: opts.root, taskId: opts.taskId });
   await writeJsonStableIfChanged(path.join(taskDir, "canonical-snapshot.json"), canonicalSnapshot);
+  await writeJsonStableIfChanged(
+    path.join(taskDir, "canonical-entity-catalog.json"),
+    canonicalEntityCatalog,
+  );
   await writeTextIfChanged(
     path.join(taskDir, "source-spans.skeleton.jsonl"),
     spans.map((span) => JSON.stringify(span)).join("\n") + (spans.length > 0 ? "\n" : ""),

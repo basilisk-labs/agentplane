@@ -46,6 +46,24 @@ function hasRecordArray(row: Record<string, unknown>, field: string): boolean {
   return Array.isArray(value) && value.some((entry) => entry && typeof entry === "object");
 }
 
+function recordArray(row: Record<string, unknown>, field: string): Record<string, unknown>[] {
+  const value = row[field];
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (entry): entry is Record<string, unknown> =>
+      Boolean(entry) && typeof entry === "object" && !Array.isArray(entry),
+  );
+}
+
+const ENTITY_RESOLUTION_DECISIONS = new Set([
+  "same_as",
+  "alias_of",
+  "distinct_entity",
+  "possibly_same_as",
+  "new_entity_proposal",
+  "canonical_entity",
+]);
+
 function pathTemplatePrefix(pathTemplate: string): string {
   const marker = pathTemplate.indexOf("{");
   const prefix = marker === -1 ? pathTemplate : pathTemplate.slice(0, marker);
@@ -80,6 +98,10 @@ export async function validateEntityResolution(root: string, errors: string[]): 
     errors.push(`${rel}: maximum-assimilation requires entity-resolution rows`);
     return;
   }
+  const graphRows = await loadJsonlRows(
+    path.join(root, ".agentplane/context/derived/graph/entities.jsonl"),
+  );
+  const graphEntityIds = new Set(graphRows.map((row) => stringField(row, "id")).filter(Boolean));
   const resolvedEntityIds = new Set<string>();
   for (const row of rows) {
     const id = stringField(row, "id") || "<unknown>";
@@ -89,6 +111,9 @@ export async function validateEntityResolution(root: string, errors: string[]): 
     const proposedEntityId = stringField(row, "proposed_entity_id");
     if (!sourceTerm) errors.push(`${rel}#${id}: entity-resolution row missing source_term`);
     if (!resolution) errors.push(`${rel}#${id}: entity-resolution row missing resolution`);
+    if (resolution && !ENTITY_RESOLUTION_DECISIONS.has(resolution)) {
+      errors.push(`${rel}#${id}: unsupported entity-resolution decision ${resolution}`);
+    }
     if (rowSourceRefs(row).length === 0) {
       errors.push(`${rel}#${id}: entity-resolution row has no source_ref/source_refs`);
     }
@@ -103,13 +128,53 @@ export async function validateEntityResolution(root: string, errors: string[]): 
         errors.push(`${rel}#${id}: new_entity_proposal requires why_not_existing`);
       }
     }
+    if (resolution !== "canonical_entity") {
+      if (stringArray(row, "comparison_dimensions").length === 0) {
+        errors.push(`${rel}#${id}: semantic decision requires comparison_dimensions`);
+      }
+      if (!Array.isArray(row.evidence_for) || !Array.isArray(row.evidence_against)) {
+        errors.push(`${rel}#${id}: semantic decision requires evidence_for and evidence_against`);
+      }
+      if (!stringField(row, "decision_rationale")) {
+        errors.push(`${rel}#${id}: semantic decision requires decision_rationale`);
+      }
+    }
+    const candidates = recordArray(row, "candidate_entities_checked");
+    if (resolution === "same_as" || resolution === "alias_of") {
+      if (!canonicalEntityId) {
+        errors.push(`${rel}#${id}: ${resolution} requires canonical_entity_id`);
+      } else {
+        if (!graphEntityIds.has(canonicalEntityId)) {
+          errors.push(`${rel}#${id}: canonical entity ${canonicalEntityId} does not exist`);
+        }
+        if (
+          !candidates.some((candidate) => stringField(candidate, "entity_id") === canonicalEntityId)
+        ) {
+          errors.push(
+            `${rel}#${id}: ${resolution} must compare canonical_entity_id as a candidate`,
+          );
+        }
+      }
+      if (stringArray(row, "evidence_for").length === 0) {
+        errors.push(`${rel}#${id}: ${resolution} requires positive identity evidence`);
+      }
+    }
+    if (resolution === "possibly_same_as") {
+      if (candidates.length === 0) {
+        errors.push(`${rel}#${id}: possibly_same_as requires candidate_entities_checked`);
+      }
+      if (stringArray(row, "unresolved_questions").length === 0) {
+        errors.push(`${rel}#${id}: possibly_same_as requires unresolved_questions`);
+      }
+    }
+    if (resolution === "distinct_entity" && candidates.length === 0) {
+      errors.push(`${rel}#${id}: distinct_entity requires candidate_entities_checked`);
+    }
     if (canonicalEntityId) resolvedEntityIds.add(canonicalEntityId);
     if (proposedEntityId) resolvedEntityIds.add(proposedEntityId);
   }
 
-  for (const row of await loadJsonlRows(
-    path.join(root, ".agentplane/context/derived/graph/entities.jsonl"),
-  )) {
+  for (const row of graphRows) {
     const entityId = stringField(row, "id");
     if (entityId && !resolvedEntityIds.has(entityId)) {
       errors.push(`${rel}: missing entity-resolution row for graph entity ${entityId}`);

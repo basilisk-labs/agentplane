@@ -87,6 +87,16 @@ describe("context extraction writer", () => {
 
   it("keeps canonical row identity when structured payloads contain reserved fields", async () => {
     const root = await tempRoot();
+    await write(
+      root,
+      ".agentplane/context/derived/graph/entities.jsonl",
+      `${JSON.stringify({
+        id: "entity.context_writer",
+        kind: "workflow",
+        label: "Context writer",
+        status: "active",
+      })}\n`,
+    );
     const raw = {
       schema_version: 2,
       kind: "context_extraction",
@@ -107,6 +117,16 @@ describe("context extraction writer", () => {
             source_term: "context writer",
             resolution: "alias_of",
             canonical_entity_id: "entity.context_writer",
+            candidate_entities_checked: [
+              {
+                entity_id: "entity.context_writer",
+                reason: "The source term identifies the existing workflow.",
+              },
+            ],
+            comparison_dimensions: ["kind", "scope", "defining_properties"],
+            evidence_for: ["The existing workflow has the same defining behavior."],
+            evidence_against: [],
+            decision_rationale: "The source term is an alias of the canonical workflow entity.",
           },
         },
       ],
@@ -136,5 +156,54 @@ describe("context extraction writer", () => {
       source_term: "context writer",
       canonical_entity_id: "entity.context_writer",
     });
+    const graphEntities = (
+      await readFile(path.join(root, ".agentplane/context/derived/graph/entities.jsonl"), "utf8")
+    )
+      .trim()
+      .split("\n")
+      .filter(Boolean);
+    expect(graphEntities).toHaveLength(1);
+    expect(
+      await readFile(path.join(root, ".agentplane/context/derived/ontology/aliases.jsonl"), "utf8"),
+    ).toContain('"canonical_entity_id":"entity.context_writer"');
+  });
+
+  it("rejects semantic alias decisions whose canonical target is absent", async () => {
+    const root = await tempRoot();
+    await expect(
+      applyContextExtractionResult({
+        root,
+        raw: {
+          schema_version: 2,
+          kind: "context_extraction",
+          reasoning: [{ label: "resolve", summary: "Resolve a semantic alias." }],
+          source_refs: [{ path: "context/raw/source.md", lines: "1-4" }],
+          extracted_items: [
+            {
+              id: "resolution.missing",
+              kind: "entity_resolution",
+              summary: "The target candidate is not present in the canonical graph.",
+              source_refs: [{ path: "context/raw/source.md", lines: "1-4" }],
+              status: "accepted",
+              entity_resolution: {
+                source_term: "missing alias",
+                resolution: "alias_of",
+                canonical_entity_id: "entity.missing",
+                candidate_entities_checked: [
+                  {
+                    entity_id: "entity.missing",
+                    reason: "The candidate was named but is absent from the task baseline.",
+                  },
+                ],
+                comparison_dimensions: ["kind", "scope"],
+                evidence_for: ["The source claims equivalence."],
+                evidence_against: [],
+                decision_rationale: "The claimed target must exist before apply.",
+              },
+            },
+          ],
+        },
+      }),
+    ).rejects.toThrow("absent from the pre-write canonical graph");
   });
 });

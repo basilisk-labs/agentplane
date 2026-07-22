@@ -23,9 +23,19 @@ function validateCandidateEntity(raw: unknown, field: string): ContextExtraction
   return {
     entity_id: requireString(candidate.entity_id, `${field}.entity_id`),
     label: optionalString(candidate.label, `${field}.label`),
-    reason: optionalString(candidate.reason, `${field}.reason`),
+    reason: requireString(candidate.reason, `${field}.reason`),
+    evidence_for: optionalStringArray(candidate.evidence_for, `${field}.evidence_for`),
+    evidence_against: optionalStringArray(candidate.evidence_against, `${field}.evidence_against`),
   };
 }
+
+const ENTITY_RESOLUTION_DECISIONS = new Set([
+  "same_as",
+  "alias_of",
+  "distinct_entity",
+  "possibly_same_as",
+  "new_entity_proposal",
+]);
 
 export function validateEntityResolutionPayload(
   raw: unknown,
@@ -33,36 +43,76 @@ export function validateEntityResolutionPayload(
 ): ContextExtractionEntityResolutionRow {
   const row = requireRecord(raw, field);
   const resolution = requireString(row.resolution, `${field}.resolution`);
-  const candidateEntities =
-    row.candidate_entities_checked === undefined
-      ? undefined
-      : requireNonEmptyArray(
-          row.candidate_entities_checked,
-          `${field}.candidate_entities_checked`,
-          validateCandidateEntity,
-        );
+  if (!ENTITY_RESOLUTION_DECISIONS.has(resolution)) {
+    throw invalid(
+      `${field}.resolution`,
+      "same_as|alias_of|distinct_entity|possibly_same_as|new_entity_proposal",
+    );
+  }
+  const candidateEntities = requireArray(
+    row.candidate_entities_checked,
+    `${field}.candidate_entities_checked`,
+    validateCandidateEntity,
+  );
   const validated: ContextExtractionEntityResolutionRow = {
     ...row,
     source_term: requireString(row.source_term, `${field}.source_term`),
-    resolution,
+    resolution: resolution as ContextExtractionEntityResolutionRow["resolution"],
     canonical_entity_id: optionalString(row.canonical_entity_id, `${field}.canonical_entity_id`),
     proposed_entity_id: optionalString(row.proposed_entity_id, `${field}.proposed_entity_id`),
     candidate_entities_checked: candidateEntities,
+    comparison_dimensions: requireNonEmptyArray(
+      row.comparison_dimensions,
+      `${field}.comparison_dimensions`,
+      requireString,
+    ),
+    evidence_for: requireArray(row.evidence_for, `${field}.evidence_for`, requireString),
+    evidence_against: requireArray(
+      row.evidence_against,
+      `${field}.evidence_against`,
+      requireString,
+    ),
+    decision_rationale: requireString(row.decision_rationale, `${field}.decision_rationale`),
+    unresolved_questions: optionalStringArray(
+      row.unresolved_questions,
+      `${field}.unresolved_questions`,
+    ),
     why_not_existing: optionalString(row.why_not_existing, `${field}.why_not_existing`),
     why_not_alias_of_existing: optionalString(
       row.why_not_alias_of_existing,
       `${field}.why_not_alias_of_existing`,
     ),
   };
+  if (resolution === "same_as" || resolution === "alias_of") {
+    if (!validated.canonical_entity_id) {
+      throw invalid(`${field}.canonical_entity_id`, `non-empty string for ${resolution}`);
+    }
+    if (
+      !candidateEntities.some((candidate) => candidate.entity_id === validated.canonical_entity_id)
+    ) {
+      throw invalid(
+        `${field}.candidate_entities_checked`,
+        `candidate containing canonical_entity_id for ${resolution}`,
+      );
+    }
+    if (validated.evidence_for.length === 0) {
+      throw invalid(`${field}.evidence_for`, `non-empty array for ${resolution}`);
+    }
+  }
+  if (resolution === "possibly_same_as") {
+    if (candidateEntities.length === 0) {
+      throw invalid(`${field}.candidate_entities_checked`, "non-empty array for possibly_same_as");
+    }
+    if (!validated.unresolved_questions?.length) {
+      throw invalid(`${field}.unresolved_questions`, "non-empty array for possibly_same_as");
+    }
+  }
+  if (resolution === "distinct_entity" && candidateEntities.length === 0) {
+    throw invalid(`${field}.candidate_entities_checked`, "non-empty array for distinct_entity");
+  }
   if (resolution === "new_entity_proposal") {
     if (!validated.proposed_entity_id) {
       throw invalid(`${field}.proposed_entity_id`, "non-empty string for new_entity_proposal");
-    }
-    if (!candidateEntities?.length) {
-      throw invalid(
-        `${field}.candidate_entities_checked`,
-        "non-empty array for new_entity_proposal",
-      );
     }
     if (!validated.why_not_existing && !validated.why_not_alias_of_existing) {
       throw invalid(`${field}.why_not_existing`, "non-empty rationale for new_entity_proposal");

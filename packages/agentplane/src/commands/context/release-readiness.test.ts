@@ -699,6 +699,7 @@ describe("context release readiness guards", () => {
     const createdArgs = createTask.mock.calls[0]?.[0] as {
       parsed?: {
         description?: string;
+        taskDocSections?: Record<string, string>;
         extensions?: {
           "agentplane.context"?: {
             prompt_module_ref?: string;
@@ -711,7 +712,7 @@ describe("context release readiness guards", () => {
     };
     expect(createdArgs.parsed?.description).toContain("extraction-contract.json");
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_module_ref).toBe(
-      "framework/template/generated.artifact/context_assimilation/v1",
+      "framework/template/generated.artifact/context_assimilation/v2",
     );
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
@@ -724,7 +725,7 @@ describe("context release readiness guards", () => {
     ).toContain("frontmatter");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Reconcile: compare the source lock with the canonical snapshot");
+    ).toContain("Reconcile semantically: compare each source term");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("keep local detail under stable headings");
@@ -739,7 +740,11 @@ describe("context release readiness guards", () => {
     ).toContain("Refresh indexes and reports");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Reuse canonical pages/entities");
+    ).toContain("reuse `canonical_entity_id`");
+    expect(createdArgs.parsed?.taskDocSections?.Plan).toContain("Let CURATOR reconcile");
+    expect(createdArgs.parsed?.taskDocSections?.["Verify Steps"]).toContain(
+      "same_as/alias_of reuse an existing canonical ID",
+    );
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.wiki).toMatchObject({
       layout_strategy: "adaptive",
       frontmatter_required: true,
@@ -747,11 +752,18 @@ describe("context release readiness guards", () => {
     const blueprint = createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint;
     expect(blueprint?.id).toBe("context.maximum_assimilation");
     expect(blueprint?.required_gates).toEqual(
-      expect.arrayContaining(["source_set_locked", "reindex_after_writes"]),
+      expect.arrayContaining([
+        "source_set_locked",
+        "semantic_entity_reconciliation_recorded",
+        "semantic_resolution_evidence_validated",
+        "reindex_after_writes",
+      ]),
     );
     expect(blueprint?.stop_rules).toEqual(
       expect.arrayContaining([
         "pipeline_order_skipped",
+        "semantic_merge_without_comparative_evidence",
+        "forced_semantic_merge_under_uncertainty",
         "agent_handoff_missing_after_stalled_work",
       ]),
     );

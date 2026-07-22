@@ -22,6 +22,12 @@ export const contextMaximumAssimilationEvidence: readonly EvidenceRequirement[] 
     "Entity, alias, relation, conflict, and open-question extraction completed before narrative wiki synthesis.",
   ),
   evidence(
+    "context_max.semantic_resolution",
+    "artifact",
+    "work_unit",
+    "CURATOR-authored entity-resolution rows comparing canonical candidates across identity dimensions, evidence for and against, rationale, and unresolved questions; same/alias decisions reuse an existing canonical entity.",
+  ),
+  evidence(
     "context_max.topology",
     "artifact",
     "artifact_write",
@@ -72,6 +78,24 @@ export const contextMaximumAssimilationStopRules: readonly StopRule[] = [
     severity: "stop",
     reason:
       "Entity/relation/glossary extraction and pre-write reconciliation must happen before narrative wiki synthesis.",
+  },
+  {
+    id: "context_max_semantic_resolution_missing",
+    severity: "stop",
+    reason:
+      "Every entity-bearing source term needs a CURATOR-authored semantic resolution before graph or Wiki synthesis.",
+  },
+  {
+    id: "context_max_semantic_merge_without_comparative_evidence",
+    severity: "stop",
+    reason:
+      "Same-entity and alias decisions require compared candidates, identity dimensions, evidence for and against, and a reproducible rationale; stable IDs or similar spelling are not semantic proof.",
+  },
+  {
+    id: "context_max_forced_semantic_merge_under_uncertainty",
+    severity: "approval_required",
+    reason:
+      "Conflicting or incomplete identity evidence must remain distinct_entity or possibly_same_as instead of being forced into a canonical merge.",
   },
   {
     id: "context_max_missing_topology_decision",

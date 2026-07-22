@@ -43,7 +43,41 @@ describe("context ingest task pack", () => {
     await write(
       root,
       ".agentplane/context/derived/graph/entities.jsonl",
-      `${JSON.stringify({ id: "entity.payments", kind: "concept", label: "Payments" })}\n`,
+      `${JSON.stringify({
+        id: "entity.payments",
+        kind: "concept",
+        label: "Payments",
+        summary: "Canonical payments concept.",
+        source_refs: ["context/raw/specs/legacy-payments.md#L1-L4"],
+      })}\n`,
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/ontology/aliases.jsonl",
+      `${JSON.stringify({
+        id: "alias.payments.billing",
+        alias: "Billing",
+        canonical_entity_id: "entity.payments",
+      })}\n`,
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/graph/edges.jsonl",
+      `${JSON.stringify({
+        id: "edge.payments.uses.ledger",
+        from: "entity.payments",
+        to: "entity.ledger",
+        relation: "uses",
+      })}\n`,
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/wiki/page-manifests.jsonl",
+      `${JSON.stringify({
+        id: "page.payments",
+        path: "context/wiki/payments.md",
+        canonical_entity_ids: ["entity.payments"],
+      })}\n`,
     );
     await write(
       root,
@@ -54,11 +88,13 @@ describe("context ingest task pack", () => {
 
     const tasks: { id: string; owner: string }[] = [];
     let parsedAllowedOutputs: string[] = [];
+    let parsedTaskDocSections: TaskNewParsed["taskDocSections"];
     const createTask = vi.fn(({ parsed }: { parsed: TaskNewParsed }) => {
       const contextExtension = parsed.extensions?.["agentplane.context"] as
         | { allowed_outputs?: string[] }
         | undefined;
       parsedAllowedOutputs = contextExtension?.allowed_outputs ?? [];
+      parsedTaskDocSections = parsed.taskDocSections;
       tasks.push({ id: "202607021200-CTXPACK", owner: "CURATOR" });
     });
     const ctx = {
@@ -87,6 +123,7 @@ describe("context ingest task pack", () => {
       `${taskRoot}/expected-artifacts.json`,
     );
     const extractionContract = await readJson<{
+      version: number;
       sgr_schema_version: number;
       typed_payloads: Record<string, string[]>;
       conditional_required: { when: { equals: string }; required: string[] }[];
@@ -104,6 +141,19 @@ describe("context ingest task pack", () => {
         graph_entities: { id: string; label: string }[];
       };
     }>(root, `${taskRoot}/canonical-snapshot.json`);
+    const canonicalEntityCatalog = await readJson<{
+      version: number;
+      entity_count: number;
+      catalog_sha256: string;
+      entities: {
+        id: string;
+        label: string;
+        aliases: string[];
+        source_refs: string[];
+        wiki_paths: string[];
+        relations: unknown[];
+      }[];
+    }>(root, `${taskRoot}/canonical-entity-catalog.json`);
     const skeletonText = await readFile(
       path.join(root, taskRoot, "source-spans.skeleton.jsonl"),
       "utf8",
@@ -119,7 +169,9 @@ describe("context ingest task pack", () => {
     expect(spans[0]?.span_id).toMatch(/^span\.[a-f0-9]{12}\.[a-f0-9]{12}\.1$/u);
     expect(contextPack).toContain("Generated spans: 1.");
     expect(contextPack).toContain("exact SGR v2 payload requirements");
-    expect(extractionContract.sgr_schema_version).toBe(2);
+    expect(contextPack).toContain("CURATOR must decide meaning");
+    expect(contextPack).toContain("stable ID equality");
+    expect(extractionContract).toMatchObject({ version: 2, sgr_schema_version: 2 });
     expect(extractionContract.typed_payloads.topology_decision).toContain(
       "topology_decision.source_shape.rationale",
     );
@@ -130,7 +182,6 @@ describe("context ingest task pack", () => {
       },
       required: [
         "entity_resolution.proposed_entity_id",
-        "entity_resolution.candidate_entities_checked[].entity_id",
         "entity_resolution.why_not_existing|why_not_alias_of_existing",
       ],
     });
@@ -157,8 +208,31 @@ describe("context ingest task pack", () => {
     expect(canonicalSnapshot.surfaces.wiki.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
     expect(canonicalSnapshot.surfaces.facts.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
     expect(canonicalSnapshot.surfaces.graph_entities.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
+    expect(canonicalEntityCatalog).toMatchObject({
+      version: 1,
+      entity_count: 1,
+      entities: [
+        {
+          id: "entity.payments",
+          label: "Payments",
+          aliases: ["Billing"],
+          source_refs: ["context/raw/specs/legacy-payments.md#L1-L4"],
+          wiki_paths: ["context/wiki/payments.md"],
+          relations: [
+            {
+              direction: "outgoing",
+              relation: "uses",
+              entity_id: "entity.ledger",
+              edge_id: "edge.payments.uses.ledger",
+            },
+          ],
+        },
+      ],
+    });
+    expect(canonicalEntityCatalog.catalog_sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
     expect(expectedArtifacts.required).toContain(`${taskRoot}/source-spans.skeleton.jsonl`);
     expect(expectedArtifacts.required).toContain(`${taskRoot}/extraction-contract.json`);
+    expect(expectedArtifacts.required).toContain(`${taskRoot}/canonical-entity-catalog.json`);
     expect(expectedArtifacts.required).toEqual(
       expect.arrayContaining([
         ".agentplane/context/derived/ontology/entity-resolution.jsonl",
@@ -184,10 +258,16 @@ describe("context ingest task pack", () => {
         ".agentplane/tasks/${taskId}/context-pack.md",
         ".agentplane/tasks/${taskId}/extraction-contract.json",
         ".agentplane/tasks/${taskId}/canonical-snapshot.json",
+        ".agentplane/tasks/${taskId}/canonical-entity-catalog.json",
         ".agentplane/tasks/${taskId}/source-set.lock.json",
         ".agentplane/tasks/${taskId}/source-spans.skeleton.jsonl",
         ".agentplane/tasks/${taskId}/expected-artifacts.json",
       ]),
     );
+    expect(parsedTaskDocSections?.Plan).toContain("Let CURATOR reconcile");
+    expect(parsedTaskDocSections?.["Verify Steps"]).toContain(
+      "same_as/alias_of reuse an existing canonical ID",
+    );
+    expect(parsedTaskDocSections?.Findings).toContain("Semantic identity is agent-owned");
   });
 });

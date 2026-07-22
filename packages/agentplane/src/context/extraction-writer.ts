@@ -219,6 +219,26 @@ export async function applyContextExtractionResult(opts: {
     extractionQuality.set(rowId(row), row);
   }
 
+  const declaredEntityIds = new Set(
+    result.extracted_items.flatMap((item) =>
+      item.kind === "graph_entity" && item.entity ? [item.entity.id] : [],
+    ),
+  );
+  for (const item of result.extracted_items) {
+    if (item.kind !== "entity_resolution" || !item.entity_resolution) continue;
+    const resolution = stringField(item.entity_resolution, "resolution");
+    if (resolution !== "same_as" && resolution !== "alias_of") continue;
+    const canonicalEntityId = stringField(item.entity_resolution, "canonical_entity_id");
+    if (
+      !canonicalEntityId ||
+      (!entities.has(canonicalEntityId) && !declaredEntityIds.has(canonicalEntityId))
+    ) {
+      throw new Error(
+        `Entity resolution ${item.id} cannot apply ${resolution}: canonical entity ${canonicalEntityId || "<missing>"} is absent from the pre-write canonical graph`,
+      );
+    }
+  }
+
   function addProvenance(item: ContextExtractionItem, artifactPath: string, id = item.id): void {
     for (const row of provenanceRows(
       { ...item, id },

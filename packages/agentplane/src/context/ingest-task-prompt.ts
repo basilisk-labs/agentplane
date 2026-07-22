@@ -3,7 +3,7 @@ import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "../runtime/prompt-modules
 import type { ContextWorkspaceMode } from "./ingest-task.js";
 
 export const CONTEXT_ASSIMILATION_PROMPT_ADDRESS =
-  "framework/template/generated.artifact/context_assimilation/v1";
+  "framework/template/generated.artifact/context_assimilation/v2";
 
 export function buildContextAssimilationPromptModule(
   workspaceMode?: ContextWorkspaceMode,
@@ -20,7 +20,7 @@ export function buildContextAssimilationPromptModule(
       surface: "template",
       target: "generated.artifact",
       slot: "body",
-      name: "context_assimilation_v1",
+      name: "context_assimilation_v2",
     },
     owner: { kind: "framework", package_name: "agentplane" },
     title: "Context assimilation prompt",
@@ -39,19 +39,22 @@ export function buildContextAssimilationPromptModule(
       "- `source-set.lock.json`: exact selected paths, hashes, status, type, and size.",
       "- `source-spans.skeleton.jsonl`: stable span ids for line-addressed extraction and coverage.",
       "- `canonical-snapshot.json`: current surface counts/digests plus bounded existing page/entity candidates.",
+      "- `canonical-entity-catalog.json`: complete existing entity inventory with aliases, source refs, wiki targets, and graph neighborhoods. Treat it as evidence to inspect, not as an automatic matching result.",
       "- `extraction-contract.json`: authoritative SGR v2 payload fields and a complete valid example.",
       "- `expected-artifacts.json`: finish contract.",
       "",
       "## Execute in order",
       "",
-      "1. Reconcile: compare the source lock with the canonical snapshot. Run `agentplane context search`, `agentplane context graph show`, and `agentplane context graph neighbors` for candidate identities. Reuse canonical pages/entities; keep uncertain identity as `possibly_same_as` or an open question.",
-      "2. Classify every selected span as significant, boilerplate, redacted, duplicate, conflict, out-of-scope, or unresolved.",
-      "3. Extract entities, aliases, typed claims, relations, conflicts, open questions, page decisions, a source-shaped topology decision, and coverage into one SGR v2 `context_extraction` JSON file matching `extraction-contract.json`.",
-      "4. Compile the formal layer and linked wiki atomically with `agentplane context extraction apply <sgr-json> --task-id <task-id> --synthesize-wiki`. Do not hand-edit writer-owned JSONL or managed wiki blocks when the supported writer can materialize them.",
-      "5. Review the compiled `context/wiki/**` pages. The compiler updates existing canonical pages before creating new ones, preserves human prose outside managed blocks, records stable atoms and graph references, and appends an idempotent entry to `context/wiki/log.md`. Create page decisions only for reusable concepts/entities/decisions/requirements/policies/risks/definitions/workflows/modules; keep local detail under stable headings.",
-      "6. Link first meaningful mentions with case-stable Obsidian wikilinks such as `[[canonical-page|Label]]` or `[[canonical-page#Stable Heading|Label]]`. Use Markdown links for source refs and external/file links. Keep `context/wiki/glossary.md` a thin alias/navigation index over canonical pages/entities.",
-      "7. Cite source-backed prose with numeric notes and put line-addressed raw Markdown links in a trailing `## Sources`. Preserve modality, validity, status, scope, supersession, confidence, visibility, and contradictions; never overwrite conflicting knowledge silently.",
-      "8. Refresh indexes and reports, then evaluate practical retrieval through wiki/derived entrypoints. The result must remain useful if raw files disappear, while private/sensitive source content must not leak into public wiki/task/ACR surfaces.",
+      "1. Reconcile semantically: compare each source term with the complete canonical entity catalog, then run `agentplane context search`, `agentplane context graph show`, and `agentplane context graph neighbors` for plausible candidates. CURATOR owns this judgment; deterministic AgentPlane code must not infer equivalence from spelling, identifiers, embeddings, or heuristics.",
+      "2. For every entity-bearing term, compare kind, scope, time/validity, ownership, defining properties, aliases, source evidence, wiki use, and graph neighborhood. Record candidates checked, decision dimensions, evidence for and against, rationale, and unresolved questions in one `entity_resolution` row.",
+      "3. Choose exactly one resolution: `same_as`, `alias_of`, `distinct_entity`, `possibly_same_as`, or `new_entity_proposal`. `same_as` and `alias_of` must reuse `canonical_entity_id` and must not emit a duplicate `graph_entity`. `possibly_same_as` must preserve both identities and state what evidence is missing. `new_entity_proposal` requires evidence that checked candidates do not match.",
+      "4. Classify every selected span as significant, boilerplate, redacted, duplicate, conflict, out-of-scope, or unresolved.",
+      "5. Extract entities, aliases, typed claims, relations, conflicts, open questions, page decisions, a source-shaped topology decision, and coverage into one SGR v2 `context_extraction` JSON file matching `extraction-contract.json`.",
+      "6. Compile the formal layer and linked wiki atomically with `agentplane context extraction apply <sgr-json> --task-id <task-id> --synthesize-wiki`. Do not hand-edit writer-owned JSONL or managed wiki blocks when the supported writer can materialize them.",
+      "7. Review the compiled `context/wiki/**` pages. The compiler updates existing canonical pages before creating new ones, preserves human prose outside managed blocks, records stable atoms and graph references, and appends an idempotent entry to `context/wiki/log.md`. Create page decisions only for reusable concepts/entities/decisions/requirements/policies/risks/definitions/workflows/modules; keep local detail under stable headings.",
+      "8. Link first meaningful mentions with case-stable Obsidian wikilinks such as `[[canonical-page|Label]]` or `[[canonical-page#Stable Heading|Label]]`. Use Markdown links for source refs and external/file links. Keep `context/wiki/glossary.md` a thin alias/navigation index over canonical pages/entities.",
+      "9. Cite source-backed prose with numeric notes and put line-addressed raw Markdown links in a trailing `## Sources`. Preserve modality, validity, status, scope, supersession, confidence, visibility, and contradictions; never overwrite conflicting knowledge silently.",
+      "10. Refresh indexes and reports, then evaluate practical retrieval through wiki/derived entrypoints. The result must remain useful if raw files disappear, while private/sensitive source content must not leak into public wiki/task/ACR surfaces.",
       "",
       "## Required quality",
       "",
@@ -59,7 +62,8 @@ export function buildContextAssimilationPromptModule(
       "- Wiki pages require YAML frontmatter for stable identity, modality/status, source refs, aliases, tags, and graph refs.",
       "- `context/wiki/index.md` must expose one-line page summaries and source counts; `context/wiki/log.md` is append-only and parseable by humans and agents.",
       "- Every significant span needs a coverage row or an explicit reason. Every factual output needs precise `source_refs`; every new/changed page needs page-creation and topology support.",
-      "- Graph entities must be reconciled before creation and linked by useful edges. Aliases must resolve to one canonical entity unless explicitly uncertain.",
+      "- Graph entities must be reconciled before creation and linked by useful edges. Semantic identity requires comparative evidence; stable IDs and lexical similarity are lookup keys, not proof. Aliases must resolve to one canonical entity unless explicitly uncertain.",
+      "- Stop rather than merge when kind, scope, validity, ownership, or defining properties conflict. Keep `possibly_same_as` and `distinct_entity` decisions visible for later review.",
       "- Record stale, conflict, unresolved, or no-derived-record outcomes explicitly. Do not promote weak claims, invent canonical terms, flatten contradictions, or claim completeness from raw-only recall.",
       "- If work stalls or ownership changes, record a handoff with source set, changed files, verification state, and next action.",
       "",
