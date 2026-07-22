@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221344-D9JTEY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T14:44:32.393Z",
+  "verdict": "pass",
+  "summary": "v0.6.24 release candidate is ready after the hosted lockfile review fix.",
+  "evaluated_sha": "0ceb9703e0470c672153ea8c461d391df5608121",
+  "blueprint_digest": "e77ff3804f61ca6e5bc784823f05f7ec8c4a484ce8bef7b48894a007df5e1a1e",
+  "findings": [
+    "bun.lock now records 0.6.24 for all publishable workspaces and internal workspace dependencies; frozen install, release parity, two focused release mutation files with 5 tests, and release:check pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221344-D9JTEY/README.md",
+    "bun.lock"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Publication remains deferred until the refreshed PR head passes hosted checks and the merged main SHA completes Publish to npm."
+  ]
+}

@@ -31,6 +31,7 @@ Created: 2026-07-22T13:45:45.805Z
 ```text
  .agentplane/WORKFLOW.md                            |   3 +-
  .agentplane/workflows/last-known-good.md           |   4 +-
+ bun.lock                                           |  12 ++---
  docs/assets/header.svg                             |   4 +-
  docs/assets/readme-headers/adr.svg                 |   4 +-
  docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
@@ -56,7 +57,7 @@ Created: 2026-07-22T13:45:45.805Z
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.24.png    | Bin 0 -> 54287 bytes
  website/static/img/social/manifest.json            |   8 +++
- 27 files changed, 111 insertions(+), 42 deletions(-)
+ 28 files changed, 117 insertions(+), 48 deletions(-)
 ```
 
 </details>
