@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221555-JSEZ5E",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T16:34:28.487Z",
+  "verdict": "pass",
+  "summary": "Quality review passed for implementation HEAD 4b8b9e4b17fa after complete local CI.",
+  "evaluated_sha": "4b8b9e4b17faa1918c3aadd480083a751735bacf",
+  "blueprint_digest": "6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c",
+  "findings": [
+    "The context executor owns semantic identity; deterministic code supplies evidence, validates the structured outcome, and applies only declared canonical targets."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221555-JSEZ5E/README.md",
+    "packages/agentplane/src/context/ingest-task-pack.ts",
+    "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
+    "packages/agentplane/src/context/extraction-writer.ts",
+    "ci:local:fast passed",
+    "manual-e2e:/tmp/agentplane-semantic-e2e2.pt2VHA"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Uncertain identity remains possibly_same_as until additional evidence is available."
+  ]
+}

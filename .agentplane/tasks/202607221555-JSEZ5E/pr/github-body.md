@@ -25,7 +25,7 @@ reconciliation E2E.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-22T15:56:49.832Z
+- Updated: 2026-07-22T16:41:16.428Z
 - Branch: task/202607221555-JSEZ5E/delegate-semantic-entity-reconciliation-to-the-c
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

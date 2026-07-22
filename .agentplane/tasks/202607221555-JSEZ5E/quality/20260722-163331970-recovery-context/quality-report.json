@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221555-JSEZ5E",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T16:33:31.970Z",
+  "verdict": "pass",
+  "summary": "Quality review passed for implementation HEAD ab1d7e68c662 after the complete local CI lane.",
+  "evaluated_sha": "ab1d7e68c66289b2d767d0af734019587d419a14",
+  "blueprint_digest": "6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c",
+  "findings": [
+    "CURATOR receives a self-contained canonical catalog, semantic comparison protocol, explicit uncertainty states, and task-specific acceptance criteria.",
+    "Deterministic AgentPlane code never infers semantic equivalence; it rejects missing targets or evidence and atomically applies the executor decision."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221555-JSEZ5E/README.md",
+    "packages/agentplane/src/context/ingest-task-pack.ts",
+    "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
+    "packages/agentplane/src/context/extraction-writer.ts",
+    "packages/agentplane/src/context/maximum-assimilation-artifacts-validation-ontology.test.ts",
+    "ci:local:fast passed: 370 files 2185 tests plus 5 critical CLI E2E chunks",
+    "manual-e2e:/tmp/agentplane-semantic-e2e2.pt2VHA task=202607221613-Q8B3XW entities=2 alias=Billing->entity.payments"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Semantic correctness remains dependent on executor reasoning and source evidence; uncertainty is preserved instead of silently merged."
+  ]
+}
