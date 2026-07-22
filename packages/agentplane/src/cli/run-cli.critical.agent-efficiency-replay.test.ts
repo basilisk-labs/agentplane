@@ -61,6 +61,7 @@ type ObservedCell<T extends number | boolean> = {
 };
 type ReplayScenario = {
   expected_episode_trace: string[];
+  expected_lifecycle_trace: string[];
   expected_outcomes: Record<OutcomeField, boolean> & { outcome: string };
   id: string;
 };
@@ -72,12 +73,41 @@ type HarnessManifest = {
 };
 type EvidencePayload = {
   diagnostics: {
-    latency_ms: Record<"time_to_first_scoped_mutation_ms" | "time_to_verified_result_ms", number>;
+    latency_ms: Record<
+      | "harness_setup_latency_ms"
+      | "time_to_first_scoped_mutation_ms"
+      | "time_to_verified_result_ms",
+      number
+    >;
   };
   evidence: { critical_fixture_receipt: boolean };
+  episode_ledger: {
+    episode_index: number;
+    provider_usage: {
+      cached_input_tokens: number;
+      input_tokens: number;
+      output_tokens: number;
+      reasoning_output_tokens: number;
+      turn_completed_events: number;
+    };
+    role: string;
+  }[];
+  lifecycle_control: {
+    call_count: number;
+    provenance: "fixture_control";
+    trace: string[];
+  };
   metrics: Record<MetricField, number>;
   observed_outcomes: Record<OutcomeField, boolean>;
-  token_usage_by_role: Record<string, Record<TokenField, number>>;
+  provider_usage_by_role: Record<
+    string,
+    {
+      cached_input_tokens: number;
+      input_tokens: number;
+      output_tokens: number;
+      reasoning_output_tokens: number;
+    }
+  >;
   [key: string]: unknown;
 };
 type EvidenceBundle = {
@@ -105,7 +135,9 @@ type ReplayEnvelope = {
     captured_at: string;
     host_fingerprint: string;
     latency_ms: Record<
-      "time_to_first_scoped_mutation_ms" | "time_to_verified_result_ms",
+      | "harness_setup_latency_ms"
+      | "time_to_first_scoped_mutation_ms"
+      | "time_to_verified_result_ms",
       ObservedCell<number>
     >;
   };
@@ -209,12 +241,13 @@ function observed<T extends number | boolean>(
   value: T,
   artifactSha256: string,
   source: string,
+  category = "test_control",
 ): ObservedCell<T> {
   return {
     provenance: {
       artifact_id: "critical_fixture_receipt",
       artifact_sha256: artifactSha256,
-      category: "test_control",
+      category,
       source,
     },
     resolution: "observed",
@@ -251,13 +284,35 @@ function makeRecordPair(options: {
         ? base + diagnosticOffset
         : base;
   }
-  const tokenUsage: Record<string, Record<TokenField, number>> = {};
-  for (const [roleIndex, role] of roles.entries()) {
-    tokenUsage[role] = {
-      input_tokens: 100 + runIndex + roleIndex,
-      output_tokens: 20 + runIndex + roleIndex,
-      reasoning_tokens: 10 + runIndex + roleIndex,
+  const episodeLedger = scenario.expected_episode_trace.map((role, episodeIndex) => ({
+    episode_index: episodeIndex + 1,
+    provider_usage: {
+      cached_input_tokens: 40 + runIndex + episodeIndex,
+      input_tokens: 100 + runIndex + episodeIndex,
+      output_tokens: 20 + runIndex + episodeIndex,
+      reasoning_output_tokens: 10 + runIndex + episodeIndex,
+      turn_completed_events: 1,
+    },
+    role,
+  }));
+  metrics.llm_episodes = episodeLedger.length;
+  metrics.prompt_count = episodeLedger.length;
+  metrics.lifecycle_calls = scenario.expected_lifecycle_trace.length;
+  const providerUsageByRole: EvidencePayload["provider_usage_by_role"] = {};
+  for (const role of roles) {
+    providerUsageByRole[role] = {
+      cached_input_tokens: 0,
+      input_tokens: 0,
+      output_tokens: 0,
+      reasoning_output_tokens: 0,
     };
+  }
+  for (const episode of episodeLedger) {
+    const roleUsage = providerUsageByRole[episode.role];
+    roleUsage.cached_input_tokens += episode.provider_usage.cached_input_tokens;
+    roleUsage.input_tokens += episode.provider_usage.input_tokens;
+    roleUsage.output_tokens += episode.provider_usage.output_tokens;
+    roleUsage.reasoning_output_tokens += episode.provider_usage.reasoning_output_tokens;
   }
   const outcomes = {} as Record<OutcomeField, boolean>;
   for (const field of OUTCOME_FIELDS) {
@@ -266,14 +321,21 @@ function makeRecordPair(options: {
   const payload: EvidencePayload = {
     diagnostics: {
       latency_ms: {
+        harness_setup_latency_ms: 20 + runIndex + diagnosticOffset,
         time_to_first_scoped_mutation_ms: 30 + runIndex + diagnosticOffset,
         time_to_verified_result_ms: 60 + runIndex + diagnosticOffset,
       },
     },
     evidence: { critical_fixture_receipt: true },
+    episode_ledger: episodeLedger,
+    lifecycle_control: {
+      call_count: scenario.expected_lifecycle_trace.length,
+      provenance: "fixture_control",
+      trace: scenario.expected_lifecycle_trace,
+    },
     metrics,
     observed_outcomes: outcomes,
-    token_usage_by_role: tokenUsage,
+    provider_usage_by_role: providerUsageByRole,
   };
   const artifactSha256 = digest(canonical(payload));
   const runId = `${scenario.id}/run-${String(runIndex).padStart(2, "0")}`;
@@ -295,7 +357,14 @@ function makeRecordPair(options: {
   const metricsCells = Object.fromEntries(
     METRIC_FIELDS.map((field) => [
       field,
-      observed(metrics[field], artifactSha256, `metrics.${field}`),
+      field === "lifecycle_calls"
+        ? observed(
+            metrics[field],
+            artifactSha256,
+            "lifecycle_control.call_count",
+            "fixture_control",
+          )
+        : observed(metrics[field], artifactSha256, `metrics.${field}`),
     ]),
   ) as Record<MetricField, ObservedCell<number>>;
   const outcomeCells = Object.fromEntries(
@@ -310,7 +379,13 @@ function makeRecordPair(options: {
       Object.fromEntries(
         TOKEN_FIELDS.map((field) => [
           field,
-          observed(tokenUsage[role][field], artifactSha256, `token_usage_by_role.${role}.${field}`),
+          observed(
+            field === "reasoning_tokens"
+              ? providerUsageByRole[role].reasoning_output_tokens
+              : providerUsageByRole[role][field],
+            artifactSha256,
+            `provider_usage_by_role.${role}.${field === "reasoning_tokens" ? "reasoning_output_tokens" : field}`,
+          ),
         ]),
       ),
     ]),
@@ -335,6 +410,11 @@ function makeRecordPair(options: {
       captured_at: `2026-01-${String(runIndex).padStart(2, "0")}T00:00:00.000Z`,
       host_fingerprint: digest(`host-${runIndex}`),
       latency_ms: {
+        harness_setup_latency_ms: observed(
+          payload.diagnostics.latency_ms.harness_setup_latency_ms,
+          artifactSha256,
+          "diagnostics.latency_ms.harness_setup_latency_ms",
+        ),
         time_to_first_scoped_mutation_ms: observed(
           payload.diagnostics.latency_ms.time_to_first_scoped_mutation_ms,
           artifactSha256,
@@ -487,6 +567,26 @@ describeCritical("critical: RF-04 anchored replay telemetry", () => {
     expect(baseline.run_manifest).toHaveLength(50);
     expect(baseline.structural_projection.scenarios).toHaveLength(10);
     expect(baseline.golden_outcome_comparison.verdict).toBe("matches_control");
+  });
+
+  it("keeps every registry lifecycle trace explicit as a fixture control", async () => {
+    const context = await testContext();
+
+    for (const [scenarioIndex, scenario] of context.registry.scenarios.entries()) {
+      const pair = context.pairs[scenarioIndex * context.replay.MINIMUM_REPLAY_RUNS];
+      expect(pair.evidence.value.artifacts[0].payload.lifecycle_control).toEqual({
+        call_count: scenario.expected_lifecycle_trace.length,
+        provenance: "fixture_control",
+        trace: scenario.expected_lifecycle_trace,
+      });
+      expect(pair.envelope.value.metrics.lifecycle_calls).toMatchObject({
+        provenance: {
+          category: "fixture_control",
+          source: "lifecycle_control.call_count",
+        },
+        value: scenario.expected_lifecycle_trace.length,
+      });
+    }
   });
 
   it("keeps timestamps, hosts, and latency samples outside the structural digest", async () => {
@@ -648,6 +748,7 @@ describeCritical("critical: RF-04 anchored replay telemetry", () => {
         HOME: "/Users/operator",
         OPENAI_API_KEY: "explicit-secret-value",
         PATH: "/usr/bin",
+        TMPDIR: "/sensitive/tmp",
         UNRELATED_SECRET: "must-not-pass",
       },
       ["OPENAI_API_KEY"],
@@ -687,5 +788,53 @@ describeCritical("critical: RF-04 anchored replay telemetry", () => {
         registry: context.registry,
       }),
     ).toThrow("must use provider_reported provenance");
+  });
+
+  it("rejects episode count, order, final-event, and role-aggregate drift", async () => {
+    const context = await testContext();
+    const build = (pairs: RecordPair[]) =>
+      context.replay.buildReplayBaseline({
+        allowTestControls: true,
+        driverIdentity: context.driverIdentity,
+        envelopeRecords: pairs.map((pair) => pair.envelope),
+        evidenceRecords: pairs.map((pair) => pair.evidence),
+        harnessManifest: context.harness,
+        registry: context.registry,
+      });
+
+    const missingEpisode = clonedPairs(context.pairs);
+    missingEpisode[0].evidence.value.artifacts[0].payload.episode_ledger.pop();
+    relinkPair(missingEpisode[0]);
+    expect(() => build(missingEpisode)).toThrow("has 0/1 expected episodes");
+
+    const wrongOrder = clonedPairs(context.pairs);
+    wrongOrder[5].evidence.value.artifacts[0].payload.episode_ledger[0].role = "EVALUATOR";
+    relinkPair(wrongOrder[5]);
+    expect(() => build(wrongOrder)).toThrow("must preserve expected trace role CODER");
+
+    const duplicateFinal = clonedPairs(context.pairs);
+    duplicateFinal[0].evidence.value.artifacts[0].payload.episode_ledger[0].provider_usage.turn_completed_events = 2;
+    relinkPair(duplicateFinal[0]);
+    expect(() => build(duplicateFinal)).toThrow(
+      "must contain exactly one final turn.completed event",
+    );
+
+    const aggregateDrift = clonedPairs(context.pairs);
+    aggregateDrift[0].evidence.value.artifacts[0].payload.provider_usage_by_role.CODER.reasoning_output_tokens += 1;
+    relinkPair(aggregateDrift[0]);
+    expect(() => build(aggregateDrift)).toThrow("must equal the exact episode ledger sum");
+
+    const lifecycleTraceDrift = clonedPairs(context.pairs);
+    lifecycleTraceDrift[0].evidence.value.artifacts[0].payload.lifecycle_control.trace.pop();
+    relinkPair(lifecycleTraceDrift[0]);
+    expect(() => build(lifecycleTraceDrift)).toThrow("must equal the exact registry control");
+
+    const lifecycleProvenanceDrift = clonedPairs(context.pairs);
+    lifecycleProvenanceDrift[0].envelope.value.metrics.lifecycle_calls.provenance.category =
+      "supervisor_observed";
+    lifecycleProvenanceDrift[0].envelope.bytes = canonical(
+      lifecycleProvenanceDrift[0].envelope.value,
+    );
+    expect(() => build(lifecycleProvenanceDrift)).toThrow("must use fixture_control provenance");
   });
 });

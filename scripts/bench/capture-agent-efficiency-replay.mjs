@@ -11,6 +11,7 @@ import {
 import {
   MINIMUM_REPLAY_RUNS,
   REPLAY_ANCHOR_COMMIT,
+  assertReplayEnvelope,
   buildReplayBaseline,
   buildReplayDriverEnvironment,
   createReplayDriverIdentity,
@@ -50,6 +51,25 @@ const DEFAULT_OUTPUT_PATH = path.join(
   "baselines",
   "agent-efficiency-pre-v0.7-replay.json",
 );
+export const REPLAY_DRIVER_TURN_TIMEOUT_MS = 240_000;
+const REPLAY_DRIVER_SETUP_TIMEOUT_MS = 5 * 60 * 1000;
+const REPLAY_DRIVER_EXIT_GRACE_MS = 60_000;
+const REPLAY_DRIVER_MAX_TIMEOUT_MS = 25 * 60 * 1000;
+
+export function replayDriverTimeoutMs(scenario) {
+  const episodeCount = scenario?.expected_episode_trace?.length;
+  if (!Number.isInteger(episodeCount) || episodeCount < 0) {
+    throw new Error("replay scenario must declare a non-negative expected episode trace");
+  }
+  const timeout =
+    REPLAY_DRIVER_SETUP_TIMEOUT_MS +
+    episodeCount * REPLAY_DRIVER_TURN_TIMEOUT_MS +
+    REPLAY_DRIVER_EXIT_GRACE_MS;
+  if (timeout > REPLAY_DRIVER_MAX_TIMEOUT_MS) {
+    throw new Error("replay scenario exceeds the bounded parent driver timeout contract");
+  }
+  return timeout;
+}
 
 function helpText() {
   return [
@@ -67,6 +87,7 @@ function helpText() {
     "  --output <path>      Replay baseline output path.",
     "  --driver <path>      Explicitly authorized local driver. It runs once per isolated scenario/run.",
     "  --driver-env <names>  Comma-separated environment fields explicitly allowed for the driver.",
+    "  --pilot              Run only direct/run-01, validate it in memory, and persist nothing.",
     "  --replace            Replace envelopes and evidence only after a complete staged capture validates.",
     "  --help               Show this help text.",
     "",
@@ -74,7 +95,7 @@ function helpText() {
     "  argv: --scenario <id> --run-index <n> --output <file> --evidence-output <file>",
     "  env: only safe process fields, explicit --driver-env fields, and AGENTPLANE_RF04_REPLAY_* contract fields.",
     "  output: one canonical sanitized envelope plus one canonical content-addressed evidence bundle;",
-    "          provider usage must include explicit reasoning_tokens.",
+    "          provider usage must include explicit reasoning_output_tokens mapped to reasoning_tokens.",
   ].join("\n");
 }
 
@@ -90,7 +111,7 @@ function parseArgs(argv) {
       "driver",
       "driver-env",
     ],
-    booleanFlags: ["replace", "help"],
+    booleanFlags: ["replace", "pilot", "help"],
     aliases: { h: "help" },
   });
   if (positionals.length > 0) {
@@ -113,6 +134,7 @@ function parseArgs(argv) {
     evidenceDirectory: path.resolve(flags["evidence-dir"] ?? DEFAULT_EVIDENCE_DIRECTORY),
     help: flags.help === true,
     outputPath: path.resolve(flags.output ?? DEFAULT_OUTPUT_PATH),
+    pilot: flags.pilot === true,
     registryPath: path.resolve(flags.registry ?? DEFAULT_REGISTRY_PATH),
     replace: flags.replace === true,
     runs,
@@ -144,23 +166,119 @@ function expectedRoles(scenario) {
 }
 
 function runChecked(command, args, options, label) {
-  const encoding = Object.hasOwn(options, "encoding") ? options.encoding : "utf8";
+  const { exposeStderr = true, ...spawnOptions } = options;
+  const encoding = Object.hasOwn(spawnOptions, "encoding") ? spawnOptions.encoding : "utf8";
   const result = spawnSync(command, args, {
-    ...options,
+    ...spawnOptions,
     encoding,
-    maxBuffer: options.maxBuffer ?? 128 * 1024 * 1024,
+    maxBuffer: spawnOptions.maxBuffer ?? 128 * 1024 * 1024,
   });
-  if (result.error) throw new Error(`${label} failed to start: ${result.error.message}`);
+  if (result.error) {
+    throw new Error(
+      exposeStderr
+        ? `${label} failed to start: ${result.error.message}`
+        : `${label} failed to start or exceeded its fixed timeout`,
+    );
+  }
   if (result.status !== 0) {
     const stderr =
-      typeof result.stderr === "string"
+      exposeStderr && typeof result.stderr === "string"
         ? result.stderr.trim()
-        : Buffer.isBuffer(result.stderr)
+        : exposeStderr && Buffer.isBuffer(result.stderr)
           ? result.stderr.toString("utf8").trim()
           : "";
     throw new Error(`${label} failed with exit ${result.status}${stderr ? `: ${stderr}` : ""}`);
   }
   return result;
+}
+
+export function buildReplayGitEnvironment(source = process.env) {
+  return {
+    GIT_CONFIG_GLOBAL: "/dev/null",
+    GIT_CONFIG_NOSYSTEM: "1",
+    GIT_TERMINAL_PROMPT: "0",
+    LANG: source.LANG || "C.UTF-8",
+    LC_ALL: source.LC_ALL || "C.UTF-8",
+    PATH: "/usr/bin:/bin",
+    TZ: "UTC",
+  };
+}
+
+export function replayAnchorCloneArgs(sourceRoot) {
+  return [
+    "clone",
+    "--quiet",
+    "--shared",
+    "--no-checkout",
+    "--no-tags",
+    path.resolve(sourceRoot),
+    ".",
+  ];
+}
+
+function initializeAnchorCheckout(repositoryPath, anchor) {
+  const environment = buildReplayGitEnvironment();
+  runChecked(
+    "/usr/bin/git",
+    replayAnchorCloneArgs(repoRoot),
+    { cwd: repositoryPath, env: environment, exposeStderr: false },
+    "replay anchor local clone",
+  );
+  runChecked(
+    "/usr/bin/git",
+    ["config", "core.hooksPath", "/dev/null"],
+    { cwd: repositoryPath, env: environment },
+    "replay anchor disable hooks",
+  );
+  runChecked(
+    "/usr/bin/git",
+    ["config", "gc.auto", "0"],
+    { cwd: repositoryPath, env: environment },
+    "replay anchor disable gc",
+  );
+  runChecked(
+    "/usr/bin/git",
+    ["checkout", "--quiet", "--detach", anchor],
+    { cwd: repositoryPath, env: environment },
+    "replay anchor checkout",
+  );
+  const actualHead = runChecked(
+    "/usr/bin/git",
+    ["rev-parse", "HEAD"],
+    { cwd: repositoryPath, env: environment },
+    "replay checkout head",
+  ).stdout.trim();
+  if (actualHead !== anchor) throw new Error("replay checkout does not point at the exact anchor");
+  const actualTree = runChecked(
+    "/usr/bin/git",
+    ["rev-parse", "HEAD^{tree}"],
+    { cwd: repositoryPath, env: environment },
+    "replay fixture tree",
+  ).stdout.trim();
+  const expectedTree = runChecked(
+    "/usr/bin/git",
+    ["rev-parse", `${anchor}^{tree}`],
+    { cwd: repoRoot, env: environment },
+    "replay anchor tree",
+  ).stdout.trim();
+  if (actualTree !== expectedTree) {
+    throw new Error("replay checkout tree differs from the exact anchor tree");
+  }
+  runChecked(
+    "/usr/bin/git",
+    ["remote", "remove", "origin"],
+    { cwd: repositoryPath, env: environment },
+    "replay checkout remove remote",
+  );
+  const status = runChecked(
+    "/usr/bin/git",
+    ["status", "--porcelain", "--untracked-files=no"],
+    { cwd: repositoryPath, env: environment },
+    "replay checkout status",
+  ).stdout;
+  if (status !== "") {
+    throw new Error("replay checkout is not clean before harness setup");
+  }
 }
 
 const SENSITIVE_ENV_NAME = /(?:AUTH|CREDENTIAL|KEY|PASS|SECRET|TOKEN)/i;
@@ -215,6 +333,7 @@ function captureWithDriver({
   evidenceDirectory,
   fixtureDigest,
   harnessManifest,
+  pilot,
   registry,
   replace,
   runs,
@@ -222,7 +341,7 @@ function captureWithDriver({
 }) {
   assertInsideRepository(sourceDirectory, "replay source directory");
   assertInsideRepository(evidenceDirectory, "replay evidence directory");
-  if ((existsSync(sourceDirectory) || existsSync(evidenceDirectory)) && !replace) {
+  if (!pilot && (existsSync(sourceDirectory) || existsSync(evidenceDirectory)) && !replace) {
     throw new Error(
       "replay envelopes or evidence already exist; " +
         "pass --replace only when intentionally replacing an unpublished capture",
@@ -244,24 +363,16 @@ function captureWithDriver({
     "replay evidence directory",
   );
 
-  const archive = runChecked(
-    "git",
-    ["archive", "--format=tar", anchor],
-    { cwd: repoRoot, encoding: null },
-    "git archive for replay subject",
-  ).stdout;
-
   try {
-    for (const scenario of registry.scenarios) {
-      for (let runIndex = 1; runIndex <= runs; runIndex += 1) {
+    const pilotScenario = registry.scenarios.find((scenario) => scenario.id === "direct");
+    if (pilot && !pilotScenario) throw new Error("RF-04 pilot scenario direct is absent");
+    const selectedScenarios = pilot ? [pilotScenario] : registry.scenarios;
+    const selectedRuns = pilot ? 1 : runs;
+    for (const scenario of selectedScenarios) {
+      for (let runIndex = 1; runIndex <= selectedRuns; runIndex += 1) {
         rmSync(isolatedRepository, { force: true, recursive: true });
         mkdirSync(isolatedRepository, { recursive: true });
-        runChecked(
-          "tar",
-          ["-xf", "-", "-C", isolatedRepository],
-          { cwd: repoRoot, encoding: null, input: archive },
-          `${scenario.id} run ${runIndex} archive extraction`,
-        );
+        initializeAnchorCheckout(isolatedRepository, anchor);
         const scenarioDirectory = path.join(stagingDirectory, scenario.id);
         const evidenceScenarioDirectory = path.join(stagingEvidenceDirectory, scenario.id);
         mkdirSync(scenarioDirectory, { recursive: true });
@@ -308,6 +419,8 @@ function captureWithDriver({
               driverEnvNames ?? [],
               contractEnvironment,
             ),
+            exposeStderr: false,
+            timeout: replayDriverTimeoutMs(scenario),
           },
           `${runId} replay driver`,
         );
@@ -340,6 +453,36 @@ function captureWithDriver({
     const evidenceRecords = readReplayEvidenceRecords(repoRoot, stagingEvidenceDirectory, {
       logicalRoot: evidenceLogicalRoot,
     });
+    if (pilot) {
+      if (envelopeRecords.length !== 1 || evidenceRecords.length !== 1) {
+        throw new Error("RF-04 pilot must produce exactly one envelope and evidence bundle");
+      }
+      const evidenceByPath = new Map(evidenceRecords.map((record) => [record.path, record]));
+      const envelope = envelopeRecords[0].value;
+      assertReplayEnvelope(envelope, {
+        allowTestControls: false,
+        anchor,
+        driverIdentity,
+        evidenceByPath,
+        fixtureRegistrySha256: fixtureDigest,
+        harnessSha256: harnessManifest.sha256,
+        runs,
+        scenarioById: new Map(registry.scenarios.map((scenario) => [scenario.id, scenario])),
+      });
+      return {
+        driver_sha256: driverIdentity.sha256,
+        episode_count: envelope.metrics.llm_episodes.value,
+        pilot: true,
+        profile: envelope.profile,
+        provider_usage_by_role: Object.fromEntries(
+          Object.entries(envelope.token_usage_by_role).map(([role, usage]) => [
+            role,
+            Object.fromEntries(Object.entries(usage).map(([field, cell]) => [field, cell.value])),
+          ]),
+        ),
+        run_id: envelope.run_id,
+      };
+    }
     buildReplayBaseline({
       anchor,
       driverIdentity,
@@ -356,6 +499,7 @@ function captureWithDriver({
       ],
       captureRoot,
     );
+    return null;
   } finally {
     rmSync(captureRoot, { force: true, recursive: true });
   }
@@ -391,7 +535,7 @@ export function captureAgentEfficiencyReplay(options) {
   if (options.driverPath) {
     requestedDriverIdentity = createReplayDriverIdentity(repoRoot, options.driverPath);
     const captureHarnessManifest = createReplayHarnessManifest(repoRoot, requestedDriverIdentity);
-    captureWithDriver({
+    const captureResult = captureWithDriver({
       anchor: options.anchor,
       driverEnvNames: options.driverEnvNames,
       driverIdentity: requestedDriverIdentity,
@@ -399,11 +543,15 @@ export function captureAgentEfficiencyReplay(options) {
       evidenceDirectory: options.evidenceDirectory,
       fixtureDigest,
       harnessManifest: captureHarnessManifest,
+      pilot: options.pilot,
       registry,
       replace: options.replace,
       runs: options.runs,
       sourceDirectory: options.sourceDirectory,
     });
+    if (options.pilot) return captureResult;
+  } else if (options.pilot) {
+    throw new Error("--pilot requires an explicit reviewed --driver");
   }
 
   const envelopeRecords = readReplayEnvelopeRecords(repoRoot, options.sourceDirectory);
@@ -437,6 +585,10 @@ const main = defineCheck({
       return;
     }
     const baseline = captureAgentEfficiencyReplay(options);
+    if (baseline?.pilot === true) {
+      stdout.write(`${stableJson(baseline, 2)}\n`);
+      return;
+    }
     stdout.write(
       `RF-04 replay baseline captured (${baseline.coverage.replay_runs.actual} runs; ` +
         `${baseline.coverage.observed_outcome_cells.actual}/70 outcomes; ` +
