@@ -4,7 +4,7 @@ title: "Release AgentPlane v0.6.24"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -24,20 +24,20 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-22T14:31:13.632Z"
+  updated_at: "2026-07-22T14:32:36.789Z"
   updated_by: "EVALUATOR"
-  note: "v0.6.24 release candidate is ready for hosted review and protected-main integration."
-  evaluated_sha: "48e34e6e570f479b31b64f7d4d2c0d9a674a1636"
+  note: "v0.6.24 release candidate remains ready after generated-artifact normalization."
+  evaluated_sha: "f1ab68eaa9a377caa76571ed8ac65784e90c218d"
   blueprint_digest: "e77ff3804f61ca6e5bc784823f05f7ec8c4a484ce8bef7b48894a007df5e1a1e"
   evidence_refs:
     - ".agentplane/tasks/202607221344-D9JTEY/README.md"
-    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-143113632-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-143113632-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-143113632-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-143236789-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-143236789-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-143236789-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221344-D9JTEY/blueprint/resolved-snapshot.json"
     - ".agentplane/.release/apply/2026-07-22T14-28-33-962Z.json"
   findings:
-    - "Frozen plan coverage, 82-group release prepublish, coverage suites, release-critical tests, version parity, incident clearance, generated artifacts, and package smoke all pass on the candidate branch."
+    - "The current implementation head adds only the evaluator packet and Prettier normalization for the release-bumped ACR example; all 82 release groups, focused help snapshot, parity, release check, routing, doctor, and generated artifact checks remain satisfied."
 commit: null
 comments:
   -

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221344-D9JTEY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T14:32:36.789Z",
+  "verdict": "pass",
+  "summary": "v0.6.24 release candidate remains ready after generated-artifact normalization.",
+  "evaluated_sha": "f1ab68eaa9a377caa76571ed8ac65784e90c218d",
+  "blueprint_digest": "e77ff3804f61ca6e5bc784823f05f7ec8c4a484ce8bef7b48894a007df5e1a1e",
+  "findings": [
+    "The current implementation head adds only the evaluator packet and Prettier normalization for the release-bumped ACR example; all 82 release groups, focused help snapshot, parity, release check, routing, doctor, and generated artifact checks remain satisfied."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221344-D9JTEY/README.md",
+    ".agentplane/.release/apply/2026-07-22T14-28-33-962Z.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Publication remains deferred until the merged main SHA completes Publish to npm and registry parity is verified."
+  ]
+}
