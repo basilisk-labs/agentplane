@@ -4,7 +4,7 @@ title: "Release AgentPlane v0.6.24"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -36,7 +36,7 @@ events:
     to: "DOING"
     note: "Start: prepare v0.6.24 release notes and AgentPlane release candidate, verify locally and on GitHub, merge to main, publish npm packages, and record registry evidence without touching agentplane-loops."
 doc_version: 3
-doc_updated_at: "2026-07-22T13:55:13.660Z"
+doc_updated_at: "2026-07-22T14:29:35.341Z"
 doc_updated_by: "CODER"
 description: "Prepare release notes and the v0.6.24 release candidate from current main, pass release and hosted verification, merge through protected main, dispatch Publish to npm for the merged release SHA, and verify GitHub Release, tag, and npm package parity. Do not touch agentplane-loops."
 sections:
@@ -55,6 +55,12 @@ sections:
     - Observation: The release prepublish suite found the top-level CLI help snapshot omitted the shipped context finalize-task command.
       Impact: The release candidate could not pass the immutable help contract even though runtime registration and generated CLI documentation were correct.
       Resolution: Updated only the canonical help snapshot, added the release-note entry, and reran the focused 13-test help snapshot suite successfully.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+
+    - Observation: Release candidate preparation updated .agentplane/WORKFLOW.md to 0.6.24 and the workflow hook refreshed last-known-good.md, leaving the recovery snapshot as a tracked post-commit change.
+      Impact: The candidate branch was not clean and recovery would otherwise remain pinned to an older expected CLI version.
+      Resolution: Included the refreshed last-known-good snapshot and release-note entry in a dedicated signed release fix commit, then revalidated parity and workflow freshness.
       Promotion: incident-candidate
       Fixability: repo-fixable
 id_source: "generated"
@@ -91,5 +97,11 @@ Before publication, close or revert the release candidate PR without tagging. Af
 - Observation: The release prepublish suite found the top-level CLI help snapshot omitted the shipped context finalize-task command.
   Impact: The release candidate could not pass the immutable help contract even though runtime registration and generated CLI documentation were correct.
   Resolution: Updated only the canonical help snapshot, added the release-note entry, and reran the focused 13-test help snapshot suite successfully.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+
+- Observation: Release candidate preparation updated .agentplane/WORKFLOW.md to 0.6.24 and the workflow hook refreshed last-known-good.md, leaving the recovery snapshot as a tracked post-commit change.
+  Impact: The candidate branch was not clean and recovery would otherwise remain pinned to an older expected CLI version.
+  Resolution: Included the refreshed last-known-good snapshot and release-note entry in a dedicated signed release fix commit, then revalidated parity and workflow freshness.
   Promotion: incident-candidate
   Fixability: repo-fixable
