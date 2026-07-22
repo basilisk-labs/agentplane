@@ -1,16 +1,16 @@
-import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
 import {
   collectTrustBoundaryViolations,
+  readTrustBoundaryReferenceBaseline,
   validateTrustBoundaryBaseline,
 } from "../lib/trust-boundary-ratchet.mjs";
 import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
 
 const BASELINE_PATH = "scripts/baselines/trust-boundary-violations.json";
 const REVIEWED_CAPTURE_COMMIT = "5e4f067fd5d1d3ef9238540231ce9306133b4161";
-const REVIEWED_ORIGIN_DIGEST = "0c1a5c01641cbf5095a732ca57c7deb22314f8793ca4ddfae8e9dca636816c83";
+const REVIEWED_ORIGIN_DIGEST = "8b7f261aedcc8f907ee3016ae3a393d795c4f4441e2a923a32677588b05c23cb";
 
 function parseArgs(argv, context) {
   const { flags, positionals } = parseScriptArgs(argv, {
@@ -29,52 +29,17 @@ function parseArgs(argv, context) {
   };
 }
 
-function gitOutput(root, args) {
-  return execFileSync("git", args, {
-    cwd: root,
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"],
-  }).trim();
-}
-
-function readCheckedOutBaseBaseline(options) {
+function readCurrentReferenceBaseline(options) {
   const relativeBaselinePath = path.relative(options.root, options.baselinePath);
   if (relativeBaselinePath.startsWith(`..${path.sep}`) || path.isAbsolute(relativeBaselinePath)) {
     throw new Error("baseline path must stay inside the repository for base comparison");
   }
-  let mergeBase;
-  try {
-    mergeBase = gitOutput(options.root, ["merge-base", "HEAD", options.baseRef]);
-  } catch (error) {
-    throw new Error(`cannot resolve merge-base against ${options.baseRef}`, { cause: error });
-  }
-  const gitPath = relativeBaselinePath.split(path.sep).join("/");
-  try {
-    gitOutput(options.root, ["cat-file", "-e", `${mergeBase}:${gitPath}`]);
-  } catch (error) {
-    if (mergeBase === REVIEWED_CAPTURE_COMMIT) {
-      return { baseline: null, mergeBase };
-    }
-    throw new Error(
-      `cannot read ${gitPath} from checked-out base ${mergeBase}; refusing to run without the monotonic base`,
-      { cause: error },
-    );
-  }
-  let content;
-  try {
-    content = gitOutput(options.root, ["show", `${mergeBase}:${gitPath}`]);
-  } catch (error) {
-    throw new Error(`cannot read ${gitPath} from checked-out base ${mergeBase}`, {
-      cause: error,
-    });
-  }
-  try {
-    return { baseline: JSON.parse(content), mergeBase };
-  } catch (error) {
-    throw new Error(`checked-out base baseline at ${mergeBase}:${gitPath} is invalid JSON`, {
-      cause: error,
-    });
-  }
+  return readTrustBoundaryReferenceBaseline({
+    root: options.root,
+    reference: options.baseRef,
+    baselineRelativePath: relativeBaselinePath,
+    allowedMissingAtCommit: REVIEWED_CAPTURE_COMMIT,
+  });
 }
 
 const main = defineCheck({
@@ -87,7 +52,7 @@ const main = defineCheck({
       return;
     }
     const baseline = JSON.parse(readFileSync(options.baselinePath, "utf8"));
-    const { baseline: baseBaseline } = readCheckedOutBaseBaseline(options);
+    const { baseline: baseBaseline } = readCurrentReferenceBaseline(options);
     const errors = validateTrustBoundaryBaseline({
       baseline,
       baseBaseline,
