@@ -140,6 +140,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Context
   - [context check](#context-check)
   - [context dashboard](#context-dashboard)
+  - [context finalize-task](#context-finalize-task)
   - [context init](#context-init)
   - [context learn changes](#context-learn-changes)
   - [context learn files](#context-learn-files)
@@ -3621,6 +3622,16 @@ Options:
 - `--open`: Open the dashboard URL in the system browser when supported. (default=false)
 - `--dump-json`: Print the dashboard graph snapshot as JSON and exit without serving HTTP. (default=false)
 
+### context finalize-task
+
+Generate context reports and indexes, rebuild curated projection, validate the graph and task, and run context doctor.
+
+Usage:
+
+```text
+agentplane context finalize-task <task-id>
+```
+
 ### context init
 
 Initialize local context workspace and system manifest.
@@ -3804,7 +3815,7 @@ agentplane context wiki new <path-or-slug> [options]
 Options:
 
 - `--title <title>`: Page title. Defaults to a title derived from the path.
-- `--modality <modality>`: Primary page modality: factual_claim, observation, assumption, hypothesis, decision, policy, preference, requirement, risk, capability, definition, or deprecation. (default=factual_claim)
+- `--modality <modality>`: Primary page modality: factual_claim, observation, assumption, hypothesis, decision, policy, preference, requirement, risk, capability, definition, workflow, or deprecation. (default=factual_claim)
 - `--status <epistemic-status>`: Initial epistemic status such as extracted_candidate, sourced_claim, reviewed_claim, disputed, deprecated, or canonical_org_knowledge. (default=sourced_claim)
 - `--visibility <scope>`: Intended visibility scope for future publication metadata. (default=project)
 - `--source <source-ref>`: Repeatable markdown/source reference backing the page. (repeatable)
