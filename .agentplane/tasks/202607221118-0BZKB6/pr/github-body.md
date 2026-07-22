@@ -16,15 +16,7 @@ Implement a deterministic maximum-assimilation wiki compiler based on the persis
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Atomic wiki compiler verified: focused synthesis/transaction tests, 115 context tests,
-downloaded-source E2E with idempotent apply and curated-only search after raw deletion, full
-agentplane suite 1928/1928, typecheck, format, hotspots, routing, builtin assets, docs freshness,
-local CI smoke, and doctor passed; doctor only reported two historical unrelated DONE-task hash
-warnings.
-```
+- Note: Review fixes verified: focused synthesis 8/8, full project 1930/1930, typecheck, hotspot and local smoke pass.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -57,10 +49,11 @@ warnings.
  packages/agentplane/src/context/ingest-task.ts     |   2 +-
  ...m-assimilation-artifacts-validation-ontology.ts |   1 +
  .../agentplane/src/context/wiki-index-builder.ts   | 146 ++++++
- .../agentplane/src/context/wiki-synthesis.test.ts  | 242 ++++++++++
- packages/agentplane/src/context/wiki-synthesis.ts  | 522 +++++++++++++++++++++
+ .../agentplane/src/context/wiki-synthesis-pages.ts | 138 ++++++
+ .../agentplane/src/context/wiki-synthesis.test.ts  | 322 +++++++++++++
+ packages/agentplane/src/context/wiki-synthesis.ts  | 499 +++++++++++++++++++++
  .../src/shared/builtin-assets.generated.ts         |  44 +-
- 25 files changed, 1190 insertions(+), 165 deletions(-)
+ 26 files changed, 1385 insertions(+), 165 deletions(-)
 ```
 
 </details>
