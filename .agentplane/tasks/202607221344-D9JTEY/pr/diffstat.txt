@@ -21,8 +21,8 @@
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
- packages/spec/examples/acr.json                    |  22 +++++---
+ packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.24.png    | Bin 0 -> 54287 bytes
  website/static/img/social/manifest.json            |   8 +++
- 27 files changed, 125 insertions(+), 46 deletions(-)
+ 27 files changed, 111 insertions(+), 42 deletions(-)
