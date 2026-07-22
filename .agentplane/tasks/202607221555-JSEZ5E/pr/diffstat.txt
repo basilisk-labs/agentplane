@@ -15,7 +15,7 @@
  packages/agentplane/assets/agents/EVALUATOR.json   |   2 +-
  .../src/blueprints/context-maximum-assimilation.ts |  24 +++
  .../commands/context/extraction-apply.unit.test.ts |  30 ++++
- .../src/commands/context/release-readiness.test.ts |  20 ++-
+ .../src/commands/context/release-readiness.test.ts |  18 ++-
  .../verify-task.maximum-assimilation.test.ts       |  22 ++-
  .../verify-task.maximum-assimilation.unit.test.ts  |  22 ++-
  packages/agentplane/src/commands/task/new.ts       |   9 +-
@@ -31,4 +31,4 @@
  .../src/runtime/sgr/context-extraction-payloads.ts |  80 ++++++++--
  .../agentplane/src/runtime/sgr/contract-types.ts   |  20 ++-
  .../agentplane/src/runtime/sgr/contracts.test.ts   | 104 +++++++++++++
- 33 files changed, 1062 insertions(+), 78 deletions(-)
+ 33 files changed, 1057 insertions(+), 81 deletions(-)

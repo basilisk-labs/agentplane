@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221555-JSEZ5E",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T16:23:04.506Z",
+  "verdict": "pass",
+  "summary": "Semantic identity remains executor-owned; AgentPlane now supplies a complete, reproducible evidence and validation contract.",
+  "evaluated_sha": "20218dc69b1d9ffe76a97b3bc9fb888e39507e20",
+  "blueprint_digest": "6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c",
+  "findings": [
+    "CURATOR receives the full canonical catalog, comparison protocol, uncertainty outcomes, and task-local acceptance criteria.",
+    "Deterministic code validates and applies declared canonical targets but does not infer semantic equivalence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221555-JSEZ5E/README.md",
+    "packages/agentplane/src/context/ingest-task-pack.ts",
+    "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
+    "packages/agentplane/src/context/extraction-writer.ts",
+    "packages/agentplane/src/context/maximum-assimilation-artifacts-validation-ontology.test.ts",
+    "manual-e2e:/tmp/agentplane-semantic-e2e2.pt2VHA task=202607221613-Q8B3XW entities=2 alias=Billing->entity.payments"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Semantic quality still depends on the executor model and source evidence; uncertain identity is preserved as possibly_same_as instead of forcing a merge."
+  ]
+}
