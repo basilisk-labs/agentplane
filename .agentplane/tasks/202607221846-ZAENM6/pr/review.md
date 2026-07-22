@@ -29,7 +29,13 @@ Created: 2026-07-22T21:28:08.886Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ package.json                                       |   3 +-
+ ...run-cli.critical.trust-boundary-ratchet.test.ts | 271 ++++++++
+ scripts/README.md                                  |   4 +-
+ scripts/baselines/trust-boundary-violations.json   | 330 ++++++++++
+ scripts/checks/check-trust-boundary-ratchet.mjs    |  69 ++
+ scripts/lib/trust-boundary-ratchet.mjs             | 702 +++++++++++++++++++++
+ 6 files changed, 1377 insertions(+), 2 deletions(-)
 ```
 
 </details>
