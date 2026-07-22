@@ -5,9 +5,19 @@
   "diffstat_sha256": "sha256:8314cff2638c64b076efdedab84ec6178c7105a9585e277f6c5043ca9931d97f",
   "last_verified_at": "2026-07-22T21:10:18.962Z",
   "last_verified_diffstat_sha256": "sha256:8314cff2638c64b076efdedab84ec6178c7105a9585e277f6c5043ca9931d97f",
+  "pr_number": 4597,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4597",
+  "pre_merge_closure": {
+    "basis_commit": "f3b5bd412c400ffda0599785695641c93d0cd06d",
+    "branch": "task/202607221846-SXJ75T/capture-0-6-24-compatibility-and-agent-efficienc",
+    "pr_number": 4597,
+    "recorded_at": "2026-07-22T21:16:46.172Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607221846-SXJ75T",
-  "updated_at": "2026-07-22T21:05:12.077Z",
+  "updated_at": "2026-07-22T21:16:22.654Z",
   "verify": {
     "status": "pass"
   }
