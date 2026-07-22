@@ -4,8 +4,8 @@
   "preexisting_drift": {
     "changed_sections": ["agent_facing_context_contracts"],
     "commit_sha_changed": true,
-    "exact_main_surface_sha256": "4ee4da2e70506857b6137ce80883198feb116d16109464a934aeca03c86d4607",
-    "published_surface_sha256": "6c7048837ee675ba20a290cb069f9156d2b5eeaea7f6e0440b48a0d3d8c23d8c",
+    "exact_main_surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839",
+    "published_surface_sha256": "1ecf47a697005683f0136db8c531e1f14f889ff241c95e355e7afb42e8f76ab3",
     "surface_changed": true
   },
   "published_registry": {
@@ -213,7 +213,7 @@
     "comparison": "normalized_surface_exact",
     "reference": "exact_main",
     "source_evidence_policy": "Raw implementation movement is reviewable; normalized public surfaces must remain exact.",
-    "surface_sha256": "4ee4da2e70506857b6137ce80883198feb116d16109464a934aeca03c86d4607"
+    "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "references": {
     "exact_main": {
@@ -229,10 +229,10 @@
         "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
         "machine_output_contract": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
         "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-        "tarball_policy": "54a2ee879689f2049613a763fd8432099557d5f68686612217d4cda453110ca6",
+        "tarball_policy": "c37264a69d57cd40bd519115b084430c590a71b0df3fe6b541b44bad02e4b61d",
         "workflow_schema": "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7"
       },
-      "surface_sha256": "4ee4da2e70506857b6137ce80883198feb116d16109464a934aeca03c86d4607",
+      "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839",
       "tree_sha": "63d458ce5ec323a63b80d033f0dfb94b1bcdc093"
     },
     "published_tag": {
@@ -248,10 +248,10 @@
         "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
         "machine_output_contract": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
         "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-        "tarball_policy": "54a2ee879689f2049613a763fd8432099557d5f68686612217d4cda453110ca6",
+        "tarball_policy": "c37264a69d57cd40bd519115b084430c590a71b0df3fe6b541b44bad02e4b61d",
         "workflow_schema": "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7"
       },
-      "surface_sha256": "6c7048837ee675ba20a290cb069f9156d2b5eeaea7f6e0440b48a0d3d8c23d8c",
+      "surface_sha256": "1ecf47a697005683f0136db8c531e1f14f889ff241c95e355e7afb42e8f76ab3",
       "tree_sha": "5e92f829c00b10d606c62ff5c21f148b5fe4283f"
     }
   },
@@ -530,150 +530,6 @@
         ],
         "schema_version": 1
       }
-    },
-    "54a2ee879689f2049613a763fd8432099557d5f68686612217d4cda453110ca6": {
-      "normalized_policy_scope": "Shared semantic release policy plus policy-eligible package path inventory. Published npm inventory remains the authoritative packed-file evidence.",
-      "packages": [
-        {
-          "name": "agentplane",
-          "package_dir": "packages/agentplane",
-          "source_file_count": 50,
-          "source_files": [
-            "LICENSE",
-            "README.md",
-            "assets/AGENTS.md",
-            "assets/RUNNER.md",
-            "assets/agents/CODER.json",
-            "assets/agents/CREATOR.json",
-            "assets/agents/CURATOR.json",
-            "assets/agents/DOCS.json",
-            "assets/agents/EVALUATOR.json",
-            "assets/agents/EXTRACTOR.json",
-            "assets/agents/INTAKE.json",
-            "assets/agents/INTEGRATOR.json",
-            "assets/agents/ORCHESTRATOR.json",
-            "assets/agents/PLANNER.json",
-            "assets/agents/REDMINE.json",
-            "assets/agents/REVIEWER.json",
-            "assets/agents/TESTER.json",
-            "assets/agents/UPDATER.json",
-            "assets/agents/UPGRADER.json",
-            "assets/codex-plugin/assets/header.png",
-            "assets/codex-plugin/assets/icon.svg",
-            "assets/codex-plugin/assets/logo.svg",
-            "assets/codex-plugin/skills/agentplane/SKILL.md",
-            "assets/evaluators/recovery-context.md",
-            "assets/framework.manifest.json",
-            "assets/policy/check-routing.mjs",
-            "assets/policy/context.must.md",
-            "assets/policy/dod.code.md",
-            "assets/policy/dod.core.md",
-            "assets/policy/dod.docs.md",
-            "assets/policy/examples/migration-note.md",
-            "assets/policy/examples/pr-note.md",
-            "assets/policy/examples/unit-test-pattern.md",
-            "assets/policy/framework.dev.md",
-            "assets/policy/governance.md",
-            "assets/policy/incidents.md",
-            "assets/policy/security.must.md",
-            "assets/policy/workflow.branch_pr.md",
-            "assets/policy/workflow.direct.md",
-            "assets/policy/workflow.md",
-            "assets/policy/workflow.release.md",
-            "assets/policy/workflow.upgrade.md",
-            "bin/agentplane.js",
-            "bin/ap.js",
-            "bin/dist-guard.js",
-            "bin/framework-dev-contract.js",
-            "bin/runtime-context.js",
-            "bin/runtime-watch.js",
-            "bin/stale-dist-policy.js",
-            "package.json"
-          ],
-          "source_files_sha256": "0de1530769fe4185d4b944d1780ba1fbc798aacc897ad6eba19123955845a102"
-        },
-        {
-          "name": "@agentplaneorg/core",
-          "package_dir": "packages/core",
-          "source_file_count": 17,
-          "source_files": [
-            "LICENSE",
-            "README.md",
-            "package.json",
-            "schemas/acr-v0.1.schema.json",
-            "schemas/agentplane-context.schema.json",
-            "schemas/config.schema.json",
-            "schemas/context-capability-artifact.schema.json",
-            "schemas/context-edge.schema.json",
-            "schemas/context-entity.schema.json",
-            "schemas/context-fact.schema.json",
-            "schemas/context-provenance-edge.schema.json",
-            "schemas/pr-meta.schema.json",
-            "schemas/runner-handoff.schema.json",
-            "schemas/task-handoff.schema.json",
-            "schemas/task-observation.schema.json",
-            "schemas/task-readme-frontmatter.schema.json",
-            "schemas/tasks-export.schema.json"
-          ],
-          "source_files_sha256": "73853a90a97cd60e817875421f8a6344f294b5aec5fbb80bc9a4d181fc08fcaf"
-        },
-        {
-          "name": "@agentplaneorg/recipes",
-          "package_dir": "packages/recipes",
-          "source_file_count": 3,
-          "source_files": ["LICENSE", "README.md", "package.json"],
-          "source_files_sha256": "c580ac5a228235eb9f2e31720df2b168df508bea278877f1e7812a15c84912ad"
-        }
-      ],
-      "policy": {
-        "allowed": {
-          "agentplane_exact_files": [
-            "LICENSE",
-            "README.md",
-            "bin/agentplane.js",
-            "bin/ap.js",
-            "bin/dist-guard.js",
-            "bin/framework-dev-contract.js",
-            "bin/runtime-context.js",
-            "bin/runtime-watch.js",
-            "bin/stale-dist-policy.js",
-            "dist/.build-manifest.json",
-            "dist/cli.d.ts",
-            "dist/cli.js",
-            "package.json"
-          ],
-          "agentplane_prefixes": ["assets/"],
-          "core_prefixes": ["schemas/"],
-          "library_dist_pattern": "^dist\\/.+\\.(?:js|d\\.ts)$",
-          "library_exact_files": [
-            "LICENSE",
-            "README.md",
-            "dist/.build-manifest.json",
-            "package.json"
-          ]
-        },
-        "denied": {
-          "file_patterns": [
-            "\\.(?:log|jsonl|tsbuildinfo|map)$",
-            "\\.(?:test|spec)\\.(?:ts|tsx|js|mjs|cjs)$"
-          ],
-          "prefixes": [".agentplane/", "docs/", "scripts/", "src/", "website/"],
-          "segments": ["/__snapshots__/"]
-        },
-        "package_identities": [
-          { "dir": "core", "name": "@agentplaneorg/core" },
-          { "dir": "recipes", "name": "@agentplaneorg/recipes" },
-          { "dir": "agentplane", "name": "agentplane" }
-        ],
-        "required_files": ["LICENSE", "README.md", "dist/.build-manifest.json", "package.json"],
-        "schema_version": 1
-      },
-      "policy_contract_kind": "shared_semantic_package_tarball_policy_v1",
-      "policy_path": "scripts/lib/package-tarball-policy.mjs",
-      "policy_sha256": "14cdedb94be06ad4d1987ae4553334a03497335df963e03837d14e69a7b573f7",
-      "release_check_path": "scripts/release/check-package-tarball.mjs",
-      "source_inventory_kind": "git_tracked_and_nonignored_untracked_policy_eligible",
-      "source_inventory_sha256": "6c71243fec94c6069b694104ea4ad3c50386419c276fe804e0c3cb5de4f28ef2"
     },
     "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a": {
       "command_count": 243,
@@ -4333,6 +4189,150 @@
       ],
       "normalized_sha256": "67fb0c7ec9cc1b17dd1b8644c00f7402a50144bef6023abf83c768a805f38fa4",
       "source_contract_kind": "normalized_exact_agent_facing_source_contracts"
+    },
+    "c37264a69d57cd40bd519115b084430c590a71b0df3fe6b541b44bad02e4b61d": {
+      "normalized_policy_scope": "Shared semantic release policy plus policy-eligible package path inventory. Published npm inventory remains the authoritative packed-file evidence.",
+      "packages": [
+        {
+          "name": "agentplane",
+          "package_dir": "packages/agentplane",
+          "source_file_count": 50,
+          "source_files": [
+            "LICENSE",
+            "README.md",
+            "assets/AGENTS.md",
+            "assets/RUNNER.md",
+            "assets/agents/CODER.json",
+            "assets/agents/CREATOR.json",
+            "assets/agents/CURATOR.json",
+            "assets/agents/DOCS.json",
+            "assets/agents/EVALUATOR.json",
+            "assets/agents/EXTRACTOR.json",
+            "assets/agents/INTAKE.json",
+            "assets/agents/INTEGRATOR.json",
+            "assets/agents/ORCHESTRATOR.json",
+            "assets/agents/PLANNER.json",
+            "assets/agents/REDMINE.json",
+            "assets/agents/REVIEWER.json",
+            "assets/agents/TESTER.json",
+            "assets/agents/UPDATER.json",
+            "assets/agents/UPGRADER.json",
+            "assets/codex-plugin/assets/header.png",
+            "assets/codex-plugin/assets/icon.svg",
+            "assets/codex-plugin/assets/logo.svg",
+            "assets/codex-plugin/skills/agentplane/SKILL.md",
+            "assets/evaluators/recovery-context.md",
+            "assets/framework.manifest.json",
+            "assets/policy/check-routing.mjs",
+            "assets/policy/context.must.md",
+            "assets/policy/dod.code.md",
+            "assets/policy/dod.core.md",
+            "assets/policy/dod.docs.md",
+            "assets/policy/examples/migration-note.md",
+            "assets/policy/examples/pr-note.md",
+            "assets/policy/examples/unit-test-pattern.md",
+            "assets/policy/framework.dev.md",
+            "assets/policy/governance.md",
+            "assets/policy/incidents.md",
+            "assets/policy/security.must.md",
+            "assets/policy/workflow.branch_pr.md",
+            "assets/policy/workflow.direct.md",
+            "assets/policy/workflow.md",
+            "assets/policy/workflow.release.md",
+            "assets/policy/workflow.upgrade.md",
+            "bin/agentplane.js",
+            "bin/ap.js",
+            "bin/dist-guard.js",
+            "bin/framework-dev-contract.js",
+            "bin/runtime-context.js",
+            "bin/runtime-watch.js",
+            "bin/stale-dist-policy.js",
+            "package.json"
+          ],
+          "source_files_sha256": "0de1530769fe4185d4b944d1780ba1fbc798aacc897ad6eba19123955845a102"
+        },
+        {
+          "name": "@agentplaneorg/core",
+          "package_dir": "packages/core",
+          "source_file_count": 17,
+          "source_files": [
+            "LICENSE",
+            "README.md",
+            "package.json",
+            "schemas/acr-v0.1.schema.json",
+            "schemas/agentplane-context.schema.json",
+            "schemas/config.schema.json",
+            "schemas/context-capability-artifact.schema.json",
+            "schemas/context-edge.schema.json",
+            "schemas/context-entity.schema.json",
+            "schemas/context-fact.schema.json",
+            "schemas/context-provenance-edge.schema.json",
+            "schemas/pr-meta.schema.json",
+            "schemas/runner-handoff.schema.json",
+            "schemas/task-handoff.schema.json",
+            "schemas/task-observation.schema.json",
+            "schemas/task-readme-frontmatter.schema.json",
+            "schemas/tasks-export.schema.json"
+          ],
+          "source_files_sha256": "73853a90a97cd60e817875421f8a6344f294b5aec5fbb80bc9a4d181fc08fcaf"
+        },
+        {
+          "name": "@agentplaneorg/recipes",
+          "package_dir": "packages/recipes",
+          "source_file_count": 3,
+          "source_files": ["LICENSE", "README.md", "package.json"],
+          "source_files_sha256": "c580ac5a228235eb9f2e31720df2b168df508bea278877f1e7812a15c84912ad"
+        }
+      ],
+      "policy": {
+        "allowed": {
+          "agentplane_exact_files": [
+            "LICENSE",
+            "README.md",
+            "bin/agentplane.js",
+            "bin/ap.js",
+            "bin/dist-guard.js",
+            "bin/framework-dev-contract.js",
+            "bin/runtime-context.js",
+            "bin/runtime-watch.js",
+            "bin/stale-dist-policy.js",
+            "dist/.build-manifest.json",
+            "dist/cli.d.ts",
+            "dist/cli.js",
+            "package.json"
+          ],
+          "agentplane_prefixes": ["assets/"],
+          "core_prefixes": ["schemas/"],
+          "library_dist_pattern": { "flags": "u", "source": "^dist\\/.+\\.(?:js|d\\.ts)$" },
+          "library_exact_files": [
+            "LICENSE",
+            "README.md",
+            "dist/.build-manifest.json",
+            "package.json"
+          ]
+        },
+        "denied": {
+          "file_patterns": [
+            { "flags": "u", "source": "\\.(?:log|jsonl|tsbuildinfo|map)$" },
+            { "flags": "u", "source": "\\.(?:test|spec)\\.(?:ts|tsx|js|mjs|cjs)$" }
+          ],
+          "prefixes": [".agentplane/", "docs/", "scripts/", "src/", "website/"],
+          "segments": ["/__snapshots__/"]
+        },
+        "package_identities": [
+          { "dir": "core", "name": "@agentplaneorg/core" },
+          { "dir": "recipes", "name": "@agentplaneorg/recipes" },
+          { "dir": "agentplane", "name": "agentplane" }
+        ],
+        "required_files": ["LICENSE", "README.md", "dist/.build-manifest.json", "package.json"],
+        "schema_version": 1
+      },
+      "policy_contract_kind": "shared_semantic_package_tarball_policy_v1",
+      "policy_path": "scripts/lib/package-tarball-policy.mjs",
+      "policy_sha256": "9a3c4cdbd34bbed1568c89314257401f763f8ef1e19e426104fb76041dcf1839",
+      "release_check_path": "scripts/release/check-package-tarball.mjs",
+      "source_inventory_kind": "git_tracked_and_nonignored_untracked_policy_eligible",
+      "source_inventory_sha256": "6c71243fec94c6069b694104ea4ad3c50386419c276fe804e0c3cb5de4f28ef2"
     },
     "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7": {
       "definition_names": [],

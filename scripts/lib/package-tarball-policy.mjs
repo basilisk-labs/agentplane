@@ -65,14 +65,23 @@ export function packageTarballPolicyContract() {
     denied: {
       prefixes: DENIED_PREFIXES.toSorted(),
       segments: DENIED_SEGMENTS.toSorted(),
-      file_patterns: DENIED_FILE_PATTERNS.map((pattern) => pattern.source).toSorted(),
+      file_patterns: DENIED_FILE_PATTERNS.map((pattern) => ({
+        source: pattern.source,
+        flags: pattern.flags,
+      })).toSorted(
+        (left, right) =>
+          left.source.localeCompare(right.source) || left.flags.localeCompare(right.flags),
+      ),
     },
     allowed: {
       agentplane_exact_files: AGENTPLANE_EXACT_FILES.toSorted(),
       agentplane_prefixes: ["assets/"],
       library_exact_files: LIBRARY_EXACT_FILES.toSorted(),
       core_prefixes: ["schemas/"],
-      library_dist_pattern: LIBRARY_DIST_PATTERN.source,
+      library_dist_pattern: {
+        source: LIBRARY_DIST_PATTERN.source,
+        flags: LIBRARY_DIST_PATTERN.flags,
+      },
     },
   };
 }
