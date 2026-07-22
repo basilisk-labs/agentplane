@@ -1,10 +1,11 @@
 ---
 id: "202607221838-SD1W93"
 title: "Define the AgentPlane 0.7 refactor execution graph"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -54,11 +55,16 @@ quality_review:
     - "Six executable alpha/beta/rc gates enforce wave order, and the final release depends only on the rc.2 gate whose closure includes migration, docs, architecture, and all prior milestones."
     - "SDPFN0 and PGPR3J are fan-in verification tasks over five independently scoped command-family slices; they no longer own mixed family implementation."
     - "The branch_pr supervisor rollback distinguishes pre-PR, post-open, queued, merged, and hosted-close recovery and never rewrites protected main."
-commit: null
+commit:
+  hash: "658b70585d659a627f7484a273ac6c354b71ac9c"
+  message: "🧾 SD1W93 task: record final graph verification"
 comments:
   -
     author: "PLANNER"
     body: "Start: Create the approved RF-00 through RF-27 execution graph with atomic dependencies, task-specific verification, and release gates through 0.7.0."
+  -
+    author: "PLANNER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -79,8 +85,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Verified committed graph ee24b3aec: all 56 active v0.7 records are reachable from final release, RF-00 through RF-27 coverage is complete, Markdown is formatted, task-state and policy routing pass, and doctor has no new errors. Bun is absent locally; the exact task-state Node target passed and hosted CI remains required for the wrapper."
+  -
+    type: "status"
+    at: "2026-07-22T19:21:33.545Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-22T19:16:05.329Z"
+doc_updated_at: "2026-07-22T19:21:33.545Z"
 doc_updated_by: "PLANNER"
 description: "Create the complete executable task graph for the approved RF-00 through RF-27 refactor program, including corrected contract-drift prerequisites, atomic dependency edges, acceptance-specific Verify Steps, intermediate compatible release slices, and the final 0.7.0 release gate."
 sections:
@@ -198,6 +211,10 @@ sections:
     - Observation: The corrected graph was verified on commit ee24b3aecc47717c68169a4e5201d83e48096d1f; local Bun remains unavailable and doctor still reports only two pre-existing historical warnings.
       Impact: No graph or policy blocker remains; canonical Bun wrapper evidence must come from hosted PR verification.
       Resolution: Proceed to independent EVALUATOR recording, PR publication, and hosted checks; do not integrate if the hosted Bun wrapper fails.
+extensions:
+  implementation_commit:
+    hash: "ee24b3aecc47717c68169a4e5201d83e48096d1f"
+    message: "🧾 SD1W93 task: close refactor graph review gaps"
 id_source: "generated"
 ---
 ## Summary
