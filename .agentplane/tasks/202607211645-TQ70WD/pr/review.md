@@ -31,7 +31,7 @@ Created: 2026-07-21T16:46:59.883Z
 ```text
  .agentplane/policy/incidents.md                    |   3 +-
  docs/user/cli-reference.generated.mdx              |  13 +-
- packages/agentplane/assets/policy/incidents.md     |   3 +-
+ packages/agentplane/assets/policy/incidents.md     |   2 +
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
  .../src/commands/context/check.unit.test.ts        |  14 ++
  .../src/commands/context/context-runner.ts         |  12 ++
@@ -61,7 +61,7 @@ Created: 2026-07-21T16:46:59.883Z
  packages/agentplane/src/context/integrity.ts       |   7 +-
  ...ximum-assimilation-artifacts-validation.test.ts |  23 ++++
  .../maximum-assimilation-artifacts-validation.ts   |   4 +
- 32 files changed, 1006 insertions(+), 171 deletions(-)
+ 32 files changed, 1006 insertions(+), 170 deletions(-)
 ```
 
 </details>

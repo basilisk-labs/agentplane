@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607211645-TQ70WD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T11:05:29.024Z",
+  "verdict": "pass",
+  "summary": "Hosted format failure resolved without semantic changes.",
+  "evaluated_sha": "39ccf842ab17a1ff637a55f625a46c691676e04f",
+  "blueprint_digest": "230c818d37ab56b7e97f3c6e57c02a387ebf20b89a707c0c3449544dfdae11ef",
+  "findings": [
+    "Promoted incident asset now matches Prettier; CLI docs freshness and focused tests remain green."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607211645-TQ70WD/README.md",
+    "packages/agentplane/assets/policy/incidents.md",
+    "prettier check: pass",
+    "CLI docs freshness: pass"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
