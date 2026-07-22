@@ -4,7 +4,7 @@ title: "Capture anchored multi-run RF-04 replay telemetry"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -50,6 +50,12 @@ comments:
   -
     author: "TESTER"
     body: "Blocker (replay capture): repository evidence cannot populate the required 27 provider token cells. The current token accumulator reads input/output/total only; committed anchor run-state/result/events contain no usage and the only committed trace is empty. No global credentials or live provider calls were authorized for this pass. Infrastructure remains fail-closed until an explicitly authorized driver emits 50 sanitized envelopes with provider-reported input_tokens, output_tokens, and reasoning_tokens. The task must remain unverified until that capture succeeds."
+  -
+    author: "ORCHESTRATOR"
+    body: "Approval: on 2026-07-23 the user explicitly authorized access to the configured Codex/provider authentication, network use, and fifty live replay calls for this RF-04 capture. Credentials must remain outside artifacts and output; the driver must use a minimal environment and sanitized envelopes."
+  -
+    author: "TESTER"
+    body: "Audit hardening complete: committed evidence bundles are content-addressed from canonical sanitized payload bytes; every cell resolves to an exact artifact/source value; exact repo-local driver bytes and contract are in the anchor/harness; the driver receives only an explicit environment allowlist; all actual outcomes are retained and compared with the golden control; recursive host paths and broader credential forms are rejected. Targeted critical tests, lint, TypeScript build, documentation generation, workflow command checks, and policy routing pass. Capture/check remain intentionally fail-closed until the authorized live capture is committed."
 events:
   -
     type: "status"
@@ -63,8 +69,18 @@ events:
     at: "2026-07-22T21:48:26.389Z"
     author: "TESTER"
     body: "Blocker (replay capture): repository evidence cannot populate the required 27 provider token cells. The current token accumulator reads input/output/total only; committed anchor run-state/result/events contain no usage and the only committed trace is empty. No global credentials or live provider calls were authorized for this pass. Infrastructure remains fail-closed until an explicitly authorized driver emits 50 sanitized envelopes with provider-reported input_tokens, output_tokens, and reasoning_tokens. The task must remain unverified until that capture succeeds."
+  -
+    type: "comment"
+    at: "2026-07-22T22:04:37.959Z"
+    author: "ORCHESTRATOR"
+    body: "Approval: on 2026-07-23 the user explicitly authorized access to the configured Codex/provider authentication, network use, and fifty live replay calls for this RF-04 capture. Credentials must remain outside artifacts and output; the driver must use a minimal environment and sanitized envelopes."
+  -
+    type: "comment"
+    at: "2026-07-22T22:12:16.241Z"
+    author: "TESTER"
+    body: "Audit hardening complete: committed evidence bundles are content-addressed from canonical sanitized payload bytes; every cell resolves to an exact artifact/source value; exact repo-local driver bytes and contract are in the anchor/harness; the driver receives only an explicit environment allowlist; all actual outcomes are retained and compared with the golden control; recursive host paths and broader credential forms are rejected. Targeted critical tests, lint, TypeScript build, documentation generation, workflow command checks, and policy routing pass. Capture/check remain intentionally fail-closed until the authorized live capture is committed."
 doc_version: 3
-doc_updated_at: "2026-07-22T21:48:26.389Z"
+doc_updated_at: "2026-07-22T22:12:16.241Z"
 doc_updated_by: "TESTER"
 description: "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording authoritative observed outcomes, provider token usage, cognitive and orchestration proxies, latency, retrieval, and evidence-provenance metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics."
 sections:

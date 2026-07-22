@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { lstatSync, readFileSync, readdirSync } from "node:fs";
+import { lstatSync, readFileSync, readdirSync, realpathSync } from "node:fs";
 import path from "node:path";
 
 import {
@@ -8,11 +8,14 @@ import {
   RF04_SCENARIO_IDS,
   SCALAR_TELEMETRY_FIELDS,
   assertFixtureRegistry,
+  relativeRepoPath,
   stableJson,
 } from "./agent-efficiency-baseline.mjs";
 
 export const AGENT_EFFICIENCY_REPLAY_MODE = "agent_efficiency_replay_v1";
+export const AGENT_EFFICIENCY_REPLAY_EVIDENCE_MODE = "agent_efficiency_replay_evidence_v1";
 export const AGENT_EFFICIENCY_REPLAY_SCHEMA_VERSION = 1;
+export const REPLAY_DRIVER_CONTRACT_VERSION = 1;
 export const MINIMUM_REPLAY_RUNS = 5;
 export const REPLAY_ANCHOR_COMMIT = PRE_V07_EFFICIENCY_ANCHOR_COMMIT;
 export const TOKEN_FIELDS = Object.freeze(["input_tokens", "output_tokens", "reasoning_tokens"]);
@@ -41,8 +44,11 @@ const PROVENANCE_CATEGORIES = new Set([
 const OBSERVED_CELL_CATEGORIES = new Set(["supervisor_observed", "artifact_observed"]);
 const SHA256_PATTERN = /^sha256:[a-f0-9]{64}$/;
 const SECRET_PATTERN =
-  /(?:sk-[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{16,}|-----BEGIN [A-Z ]+PRIVATE KEY-----)/;
-const ABSOLUTE_WINDOWS_PATH = /^[A-Za-z]:[\\/]/;
+  /(?:sk-[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{16,}|github_pat_[A-Za-z0-9_]{20,}|glpat-[A-Za-z0-9_-]{16,}|npm_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{12,}|AKIA[0-9A-Z]{16}|AIza[A-Za-z0-9_-]{20,}|dop_v1_[a-f0-9]{32,}|Bearer\s+[A-Za-z0-9._~+/=-]{12,}|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{8,}|-----BEGIN [A-Z ]+PRIVATE KEY-----)/;
+const EMBEDDED_POSIX_PATH = /(?:^|[\s"'=(])\/(?:[^/\s"'<>]+\/)+[^/\s"'<>]*/;
+const EMBEDDED_WINDOWS_PATH = /(?:^|[\s"'=(])(?:[A-Za-z]:[\\/]|\\\\[^\\/\s]+[\\/])/;
+const FORBIDDEN_SENSITIVE_KEYS =
+  /^(?:access[_-]?token|api[_-]?key|auth|authorization|bearer|client[_-]?secret|credential|credentials|password|private[_-]?key|refresh[_-]?token|secret|secret[_-]?key|session[_-]?token|token)$/i;
 const FORBIDDEN_PAYLOAD_KEYS = new Set([
   "chain_of_thought",
   "hostname",
@@ -52,6 +58,7 @@ const FORBIDDEN_PAYLOAD_KEYS = new Set([
   "reasoning",
   "reasoning_text",
 ]);
+const NO_EXPECTED_SOURCE_VALUE = Symbol("no-expected-source-value");
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -98,7 +105,7 @@ function assertSha256(value, label) {
 
 function assertSafeString(value, label) {
   nonEmptyString(value, label);
-  if (value.startsWith("/") || ABSOLUTE_WINDOWS_PATH.test(value)) {
+  if (EMBEDDED_POSIX_PATH.test(value) || EMBEDDED_WINDOWS_PATH.test(value)) {
     throw new Error(`${label} must not contain an absolute host path`);
   }
   if (SECRET_PATTERN.test(value)) {
@@ -109,7 +116,7 @@ function assertSafeString(value, label) {
 function assertSanitized(value, label = "replay envelope") {
   if (typeof value === "string") {
     if (SECRET_PATTERN.test(value)) throw new Error(`${label} contains a credential-like value`);
-    if (value.startsWith("/") || ABSOLUTE_WINDOWS_PATH.test(value)) {
+    if (EMBEDDED_POSIX_PATH.test(value) || EMBEDDED_WINDOWS_PATH.test(value)) {
       throw new Error(`${label} contains an absolute host path`);
     }
     return;
@@ -122,6 +129,9 @@ function assertSanitized(value, label = "replay envelope") {
   }
   if (!isObject(value)) return;
   for (const [key, child] of Object.entries(value)) {
+    if (FORBIDDEN_SENSITIVE_KEYS.test(key)) {
+      throw new Error(`${label}.${key} is forbidden because it can contain a credential`);
+    }
     if (FORBIDDEN_PAYLOAD_KEYS.has(key)) {
       throw new Error(
         `${label}.${key} is forbidden; prompts and hidden reasoning are not telemetry`,
@@ -133,8 +143,15 @@ function assertSanitized(value, label = "replay envelope") {
 
 function assertRelativePath(value, label) {
   assertSafeString(value, label);
-  const normalized = path.posix.normalize(value.replaceAll("\\", "/"));
-  if (normalized === "." || normalized.startsWith("../") || normalized.includes("/../")) {
+  const portable = value.replaceAll("\\", "/");
+  const normalized = path.posix.normalize(portable);
+  if (
+    normalized !== portable ||
+    path.posix.isAbsolute(normalized) ||
+    normalized === "." ||
+    normalized.startsWith("../") ||
+    normalized.includes("/../")
+  ) {
     throw new Error(`${label} must remain inside the replay artifact root`);
   }
   return normalized;
@@ -146,7 +163,7 @@ function assertProvenance(value, label, options = {}) {
     provenance,
     provenance.category === "applicability_rule"
       ? ["category", "source"]
-      : ["artifact_sha256", "category", "source"],
+      : ["artifact_id", "artifact_sha256", "category", "source"],
     label,
   );
   const category = nonEmptyString(provenance.category, `${label}.category`);
@@ -158,9 +175,52 @@ function assertProvenance(value, label, options = {}) {
   }
   assertSafeString(provenance.source, `${label}.source`);
   if (category !== "applicability_rule") {
+    assertSafeString(provenance.artifact_id, `${label}.artifact_id`);
     assertSha256(provenance.artifact_sha256, `${label}.artifact_sha256`);
   }
   return provenance;
+}
+
+function artifactSourceValue(provenance, artifactById, label) {
+  const artifact = artifactById.get(provenance.artifact_id);
+  if (!artifact) {
+    throw new Error(`${label}.artifact_id is absent from the committed evidence bundle`);
+  }
+  if (artifact.sha256 !== provenance.artifact_sha256) {
+    throw new Error(`${label}.artifact_sha256 differs from the committed evidence payload`);
+  }
+  const segments = provenance.source.split(".");
+  if (
+    segments.length === 0 ||
+    segments.some(
+      (segment) =>
+        !/^[A-Za-z0-9_-]+$/.test(segment) ||
+        segment === "__proto__" ||
+        segment === "constructor" ||
+        segment === "prototype",
+    )
+  ) {
+    throw new Error(`${label}.source must be a safe dotted path into the evidence payload`);
+  }
+  let current = artifact.payload;
+  for (const segment of segments) {
+    if (!isObject(current) || !Object.hasOwn(current, segment)) {
+      throw new Error(`${label}.source is absent from the committed evidence payload`);
+    }
+    current = current[segment];
+  }
+  return current;
+}
+
+function assertArtifactSource(provenance, artifactById, expectedValue, label) {
+  if (provenance.category === "applicability_rule") return;
+  const sourceValue = artifactSourceValue(provenance, artifactById, label);
+  if (
+    expectedValue !== NO_EXPECTED_SOURCE_VALUE &&
+    stableJson(sourceValue) !== stableJson(expectedValue)
+  ) {
+    throw new Error(`${label}.source value differs from the committed evidence payload`);
+  }
 }
 
 function assertObservedCell(value, label, options = {}) {
@@ -171,7 +231,7 @@ function assertObservedCell(value, label, options = {}) {
   return { cell, provenance };
 }
 
-function assertOutcomeCell(value, label, expected, artifactHashes, options = {}) {
+function assertOutcomeCell(value, label, artifactById, options = {}) {
   const { cell, provenance } = assertObservedCell(value, label, options);
   if (typeof cell.value !== "boolean") throw new Error(`${label}.value must be a boolean`);
   if (
@@ -180,12 +240,7 @@ function assertOutcomeCell(value, label, expected, artifactHashes, options = {})
   ) {
     throw new Error(`${label} must come from supervisor_observed or artifact_observed evidence`);
   }
-  if (cell.value !== expected) {
-    throw new Error(`${label}.value=${cell.value} does not match frozen RF-04 control ${expected}`);
-  }
-  if (!artifactHashes.has(provenance.artifact_sha256)) {
-    throw new Error(`${label}.provenance artifact is absent from envelope.artifacts`);
-  }
+  assertArtifactSource(provenance, artifactById, cell.value, `${label}.provenance`);
 }
 
 function assertNumber(value, label, field) {
@@ -200,7 +255,7 @@ function assertNumber(value, label, field) {
   }
 }
 
-function assertScalarCell(value, label, field, artifactHashes, options = {}) {
+function assertScalarCell(value, label, field, artifactById, options = {}) {
   const cell = object(value, label);
   if (cell.resolution === "not_applicable") {
     exactKeys(cell, ["provenance", "reason_code", "resolution"], label);
@@ -219,12 +274,15 @@ function assertScalarCell(value, label, field, artifactHashes, options = {}) {
   ) {
     throw new Error(`${label} must use supervisor_observed or artifact_observed provenance`);
   }
-  if (!artifactHashes.has(observed.provenance.artifact_sha256)) {
-    throw new Error(`${label}.provenance artifact is absent from envelope.artifacts`);
-  }
+  assertArtifactSource(
+    observed.provenance,
+    artifactById,
+    observed.cell.value,
+    `${label}.provenance`,
+  );
 }
 
-function assertTokenCell(value, label, artifactHashes, options = {}) {
+function assertTokenCell(value, label, artifactById, options = {}) {
   const { cell, provenance } = assertObservedCell(value, label, options);
   if (!Number.isInteger(cell.value) || cell.value < 0) {
     throw new Error(`${label}.value must be a provider-reported integer >= 0`);
@@ -233,9 +291,7 @@ function assertTokenCell(value, label, artifactHashes, options = {}) {
     provenance.category === "provider_reported" ||
     (options.allowTestControls === true && provenance.category === "test_control");
   if (!allowed) throw new Error(`${label} must use provider_reported provenance`);
-  if (!artifactHashes.has(provenance.artifact_sha256)) {
-    throw new Error(`${label}.provenance artifact is absent from envelope.artifacts`);
-  }
+  assertArtifactSource(provenance, artifactById, cell.value, `${label}.provenance`);
 }
 
 function expectedRoles(scenario) {
@@ -262,25 +318,69 @@ function assertProfile(value, label) {
   return profile;
 }
 
-function assertArtifacts(value, label) {
+function assertEvidenceBundle(record, runId, label) {
+  if (!record) throw new Error(`${label} is absent from the committed replay evidence directory`);
+  if (record.bytes !== canonicalBytes(record.value)) {
+    throw new Error(`${label} must use canonical stable JSON with one trailing newline`);
+  }
+  assertSanitized(record.value, label);
+  const bundle = object(record.value, label);
+  exactKeys(bundle, ["artifacts", "mode", "run_id", "schema_version"], label);
+  if (bundle.mode !== AGENT_EFFICIENCY_REPLAY_EVIDENCE_MODE) {
+    throw new Error(`${label}.mode must be ${AGENT_EFFICIENCY_REPLAY_EVIDENCE_MODE}`);
+  }
+  if (bundle.schema_version !== AGENT_EFFICIENCY_REPLAY_SCHEMA_VERSION) {
+    throw new Error(`${label}.schema_version must be ${AGENT_EFFICIENCY_REPLAY_SCHEMA_VERSION}`);
+  }
+  if (bundle.run_id !== runId) throw new Error(`${label}.run_id must be ${runId}`);
+  if (!Array.isArray(bundle.artifacts) || bundle.artifacts.length === 0) {
+    throw new Error(`${label}.artifacts must contain sanitized evidence payloads`);
+  }
+  const artifactById = new Map();
+  for (const [index, raw] of bundle.artifacts.entries()) {
+    const artifact = object(raw, `${label}.artifacts[${index}]`);
+    exactKeys(artifact, ["id", "kind", "payload", "sha256"], `${label}.artifacts[${index}]`);
+    assertSafeString(artifact.id, `${label}.artifacts[${index}].id`);
+    assertSafeString(artifact.kind, `${label}.artifacts[${index}].kind`);
+    object(artifact.payload, `${label}.artifacts[${index}].payload`);
+    if (artifactById.has(artifact.id)) {
+      throw new Error(`${label}.artifacts contains duplicate id ${artifact.id}`);
+    }
+    const actualSha256 = prefixedSha256(canonicalBytes(artifact.payload));
+    if (artifact.sha256 !== actualSha256) {
+      throw new Error(`${label}.artifacts[${index}].sha256 differs from sanitized payload bytes`);
+    }
+    artifactById.set(artifact.id, artifact);
+  }
+  return { artifactById, bundle };
+}
+
+function assertArtifacts(value, label, artifactById) {
   if (!Array.isArray(value) || value.length === 0) {
     throw new Error(`${label} must contain at least one hashed evidence artifact`);
   }
   const ids = new Set();
-  const hashes = new Set();
   for (const [index, raw] of value.entries()) {
     const artifact = object(raw, `${label}[${index}]`);
-    exactKeys(artifact, ["id", "path", "sha256"], `${label}[${index}]`);
+    exactKeys(artifact, ["id", "kind", "sha256"], `${label}[${index}]`);
     assertSafeString(artifact.id, `${label}[${index}].id`);
+    assertSafeString(artifact.kind, `${label}[${index}].kind`);
     if (ids.has(artifact.id)) throw new Error(`${label} contains duplicate id ${artifact.id}`);
     ids.add(artifact.id);
-    assertRelativePath(artifact.path, `${label}[${index}].path`);
-    hashes.add(assertSha256(artifact.sha256, `${label}[${index}].sha256`));
+    assertSha256(artifact.sha256, `${label}[${index}].sha256`);
+    const bundled = artifactById.get(artifact.id);
+    if (!bundled)
+      throw new Error(`${label}[${index}] is absent from the committed evidence bundle`);
+    if (bundled.kind !== artifact.kind || bundled.sha256 !== artifact.sha256) {
+      throw new Error(`${label}[${index}] differs from the committed evidence bundle`);
+    }
   }
-  return hashes;
+  if (ids.size !== artifactById.size) {
+    throw new Error(`${label} must list every artifact in the committed evidence bundle`);
+  }
 }
 
-function assertEvidence(value, label, artifactHashes, options = {}) {
+function assertEvidence(value, label, artifactById, options = {}) {
   if (!Array.isArray(value) || value.length === 0) {
     throw new Error(`${label} must contain at least one evidence item`);
   }
@@ -292,18 +392,16 @@ function assertEvidence(value, label, artifactHashes, options = {}) {
     if (ids.has(item.id)) throw new Error(`${label} contains duplicate id ${item.id}`);
     ids.add(item.id);
     const provenance = assertProvenance(item.provenance, `${label}[${index}].provenance`, options);
-    if (
-      provenance.category !== "human_supplied" &&
-      provenance.category !== "agent_claimed" &&
-      provenance.category !== "applicability_rule" &&
-      !artifactHashes.has(provenance.artifact_sha256)
-    ) {
-      throw new Error(`${label}[${index}] references an artifact absent from envelope.artifacts`);
-    }
+    assertArtifactSource(
+      provenance,
+      artifactById,
+      NO_EXPECTED_SOURCE_VALUE,
+      `${label}[${index}].provenance`,
+    );
   }
 }
 
-function assertDiagnostics(value, label, artifactHashes, options = {}) {
+function assertDiagnostics(value, label, artifactById, options = {}) {
   const diagnostics = object(value, label);
   exactKeys(diagnostics, ["captured_at", "host_fingerprint", "latency_ms"], label);
   const capturedAt = nonEmptyString(diagnostics.captured_at, `${label}.captured_at`);
@@ -317,7 +415,7 @@ function assertDiagnostics(value, label, artifactHashes, options = {}) {
       diagnostics.latency_ms[field],
       `${label}.latency_ms.${field}`,
       field,
-      artifactHashes,
+      artifactById,
       options,
     );
   }
@@ -327,7 +425,49 @@ export function fixtureRegistrySha256(registry) {
   return prefixedSha256(canonicalBytes(registry));
 }
 
-export function createReplayHarnessManifest(repoRoot, files = REPLAY_HARNESS_FILES) {
+export function createReplayDriverIdentity(repoRoot, driverPath) {
+  const relativePath = relativeRepoPath(repoRoot, driverPath, "replay driver");
+  if (!relativePath.startsWith("scripts/bench/")) {
+    throw new Error("replay driver must remain inside the reviewed scripts/bench task scope");
+  }
+  const absolutePath = path.join(repoRoot, relativePath);
+  const stats = lstatSync(absolutePath, { throwIfNoEntry: false });
+  if (!stats?.isFile() || stats.isSymbolicLink()) {
+    throw new Error("replay driver must be a regular non-symlink file inside the repository");
+  }
+  const realPath = realpathSync(absolutePath);
+  if (path.resolve(realPath) !== path.resolve(absolutePath)) {
+    throw new Error("replay driver path must not escape through a symlinked parent");
+  }
+  return {
+    contract_version: REPLAY_DRIVER_CONTRACT_VERSION,
+    path: relativePath,
+    sha256: prefixedSha256(readFileSync(absolutePath)),
+  };
+}
+
+export function replayDriverIdentityFromEnvelopeRecords(repoRoot, records) {
+  if (!Array.isArray(records) || records.length === 0) {
+    throw new Error("replay driver identity is unavailable because no envelopes were captured");
+  }
+  const declared = object(records[0].value?.anchor?.driver, "replay envelope.anchor.driver");
+  const actual = createReplayDriverIdentity(repoRoot, declared.path);
+  for (const record of records) {
+    if (stableJson(record.value?.anchor?.driver) !== stableJson(actual)) {
+      throw new Error(`${record.path} driver identity differs from exact reviewed driver bytes`);
+    }
+  }
+  return actual;
+}
+
+export function createReplayHarnessManifest(repoRoot, driverIdentity) {
+  const driver = object(driverIdentity, "replay driver identity");
+  exactKeys(driver, ["contract_version", "path", "sha256"], "replay driver identity");
+  if (driver.contract_version !== REPLAY_DRIVER_CONTRACT_VERSION) {
+    throw new Error(`replay driver contract must be version ${REPLAY_DRIVER_CONTRACT_VERSION}`);
+  }
+  assertSha256(driver.sha256, "replay driver identity.sha256");
+  const files = [...new Set([...REPLAY_HARNESS_FILES, driver.path])];
   const entries = files.map((relativePath) => {
     const normalized = assertRelativePath(relativePath, "harness file path");
     return {
@@ -336,9 +476,36 @@ export function createReplayHarnessManifest(repoRoot, files = REPLAY_HARNESS_FIL
     };
   });
   return {
+    driver_contract_version: REPLAY_DRIVER_CONTRACT_VERSION,
     files: entries,
-    sha256: prefixedSha256(canonicalBytes(entries)),
+    sha256: prefixedSha256(
+      canonicalBytes({ driver_contract_version: REPLAY_DRIVER_CONTRACT_VERSION, files: entries }),
+    ),
   };
+}
+
+const SAFE_DRIVER_ENV_KEYS = Object.freeze(["LANG", "LC_ALL", "PATH", "TMPDIR", "TZ"]);
+const FORBIDDEN_DRIVER_ENV_KEYS = new Set(["CODEX_HOME", "HOME", "XDG_CONFIG_HOME"]);
+
+export function buildReplayDriverEnvironment(sourceEnv, requestedNames, contractEnv) {
+  const result = {};
+  for (const name of [...SAFE_DRIVER_ENV_KEYS, ...requestedNames]) {
+    if (!/^[A-Z][A-Z0-9_]*$/.test(name)) {
+      throw new Error(`invalid replay driver environment field: ${name}`);
+    }
+    if (FORBIDDEN_DRIVER_ENV_KEYS.has(name) || name.startsWith("AGENTPLANE_RF04_REPLAY_")) {
+      throw new Error(`replay driver environment field is forbidden: ${name}`);
+    }
+    const value = sourceEnv[name];
+    if (typeof value === "string") result[name] = value;
+  }
+  for (const [name, value] of Object.entries(contractEnv)) {
+    if (!name.startsWith("AGENTPLANE_RF04_REPLAY_") || typeof value !== "string") {
+      throw new Error(`invalid replay driver contract environment field: ${name}`);
+    }
+    result[name] = value;
+  }
+  return result;
 }
 
 export function assertReplayEnvelope(envelope, context) {
@@ -351,6 +518,7 @@ export function assertReplayEnvelope(envelope, context) {
       "artifacts",
       "diagnostics",
       "evidence",
+      "evidence_bundle",
       "metrics",
       "mode",
       "observed_outcomes",
@@ -384,6 +552,7 @@ export function assertReplayEnvelope(envelope, context) {
     value.anchor,
     [
       "disposable_repository",
+      "driver",
       "external_effects",
       "fixture_registry_sha256",
       "harness_sha256",
@@ -400,6 +569,9 @@ export function assertReplayEnvelope(envelope, context) {
   if (value.anchor.harness_sha256 !== context.harnessSha256) {
     throw new Error("replay envelope harness digest does not match the capture harness");
   }
+  if (stableJson(value.anchor.driver) !== stableJson(context.driverIdentity)) {
+    throw new Error("replay envelope driver identity differs from exact reviewed driver bytes");
+  }
   if (value.anchor.disposable_repository !== true) {
     throw new Error("replay envelope must come from a disposable repository");
   }
@@ -408,16 +580,32 @@ export function assertReplayEnvelope(envelope, context) {
   }
 
   const profile = assertProfile(value.profile, "replay envelope.profile");
-  const artifactHashes = assertArtifacts(value.artifacts, "replay envelope.artifacts");
-  assertEvidence(value.evidence, "replay envelope.evidence", artifactHashes, context);
+  exactKeys(value.evidence_bundle, ["path", "sha256"], "replay envelope.evidence_bundle");
+  const evidencePath = assertRelativePath(
+    value.evidence_bundle.path,
+    "replay envelope.evidence_bundle.path",
+  );
+  const evidenceRecord = context.evidenceByPath.get(evidencePath);
+  if (!evidenceRecord) {
+    throw new Error("replay envelope evidence bundle is absent from committed evidence bytes");
+  }
+  if (value.evidence_bundle.sha256 !== prefixedSha256(evidenceRecord.bytes)) {
+    throw new Error("replay envelope evidence bundle hash differs from committed evidence bytes");
+  }
+  const { artifactById } = assertEvidenceBundle(
+    evidenceRecord,
+    value.run_id,
+    `evidence bundle ${evidencePath}`,
+  );
+  assertArtifacts(value.artifacts, "replay envelope.artifacts", artifactById);
+  assertEvidence(value.evidence, "replay envelope.evidence", artifactById, context);
 
   exactKeys(value.observed_outcomes, OUTCOME_FIELDS, "replay envelope.observed_outcomes");
   for (const field of OUTCOME_FIELDS) {
     assertOutcomeCell(
       value.observed_outcomes[field],
       `replay envelope.observed_outcomes.${field}`,
-      scenario.expected_outcomes[field],
-      artifactHashes,
+      artifactById,
       context,
     );
   }
@@ -428,7 +616,7 @@ export function assertReplayEnvelope(envelope, context) {
       value.metrics[field],
       `replay envelope.metrics.${field}`,
       field,
-      artifactHashes,
+      artifactById,
       context,
     );
   }
@@ -445,13 +633,13 @@ export function assertReplayEnvelope(envelope, context) {
       assertTokenCell(
         value.token_usage_by_role[role][field],
         `replay envelope.token_usage_by_role.${role}.${field}`,
-        artifactHashes,
+        artifactById,
         context,
       );
     }
   }
-  assertDiagnostics(value.diagnostics, "replay envelope.diagnostics", artifactHashes, context);
-  return { profile, scenario };
+  assertDiagnostics(value.diagnostics, "replay envelope.diagnostics", artifactById, context);
+  return { evidenceRecord, profile, scenario };
 }
 
 function valuesForCells(envelopes, selector) {
@@ -524,11 +712,16 @@ function scenarioProjection(scenario, envelopes) {
   const outcomes = {};
   for (const field of OUTCOME_FIELDS) {
     const cells = valuesForCells(envelopes, (envelope) => envelope.observed_outcomes[field]);
-    const values = [...new Set(cells.map((cell) => cell.value))];
-    if (values.length !== 1) throw new Error(`${scenario.id}.${field} differs across replay runs`);
+    const expected = scenario.expected_outcomes[field];
+    const trueCount = cells.filter((cell) => cell.value === true).length;
+    const matchCount = cells.filter((cell) => cell.value === expected).length;
     outcomes[field] = {
+      false_count: cells.length - trueCount,
+      golden_expected: expected,
+      golden_match_count: matchCount,
+      golden_mismatch_count: cells.length - matchCount,
       provenance_categories: [...new Set(cells.map((cell) => cell.provenance.category))].toSorted(),
-      value: values[0],
+      true_count: trueCount,
     };
   }
 
@@ -560,6 +753,36 @@ function scenarioProjection(scenario, envelopes) {
     observed_outcomes: outcomes,
     run_count: envelopes.length,
     token_usage_by_role: tokenUsage,
+  };
+}
+
+function goldenOutcomeComparison(registry, grouped) {
+  const mismatches = [];
+  let observedCells = 0;
+  for (const scenario of registry.scenarios) {
+    for (const envelope of grouped.get(scenario.id) ?? []) {
+      for (const field of OUTCOME_FIELDS) {
+        observedCells += 1;
+        const expected = scenario.expected_outcomes[field];
+        const actual = envelope.observed_outcomes[field].value;
+        if (actual !== expected) {
+          mismatches.push({
+            actual,
+            expected,
+            field,
+            run_id: envelope.run_id,
+            scenario_id: scenario.id,
+          });
+        }
+      }
+    }
+  }
+  return {
+    golden_match_count: observedCells - mismatches.length,
+    golden_mismatch_count: mismatches.length,
+    mismatches,
+    observed_run_outcome_cells: observedCells,
+    verdict: mismatches.length === 0 ? "matches_control" : "regression_observed",
   };
 }
 
@@ -627,24 +850,55 @@ function assertCoverage(coverage) {
 export function buildReplayBaseline({
   registry,
   envelopeRecords,
+  evidenceRecords,
+  driverIdentity,
   harnessManifest,
   anchor = REPLAY_ANCHOR_COMMIT,
   runs = MINIMUM_REPLAY_RUNS,
   allowTestControls = false,
 }) {
   assertFixtureRegistry(registry, { historicalBaseline: true });
+  if (!Array.isArray(envelopeRecords)) {
+    throw new TypeError("replay envelope records must be an array");
+  }
+  if (!Array.isArray(evidenceRecords)) {
+    throw new TypeError("replay evidence records must be an array");
+  }
+  const driver = object(driverIdentity, "replay driver identity");
+  exactKeys(driver, ["contract_version", "path", "sha256"], "replay driver identity");
+  assertRelativePath(driver.path, "replay driver identity.path");
+  assertSha256(driver.sha256, "replay driver identity.sha256");
   if (anchor !== REPLAY_ANCHOR_COMMIT) {
     throw new Error(`replay anchor must remain exact commit ${REPLAY_ANCHOR_COMMIT}`);
   }
   if (!Number.isInteger(runs) || runs < MINIMUM_REPLAY_RUNS) {
     throw new Error(`replay requires at least ${MINIMUM_REPLAY_RUNS} runs per scenario`);
   }
+  if (driver.contract_version !== REPLAY_DRIVER_CONTRACT_VERSION) {
+    throw new Error(`replay driver contract must be version ${REPLAY_DRIVER_CONTRACT_VERSION}`);
+  }
+  const driverHarnessEntry = harnessManifest.files?.find((entry) => entry.path === driver.path);
+  if (
+    harnessManifest.driver_contract_version !== REPLAY_DRIVER_CONTRACT_VERSION ||
+    driverHarnessEntry?.sha256 !== driver.sha256
+  ) {
+    throw new Error("replay harness must include the exact reviewed driver bytes and contract");
+  }
   const scenarioById = new Map(registry.scenarios.map((scenario) => [scenario.id, scenario]));
   const registryDigest = fixtureRegistrySha256(registry);
+  const evidenceByPath = new Map();
+  for (const record of evidenceRecords) {
+    const evidencePath = assertRelativePath(record.path, "replay evidence bundle path");
+    if (evidenceByPath.has(evidencePath)) {
+      throw new Error(`duplicate replay evidence bundle path: ${evidencePath}`);
+    }
+    evidenceByPath.set(evidencePath, record);
+  }
   const grouped = new Map();
   let fixedProfile = null;
   const runManifest = [];
   const seenRunIds = new Set();
+  const usedEvidencePaths = new Set();
 
   for (const record of envelopeRecords) {
     const envelope = record.value;
@@ -652,9 +906,11 @@ export function buildReplayBaseline({
     if (record.bytes !== canonical) {
       throw new Error(`${record.path} must use canonical stable JSON with one trailing newline`);
     }
-    const { profile } = assertReplayEnvelope(envelope, {
+    const { evidenceRecord, profile } = assertReplayEnvelope(envelope, {
       allowTestControls,
       anchor,
+      driverIdentity: driver,
+      evidenceByPath,
       fixtureRegistrySha256: registryDigest,
       harnessSha256: harnessManifest.sha256,
       runs,
@@ -671,11 +927,24 @@ export function buildReplayBaseline({
     const scenarioRuns = grouped.get(envelope.scenario_id) ?? [];
     scenarioRuns.push(envelope);
     grouped.set(envelope.scenario_id, scenarioRuns);
+    usedEvidencePaths.add(
+      assertRelativePath(envelope.evidence_bundle.path, "replay envelope.evidence_bundle.path"),
+    );
     runManifest.push({
-      path: assertRelativePath(record.path, "replay envelope path"),
+      envelope: {
+        path: assertRelativePath(record.path, "replay envelope path"),
+        sha256: prefixedSha256(record.bytes),
+      },
+      evidence_bundle: {
+        path: envelope.evidence_bundle.path,
+        sha256: prefixedSha256(evidenceRecord.bytes),
+      },
       run_id: envelope.run_id,
-      sha256: prefixedSha256(record.bytes),
     });
+  }
+
+  if (usedEvidencePaths.size !== evidenceByPath.size) {
+    throw new Error("replay evidence directory contains unreferenced or missing evidence bundles");
   }
 
   for (const scenario of registry.scenarios) {
@@ -696,9 +965,12 @@ export function buildReplayBaseline({
   const coverage = coverageFor(registry, grouped, runs);
   assertCoverage(coverage);
   const profile = JSON.parse(fixedProfile);
+  const goldenComparison = goldenOutcomeComparison(registry, grouped);
   const structuralProjection = {
     anchor_commit: anchor,
+    driver,
     fixture_registry_sha256: registryDigest,
+    golden_outcome_comparison: goldenComparison,
     harness_sha256: harnessManifest.sha256,
     mode: AGENT_EFFICIENCY_REPLAY_MODE,
     profile_sha256: prefixedSha256(canonicalBytes(profile)),
@@ -727,6 +999,7 @@ export function buildReplayBaseline({
   );
   return {
     anchor: {
+      driver,
       fixture_registry_sha256: registryDigest,
       harness: harnessManifest,
       subject_sha: anchor,
@@ -735,6 +1008,7 @@ export function buildReplayBaseline({
     coverage,
     diagnostics,
     diagnostics_sha256: prefixedSha256(canonicalBytes(diagnostics)),
+    golden_outcome_comparison: goldenComparison,
     mode: AGENT_EFFICIENCY_REPLAY_MODE,
     run_manifest: sortedManifest,
     run_manifest_sha256: prefixedSha256(canonicalBytes(sortedManifest)),
@@ -766,22 +1040,40 @@ function collectJsonFiles(directory) {
   return result;
 }
 
-export function readReplayEnvelopeRecords(repoRoot, sourceDirectory) {
+function readReplayRecords(repoRoot, sourceDirectory, options) {
   const stats = lstatSync(sourceDirectory, { throwIfNoEntry: false });
   if (!stats?.isDirectory()) {
     throw new Error(
-      "authoritative replay capture is absent: provide canonical envelopes or an explicitly " +
-        "authorized driver whose provider events expose input_tokens, output_tokens, and reasoning_tokens",
+      `authoritative replay ${options.kind} is absent: provide committed sanitized bytes from an ` +
+        "explicitly authorized driver whose provider events expose input_tokens, output_tokens, and reasoning_tokens",
     );
   }
   const files = collectJsonFiles(sourceDirectory).toSorted();
+  const logicalRoot = options.logicalRoot
+    ? assertRelativePath(options.logicalRoot, `${options.kind} logical root`)
+    : relativeRepoPath(repoRoot, sourceDirectory, `${options.kind} directory`);
   return files.map((filePath) => {
     const bytes = readFileSync(filePath, "utf8");
+    const relativeFile = path.relative(sourceDirectory, filePath).split(path.sep).join("/");
     return {
       bytes,
-      path: path.relative(repoRoot, filePath).split(path.sep).join("/"),
+      path: path.posix.join(logicalRoot, relativeFile),
       value: JSON.parse(bytes),
     };
+  });
+}
+
+export function readReplayEnvelopeRecords(repoRoot, sourceDirectory, options = {}) {
+  return readReplayRecords(repoRoot, sourceDirectory, {
+    kind: "envelopes",
+    logicalRoot: options.logicalRoot,
+  });
+}
+
+export function readReplayEvidenceRecords(repoRoot, sourceDirectory, options = {}) {
+  return readReplayRecords(repoRoot, sourceDirectory, {
+    kind: "evidence bundles",
+    logicalRoot: options.logicalRoot,
   });
 }
 
