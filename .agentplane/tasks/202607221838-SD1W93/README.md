@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -65,6 +65,9 @@ comments:
   -
     author: "PLANNER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "PLANNER"
+    body: "Graph extension after RF-04 baseline verification: added executable replay task 202607222129-1ZQHJD as a direct dependency of alpha.1 gate 202607221907-DK2CJF. The v0.7 graph now contains 57 active records: one completed planning task plus 56 executable leaves/gates. The extension closes the quantified replay and provider-usage evidence gap before any efficiency claim."
 events:
   -
     type: "status"
@@ -92,8 +95,13 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "comment"
+    at: "2026-07-22T21:31:21.993Z"
+    author: "PLANNER"
+    body: "Graph extension after RF-04 baseline verification: added executable replay task 202607222129-1ZQHJD as a direct dependency of alpha.1 gate 202607221907-DK2CJF. The v0.7 graph now contains 57 active records: one completed planning task plus 56 executable leaves/gates. The extension closes the quantified replay and provider-usage evidence gap before any efficiency claim."
 doc_version: 3
-doc_updated_at: "2026-07-22T19:21:33.545Z"
+doc_updated_at: "2026-07-22T21:31:21.993Z"
 doc_updated_by: "PLANNER"
 description: "Create the complete executable task graph for the approved RF-00 through RF-27 refactor program, including corrected contract-drift prerequisites, atomic dependency edges, acceptance-specific Verify Steps, intermediate compatible release slices, and the final 0.7.0 release gate."
 sections:

@@ -32,7 +32,19 @@ Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/tasks/202607221838-SD1W93/README.md    |  12 +-
+ .agentplane/tasks/202607221907-DK2CJF/README.md    |   2 +
+ .github/workflows/ci.yml                           |   4 +
+ .github/workflows/prepublish.yml                   |   3 +
+ docs/internal/v0.7-agent-efficiency-baseline.md    |  42 +-
+ docs/internal/v0.7-refactor-plan.md                |   3 +-
+ package.json                                       |   4 +-
+ ...un-cli.critical.agent-efficiency-replay.test.ts | 390 ++++++++++
+ scripts/README.md                                  |  66 +-
+ scripts/bench/capture-agent-efficiency-replay.mjs  | 298 ++++++++
+ scripts/checks/check-agent-efficiency-replay.mjs   | 170 +++++
+ scripts/lib/agent-efficiency-replay.mjs            | 790 +++++++++++++++++++++
+ 12 files changed, 1745 insertions(+), 39 deletions(-)
 ```
 
 </details>

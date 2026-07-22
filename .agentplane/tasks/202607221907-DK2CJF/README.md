@@ -16,6 +16,7 @@ depends_on:
   - "202607221846-Y89CFB"
   - "202607221846-YGWMA2"
   - "202607221846-ZAENM6"
+  - "202607222129-1ZQHJD"
   - "202607230554-YFYT83"
 tags:
   - "milestone-0-7-0-alpha-1"
@@ -30,6 +31,7 @@ verify:
   - "bun run guards:check"
   - "bun run schemas:check"
   - "bun run test:critical"
+  - "bun run bench:agent-efficiency:replay:check"
 plan_approval:
   state: "pending"
   updated_at: null
