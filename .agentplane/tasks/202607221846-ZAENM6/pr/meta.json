@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607221846-ZAENM6/add-trust-boundary-architecture-ratchets",
   "created_at": "2026-07-22T21:28:08.886Z",
-  "diffstat_sha256": "sha256:1fb218cd2dbbce09df63019aca60b6d89e29a64bb68675c2960bc1fc15d2abda",
+  "diffstat_sha256": "sha256:e4dcf594bf241233a1c538d5fce9c92214dca1bf94e29720a59f8f6da407425c",
   "last_verified_at": null,
   "schema_version": 1,
   "task_id": "202607221846-ZAENM6",
