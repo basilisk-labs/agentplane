@@ -4,6 +4,8 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync }
 import os from "node:os";
 import path from "node:path";
 
+import { isAllowedTarballPath, packageTarballPolicyContract } from "./package-tarball-policy.mjs";
+
 export const COMPATIBILITY_CONTRACT_SCHEMA_VERSION = 2;
 export const COMPATIBILITY_BASELINE_ID = "agentplane.compatibility.v0.6.24";
 export const PUBLISHED_TAG = "v0.6.24";
@@ -14,7 +16,8 @@ const EXIT_CODES_PATH = "packages/agentplane/src/cli/exit-codes.ts";
 const SHARED_ERRORS_PATH = "packages/agentplane/src/shared/errors.ts";
 const OUTPUT_MODE_PATH = "packages/agentplane/src/cli/run-cli/globals.ts";
 const WORKFLOW_SCHEMA_PATH = "schemas/workflow.schema.json";
-const TARBALL_POLICY_PATH = "scripts/release/check-package-tarball.mjs";
+const TARBALL_POLICY_PATH = "scripts/lib/package-tarball-policy.mjs";
+const TARBALL_RELEASE_CHECK_PATH = "scripts/release/check-package-tarball.mjs";
 
 const CONTEXT_CONTRACT_PATHS = [
   "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
@@ -71,29 +74,6 @@ export const PUBLISHED_PACKAGES = [
 
 const PACKAGE_MANIFEST_PATHS = PUBLISHED_PACKAGES.map((pkg) => `packages/${pkg.dir}/package.json`);
 
-const EXACT_AGENTPLANE_TARBALL_FILES = new Set([
-  "LICENSE",
-  "README.md",
-  "package.json",
-  "bin/ap.js",
-  "bin/agentplane.js",
-  "bin/dist-guard.js",
-  "bin/framework-dev-contract.js",
-  "bin/runtime-context.js",
-  "bin/runtime-watch.js",
-  "bin/stale-dist-policy.js",
-  "dist/.build-manifest.json",
-  "dist/cli.d.ts",
-  "dist/cli.js",
-]);
-
-const EXACT_LIBRARY_TARBALL_FILES = new Set([
-  "LICENSE",
-  "README.md",
-  "package.json",
-  "dist/.build-manifest.json",
-]);
-
 function normalizeGitPath(value) {
   return value.replaceAll("\\", "/").replace(/^\.\//u, "");
 }
@@ -107,6 +87,14 @@ export function canonicalizeJson(value) {
       if (normalized !== undefined) output[key] = normalized;
     }
     return output;
+  }
+  return value;
+}
+
+function preserveJsonObjectOrder(value) {
+  if (Array.isArray(value)) return value.map((entry) => preserveJsonObjectOrder(entry));
+  if (value !== null && typeof value === "object") {
+    return Object.entries(value).map(([key, entry]) => [key, preserveJsonObjectOrder(entry)]);
   }
   return value;
 }
@@ -652,7 +640,7 @@ function normalizeStringSet(value) {
   return [...new Set(value.map(String))].toSorted(compareStrings);
 }
 
-function packageSurface(manifestPath, manifest) {
+export function packageSurface(manifestPath, manifest) {
   const fields = [
     "name",
     "version",
@@ -679,9 +667,11 @@ function packageSurface(manifestPath, manifest) {
   const normalized = Object.fromEntries(
     fields.map((field) => [
       field,
-      STRING_SET_MANIFEST_FIELDS.has(field)
-        ? normalizeStringSet(manifest[field])
-        : (manifest[field] ?? null),
+      field === "exports"
+        ? preserveJsonObjectOrder(manifest[field] ?? null)
+        : STRING_SET_MANIFEST_FIELDS.has(field)
+          ? normalizeStringSet(manifest[field])
+          : (manifest[field] ?? null),
     ]),
   );
   return {
@@ -698,16 +688,8 @@ function collectPackageManifests(source) {
   });
 }
 
-function isAllowedTarballPath(relativePath, packageName) {
-  if (packageName === "agentplane") {
-    return relativePath.startsWith("assets/") || EXACT_AGENTPLANE_TARBALL_FILES.has(relativePath);
-  }
-  if (EXACT_LIBRARY_TARBALL_FILES.has(relativePath)) return true;
-  if (packageName === "@agentplaneorg/core" && relativePath.startsWith("schemas/")) return true;
-  return /^dist\/.+\.(?:js|d\.ts)$/u.test(relativePath);
-}
-
 function collectTarballPolicy(source) {
+  const policy = packageTarballPolicyContract();
   const packages = PUBLISHED_PACKAGES.map((pkg) => {
     const prefix = `packages/${pkg.dir}/`;
     const files = source
@@ -726,8 +708,12 @@ function collectTarballPolicy(source) {
   });
   return {
     policy_path: TARBALL_POLICY_PATH,
+    release_check_path: TARBALL_RELEASE_CHECK_PATH,
+    policy_contract_kind: "shared_semantic_package_tarball_policy_v1",
+    policy_sha256: hashJson(policy),
+    policy,
     normalized_policy_scope:
-      "Policy-eligible package path inventory only; implementation source formatting is diagnostic, not part of the ratchet.",
+      "Shared semantic release policy plus policy-eligible package path inventory. Published npm inventory remains the authoritative packed-file evidence.",
     source_inventory_kind: "git_tracked_and_nonignored_untracked_policy_eligible",
     source_inventory_sha256: hashJson(packages),
     packages,

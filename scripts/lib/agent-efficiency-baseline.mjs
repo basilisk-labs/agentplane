@@ -7,6 +7,8 @@ export const AGENT_EFFICIENCY_FIXTURE_MODE = "agent_efficiency_fixture_registry_
 export const AGENT_EFFICIENCY_SCHEMA_VERSION = 2;
 export const STRUCTURAL_COST_MAX_GROWTH_RATIO = 0.1;
 export const PRE_V07_OBSERVABILITY_GAP = "not_observed_at_pre_v0.7_main_anchor";
+export const PRE_V07_EFFICIENCY_ANCHOR_COMMIT = "1a702e160ba9f0efe7067f2a22fc008defc89ffb";
+export const PRE_V07_COMPATIBILITY_RELEASE = "0.6.24";
 
 export const RF04_SCENARIO_IDS = Object.freeze([
   "direct",
@@ -55,6 +57,11 @@ export const STRUCTURAL_COST_FIELDS = Object.freeze([
 ]);
 
 const TOKEN_FIELDS = Object.freeze(["input_tokens", "output_tokens", "reasoning_tokens"]);
+const OBSERVED_EVIDENCE_METRIC_FIELDS = Object.freeze([
+  "evidence_observed_count",
+  "evidence_claimed_count",
+  "evidence_observed_to_claimed_ratio",
+]);
 const EVIDENCE_PROVENANCE_VALUES = Object.freeze(["observed", "agent_claimed", "human_supplied"]);
 const EVIDENCE_PROVENANCE_RANK = Object.freeze({
   agent_claimed: 0,
@@ -141,9 +148,9 @@ function readJsonFile(filePath, label) {
   }
 }
 
-export function readFixtureRegistry(filePath) {
+export function readFixtureRegistry(filePath, options = {}) {
   const registry = readJsonFile(filePath, "agent-efficiency fixture registry");
-  assertFixtureRegistry(registry);
+  assertFixtureRegistry(registry, options);
   return registry;
 }
 
@@ -166,7 +173,7 @@ function assertExpectedOutcomes(value, label) {
   return outcomes;
 }
 
-export function assertFixtureRegistry(registry) {
+export function assertFixtureRegistry(registry, options = {}) {
   assertObject(registry, "fixture registry");
   if (
     registry.schema_version !== AGENT_EFFICIENCY_SCHEMA_VERSION ||
@@ -185,6 +192,19 @@ export function assertFixtureRegistry(registry) {
   );
   if (!/^[0-9a-f]{40}$/u.test(anchor)) {
     throw new Error("provenance.efficiency_anchor_commit must be a full Git commit SHA");
+  }
+  if (options.historicalBaseline === true && anchor !== PRE_V07_EFFICIENCY_ANCHOR_COMMIT) {
+    throw new Error(
+      `historical efficiency anchor must remain ${PRE_V07_EFFICIENCY_ANCHOR_COMMIT}, got ${anchor}`,
+    );
+  }
+  if (
+    options.historicalBaseline === true &&
+    provenance.compatibility_release !== PRE_V07_COMPATIBILITY_RELEASE
+  ) {
+    throw new Error(
+      `historical compatibility release must remain ${PRE_V07_COMPATIBILITY_RELEASE}, got ${provenance.compatibility_release}`,
+    );
   }
   assertString(provenance.explanation, "provenance.explanation");
   assertString(provenance.observability_gap, "provenance.observability_gap");
@@ -618,6 +638,8 @@ export function buildAgentEfficiencyMeasurement({ repoRoot, registry, registryPa
     scenario_count: RF04_SCENARIO_IDS.length,
     comparison_policy: {
       quality_control: "regressions_fail_improvements_non_comparable_exact_compares_cost",
+      evidence_observed_to_claimed_ratio_formula:
+        "observed / (observed + agent_claimed); human_supplied excluded",
       structural_cost_max_growth_ratio: STRUCTURAL_COST_MAX_GROWTH_RATIO,
       timing: "diagnostic_only_never_gated",
     },
@@ -716,6 +738,19 @@ export function assertMeasurement(payload, label = "measurement", options = {}) 
   if (!/^sha256:[0-9a-f]{64}$/u.test(payload.fixture_registry_sha256)) {
     throw new Error(`${label}.fixture_registry_sha256 must be a sha256 digest`);
   }
+  if (options.historicalBaseline === true) {
+    const provenance = assertObject(payload.provenance, `${label}.provenance`);
+    if (provenance.efficiency_anchor_commit !== PRE_V07_EFFICIENCY_ANCHOR_COMMIT) {
+      throw new Error(
+        `${label} historical efficiency anchor must remain ${PRE_V07_EFFICIENCY_ANCHOR_COMMIT}`,
+      );
+    }
+    if (provenance.compatibility_release !== PRE_V07_COMPATIBILITY_RELEASE) {
+      throw new Error(
+        `${label} historical compatibility release must remain ${PRE_V07_COMPATIBILITY_RELEASE}`,
+      );
+    }
+  }
   const projection = assertObject(payload.structural_projection, `${label}.structural_projection`);
   if (!Array.isArray(projection.scenarios)) {
     throw new TypeError(`${label}.structural_projection.scenarios must be an array`);
@@ -738,6 +773,28 @@ export function assertMeasurement(payload, label = "measurement", options = {}) 
     const metrics = assertObject(scenario.metrics, `${scenarioLabel}.metrics`);
     for (const field of SCALAR_TELEMETRY_FIELDS) {
       assertMetricCell(metrics[field], `${scenarioLabel}.metrics.${field}`, options);
+    }
+    const evidenceMetricValues = OBSERVED_EVIDENCE_METRIC_FIELDS.map(
+      (field) => metrics[field].value,
+    );
+    const knownEvidenceMetricCount = evidenceMetricValues.filter((value) => value !== null).length;
+    if (
+      knownEvidenceMetricCount !== 0 &&
+      knownEvidenceMetricCount !== evidenceMetricValues.length
+    ) {
+      throw new Error(
+        `${scenarioLabel} observed evidence metrics must be all known or all unobserved`,
+      );
+    }
+    if (knownEvidenceMetricCount === evidenceMetricValues.length) {
+      const [observedCount, claimedCount, observedShare] = evidenceMetricValues;
+      const evidenceTotal = observedCount + claimedCount;
+      const expectedShare = evidenceTotal === 0 ? 0 : observedCount / evidenceTotal;
+      if (Math.abs(observedShare - expectedShare) > Number.EPSILON * 16) {
+        throw new Error(
+          `${scenarioLabel}.metrics.evidence_observed_to_claimed_ratio must equal observed / (observed + claimed)`,
+        );
+      }
     }
     const observedOutcomes = assertObject(
       scenario.observed_outcomes,
@@ -774,6 +831,12 @@ export function assertMeasurement(payload, label = "measurement", options = {}) 
   }
   if (payload.comparison_policy?.timing !== "diagnostic_only_never_gated") {
     throw new Error(`${label} timing policy must be diagnostic_only_never_gated`);
+  }
+  if (
+    payload.comparison_policy?.evidence_observed_to_claimed_ratio_formula !==
+    "observed / (observed + agent_claimed); human_supplied excluded"
+  ) {
+    throw new Error(`${label} observed evidence ratio formula drift`);
   }
   if (
     payload.comparison_policy?.structural_cost_max_growth_ratio !== STRUCTURAL_COST_MAX_GROWTH_RATIO
@@ -849,7 +912,7 @@ function compareMetricCell({ actual, expected, label, cost, failures, summaries 
   return 1;
 }
 
-function classifyObservedOutcomes(actual, expected) {
+function classifyObservedOutcomes(actual, expected, goldenExpected) {
   const regressions = [];
   const improvements = [];
   const newlyObserved = [];
@@ -857,7 +920,16 @@ function classifyObservedOutcomes(actual, expected) {
     const actualCell = actual[field];
     const expectedCell = expected[field];
     if (expectedCell.value === null) {
-      if (actualCell.value !== null) newlyObserved.push(field);
+      if (actualCell.value !== null) {
+        newlyObserved.push(field);
+        if (actualCell.value !== goldenExpected[field]) {
+          const improved =
+            direction === "higher" ? actualCell.value === true : actualCell.value === false;
+          (improved ? improvements : regressions).push(
+            `${field}:golden_${goldenExpected[field]}->${actualCell.value}`,
+          );
+        }
+      }
       continue;
     }
     if (actualCell.value === null) {
@@ -872,6 +944,54 @@ function classifyObservedOutcomes(actual, expected) {
     );
   }
   return { regressions, improvements, newlyObserved };
+}
+
+function classifyObservedEvidence(actualMetrics, expectedMetrics, goldenControls) {
+  const regressions = [];
+  const improvements = [];
+  const actualKnown = actualMetrics.evidence_observed_count.value !== null;
+  const expectedKnown = expectedMetrics.evidence_observed_count.value !== null;
+  if (!actualKnown) {
+    return { regressions, improvements, newlyObserved: false };
+  }
+
+  const actualObserved = actualMetrics.evidence_observed_count.value;
+  const actualShare = actualMetrics.evidence_observed_to_claimed_ratio.value;
+  if (!expectedKnown) {
+    const goldenObserved = goldenControls.filter((entry) => entry.provenance === "observed").length;
+    const goldenClaimed = goldenControls.filter(
+      (entry) => entry.provenance === "agent_claimed",
+    ).length;
+    const goldenTotal = goldenObserved + goldenClaimed;
+    if (actualObserved < goldenObserved) {
+      regressions.push(`observed_count:golden_${goldenObserved}->${actualObserved}`);
+    } else if (actualObserved > goldenObserved) {
+      improvements.push(`observed_count:golden_${goldenObserved}->${actualObserved}`);
+    }
+    if (goldenTotal > 0) {
+      const goldenShare = goldenObserved / goldenTotal;
+      if (actualShare < goldenShare) {
+        regressions.push(`observed_share:golden_${goldenShare}->${actualShare}`);
+      } else if (actualShare > goldenShare) {
+        improvements.push(`observed_share:golden_${goldenShare}->${actualShare}`);
+      }
+    }
+    return { regressions, improvements, newlyObserved: true };
+  }
+
+  const expectedObserved = expectedMetrics.evidence_observed_count.value;
+  const expectedShare = expectedMetrics.evidence_observed_to_claimed_ratio.value;
+  if (actualObserved < expectedObserved) {
+    regressions.push(`observed_count:${expectedObserved}->${actualObserved}`);
+  } else if (actualObserved > expectedObserved) {
+    improvements.push(`observed_count:${expectedObserved}->${actualObserved}`);
+  }
+  if (actualShare < expectedShare) {
+    regressions.push(`observed_share:${expectedShare}->${actualShare}`);
+  } else if (actualShare > expectedShare) {
+    improvements.push(`observed_share:${expectedShare}->${actualShare}`);
+  }
+  return { regressions, improvements, newlyObserved: false };
 }
 
 export function compareAgentEfficiencyMeasurements(candidate, baseline) {
@@ -891,6 +1011,12 @@ export function compareAgentEfficiencyMeasurements(candidate, baseline) {
     const observedQuality = classifyObservedOutcomes(
       actual.observed_outcomes,
       expected.observed_outcomes,
+      expected.expected_outcomes,
+    );
+    const observedEvidence = classifyObservedEvidence(
+      actual.metrics,
+      expected.metrics,
+      expected.evidence_controls,
     );
     const outcomeLabelChanged =
       actual.expected_outcomes.outcome !== expected.expected_outcomes.outcome;
@@ -909,32 +1035,47 @@ export function compareAgentEfficiencyMeasurements(candidate, baseline) {
         `${expected.id}: observed quality regressions: ${observedQuality.regressions.join(", ")}`,
       );
     }
+    if (observedEvidence.regressions.length > 0) {
+      failures.push(
+        `${expected.id}: observed evidence regressions: ${observedEvidence.regressions.join(", ")}`,
+      );
+    }
     const nonComparable =
       quality.regressions.length > 0 ||
       evidence.regressions.length > 0 ||
       observedQuality.regressions.length > 0 ||
+      observedEvidence.regressions.length > 0 ||
       quality.improvements.length > 0 ||
       evidence.improvements.length > 0 ||
       observedQuality.improvements.length > 0 ||
+      observedEvidence.improvements.length > 0 ||
       observedQuality.newlyObserved.length > 0 ||
+      observedEvidence.newlyObserved ||
       outcomeLabelChanged ||
       protocolControlsChanged;
     if (
       quality.improvements.length > 0 ||
       evidence.improvements.length > 0 ||
-      observedQuality.improvements.length > 0
+      observedQuality.improvements.length > 0 ||
+      observedEvidence.improvements.length > 0
     ) {
       summaries.push(
         `${expected.id}: quality/evidence improved; structural costs are non-comparable (${[
           ...quality.improvements,
           ...evidence.improvements,
           ...observedQuality.improvements,
+          ...observedEvidence.improvements,
         ].join(", ")})`,
       );
     }
     if (observedQuality.newlyObserved.length > 0) {
       summaries.push(
         `${expected.id}: quality outcomes newly observed; structural costs are non-comparable (${observedQuality.newlyObserved.join(", ")})`,
+      );
+    }
+    if (observedEvidence.newlyObserved) {
+      summaries.push(
+        `${expected.id}: evidence telemetry newly observed; structural costs are non-comparable`,
       );
     }
     if (outcomeLabelChanged || protocolControlsChanged) {

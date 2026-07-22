@@ -207,12 +207,20 @@ const main = defineCheck({
       return;
     }
 
-    const historicalRegistry = readFixtureRegistry(options.fixturesPath);
+    const historicalRegistry = readFixtureRegistry(options.fixturesPath, {
+      historicalBaseline: true,
+    });
     const baseline = readAgentEfficiencyMeasurement(options.baselinePath, "frozen baseline", {
       historicalBaseline: true,
     });
-    const first = measureAgentEfficiency({ fixturesPath: options.fixturesPath });
-    const second = measureAgentEfficiency({ fixturesPath: options.fixturesPath });
+    const first = measureAgentEfficiency({
+      fixturesPath: options.fixturesPath,
+      historicalBaseline: true,
+    });
+    const second = measureAgentEfficiency({
+      fixturesPath: options.fixturesPath,
+      historicalBaseline: true,
+    });
     const failures = [];
 
     if (structuralProjectionBytes(first) !== structuralProjectionBytes(second)) {
@@ -229,7 +237,10 @@ const main = defineCheck({
       candidate = readAgentEfficiencyMeasurement(options.measurementPath, "candidate measurement");
       const registryPath = candidateRegistryPath(candidate);
       const candidateRegistry = readFixtureRegistry(registryPath);
-      const rebuiltCandidate = measureAgentEfficiency({ fixturesPath: registryPath });
+      const rebuiltCandidate = measureAgentEfficiency({
+        fixturesPath: registryPath,
+        historicalBaseline: false,
+      });
       failures.push(
         ...exactRebuildFailures(candidate, rebuiltCandidate, "candidate measurement"),
         ...verifyArtifactProvenance(candidateRegistry, rebuiltCandidate, "candidate"),
