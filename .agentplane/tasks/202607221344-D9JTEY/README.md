@@ -4,7 +4,7 @@ title: "Release AgentPlane v0.6.24"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -17,11 +17,27 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-22T14:30:59.383Z"
+  updated_by: "CODER"
+  note: "Release candidate v0.6.24 verified: frozen plan covers all 20 commits since v0.6.23; release prepublish completed all 82 isolated groups plus workflow coverage 34/34, significant coverage 204/204, and release-critical 16/16; focused help snapshot 13/13 passed; version parity, incident gate, release check, generated headers, workflow recovery snapshot, routing, doctor, local tarball installation, and package policy all pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-22T14:31:13.632Z"
+  updated_by: "EVALUATOR"
+  note: "v0.6.24 release candidate is ready for hosted review and protected-main integration."
+  evaluated_sha: "48e34e6e570f479b31b64f7d4d2c0d9a674a1636"
+  blueprint_digest: "e77ff3804f61ca6e5bc784823f05f7ec8c4a484ce8bef7b48894a007df5e1a1e"
+  evidence_refs:
+    - ".agentplane/tasks/202607221344-D9JTEY/README.md"
+    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-143113632-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-143113632-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221344-D9JTEY/quality/20260722-143113632-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221344-D9JTEY/blueprint/resolved-snapshot.json"
+    - ".agentplane/.release/apply/2026-07-22T14-28-33-962Z.json"
+  findings:
+    - "Frozen plan coverage, 82-group release prepublish, coverage suites, release-critical tests, version parity, incident clearance, generated artifacts, and package smoke all pass on the candidate branch."
 commit: null
 comments:
   -
@@ -35,8 +51,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: prepare v0.6.24 release notes and AgentPlane release candidate, verify locally and on GitHub, merge to main, publish npm packages, and record registry evidence without touching agentplane-loops."
+  -
+    type: "verify"
+    at: "2026-07-22T14:30:59.383Z"
+    author: "CODER"
+    state: "ok"
+    note: "Release candidate v0.6.24 verified: frozen plan covers all 20 commits since v0.6.23; release prepublish completed all 82 isolated groups plus workflow coverage 34/34, significant coverage 204/204, and release-critical 16/16; focused help snapshot 13/13 passed; version parity, incident gate, release check, generated headers, workflow recovery snapshot, routing, doctor, local tarball installation, and package policy all pass."
 doc_version: 3
-doc_updated_at: "2026-07-22T14:29:35.341Z"
+doc_updated_at: "2026-07-22T14:30:59.499Z"
 doc_updated_by: "CODER"
 description: "Prepare release notes and the v0.6.24 release candidate from current main, pass release and hosted verification, merge through protected main, dispatch Publish to npm for the merged release SHA, and verify GitHub Release, tag, and npm package parity. Do not touch agentplane-loops."
 sections:
@@ -49,6 +71,36 @@ sections:
   Verify Steps: "1. Confirm the release plan targets exactly 0.6.24 from v0.6.23 and every planned commit is represented in docs/releases/v0.6.24.md. 2. Run bun run release:incidents:check, bun run release:check, bun run release:parity, node .agentplane/policy/check-routing.mjs, ap doctor, and bun run test:full-fast. 3. Confirm hosted PR checks pass on the closure head and protected-main integration completes through the queue. 4. Dispatch Publish to npm with the exact merged release SHA and require a successful workflow. 5. Verify tag v0.6.24, GitHub Release v0.6.24, and exact npm 0.6.24 parity for all published packages. 6. Confirm main is clean and the original agentplane-loops checkout remains unchanged."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-22T14:30:59.383Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Release candidate v0.6.24 verified: frozen plan covers all 20 commits since v0.6.23; release prepublish completed all 82 isolated groups plus workflow coverage 34/34, significant coverage 204/204, and release-critical 16/16; focused help snapshot 13/13 passed; version parity, incident gate, release check, generated headers, workflow recovery snapshot, routing, doctor, local tarball installation, and package policy all pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T14:30:18.094Z, excerpt_hash=sha256:3c7d316c0e9445e3c074b262b061f601c3c2c96c7f69ce4eb1504a1eae843a24
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221344-D9JTEY-release-v0-6-24/.agentplane/tasks/202607221344-D9JTEY/blueprint/resolved-snapshot.json
+    - old_digest: e77ff3804f61ca6e5bc784823f05f7ec8c4a484ce8bef7b48894a007df5e1a1e
+    - current_digest: e77ff3804f61ca6e5bc784823f05f7ec8c4a484ce8bef7b48894a007df5e1a1e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221344-D9JTEY
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202607221344-D9JTEY
+    - diagnostic_command: agentplane pr check 202607221344-D9JTEY
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Before publication, close or revert the release candidate PR without tagging. After publication, do not rewrite v0.6.24; prepare a new patch release that reverts or corrects the defective change and preserve the immutable tag and npm evidence."
   Findings: |-
@@ -63,6 +115,16 @@ sections:
       Resolution: Included the refreshed last-known-good snapshot and release-note entry in a dedicated signed release fix commit, then revalidated parity and workflow freshness.
       Promotion: incident-candidate
       Fixability: repo-fixable
+
+    - Observation: After the version bump, release:check reported all fourteen checked-in README header SVGs still rendered the previous package version.
+      Impact: The v0.6.24 candidate was internally version-consistent but its public generated header assets were stale.
+      Resolution: Regenerated all fourteen README header assets for v0.6.24 and verified the freshness check before committing them.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+
+    - Observation: The release gates found a stale CLI help snapshot and versioned generated recovery/header artifacts.
+      Impact: Without correction the candidate would fail hosted release validation or expose stale recovery/public documentation state.
+      Resolution: Updated the canonical help snapshot, synchronized last-known-good, regenerated v0.6.24 headers, and reran the relevant focused and full release checks.
 id_source: "generated"
 ---
 ## Summary
@@ -86,6 +148,36 @@ Release v0.6.24 from main at base SHA 9de894461a781549fd1044d588037870e5532acc. 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-22T14:30:59.383Z — VERIFY — ok
+
+By: CODER
+
+Note: Release candidate v0.6.24 verified: frozen plan covers all 20 commits since v0.6.23; release prepublish completed all 82 isolated groups plus workflow coverage 34/34, significant coverage 204/204, and release-critical 16/16; focused help snapshot 13/13 passed; version parity, incident gate, release check, generated headers, workflow recovery snapshot, routing, doctor, local tarball installation, and package policy all pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T14:30:18.094Z, excerpt_hash=sha256:3c7d316c0e9445e3c074b262b061f601c3c2c96c7f69ce4eb1504a1eae843a24
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221344-D9JTEY-release-v0-6-24/.agentplane/tasks/202607221344-D9JTEY/blueprint/resolved-snapshot.json
+- old_digest: e77ff3804f61ca6e5bc784823f05f7ec8c4a484ce8bef7b48894a007df5e1a1e
+- current_digest: e77ff3804f61ca6e5bc784823f05f7ec8c4a484ce8bef7b48894a007df5e1a1e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221344-D9JTEY
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202607221344-D9JTEY
+- diagnostic_command: agentplane pr check 202607221344-D9JTEY
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -105,3 +197,13 @@ Before publication, close or revert the release candidate PR without tagging. Af
   Resolution: Included the refreshed last-known-good snapshot and release-note entry in a dedicated signed release fix commit, then revalidated parity and workflow freshness.
   Promotion: incident-candidate
   Fixability: repo-fixable
+
+- Observation: After the version bump, release:check reported all fourteen checked-in README header SVGs still rendered the previous package version.
+  Impact: The v0.6.24 candidate was internally version-consistent but its public generated header assets were stale.
+  Resolution: Regenerated all fourteen README header assets for v0.6.24 and verified the freshness check before committing them.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+
+- Observation: The release gates found a stale CLI help snapshot and versioned generated recovery/header artifacts.
+  Impact: Without correction the candidate would fail hosted release validation or expose stale recovery/public documentation state.
+  Resolution: Updated the canonical help snapshot, synchronized last-known-good, regenerated v0.6.24 headers, and reran the relevant focused and full release checks.
