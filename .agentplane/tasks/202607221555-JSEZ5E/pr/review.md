@@ -13,7 +13,7 @@ Created: 2026-07-22T15:56:49.832Z
 ## Verification
 
 - State: ok
-- Note: Verified current implementation: ci:local:fast passed, including lint, budgets, 370 files/2185 tests, five critical CLI E2E chunks, typecheck, routing, doctor, and the temporary-project semantic reconciliation E2E.
+- Note: Verified HEAD c1c135508d53 after hosted knip fix: knip baseline, typecheck, SGR contract tests, and complete ci:local:fast all pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -56,13 +56,13 @@ Created: 2026-07-22T15:56:49.832Z
  .../agentplane/src/context/ingest-task-pack.ts     | 162 ++++++++++++++++++++-
  .../agentplane/src/context/ingest-task-prompt.ts   |  26 ++--
  packages/agentplane/src/context/ingest-task.ts     |  39 ++++-
- ...imilation-artifacts-validation-ontology.test.ts |  86 +++++++++++
- ...m-assimilation-artifacts-validation-ontology.ts |  80 +++++++++-
+ ...imilation-artifacts-validation-ontology.test.ts | 116 +++++++++++++++
+ ...m-assimilation-artifacts-validation-ontology.ts |  81 ++++++++++-
  .../src/runtime/sgr/context-extraction-contract.ts |  41 +++++-
  .../src/runtime/sgr/context-extraction-payloads.ts |  80 ++++++++--
  .../agentplane/src/runtime/sgr/contract-types.ts   |  20 ++-
  .../agentplane/src/runtime/sgr/contracts.test.ts   | 104 +++++++++++++
- 33 files changed, 1066 insertions(+), 81 deletions(-)
+ 33 files changed, 1094 insertions(+), 84 deletions(-)
 ```
 
 </details>
