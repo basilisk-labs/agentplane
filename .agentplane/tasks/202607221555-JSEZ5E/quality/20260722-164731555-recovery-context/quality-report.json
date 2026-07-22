@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221555-JSEZ5E",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T16:47:31.555Z",
+  "verdict": "pass",
+  "summary": "Quality review passed for HEAD 03985dd3622c after resolving the empty-catalog consistency defect.",
+  "evaluated_sha": "03985dd3622cb28371e96dbb79474d45de024c54",
+  "blueprint_digest": "6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c",
+  "findings": [
+    "Apply-time and maximum-assimilation verification now both accept an explicit empty candidate array for new_entity_proposal when no canonical entity exists."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221555-JSEZ5E/README.md",
+    "packages/agentplane/src/context/maximum-assimilation-artifacts-validation-ontology.ts",
+    "packages/agentplane/src/context/maximum-assimilation-artifacts-validation-ontology.test.ts",
+    "ci:local:fast 370 files 2186 tests passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Empty candidates are allowed only for new_entity_proposal; merge, alias, distinct, and uncertain decisions retain their stronger candidate requirements."
+  ]
+}

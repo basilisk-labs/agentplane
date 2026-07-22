@@ -16,8 +16,8 @@ In scope: context-ingest task metadata and task pack; a task-bound canonical ent
 - Note:
 
 ```text
-Verified HEAD c1c135508d53 after hosted knip fix: knip baseline, typecheck, SGR contract tests, and
-complete ci:local:fast all pass.
+Verified HEAD 03985dd3622c: empty-catalog new_entity_proposal regression passes; complete
+ci:local:fast passes 370 files/2186 tests plus critical CLI E2E.
 ```
 - Canonical workflow state lives in the task README.
 

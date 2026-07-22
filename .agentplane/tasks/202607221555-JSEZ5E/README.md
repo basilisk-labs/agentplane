@@ -1,10 +1,11 @@
 ---
 id: "202607221555-JSEZ5E"
 title: "Delegate semantic entity reconciliation to the context executor"
-status: "DOING"
+result_summary: "Executor-owned semantic reconciliation with self-contained task context, evidence gates, and duplicate-free canonical application."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -30,33 +31,38 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-22T16:43:27.625Z"
+  updated_at: "2026-07-22T16:47:29.840Z"
   updated_by: "CODER"
-  note: "Verified HEAD c1c135508d53 after hosted knip fix: knip baseline, typecheck, SGR contract tests, and complete ci:local:fast all pass."
+  note: "Verified HEAD 03985dd3622c: empty-catalog new_entity_proposal regression passes; complete ci:local:fast passes 370 files/2186 tests plus critical CLI E2E."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-22T16:43:29.988Z"
+  updated_at: "2026-07-22T16:47:31.555Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed for HEAD c1c135508d53; hosted knip failure was resolved without changing runtime behavior."
-  evaluated_sha: "c1c135508d532836c878c2ec943a03f3acdc55f9"
+  note: "Quality review passed for HEAD 03985dd3622c after resolving the empty-catalog consistency defect."
+  evaluated_sha: "03985dd3622cb28371e96dbb79474d45de024c54"
   blueprint_digest: "6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c"
   evidence_refs:
     - ".agentplane/tasks/202607221555-JSEZ5E/README.md"
-    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-164329988-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-164329988-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-164329988-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-164731555-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-164731555-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-164731555-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221555-JSEZ5E/blueprint/resolved-snapshot.json"
-    - "knip:check passed 555/555 baseline"
-    - "ci:local:fast passed 370 files 2185 tests plus critical CLI E2E"
-    - "packages/agentplane/src/runtime/sgr/contract-types.ts"
+    - "packages/agentplane/src/context/maximum-assimilation-artifacts-validation-ontology.ts"
+    - "packages/agentplane/src/context/maximum-assimilation-artifacts-validation-ontology.test.ts"
+    - "ci:local:fast 370 files 2186 tests passed"
   findings:
-    - "Removed only an unnecessary public export from an internally consumed semantic decision union."
-commit: null
+    - "Apply-time and maximum-assimilation verification now both accept an explicit empty candidate array for new_entity_proposal when no canonical entity exists."
+commit:
+  hash: "03985dd3622cb28371e96dbb79474d45de024c54"
+  message: "🐛 JSEZ5E task: permit new entities with empty catalogs"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved semantic entity-reconciliation task contract, keeping semantic identity decisions with CURATOR and deterministic code limited to evidence preparation, validation, and canonical application."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: semantic entity reconciliation is delegated to CURATOR, deterministic validation/application is enforced, empty-catalog proposals are supported, and all local and hosted checks pass."
 events:
   -
     type: "status"
@@ -89,9 +95,22 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified HEAD c1c135508d53 after hosted knip fix: knip baseline, typecheck, SGR contract tests, and complete ci:local:fast all pass."
+  -
+    type: "verify"
+    at: "2026-07-22T16:47:29.840Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified HEAD 03985dd3622c: empty-catalog new_entity_proposal regression passes; complete ci:local:fast passes 370 files/2186 tests plus critical CLI E2E."
+  -
+    type: "status"
+    at: "2026-07-22T16:53:38.364Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: semantic entity reconciliation is delegated to CURATOR, deterministic validation/application is enforced, empty-catalog proposals are supported, and all local and hosted checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-22T16:43:27.864Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-22T16:53:38.365Z"
+doc_updated_by: "INTEGRATOR"
 description: "Improve context assimilation so every generated CURATOR task contains a self-sufficient semantic entity-reconciliation brief, canonical entity catalog, explicit decision protocol, and machine-validated evidence contract. The executor must decide semantic identity; deterministic AgentPlane code may only prepare candidates, validate the decision, and apply the chosen canonical identifiers. Same-meaning terms must reuse canonical entities instead of creating stable-ID duplicates; ambiguous and distinct entities must remain explicit."
 sections:
   Summary: "Make context ingestion generate an executor-ready semantic reconciliation contract. CURATOR—not deterministic code—must decide whether source terms denote an existing canonical entity, an alias, a distinct entity, or an unresolved possible match. AgentPlane prepares complete evidence surfaces, validates the decision record, and applies canonical identifiers without inventing semantic equivalence."
@@ -260,6 +279,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-22T16:47:29.840Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified HEAD 03985dd3622c: empty-catalog new_entity_proposal regression passes; complete ci:local:fast passes 370 files/2186 tests plus critical CLI E2E.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T16:43:27.864Z, excerpt_hash=sha256:7c4a1b25376e295ec1fd7aff6108a73d334c61744ca701ed926e183a7f68ce3d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221555-JSEZ5E-delegate-semantic-entity-reconciliation-to-the-c/.agentplane/tasks/202607221555-JSEZ5E/blueprint/resolved-snapshot.json
+    - old_digest: 6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c
+    - current_digest: 6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221555-JSEZ5E
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane evaluator run 202607221555-JSEZ5E --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607221555-JSEZ5E/README.md
+    - diagnostic_command: agentplane evaluator run 202607221555-JSEZ5E --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607221555-JSEZ5E/README.md
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the task branch before integration. After integration, revert the implementation commit through a new follow-up task. Existing context artifacts remain compatible because the change governs newly produced extraction payloads and task packs; do not rewrite historical semantic decisions automatically."
   Findings: |-
@@ -276,6 +325,10 @@ sections:
       Resolution: Updated the successful fixture with candidate rationale, comparison dimensions, evidence for and against, and an explicit decision rationale.
       Promotion: incident-candidate
       Fixability: repo-fixable
+extensions:
+  implementation_commit:
+    hash: "03985dd3622cb28371e96dbb79474d45de024c54"
+    message: "🐛 JSEZ5E task: permit new entities with empty catalogs"
 id_source: "generated"
 ---
 ## Summary
@@ -435,6 +488,36 @@ Note: Verified HEAD c1c135508d53 after hosted knip fix: knip baseline, typecheck
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T16:33:20.082Z, excerpt_hash=sha256:7c4a1b25376e295ec1fd7aff6108a73d334c61744ca701ed926e183a7f68ce3d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221555-JSEZ5E-delegate-semantic-entity-reconciliation-to-the-c/.agentplane/tasks/202607221555-JSEZ5E/blueprint/resolved-snapshot.json
+- old_digest: 6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c
+- current_digest: 6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221555-JSEZ5E
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane evaluator run 202607221555-JSEZ5E --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607221555-JSEZ5E/README.md
+- diagnostic_command: agentplane evaluator run 202607221555-JSEZ5E --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607221555-JSEZ5E/README.md
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-22T16:47:29.840Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified HEAD 03985dd3622c: empty-catalog new_entity_proposal regression passes; complete ci:local:fast passes 370 files/2186 tests plus critical CLI E2E.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T16:43:27.864Z, excerpt_hash=sha256:7c4a1b25376e295ec1fd7aff6108a73d334c61744ca701ed926e183a7f68ce3d
 
 Details:
 
