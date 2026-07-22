@@ -40,7 +40,7 @@ and doctor all passed; only unrelated historical doctor warnings remain.
  .../src/commands/context/finalize.unit.test.ts     |  58 +++++++++
  .../src/commands/context/init-manifest.ts          |   1 +
  .../agentplane/src/commands/context/init-wiki.ts   |   1 +
- .../src/commands/context/release-readiness.test.ts |  54 ++++++++
+ .../context/release-readiness.raw-deletion.test.ts |  79 ++++++++++++
  .../verify-task.maximum-assimilation.unit.test.ts  |  27 ++--
  .../src/commands/context/wiki-frontmatter.ts       | 115 +++++++++++++++++
  .../src/commands/context/wiki-index.unit.test.ts   |   6 +
@@ -61,7 +61,7 @@ and doctor all passed; only unrelated historical doctor warnings remain.
  packages/agentplane/src/context/integrity.ts       |   7 +-
  ...ximum-assimilation-artifacts-validation.test.ts |  23 ++++
  .../maximum-assimilation-artifacts-validation.ts   |   4 +
- 32 files changed, 1006 insertions(+), 169 deletions(-)
+ 32 files changed, 1031 insertions(+), 169 deletions(-)
 ```
 
 </details>

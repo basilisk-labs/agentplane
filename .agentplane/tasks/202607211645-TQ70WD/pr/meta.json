@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607211645-TQ70WD/repair-maximum-assimilation-context-lifecycle",
   "created_at": "2026-07-21T16:46:59.883Z",
-  "diffstat_sha256": "sha256:2587b3e5a7463c7cec00152b6fd1844a0b33140f2bf0805a2db1c97b770e65e0",
+  "diffstat_sha256": "sha256:798b63fa7959b86696775d251c3084e1fd8115077ab784112e025de6f7c624b7",
   "last_verified_at": "2026-07-21T21:33:12.799Z",
   "last_verified_diffstat_sha256": "sha256:63d2eab8a15e00e9cb1f2ea79508a124877b3fe87c4b170ecd8238839c811b5d",
   "pr_number": 4590,
