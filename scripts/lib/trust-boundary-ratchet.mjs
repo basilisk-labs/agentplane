@@ -120,6 +120,21 @@ function nearestSymbol(node) {
   return "module";
 }
 
+function nearestFunctionSymbol(node) {
+  let current = node;
+  while (current) {
+    if (ts.isFunctionLike(current)) {
+      const directName = declarationName(current);
+      if (directName) return directName;
+      if (ts.isVariableDeclaration(current.parent) && ts.isIdentifier(current.parent.name)) {
+        return current.parent.name.text;
+      }
+    }
+    current = current.parent;
+  }
+  return "module";
+}
+
 function propertyName(node) {
   const name = node?.name;
   if (name && (ts.isIdentifier(name) || ts.isStringLiteral(name))) return name.text;
@@ -131,18 +146,57 @@ function lineAndColumn(sourceFile, node) {
   return { line: position.line + 1, column: position.character + 1 };
 }
 
+function normalizedNodeText(sourceFile, node) {
+  return node.getText(sourceFile).replaceAll(/\s+/g, " ").trim();
+}
+
+function structuralContainer(node) {
+  let current = node.parent;
+  while (current) {
+    if (
+      ts.isFunctionLike(current) ||
+      ts.isClassDeclaration(current) ||
+      ts.isInterfaceDeclaration(current) ||
+      ts.isTypeAliasDeclaration(current) ||
+      ts.isSourceFile(current)
+    ) {
+      return current;
+    }
+    current = current.parent;
+  }
+  return node.getSourceFile();
+}
+
+function structuralNodeIdentity(sourceFile, node) {
+  const container = structuralContainer(node);
+  const normalized = normalizedNodeText(sourceFile, node);
+  let ordinal = 0;
+  let selectedOrdinal = 0;
+  const visit = (candidate) => {
+    if (candidate.kind === node.kind && normalizedNodeText(sourceFile, candidate) === normalized) {
+      ordinal += 1;
+      if (candidate === node) selectedOrdinal = ordinal;
+    }
+    if (selectedOrdinal === 0) ts.forEachChild(candidate, visit);
+  };
+  visit(container);
+  const kind = ts.SyntaxKind[node.kind] ?? String(node.kind);
+  return `ast:${kind}:${sha256(normalized).slice(0, 12)}:${String(selectedOrdinal || 1)}`;
+}
+
 function makeViolation(ruleId, sourceFile, node, locator, message) {
   const rule = RULE_BY_ID.get(ruleId);
   if (!rule) throw new Error(`Unknown trust-boundary rule: ${ruleId}`);
   const filePath = normalizeRepoPath(sourceFile.fileName);
   const position = lineAndColumn(sourceFile, node);
+  const stableLocator = `${locator}:${structuralNodeIdentity(sourceFile, node)}`;
   return {
-    violation_id: `${ruleId}:${filePath}:${locator}`,
+    violation_id: `${ruleId}:${filePath}:${stableLocator}`,
     rule_id: ruleId,
     rf_owners: rule.rf_owners,
     owner_task_ids: rule.owner_task_ids,
     path: filePath,
-    locator,
+    locator: stableLocator,
     line: position.line,
     column: position.column,
     message,
@@ -243,14 +297,19 @@ function collectAutomaticVerdicts(sourceFiles, textFiles) {
     visit(sourceFile);
   }
   for (const { filePath, text } of textFiles) {
+    const occurrences = new Map();
     for (const [index, line] of text.split("\n").entries()) {
       if (!/--verdict\s+pass(?=\s|["'`])/u.test(line)) continue;
+      const normalized = line.trim().replaceAll(/\s+/g, " ");
+      const digest = sha256(normalized).slice(0, 12);
+      const ordinal = (occurrences.get(digest) ?? 0) + 1;
+      occurrences.set(digest, ordinal);
       violations.push(
         makeTextViolation(
           ruleId,
           filePath,
           index + 1,
-          `text:${sha256(line.trim()).slice(0, 12)}`,
+          `text:${digest}:${String(ordinal)}`,
           "fixed --verdict pass command appears in an agent-facing template",
         ),
       );
@@ -259,12 +318,121 @@ function collectAutomaticVerdicts(sourceFiles, textFiles) {
   return violations;
 }
 
-function collectAgentWritableObservedFields(declarations) {
+function functionName(node) {
+  return declarationName(node) ?? nearestSymbol(node);
+}
+
+function propertyAccessSegments(node) {
+  const segments = [];
+  let current = node;
+  while (ts.isPropertyAccessExpression(current) || ts.isElementAccessExpression(current)) {
+    if (ts.isPropertyAccessExpression(current)) segments.unshift(current.name.text);
+    if (
+      ts.isElementAccessExpression(current) &&
+      ts.isStringLiteralLike(current.argumentExpression)
+    ) {
+      segments.unshift(current.argumentExpression.text);
+    }
+    current = current.expression;
+  }
+  if (ts.isIdentifier(current)) segments.unshift(current.text);
+  return segments;
+}
+
+function observedParserFields(sourceFile, node) {
+  const name = functionName(node);
+  if (!/\/runner\/.*result-manifest/iu.test(sourceFile.fileName)) return [];
+  const manifestParser = /(?:read|parse|decode|normalize).*?(?:manifest|result|envelope)/iu.test(
+    name,
+  );
+  const metricsParser = /(?:normalize|parse|decode).*metrics/iu.test(name);
+  const evidenceParser = /(?:normalize|parse|decode).*evidence/iu.test(name);
+  if (!manifestParser && !metricsParser && !evidenceParser) return [];
+  const fields = new Map();
+  const visit = (candidate) => {
+    if (ts.isPropertyAccessExpression(candidate) || ts.isElementAccessExpression(candidate)) {
+      const segments = propertyAccessSegments(candidate);
+      const field = segments.at(-1);
+      if (
+        field &&
+        ((manifestParser &&
+          (OBSERVED_DIRECT_FIELDS.has(field) || OBSERVED_NESTED_FIELDS.has(field))) ||
+          (metricsParser && OBSERVED_NESTED_FIELDS.get("metrics")?.has(field)) ||
+          (evidenceParser && OBSERVED_NESTED_FIELDS.get("evidence")?.has(field))) &&
+        !fields.has(field)
+      ) {
+        fields.set(field, candidate);
+      }
+    }
+    ts.forEachChild(candidate, visit);
+  };
+  if (node.body) visit(node.body);
+  return [...fields.entries()];
+}
+
+function observedManifestOverrideFields(node) {
+  if (!node.body) return [];
+  const name = functionName(node);
+  const mergeLikeName = /(?:apply|merge).*manifest/iu.test(name);
+  if (!mergeLikeName) return [];
+  const fields = new Map();
+  const manifestAliases = new Set(["manifest"]);
+  for (const parameter of node.parameters ?? []) {
+    if (ts.isIdentifier(parameter.name) && /manifest/iu.test(parameter.name.text)) {
+      manifestAliases.add(parameter.name.text);
+    }
+  }
+  const flowsFromManifest = (candidate) => {
+    if (ts.isIdentifier(candidate)) return manifestAliases.has(candidate.text);
+    if (!ts.isPropertyAccessExpression(candidate) && !ts.isElementAccessExpression(candidate)) {
+      return false;
+    }
+    const segments = propertyAccessSegments(candidate);
+    return (
+      segments.some((segment) => segment.toLowerCase() === "manifest") ||
+      manifestAliases.has(segments[0])
+    );
+  };
+  const visit = (candidate) => {
+    if (ts.isVariableDeclaration(candidate) && candidate.initializer) {
+      if (ts.isIdentifier(candidate.name) && flowsFromManifest(candidate.initializer)) {
+        manifestAliases.add(candidate.name.text);
+      }
+      if (ts.isObjectBindingPattern(candidate.name) && flowsFromManifest(candidate.initializer)) {
+        for (const element of candidate.name.elements) {
+          const field = element.propertyName?.getText() ?? element.name.getText();
+          if (
+            (OBSERVED_DIRECT_FIELDS.has(field) || OBSERVED_NESTED_FIELDS.has(field)) &&
+            !fields.has(field)
+          ) {
+            fields.set(field, element);
+          }
+        }
+      }
+    }
+    if (ts.isPropertyAccessExpression(candidate) || ts.isElementAccessExpression(candidate)) {
+      const segments = propertyAccessSegments(candidate);
+      const field = segments.at(-1);
+      if (
+        flowsFromManifest(candidate) &&
+        field &&
+        (OBSERVED_DIRECT_FIELDS.has(field) || OBSERVED_NESTED_FIELDS.has(field)) &&
+        !fields.has(field)
+      ) {
+        fields.set(field, candidate);
+      }
+    }
+    ts.forEachChild(candidate, visit);
+  };
+  visit(node.body);
+  return [...fields.entries()];
+}
+
+function collectAgentWritableObservedFields(sourceFiles, declarations) {
   const ruleId = "trust.no-agent-writable-observed-fields";
   const root = declarations.get("RunnerResultManifest");
-  if (!root) return [];
   const violations = [];
-  for (const member of membersForDeclaration(root.node)) {
+  for (const member of root ? membersForDeclaration(root.node) : []) {
     if (!ts.isPropertySignature(member)) continue;
     const name = propertyName(member);
     if (!name) continue;
@@ -310,7 +478,117 @@ function collectAgentWritableObservedFields(declarations) {
       );
     }
   }
+  for (const sourceFile of sourceFiles) {
+    const visit = (node) => {
+      if (ts.isFunctionLike(node) && node.body) {
+        for (const [field, fieldNode] of observedParserFields(sourceFile, node)) {
+          violations.push(
+            makeViolation(
+              ruleId,
+              sourceFile,
+              fieldNode,
+              `parser:${functionName(node)}.${field}`,
+              `agent-writable parser accepts observed field ${field}`,
+            ),
+          );
+        }
+        for (const [field, fieldNode] of observedManifestOverrideFields(node)) {
+          violations.push(
+            makeViolation(
+              ruleId,
+              sourceFile,
+              fieldNode,
+              `override:${functionName(node)}.${field}`,
+              `agent-writable manifest overrides observed result field ${field}`,
+            ),
+          );
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(sourceFile);
+  }
   return violations;
+}
+
+function isEmptyStringLiteral(value) {
+  return value === '""' || value === "''" || value === "``";
+}
+
+function missingComparisonPolarity(condition) {
+  if (!ts.isBinaryExpression(condition)) return null;
+  const operator = condition.operatorToken.kind;
+  const left = condition.left.getText();
+  const right = condition.right.getText();
+  const comparesMissingValue =
+    [left, right].some((value) => value === "null" || value === "undefined") ||
+    [left, right].some(
+      (value) =>
+        /^typeof\s+/u.test(value) ||
+        value === '"undefined"' ||
+        value === "'undefined'" ||
+        isEmptyStringLiteral(value),
+    );
+  const comparesEmptyLength =
+    (left.endsWith(".length") && right === "0") || (right.endsWith(".length") && left === "0");
+  if (!comparesMissingValue && !comparesEmptyLength) {
+    const rendered = condition.getText().replaceAll(/\s+/g, "");
+    if (/\.length(?:<=0|<1)$|^(?:0>=|1>).*\.length$/u.test(rendered)) return true;
+    if (/\.length(?:>0|>=1)$|^(?:0<|1<=).*\.length$/u.test(rendered)) return false;
+    return null;
+  }
+  if (
+    operator === ts.SyntaxKind.EqualsEqualsToken ||
+    operator === ts.SyntaxKind.EqualsEqualsEqualsToken
+  ) {
+    return true;
+  }
+  if (
+    operator === ts.SyntaxKind.ExclamationEqualsToken ||
+    operator === ts.SyntaxKind.ExclamationEqualsEqualsToken
+  ) {
+    return false;
+  }
+  return null;
+}
+
+function conditionSelectsMissingInput(condition, whenTrue) {
+  if (ts.isParenthesizedExpression(condition)) {
+    return conditionSelectsMissingInput(condition.expression, whenTrue);
+  }
+  if (
+    ts.isPrefixUnaryExpression(condition) &&
+    condition.operator === ts.SyntaxKind.ExclamationToken
+  ) {
+    return (
+      whenTrue &&
+      (ts.isIdentifier(condition.operand) ||
+        ts.isPropertyAccessExpression(condition.operand) ||
+        ts.isCallExpression(condition.operand))
+    );
+  }
+  if (ts.isIdentifier(condition) || ts.isPropertyAccessExpression(condition)) {
+    return !whenTrue;
+  }
+  if (
+    ts.isCallExpression(condition) &&
+    ts.isPropertyAccessExpression(condition.expression) &&
+    condition.expression.name.text === "trim"
+  ) {
+    return !whenTrue;
+  }
+  const missingWhenTrue = missingComparisonPolarity(condition);
+  return missingWhenTrue === null ? false : missingWhenTrue === whenTrue;
+}
+
+function enclosingIfBranch(statement) {
+  let current = statement;
+  while (current.parent && ts.isBlock(current.parent)) current = current.parent;
+  const parent = current.parent;
+  if (!parent || !ts.isIfStatement(parent)) return null;
+  if (parent.thenStatement === current) return { condition: parent.expression, whenTrue: true };
+  if (parent.elseStatement === current) return { condition: parent.expression, whenTrue: false };
+  return null;
 }
 
 function isImplicitDangerLiteral(node) {
@@ -323,15 +601,12 @@ function isImplicitDangerLiteral(node) {
     );
   }
   if (ts.isParameter(parent) && parent.initializer === node) return true;
-  if (ts.isConditionalExpression(parent)) return true;
-  if (!ts.isReturnStatement(parent) || !parent.parent || !ts.isIfStatement(parent.parent)) {
-    return false;
+  if (ts.isConditionalExpression(parent)) {
+    return conditionSelectsMissingInput(parent.condition, parent.whenTrue === node);
   }
-  const condition = parent.parent.expression;
-  return (
-    ts.isPrefixUnaryExpression(condition) ||
-    /(?:undefined|null|\.length\s*===\s*0)/u.test(condition.getText())
-  );
+  if (!ts.isReturnStatement(parent)) return false;
+  const branch = enclosingIfBranch(parent);
+  return branch ? conditionSelectsMissingInput(branch.condition, branch.whenTrue) : false;
 }
 
 function collectImplicitDangerSandboxes(sourceFiles) {
@@ -380,9 +655,74 @@ function rootExpressionName(node) {
   return ts.isIdentifier(current) ? current.text : "";
 }
 
-function collectUntypedDurableBoundaries(sourceFiles) {
+function terminalExpressionName(node) {
+  if (ts.isPropertyAccessExpression(node)) return node.name.text;
+  if (ts.isElementAccessExpression(node) && ts.isStringLiteralLike(node.argumentExpression)) {
+    return node.argumentExpression.text;
+  }
+  if (ts.isIdentifier(node)) return node.text;
+  return "";
+}
+
+function containsInlineDurableShape(typeNode) {
+  if (ts.isTypeLiteralNode(typeNode)) return true;
+  if (ts.isUnionTypeNode(typeNode)) {
+    return typeNode.types.some((candidate) => containsInlineDurableShape(candidate));
+  }
+  return untypedBoundaryType(typeNode);
+}
+
+function declarationMemberNames(declaration) {
+  return new Set(
+    membersForDeclaration(declaration)
+      .map((member) => propertyName(member))
+      .filter(Boolean),
+  );
+}
+
+function collectUntypedDurableBoundaries(sourceFiles, declarations) {
   const ruleId = "trust.no-untyped-durable-route-workorder";
   const violations = [];
+  const contract = declarations.get("AgentWorkContextContract");
+  if (contract) {
+    const memberNames = declarationMemberNames(contract.node);
+    if (
+      memberNames.size > 0 &&
+      [...memberNames].every((name) => name === "kind" || name === "version")
+    ) {
+      violations.push(
+        makeViolation(
+          ruleId,
+          contract.sourceFile,
+          contract.node,
+          "contract:AgentWorkContextContract:nominal-only",
+          "AgentWorkContextContract is nominal metadata without a typed durable work-order payload",
+        ),
+      );
+    }
+  }
+  const taskBrief = declarations.get("TaskBrief");
+  if (taskBrief) {
+    const memberNames = declarationMemberNames(taskBrief.node);
+    const duplicatedDurableFields = [
+      "task",
+      "workflow",
+      "route",
+      "next_action",
+      "execution_packet",
+    ].filter((name) => memberNames.has(name));
+    if (memberNames.has("contract") && duplicatedDurableFields.length >= 2) {
+      violations.push(
+        makeViolation(
+          ruleId,
+          taskBrief.sourceFile,
+          taskBrief.node,
+          "contract:TaskBrief:duplicated-durable-shape",
+          `TaskBrief duplicates durable fields outside AgentWorkContextContract: ${duplicatedDurableFields.join(", ")}`,
+        ),
+      );
+    }
+  }
   for (const sourceFile of sourceFiles) {
     const visit = (node) => {
       if (ts.isPropertySignature(node)) {
@@ -421,6 +761,37 @@ function collectUntypedDurableBoundaries(sourceFiles) {
             ),
           );
         }
+      }
+      if (
+        ts.isAsExpression(node) &&
+        normalizedFieldName(terminalExpressionName(node.expression)) === "routeDecision" &&
+        containsInlineDurableShape(node.type)
+      ) {
+        violations.push(
+          makeViolation(
+            ruleId,
+            sourceFile,
+            node,
+            `assertion:${nearestSymbol(node)}:route-decision-inline-shape`,
+            "route_decision is decoded through an inline bootstrap assertion instead of a shared contract",
+          ),
+        );
+      }
+      if (
+        (ts.isStringLiteralLike(node) || ts.isNoSubstitutionTemplateLiteral(node)) &&
+        /route_decision\.(?:oracle|executionPacket|nextAction|workspace|approval)\./u.test(
+          node.text,
+        )
+      ) {
+        violations.push(
+          makeViolation(
+            ruleId,
+            sourceFile,
+            node,
+            `bootstrap:${nearestSymbol(node)}:route-decision-projection`,
+            "runner bootstrap duplicates route_decision field paths instead of consuming a typed work order",
+          ),
+        );
       }
       ts.forEachChild(node, visit);
     };
@@ -546,29 +917,64 @@ function collectRenderedCommandOrchestration(sourceFiles) {
   return violations;
 }
 
-function collectDuplicateRunnerTaskRepresentations(declarations) {
+function collectDuplicateRunnerTaskRepresentations(sourceFiles, declarations) {
   const ruleId = "trust.no-duplicate-runner-task-representation";
   const declaration = declarations.get("RunnerTaskContext");
-  if (!declaration) return [];
-  const members = membersForDeclaration(declaration.node).filter((member) =>
-    ts.isPropertySignature(member),
-  );
-  const byName = new Map(members.map((member) => [propertyName(member), member]));
-  const data = byName.get("data");
-  if (!data || !data.type?.getText().includes("TaskData")) return [];
-  return DUPLICATE_TASK_FIELDS.flatMap((name) => {
-    const member = byName.get(name);
-    if (!member) return [];
-    return [
-      makeViolation(
-        ruleId,
-        declaration.sourceFile,
-        member,
-        `type:RunnerTaskContext.data+${name}`,
-        `RunnerTaskContext serializes TaskData beside duplicate ${name} projection`,
-      ),
-    ];
-  });
+  const violations = [];
+  if (declaration) {
+    const members = membersForDeclaration(declaration.node).filter((member) =>
+      ts.isPropertySignature(member),
+    );
+    const byName = new Map(members.map((member) => [propertyName(member), member]));
+    const data = byName.get("data");
+    if (data?.type?.getText().includes("TaskData")) {
+      for (const name of DUPLICATE_TASK_FIELDS) {
+        const member = byName.get(name);
+        if (!member) continue;
+        violations.push(
+          makeViolation(
+            ruleId,
+            declaration.sourceFile,
+            member,
+            `type:RunnerTaskContext.data+${name}`,
+            `RunnerTaskContext serializes TaskData beside duplicate ${name} projection`,
+          ),
+        );
+      }
+    }
+  }
+  for (const sourceFile of sourceFiles) {
+    const visit = (node) => {
+      if (ts.isObjectLiteralExpression(node)) {
+        const byName = new Map(
+          node.properties.map((property) => [propertyName(property), property]),
+        );
+        const isTaskBuilderObject =
+          (ts.isPropertyAssignment(node.parent) && propertyName(node.parent) === "task") ||
+          /(?:assemble|build|compose).*task.*(?:context|envelope)/iu.test(
+            nearestFunctionSymbol(node),
+          );
+        if (isTaskBuilderObject && byName.has("data")) {
+          for (const name of DUPLICATE_TASK_FIELDS) {
+            const property = byName.get(name);
+            if (!property) continue;
+            violations.push(
+              makeViolation(
+                ruleId,
+                sourceFile,
+                property,
+                `builder:${nearestFunctionSymbol(node)}.data+${name}`,
+                `runner task builder emits TaskData beside duplicate ${name} projection`,
+              ),
+            );
+          }
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(sourceFile);
+  }
+  return violations;
 }
 
 export function collectTrustBoundaryViolations(root) {
@@ -596,11 +1002,11 @@ export function collectTrustBoundaryViolations(root) {
   const declarations = collectDeclarations(sourceFiles);
   return [
     ...collectAutomaticVerdicts(sourceFiles, textFiles),
-    ...collectAgentWritableObservedFields(declarations),
+    ...collectAgentWritableObservedFields(sourceFiles, declarations),
     ...collectImplicitDangerSandboxes(sourceFiles),
-    ...collectUntypedDurableBoundaries(sourceFiles),
+    ...collectUntypedDurableBoundaries(sourceFiles, declarations),
     ...collectRenderedCommandOrchestration(sourceFiles),
-    ...collectDuplicateRunnerTaskRepresentations(declarations),
+    ...collectDuplicateRunnerTaskRepresentations(sourceFiles, declarations),
   ].toSorted((left, right) => left.violation_id.localeCompare(right.violation_id));
 }
 
@@ -612,11 +1018,24 @@ function sameStringArray(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
-export function validateTrustBoundaryBaseline({ baseline, violations, expectedOriginDigest }) {
+export function validateTrustBoundaryBaseline({
+  baseline,
+  baseBaseline = null,
+  violations,
+  expectedOriginDigest,
+  expectedCapturedFromCommit,
+}) {
   const errors = [];
   if (baseline?.schema_version !== 1) errors.push("baseline schema_version must be 1");
   if (baseline?.baseline_id !== "agentplane.trust-boundary.v0.7") {
     errors.push("baseline_id must be agentplane.trust-boundary.v0.7");
+  }
+  if (expectedCapturedFromCommit && baseline?.captured_from_commit !== expectedCapturedFromCommit) {
+    errors.push(
+      `captured_from_commit must remain ${expectedCapturedFromCommit}; received ${String(
+        baseline?.captured_from_commit,
+      )}`,
+    );
   }
   const baselineRules = Array.isArray(baseline?.rules) ? baseline.rules : [];
   for (const rule of TRUST_BOUNDARY_RULES) {
@@ -635,6 +1054,13 @@ export function validateTrustBoundaryBaseline({ baseline, violations, expectedOr
   const originIds = Array.isArray(baseline?.origin?.violation_ids)
     ? baseline.origin.violation_ids
     : [];
+  const uniqueOriginIds = new Set();
+  for (const violationId of originIds) {
+    if (uniqueOriginIds.has(violationId)) {
+      errors.push(`duplicate origin violation_id: ${String(violationId)}`);
+    }
+    uniqueOriginIds.add(violationId);
+  }
   const originDigest = trustBoundaryOriginDigest(originIds);
   if (baseline?.origin?.violation_ids_sha256 !== originDigest) {
     errors.push("origin.violation_ids_sha256 does not match origin.violation_ids");
@@ -645,6 +1071,15 @@ export function validateTrustBoundaryBaseline({ baseline, violations, expectedOr
     );
   }
   const entries = Array.isArray(baseline?.violations) ? baseline.violations : [];
+  const currentById = new Map();
+  const currentIds = new Set();
+  for (const violation of violations) {
+    if (currentIds.has(violation.violation_id)) {
+      errors.push(`duplicate collected violation_id: ${violation.violation_id}`);
+    }
+    currentIds.add(violation.violation_id);
+    currentById.set(violation.violation_id, violation);
+  }
   const baselineIds = new Set();
   for (const entry of entries) {
     if (!entry || typeof entry.violation_id !== "string") {
@@ -670,8 +1105,60 @@ export function validateTrustBoundaryBaseline({ baseline, violations, expectedOr
     ) {
       errors.push(`baseline entry ${entry.violation_id} has stale RF ownership`);
     }
+    const collected = currentById.get(entry.violation_id);
+    if (collected) {
+      const exactFields = [
+        ["rule_id", entry.rule_id, collected.rule_id],
+        ["path", entry.path, collected.path],
+        ["locator", entry.locator, collected.locator],
+        ["rationale", entry.rationale, collected.message],
+      ];
+      for (const [field, actual, expected] of exactFields) {
+        if (actual !== expected) {
+          errors.push(
+            `baseline entry ${entry.violation_id} ${field} does not match the collected violation`,
+          );
+        }
+      }
+      if (!sameStringArray(entry.rf_owners, collected.rf_owners)) {
+        errors.push(
+          `baseline entry ${entry.violation_id} rf_owners do not match the collected violation`,
+        );
+      }
+      if (!sameStringArray(entry.owner_task_ids, collected.owner_task_ids)) {
+        errors.push(
+          `baseline entry ${entry.violation_id} owner_task_ids do not match the collected violation`,
+        );
+      }
+    }
   }
-  const currentIds = new Set(violations.map((entry) => entry.violation_id));
+  if (baseBaseline !== null) {
+    if (baseBaseline?.schema_version !== 1) {
+      errors.push("base baseline schema_version must be 1");
+    }
+    if (baseBaseline?.baseline_id !== "agentplane.trust-boundary.v0.7") {
+      errors.push("base baseline_id must be agentplane.trust-boundary.v0.7");
+    }
+    const baseEntries = Array.isArray(baseBaseline?.violations) ? baseBaseline.violations : [];
+    const baseIds = new Set();
+    for (const entry of baseEntries) {
+      if (!entry || typeof entry.violation_id !== "string") {
+        errors.push("base baseline contains a violation without violation_id");
+        continue;
+      }
+      if (baseIds.has(entry.violation_id)) {
+        errors.push(`duplicate base baseline entry: ${entry.violation_id}`);
+      }
+      baseIds.add(entry.violation_id);
+    }
+    for (const entry of entries) {
+      if (entry?.violation_id && !baseIds.has(entry.violation_id)) {
+        errors.push(
+          `baseline reactivation or growth is forbidden relative to the checked-out base: ${entry.violation_id}`,
+        );
+      }
+    }
+  }
   for (const violation of violations) {
     if (!baselineIds.has(violation.violation_id)) {
       errors.push(
