@@ -108,7 +108,7 @@ export type ContextExtractionCandidateEntity = {
   evidence_against?: string[];
 };
 
-export type ContextExtractionEntityResolutionDecision =
+type ContextExtractionEntityResolutionDecision =
   | "same_as"
   | "alias_of"
   | "distinct_entity"

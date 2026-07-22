@@ -4,7 +4,7 @@ title: "Delegate semantic entity reconciliation to the context executor"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -36,26 +36,24 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-22T16:33:31.970Z"
+  updated_at: "2026-07-22T16:34:28.487Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed for implementation HEAD ab1d7e68c662 after the complete local CI lane."
-  evaluated_sha: "ab1d7e68c66289b2d767d0af734019587d419a14"
+  note: "Quality review passed for implementation HEAD 4b8b9e4b17fa after complete local CI."
+  evaluated_sha: "4b8b9e4b17faa1918c3aadd480083a751735bacf"
   blueprint_digest: "6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c"
   evidence_refs:
     - ".agentplane/tasks/202607221555-JSEZ5E/README.md"
-    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-163331970-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-163331970-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-163331970-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-163428487-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-163428487-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-163428487-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221555-JSEZ5E/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/context/ingest-task-pack.ts"
     - "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts"
     - "packages/agentplane/src/context/extraction-writer.ts"
-    - "packages/agentplane/src/context/maximum-assimilation-artifacts-validation-ontology.test.ts"
-    - "ci:local:fast passed: 370 files 2185 tests plus 5 critical CLI E2E chunks"
-    - "manual-e2e:/tmp/agentplane-semantic-e2e2.pt2VHA task=202607221613-Q8B3XW entities=2 alias=Billing->entity.payments"
+    - "ci:local:fast passed"
+    - "manual-e2e:/tmp/agentplane-semantic-e2e2.pt2VHA"
   findings:
-    - "CURATOR receives a self-contained canonical catalog, semantic comparison protocol, explicit uncertainty states, and task-specific acceptance criteria."
-    - "Deterministic AgentPlane code never infers semantic equivalence; it rejects missing targets or evidence and atomically applies the executor decision."
+    - "The context executor owns semantic identity; deterministic code supplies evidence, validates the structured outcome, and applies only declared canonical targets."
 commit: null
 comments:
   -
