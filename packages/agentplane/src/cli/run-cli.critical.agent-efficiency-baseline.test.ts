@@ -268,6 +268,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
         allowsJs: isAllowedTarballPath("dist/index.js", "@agentplaneorg/core"),
         allowsMap: isAllowedTarballPath("dist/index.js.map", "@agentplaneorg/core"),
         policySchemaVersion: packageTarballPolicyContract().schema_version,
+        policyRegexFlags: packageTarballPolicyContract().allowed.library_dist_pattern.flags,
       }));
     `;
     const result = await runNode(["--input-type=module", "--eval", source]);
@@ -277,6 +278,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       allowsJs: true,
       allowsMap: false,
       policySchemaVersion: 1,
+      policyRegexFlags: "u",
     });
   });
 
