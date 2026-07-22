@@ -1,10 +1,11 @@
 ---
 id: "202607221344-D9JTEY"
 title: "Release AgentPlane v0.6.24"
-status: "DOING"
+result_summary: "Prepared and locally verified v0.6.24 release candidate with complete notes, generated artifacts, package parity, and evaluator evidence."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ quality_review:
     - ".agentplane/.release/apply/2026-07-22T14-28-33-962Z.json"
   findings:
     - "The current implementation head adds only the evaluator packet and Prettier normalization for the release-bumped ACR example; all 82 release groups, focused help snapshot, parity, release check, routing, doctor, and generated artifact checks remain satisfied."
-commit: null
+commit:
+  hash: "9698f5602cb621128dbf7262287ee09ecdd4d4e6"
+  message: "✅ D9JTEY task: refresh quality review"
 comments:
   -
     author: "CODER"
     body: "Start: prepare v0.6.24 release notes and AgentPlane release candidate, verify locally and on GitHub, merge to main, publish npm packages, and record registry evidence without touching agentplane-loops."
+  -
+    author: "CODER"
+    body: "Verified: v0.6.24 release candidate passed full local release gates and is ready for hosted review, protected-main integration, and deferred publication."
 events:
   -
     type: "status"
@@ -57,8 +63,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release candidate v0.6.24 verified: frozen plan covers all 20 commits since v0.6.23; release prepublish completed all 82 isolated groups plus workflow coverage 34/34, significant coverage 204/204, and release-critical 16/16; focused help snapshot 13/13 passed; version parity, incident gate, release check, generated headers, workflow recovery snapshot, routing, doctor, local tarball installation, and package policy all pass."
+  -
+    type: "status"
+    at: "2026-07-22T14:36:11.273Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: v0.6.24 release candidate passed full local release gates and is ready for hosted review, protected-main integration, and deferred publication."
 doc_version: 3
-doc_updated_at: "2026-07-22T14:31:55.639Z"
+doc_updated_at: "2026-07-22T14:36:11.273Z"
 doc_updated_by: "CODER"
 description: "Prepare release notes and the v0.6.24 release candidate from current main, pass release and hosted verification, merge through protected main, dispatch Publish to npm for the merged release SHA, and verify GitHub Release, tag, and npm package parity. Do not touch agentplane-loops."
 sections:
@@ -131,6 +144,10 @@ sections:
       Resolution: Formatted only packages/spec/examples/acr.json, preserved the evaluator evidence directory, and committed both before retrying the push.
       Promotion: incident-candidate
       Fixability: repo-fixable
+extensions:
+  implementation_commit:
+    hash: "f1ab68eaa9a377caa76571ed8ac65784e90c218d"
+    message: "✅ D9JTEY task: record release verification"
 id_source: "generated"
 ---
 ## Summary

@@ -5,9 +5,19 @@
   "diffstat_sha256": "sha256:8e0f5deb96b7a426eb583349f35d45449e4ecd06df436aacc1c0c1e29cdda637",
   "last_verified_at": "2026-07-22T14:30:59.383Z",
   "last_verified_diffstat_sha256": "sha256:31396ce3ae9733d798a5bc18cb2644103a9b378c73aa3bd40076bdf192038e50",
+  "pr_number": 4593,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4593",
+  "pre_merge_closure": {
+    "basis_commit": "9698f5602cb621128dbf7262287ee09ecdd4d4e6",
+    "branch": "task/202607221344-D9JTEY/release-v0-6-24",
+    "pr_number": 4593,
+    "recorded_at": "2026-07-22T14:36:11.295Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607221344-D9JTEY",
-  "updated_at": "2026-07-22T13:45:45.805Z",
+  "updated_at": "2026-07-22T14:35:38.859Z",
   "verify": {
     "status": "pass"
   }

@@ -6,7 +6,7 @@ Created: 2026-07-22T13:45:45.805Z
 
 - Task: `202607221344-D9JTEY`
 - Title: Release AgentPlane v0.6.24
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221344-D9JTEY/release-v0-6-24`
 - Canonical task record: `.agentplane/tasks/202607221344-D9JTEY/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-07-22T13:45:45.805Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-22T13:45:45.805Z
+- Updated: 2026-07-22T14:35:38.859Z
 - Branch: task/202607221344-D9JTEY/release-v0-6-24
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
