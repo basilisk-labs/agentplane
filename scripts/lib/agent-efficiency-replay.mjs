@@ -19,13 +19,22 @@ export const REPLAY_DRIVER_CONTRACT_VERSION = 1;
 export const MINIMUM_REPLAY_RUNS = 5;
 export const REPLAY_ANCHOR_COMMIT = PRE_V07_EFFICIENCY_ANCHOR_COMMIT;
 export const TOKEN_FIELDS = Object.freeze(["input_tokens", "output_tokens", "reasoning_tokens"]);
+export const REPLAY_PROVIDER_USAGE_FIELDS = Object.freeze([
+  "input_tokens",
+  "output_tokens",
+  "reasoning_output_tokens",
+]);
 export const DIAGNOSTIC_LATENCY_FIELDS = Object.freeze([
+  "harness_setup_latency_ms",
   "time_to_first_scoped_mutation_ms",
   "time_to_verified_result_ms",
 ]);
 export const REPLAY_HARNESS_FILES = Object.freeze([
   "scripts/lib/agent-efficiency-replay.mjs",
   "scripts/bench/capture-agent-efficiency-replay.mjs",
+  "scripts/bench/internal/agent-efficiency-anchor-runtime.mjs",
+  "scripts/bench/internal/agent-efficiency-anchor-supervisor.mjs",
+  "scripts/bench/internal/agent-efficiency-codex-runtime.mjs",
   "scripts/checks/check-agent-efficiency-replay.mjs",
 ]);
 
@@ -38,6 +47,7 @@ const PROVENANCE_CATEGORIES = new Set([
   "artifact_observed",
   "agent_claimed",
   "human_supplied",
+  "fixture_control",
   "applicability_rule",
   "test_control",
 ]);
@@ -268,9 +278,19 @@ function assertScalarCell(value, label, field, artifactById, options = {}) {
   }
   const observed = assertObservedCell(cell, label, options);
   assertNumber(observed.cell.value, label, field);
+  const testControl =
+    options.allowTestControls === true && observed.provenance.category === "test_control";
   if (
+    field === "lifecycle_calls" &&
+    observed.provenance.category !== "fixture_control" &&
+    !testControl
+  ) {
+    throw new Error(`${label} must use fixture_control provenance`);
+  }
+  if (
+    field !== "lifecycle_calls" &&
     !OBSERVED_CELL_CATEGORIES.has(observed.provenance.category) &&
-    observed.provenance.category !== "test_control"
+    !testControl
   ) {
     throw new Error(`${label} must use supervisor_observed or artifact_observed provenance`);
   }
@@ -401,6 +421,110 @@ function assertEvidence(value, label, artifactById, options = {}) {
   }
 }
 
+function assertEpisodeLedger(artifactById, scenario, label) {
+  const candidates = [...artifactById.values()].filter((artifact) =>
+    Object.hasOwn(artifact.payload, "episode_ledger"),
+  );
+  if (candidates.length !== 1) {
+    throw new Error(`${label} must have exactly one evidence artifact with an episode_ledger`);
+  }
+  const artifact = candidates[0];
+  const ledger = artifact.payload.episode_ledger;
+  if (!Array.isArray(ledger)) throw new TypeError(`${label}.episode_ledger must be an array`);
+  const expectedTrace = scenario.expected_episode_trace;
+  if (ledger.length !== expectedTrace.length) {
+    throw new Error(
+      `${label}.episode_ledger has ${ledger.length}/${expectedTrace.length} expected episodes`,
+    );
+  }
+  const aggregate = Object.fromEntries(
+    [...new Set(expectedTrace)].map((role) => [
+      role,
+      {
+        cached_input_tokens: 0,
+        input_tokens: 0,
+        output_tokens: 0,
+        reasoning_output_tokens: 0,
+      },
+    ]),
+  );
+  for (const [index, rawEpisode] of ledger.entries()) {
+    const episode = object(rawEpisode, `${label}.episode_ledger[${index}]`);
+    exactKeys(
+      episode,
+      ["episode_index", "provider_usage", "role"],
+      `${label}.episode_ledger[${index}]`,
+    );
+    if (episode.episode_index !== index + 1) {
+      throw new Error(`${label}.episode_ledger[${index}].episode_index must be ${index + 1}`);
+    }
+    if (episode.role !== expectedTrace[index]) {
+      throw new Error(
+        `${label}.episode_ledger[${index}].role must preserve expected trace role ${expectedTrace[index]}`,
+      );
+    }
+    const usage = object(
+      episode.provider_usage,
+      `${label}.episode_ledger[${index}].provider_usage`,
+    );
+    exactKeys(
+      usage,
+      [...REPLAY_PROVIDER_USAGE_FIELDS, "cached_input_tokens", "turn_completed_events"],
+      `${label}.episode_ledger[${index}].provider_usage`,
+    );
+    for (const field of [...REPLAY_PROVIDER_USAGE_FIELDS, "cached_input_tokens"]) {
+      if (!Number.isInteger(usage[field]) || usage[field] < 0) {
+        throw new Error(
+          `${label}.episode_ledger[${index}].provider_usage.${field} must be an integer >= 0`,
+        );
+      }
+      aggregate[episode.role][field] += usage[field];
+    }
+    if (usage.turn_completed_events !== 1) {
+      throw new Error(
+        `${label}.episode_ledger[${index}] must contain exactly one final turn.completed event`,
+      );
+    }
+  }
+  const providerUsageByRole = object(
+    artifact.payload.provider_usage_by_role,
+    `${label}.provider_usage_by_role`,
+  );
+  exactKeys(providerUsageByRole, Object.keys(aggregate), `${label}.provider_usage_by_role`);
+  for (const [role, expectedUsage] of Object.entries(aggregate)) {
+    const usage = object(providerUsageByRole[role], `${label}.provider_usage_by_role.${role}`);
+    exactKeys(
+      usage,
+      [...REPLAY_PROVIDER_USAGE_FIELDS, "cached_input_tokens"],
+      `${label}.provider_usage_by_role.${role}`,
+    );
+    if (stableJson(usage) !== stableJson(expectedUsage)) {
+      throw new Error(
+        `${label}.provider_usage_by_role.${role} must equal the exact episode ledger sum`,
+      );
+    }
+  }
+  const metrics = object(artifact.payload.metrics, `${label}.metrics`);
+  if (metrics.llm_episodes !== ledger.length || metrics.prompt_count !== ledger.length) {
+    throw new Error(`${label}.metrics must count the exact episode ledger length`);
+  }
+  return { artifact, providerUsageByRole };
+}
+
+function assertLifecycleControl(artifact, scenario, label) {
+  const control = object(artifact.payload.lifecycle_control, `${label}.lifecycle_control`);
+  exactKeys(control, ["call_count", "provenance", "trace"], `${label}.lifecycle_control`);
+  if (control.provenance !== "fixture_control") {
+    throw new Error(`${label}.lifecycle_control.provenance must be fixture_control`);
+  }
+  if (stableJson(control.trace) !== stableJson(scenario.expected_lifecycle_trace)) {
+    throw new Error(`${label}.lifecycle_control.trace must equal the exact registry control`);
+  }
+  if (control.call_count !== scenario.expected_lifecycle_trace.length) {
+    throw new Error(`${label}.lifecycle_control.call_count must equal its exact trace length`);
+  }
+}
+
 function assertDiagnostics(value, label, artifactById, options = {}) {
   const diagnostics = object(value, label);
   exactKeys(diagnostics, ["captured_at", "host_fingerprint", "latency_ms"], label);
@@ -484,7 +608,7 @@ export function createReplayHarnessManifest(repoRoot, driverIdentity) {
   };
 }
 
-const SAFE_DRIVER_ENV_KEYS = Object.freeze(["LANG", "LC_ALL", "PATH", "TMPDIR", "TZ"]);
+const SAFE_DRIVER_ENV_KEYS = Object.freeze(["LANG", "LC_ALL", "PATH", "TZ"]);
 const FORBIDDEN_DRIVER_ENV_KEYS = new Set(["CODEX_HOME", "HOME", "XDG_CONFIG_HOME"]);
 
 export function buildReplayDriverEnvironment(sourceEnv, requestedNames, contractEnv) {
@@ -599,6 +723,12 @@ export function assertReplayEnvelope(envelope, context) {
   );
   assertArtifacts(value.artifacts, "replay envelope.artifacts", artifactById);
   assertEvidence(value.evidence, "replay envelope.evidence", artifactById, context);
+  const { artifact: episodeArtifact, providerUsageByRole } = assertEpisodeLedger(
+    artifactById,
+    scenario,
+    "replay evidence",
+  );
+  assertLifecycleControl(episodeArtifact, scenario, "replay evidence");
 
   exactKeys(value.observed_outcomes, OUTCOME_FIELDS, "replay envelope.observed_outcomes");
   for (const field of OUTCOME_FIELDS) {
@@ -636,6 +766,18 @@ export function assertReplayEnvelope(envelope, context) {
         artifactById,
         context,
       );
+      const providerField = field === "reasoning_tokens" ? "reasoning_output_tokens" : field;
+      const cell = value.token_usage_by_role[role][field];
+      const expectedSource = `provider_usage_by_role.${role}.${providerField}`;
+      if (
+        cell.value !== providerUsageByRole[role][providerField] ||
+        cell.provenance.artifact_id !== episodeArtifact.id ||
+        cell.provenance.source !== expectedSource
+      ) {
+        throw new Error(
+          `replay envelope.token_usage_by_role.${role}.${field} must map exact provider field ${expectedSource}`,
+        );
+      }
     }
   }
   assertDiagnostics(value.diagnostics, "replay envelope.diagnostics", artifactById, context);
