@@ -1,10 +1,11 @@
 ---
 id: "202607211645-TQ70WD"
 title: "Repair maximum assimilation context lifecycle"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "bun run ci:local:smoke: passed"
   findings:
     - "No blocking findings; the implementation commit and all recorded checks remain unchanged."
-commit: null
+commit:
+  hash: "28d61bee90050bf2869313d497922f3cfb5fd738"
+  message: "✅ TQ70WD task: record verified context lifecycle"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved maximum-assimilation lifecycle fixes and regression coverage from the dedicated main-based task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -61,8 +67,15 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Focused context tests, full AgentPlane suite, smoke gate, typecheck, formatting, routing, CLI help, and doctor all passed; only unrelated historical doctor warnings remain."
+  -
+    type: "status"
+    at: "2026-07-22T10:57:45.472Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-21T21:33:13.032Z"
+doc_updated_at: "2026-07-22T10:57:45.473Z"
 doc_updated_by: "CODER"
 description: "Fix the evaluator-to-context verification contract, Wiki frontmatter generation and linting, modality and expected-artifact consistency, and add end-to-end regression coverage for maximum assimilation including raw-deletion resilience."
 sections:
@@ -146,6 +159,10 @@ sections:
     - Observation: ap doctor completed with zero errors and two warnings for historical DONE tasks 202606040927-KSESDS and 202606041702-TVTSM2 missing implementation hashes.
       Impact: No impact on this task; warnings predate and are outside the approved context lifecycle scope.
       Resolution: Recorded as baseline drift; no unrelated historical task mutation performed.
+extensions:
+  implementation_commit:
+    hash: "63e998521c6c6e82b63f3525adab65044d7471e3"
+    message: "🐛 TQ70WD task: repair context assimilation lifecycle"
 id_source: "generated"
 ---
 ## Summary
