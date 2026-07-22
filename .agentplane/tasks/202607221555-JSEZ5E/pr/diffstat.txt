@@ -25,10 +25,10 @@
  .../agentplane/src/context/ingest-task-pack.ts     | 162 ++++++++++++++++++++-
  .../agentplane/src/context/ingest-task-prompt.ts   |  26 ++--
  packages/agentplane/src/context/ingest-task.ts     |  39 ++++-
- ...imilation-artifacts-validation-ontology.test.ts |  86 +++++++++++
- ...m-assimilation-artifacts-validation-ontology.ts |  80 +++++++++-
+ ...imilation-artifacts-validation-ontology.test.ts | 116 +++++++++++++++
+ ...m-assimilation-artifacts-validation-ontology.ts |  81 ++++++++++-
  .../src/runtime/sgr/context-extraction-contract.ts |  41 +++++-
  .../src/runtime/sgr/context-extraction-payloads.ts |  80 ++++++++--
  .../agentplane/src/runtime/sgr/contract-types.ts   |  20 ++-
  .../agentplane/src/runtime/sgr/contracts.test.ts   | 104 +++++++++++++
- 33 files changed, 1066 insertions(+), 81 deletions(-)
+ 33 files changed, 1094 insertions(+), 84 deletions(-)

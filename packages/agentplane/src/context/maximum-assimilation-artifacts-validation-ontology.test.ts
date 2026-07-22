@@ -59,6 +59,36 @@ describe("maximum-assimilation semantic entity validation", () => {
     expect(errors).toEqual([]);
   });
 
+  it("accepts a new entity proposal after comparing against an empty canonical catalog", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      ".agentplane/context/derived/graph/entities.jsonl",
+      `${JSON.stringify({ id: "entity.first", kind: "service", label: "First Service" })}\n`,
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/ontology/entity-resolution.jsonl",
+      `${JSON.stringify({
+        id: "resolution.first",
+        source_term: "First Service",
+        resolution: "new_entity_proposal",
+        proposed_entity_id: "entity.first",
+        candidate_entities_checked: [],
+        comparison_dimensions: ["kind", "scope", "behavior", "graph_neighborhood"],
+        evidence_for: ["The source defines a service and the canonical catalog is empty."],
+        evidence_against: [],
+        decision_rationale: "No canonical entity exists to reuse or classify as an alias.",
+        why_not_existing: "The canonical catalog was empty before this extraction was applied.",
+        source_refs: ["context/raw/specs/first.md#L1-L4"],
+      })}\n`,
+    );
+
+    const errors: string[] = [];
+    await validateEntityResolution(root, errors);
+    expect(errors).toEqual([]);
+  });
+
   it("rejects a merge without evidence and a canonical graph target", async () => {
     const root = await tempRoot();
     await write(root, ".agentplane/context/derived/graph/entities.jsonl", "");

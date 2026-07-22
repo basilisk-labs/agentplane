@@ -41,11 +41,6 @@ function stringArray(row: Record<string, unknown>, field: string): string[] {
   return value.filter((entry): entry is string => typeof entry === "string" && entry.trim() !== "");
 }
 
-function hasRecordArray(row: Record<string, unknown>, field: string): boolean {
-  const value = row[field];
-  return Array.isArray(value) && value.some((entry) => entry && typeof entry === "object");
-}
-
 function recordArray(row: Record<string, unknown>, field: string): Record<string, unknown>[] {
   const value = row[field];
   if (!Array.isArray(value)) return [];
@@ -121,7 +116,7 @@ export async function validateEntityResolution(root: string, errors: string[]): 
       if (!proposedEntityId) {
         errors.push(`${rel}#${id}: new_entity_proposal requires proposed_entity_id`);
       }
-      if (!hasRecordArray(row, "candidate_entities_checked")) {
+      if (!Array.isArray(row.candidate_entities_checked)) {
         errors.push(`${rel}#${id}: new_entity_proposal requires candidate_entities_checked`);
       }
       if (!stringField(row, "why_not_existing") && !stringField(row, "why_not_alias_of_existing")) {

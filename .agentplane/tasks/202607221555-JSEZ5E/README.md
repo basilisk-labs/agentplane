@@ -4,7 +4,7 @@ title: "Delegate semantic entity reconciliation to the context executor"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -30,30 +30,28 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-22T16:33:19.849Z"
+  updated_at: "2026-07-22T16:43:27.625Z"
   updated_by: "CODER"
-  note: "Verified current implementation: ci:local:fast passed, including lint, budgets, 370 files/2185 tests, five critical CLI E2E chunks, typecheck, routing, doctor, and the temporary-project semantic reconciliation E2E."
+  note: "Verified HEAD c1c135508d53 after hosted knip fix: knip baseline, typecheck, SGR contract tests, and complete ci:local:fast all pass."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-22T16:34:28.487Z"
+  updated_at: "2026-07-22T16:43:29.988Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed for implementation HEAD 4b8b9e4b17fa after complete local CI."
-  evaluated_sha: "4b8b9e4b17faa1918c3aadd480083a751735bacf"
+  note: "Quality review passed for HEAD c1c135508d53; hosted knip failure was resolved without changing runtime behavior."
+  evaluated_sha: "c1c135508d532836c878c2ec943a03f3acdc55f9"
   blueprint_digest: "6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c"
   evidence_refs:
     - ".agentplane/tasks/202607221555-JSEZ5E/README.md"
-    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-163428487-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-163428487-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-163428487-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-164329988-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-164329988-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221555-JSEZ5E/quality/20260722-164329988-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221555-JSEZ5E/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/context/ingest-task-pack.ts"
-    - "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts"
-    - "packages/agentplane/src/context/extraction-writer.ts"
-    - "ci:local:fast passed"
-    - "manual-e2e:/tmp/agentplane-semantic-e2e2.pt2VHA"
+    - "knip:check passed 555/555 baseline"
+    - "ci:local:fast passed 370 files 2185 tests plus critical CLI E2E"
+    - "packages/agentplane/src/runtime/sgr/contract-types.ts"
   findings:
-    - "The context executor owns semantic identity; deterministic code supplies evidence, validates the structured outcome, and applies only declared canonical targets."
+    - "Removed only an unnecessary public export from an internally consumed semantic decision union."
 commit: null
 comments:
   -
@@ -85,8 +83,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified current implementation: ci:local:fast passed, including lint, budgets, 370 files/2185 tests, five critical CLI E2E chunks, typecheck, routing, doctor, and the temporary-project semantic reconciliation E2E."
+  -
+    type: "verify"
+    at: "2026-07-22T16:43:27.625Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified HEAD c1c135508d53 after hosted knip fix: knip baseline, typecheck, SGR contract tests, and complete ci:local:fast all pass."
 doc_version: 3
-doc_updated_at: "2026-07-22T16:33:20.082Z"
+doc_updated_at: "2026-07-22T16:43:27.864Z"
 doc_updated_by: "CODER"
 description: "Improve context assimilation so every generated CURATOR task contains a self-sufficient semantic entity-reconciliation brief, canonical entity catalog, explicit decision protocol, and machine-validated evidence contract. The executor must decide semantic identity; deterministic AgentPlane code may only prepare candidates, validate the decision, and apply the chosen canonical identifiers. Same-meaning terms must reuse canonical entities instead of creating stable-ID duplicates; ambiguous and distinct entities must remain explicit."
 sections:
@@ -204,6 +208,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T16:24:25.451Z, excerpt_hash=sha256:7c4a1b25376e295ec1fd7aff6108a73d334c61744ca701ed926e183a7f68ce3d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221555-JSEZ5E-delegate-semantic-entity-reconciliation-to-the-c/.agentplane/tasks/202607221555-JSEZ5E/blueprint/resolved-snapshot.json
+    - old_digest: 6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c
+    - current_digest: 6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221555-JSEZ5E
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane evaluator run 202607221555-JSEZ5E --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607221555-JSEZ5E/README.md
+    - diagnostic_command: agentplane evaluator run 202607221555-JSEZ5E --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607221555-JSEZ5E/README.md
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-22T16:43:27.625Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified HEAD c1c135508d53 after hosted knip fix: knip baseline, typecheck, SGR contract tests, and complete ci:local:fast all pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T16:33:20.082Z, excerpt_hash=sha256:7c4a1b25376e295ec1fd7aff6108a73d334c61744ca701ed926e183a7f68ce3d
 
     Details:
 
@@ -371,6 +405,36 @@ Note: Verified current implementation: ci:local:fast passed, including lint, bud
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T16:24:25.451Z, excerpt_hash=sha256:7c4a1b25376e295ec1fd7aff6108a73d334c61744ca701ed926e183a7f68ce3d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221555-JSEZ5E-delegate-semantic-entity-reconciliation-to-the-c/.agentplane/tasks/202607221555-JSEZ5E/blueprint/resolved-snapshot.json
+- old_digest: 6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c
+- current_digest: 6746947f2acfa35196ce3f84556f36b82c315dca825518134237aef6afbc973c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221555-JSEZ5E
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane evaluator run 202607221555-JSEZ5E --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607221555-JSEZ5E/README.md
+- diagnostic_command: agentplane evaluator run 202607221555-JSEZ5E --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607221555-JSEZ5E/README.md
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-22T16:43:27.625Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified HEAD c1c135508d53 after hosted knip fix: knip baseline, typecheck, SGR contract tests, and complete ci:local:fast all pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T16:33:20.082Z, excerpt_hash=sha256:7c4a1b25376e295ec1fd7aff6108a73d334c61744ca701ed926e183a7f68ce3d
 
 Details:
 
