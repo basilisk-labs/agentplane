@@ -4,7 +4,7 @@ title: "Capture 0.6.24 compatibility and agent-efficiency baselines"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -37,16 +37,16 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-22T21:10:36.409Z"
+  updated_at: "2026-07-22T21:12:58.682Z"
   updated_by: "EVALUATOR"
   note: "Quality review passed."
-  evaluated_sha: "c83a40157222bb986784604d91d0a5ebfa03ef88"
+  evaluated_sha: "6f383355ebf903b15bae31ec3a17476274384445"
   blueprint_digest: "951c6e55158c0aa74ab50e606b77d63d4ff422bc3efc0e9c9e1d582d7a1dca21"
   evidence_refs:
     - ".agentplane/tasks/202607221846-SXJ75T/README.md"
-    - ".agentplane/tasks/202607221846-SXJ75T/quality/20260722-211036409-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221846-SXJ75T/quality/20260722-211036409-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221846-SXJ75T/quality/20260722-211036409-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221846-SXJ75T/quality/20260722-211258682-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221846-SXJ75T/quality/20260722-211258682-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221846-SXJ75T/quality/20260722-211258682-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221846-SXJ75T/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
