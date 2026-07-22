@@ -125,17 +125,49 @@ function isHierarchyNode(node) {
   );
 }
 
-function structuralAncestorHierarchy(node) {
+function controlSiblingOrdinal(node, sourceFile, signature) {
+  if (!node.parent) return 1;
+  let ordinal = 0;
+  let selected = 0;
+  ts.forEachChild(node.parent, (candidate) => {
+    if (candidate.kind !== node.kind) return;
+    const candidateSignature = ts.isIfStatement(candidate)
+      ? sha256(normalizedNodeText(sourceFile, candidate.expression)).slice(0, 12)
+      : "";
+    if (candidateSignature !== signature) return;
+    ordinal += 1;
+    if (candidate === node) selected = ordinal;
+  });
+  return selected || 1;
+}
+
+function structuralAncestorHierarchy(sourceFile, node) {
   const segments = [];
+  const includeControlFlow = ts.isCallExpression(node);
+  let child = node;
   let current = node.parent;
   while (current && !ts.isSourceFile(current)) {
-    if (isHierarchyNode(current)) {
+    if (includeControlFlow && ts.isIfStatement(current)) {
+      const branch =
+        current.thenStatement === child
+          ? "then"
+          : current.elseStatement === child
+            ? "else"
+            : "condition";
+      const condition = sha256(normalizedNodeText(sourceFile, current.expression)).slice(0, 12);
+      segments.unshift(
+        `IfStatement:${branch}:${condition}:${String(
+          controlSiblingOrdinal(current, sourceFile, condition),
+        )}`,
+      );
+    } else if (isHierarchyNode(current)) {
       const kind = ts.SyntaxKind[current.kind] ?? String(current.kind);
       const name = hierarchyNodeName(current);
       segments.unshift(
         `${kind}:${name || "anonymous"}:${String(hierarchySiblingOrdinal(current))}`,
       );
     }
+    child = current;
     current = current.parent;
   }
   return segments.join("/") || "module";
@@ -155,42 +187,88 @@ export function structuralNodeIdentity(sourceFile, node) {
   };
   visit(container);
   const kind = ts.SyntaxKind[node.kind] ?? String(node.kind);
-  const hierarchy = structuralAncestorHierarchy(node);
+  const hierarchy = structuralAncestorHierarchy(sourceFile, node);
   return `ast:${hierarchy}:${kind}:${sha256(normalized).slice(0, 12)}:${String(
     selectedOrdinal || 1,
   )}`;
 }
 
+export function staticStringValue(node, constants = new Map()) {
+  if (!node) return null;
+  if (ts.isStringLiteralLike(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text;
+  if (
+    ts.isParenthesizedExpression(node) ||
+    ts.isAsExpression(node) ||
+    ts.isNonNullExpression(node) ||
+    ts.isSatisfiesExpression(node)
+  ) {
+    return staticStringValue(node.expression, constants);
+  }
+  if (ts.isIdentifier(node)) return constants.get(node.text) ?? null;
+  if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+    const left = staticStringValue(node.left, constants);
+    const right = staticStringValue(node.right, constants);
+    return left !== null && right !== null ? `${left}${right}` : null;
+  }
+  if (
+    ts.isCallExpression(node) &&
+    ts.isPropertyAccessExpression(node.expression) &&
+    node.expression.name.text === "join" &&
+    ts.isArrayLiteralExpression(node.expression.expression)
+  ) {
+    const separator =
+      node.arguments.length === 0 ? "," : staticStringValue(node.arguments[0], constants);
+    if (separator === null) return null;
+    const values = node.expression.expression.elements.map((element) =>
+      ts.isSpreadElement(element) ? null : staticStringValue(element, constants),
+    );
+    return values.every((value) => value !== null) ? values.join(separator) : null;
+  }
+  return null;
+}
+
 export function collectStringConstants(node) {
   const constants = new Map();
+  const declarations = [];
   const visit = (candidate) => {
     if (
       ts.isVariableDeclaration(candidate) &&
       ts.isIdentifier(candidate.name) &&
-      candidate.initializer &&
-      ts.isStringLiteralLike(candidate.initializer)
+      candidate.initializer
     ) {
-      constants.set(candidate.name.text, candidate.initializer.text);
+      declarations.push(candidate);
     }
     ts.forEachChild(candidate, visit);
   };
   visit(node);
+  let changed = true;
+  for (let pass = 0; pass < declarations.length && changed; pass += 1) {
+    changed = false;
+    for (const declaration of declarations) {
+      const value = staticStringValue(declaration.initializer, constants);
+      if (value !== null && constants.get(declaration.name.text) !== value) {
+        constants.set(declaration.name.text, value);
+        changed = true;
+      }
+    }
+  }
   return constants;
 }
 
 export function resolvedPropertyField(node, constants) {
   if (ts.isPropertyAccessExpression(node)) return node.name.text;
   if (!ts.isElementAccessExpression(node) || !node.argumentExpression) return null;
-  if (ts.isStringLiteralLike(node.argumentExpression)) return node.argumentExpression.text;
-  if (ts.isIdentifier(node.argumentExpression)) {
-    return constants.get(node.argumentExpression.text) ?? null;
-  }
-  return null;
+  return staticStringValue(node.argumentExpression, constants);
 }
 
 export function expressionPath(node, constants) {
   if (ts.isIdentifier(node)) return node.text;
-  if (ts.isParenthesizedExpression(node) || ts.isAsExpression(node)) {
+  if (
+    ts.isParenthesizedExpression(node) ||
+    ts.isAsExpression(node) ||
+    ts.isNonNullExpression(node) ||
+    ts.isSatisfiesExpression(node)
+  ) {
     return expressionPath(node.expression, constants);
   }
   if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) {

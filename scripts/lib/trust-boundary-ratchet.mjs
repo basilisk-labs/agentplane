@@ -357,7 +357,34 @@ function propertyInitializer(object, name) {
   return null;
 }
 
-function isShellInvocation(node) {
+function shellInvocationNames(sourceFile) {
+  const names = new Set(["spawn", "spawnSync", "execFile", "execFileSync"]);
+  for (const statement of sourceFile.statements) {
+    if (
+      !ts.isImportDeclaration(statement) ||
+      !ts.isStringLiteralLike(statement.moduleSpecifier) ||
+      !["child_process", "node:child_process"].includes(statement.moduleSpecifier.text) ||
+      !statement.importClause?.namedBindings
+    ) {
+      continue;
+    }
+    if (ts.isNamedImports(statement.importClause.namedBindings)) {
+      for (const element of statement.importClause.namedBindings.elements) {
+        const importedName = element.propertyName?.text ?? element.name.text;
+        if (["spawn", "spawnSync", "execFile", "execFileSync"].includes(importedName)) {
+          names.add(element.name.text);
+        }
+      }
+    } else if (ts.isNamespaceImport(statement.importClause.namedBindings)) {
+      for (const name of ["spawn", "spawnSync", "execFile", "execFileSync"]) {
+        names.add(`${statement.importClause.namedBindings.name.text}.${name}`);
+      }
+    }
+  }
+  return names;
+}
+
+function isShellInvocation(node, invocationNames) {
   if (!ts.isCallExpression(node)) return false;
   const callee = node.expression.getText();
   if (
@@ -376,7 +403,7 @@ function isShellInvocation(node) {
       args.elements.some((element) => SHELL_FLAGS.has(literalText(element))),
     );
   }
-  if (!["spawn", "spawnSync", "execFile", "execFileSync"].includes(callee)) return false;
+  if (!invocationNames.has(callee)) return false;
   const command = literalText(node.arguments[0]);
   const args = node.arguments[1];
   return Boolean(
@@ -396,8 +423,9 @@ function collectRenderedCommandOrchestration(sourceFiles) {
   const ruleId = "trust.no-rendered-command-orchestration";
   const violations = [];
   for (const sourceFile of sourceFiles) {
+    const invocationNames = shellInvocationNames(sourceFile);
     const visit = (node) => {
-      if (isShellInvocation(node)) {
+      if (isShellInvocation(node, invocationNames)) {
         violations.push(
           makeViolation(
             ruleId,
@@ -491,7 +519,11 @@ function collectDuplicateRunnerTaskRepresentations(sourceFiles, typeIndex) {
         const byName = new Map(
           node.properties.map((property) => [propertyName(property), property]),
         );
-        if (/\/runner\//u.test(sourceFile.fileName) && byName.has("data")) {
+        if (
+          /\/runner\//u.test(sourceFile.fileName) &&
+          byName.has("task_id") &&
+          byName.has("data")
+        ) {
           for (const name of DUPLICATE_TASK_FIELDS) {
             const property = byName.get(name);
             if (!property) continue;

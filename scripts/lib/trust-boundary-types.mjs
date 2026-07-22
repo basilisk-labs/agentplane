@@ -14,10 +14,12 @@ export function createTypeDeclarationIndex(sourceFiles) {
   );
   const declarations = new Map();
   const imports = new Map();
+  const namespaceImports = new Map();
   const reexports = new Map();
   const starReexports = new Map();
   for (const sourceFile of sourceFiles) {
     const importMap = new Map();
+    const namespaceImportMap = new Map();
     const reexportMap = new Map();
     const starModules = [];
     for (const statement of sourceFile.statements) {
@@ -34,6 +36,17 @@ export function createTypeDeclarationIndex(sourceFiles) {
             node: element,
           });
         }
+      }
+      if (
+        ts.isImportDeclaration(statement) &&
+        ts.isStringLiteralLike(statement.moduleSpecifier) &&
+        statement.importClause?.namedBindings &&
+        ts.isNamespaceImport(statement.importClause.namedBindings)
+      ) {
+        namespaceImportMap.set(statement.importClause.namedBindings.name.text, {
+          moduleSpecifier: statement.moduleSpecifier.text,
+          node: statement.importClause.namedBindings,
+        });
       }
       if (
         ts.isExportDeclaration(statement) &&
@@ -55,6 +68,7 @@ export function createTypeDeclarationIndex(sourceFiles) {
     }
     const sourcePath = normalizeRepoPath(sourceFile.fileName);
     imports.set(sourcePath, importMap);
+    namespaceImports.set(sourcePath, namespaceImportMap);
     reexports.set(sourcePath, reexportMap);
     starReexports.set(sourcePath, starModules);
     const visit = (node) => {
@@ -188,8 +202,30 @@ export function createTypeDeclarationIndex(sourceFiles) {
           diagnostics: [],
         };
       }
-      if (ts.isTypeReferenceNode(typeNode) && ts.isIdentifier(typeNode.typeName)) {
-        return resolveSymbol(sourceFile, typeNode.typeName.text, nextStack);
+      if (ts.isTypeReferenceNode(typeNode)) {
+        if (ts.isIdentifier(typeNode.typeName)) {
+          return resolveSymbol(sourceFile, typeNode.typeName.text, nextStack);
+        }
+        if (ts.isQualifiedName(typeNode.typeName) && ts.isIdentifier(typeNode.typeName.left)) {
+          const sourcePath = normalizeRepoPath(sourceFile.fileName);
+          const imported = namespaceImports.get(sourcePath)?.get(typeNode.typeName.left.text);
+          const targetFile = imported ? resolveModule(sourceFile, imported.moduleSpecifier) : null;
+          if (targetFile) {
+            return resolveSymbol(targetFile, typeNode.typeName.right.text, nextStack);
+          }
+          return {
+            declarations: [],
+            members: [],
+            diagnostics: [
+              {
+                code: "unresolved_namespace_type",
+                message: `cannot resolve namespace type ${typeNode.typeName.getText()} from ${sourceFile.fileName}`,
+                node: typeNode,
+                sourceFile,
+              },
+            ],
+          };
+        }
       }
       if (ts.isIntersectionTypeNode(typeNode)) {
         const parts = typeNode.types.map((candidate) => resolveTypeNode(candidate));
@@ -278,8 +314,16 @@ export function createTypeDeclarationIndex(sourceFiles) {
         diagnostics: [],
       };
     }
-    if (ts.isTypeReferenceNode(typeNode) && ts.isIdentifier(typeNode.typeName)) {
-      return resolveSymbol(sourceFile, typeNode.typeName.text);
+    if (ts.isTypeReferenceNode(typeNode)) {
+      if (ts.isIdentifier(typeNode.typeName)) {
+        return resolveSymbol(sourceFile, typeNode.typeName.text);
+      }
+      if (ts.isQualifiedName(typeNode.typeName) && ts.isIdentifier(typeNode.typeName.left)) {
+        const sourcePath = normalizeRepoPath(sourceFile.fileName);
+        const imported = namespaceImports.get(sourcePath)?.get(typeNode.typeName.left.text);
+        const targetFile = imported ? resolveModule(sourceFile, imported.moduleSpecifier) : null;
+        if (targetFile) return resolveSymbol(targetFile, typeNode.typeName.right.text);
+      }
     }
     if (ts.isIntersectionTypeNode(typeNode) || ts.isUnionTypeNode(typeNode)) {
       const parts = typeNode.types.map((candidate) => resolveTypeNode(sourceFile, candidate));
@@ -296,6 +340,7 @@ export function createTypeDeclarationIndex(sourceFiles) {
     canonical,
     declarations,
     imports,
+    namespaceImports,
     reexports,
     resolveModule,
     resolveSymbol,
@@ -315,8 +360,8 @@ function resolutionDeclarationKeys(resolution) {
 function typeNodeReferencesResolution(typeIndex, sourceFile, typeNode, target) {
   if (!typeNode || !target) return false;
   if (ts.isTypeLiteralNode(typeNode) || ts.isFunctionTypeNode(typeNode)) return false;
-  if (ts.isTypeReferenceNode(typeNode) && ts.isIdentifier(typeNode.typeName)) {
-    const resolved = typeIndex.resolveSymbol(sourceFile, typeNode.typeName.text);
+  if (ts.isTypeReferenceNode(typeNode)) {
+    const resolved = typeIndex.resolveTypeNode(sourceFile, typeNode);
     const targetKeys = resolutionDeclarationKeys(target);
     if (
       resolved.identity === target.identity ||
@@ -364,6 +409,46 @@ export function createObservedBoundaryModel(sourceFiles, typeIndex) {
         )
         .map(([kind]) => kind),
     );
+  const functionSignatureForType = (sourceFile, typeNode, seen = new Set()) => {
+    if (!typeNode) return null;
+    if (ts.isParenthesizedTypeNode(typeNode)) {
+      return functionSignatureForType(sourceFile, typeNode.type, seen);
+    }
+    if (ts.isFunctionTypeNode(typeNode)) return { node: typeNode, sourceFile };
+    const resolution = typeIndex.resolveTypeNode(sourceFile, typeNode);
+    for (const declaration of resolution.declarations ?? []) {
+      const key = typeDeclarationKey(declaration.sourceFile, declaration.node.name.text);
+      if (seen.has(key) || !ts.isTypeAliasDeclaration(declaration.node)) continue;
+      seen.add(key);
+      const signature = functionSignatureForType(
+        declaration.sourceFile,
+        declaration.node.type,
+        seen,
+      );
+      if (signature) return signature;
+    }
+    return null;
+  };
+  const contextualSignature = (sourceFile, functionNode) => {
+    const parent = functionNode.parent;
+    if (ts.isVariableDeclaration(parent) && parent.initializer === functionNode && parent.type) {
+      return functionSignatureForType(sourceFile, parent.type);
+    }
+    return null;
+  };
+  const functionReturnType = (sourceFile, functionNode) => {
+    if (functionNode.type) return { sourceFile, type: functionNode.type };
+    const contextual = contextualSignature(sourceFile, functionNode);
+    return contextual ? { sourceFile: contextual.sourceFile, type: contextual.node.type } : null;
+  };
+  const parameterType = (sourceFile, functionNode, parameter, index) => {
+    if (parameter.type) return { sourceFile, type: parameter.type };
+    const contextual = contextualSignature(sourceFile, functionNode);
+    const contextualParameter = contextual?.node.parameters[index];
+    return contextualParameter?.type
+      ? { sourceFile: contextual.sourceFile, type: contextualParameter.type }
+      : null;
+  };
   for (const sourceFile of sourceFiles) {
     const visit = (node) => {
       if (ts.isFunctionLike(node) && node.body) {
@@ -371,7 +456,11 @@ export function createObservedBoundaryModel(sourceFiles, typeIndex) {
         if (name) {
           const key = observedFunctionKey(sourceFile, name);
           functionNodes.set(key, node);
-          functionKinds.set(key, directKindsForType(sourceFile, node.type));
+          const returnType = functionReturnType(sourceFile, node);
+          functionKinds.set(
+            key,
+            returnType ? directKindsForType(returnType.sourceFile, returnType.type) : new Set(),
+          );
         }
       }
       ts.forEachChild(node, visit);
@@ -399,5 +488,20 @@ export function createObservedBoundaryModel(sourceFiles, typeIndex) {
     if (typeNode) visit(typeNode);
     return kinds;
   };
-  return { functionKinds, kindsForType, targets, typeIndex };
+  const kindsForFunction = (sourceFile, functionNode) => {
+    const name = directFunctionName(functionNode);
+    if (name) {
+      return new Set(functionKinds.get(observedFunctionKey(sourceFile, name)));
+    }
+    const returnType = functionReturnType(sourceFile, functionNode);
+    return returnType ? kindsForType(returnType.sourceFile, returnType.type) : new Set();
+  };
+  return {
+    functionKinds,
+    kindsForFunction,
+    kindsForType,
+    parameterType,
+    targets,
+    typeIndex,
+  };
 }

@@ -5,6 +5,7 @@ import {
   expressionPath,
   nearestSymbol,
   propertyName,
+  staticStringValue,
 } from "./trust-boundary-ast.mjs";
 
 function enclosingIfBranch(statement) {
@@ -147,9 +148,23 @@ function precedingGuardAuthorizesDanger(sourceFile, returnStatement, typeIndex) 
     const statement = block.statements[cursor];
     if (!ts.isIfStatement(statement) || statement.elseStatement) continue;
     if (!statementAlwaysExits(statement.thenStatement)) continue;
-    return conditionAuthorizesDanger(sourceFile, statement.expression, false, typeIndex);
+    if (conditionAuthorizesDanger(sourceFile, statement.expression, false, typeIndex)) return true;
   }
   return false;
+}
+
+function enclosingConditionalBranch(node) {
+  let child = node;
+  let current = node.parent;
+  while (current && !ts.isStatement(current) && !ts.isFunctionLike(current)) {
+    if (ts.isConditionalExpression(current)) {
+      if (current.whenTrue === child) return { condition: current.condition, whenTrue: true };
+      if (current.whenFalse === child) return { condition: current.condition, whenTrue: false };
+    }
+    child = current;
+    current = current.parent;
+  }
+  return null;
 }
 
 function dangerLiteralIsVocabulary(node) {
@@ -171,9 +186,32 @@ function dangerLiteralIsVocabulary(node) {
   return false;
 }
 
-function isImplicitDangerLiteral(sourceFile, node, typeIndex) {
-  if (!ts.isStringLiteralLike(node) || node.text !== "danger-full-access") return false;
-  if (dangerLiteralIsVocabulary(node)) return false;
+function isDangerExpression(node, constants) {
+  if (!ts.isExpression(node)) return false;
+  if (ts.isIdentifier(node)) return false;
+  if (
+    ts.isParenthesizedExpression(node) ||
+    ts.isAsExpression(node) ||
+    ts.isNonNullExpression(node) ||
+    ts.isSatisfiesExpression(node)
+  ) {
+    return false;
+  }
+  return staticStringValue(node, constants) === "danger-full-access";
+}
+
+function isImplicitDangerExpression(sourceFile, node, typeIndex, constants) {
+  if (!isDangerExpression(node, constants)) return false;
+  if (ts.isStringLiteralLike(node) && dangerLiteralIsVocabulary(node)) return false;
+  const conditional = enclosingConditionalBranch(node);
+  if (conditional) {
+    return !conditionAuthorizesDanger(
+      sourceFile,
+      conditional.condition,
+      conditional.whenTrue,
+      typeIndex,
+    );
+  }
   let parent = node.parent;
   while (
     ts.isParenthesizedExpression(parent) ||
@@ -204,8 +242,9 @@ export function collectImplicitDangerSandboxes(sourceFiles, typeIndex, makeViola
   const ruleId = "trust.no-implicit-danger-sandbox";
   const violations = [];
   for (const sourceFile of sourceFiles) {
+    const constants = collectStringConstants(sourceFile);
     const visit = (node) => {
-      if (isImplicitDangerLiteral(sourceFile, node, typeIndex)) {
+      if (isImplicitDangerExpression(sourceFile, node, typeIndex, constants)) {
         violations.push(
           makeViolation(
             ruleId,

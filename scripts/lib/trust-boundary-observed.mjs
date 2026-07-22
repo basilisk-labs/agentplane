@@ -3,11 +3,20 @@ import ts from "typescript";
 import {
   collectStringConstants,
   declarationName,
-  expressionPath,
   nearestSymbol,
   propertyName,
   resolvedPropertyField,
 } from "./trust-boundary-ast.mjs";
+import {
+  bindingIdentifiers,
+  collectJsonParserNames,
+  collectManifestTypedPaths,
+  expressionHasManifestSource,
+  expressionIsDirectlyTainted,
+  expressionIsTainted,
+  isUntrustedInputType,
+  propagateTaint,
+} from "./trust-boundary-observed-taint.mjs";
 import { createObservedBoundaryModel } from "./trust-boundary-types.mjs";
 
 const OBSERVED_DIRECT_FIELDS = new Set(["status", "exit_code", "timeout_reason", "artifacts"]);
@@ -18,264 +27,12 @@ const OBSERVED_NESTED_FIELDS = new Map([
   ],
   ["evidence", new Set(["evidence_paths", "changed_paths", "files_changed_count", "tests_run"])],
 ]);
+const OBSERVED_NESTED_LEAF_FIELDS = new Set(
+  [...OBSERVED_NESTED_FIELDS.values()].flatMap((fields) => [...fields]),
+);
 
 function functionName(node) {
   return declarationName(node) ?? nearestSymbol(node);
-}
-
-function expressionIsTainted(node, taintedNames, taintedPaths, constants, jsonIsSource) {
-  if (!node) return false;
-  if (ts.isIdentifier(node)) return taintedNames.has(node.text);
-  if (
-    ts.isParenthesizedExpression(node) ||
-    ts.isAsExpression(node) ||
-    ts.isNonNullExpression(node) ||
-    ts.isSatisfiesExpression(node)
-  ) {
-    return expressionIsTainted(
-      node.expression,
-      taintedNames,
-      taintedPaths,
-      constants,
-      jsonIsSource,
-    );
-  }
-  const candidatePath = expressionPath(node, constants);
-  if (candidatePath && taintedPaths.has(candidatePath)) return true;
-  if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) {
-    return expressionIsTainted(
-      node.expression,
-      taintedNames,
-      taintedPaths,
-      constants,
-      jsonIsSource,
-    );
-  }
-  if (ts.isCallExpression(node)) {
-    if (jsonIsSource && node.expression.getText() === "JSON.parse") return true;
-    return node.arguments.some((argument) =>
-      expressionIsTainted(argument, taintedNames, taintedPaths, constants, jsonIsSource),
-    );
-  }
-  if (ts.isObjectLiteralExpression(node)) {
-    return node.properties.some((property) => {
-      if (ts.isSpreadAssignment(property)) {
-        return expressionIsTainted(
-          property.expression,
-          taintedNames,
-          taintedPaths,
-          constants,
-          jsonIsSource,
-        );
-      }
-      if (ts.isPropertyAssignment(property)) {
-        return expressionIsTainted(
-          property.initializer,
-          taintedNames,
-          taintedPaths,
-          constants,
-          jsonIsSource,
-        );
-      }
-      return ts.isShorthandPropertyAssignment(property) && taintedNames.has(property.name.text);
-    });
-  }
-  let tainted = false;
-  ts.forEachChild(node, (child) => {
-    if (
-      !tainted &&
-      ts.isExpression(child) &&
-      expressionIsTainted(child, taintedNames, taintedPaths, constants, jsonIsSource)
-    ) {
-      tainted = true;
-    }
-  });
-  return tainted;
-}
-
-function expressionIsDirectlyTainted(node, taintedNames, taintedPaths, constants, jsonIsSource) {
-  if (!node) return false;
-  if (ts.isIdentifier(node)) return taintedNames.has(node.text);
-  if (
-    ts.isParenthesizedExpression(node) ||
-    ts.isAsExpression(node) ||
-    ts.isNonNullExpression(node) ||
-    ts.isSatisfiesExpression(node)
-  ) {
-    return expressionIsDirectlyTainted(
-      node.expression,
-      taintedNames,
-      taintedPaths,
-      constants,
-      jsonIsSource,
-    );
-  }
-  const candidatePath = expressionPath(node, constants);
-  if (candidatePath && taintedPaths.has(candidatePath)) return true;
-  if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) {
-    return expressionIsDirectlyTainted(
-      node.expression,
-      taintedNames,
-      taintedPaths,
-      constants,
-      jsonIsSource,
-    );
-  }
-  if (ts.isCallExpression(node)) {
-    if (jsonIsSource && node.expression.getText() === "JSON.parse") return true;
-    return node.arguments.some((argument) =>
-      expressionIsTainted(argument, taintedNames, taintedPaths, constants, jsonIsSource),
-    );
-  }
-  if (ts.isObjectLiteralExpression(node)) {
-    return node.properties.some(
-      (property) =>
-        ts.isSpreadAssignment(property) &&
-        expressionIsDirectlyTainted(
-          property.expression,
-          taintedNames,
-          taintedPaths,
-          constants,
-          jsonIsSource,
-        ),
-    );
-  }
-  return false;
-}
-
-function expressionHasManifestSource(node, manifestNames, manifestPaths, constants) {
-  const candidatePath = expressionPath(node, constants);
-  if (candidatePath) {
-    if (
-      [...manifestPaths].some(
-        (sourcePath) => candidatePath === sourcePath || candidatePath.startsWith(`${sourcePath}.`),
-      )
-    ) {
-      return true;
-    }
-    const root = candidatePath.split(".")[0];
-    if ([...manifestPaths].some((sourcePath) => sourcePath.startsWith(`${root}.`))) {
-      return false;
-    }
-  }
-  return expressionIsTainted(node, manifestNames, manifestPaths, constants, false);
-}
-
-function bindingIdentifiers(name) {
-  if (ts.isIdentifier(name)) return [name.text];
-  if (ts.isObjectBindingPattern(name) || ts.isArrayBindingPattern(name)) {
-    return name.elements.flatMap((element) =>
-      ts.isBindingElement(element) ? bindingIdentifiers(element.name) : [],
-    );
-  }
-  return [];
-}
-
-function markTaintedBindingPath(name, sourcePath, taintedPaths, markBinding) {
-  if (ts.isIdentifier(name)) {
-    if (
-      taintedPaths.has(sourcePath) ||
-      [...taintedPaths].some((candidate) => candidate.startsWith(`${sourcePath}.`))
-    ) {
-      markBinding(name);
-    }
-    return;
-  }
-  if (!ts.isObjectBindingPattern(name)) return;
-  for (const element of name.elements) {
-    if (!ts.isBindingElement(element)) continue;
-    const key = element.propertyName ?? element.name;
-    if (!ts.isIdentifier(key) && !ts.isStringLiteralLike(key)) continue;
-    markTaintedBindingPath(element.name, `${sourcePath}.${key.text}`, taintedPaths, markBinding);
-  }
-}
-
-function propagateTaint(functionNode, initialNames, taintedPaths, constants, jsonIsSource) {
-  const taintedNames = new Set(initialNames);
-  let changed = true;
-  for (let pass = 0; pass < 12 && changed; pass += 1) {
-    changed = false;
-    const markBinding = (name) => {
-      for (const identifier of bindingIdentifiers(name)) {
-        if (!taintedNames.has(identifier)) {
-          taintedNames.add(identifier);
-          changed = true;
-        }
-      }
-    };
-    const visit = (node) => {
-      if (node !== functionNode && ts.isFunctionLike(node)) return;
-      if (
-        ts.isVariableDeclaration(node) &&
-        node.initializer &&
-        expressionIsTainted(node.initializer, taintedNames, taintedPaths, constants, jsonIsSource)
-      ) {
-        markBinding(node.name);
-      }
-      if (ts.isVariableDeclaration(node) && node.initializer) {
-        const sourcePath = expressionPath(node.initializer, constants);
-        if (sourcePath) {
-          markTaintedBindingPath(node.name, sourcePath, taintedPaths, markBinding);
-        }
-      }
-      if (
-        ts.isBinaryExpression(node) &&
-        node.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
-        expressionIsTainted(node.right, taintedNames, taintedPaths, constants, jsonIsSource)
-      ) {
-        if (ts.isIdentifier(node.left)) markBinding(node.left);
-        if (ts.isObjectLiteralExpression(node.left) || ts.isArrayLiteralExpression(node.left)) {
-          for (const identifier of node.left.getText().matchAll(/[A-Za-z_$][\w$]*/gu)) {
-            if (!taintedNames.has(identifier[0])) {
-              taintedNames.add(identifier[0]);
-              changed = true;
-            }
-          }
-        }
-      }
-      ts.forEachChild(node, visit);
-    };
-    visit(functionNode.body);
-  }
-  return taintedNames;
-}
-
-function isUntrustedInputType(typeNode) {
-  if (!typeNode) return false;
-  if (
-    typeNode.kind === ts.SyntaxKind.UnknownKeyword ||
-    typeNode.kind === ts.SyntaxKind.AnyKeyword
-  ) {
-    return true;
-  }
-  return /^Record\s*<\s*string\s*,\s*(?:unknown|any)\s*>$/u.test(typeNode.getText());
-}
-
-function collectManifestTypedPaths(model, sourceFile, typeNode, prefix, seen = new Set()) {
-  const paths = new Set();
-  if (!typeNode || seen.has(typeNode)) return paths;
-  seen.add(typeNode);
-  const kinds = model.kindsForType(sourceFile, typeNode);
-  if (kinds.has("manifest")) {
-    paths.add(prefix);
-    return paths;
-  }
-  const resolved = model.typeIndex.resolveTypeNode(sourceFile, typeNode);
-  for (const { member, sourceFile: memberSourceFile } of resolved.members) {
-    if (!ts.isPropertySignature(member) || !member.type) continue;
-    const name = propertyName(member);
-    if (!name) continue;
-    for (const nested of collectManifestTypedPaths(
-      model,
-      memberSourceFile,
-      member.type,
-      `${prefix}.${name}`,
-      seen,
-    )) {
-      paths.add(nested);
-    }
-  }
-  return paths;
 }
 
 function observedFieldsForKinds(kinds) {
@@ -293,15 +50,31 @@ function observedFieldsForKinds(kinds) {
   return fields;
 }
 
-function objectLiteralIsResultSink(node, sourceFile, functionKinds, model) {
+function unwrapExpressionParent(node) {
+  let expression = node;
   let current = node.parent;
-  while (ts.isParenthesizedExpression(current) || ts.isAsExpression(current)) {
+  while (
+    ts.isParenthesizedExpression(current) ||
+    ts.isAsExpression(current) ||
+    ts.isNonNullExpression(current) ||
+    ts.isSatisfiesExpression(current)
+  ) {
+    expression = current;
     current = current.parent;
   }
+  return { expression, parent: current };
+}
+
+function expressionIsResultSink(node, sourceFile, functionKinds, model, resultSinkNames) {
+  const { expression, parent: current } = unwrapExpressionParent(node);
   if (ts.isReturnStatement(current)) return functionKinds.has("result");
-  if (ts.isArrowFunction(current) && current.body === node) return functionKinds.has("result");
-  if (ts.isVariableDeclaration(current) && current.initializer === node) {
-    return model.kindsForType(sourceFile, current.type).has("result");
+  if (ts.isArrowFunction(current) && current.body === expression)
+    return functionKinds.has("result");
+  if (ts.isVariableDeclaration(current) && current.initializer === expression) {
+    return (
+      model.kindsForType(sourceFile, current.type).has("result") ||
+      (ts.isIdentifier(current.name) && resultSinkNames.has(current.name.text))
+    );
   }
   return false;
 }
@@ -317,24 +90,91 @@ function declaredPropertyField(node, constants) {
   return null;
 }
 
-function objectLiteralParserFields(node, sourceFile, functionKinds, model) {
-  let current = node.parent;
-  while (ts.isParenthesizedExpression(current) || ts.isAsExpression(current)) {
-    current = current.parent;
-  }
+function expressionParserFields(node, sourceFile, functionKinds, model, parserSinkFieldsByName) {
+  const { expression, parent: current } = unwrapExpressionParent(node);
   if (ts.isReturnStatement(current)) return observedFieldsForKinds(functionKinds);
-  if (ts.isArrowFunction(current) && current.body === node)
+  if (ts.isArrowFunction(current) && current.body === expression)
     return observedFieldsForKinds(functionKinds);
-  if (ts.isVariableDeclaration(current) && current.initializer === node) {
-    return observedFieldsForKinds(model.kindsForType(sourceFile, current.type));
+  if (ts.isVariableDeclaration(current) && current.initializer === expression) {
+    const explicit = observedFieldsForKinds(model.kindsForType(sourceFile, current.type));
+    if (explicit.size > 0) return explicit;
+    if (ts.isIdentifier(current.name)) {
+      return parserSinkFieldsByName.get(current.name.text) ?? new Set();
+    }
   }
   return new Set();
 }
 
-function parserValueIsAccepted(field, value, parserNames, constants) {
-  const directOnly = field === "artifacts" || field === "metrics" || field === "evidence";
+function parserValueIsAccepted(value, parserNames, constants, jsonParserNames, directOnly = false) {
   const predicate = directOnly ? expressionIsDirectlyTainted : expressionIsTainted;
-  return predicate(value, parserNames, new Set(), constants, true);
+  return predicate(value, parserNames, new Set(), constants, true, jsonParserNames);
+}
+
+function parserObservedPaths(field, value, parserNames, constants, jsonParserNames) {
+  if (OBSERVED_NESTED_LEAF_FIELDS.has(field)) {
+    return parserValueIsAccepted(value, parserNames, constants, jsonParserNames) ? [field] : [];
+  }
+  if (OBSERVED_DIRECT_FIELDS.has(field) && field !== "artifacts") {
+    return parserValueIsAccepted(value, parserNames, constants, jsonParserNames) ? [field] : [];
+  }
+  if (field === "artifacts") {
+    return parserValueIsAccepted(value, parserNames, constants, jsonParserNames) ? [field] : [];
+  }
+  const nestedFields = OBSERVED_NESTED_FIELDS.get(field);
+  if (!nestedFields) return [];
+  if (!ts.isObjectLiteralExpression(value)) {
+    return parserValueIsAccepted(value, parserNames, constants, jsonParserNames, true)
+      ? [field]
+      : [];
+  }
+  const paths = [];
+  for (const property of value.properties) {
+    if (
+      ts.isSpreadAssignment(property) &&
+      parserValueIsAccepted(property.expression, parserNames, constants, jsonParserNames, true)
+    ) {
+      paths.push(field);
+      continue;
+    }
+    if (!ts.isPropertyAssignment(property) && !ts.isShorthandPropertyAssignment(property)) {
+      continue;
+    }
+    const nestedField = declaredPropertyField(property, constants);
+    if (!nestedField || !nestedFields.has(nestedField)) continue;
+    const nestedValue = ts.isPropertyAssignment(property) ? property.initializer : property.name;
+    if (parserValueIsAccepted(nestedValue, parserNames, constants, jsonParserNames)) {
+      paths.push(`${field}.${nestedField}`);
+    }
+  }
+  return paths;
+}
+
+function returnedIdentifier(node) {
+  let current = node;
+  while (
+    ts.isParenthesizedExpression(current) ||
+    ts.isAsExpression(current) ||
+    ts.isNonNullExpression(current) ||
+    ts.isSatisfiesExpression(current)
+  ) {
+    current = current.expression;
+  }
+  return ts.isIdentifier(current) ? current.text : null;
+}
+
+function collectReturnedSinkNames(functionNode, enabled) {
+  const names = new Set();
+  if (!enabled) return names;
+  const visit = (node) => {
+    if (node !== functionNode && ts.isFunctionLike(node)) return;
+    if (ts.isReturnStatement(node) && node.expression) {
+      const name = returnedIdentifier(node.expression);
+      if (name) names.add(name);
+    }
+    ts.forEachChild(node, visit);
+  };
+  if (functionNode.body) visit(functionNode.body);
+  return names;
 }
 
 function rootExpressionName(node) {
@@ -347,27 +187,44 @@ function rootExpressionName(node) {
 
 function analyzeObservedFunctionDataflow(sourceFile, functionNode, model) {
   const constants = collectStringConstants(sourceFile);
-  const functionKinds = model.kindsForType(sourceFile, functionNode.type);
+  const functionKinds = model.kindsForFunction(sourceFile, functionNode);
+  const jsonParserNames = collectJsonParserNames(sourceFile, functionNode);
   const parserInitial = new Set();
   const manifestInitial = new Set();
   const manifestPaths = new Set();
-  for (const parameter of functionNode.parameters ?? []) {
-    if (!ts.isIdentifier(parameter.name)) continue;
-    if (isUntrustedInputType(parameter.type)) parserInitial.add(parameter.name.text);
-    const parameterKinds = model.kindsForType(sourceFile, parameter.type);
-    if (parameterKinds.has("manifest") && !ts.isTypeLiteralNode(parameter.type)) {
-      manifestInitial.add(parameter.name.text);
+  for (const [index, parameter] of (functionNode.parameters ?? []).entries()) {
+    const effectiveType = model.parameterType(sourceFile, functionNode, parameter, index);
+    if (
+      effectiveType &&
+      isUntrustedInputType(model, effectiveType.sourceFile, effectiveType.type)
+    ) {
+      for (const name of bindingIdentifiers(parameter.name)) parserInitial.add(name);
     }
-    for (const sourcePath of collectManifestTypedPaths(
-      model,
-      sourceFile,
-      parameter.type,
-      parameter.name.text,
-    )) {
-      manifestPaths.add(sourcePath);
+    const parameterKinds = effectiveType
+      ? model.kindsForType(effectiveType.sourceFile, effectiveType.type)
+      : new Set();
+    if (parameterKinds.has("manifest")) {
+      for (const name of bindingIdentifiers(parameter.name)) manifestInitial.add(name);
+    }
+    if (effectiveType && ts.isIdentifier(parameter.name)) {
+      for (const sourcePath of collectManifestTypedPaths(
+        model,
+        effectiveType.sourceFile,
+        effectiveType.type,
+        parameter.name.text,
+      )) {
+        manifestPaths.add(sourcePath);
+      }
     }
   }
-  const parserNames = propagateTaint(functionNode, parserInitial, new Set(), constants, true);
+  const parserNames = propagateTaint(
+    functionNode,
+    parserInitial,
+    new Set(),
+    constants,
+    true,
+    jsonParserNames,
+  );
   const manifestNames = propagateTaint(
     functionNode,
     manifestInitial,
@@ -375,7 +232,15 @@ function analyzeObservedFunctionDataflow(sourceFile, functionNode, model) {
     constants,
     false,
   );
+  const returnedParserNames = collectReturnedSinkNames(
+    functionNode,
+    observedFieldsForKinds(functionKinds).size > 0,
+  );
+  const resultSinkNames = collectReturnedSinkNames(functionNode, functionKinds.has("result"));
   const parserSinkFieldsByName = new Map();
+  for (const name of returnedParserNames) {
+    parserSinkFieldsByName.set(name, observedFieldsForKinds(functionKinds));
+  }
   const collectParserSinks = (node) => {
     if (node !== functionNode && ts.isFunctionLike(node)) return;
     if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.type) {
@@ -397,17 +262,26 @@ function analyzeObservedFunctionDataflow(sourceFile, functionNode, model) {
       const targetName = rootExpressionName(node.left);
       const field = resolvedPropertyField(node.left, constants);
       const sinkFields = parserSinkFieldsByName.get(targetName) ?? new Set();
-      if (
-        field &&
-        sinkFields.has(field) &&
-        parserValueIsAccepted(field, node.right, parserNames, constants) &&
-        !parser.has(field)
-      ) {
-        parser.set(field, node);
+      if (field && sinkFields.has(field)) {
+        for (const observedPath of parserObservedPaths(
+          field,
+          node.right,
+          parserNames,
+          constants,
+          jsonParserNames,
+        )) {
+          if (!parser.has(observedPath)) parser.set(observedPath, node);
+        }
       }
     }
     if (ts.isObjectLiteralExpression(node)) {
-      const sinkFields = objectLiteralParserFields(node, sourceFile, functionKinds, model);
+      const sinkFields = expressionParserFields(
+        node,
+        sourceFile,
+        functionKinds,
+        model,
+        parserSinkFieldsByName,
+      );
       for (const property of node.properties) {
         if (
           sinkFields.size > 0 &&
@@ -418,6 +292,7 @@ function analyzeObservedFunctionDataflow(sourceFile, functionNode, model) {
             new Set(),
             constants,
             true,
+            jsonParserNames,
           ) &&
           !parser.has("spread")
         ) {
@@ -428,19 +303,22 @@ function analyzeObservedFunctionDataflow(sourceFile, functionNode, model) {
           continue;
         const field = declaredPropertyField(property, constants);
         const value = ts.isPropertyAssignment(property) ? property.initializer : property.name;
-        if (
-          field &&
-          sinkFields.has(field) &&
-          parserValueIsAccepted(field, value, parserNames, constants) &&
-          !parser.has(field)
-        ) {
-          parser.set(field, property);
+        if (field && sinkFields.has(field)) {
+          for (const observedPath of parserObservedPaths(
+            field,
+            value,
+            parserNames,
+            constants,
+            jsonParserNames,
+          )) {
+            if (!parser.has(observedPath)) parser.set(observedPath, property);
+          }
         }
       }
     }
     if (
       ts.isObjectLiteralExpression(node) &&
-      objectLiteralIsResultSink(node, sourceFile, functionKinds, model)
+      expressionIsResultSink(node, sourceFile, functionKinds, model, resultSinkNames)
     ) {
       for (const property of node.properties) {
         if (
@@ -468,6 +346,46 @@ function analyzeObservedFunctionDataflow(sourceFile, functionNode, model) {
         ) {
           override.set(field, property);
         }
+      }
+    }
+    if (
+      ts.isCallExpression(node) &&
+      ts.isPropertyAccessExpression(node.expression) &&
+      ts.isIdentifier(node.expression.expression) &&
+      node.expression.expression.text === "Object" &&
+      node.expression.name.text === "assign"
+    ) {
+      if (
+        expressionIsResultSink(node, sourceFile, functionKinds, model, resultSinkNames) &&
+        node.arguments.some((argument) =>
+          expressionHasManifestSource(argument, manifestNames, manifestPaths, constants),
+        ) &&
+        !override.has("assign")
+      ) {
+        override.set("assign", node);
+      }
+      const parserFields = expressionParserFields(
+        node,
+        sourceFile,
+        functionKinds,
+        model,
+        parserSinkFieldsByName,
+      );
+      if (
+        parserFields.size > 0 &&
+        node.arguments.some((argument) =>
+          expressionIsDirectlyTainted(
+            argument,
+            parserNames,
+            new Set(),
+            constants,
+            true,
+            jsonParserNames,
+          ),
+        ) &&
+        !parser.has("assign")
+      ) {
+        parser.set("assign", node);
       }
     }
     ts.forEachChild(node, visit);
