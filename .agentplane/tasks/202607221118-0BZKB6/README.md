@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-22T12:27:07.231Z"
+  updated_at: "2026-07-22T12:57:42.036Z"
   updated_by: "CODER"
-  note: "Atomic wiki compiler verified: focused synthesis/transaction tests, 115 context tests, downloaded-source E2E with idempotent apply and curated-only search after raw deletion, full agentplane suite 1928/1928, typecheck, format, hotspots, routing, builtin assets, docs freshness, local CI smoke, and doctor passed; doctor only reported two historical unrelated DONE-task hash warnings."
+  note: "Review fixes verified: focused synthesis 8/8, full project 1930/1930, typecheck, hotspot and local smoke pass."
   attempts: 0
 quality_review:
   state: "pass"
@@ -79,8 +79,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-22T12:57:42.036Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review fixes verified: focused synthesis 8/8, full project 1930/1930, typecheck, hotspot and local smoke pass."
 doc_version: 3
-doc_updated_at: "2026-07-22T12:41:46.203Z"
+doc_updated_at: "2026-07-22T12:57:43.995Z"
 doc_updated_by: "CODER"
 description: "Implement a deterministic maximum-assimilation wiki compiler based on the persistent LLM Wiki pattern: keep raw sources immutable; treat SGR as the typed intermediate representation; atomically materialize formal artifacts and managed wiki blocks; upsert stable atomic claims into existing canonical pages; preserve human-authored prose; maintain entity links, provenance, contradictions, a content-oriented index, and append-only context/wiki/log.md; validate idempotency, raw-deletion resilience, and human/agent usability. Do not touch agentplane-loops. Release/version work is a separate dependent task."
 sections:
@@ -124,6 +130,36 @@ sections:
     - repeat_allowed: false
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-07-22T12:57:42.036Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Review fixes verified: focused synthesis 8/8, full project 1930/1930, typecheck, hotspot and local smoke pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T12:41:46.203Z, excerpt_hash=sha256:953f6e4f9eb42dd7cec746847048a45eb15144f11a429165914754f4de426a54
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221118-0BZKB6-compile-atomic-linked-wiki-during-context-assimi/.agentplane/tasks/202607221118-0BZKB6/blueprint/resolved-snapshot.json
+    - old_digest: dff6a0df0d14b136f572165d92f43cfd73b7a6276d969d275735147244bdbcc1
+    - current_digest: dff6a0df0d14b136f572165d92f43cfd73b7a6276d969d275735147244bdbcc1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221118-0BZKB6
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607221118-0BZKB6 --branch task/202607221118-0BZKB6/compile-atomic-linked-wiki-during-context-assimi
+    - diagnostic_command: agentplane pr check 202607221118-0BZKB6
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -183,6 +219,36 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-07-22T12:57:42.036Z — VERIFY — ok
+
+By: CODER
+
+Note: Review fixes verified: focused synthesis 8/8, full project 1930/1930, typecheck, hotspot and local smoke pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T12:41:46.203Z, excerpt_hash=sha256:953f6e4f9eb42dd7cec746847048a45eb15144f11a429165914754f4de426a54
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221118-0BZKB6-compile-atomic-linked-wiki-during-context-assimi/.agentplane/tasks/202607221118-0BZKB6/blueprint/resolved-snapshot.json
+- old_digest: dff6a0df0d14b136f572165d92f43cfd73b7a6276d969d275735147244bdbcc1
+- current_digest: dff6a0df0d14b136f572165d92f43cfd73b7a6276d969d275735147244bdbcc1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221118-0BZKB6
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607221118-0BZKB6 --branch task/202607221118-0BZKB6/compile-atomic-linked-wiki-during-context-assimi
+- diagnostic_command: agentplane pr check 202607221118-0BZKB6
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 

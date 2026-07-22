@@ -16,6 +16,7 @@ import type {
 import { fileExists, toPosix } from "./context-utils.js";
 import type { ExtractionArtifact } from "./extraction-transaction.js";
 import { buildWikiIndexUpdates } from "./wiki-index-builder.js";
+import { mergeWikiPageRows, resolvedWikiPageStatus } from "./wiki-synthesis-pages.js";
 
 const MANAGED = {
   summary: {
@@ -102,18 +103,6 @@ function stringField(row: Record<string, unknown>, field: string): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function assertWikiPath(root: string, input: string): string {
-  const rel = toPosix(input.trim());
-  const abs = path.resolve(root, rel);
-  const wikiRoot = path.resolve(root, "context/wiki");
-  if (!rel.endsWith(".md") || (!abs.startsWith(`${wikiRoot}${path.sep}`) && abs !== wikiRoot)) {
-    throw new Error(
-      `Context wiki synthesis path must stay under context/wiki and end in .md: ${input}`,
-    );
-  }
-  return toPosix(path.relative(root, abs));
-}
-
 function bodyWithoutFrontmatter(text: string): string {
   const normalized = text.replaceAll("\r\n", "\n");
   if (!normalized.startsWith("---\n")) return normalized;
@@ -189,18 +178,6 @@ function pageModality(pageType: string, items: ContextExtractionItem[]): WikiMod
     return "definition";
   }
   return "factual_claim";
-}
-
-function pageStatus(items: ContextExtractionItem[]): string {
-  if (items.some((item) => item.status === "conflict" || item.kind === "contradiction")) {
-    return "disputed";
-  }
-  if (items.some((item) => item.status === "stale" || item.validity === "deprecated")) {
-    return "deprecated";
-  }
-  if (items.some((item) => item.status === "accepted")) return "sourced_claim";
-  if (items.some((item) => item.status === "unresolved")) return "hypothesis";
-  return "extracted_candidate";
 }
 
 function atomBelongsToPage(
@@ -353,11 +330,7 @@ export async function buildContextWikiSynthesis(opts: {
     if (item.entity) entityLabels.set(item.entity.id, item.entity.label);
   }
 
-  const pageRows = pageItems.map((item) => {
-    const page = item.page_creation;
-    if (!page) throw new Error(`Missing page_creation payload for ${item.id}`);
-    return { item, page, rel: assertWikiPath(opts.root, page.path) };
-  });
+  const pageRows = mergeWikiPageRows(opts.root, pageItems);
   const entityPages = new Map<string, string>();
   for (const row of pageRows) {
     for (const entityId of row.page.canonical_entity_ids ?? []) {
@@ -392,7 +365,7 @@ export async function buildContextWikiSynthesis(opts: {
     const bodyBefore = current ? bodyWithoutFrontmatter(current) : `# ${title}\n`;
     const sourceRefs = uniqueStable([
       ...frontmatterSourceRefs(parsed?.context?.source_refs),
-      ...row.item.source_refs.map((ref) => sourceRefToString(ref)),
+      ...row.items.flatMap((item) => item.source_refs.map((ref) => sourceRefToString(ref))),
       ...atoms.flatMap((item) => item.source_refs.map((ref) => sourceRefToString(ref))),
     ]);
     const sourceNumbers = new Map(sourceRefs.map((ref, index) => [ref, index + 1]));
@@ -448,8 +421,11 @@ export async function buildContextWikiSynthesis(opts: {
       canonicalId,
       title,
       modality: pageModality(row.page.page_type, atoms),
-      status: conflicts.length > 0 ? "disputed" : pageStatus(atoms),
-      visibility: stringField(row.page, "visibility") || "project",
+      status: resolvedWikiPageStatus(atoms, conflicts, parsed?.context?.epistemic_status),
+      visibility:
+        stringField(row.page, "visibility") ||
+        (parsed?.context ? stringField(parsed.context, "visibility") : "") ||
+        "project",
       sourceRefs,
       claims: unique([...stringArray(parsed?.context?.claims), ...atomIds]),
       graphEntities,
@@ -469,7 +445,8 @@ export async function buildContextWikiSynthesis(opts: {
       atoms.find((item) => !["graph_entity", "graph_edge", "wiki_update"].includes(item.kind))
         ?.summary ??
       managedSectionContent(bodyBefore, MANAGED.summary) ??
-      row.item.summary;
+      row.items[0]?.summary ??
+      `Context page ${title}`;
     let body = bodyBefore;
     body = upsertManagedSection(body, MANAGED.summary, synthesizedSummary);
     body = upsertManagedSection(

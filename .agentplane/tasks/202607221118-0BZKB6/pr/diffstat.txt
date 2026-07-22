@@ -20,7 +20,8 @@
  packages/agentplane/src/context/ingest-task.ts     |   2 +-
  ...m-assimilation-artifacts-validation-ontology.ts |   1 +
  .../agentplane/src/context/wiki-index-builder.ts   | 146 ++++++
- .../agentplane/src/context/wiki-synthesis.test.ts  | 242 ++++++++++
- packages/agentplane/src/context/wiki-synthesis.ts  | 522 +++++++++++++++++++++
+ .../agentplane/src/context/wiki-synthesis-pages.ts | 138 ++++++
+ .../agentplane/src/context/wiki-synthesis.test.ts  | 322 +++++++++++++
+ packages/agentplane/src/context/wiki-synthesis.ts  | 499 +++++++++++++++++++++
  .../src/shared/builtin-assets.generated.ts         |  44 +-
- 25 files changed, 1190 insertions(+), 165 deletions(-)
+ 26 files changed, 1385 insertions(+), 165 deletions(-)

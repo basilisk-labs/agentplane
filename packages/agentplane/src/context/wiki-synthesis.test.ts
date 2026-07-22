@@ -207,6 +207,86 @@ describe("atomic linked wiki synthesis", () => {
     expect(log.match(/^## \[2026-07-2[23]\] ingest/gmu)).toHaveLength(2);
   });
 
+  it("preserves stronger epistemic status and existing visibility on partial updates", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/wiki/services/meridian.md",
+      [
+        "---",
+        "aliases: [Meridian]",
+        "tags: [agentplane/context]",
+        "cssclasses: [agentplane-context]",
+        "agentplane_context:",
+        "  schema_version: 1",
+        "  artifact_type: wiki_page",
+        "  canonical_id: wiki.services-meridian",
+        "  title: Meridian",
+        "  modality: factual_claim",
+        "  epistemic_status: reviewed_claim",
+        "  visibility: local",
+        "  source_refs: []",
+        "  claims: []",
+        "  graph_refs: { entities: [], edges: [] }",
+        "  conflicts: []",
+        "  updated_by: human-review",
+        "---",
+        "",
+        "# Meridian",
+        "",
+      ].join("\n"),
+    );
+    const partial = extraction();
+    partial.extracted_items = partial.extracted_items.map((item) =>
+      item.kind === "page_creation" ? item : { ...item, status: "proposed" },
+    );
+
+    await applyContextExtractionResult({
+      root,
+      raw: partial,
+      synthesizeWiki: true,
+      generatedAt: "2026-07-24T12:00:00.000Z",
+    });
+
+    const meridian = await readFile(path.join(root, "context/wiki/services/meridian.md"), "utf8");
+    expect(meridian).toContain("epistemic_status: reviewed_claim");
+    expect(meridian).toContain("visibility: local");
+  });
+
+  it("merges duplicate page_creation paths without losing routed atoms", async () => {
+    const root = await tempRoot();
+    const duplicated = extraction();
+    duplicated.extracted_items.push({
+      id: "page.meridian-atlas-alias",
+      kind: "page_creation",
+      summary: "Route Atlas knowledge through the existing Meridian page.",
+      source_refs: [{ path: "context/raw/research/meridian.md", lines: "13-18" }],
+      span_refs: ["span.meridian.3"],
+      status: "proposed",
+      page_creation: {
+        path: "context/wiki/services/meridian.md",
+        page_type: "entity",
+        family_id: "family.services",
+        decision: "create_or_update",
+        canonical_entity_ids: ["entity.atlas"],
+      },
+    });
+
+    const result = await applyContextExtractionResult({
+      root,
+      raw: duplicated,
+      synthesizeWiki: true,
+      generatedAt: "2026-07-24T12:00:00.000Z",
+    });
+
+    expect(result.wiki_pages).toBe(2);
+    const meridian = await readFile(path.join(root, "context/wiki/services/meridian.md"), "utf8");
+    expect(meridian).toContain("### `fact.meridian-atlas`");
+    expect(meridian).toContain("### `contradiction.atlas-port`");
+    const log = await readFile(path.join(root, "context/wiki/log.md"), "utf8");
+    expect(log.match(/\[\[services\/meridian\|Meridian\]\]/gu)).toHaveLength(1);
+  });
+
   it("rolls back formal and wiki artifacts together when promotion fails", async () => {
     const root = await tempRoot();
     await applyContextExtractionResult({
