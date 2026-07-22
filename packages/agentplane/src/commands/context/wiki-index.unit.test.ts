@@ -58,6 +58,8 @@ describe("context wiki index", () => {
     expect(modulesIndex).toContain("agentplane_context:");
     expect(modulesIndex).toContain("source_refs: []");
     expect(modulesIndex).toContain("[Meridian Relay](meridian-relay.md)");
+    expect(modulesIndex).toContain("No summary available.");
+    expect(modulesIndex).toContain("(sources: 1)");
     expect(modulesIndex).not.toContain("[Stale](stale.md)");
     await cmdContextWikiLint({ cwd: root, parsed: { path: "context/wiki" } });
 

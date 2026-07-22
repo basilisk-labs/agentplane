@@ -1,0 +1,26 @@
+ .agentplane/tasks/202607211645-TQ70WD/README.md    |  22 +-
+ .../tasks/202607211645-TQ70WD/pr/diffstat.txt      |   4 +-
+ .../tasks/202607211645-TQ70WD/pr/github-body.md    |   4 +-
+ .agentplane/tasks/202607211645-TQ70WD/pr/meta.json |   2 +-
+ .agentplane/tasks/202607211645-TQ70WD/pr/review.md |   4 +-
+ .../evaluator-opinion.md                           |  21 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  23 +
+ .../src/commands/context/context-runner.ts         |   2 +-
+ .../src/commands/context/context.spec.ts           |  13 +-
+ .../agentplane/src/commands/context/extraction.ts  |   6 +-
+ .../src/commands/context/wiki-frontmatter.ts       |  35 +-
+ .../src/commands/context/wiki-index.unit.test.ts   |   2 +
+ packages/agentplane/src/commands/context/wiki.ts   | 110 +----
+ .../src/context/extraction-transaction.test.ts     |  22 +
+ .../src/context/extraction-transaction.ts          |  20 +-
+ .../agentplane/src/context/extraction-writer.ts    |  26 +-
+ .../agentplane/src/context/ingest-task-pack.ts     |   3 +-
+ .../agentplane/src/context/ingest-task-prompt.ts   |   5 +-
+ packages/agentplane/src/context/ingest-task.ts     |   2 +-
+ ...m-assimilation-artifacts-validation-ontology.ts |   1 +
+ .../agentplane/src/context/wiki-index-builder.ts   | 146 ++++++
+ .../agentplane/src/context/wiki-synthesis.test.ts  | 242 ++++++++++
+ packages/agentplane/src/context/wiki-synthesis.ts  | 522 +++++++++++++++++++++
+ .../src/shared/builtin-assets.generated.ts         |  44 +-
+ 25 files changed, 1190 insertions(+), 165 deletions(-)

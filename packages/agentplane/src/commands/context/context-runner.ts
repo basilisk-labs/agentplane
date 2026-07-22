@@ -311,7 +311,7 @@ export async function runContextGraphExport(
 
 export async function runContextExtractionApply(
   _ctx: CommandCtx,
-  p: { file: string; taskId: string; dryRun: boolean },
+  p: { file: string; taskId: string; dryRun: boolean; synthesizeWiki?: boolean },
 ): Promise<number> {
   return await cmdContextExtractionApply({
     cwd: _ctx.cwd,

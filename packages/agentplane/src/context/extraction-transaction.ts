@@ -6,7 +6,7 @@ import { fileExists, toPosix } from "./context-utils.js";
 export type ExtractionArtifact = {
   path: string;
   content: string;
-  format: "json" | "jsonl";
+  format: "json" | "jsonl" | "text";
 };
 
 type StagedArtifact = ExtractionArtifact & {
@@ -23,19 +23,21 @@ export type ExtractionTransactionHooks = {
   afterPromote?: (artifact: StagedArtifact, index: number) => void | Promise<void>;
 };
 
-function assertDerivedArtifactPath(root: string, filePath: string): string {
+function assertContextArtifactPath(root: string, filePath: string): string {
   const relativePath = toPosix(path.relative(root, filePath));
-  if (
-    relativePath.startsWith("../") ||
-    relativePath === ".." ||
-    !relativePath.startsWith(".agentplane/context/derived/")
-  ) {
-    throw new Error(`Context extraction transaction path is outside derived context: ${filePath}`);
+  const allowed =
+    relativePath.startsWith(".agentplane/context/derived/") ||
+    relativePath.startsWith("context/wiki/");
+  if (relativePath.startsWith("../") || relativePath === ".." || !allowed) {
+    throw new Error(
+      `Context extraction transaction path is outside derived context or managed wiki: ${filePath}`,
+    );
   }
   return relativePath;
 }
 
 function validateArtifactContent(artifact: ExtractionArtifact, content: string): void {
+  if (artifact.format === "text") return;
   if (artifact.format === "json") {
     const parsed = JSON.parse(content) as unknown;
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
@@ -78,7 +80,7 @@ export async function commitExtractionArtifacts(opts: {
   const changed: (ExtractionArtifact & { relativePath: string; hadOriginal: boolean })[] = [];
 
   for (const artifact of opts.artifacts) {
-    const relativePath = assertDerivedArtifactPath(opts.root, artifact.path);
+    const relativePath = assertContextArtifactPath(opts.root, artifact.path);
     if (seenPaths.has(relativePath)) {
       throw new Error(`Duplicate context extraction transaction path: ${relativePath}`);
     }

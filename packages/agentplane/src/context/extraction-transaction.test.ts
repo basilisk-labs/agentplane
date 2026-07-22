@@ -75,4 +75,26 @@ describe("context extraction artifact transaction", () => {
     await expect(readFile(factsPath, "utf8")).resolves.toBe('{"id":"fact.old"}\n');
     await expect(readFile(entitiesPath, "utf8")).resolves.toBe('{"id":"entity.old"}\n');
   });
+
+  it("accepts managed wiki text but rejects raw and unrelated paths", async () => {
+    const root = await tempRoot();
+    const wikiPath = path.join(root, "context/wiki/entity.md");
+    await expect(
+      commitExtractionArtifacts({
+        root,
+        artifacts: [{ path: wikiPath, content: "# Entity\n", format: "text" }],
+        dryRun: true,
+      }),
+    ).resolves.toEqual(["context/wiki/entity.md"]);
+
+    for (const rel of ["context/raw/source.md", "README.md"]) {
+      await expect(
+        commitExtractionArtifacts({
+          root,
+          artifacts: [{ path: path.join(root, rel), content: "blocked\n", format: "text" }],
+          dryRun: true,
+        }),
+      ).rejects.toThrow("outside derived context or managed wiki");
+    }
+  });
 });

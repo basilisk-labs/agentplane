@@ -8,7 +8,11 @@ import {
   type SgrSourceRef,
 } from "./sgr-extraction.js";
 import { fileExists, parseJsonlLines, toPosix } from "./context-utils.js";
-import { commitExtractionArtifacts, type ExtractionArtifact } from "./extraction-transaction.js";
+import {
+  commitExtractionArtifacts,
+  type ExtractionArtifact,
+  type ExtractionTransactionHooks,
+} from "./extraction-transaction.js";
 import {
   buildExtractionQualityRows,
   countSourceRefs,
@@ -16,6 +20,7 @@ import {
   slugFragment,
   stringField,
 } from "./extraction-writer-quality.js";
+import { buildContextWikiSynthesis } from "./wiki-synthesis.js";
 
 type ApplyResult = {
   items: number;
@@ -31,6 +36,9 @@ type ApplyResult = {
   ontology: number;
   sources: number;
   wiki: number;
+  wiki_pages: number;
+  wiki_atoms: number;
+  wiki_log_entries: number;
   quality: number;
   changed_paths: string[];
 };
@@ -141,6 +149,9 @@ export async function applyContextExtractionResult(opts: {
   raw: unknown;
   taskId?: string;
   dryRun?: boolean;
+  synthesizeWiki?: boolean;
+  generatedAt?: string;
+  transactionHooks?: ExtractionTransactionHooks;
 }): Promise<ApplyResult> {
   const result: ContextExtractionSgrResult = validateContextExtractionSgrResult(opts.raw);
   const taskId = opts.taskId ?? result.task_id;
@@ -341,10 +352,20 @@ export async function applyContextExtractionResult(opts: {
   for (const [claimPath, rows] of claimMaps) {
     artifacts.push(jsonlArtifact(claimPath, rows));
   }
+  const wikiSynthesis = opts.synthesizeWiki
+    ? await buildContextWikiSynthesis({
+        root: opts.root,
+        result,
+        taskId,
+        generatedAt: opts.generatedAt,
+      })
+    : null;
+  if (wikiSynthesis) artifacts.push(...wikiSynthesis.artifacts);
   const changedPaths = await commitExtractionArtifacts({
     root: opts.root,
     artifacts,
     dryRun,
+    hooks: opts.transactionHooks,
   });
 
   return {
@@ -361,6 +382,9 @@ export async function applyContextExtractionResult(opts: {
     ontology: entityResolution.size + aliases.size + pageCreation.size + topologyChanges.size,
     sources: sourceSpans.size,
     wiki: pageManifests.size + (topologyPlan === null ? 0 : 1),
+    wiki_pages: wikiSynthesis?.pages ?? 0,
+    wiki_atoms: wikiSynthesis?.atoms ?? 0,
+    wiki_log_entries: wikiSynthesis?.logEntries ?? 0,
     quality: extractionQuality.size,
     changed_paths: changedPaths,
   };

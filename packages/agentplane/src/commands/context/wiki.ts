@@ -1,8 +1,9 @@
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
-import { fileExists, toPosix } from "./context-utils.js";
+import { buildWikiIndexUpdates } from "../../context/wiki-index-builder.js";
+import { fileExists } from "./context-utils.js";
 import {
   buildWikiLinkCatalog,
   collectWikiFiles,
@@ -18,53 +19,6 @@ import {
   STATUSES,
   titleFromPath,
 } from "./wiki-page.js";
-
-function titleFromMarkdown(rel: string, text: string): string {
-  const frontmatter = extractFrontmatter(text);
-  const titleMatch = frontmatter ? /(?:^|\n)\s*title:\s*"?([^"\n]+)"?/u.exec(frontmatter) : null;
-  if (titleMatch?.[1]) return titleMatch[1].trim();
-  const headingMatch = /^#\s+(.+)$/mu.exec(text);
-  if (headingMatch?.[1]) return headingMatch[1].trim();
-  return titleFromPath(rel);
-}
-
-function isIndexableWikiPage(rel: string): boolean {
-  const base = path.basename(rel);
-  return rel.endsWith(".md") && base !== "index.md" && base !== "AGENTS.md";
-}
-
-function relativeMarkdownLink(fromDir: string, targetRel: string): string {
-  return toPosix(path.relative(fromDir, targetRel)) || path.basename(targetRel);
-}
-
-function replaceGeneratedIndexSection(text: string, generated: string): string {
-  const start = "<!-- agentplane-context-wiki-index:start -->";
-  const end = "<!-- agentplane-context-wiki-index:end -->";
-  const section = `${start}\n${generated.trimEnd()}\n${end}`;
-  const pattern = new RegExp(String.raw`${start}[\s\S]*?${end}`, "u");
-  if (pattern.test(text)) return text.replace(pattern, section);
-  const trimmed = text.trimEnd();
-  return `${trimmed}${trimmed ? "\n\n" : ""}${section}\n`;
-}
-
-function renderGeneratedIndexPage(rel: string): string {
-  return renderWikiPage({
-    rel,
-    title: titleFromPath(path.posix.dirname(rel)),
-    modality: "observation",
-    status: "sourced_claim",
-    visibility: "project",
-    sourceRefs: [],
-  });
-}
-
-function isLegacyGeneratedIndexPage(text: string): boolean {
-  return (
-    !extractFrontmatter(text) &&
-    text.includes("<!-- agentplane-context-wiki-index:start -->") &&
-    /^#\s+.+$/mu.test(text)
-  );
-}
 
 export async function cmdContextWikiNew(opts: {
   cwd: string;
@@ -185,58 +139,14 @@ export async function cmdContextWikiIndex(opts: {
 }): Promise<number> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const target = await normalizeWikiLintTarget(root, opts.parsed.path);
-  const targetAbs = path.join(root, target);
-  const targetStats = await stat(targetAbs);
-  const targetDir = targetStats.isFile() ? path.posix.dirname(target) : target;
-  const wikiRoot = "context/wiki";
-  const collectedWikiFiles = await collectWikiFiles(root, target);
-  const wikiFiles = collectedWikiFiles.filter((file) => isIndexableWikiPage(file));
-  const dirs = new Set<string>();
-  for (const file of wikiFiles) {
-    let current = path.posix.dirname(file);
-    while (current.startsWith(targetDir) && current !== ".") {
-      dirs.add(current);
-      if (current === targetDir || current === wikiRoot) break;
-      current = path.posix.dirname(current);
-    }
+  const updates = await buildWikiIndexUpdates({ root, target });
+  for (const [rel, text] of updates) {
+    const abs = path.join(root, rel);
+    await mkdir(path.dirname(abs), { recursive: true });
+    await writeFile(abs, text, "utf8");
   }
 
-  const updated: string[] = [];
-  for (const dir of [...dirs].toSorted()) {
-    const directPages = wikiFiles.filter((file) => path.posix.dirname(file) === dir);
-    const childDirs = [...dirs].filter(
-      (candidate) => path.posix.dirname(candidate) === dir && candidate !== dir,
-    );
-    if (directPages.length === 0 && childDirs.length === 0) continue;
-
-    const entries: string[] = [];
-    for (const child of childDirs.toSorted()) {
-      entries.push(
-        `- [${titleFromPath(child)}](${relativeMarkdownLink(dir, `${child}/index.md`)})`,
-      );
-    }
-    for (const page of directPages.toSorted()) {
-      const text = await readFile(path.join(root, page), "utf8");
-      entries.push(`- [${titleFromMarkdown(page, text)}](${relativeMarkdownLink(dir, page)})`);
-    }
-
-    const indexRel = `${dir}/index.md`;
-    const indexAbs = path.join(root, indexRel);
-    const existing = (await fileExists(indexAbs))
-      ? await readFile(indexAbs, "utf8")
-      : renderGeneratedIndexPage(indexRel);
-    const base = isLegacyGeneratedIndexPage(existing)
-      ? renderGeneratedIndexPage(indexRel)
-      : existing;
-    const next = replaceGeneratedIndexSection(base, entries.join("\n"));
-    if (next !== existing) {
-      await mkdir(path.dirname(indexAbs), { recursive: true });
-      await writeFile(indexAbs, next, "utf8");
-      updated.push(indexRel);
-    }
-  }
-
-  process.stdout.write(`context wiki index: updated ${updated.length} index page(s)\n`);
-  for (const rel of updated) process.stdout.write(`- ${rel}\n`);
+  process.stdout.write(`context wiki index: updated ${updates.size} index page(s)\n`);
+  for (const rel of updates.keys()) process.stdout.write(`- ${rel}\n`);
   return 0;
 }
