@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -28,21 +28,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-21T21:34:06.213Z"
+  updated_at: "2026-07-22T11:02:00.134Z"
   updated_by: "EVALUATOR"
-  note: "Quality review remains valid after committing evaluator and verification artifacts."
-  evaluated_sha: "63e998521c6c6e82b63f3525adab65044d7471e3"
+  note: "CLI reference regenerated after hosted freshness failure."
+  evaluated_sha: "846bcce2b2bab3b15a576cb425b2af13b078ba3e"
   blueprint_digest: "230c818d37ab56b7e97f3c6e57c02a387ebf20b89a707c0c3449544dfdae11ef"
   evidence_refs:
     - ".agentplane/tasks/202607211645-TQ70WD/README.md"
-    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260721-213406213-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260721-213406213-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260721-213406213-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260722-110200134-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260722-110200134-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607211645-TQ70WD/quality/20260722-110200134-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607211645-TQ70WD/blueprint/resolved-snapshot.json"
-    - "bun run test:project agentplane: 338 files, 1924 tests passed"
-    - "bun run ci:local:smoke: passed"
+    - "docs/user/cli-reference.generated.mdx"
+    - "CLI docs freshness: pass"
+    - "cli-core docs/help tests: 2 files, 15 tests passed"
   findings:
-    - "No blocking findings; the implementation commit and all recorded checks remain unchanged."
+    - "Generated docs now include context finalize-task and workflow modality; focused CLI docs tests and freshness check pass."
 commit:
   hash: "28d61bee90050bf2869313d497922f3cfb5fd738"
   message: "✅ TQ70WD task: record verified context lifecycle"
