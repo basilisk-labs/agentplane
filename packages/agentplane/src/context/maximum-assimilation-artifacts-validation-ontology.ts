@@ -66,6 +66,7 @@ function pageFamilyAllowsPath(family: Record<string, unknown>, rel: string): boo
 function isExemptWikiPage(rel: string): boolean {
   return (
     rel === "context/wiki/index.md" ||
+    rel === "context/wiki/log.md" ||
     rel === "context/wiki/glossary.md" ||
     rel.includes("/reports/") ||
     rel.includes("/maps/")

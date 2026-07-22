@@ -582,12 +582,13 @@ export const contextExtractionApplySpec: CommandSpec<{
   file: string;
   taskId: string;
   dryRun: boolean;
+  synthesizeWiki: boolean;
 }> = {
   id: ["context", "extraction", "apply"],
   group: "Context",
-  summary: "Apply a validated context_extraction SGR result into derived JSONL artifacts.",
+  summary: "Apply a validated context_extraction SGR result into formal context artifacts.",
   description:
-    "Materializes facts, graph entities, graph edges, and provenance rows from a context_extraction SGR JSON file. Use this before writing maximum-assimilation wiki articles.",
+    "Materializes facts, graph entities, graph edges, and provenance rows from a context_extraction SGR JSON file. With --synthesize-wiki it compiles linked atomic wiki pages, indexes, and an idempotent ingestion log in the same transaction.",
   args: [{ name: "file", required: true, valueHint: "<sgr-json>" }],
   options: [
     {
@@ -602,11 +603,19 @@ export const contextExtractionApplySpec: CommandSpec<{
       default: false,
       description: "Validate and summarize without writing derived artifacts.",
     },
+    {
+      kind: "boolean",
+      name: "synthesize-wiki",
+      default: false,
+      description:
+        "Compile linked atomic wiki pages, indexes, and the ingestion log in the same transaction.",
+    },
   ],
   parse: (raw) => ({
     file: String(raw.args.file),
     taskId: typeof raw.opts["task-id"] === "string" ? raw.opts["task-id"] : "",
     dryRun: raw.opts["dry-run"] === true,
+    synthesizeWiki: raw.opts["synthesize-wiki"] === true,
   }),
 };
 

@@ -6,7 +6,7 @@ import { applyContextExtractionResult } from "../../context/extraction-writer.js
 export async function cmdContextExtractionApply(opts: {
   cwd: string;
   rootOverride?: string;
-  parsed: { file: string; taskId: string; dryRun: boolean };
+  parsed: { file: string; taskId: string; dryRun: boolean; synthesizeWiki?: boolean };
 }): Promise<number> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const filePath = path.resolve(root, opts.parsed.file);
@@ -16,6 +16,7 @@ export async function cmdContextExtractionApply(opts: {
     raw,
     taskId: opts.parsed.taskId || undefined,
     dryRun: opts.parsed.dryRun,
+    synthesizeWiki: opts.parsed.synthesizeWiki,
   });
   process.stdout.write(
     [
@@ -25,6 +26,9 @@ export async function cmdContextExtractionApply(opts: {
       `ontology=${result.ontology}`,
       `sources=${result.sources}`,
       `wiki=${result.wiki}`,
+      `wiki_pages=${result.wiki_pages}`,
+      `wiki_atoms=${result.wiki_atoms}`,
+      `wiki_log_entries=${result.wiki_log_entries}`,
       `quality=${result.quality}`,
       result.changed_paths.length > 0 ? `changed=${result.changed_paths.join(",")}` : "",
     ]

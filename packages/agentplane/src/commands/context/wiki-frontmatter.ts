@@ -81,11 +81,21 @@ export function renderWikiFrontmatter(opts: {
   status: string;
   visibility: string;
   sourceRefs: string[];
+  claims?: string[];
+  graphEntities?: string[];
+  graphEdges?: string[];
+  conflicts?: string[];
+  aliases?: string[];
   tags?: string[];
   updatedBy: string;
   noGraphRefReason?: string;
+  existingRoot?: Record<string, unknown> | null;
 }): string {
+  const existingContext = isRecord(opts.existingRoot?.agentplane_context)
+    ? opts.existingRoot.agentplane_context
+    : {};
   const agentplaneContext: Record<string, unknown> = {
+    ...existingContext,
     schema_version: 1,
     artifact_type: "wiki_page",
     canonical_id: opts.canonicalId,
@@ -94,19 +104,30 @@ export function renderWikiFrontmatter(opts: {
     epistemic_status: opts.status,
     visibility: opts.visibility,
     source_refs: opts.sourceRefs.map((value) => sourceRef(value)),
-    claims: [],
-    graph_refs: { entities: [], edges: [] },
-    conflicts: [],
+    claims: opts.claims ?? [],
+    graph_refs: { entities: opts.graphEntities ?? [], edges: opts.graphEdges ?? [] },
+    conflicts: opts.conflicts ?? [],
     updated_by: opts.updatedBy,
   };
-  if (opts.noGraphRefReason) {
+  if (opts.noGraphRefReason && (opts.graphEntities?.length ?? 0) === 0) {
     agentplaneContext.no_graph_ref_reason = opts.noGraphRefReason;
+  } else {
+    delete agentplaneContext.no_graph_ref_reason;
   }
+  const existingAliases = Array.isArray(opts.existingRoot?.aliases)
+    ? opts.existingRoot.aliases.filter((value): value is string => typeof value === "string")
+    : [];
+  const existingTags = Array.isArray(opts.existingRoot?.tags)
+    ? opts.existingRoot.tags.filter((value): value is string => typeof value === "string")
+    : [];
   const yaml = stringify(
     {
-      aliases: [opts.title],
-      tags: opts.tags ?? ["agentplane/context"],
-      cssclasses: ["agentplane-context"],
+      ...opts.existingRoot,
+      aliases: [...new Set([opts.title, ...(opts.aliases ?? []), ...existingAliases])],
+      tags: [...new Set([...(opts.tags ?? ["agentplane/context"]), ...existingTags])],
+      cssclasses: Array.isArray(opts.existingRoot?.cssclasses)
+        ? opts.existingRoot.cssclasses
+        : ["agentplane-context"],
       agentplane_context: agentplaneContext,
     },
     { lineWidth: 0 },

@@ -246,6 +246,7 @@ function buildExpectedArtifacts(taskId: string): Record<string, unknown> {
     task_id: taskId,
     required: [
       ...generatedTaskPackFiles,
+      "context/wiki/log.md",
       "context/wiki/glossary.md",
       "context/wiki/reports/topology.md",
       "context/wiki/reports/coverage.md",
@@ -266,7 +267,7 @@ function buildExpectedArtifacts(taskId: string): Record<string, unknown> {
     ],
     notes: [
       "Task-bound pack files are CLI-generated scaffolds.",
-      "CURATOR owns semantic classification, extraction, topology, wiki synthesis, coverage rows, and evaluator review.",
+      "CURATOR owns semantic classification, extraction, topology decisions, coverage rows, and evaluator review; extraction apply compiles writer-owned formal and wiki artifacts atomically.",
     ],
   };
 }

@@ -78,7 +78,7 @@ function buildIngestMetadata(
     ...deprecatedModeNote(workspaceMode),
     "",
     "Read the task-bound `context-pack.md`, `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `extraction-contract.json`, and `expected-artifacts.json` before mutation.",
-    "Execute reconciliation -> SGR extraction/apply -> linked wiki synthesis -> coverage/reports -> verification. Raw sources are read-only; unresolved identity or conflict must remain explicit.",
+    "Execute reconciliation -> SGR extraction -> atomic formal+wiki compilation -> coverage/reports -> verification. Raw sources are read-only; unresolved identity or conflict must remain explicit.",
   ].join("\n");
   return {
     title,
