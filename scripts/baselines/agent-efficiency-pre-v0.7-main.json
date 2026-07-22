@@ -1,0 +1,1923 @@
+{
+  "comparison_policy": {
+    "quality_control": "regressions_fail_improvements_non_comparable_exact_compares_cost",
+    "structural_cost_max_growth_ratio": 0.1,
+    "timing": "diagnostic_only_never_gated"
+  },
+  "duplicate_input_metric": {
+    "algorithm": "repeated_utf8_string_leaves_v1",
+    "formula": "sum((occurrences - 1) * utf8_bytes) for identical normalized string leaves",
+    "minimum_string_bytes": 32
+  },
+  "fixture_registry": "scripts/bench/agent-efficiency-fixtures.json",
+  "fixture_registry_sha256": "sha256:a9d88e1ddee963bc6527ec829608c0ef517bd7d595450c3d1da23c60e1fa13ce",
+  "mode": "agent_efficiency_v2",
+  "provenance": {
+    "compatibility_release": "0.6.24",
+    "efficiency_anchor_commit": "1a702e160ba9f0efe7067f2a22fc008defc89ffb",
+    "explanation": "Compatibility is anchored to the published 0.6.24 contract. Efficiency is anchored separately to task-parent main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb and to runner artifacts already committed at that revision. Artifact-backed telemetry is observed; expected traces, outcomes, and evidence controls are synthetic RF-04 controls and are never counted as observed cost.",
+    "observability_gap": "not_observed_at_pre_v0.7_main_anchor"
+  },
+  "scenario_count": 10,
+  "schema_version": 2,
+  "structural_projection": {
+    "scenario_count": 10,
+    "scenarios": [
+      {
+        "evidence_controls": [
+          {
+            "id": "runner_state",
+            "provenance": "observed",
+            "source": "runner_artifact.run_state"
+          },
+          {
+            "id": "verification_record",
+            "provenance": "agent_claimed"
+          }
+        ],
+        "expected_episode_trace": ["CODER"],
+        "expected_lifecycle_trace": [
+          "task.brief",
+          "task.next_action",
+          "task.start_ready",
+          "runner.prepare",
+          "runner.execute",
+          "verify",
+          "finish"
+        ],
+        "expected_outcomes": {
+          "adapter_failure": true,
+          "approval_respected": true,
+          "blocked": false,
+          "context_gap": false,
+          "outcome": "verified_after_rework",
+          "rework_required": true,
+          "scope_violation": false,
+          "verified_success": true
+        },
+        "id": "direct",
+        "label": "Direct code task",
+        "metrics": {
+          "bootstrap_bytes": {
+            "observability_gap": null,
+            "provenance": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/run-state.json#prepared_metadata.bootstrap_bytes",
+            "value": 1549
+          },
+          "bundle_bytes": {
+            "observability_gap": null,
+            "provenance": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/run-state.json#prepared_metadata.bundle_bytes",
+            "value": 29148
+          },
+          "context_search_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "duplicate_input_bytes": {
+            "observability_gap": null,
+            "provenance": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/bundle.json#repeated_utf8_string_leaves_v1",
+            "value": 6331
+          },
+          "evidence_claimed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_to_claimed_ratio": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "lifecycle_calls": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "llm_episodes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "preparation_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_boilerplate_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_count": {
+            "observability_gap": null,
+            "provenance": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/run-state.json#prepared_metadata.prompt_count",
+            "value": 3
+          },
+          "retrieval_gaps": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_hits": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_recall_proxy": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stderr_bytes": {
+            "observability_gap": null,
+            "provenance": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/run-state.json#result.metrics.stderr_bytes",
+            "value": 760
+          },
+          "stdout_bytes": {
+            "observability_gap": null,
+            "provenance": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/run-state.json#result.metrics.stdout_bytes",
+            "value": 147982
+          }
+        },
+        "observed_outcomes": {
+          "adapter_failure": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "approval_respected": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "blocked": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_gap": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "rework_required": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "scope_violation": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "verified_success": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "source_artifact": {
+          "paths": {
+            "bootstrap": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/bootstrap.md",
+            "bundle": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/bundle.json",
+            "run_state": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/run-state.json"
+          },
+          "relevance": "Historical direct code-run sample. Raw runner fields come from the artifact; scenario quality comes from the explicit golden control.",
+          "sha256": {
+            "bootstrap": "c1057491a6fb4235acf9108cd9056ed5260a762e66f559416ef289aab6a50290",
+            "bundle": "2f05a4715e3613b82e8193e3344343fe05bfd81c4a3a60e84d428df7335f77a7",
+            "run_state": "7b7c93d999fd44ea2c4f4c42c7fcb811ae56d1d5d332431cde577a96764965d0"
+          }
+        },
+        "token_usage_by_role": {
+          "CODER": {
+            "input_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "output_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "reasoning_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            }
+          }
+        }
+      },
+      {
+        "evidence_controls": [
+          {
+            "id": "scenario_control",
+            "provenance": "human_supplied"
+          },
+          {
+            "id": "executor_result",
+            "provenance": "agent_claimed"
+          }
+        ],
+        "expected_episode_trace": ["CODER", "EVALUATOR"],
+        "expected_lifecycle_trace": [
+          "task.brief",
+          "task.next_action",
+          "work.resume",
+          "task.start_ready",
+          "runner.prepare",
+          "runner.execute",
+          "pr.open",
+          "pr.check",
+          "verify",
+          "evaluator.run",
+          "finish.pre_merge",
+          "integrate.enqueue",
+          "integrate.run",
+          "hosted_close"
+        ],
+        "expected_outcomes": {
+          "adapter_failure": false,
+          "approval_respected": true,
+          "blocked": false,
+          "context_gap": false,
+          "outcome": "verified_success",
+          "rework_required": false,
+          "scope_violation": false,
+          "verified_success": true
+        },
+        "id": "branch_pr",
+        "label": "branch_pr code task",
+        "metrics": {
+          "bootstrap_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "bundle_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_search_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "duplicate_input_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_claimed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_to_claimed_ratio": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "lifecycle_calls": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "llm_episodes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "preparation_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_boilerplate_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_gaps": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_hits": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_recall_proxy": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stderr_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stdout_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "observed_outcomes": {
+          "adapter_failure": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "approval_respected": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "blocked": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_gap": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "rework_required": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "scope_violation": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "verified_success": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "source_artifact": null,
+        "token_usage_by_role": {
+          "CODER": {
+            "input_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "output_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "reasoning_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            }
+          },
+          "EVALUATOR": {
+            "input_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "output_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "reasoning_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            }
+          }
+        }
+      },
+      {
+        "evidence_controls": [
+          {
+            "id": "prepared_runner_state",
+            "provenance": "observed",
+            "source": "runner_artifact.run_state"
+          }
+        ],
+        "expected_episode_trace": [],
+        "expected_lifecycle_trace": [
+          "task.brief",
+          "context.search",
+          "context.resolve",
+          "runner.prepare"
+        ],
+        "expected_outcomes": {
+          "adapter_failure": false,
+          "approval_respected": true,
+          "blocked": false,
+          "context_gap": false,
+          "outcome": "prepared_only",
+          "rework_required": false,
+          "scope_violation": false,
+          "verified_success": false
+        },
+        "id": "context_assimilation",
+        "label": "Context assimilation",
+        "metrics": {
+          "bootstrap_bytes": {
+            "observability_gap": null,
+            "provenance": ".agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/run-state.json#prepared_metadata.bootstrap_bytes",
+            "value": 1549
+          },
+          "bundle_bytes": {
+            "observability_gap": null,
+            "provenance": ".agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/run-state.json#prepared_metadata.bundle_bytes",
+            "value": 30251
+          },
+          "context_search_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "duplicate_input_bytes": {
+            "observability_gap": null,
+            "provenance": ".agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/bundle.json#repeated_utf8_string_leaves_v1",
+            "value": 5950
+          },
+          "evidence_claimed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_to_claimed_ratio": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "lifecycle_calls": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "llm_episodes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "preparation_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_boilerplate_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_count": {
+            "observability_gap": null,
+            "provenance": ".agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/run-state.json#prepared_metadata.prompt_count",
+            "value": 3
+          },
+          "retrieval_gaps": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_hits": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_recall_proxy": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stderr_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stdout_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "observed_outcomes": {
+          "adapter_failure": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "approval_respected": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "blocked": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_gap": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "rework_required": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "scope_violation": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "verified_success": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "source_artifact": {
+          "paths": {
+            "bootstrap": ".agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/bootstrap.md",
+            "bundle": ".agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/bundle.json",
+            "run_state": ".agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/run-state.json"
+          },
+          "relevance": "Historical dry-run preparation sample with committed bundle and bootstrap; it has no execution result metrics.",
+          "sha256": {
+            "bootstrap": "f49944073177a75771b6e19550aa30951681b034d23341c46951cc9b9ab06060",
+            "bundle": "4bfdb081c7bb645029618fe9dd498dd29a59712a5cb2dde433d7f1b27fe04a21",
+            "run_state": "8637933c5e2b9c5301120b8ac72f321ce8f468f590ab5cf547cd1fd1d2842146"
+          }
+        },
+        "token_usage_by_role": {}
+      },
+      {
+        "evidence_controls": [
+          {
+            "id": "stale_state_control",
+            "provenance": "human_supplied"
+          }
+        ],
+        "expected_episode_trace": [],
+        "expected_lifecycle_trace": [
+          "task.brief",
+          "task.next_action",
+          "stale_state_check",
+          "repair_route"
+        ],
+        "expected_outcomes": {
+          "adapter_failure": false,
+          "approval_respected": true,
+          "blocked": true,
+          "context_gap": false,
+          "outcome": "blocked_stale_state",
+          "rework_required": true,
+          "scope_violation": false,
+          "verified_success": false
+        },
+        "id": "stale_state",
+        "label": "Stale state",
+        "metrics": {
+          "bootstrap_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "bundle_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_search_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "duplicate_input_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_claimed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_to_claimed_ratio": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "lifecycle_calls": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "llm_episodes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "preparation_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_boilerplate_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_gaps": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_hits": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_recall_proxy": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stderr_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stdout_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "observed_outcomes": {
+          "adapter_failure": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "approval_respected": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "blocked": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_gap": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "rework_required": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "scope_violation": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "verified_success": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "source_artifact": null,
+        "token_usage_by_role": {}
+      },
+      {
+        "evidence_controls": [
+          {
+            "id": "approval_control",
+            "provenance": "human_supplied"
+          }
+        ],
+        "expected_episode_trace": [],
+        "expected_lifecycle_trace": ["task.brief", "task.next_action", "approval_gate"],
+        "expected_outcomes": {
+          "adapter_failure": false,
+          "approval_respected": true,
+          "blocked": true,
+          "context_gap": false,
+          "outcome": "blocked_for_approval",
+          "rework_required": false,
+          "scope_violation": false,
+          "verified_success": false
+        },
+        "id": "approval_required",
+        "label": "Approval required",
+        "metrics": {
+          "bootstrap_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "bundle_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_search_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "duplicate_input_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_claimed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_to_claimed_ratio": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "lifecycle_calls": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "llm_episodes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "preparation_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_boilerplate_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_gaps": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_hits": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_recall_proxy": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stderr_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stdout_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "observed_outcomes": {
+          "adapter_failure": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "approval_respected": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "blocked": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_gap": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "rework_required": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "scope_violation": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "verified_success": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "source_artifact": null,
+        "token_usage_by_role": {}
+      },
+      {
+        "evidence_controls": [
+          {
+            "id": "missing_knowledge_control",
+            "provenance": "human_supplied"
+          },
+          {
+            "id": "context_gap_report",
+            "provenance": "agent_claimed"
+          }
+        ],
+        "expected_episode_trace": ["CODER"],
+        "expected_lifecycle_trace": [
+          "task.brief",
+          "context.search",
+          "runner.prepare",
+          "runner.execute",
+          "context_gap_return"
+        ],
+        "expected_outcomes": {
+          "adapter_failure": false,
+          "approval_respected": true,
+          "blocked": true,
+          "context_gap": true,
+          "outcome": "context_gap",
+          "rework_required": true,
+          "scope_violation": false,
+          "verified_success": false
+        },
+        "id": "missing_knowledge",
+        "label": "Missing knowledge",
+        "metrics": {
+          "bootstrap_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "bundle_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_search_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "duplicate_input_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_claimed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_to_claimed_ratio": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "lifecycle_calls": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "llm_episodes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "preparation_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_boilerplate_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_gaps": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_hits": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_recall_proxy": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stderr_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stdout_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "observed_outcomes": {
+          "adapter_failure": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "approval_respected": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "blocked": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_gap": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "rework_required": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "scope_violation": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "verified_success": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "source_artifact": null,
+        "token_usage_by_role": {
+          "CODER": {
+            "input_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "output_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "reasoning_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            }
+          }
+        }
+      },
+      {
+        "evidence_controls": [
+          {
+            "id": "rework_control",
+            "provenance": "human_supplied"
+          },
+          {
+            "id": "executor_result",
+            "provenance": "agent_claimed"
+          },
+          {
+            "id": "evaluator_verdict",
+            "provenance": "agent_claimed"
+          }
+        ],
+        "expected_episode_trace": ["CODER", "EVALUATOR", "CODER", "EVALUATOR"],
+        "expected_lifecycle_trace": [
+          "task.brief",
+          "runner.prepare",
+          "runner.execute",
+          "verify",
+          "evaluator.run",
+          "rework_route",
+          "runner.prepare",
+          "runner.execute",
+          "verify",
+          "evaluator.run"
+        ],
+        "expected_outcomes": {
+          "adapter_failure": false,
+          "approval_respected": true,
+          "blocked": false,
+          "context_gap": false,
+          "outcome": "verified_after_rework",
+          "rework_required": true,
+          "scope_violation": false,
+          "verified_success": true
+        },
+        "id": "evaluator_rework",
+        "label": "Evaluator rework",
+        "metrics": {
+          "bootstrap_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "bundle_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_search_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "duplicate_input_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_claimed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_to_claimed_ratio": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "lifecycle_calls": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "llm_episodes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "preparation_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_boilerplate_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_gaps": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_hits": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_recall_proxy": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stderr_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stdout_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "observed_outcomes": {
+          "adapter_failure": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "approval_respected": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "blocked": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_gap": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "rework_required": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "scope_violation": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "verified_success": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "source_artifact": null,
+        "token_usage_by_role": {
+          "CODER": {
+            "input_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "output_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "reasoning_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            }
+          },
+          "EVALUATOR": {
+            "input_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "output_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "reasoning_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            }
+          }
+        }
+      },
+      {
+        "evidence_controls": [
+          {
+            "id": "scope_violation_control",
+            "provenance": "human_supplied"
+          },
+          {
+            "id": "reported_changed_paths",
+            "provenance": "agent_claimed"
+          }
+        ],
+        "expected_episode_trace": ["CODER"],
+        "expected_lifecycle_trace": [
+          "task.brief",
+          "runner.prepare",
+          "runner.execute",
+          "artifact_review",
+          "verify"
+        ],
+        "expected_outcomes": {
+          "adapter_failure": false,
+          "approval_respected": true,
+          "blocked": false,
+          "context_gap": false,
+          "outcome": "scope_violation",
+          "rework_required": true,
+          "scope_violation": true,
+          "verified_success": false
+        },
+        "id": "scope_violation",
+        "label": "Out-of-scope write",
+        "metrics": {
+          "bootstrap_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "bundle_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_search_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "duplicate_input_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_claimed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_to_claimed_ratio": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "lifecycle_calls": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "llm_episodes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "preparation_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_boilerplate_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_gaps": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_hits": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_recall_proxy": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stderr_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stdout_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "observed_outcomes": {
+          "adapter_failure": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "approval_respected": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "blocked": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_gap": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "rework_required": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "scope_violation": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "verified_success": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "source_artifact": null,
+        "token_usage_by_role": {
+          "CODER": {
+            "input_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "output_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "reasoning_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            }
+          }
+        }
+      },
+      {
+        "evidence_controls": [
+          {
+            "id": "adapter_crash_control",
+            "provenance": "human_supplied"
+          },
+          {
+            "id": "failure_classification_control",
+            "provenance": "human_supplied"
+          }
+        ],
+        "expected_episode_trace": ["CURRENT_AGENT"],
+        "expected_lifecycle_trace": [
+          "task.brief",
+          "runner.prepare",
+          "runner.execute",
+          "adapter.crash",
+          "rework_route"
+        ],
+        "expected_outcomes": {
+          "adapter_failure": true,
+          "approval_respected": true,
+          "blocked": true,
+          "context_gap": false,
+          "outcome": "adapter_crash",
+          "rework_required": true,
+          "scope_violation": false,
+          "verified_success": false
+        },
+        "id": "adapter_failure",
+        "label": "Adapter failure",
+        "metrics": {
+          "bootstrap_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "bundle_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_search_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "duplicate_input_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_claimed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_to_claimed_ratio": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "lifecycle_calls": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "llm_episodes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "preparation_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_boilerplate_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_gaps": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_hits": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_recall_proxy": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stderr_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stdout_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "observed_outcomes": {
+          "adapter_failure": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "approval_respected": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "blocked": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_gap": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "rework_required": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "scope_violation": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "verified_success": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "source_artifact": null,
+        "token_usage_by_role": {
+          "CURRENT_AGENT": {
+            "input_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "output_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "reasoning_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            }
+          }
+        }
+      },
+      {
+        "evidence_controls": [
+          {
+            "id": "one_step_control",
+            "provenance": "human_supplied"
+          },
+          {
+            "id": "command_exit_control",
+            "provenance": "human_supplied"
+          }
+        ],
+        "expected_episode_trace": ["CURRENT_AGENT"],
+        "expected_lifecycle_trace": ["task.next_action", "executor.exact_argv", "return_control"],
+        "expected_outcomes": {
+          "adapter_failure": false,
+          "approval_respected": true,
+          "blocked": false,
+          "context_gap": false,
+          "outcome": "verified_success",
+          "rework_required": false,
+          "scope_violation": false,
+          "verified_success": true
+        },
+        "id": "hermes_one_step",
+        "label": "Hermes one-step supervision",
+        "metrics": {
+          "bootstrap_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "bundle_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_search_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "duplicate_input_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_claimed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "evidence_observed_to_claimed_ratio": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "lifecycle_calls": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "llm_episodes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "preparation_latency_ms": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_boilerplate_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "prompt_count": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_gaps": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_hits": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "retrieval_recall_proxy": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stderr_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "stdout_bytes": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "observed_outcomes": {
+          "adapter_failure": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "approval_respected": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "blocked": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "context_gap": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "rework_required": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "scope_violation": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          },
+          "verified_success": {
+            "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+            "provenance": null,
+            "value": null
+          }
+        },
+        "source_artifact": null,
+        "token_usage_by_role": {
+          "CURRENT_AGENT": {
+            "input_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "output_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            },
+            "reasoning_tokens": {
+              "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+              "provenance": null,
+              "value": null
+            }
+          }
+        }
+      }
+    ],
+    "schema_version": 2
+  },
+  "structural_projection_sha256": "sha256:a9b855c5887f697c21690d7386c627c555f8d46d7b083cab8c54636411e47351",
+  "timing_diagnostics": {
+    "comparison": "diagnostic_only",
+    "field": "duration_ms",
+    "scenarios": [
+      {
+        "duration_ms": {
+          "sample_count": 1,
+          "samples": [138046],
+          "statistics": {
+            "max": 138046,
+            "mean": 138046,
+            "median": 138046,
+            "min": 138046,
+            "p95": 138046,
+            "stddev": 0
+          },
+          "status": "insufficient_samples",
+          "sufficient_for_comparison": false
+        },
+        "id": "direct",
+        "observability_gap": null,
+        "provenance": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/run-state.json#result.metrics.duration_ms"
+      },
+      {
+        "duration_ms": {
+          "sample_count": 0,
+          "samples": [],
+          "statistics": null,
+          "status": "not_observed",
+          "sufficient_for_comparison": false
+        },
+        "id": "branch_pr",
+        "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+        "provenance": null
+      },
+      {
+        "duration_ms": {
+          "sample_count": 0,
+          "samples": [],
+          "statistics": null,
+          "status": "not_observed",
+          "sufficient_for_comparison": false
+        },
+        "id": "context_assimilation",
+        "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+        "provenance": null
+      },
+      {
+        "duration_ms": {
+          "sample_count": 0,
+          "samples": [],
+          "statistics": null,
+          "status": "not_observed",
+          "sufficient_for_comparison": false
+        },
+        "id": "stale_state",
+        "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+        "provenance": null
+      },
+      {
+        "duration_ms": {
+          "sample_count": 0,
+          "samples": [],
+          "statistics": null,
+          "status": "not_observed",
+          "sufficient_for_comparison": false
+        },
+        "id": "approval_required",
+        "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+        "provenance": null
+      },
+      {
+        "duration_ms": {
+          "sample_count": 0,
+          "samples": [],
+          "statistics": null,
+          "status": "not_observed",
+          "sufficient_for_comparison": false
+        },
+        "id": "missing_knowledge",
+        "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+        "provenance": null
+      },
+      {
+        "duration_ms": {
+          "sample_count": 0,
+          "samples": [],
+          "statistics": null,
+          "status": "not_observed",
+          "sufficient_for_comparison": false
+        },
+        "id": "evaluator_rework",
+        "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+        "provenance": null
+      },
+      {
+        "duration_ms": {
+          "sample_count": 0,
+          "samples": [],
+          "statistics": null,
+          "status": "not_observed",
+          "sufficient_for_comparison": false
+        },
+        "id": "scope_violation",
+        "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+        "provenance": null
+      },
+      {
+        "duration_ms": {
+          "sample_count": 0,
+          "samples": [],
+          "statistics": null,
+          "status": "not_observed",
+          "sufficient_for_comparison": false
+        },
+        "id": "adapter_failure",
+        "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+        "provenance": null
+      },
+      {
+        "duration_ms": {
+          "sample_count": 0,
+          "samples": [],
+          "statistics": null,
+          "status": "not_observed",
+          "sufficient_for_comparison": false
+        },
+        "id": "hermes_one_step",
+        "observability_gap": "not_observed_at_pre_v0.7_main_anchor",
+        "provenance": null
+      }
+    ]
+  }
+}
