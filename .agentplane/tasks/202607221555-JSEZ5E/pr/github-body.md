@@ -16,9 +16,9 @@ In scope: context-ingest task metadata and task pack; a task-bound canonical ent
 - Note:
 
 ```text
-Verified current implementation HEAD 3f02dab0bdaf: focused 119/119, complete fast suite 2185/2185,
-typecheck, agent templates, routing, doctor, and temporary-project semantic reconciliation E2E
-passed.
+Verified current implementation: ci:local:fast passed, including lint, budgets, 370 files/2185
+tests, five critical CLI E2E chunks, typecheck, routing, doctor, and the temporary-project semantic
+reconciliation E2E.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -51,19 +51,19 @@ passed.
  .../verify-task.maximum-assimilation.test.ts       |  22 ++-
  .../verify-task.maximum-assimilation.unit.test.ts  |  22 ++-
  packages/agentplane/src/commands/task/new.ts       |   9 +-
- .../src/context/extraction-writer.test.ts          |  69 +++++++++
- .../agentplane/src/context/extraction-writer.ts    |  20 +++
+ .../src/context/extraction-writer.test.ts          |  68 +++++++++
+ .../agentplane/src/context/extraction-writer.ts    |  21 +++
  .../src/context/ingest-task-pack.test.ts           |  86 ++++++++++-
  .../agentplane/src/context/ingest-task-pack.ts     | 162 ++++++++++++++++++++-
  .../agentplane/src/context/ingest-task-prompt.ts   |  26 ++--
  packages/agentplane/src/context/ingest-task.ts     |  39 ++++-
  ...imilation-artifacts-validation-ontology.test.ts |  86 +++++++++++
- ...m-assimilation-artifacts-validation-ontology.ts |  71 ++++++++-
+ ...m-assimilation-artifacts-validation-ontology.ts |  80 +++++++++-
  .../src/runtime/sgr/context-extraction-contract.ts |  41 +++++-
  .../src/runtime/sgr/context-extraction-payloads.ts |  80 ++++++++--
  .../agentplane/src/runtime/sgr/contract-types.ts   |  20 ++-
  .../agentplane/src/runtime/sgr/contracts.test.ts   | 104 +++++++++++++
- 33 files changed, 1057 insertions(+), 81 deletions(-)
+ 33 files changed, 1066 insertions(+), 81 deletions(-)
 ```
 
 </details>
