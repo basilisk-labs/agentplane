@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221838-SD1W93",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T19:16:26.477Z",
+  "verdict": "pass",
+  "summary": "The corrected AgentPlane 0.7 execution graph fully covers RF-00 through RF-27, enforces sequential milestone fan-in, uses atomic vertical slices for broad internal migrations, and has a state-aware branch_pr recovery contract.",
+  "evaluated_sha": "ee24b3aecc47717c68169a4e5201d83e48096d1f",
+  "blueprint_digest": "ef1a009399c90576c1c070524dfa6d59a275fc968242f4cc0a77ab34ed8bd555",
+  "findings": [
+    "All 56 active v0.7 records are ancestors of final task XV67TD; RF-02 enters through alpha.1 and RF-20 through beta.2, with no cycle or unknown dependency.",
+    "Six executable alpha/beta/rc gates enforce wave order, and the final release depends only on the rc.2 gate whose closure includes migration, docs, architecture, and all prior milestones.",
+    "SDPFN0 and PGPR3J are fan-in verification tasks over five independently scoped command-family slices; they no longer own mixed family implementation.",
+    "The branch_pr supervisor rollback distinguishes pre-PR, post-open, queued, merged, and hosted-close recovery and never rewrites protected main."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221838-SD1W93/README.md",
+    "docs/internal/v0.7-refactor-plan.md",
+    ".agentplane/tasks/202607221854-SDPFN0/README.md",
+    ".agentplane/tasks/202607221854-PGPR3J/README.md",
+    ".agentplane/tasks/202607221852-71SCSW/README.md",
+    "node scripts/checks/check-task-state.mjs: pass",
+    "final ancestor closure: active=56 reachable=56 missing=0"
+  ],
+  "missing_tests": [
+    "The canonical bun run task-state:check wrapper could not run locally because Bun is unavailable; hosted PR verification must exercise it before integration."
+  ],
+  "hidden_assumptions": [
+    "Optional prereleases or 0.6.25+ backports are published only when external validation benefits; qualification gates remain mandatory even when publication is skipped."
+  ],
+  "residual_risks": [
+    "Implementation duration and performance gains remain hypotheses until each leaf produces measured evidence; milestone gates prevent those hypotheses from becoming release claims."
+  ]
+}

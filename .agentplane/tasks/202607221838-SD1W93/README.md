@@ -4,7 +4,7 @@ title: "Define the AgentPlane 0.7 refactor execution graph"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,34 @@ plan_approval:
   note: "Approved from the user-authorized full RF-00 through RF-27 refactor program; 0.7.0 remains the terminal release gate and compatible intermediate 0.6.x releases are permitted."
 verification:
   state: "ok"
-  updated_at: "2026-07-22T18:59:27.343Z"
+  updated_at: "2026-07-22T19:16:05.190Z"
   updated_by: "PLANNER"
-  note: "Verified 43 executable leaves plus the planning task: RF-00 through RF-27 coverage is complete, task-state and dependency integrity pass, roadmap/task Markdown is formatted, policy routing passes, and doctor has no new errors. Bun is unavailable locally, so the exact task-state script was run directly with Node; hosted PR verification must still exercise the Bun wrapper."
+  note: "Verified committed graph ee24b3aec: all 56 active v0.7 records are reachable from final release, RF-00 through RF-27 coverage is complete, Markdown is formatted, task-state and policy routing pass, and doctor has no new errors. Bun is absent locally; the exact task-state Node target passed and hosted CI remains required for the wrapper."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-22T19:16:26.477Z"
+  updated_by: "EVALUATOR"
+  note: "The corrected AgentPlane 0.7 execution graph fully covers RF-00 through RF-27, enforces sequential milestone fan-in, uses atomic vertical slices for broad internal migrations, and has a state-aware branch_pr recovery contract."
+  evaluated_sha: "ee24b3aecc47717c68169a4e5201d83e48096d1f"
+  blueprint_digest: "ef1a009399c90576c1c070524dfa6d59a275fc968242f4cc0a77ab34ed8bd555"
+  evidence_refs:
+    - ".agentplane/tasks/202607221838-SD1W93/README.md"
+    - ".agentplane/tasks/202607221838-SD1W93/quality/20260722-191626477-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221838-SD1W93/quality/20260722-191626477-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221838-SD1W93/quality/20260722-191626477-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221838-SD1W93/blueprint/resolved-snapshot.json"
+    - "docs/internal/v0.7-refactor-plan.md"
+    - ".agentplane/tasks/202607221854-SDPFN0/README.md"
+    - ".agentplane/tasks/202607221854-PGPR3J/README.md"
+    - ".agentplane/tasks/202607221852-71SCSW/README.md"
+    - "node scripts/checks/check-task-state.mjs: pass"
+    - "final ancestor closure: active=56 reachable=56 missing=0"
+  findings:
+    - "All 56 active v0.7 records are ancestors of final task XV67TD; RF-02 enters through alpha.1 and RF-20 through beta.2, with no cycle or unknown dependency."
+    - "Six executable alpha/beta/rc gates enforce wave order, and the final release depends only on the rc.2 gate whose closure includes migration, docs, architecture, and all prior milestones."
+    - "SDPFN0 and PGPR3J are fan-in verification tasks over five independently scoped command-family slices; they no longer own mixed family implementation."
+    - "The branch_pr supervisor rollback distinguishes pre-PR, post-open, queued, merged, and hosted-close recovery and never rewrites protected main."
 commit: null
 comments:
   -
@@ -49,8 +73,14 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Verified 43 executable leaves plus the planning task: RF-00 through RF-27 coverage is complete, task-state and dependency integrity pass, roadmap/task Markdown is formatted, policy routing passes, and doctor has no new errors. Bun is unavailable locally, so the exact task-state script was run directly with Node; hosted PR verification must still exercise the Bun wrapper."
+  -
+    type: "verify"
+    at: "2026-07-22T19:16:05.190Z"
+    author: "PLANNER"
+    state: "ok"
+    note: "Verified committed graph ee24b3aec: all 56 active v0.7 records are reachable from final release, RF-00 through RF-27 coverage is complete, Markdown is formatted, task-state and policy routing pass, and doctor has no new errors. Bun is absent locally; the exact task-state Node target passed and hosted CI remains required for the wrapper."
 doc_version: 3
-doc_updated_at: "2026-07-22T19:15:07.952Z"
+doc_updated_at: "2026-07-22T19:16:05.329Z"
 doc_updated_by: "PLANNER"
 description: "Create the complete executable task graph for the approved RF-00 through RF-27 refactor program, including corrected contract-drift prerequisites, atomic dependency edges, acceptance-specific Verify Steps, intermediate compatible release slices, and the final 0.7.0 release gate."
 sections:
@@ -107,6 +137,36 @@ sections:
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+    ### 2026-07-22T19:16:05.190Z — VERIFY — ok
+
+    By: PLANNER
+
+    Note: Verified committed graph ee24b3aec: all 56 active v0.7 records are reachable from final release, RF-00 through RF-27 coverage is complete, Markdown is formatted, task-state and policy routing pass, and doctor has no new errors. Bun is absent locally; the exact task-state Node target passed and hosted CI remains required for the wrapper.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T19:15:07.952Z, excerpt_hash=sha256:ac4c847beaf9545442b574dc8335c2137471651ae1a9034bb4a63620fc461dae
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221838-SD1W93-define-the-agentplane-0-7-refactor-execution-gra/.agentplane/tasks/202607221838-SD1W93/blueprint/resolved-snapshot.json
+    - old_digest: ef1a009399c90576c1c070524dfa6d59a275fc968242f4cc0a77ab34ed8bd555
+    - current_digest: ef1a009399c90576c1c070524dfa6d59a275fc968242f4cc0a77ab34ed8bd555
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221838-SD1W93
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane evaluator run 202607221838-SD1W93 --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607221838-SD1W93/README.md
+    - diagnostic_command: agentplane evaluator run 202607221838-SD1W93 --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607221838-SD1W93/README.md
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the planning-task PR before any dependent implementation task is started.
@@ -134,6 +194,10 @@ sections:
       Resolution: Added six executable milestone fan-in gates, five command-family vertical slices, a release dependency-closure guard task, final gate ancestry for all 56 active records, fan-in-only scopes for SDPFN0/PGPR3J, and state-aware branch_pr recovery. The second independent review returned pass.
       Promotion: incident-candidate
       Fixability: repo-fixable
+
+    - Observation: The corrected graph was verified on commit ee24b3aecc47717c68169a4e5201d83e48096d1f; local Bun remains unavailable and doctor still reports only two pre-existing historical warnings.
+      Impact: No graph or policy blocker remains; canonical Bun wrapper evidence must come from hosted PR verification.
+      Resolution: Proceed to independent EVALUATOR recording, PR publication, and hosted checks; do not integrate if the hosted Bun wrapper fails.
 id_source: "generated"
 ---
 ## Summary
@@ -198,6 +262,36 @@ DecisionContextRef:
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
 
+### 2026-07-22T19:16:05.190Z — VERIFY — ok
+
+By: PLANNER
+
+Note: Verified committed graph ee24b3aec: all 56 active v0.7 records are reachable from final release, RF-00 through RF-27 coverage is complete, Markdown is formatted, task-state and policy routing pass, and doctor has no new errors. Bun is absent locally; the exact task-state Node target passed and hosted CI remains required for the wrapper.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T19:15:07.952Z, excerpt_hash=sha256:ac4c847beaf9545442b574dc8335c2137471651ae1a9034bb4a63620fc461dae
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221838-SD1W93-define-the-agentplane-0-7-refactor-execution-gra/.agentplane/tasks/202607221838-SD1W93/blueprint/resolved-snapshot.json
+- old_digest: ef1a009399c90576c1c070524dfa6d59a275fc968242f4cc0a77ab34ed8bd555
+- current_digest: ef1a009399c90576c1c070524dfa6d59a275fc968242f4cc0a77ab34ed8bd555
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221838-SD1W93
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane evaluator run 202607221838-SD1W93 --verdict pass --summary Quality review passed. --finding No blocking findings. --evidence .agentplane/tasks/202607221838-SD1W93/README.md
+- diagnostic_command: agentplane evaluator run 202607221838-SD1W93 --verdict pass --summary "Quality review passed." --finding "No blocking findings." --evidence .agentplane/tasks/202607221838-SD1W93/README.md
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -229,3 +323,7 @@ DecisionContextRef:
   Resolution: Added six executable milestone fan-in gates, five command-family vertical slices, a release dependency-closure guard task, final gate ancestry for all 56 active records, fan-in-only scopes for SDPFN0/PGPR3J, and state-aware branch_pr recovery. The second independent review returned pass.
   Promotion: incident-candidate
   Fixability: repo-fixable
+
+- Observation: The corrected graph was verified on commit ee24b3aecc47717c68169a4e5201d83e48096d1f; local Bun remains unavailable and doctor still reports only two pre-existing historical warnings.
+  Impact: No graph or policy blocker remains; canonical Bun wrapper evidence must come from hosted PR verification.
+  Resolution: Proceed to independent EVALUATOR recording, PR publication, and hosted checks; do not integrate if the hosted Bun wrapper fails.
