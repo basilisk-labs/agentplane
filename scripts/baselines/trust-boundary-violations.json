@@ -1,0 +1,330 @@
+{
+  "schema_version": 1,
+  "baseline_id": "agentplane.trust-boundary.v0.7",
+  "captured_from_commit": "5e4f067fd5d1d3ef9238540231ce9306133b4161",
+  "origin": {
+    "violation_ids_sha256": "eb66f918d05f34e76c2a6ac2a041088a0eb49a53a88b8bfe9b8e0554a836fc7b",
+    "violation_ids": [
+      "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.artifacts",
+      "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.evidence.changed_paths",
+      "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.evidence.evidence_paths",
+      "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.evidence.files_changed_count",
+      "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.evidence.tests_run",
+      "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.exit_code",
+      "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.metrics.duration_ms",
+      "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.metrics.output_last_message_bytes",
+      "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.metrics.stderr_bytes",
+      "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.metrics.stdout_bytes",
+      "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.status",
+      "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.timeout_reason",
+      "trust.no-automatic-semantic-verdict:packages/agentplane/src/commands/shared/route-decision-next-action.ts:literal:deriveNextAction:fedad6c7a30d",
+      "trust.no-automatic-semantic-verdict:packages/agentplane/src/commands/shared/route-decision-repair.ts:literal:qualityReviewRepair:c618f47d8cd8",
+      "trust.no-automatic-semantic-verdict:packages/agentplane/src/commands/task/quality-review-gate.ts:literal:fix:d68c883be221",
+      "trust.no-automatic-semantic-verdict:packages/agentplane/src/context/ingest-task.ts:literal:buildIngestMetadata:52a3288bd62b",
+      "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+comments",
+      "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+doc",
+      "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+events",
+      "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+frontmatter",
+      "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+sections",
+      "trust.no-implicit-danger-sandbox:packages/agentplane/src/runner/adapters/codex-preparation.ts:fallback:resolveCodexSandbox:danger-full-access",
+      "trust.no-rendered-command-orchestration:packages/agentplane/src/commands/hermes/hermes-runtime.ts:parser:executableStepFor:next-action-command",
+      "trust.no-rendered-command-orchestration:packages/agentplane/src/commands/hermes/hermes-runtime.ts:subprocess:runAgentplaneStep",
+      "trust.no-rendered-command-orchestration:packages/agentplane/src/commands/shared/route-execution-packet.ts:parser:exactArgvFor",
+      "trust.no-rendered-command-orchestration:packages/agentplane/src/harness/hooks-lifecycle.ts:shell:child",
+      "trust.no-untyped-durable-route-workorder:packages/agentplane/src/runner/types/context.ts:type:RunnerContextBundle.route_decision",
+      "trust.no-untyped-durable-route-workorder:packages/agentplane/src/runner/usecases/task-run.ts:cast:bundle:route_decision"
+    ]
+  },
+  "rules": [
+    {
+      "id": "trust.no-automatic-semantic-verdict",
+      "rf_owners": ["RF-00"],
+      "owner_task_ids": ["202607221846-YGWMA2"],
+      "description": "Routers and templates must not manufacture a semantic pass verdict."
+    },
+    {
+      "id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "description": "Agent-writable results must not define or override observed process, Git, check, or artifact facts."
+    },
+    {
+      "id": "trust.no-implicit-danger-sandbox",
+      "rf_owners": ["RF-03"],
+      "owner_task_ids": ["202607221846-9XC1H0"],
+      "description": "A missing sandbox choice must not fall back to danger-full-access."
+    },
+    {
+      "id": "trust.no-untyped-durable-route-workorder",
+      "rf_owners": ["RF-05a", "RF-05b"],
+      "owner_task_ids": ["202607221848-T9B3PS", "202607221848-VC4VVS"],
+      "description": "Durable route and work-order payloads require typed, validated contracts."
+    },
+    {
+      "id": "trust.no-rendered-command-orchestration",
+      "rf_owners": ["RF-06b", "RF-09", "RF-25"],
+      "owner_task_ids": ["202607221848-VBV9B1", "202607221850-DRWR0V", "202607221854-PGPR3J"],
+      "description": "Rendered command strings and AgentPlane subprocesses must not be the internal orchestration protocol."
+    },
+    {
+      "id": "trust.no-duplicate-runner-task-representation",
+      "rf_owners": ["RF-21"],
+      "owner_task_ids": ["202607221850-9C9WBP"],
+      "description": "Serialized runner task input must not carry TaskData beside duplicate task projections."
+    }
+  ],
+  "violations": [
+    {
+      "violation_id": "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.artifacts",
+      "rule_id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "path": "packages/agentplane/src/runner/types/invocation.ts",
+      "locator": "type:RunnerResultManifest.artifacts",
+      "rationale": "agent-writable RunnerResultManifest exposes observed field artifacts"
+    },
+    {
+      "violation_id": "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.evidence.changed_paths",
+      "rule_id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "path": "packages/agentplane/src/runner/types/invocation.ts",
+      "locator": "type:RunnerResultManifest.evidence.changed_paths",
+      "rationale": "agent-writable RunnerResultManifest exposes observed field evidence.changed_paths"
+    },
+    {
+      "violation_id": "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.evidence.evidence_paths",
+      "rule_id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "path": "packages/agentplane/src/runner/types/invocation.ts",
+      "locator": "type:RunnerResultManifest.evidence.evidence_paths",
+      "rationale": "agent-writable RunnerResultManifest exposes observed field evidence.evidence_paths"
+    },
+    {
+      "violation_id": "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.evidence.files_changed_count",
+      "rule_id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "path": "packages/agentplane/src/runner/types/invocation.ts",
+      "locator": "type:RunnerResultManifest.evidence.files_changed_count",
+      "rationale": "agent-writable RunnerResultManifest exposes observed field evidence.files_changed_count"
+    },
+    {
+      "violation_id": "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.evidence.tests_run",
+      "rule_id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "path": "packages/agentplane/src/runner/types/invocation.ts",
+      "locator": "type:RunnerResultManifest.evidence.tests_run",
+      "rationale": "agent-writable RunnerResultManifest exposes observed field evidence.tests_run"
+    },
+    {
+      "violation_id": "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.exit_code",
+      "rule_id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "path": "packages/agentplane/src/runner/types/invocation.ts",
+      "locator": "type:RunnerResultManifest.exit_code",
+      "rationale": "agent-writable RunnerResultManifest exposes observed field exit_code"
+    },
+    {
+      "violation_id": "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.metrics.duration_ms",
+      "rule_id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "path": "packages/agentplane/src/runner/types/invocation.ts",
+      "locator": "type:RunnerResultManifest.metrics.duration_ms",
+      "rationale": "agent-writable RunnerResultManifest exposes observed field metrics.duration_ms"
+    },
+    {
+      "violation_id": "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.metrics.output_last_message_bytes",
+      "rule_id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "path": "packages/agentplane/src/runner/types/invocation.ts",
+      "locator": "type:RunnerResultManifest.metrics.output_last_message_bytes",
+      "rationale": "agent-writable RunnerResultManifest exposes observed field metrics.output_last_message_bytes"
+    },
+    {
+      "violation_id": "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.metrics.stderr_bytes",
+      "rule_id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "path": "packages/agentplane/src/runner/types/invocation.ts",
+      "locator": "type:RunnerResultManifest.metrics.stderr_bytes",
+      "rationale": "agent-writable RunnerResultManifest exposes observed field metrics.stderr_bytes"
+    },
+    {
+      "violation_id": "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.metrics.stdout_bytes",
+      "rule_id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "path": "packages/agentplane/src/runner/types/invocation.ts",
+      "locator": "type:RunnerResultManifest.metrics.stdout_bytes",
+      "rationale": "agent-writable RunnerResultManifest exposes observed field metrics.stdout_bytes"
+    },
+    {
+      "violation_id": "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.status",
+      "rule_id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "path": "packages/agentplane/src/runner/types/invocation.ts",
+      "locator": "type:RunnerResultManifest.status",
+      "rationale": "agent-writable RunnerResultManifest exposes observed field status"
+    },
+    {
+      "violation_id": "trust.no-agent-writable-observed-fields:packages/agentplane/src/runner/types/invocation.ts:type:RunnerResultManifest.timeout_reason",
+      "rule_id": "trust.no-agent-writable-observed-fields",
+      "rf_owners": ["RF-01a", "RF-01b"],
+      "owner_task_ids": ["202607221846-4CE7EG", "202607221846-Y89CFB"],
+      "path": "packages/agentplane/src/runner/types/invocation.ts",
+      "locator": "type:RunnerResultManifest.timeout_reason",
+      "rationale": "agent-writable RunnerResultManifest exposes observed field timeout_reason"
+    },
+    {
+      "violation_id": "trust.no-automatic-semantic-verdict:packages/agentplane/src/commands/shared/route-decision-next-action.ts:literal:deriveNextAction:fedad6c7a30d",
+      "rule_id": "trust.no-automatic-semantic-verdict",
+      "rf_owners": ["RF-00"],
+      "owner_task_ids": ["202607221846-YGWMA2"],
+      "path": "packages/agentplane/src/commands/shared/route-decision-next-action.ts",
+      "locator": "literal:deriveNextAction:fedad6c7a30d",
+      "rationale": "fixed --verdict pass command manufactures a semantic verdict"
+    },
+    {
+      "violation_id": "trust.no-automatic-semantic-verdict:packages/agentplane/src/commands/shared/route-decision-repair.ts:literal:qualityReviewRepair:c618f47d8cd8",
+      "rule_id": "trust.no-automatic-semantic-verdict",
+      "rf_owners": ["RF-00"],
+      "owner_task_ids": ["202607221846-YGWMA2"],
+      "path": "packages/agentplane/src/commands/shared/route-decision-repair.ts",
+      "locator": "literal:qualityReviewRepair:c618f47d8cd8",
+      "rationale": "fixed --verdict pass command manufactures a semantic verdict"
+    },
+    {
+      "violation_id": "trust.no-automatic-semantic-verdict:packages/agentplane/src/commands/task/quality-review-gate.ts:literal:fix:d68c883be221",
+      "rule_id": "trust.no-automatic-semantic-verdict",
+      "rf_owners": ["RF-00"],
+      "owner_task_ids": ["202607221846-YGWMA2"],
+      "path": "packages/agentplane/src/commands/task/quality-review-gate.ts",
+      "locator": "literal:fix:d68c883be221",
+      "rationale": "fixed --verdict pass command manufactures a semantic verdict"
+    },
+    {
+      "violation_id": "trust.no-automatic-semantic-verdict:packages/agentplane/src/context/ingest-task.ts:literal:buildIngestMetadata:52a3288bd62b",
+      "rule_id": "trust.no-automatic-semantic-verdict",
+      "rf_owners": ["RF-00"],
+      "owner_task_ids": ["202607221846-YGWMA2"],
+      "path": "packages/agentplane/src/context/ingest-task.ts",
+      "locator": "literal:buildIngestMetadata:52a3288bd62b",
+      "rationale": "fixed --verdict pass command manufactures a semantic verdict"
+    },
+    {
+      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+comments",
+      "rule_id": "trust.no-duplicate-runner-task-representation",
+      "rf_owners": ["RF-21"],
+      "owner_task_ids": ["202607221850-9C9WBP"],
+      "path": "packages/agentplane/src/runner/types/context.ts",
+      "locator": "type:RunnerTaskContext.data+comments",
+      "rationale": "RunnerTaskContext serializes TaskData beside duplicate comments projection"
+    },
+    {
+      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+doc",
+      "rule_id": "trust.no-duplicate-runner-task-representation",
+      "rf_owners": ["RF-21"],
+      "owner_task_ids": ["202607221850-9C9WBP"],
+      "path": "packages/agentplane/src/runner/types/context.ts",
+      "locator": "type:RunnerTaskContext.data+doc",
+      "rationale": "RunnerTaskContext serializes TaskData beside duplicate doc projection"
+    },
+    {
+      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+events",
+      "rule_id": "trust.no-duplicate-runner-task-representation",
+      "rf_owners": ["RF-21"],
+      "owner_task_ids": ["202607221850-9C9WBP"],
+      "path": "packages/agentplane/src/runner/types/context.ts",
+      "locator": "type:RunnerTaskContext.data+events",
+      "rationale": "RunnerTaskContext serializes TaskData beside duplicate events projection"
+    },
+    {
+      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+frontmatter",
+      "rule_id": "trust.no-duplicate-runner-task-representation",
+      "rf_owners": ["RF-21"],
+      "owner_task_ids": ["202607221850-9C9WBP"],
+      "path": "packages/agentplane/src/runner/types/context.ts",
+      "locator": "type:RunnerTaskContext.data+frontmatter",
+      "rationale": "RunnerTaskContext serializes TaskData beside duplicate frontmatter projection"
+    },
+    {
+      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+sections",
+      "rule_id": "trust.no-duplicate-runner-task-representation",
+      "rf_owners": ["RF-21"],
+      "owner_task_ids": ["202607221850-9C9WBP"],
+      "path": "packages/agentplane/src/runner/types/context.ts",
+      "locator": "type:RunnerTaskContext.data+sections",
+      "rationale": "RunnerTaskContext serializes TaskData beside duplicate sections projection"
+    },
+    {
+      "violation_id": "trust.no-implicit-danger-sandbox:packages/agentplane/src/runner/adapters/codex-preparation.ts:fallback:resolveCodexSandbox:danger-full-access",
+      "rule_id": "trust.no-implicit-danger-sandbox",
+      "rf_owners": ["RF-03"],
+      "owner_task_ids": ["202607221846-9XC1H0"],
+      "path": "packages/agentplane/src/runner/adapters/codex-preparation.ts",
+      "locator": "fallback:resolveCodexSandbox:danger-full-access",
+      "rationale": "missing sandbox input falls back to danger-full-access"
+    },
+    {
+      "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/commands/hermes/hermes-runtime.ts:parser:executableStepFor:next-action-command",
+      "rule_id": "trust.no-rendered-command-orchestration",
+      "rf_owners": ["RF-06b", "RF-09", "RF-25"],
+      "owner_task_ids": ["202607221848-VBV9B1", "202607221850-DRWR0V", "202607221854-PGPR3J"],
+      "path": "packages/agentplane/src/commands/hermes/hermes-runtime.ts",
+      "locator": "parser:executableStepFor:next-action-command",
+      "rationale": "internal dispatch tokenizes next_action.command instead of consuming a typed operation"
+    },
+    {
+      "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/commands/hermes/hermes-runtime.ts:subprocess:runAgentplaneStep",
+      "rule_id": "trust.no-rendered-command-orchestration",
+      "rf_owners": ["RF-06b", "RF-09", "RF-25"],
+      "owner_task_ids": ["202607221848-VBV9B1", "202607221850-DRWR0V", "202607221854-PGPR3J"],
+      "path": "packages/agentplane/src/commands/hermes/hermes-runtime.ts",
+      "locator": "subprocess:runAgentplaneStep",
+      "rationale": "supervisor orchestration re-enters AgentPlane through a subprocess"
+    },
+    {
+      "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/commands/shared/route-execution-packet.ts:parser:exactArgvFor",
+      "rule_id": "trust.no-rendered-command-orchestration",
+      "rf_owners": ["RF-06b", "RF-09", "RF-25"],
+      "owner_task_ids": ["202607221848-VBV9B1", "202607221850-DRWR0V", "202607221854-PGPR3J"],
+      "path": "packages/agentplane/src/commands/shared/route-execution-packet.ts",
+      "locator": "parser:exactArgvFor",
+      "rationale": "route orchestration reparses a rendered command string into argv"
+    },
+    {
+      "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/harness/hooks-lifecycle.ts:shell:child",
+      "rule_id": "trust.no-rendered-command-orchestration",
+      "rf_owners": ["RF-06b", "RF-09", "RF-25"],
+      "owner_task_ids": ["202607221848-VBV9B1", "202607221850-DRWR0V", "202607221854-PGPR3J"],
+      "path": "packages/agentplane/src/harness/hooks-lifecycle.ts",
+      "locator": "shell:child",
+      "rationale": "internal orchestration executes a rendered command through a shell"
+    },
+    {
+      "violation_id": "trust.no-untyped-durable-route-workorder:packages/agentplane/src/runner/types/context.ts:type:RunnerContextBundle.route_decision",
+      "rule_id": "trust.no-untyped-durable-route-workorder",
+      "rf_owners": ["RF-05a", "RF-05b"],
+      "owner_task_ids": ["202607221848-T9B3PS", "202607221848-VC4VVS"],
+      "path": "packages/agentplane/src/runner/types/context.ts",
+      "locator": "type:RunnerContextBundle.route_decision",
+      "rationale": "durable route_decision payload uses Record<string, unknown> instead of a validated contract"
+    },
+    {
+      "violation_id": "trust.no-untyped-durable-route-workorder:packages/agentplane/src/runner/usecases/task-run.ts:cast:bundle:route_decision",
+      "rule_id": "trust.no-untyped-durable-route-workorder",
+      "rf_owners": ["RF-05a", "RF-05b"],
+      "owner_task_ids": ["202607221848-T9B3PS", "202607221848-VC4VVS"],
+      "path": "packages/agentplane/src/runner/usecases/task-run.ts",
+      "locator": "cast:bundle:route_decision",
+      "rationale": "durable route_decision payload crosses the boundary through an unchecked double cast"
+    }
+  ]
+}
