@@ -3,14 +3,16 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
+import {
+  isAllowedTarballPath,
+  isDeniedTarballPath,
+  PACKAGE_TARBALL_IDENTITIES,
+  REQUIRED_TARBALL_FILES,
+} from "../lib/package-tarball-policy.mjs";
 import { defineScript, runScriptMain } from "../lib/script-runtime.mjs";
 
 const SCRIPT_NAME = "check-package-tarball.mjs";
-const PACKAGES = [
-  { dir: "core", name: "@agentplaneorg/core" },
-  { dir: "recipes", name: "@agentplaneorg/recipes" },
-  { dir: "agentplane", name: "agentplane" },
-];
+const PACKAGES = PACKAGE_TARBALL_IDENTITIES;
 
 function runNpmPack(packageDir, outDir) {
   const cacheDir = path.resolve(process.cwd(), ".agentplane", ".npm-cache");
@@ -37,48 +39,6 @@ function runNpmPack(packageDir, outDir) {
       .filter(Boolean)
       .toSorted(),
   };
-}
-
-function isDenied(pathInPackage) {
-  if (pathInPackage.startsWith(".agentplane/")) return true;
-  if (pathInPackage.startsWith("src/")) return true;
-  if (pathInPackage.startsWith("docs/")) return true;
-  if (pathInPackage.startsWith("scripts/")) return true;
-  if (pathInPackage.startsWith("website/")) return true;
-  if (pathInPackage.includes("/__snapshots__/")) return true;
-  if (/\.(?:test|spec)\.(?:ts|tsx|js|mjs|cjs)$/u.test(pathInPackage)) return true;
-  if (/\.(?:log|jsonl|tsbuildinfo|map)$/u.test(pathInPackage)) return true;
-  return false;
-}
-
-function isAllowedAgentplane(pathInPackage) {
-  if (["package.json", "README.md", "LICENSE"].includes(pathInPackage)) return true;
-  if (pathInPackage.startsWith("assets/")) return true;
-  if (
-    [
-      "bin/ap.js",
-      "bin/agentplane.js",
-      "bin/dist-guard.js",
-      "bin/framework-dev-contract.js",
-      "bin/runtime-context.js",
-      "bin/runtime-watch.js",
-      "bin/stale-dist-policy.js",
-      "dist/.build-manifest.json",
-      "dist/cli.d.ts",
-      "dist/cli.js",
-    ].includes(pathInPackage)
-  ) {
-    return true;
-  }
-  return false;
-}
-
-function isAllowedLibrary(pathInPackage, packageName) {
-  if (["package.json", "README.md", "LICENSE"].includes(pathInPackage)) return true;
-  if (packageName === "@agentplaneorg/core" && pathInPackage.startsWith("schemas/")) return true;
-  if (pathInPackage === "dist/.build-manifest.json") return true;
-  if (/^dist\/.+\.(?:js|d\.ts)$/u.test(pathInPackage)) return true;
-  return false;
 }
 
 function assertSanitizedManifest(tarballPath, packageName, packageVersion) {
@@ -110,12 +70,9 @@ function checkPackage(pkg, outDir) {
   const packageJson = JSON.parse(readFileSync(path.join(packageRoot, "package.json"), "utf8"));
   const packed = runNpmPack(packageRoot, outDir);
   const files = packed.files;
-  const denied = files.filter((file) => isDenied(file));
-  const unexpected = files.filter((file) =>
-    pkg.name === "agentplane" ? !isAllowedAgentplane(file) : !isAllowedLibrary(file, pkg.name),
-  );
-  const required = ["package.json", "README.md", "LICENSE", "dist/.build-manifest.json"];
-  const missing = required.filter((file) => !files.includes(file));
+  const denied = files.filter((file) => isDeniedTarballPath(file));
+  const unexpected = files.filter((file) => !isAllowedTarballPath(file, pkg.name));
+  const missing = REQUIRED_TARBALL_FILES.filter((file) => !files.includes(file));
 
   if (files.includes("dist/.build-manifest.json")) {
     assertSanitizedManifest(packed.filename, pkg.name, String(packageJson.version));

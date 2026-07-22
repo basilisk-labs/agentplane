@@ -1,5 +1,6 @@
 {
   "comparison_policy": {
+    "evidence_observed_to_claimed_ratio_formula": "observed / (observed + agent_claimed); human_supplied excluded",
     "quality_control": "regressions_fail_improvements_non_comparable_exact_compares_cost",
     "structural_cost_max_growth_ratio": 0.1,
     "timing": "diagnostic_only_never_gated"

@@ -4,8 +4,8 @@
   "preexisting_drift": {
     "changed_sections": ["agent_facing_context_contracts"],
     "commit_sha_changed": true,
-    "exact_main_surface_sha256": "4e060a89f891df4062d11ed2fb3ae31ae43cf9784c0108f58d3e6aee12155ae2",
-    "published_surface_sha256": "41efd2422a6e8cf6822d907eec06f27ae9ed1456889c3d9a341ef8148e3cc903",
+    "exact_main_surface_sha256": "4ee4da2e70506857b6137ce80883198feb116d16109464a934aeca03c86d4607",
+    "published_surface_sha256": "6c7048837ee675ba20a290cb069f9156d2b5eeaea7f6e0440b48a0d3d8c23d8c",
     "surface_changed": true
   },
   "published_registry": {
@@ -213,7 +213,7 @@
     "comparison": "normalized_surface_exact",
     "reference": "exact_main",
     "source_evidence_policy": "Raw implementation movement is reviewable; normalized public surfaces must remain exact.",
-    "surface_sha256": "4e060a89f891df4062d11ed2fb3ae31ae43cf9784c0108f58d3e6aee12155ae2"
+    "surface_sha256": "4ee4da2e70506857b6137ce80883198feb116d16109464a934aeca03c86d4607"
   },
   "references": {
     "exact_main": {
@@ -228,11 +228,11 @@
         "cli_topology": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
         "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
         "machine_output_contract": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
-        "package_manifests": "d8055aed424f5916fb48a36029d52ff673cc3cf1f0f862a289d9abeb7cbf2fde",
-        "tarball_policy": "10906639a9de753839f599072f3a30a05615930e11129c8a9dacae8b75a7802c",
+        "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+        "tarball_policy": "54a2ee879689f2049613a763fd8432099557d5f68686612217d4cda453110ca6",
         "workflow_schema": "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7"
       },
-      "surface_sha256": "4e060a89f891df4062d11ed2fb3ae31ae43cf9784c0108f58d3e6aee12155ae2",
+      "surface_sha256": "4ee4da2e70506857b6137ce80883198feb116d16109464a934aeca03c86d4607",
       "tree_sha": "63d458ce5ec323a63b80d033f0dfb94b1bcdc093"
     },
     "published_tag": {
@@ -247,18 +247,292 @@
         "cli_topology": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
         "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
         "machine_output_contract": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
-        "package_manifests": "d8055aed424f5916fb48a36029d52ff673cc3cf1f0f862a289d9abeb7cbf2fde",
-        "tarball_policy": "10906639a9de753839f599072f3a30a05615930e11129c8a9dacae8b75a7802c",
+        "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+        "tarball_policy": "54a2ee879689f2049613a763fd8432099557d5f68686612217d4cda453110ca6",
         "workflow_schema": "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7"
       },
-      "surface_sha256": "41efd2422a6e8cf6822d907eec06f27ae9ed1456889c3d9a341ef8148e3cc903",
+      "surface_sha256": "6c7048837ee675ba20a290cb069f9156d2b5eeaea7f6e0440b48a0d3d8c23d8c",
       "tree_sha": "5e92f829c00b10d606c62ff5c21f148b5fe4283f"
     }
   },
   "schema_version": 2,
   "sections": {
-    "10906639a9de753839f599072f3a30a05615930e11129c8a9dacae8b75a7802c": {
-      "normalized_policy_scope": "Policy-eligible package path inventory only; implementation source formatting is diagnostic, not part of the ratchet.",
+    "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a": [
+      {
+        "bin": { "agentplane": "bin/agentplane.js", "ap": "bin/ap.js" },
+        "bundleDependencies": null,
+        "bundledDependencies": null,
+        "cpu": null,
+        "dependencies": {
+          "@agentplaneorg/core": "0.6.24",
+          "@agentplaneorg/recipes": "0.6.24",
+          "@clack/prompts": "^1.5.1",
+          "yaml": "^2.7.1",
+          "yauzl": "^3.4.0",
+          "zod": "^4.4.3",
+          "zod-validation-error": "^5.0.0"
+        },
+        "engines": { "node": ">=24" },
+        "exports": null,
+        "files": [
+          "LICENSE",
+          "README.md",
+          "assets",
+          "bin/agentplane.js",
+          "bin/ap.js",
+          "bin/dist-guard.js",
+          "bin/framework-dev-contract.js",
+          "bin/runtime-context.js",
+          "bin/runtime-watch.js",
+          "bin/stale-dist-policy.js",
+          "dist/.build-manifest.json",
+          "dist/cli.d.ts",
+          "dist/cli.js"
+        ],
+        "license": "MIT",
+        "main": null,
+        "module": null,
+        "name": "agentplane",
+        "normalized_sha256": "c4c50c37544ff9e7d4258405dcb2bfb4b0dfbfce38432c6dd58e19ff0f406e7a",
+        "optionalDependencies": null,
+        "os": null,
+        "path": "packages/agentplane/package.json",
+        "peerDependencies": null,
+        "peerDependenciesMeta": null,
+        "publishConfig": { "access": "public", "provenance": true },
+        "sideEffects": null,
+        "type": "module",
+        "types": null,
+        "version": "0.6.24"
+      },
+      {
+        "bin": null,
+        "bundleDependencies": null,
+        "bundledDependencies": null,
+        "cpu": null,
+        "dependencies": {
+          "canonicalize": "^3.0.0",
+          "execa": "^9.6.1",
+          "yaml": "^2.8.2",
+          "zod": "^4.4.3",
+          "zod-validation-error": "^5.0.0"
+        },
+        "engines": { "node": ">=20.5.0" },
+        "exports": [
+          [
+            ".",
+            [
+              ["types", "./dist/index.d.ts"],
+              ["import", "./dist/index.js"],
+              ["default", "./dist/index.js"]
+            ]
+          ],
+          [
+            "./commit",
+            [
+              ["types", "./dist/commit/index.d.ts"],
+              ["import", "./dist/commit/index.js"],
+              ["default", "./dist/commit/index.js"]
+            ]
+          ],
+          [
+            "./config",
+            [
+              ["types", "./dist/config/index.d.ts"],
+              ["import", "./dist/config/index.js"],
+              ["default", "./dist/config/index.js"]
+            ]
+          ],
+          [
+            "./fs",
+            [
+              ["types", "./dist/fs/index.d.ts"],
+              ["import", "./dist/fs/index.js"],
+              ["default", "./dist/fs/index.js"]
+            ]
+          ],
+          [
+            "./git",
+            [
+              ["types", "./dist/git/index.d.ts"],
+              ["import", "./dist/git/index.js"],
+              ["default", "./dist/git/index.js"]
+            ]
+          ],
+          [
+            "./logger",
+            [
+              ["types", "./dist/logger.d.ts"],
+              ["import", "./dist/logger.js"],
+              ["default", "./dist/logger.js"]
+            ]
+          ],
+          [
+            "./process",
+            [
+              ["types", "./dist/process/index.d.ts"],
+              ["import", "./dist/process/index.js"],
+              ["default", "./dist/process/index.js"]
+            ]
+          ],
+          [
+            "./project",
+            [
+              ["types", "./dist/project/index.d.ts"],
+              ["import", "./dist/project/index.js"],
+              ["default", "./dist/project/index.js"]
+            ]
+          ],
+          [
+            "./schemas",
+            [
+              ["types", "./dist/schemas/index.d.ts"],
+              ["import", "./dist/schemas/index.js"],
+              ["default", "./dist/schemas/index.js"]
+            ]
+          ],
+          [
+            "./tasks",
+            [
+              ["types", "./dist/tasks/index.d.ts"],
+              ["import", "./dist/tasks/index.js"],
+              ["default", "./dist/tasks/index.js"]
+            ]
+          ],
+          ["./package.json", "./package.json"]
+        ],
+        "files": ["LICENSE", "README.md", "dist", "schemas"],
+        "license": "MIT",
+        "main": null,
+        "module": null,
+        "name": "@agentplaneorg/core",
+        "normalized_sha256": "0ab407769f2e855c83737f24a8560cc886ba6576c30e78f1721202e54dec80e3",
+        "optionalDependencies": null,
+        "os": null,
+        "path": "packages/core/package.json",
+        "peerDependencies": null,
+        "peerDependenciesMeta": null,
+        "publishConfig": { "access": "public", "provenance": true },
+        "sideEffects": null,
+        "type": "module",
+        "types": "./dist/index.d.ts",
+        "version": "0.6.24"
+      },
+      {
+        "bin": null,
+        "bundleDependencies": null,
+        "bundledDependencies": null,
+        "cpu": null,
+        "dependencies": null,
+        "engines": { "node": ">=20" },
+        "exports": [
+          [
+            ".",
+            [
+              ["types", "./dist/index.d.ts"],
+              ["import", "./dist/index.js"],
+              ["default", "./dist/index.js"]
+            ]
+          ],
+          ["./package.json", "./package.json"]
+        ],
+        "files": ["LICENSE", "README.md", "dist"],
+        "license": "MIT",
+        "main": null,
+        "module": null,
+        "name": "@agentplaneorg/recipes",
+        "normalized_sha256": "04ccb9f073abadce9d0f925eb5606a176df92952ffde8c0e94835d74df07f779",
+        "optionalDependencies": null,
+        "os": null,
+        "path": "packages/recipes/package.json",
+        "peerDependencies": null,
+        "peerDependenciesMeta": null,
+        "publishConfig": { "access": "public", "provenance": true },
+        "sideEffects": null,
+        "type": "module",
+        "types": "./dist/index.d.ts",
+        "version": "0.6.24"
+      }
+    ],
+    "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf": {
+      "contracts": [
+        {
+          "normalized_bytes": 7736,
+          "normalized_sha256": "03428e5d2e9f60aadb2d23c52c2f354f4fb0c70de1afe14e663500b88600efca",
+          "path": "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
+          "scope": "Context extraction SGR types, payload requirements, and canonical examples."
+        },
+        {
+          "normalized_bytes": 7821,
+          "normalized_sha256": "a94525d6336ee46bc30b3e1ed8182d19e37df82c6fe823d6f918a13c1cdbabe8",
+          "path": "packages/agentplane/src/runtime/sgr/context-extraction-payloads.ts",
+          "scope": "Context extraction SGR types, payload requirements, and canonical examples."
+        },
+        {
+          "normalized_bytes": 6471,
+          "normalized_sha256": "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261",
+          "path": "packages/agentplane/src/runtime/sgr/contract-types.ts",
+          "scope": "Context extraction SGR types, payload requirements, and canonical examples."
+        },
+        {
+          "normalized_bytes": 19492,
+          "normalized_sha256": "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63",
+          "path": "packages/agentplane/src/context/ingest-task-pack.ts",
+          "scope": "Generated context task-pack file set, required artifacts, and executor-facing instructions."
+        }
+      ],
+      "normalized_sha256": "e566db6d117ae5c703714c255f4b178e48a4aa045518c3575eae0442197af9b6",
+      "source_contract_kind": "normalized_exact_agent_facing_source_contracts"
+    },
+    "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613": {
+      "error_envelope": {
+        "field_casing": "snake_case_except_nested_next_action_compatibility_payload",
+        "optional_fields": [
+          "context",
+          "state",
+          "likely_cause",
+          "hint",
+          "remediation",
+          "next_action",
+          "reason_decode"
+        ],
+        "remediation_fields": ["code", "why", "fix", "safe_command", "stop_condition"],
+        "required_fields": ["code", "message"],
+        "root_field": "error"
+      },
+      "normalized_sha256": "b339b5854b3260791f73fed9b6df94af63b0462f7ff87fec15042bcdb5eb52ce",
+      "scope": "Global agent_json_v1 success wrapper and global CliError JSON envelope only; command-specific data payloads are not frozen here.",
+      "source_contracts": [
+        {
+          "marker": "runWithOutputMode",
+          "normalized_sha256": "e49652a9a2c411ea7c6a053346c3e376a81c557904b8b9d8979b49b6a1cdbd8a",
+          "path": "packages/agentplane/src/cli/run-cli/globals.ts"
+        },
+        {
+          "marker": "formatJsonError",
+          "normalized_sha256": "21224231c4b7e84e69432130463e188c960e1b0ae26a51f0305833b01de60562",
+          "path": "packages/agentplane/src/shared/errors.ts"
+        }
+      ],
+      "success_envelope": {
+        "data_rule": "present only when captured stdout parses as JSON",
+        "field_casing": "snake_case",
+        "mode": "agent_json_v1",
+        "optional_fields": ["data"],
+        "required_fields": [
+          "schema_version",
+          "mode",
+          "command",
+          "ok",
+          "exit_code",
+          "stdout",
+          "stderr"
+        ],
+        "schema_version": 1
+      }
+    },
+    "54a2ee879689f2049613a763fd8432099557d5f68686612217d4cda453110ca6": {
+      "normalized_policy_scope": "Shared semantic release policy plus policy-eligible package path inventory. Published npm inventory remains the authoritative packed-file evidence.",
       "packages": [
         {
           "name": "agentplane",
@@ -351,86 +625,55 @@
           "source_files_sha256": "c580ac5a228235eb9f2e31720df2b168df508bea278877f1e7812a15c84912ad"
         }
       ],
-      "policy_path": "scripts/release/check-package-tarball.mjs",
+      "policy": {
+        "allowed": {
+          "agentplane_exact_files": [
+            "LICENSE",
+            "README.md",
+            "bin/agentplane.js",
+            "bin/ap.js",
+            "bin/dist-guard.js",
+            "bin/framework-dev-contract.js",
+            "bin/runtime-context.js",
+            "bin/runtime-watch.js",
+            "bin/stale-dist-policy.js",
+            "dist/.build-manifest.json",
+            "dist/cli.d.ts",
+            "dist/cli.js",
+            "package.json"
+          ],
+          "agentplane_prefixes": ["assets/"],
+          "core_prefixes": ["schemas/"],
+          "library_dist_pattern": "^dist\\/.+\\.(?:js|d\\.ts)$",
+          "library_exact_files": [
+            "LICENSE",
+            "README.md",
+            "dist/.build-manifest.json",
+            "package.json"
+          ]
+        },
+        "denied": {
+          "file_patterns": [
+            "\\.(?:log|jsonl|tsbuildinfo|map)$",
+            "\\.(?:test|spec)\\.(?:ts|tsx|js|mjs|cjs)$"
+          ],
+          "prefixes": [".agentplane/", "docs/", "scripts/", "src/", "website/"],
+          "segments": ["/__snapshots__/"]
+        },
+        "package_identities": [
+          { "dir": "core", "name": "@agentplaneorg/core" },
+          { "dir": "recipes", "name": "@agentplaneorg/recipes" },
+          { "dir": "agentplane", "name": "agentplane" }
+        ],
+        "required_files": ["LICENSE", "README.md", "dist/.build-manifest.json", "package.json"],
+        "schema_version": 1
+      },
+      "policy_contract_kind": "shared_semantic_package_tarball_policy_v1",
+      "policy_path": "scripts/lib/package-tarball-policy.mjs",
+      "policy_sha256": "14cdedb94be06ad4d1987ae4553334a03497335df963e03837d14e69a7b573f7",
+      "release_check_path": "scripts/release/check-package-tarball.mjs",
       "source_inventory_kind": "git_tracked_and_nonignored_untracked_policy_eligible",
       "source_inventory_sha256": "6c71243fec94c6069b694104ea4ad3c50386419c276fe804e0c3cb5de4f28ef2"
-    },
-    "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf": {
-      "contracts": [
-        {
-          "normalized_bytes": 7736,
-          "normalized_sha256": "03428e5d2e9f60aadb2d23c52c2f354f4fb0c70de1afe14e663500b88600efca",
-          "path": "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
-          "scope": "Context extraction SGR types, payload requirements, and canonical examples."
-        },
-        {
-          "normalized_bytes": 7821,
-          "normalized_sha256": "a94525d6336ee46bc30b3e1ed8182d19e37df82c6fe823d6f918a13c1cdbabe8",
-          "path": "packages/agentplane/src/runtime/sgr/context-extraction-payloads.ts",
-          "scope": "Context extraction SGR types, payload requirements, and canonical examples."
-        },
-        {
-          "normalized_bytes": 6471,
-          "normalized_sha256": "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261",
-          "path": "packages/agentplane/src/runtime/sgr/contract-types.ts",
-          "scope": "Context extraction SGR types, payload requirements, and canonical examples."
-        },
-        {
-          "normalized_bytes": 19492,
-          "normalized_sha256": "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63",
-          "path": "packages/agentplane/src/context/ingest-task-pack.ts",
-          "scope": "Generated context task-pack file set, required artifacts, and executor-facing instructions."
-        }
-      ],
-      "normalized_sha256": "e566db6d117ae5c703714c255f4b178e48a4aa045518c3575eae0442197af9b6",
-      "source_contract_kind": "normalized_exact_agent_facing_source_contracts"
-    },
-    "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613": {
-      "error_envelope": {
-        "field_casing": "snake_case_except_nested_next_action_compatibility_payload",
-        "optional_fields": [
-          "context",
-          "state",
-          "likely_cause",
-          "hint",
-          "remediation",
-          "next_action",
-          "reason_decode"
-        ],
-        "remediation_fields": ["code", "why", "fix", "safe_command", "stop_condition"],
-        "required_fields": ["code", "message"],
-        "root_field": "error"
-      },
-      "normalized_sha256": "b339b5854b3260791f73fed9b6df94af63b0462f7ff87fec15042bcdb5eb52ce",
-      "scope": "Global agent_json_v1 success wrapper and global CliError JSON envelope only; command-specific data payloads are not frozen here.",
-      "source_contracts": [
-        {
-          "marker": "runWithOutputMode",
-          "normalized_sha256": "e49652a9a2c411ea7c6a053346c3e376a81c557904b8b9d8979b49b6a1cdbd8a",
-          "path": "packages/agentplane/src/cli/run-cli/globals.ts"
-        },
-        {
-          "marker": "formatJsonError",
-          "normalized_sha256": "21224231c4b7e84e69432130463e188c960e1b0ae26a51f0305833b01de60562",
-          "path": "packages/agentplane/src/shared/errors.ts"
-        }
-      ],
-      "success_envelope": {
-        "data_rule": "present only when captured stdout parses as JSON",
-        "field_casing": "snake_case",
-        "mode": "agent_json_v1",
-        "optional_fields": ["data"],
-        "required_fields": [
-          "schema_version",
-          "mode",
-          "command",
-          "ok",
-          "exit_code",
-          "stdout",
-          "stderr"
-        ],
-        "schema_version": 1
-      }
     },
     "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a": {
       "command_count": 243,
@@ -4091,170 +4334,6 @@
       "normalized_sha256": "67fb0c7ec9cc1b17dd1b8644c00f7402a50144bef6023abf83c768a805f38fa4",
       "source_contract_kind": "normalized_exact_agent_facing_source_contracts"
     },
-    "d8055aed424f5916fb48a36029d52ff673cc3cf1f0f862a289d9abeb7cbf2fde": [
-      {
-        "bin": { "agentplane": "bin/agentplane.js", "ap": "bin/ap.js" },
-        "bundleDependencies": null,
-        "bundledDependencies": null,
-        "cpu": null,
-        "dependencies": {
-          "@agentplaneorg/core": "0.6.24",
-          "@agentplaneorg/recipes": "0.6.24",
-          "@clack/prompts": "^1.5.1",
-          "yaml": "^2.7.1",
-          "yauzl": "^3.4.0",
-          "zod": "^4.4.3",
-          "zod-validation-error": "^5.0.0"
-        },
-        "engines": { "node": ">=24" },
-        "exports": null,
-        "files": [
-          "LICENSE",
-          "README.md",
-          "assets",
-          "bin/agentplane.js",
-          "bin/ap.js",
-          "bin/dist-guard.js",
-          "bin/framework-dev-contract.js",
-          "bin/runtime-context.js",
-          "bin/runtime-watch.js",
-          "bin/stale-dist-policy.js",
-          "dist/.build-manifest.json",
-          "dist/cli.d.ts",
-          "dist/cli.js"
-        ],
-        "license": "MIT",
-        "main": null,
-        "module": null,
-        "name": "agentplane",
-        "normalized_sha256": "c4c50c37544ff9e7d4258405dcb2bfb4b0dfbfce38432c6dd58e19ff0f406e7a",
-        "optionalDependencies": null,
-        "os": null,
-        "path": "packages/agentplane/package.json",
-        "peerDependencies": null,
-        "peerDependenciesMeta": null,
-        "publishConfig": { "access": "public", "provenance": true },
-        "sideEffects": null,
-        "type": "module",
-        "types": null,
-        "version": "0.6.24"
-      },
-      {
-        "bin": null,
-        "bundleDependencies": null,
-        "bundledDependencies": null,
-        "cpu": null,
-        "dependencies": {
-          "canonicalize": "^3.0.0",
-          "execa": "^9.6.1",
-          "yaml": "^2.8.2",
-          "zod": "^4.4.3",
-          "zod-validation-error": "^5.0.0"
-        },
-        "engines": { "node": ">=20.5.0" },
-        "exports": {
-          ".": {
-            "default": "./dist/index.js",
-            "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
-          },
-          "./commit": {
-            "default": "./dist/commit/index.js",
-            "import": "./dist/commit/index.js",
-            "types": "./dist/commit/index.d.ts"
-          },
-          "./config": {
-            "default": "./dist/config/index.js",
-            "import": "./dist/config/index.js",
-            "types": "./dist/config/index.d.ts"
-          },
-          "./fs": {
-            "default": "./dist/fs/index.js",
-            "import": "./dist/fs/index.js",
-            "types": "./dist/fs/index.d.ts"
-          },
-          "./git": {
-            "default": "./dist/git/index.js",
-            "import": "./dist/git/index.js",
-            "types": "./dist/git/index.d.ts"
-          },
-          "./logger": {
-            "default": "./dist/logger.js",
-            "import": "./dist/logger.js",
-            "types": "./dist/logger.d.ts"
-          },
-          "./package.json": "./package.json",
-          "./process": {
-            "default": "./dist/process/index.js",
-            "import": "./dist/process/index.js",
-            "types": "./dist/process/index.d.ts"
-          },
-          "./project": {
-            "default": "./dist/project/index.js",
-            "import": "./dist/project/index.js",
-            "types": "./dist/project/index.d.ts"
-          },
-          "./schemas": {
-            "default": "./dist/schemas/index.js",
-            "import": "./dist/schemas/index.js",
-            "types": "./dist/schemas/index.d.ts"
-          },
-          "./tasks": {
-            "default": "./dist/tasks/index.js",
-            "import": "./dist/tasks/index.js",
-            "types": "./dist/tasks/index.d.ts"
-          }
-        },
-        "files": ["LICENSE", "README.md", "dist", "schemas"],
-        "license": "MIT",
-        "main": null,
-        "module": null,
-        "name": "@agentplaneorg/core",
-        "normalized_sha256": "9fc107880379316b38e3bbf97f849173a0d4eeb3f802cd2041df703e5852d0f7",
-        "optionalDependencies": null,
-        "os": null,
-        "path": "packages/core/package.json",
-        "peerDependencies": null,
-        "peerDependenciesMeta": null,
-        "publishConfig": { "access": "public", "provenance": true },
-        "sideEffects": null,
-        "type": "module",
-        "types": "./dist/index.d.ts",
-        "version": "0.6.24"
-      },
-      {
-        "bin": null,
-        "bundleDependencies": null,
-        "bundledDependencies": null,
-        "cpu": null,
-        "dependencies": null,
-        "engines": { "node": ">=20" },
-        "exports": {
-          ".": {
-            "default": "./dist/index.js",
-            "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
-          },
-          "./package.json": "./package.json"
-        },
-        "files": ["LICENSE", "README.md", "dist"],
-        "license": "MIT",
-        "main": null,
-        "module": null,
-        "name": "@agentplaneorg/recipes",
-        "normalized_sha256": "b5133b28030603ff9199abeb03865fdc625abbc2628fbbd6986940f8732e5fd0",
-        "optionalDependencies": null,
-        "os": null,
-        "path": "packages/recipes/package.json",
-        "peerDependencies": null,
-        "peerDependenciesMeta": null,
-        "publishConfig": { "access": "public", "provenance": true },
-        "sideEffects": null,
-        "type": "module",
-        "types": "./dist/index.d.ts",
-        "version": "0.6.24"
-      }
-    ],
     "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7": {
       "definition_names": [],
       "normalized_bytes": 1455,

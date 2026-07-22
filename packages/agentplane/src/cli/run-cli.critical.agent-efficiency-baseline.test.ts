@@ -29,6 +29,12 @@ const EFFICIENCY_FIXTURES = path.join(REPO_ROOT, "scripts/bench/agent-efficiency
 const EFFICIENCY_LIBRARY_URL = pathToFileURL(
   path.join(REPO_ROOT, "scripts/lib/agent-efficiency-baseline.mjs"),
 ).href;
+const COMPATIBILITY_LIBRARY_URL = pathToFileURL(
+  path.join(REPO_ROOT, "scripts/lib/compatibility-contract.mjs"),
+).href;
+const TARBALL_POLICY_LIBRARY_URL = pathToFileURL(
+  path.join(REPO_ROOT, "scripts/lib/package-tarball-policy.mjs"),
+).href;
 const TEST_TIMEOUT_MS = 60_000;
 
 const tempRoots: string[] = [];
@@ -212,6 +218,69 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
   );
 
   it(
+    "keeps the historical efficiency anchor immutable",
+    async () => {
+      const root = await makeRepoTempRoot();
+      const fixturePath = path.join(root, "rewritten-historical-fixtures.json");
+      const baselinePath = path.join(root, "rewritten-historical-baseline.json");
+      const fixtures = await readJson<{
+        provenance: { efficiency_anchor_commit: string };
+      }>(EFFICIENCY_FIXTURES);
+      fixtures.provenance.efficiency_anchor_commit = "a".repeat(40);
+      await writeJson(fixturePath, fixtures);
+
+      const measured = await runNode([
+        EFFICIENCY_MEASURE,
+        "--fixtures",
+        fixturePath,
+        "--out",
+        baselinePath,
+      ]);
+      expect(measured.exitCode).toBe(0);
+
+      const result = await runNode([
+        EFFICIENCY_CHECK,
+        "--fixtures",
+        fixturePath,
+        "--baseline",
+        baselinePath,
+      ]);
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr).toContain("historical efficiency anchor must remain");
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it("preserves conditional-export order and shares the release tarball policy", async () => {
+    const source = `
+      import { packageSurface } from ${JSON.stringify(COMPATIBILITY_LIBRARY_URL)};
+      import { isAllowedTarballPath, packageTarballPolicyContract } from ${JSON.stringify(
+        TARBALL_POLICY_LIBRARY_URL,
+      )};
+      const importFirst = packageSurface("package.json", {
+        exports: { ".": { import: "./dist/index.js", default: "./dist/fallback.js" } },
+      });
+      const defaultFirst = packageSurface("package.json", {
+        exports: { ".": { default: "./dist/fallback.js", import: "./dist/index.js" } },
+      });
+      process.stdout.write(JSON.stringify({
+        exportOrderChangesDigest: importFirst.normalized_sha256 !== defaultFirst.normalized_sha256,
+        allowsJs: isAllowedTarballPath("dist/index.js", "@agentplaneorg/core"),
+        allowsMap: isAllowedTarballPath("dist/index.js.map", "@agentplaneorg/core"),
+        policySchemaVersion: packageTarballPolicyContract().schema_version,
+      }));
+    `;
+    const result = await runNode(["--input-type=module", "--eval", source]);
+    expect(result).toMatchObject({ exitCode: 0, stderr: "" });
+    expect(JSON.parse(result.stdout) as Record<string, unknown>).toEqual({
+      exportOrderChangesDigest: true,
+      allowsJs: true,
+      allowsMap: false,
+      policySchemaVersion: 1,
+    });
+  });
+
+  it(
     "treats safety regressions as failures and quality improvements as non-comparable",
     async () => {
       const source = `
@@ -224,9 +293,16 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
         const rehash = (value) => "sha256:" + createHash("sha256").update(stableJson(value, 2) + "\\n").digest("hex");
         const regression = structuredClone(baseline);
         const regressionDirect = regression.structural_projection.scenarios.find((entry) => entry.id === "direct");
-        regressionDirect.expected_outcomes.scope_violation = true;
+        regressionDirect.observed_outcomes.scope_violation = { value: true, provenance: "test", observability_gap: null };
+        regressionDirect.observed_outcomes.verified_success = { value: false, provenance: "test", observability_gap: null };
         regressionDirect.metrics.bundle_bytes.value = 1;
         regression.structural_projection_sha256 = rehash(regression.structural_projection);
+        const evidenceRegression = structuredClone(baseline);
+        const evidenceRegressionDirect = evidenceRegression.structural_projection.scenarios.find((entry) => entry.id === "direct");
+        evidenceRegressionDirect.metrics.evidence_observed_count = { value: 0, provenance: "test", observability_gap: null };
+        evidenceRegressionDirect.metrics.evidence_claimed_count = { value: 10, provenance: "test", observability_gap: null };
+        evidenceRegressionDirect.metrics.evidence_observed_to_claimed_ratio = { value: 0, provenance: "test", observability_gap: null };
+        evidenceRegression.structural_projection_sha256 = rehash(evidenceRegression.structural_projection);
         const improvement = structuredClone(baseline);
         const improvementDirect = improvement.structural_projection.scenarios.find((entry) => entry.id === "direct");
         improvementDirect.expected_outcomes.rework_required = false;
@@ -241,6 +317,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
         }
         process.stdout.write(JSON.stringify({
           regression: compareAgentEfficiencyMeasurements(regression, baseline),
+          evidenceRegression: compareAgentEfficiencyMeasurements(evidenceRegression, baseline),
           improvement: compareAgentEfficiencyMeasurements(improvement, baseline),
           latency: compareAgentEfficiencyMeasurements(latencyCandidate, latencyBaseline),
           structuralCostFields: STRUCTURAL_COST_FIELDS,
@@ -250,11 +327,15 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
       const payload = JSON.parse(result.stdout) as {
         regression: { failures: string[] };
+        evidenceRegression: { failures: string[] };
         improvement: { failures: string[]; summaries: string[] };
         latency: { failures: string[] };
         structuralCostFields: string[];
       };
       expect(payload.regression.failures.join("\n")).toContain("quality regressions");
+      expect(payload.evidenceRegression.failures.join("\n")).toContain(
+        "observed evidence regressions",
+      );
       expect(payload.improvement.failures).toEqual([]);
       expect(payload.improvement.summaries.join("\n")).toContain("non-comparable");
       expect(payload.latency.failures).toEqual([]);

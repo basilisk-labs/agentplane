@@ -57,7 +57,9 @@ function parseArgs(argv) {
 
 export function measureAgentEfficiency(options = {}) {
   const fixturesPath = path.resolve(options.fixturesPath ?? DEFAULT_FIXTURES_PATH);
-  const registry = readFixtureRegistry(fixturesPath);
+  const historicalBaseline =
+    options.historicalBaseline ?? fixturesPath === path.resolve(DEFAULT_FIXTURES_PATH);
+  const registry = readFixtureRegistry(fixturesPath, { historicalBaseline });
   return buildAgentEfficiencyMeasurement({
     repoRoot,
     registry,
