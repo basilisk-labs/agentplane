@@ -4,7 +4,7 @@ title: "Release AgentPlane v0.6.24"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -58,7 +58,7 @@ events:
     state: "ok"
     note: "Release candidate v0.6.24 verified: frozen plan covers all 20 commits since v0.6.23; release prepublish completed all 82 isolated groups plus workflow coverage 34/34, significant coverage 204/204, and release-critical 16/16; focused help snapshot 13/13 passed; version parity, incident gate, release check, generated headers, workflow recovery snapshot, routing, doctor, local tarball installation, and package policy all pass."
 doc_version: 3
-doc_updated_at: "2026-07-22T14:30:59.499Z"
+doc_updated_at: "2026-07-22T14:31:55.639Z"
 doc_updated_by: "CODER"
 description: "Prepare release notes and the v0.6.24 release candidate from current main, pass release and hosted verification, merge through protected main, dispatch Publish to npm for the merged release SHA, and verify GitHub Release, tag, and npm package parity. Do not touch agentplane-loops."
 sections:
@@ -125,6 +125,12 @@ sections:
     - Observation: The release gates found a stale CLI help snapshot and versioned generated recovery/header artifacts.
       Impact: Without correction the candidate would fail hosted release validation or expose stale recovery/public documentation state.
       Resolution: Updated the canonical help snapshot, synchronized last-known-good, regenerated v0.6.24 headers, and reran the relevant focused and full release checks.
+
+    - Observation: The pre-push format gate found the release-bumped ACR example was semantically current at 0.6.24 but not normalized by Prettier.
+      Impact: The candidate could not be pushed even though release validation and ACR version checks passed.
+      Resolution: Formatted only packages/spec/examples/acr.json, preserved the evaluator evidence directory, and committed both before retrying the push.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
 id_source: "generated"
 ---
 ## Summary
@@ -207,3 +213,9 @@ Before publication, close or revert the release candidate PR without tagging. Af
 - Observation: The release gates found a stale CLI help snapshot and versioned generated recovery/header artifacts.
   Impact: Without correction the candidate would fail hosted release validation or expose stale recovery/public documentation state.
   Resolution: Updated the canonical help snapshot, synchronized last-known-good, regenerated v0.6.24 headers, and reran the relevant focused and full release checks.
+
+- Observation: The pre-push format gate found the release-bumped ACR example was semantically current at 0.6.24 but not normalized by Prettier.
+  Impact: The candidate could not be pushed even though release validation and ACR version checks passed.
+  Resolution: Formatted only packages/spec/examples/acr.json, preserved the evaluator evidence directory, and committed both before retrying the push.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
