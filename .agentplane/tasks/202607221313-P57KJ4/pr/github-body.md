@@ -19,8 +19,8 @@ Verify INC-20260722-01 and INC-20260722-02 are durably mitigated on main, preser
 - Note:
 
 ```text
-Incident archive verified: 27 context regressions, 8 incident/release tests, empty release incident
-gate, asset parity, routing, doctor, format, and local smoke passed.
+Review fix verified: archived evidence now cites the existing
+release-readiness.raw-deletion.test.ts, which passes.
 ```
 - Canonical workflow state lives in the task README.
 
