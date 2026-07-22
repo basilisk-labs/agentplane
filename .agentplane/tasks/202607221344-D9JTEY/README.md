@@ -5,7 +5,7 @@ result_summary: "Prepared and locally verified v0.6.24 release candidate with co
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -71,7 +71,7 @@ events:
     to: "DONE"
     note: "Verified: v0.6.24 release candidate passed full local release gates and is ready for hosted review, protected-main integration, and deferred publication."
 doc_version: 3
-doc_updated_at: "2026-07-22T14:36:11.273Z"
+doc_updated_at: "2026-07-22T14:43:17.330Z"
 doc_updated_by: "CODER"
 description: "Prepare release notes and the v0.6.24 release candidate from current main, pass release and hosted verification, merge through protected main, dispatch Publish to npm for the merged release SHA, and verify GitHub Release, tag, and npm package parity. Do not touch agentplane-loops."
 sections:
@@ -142,6 +142,12 @@ sections:
     - Observation: The pre-push format gate found the release-bumped ACR example was semantically current at 0.6.24 but not normalized by Prettier.
       Impact: The candidate could not be pushed even though release validation and ACR version checks passed.
       Resolution: Formatted only packages/spec/examples/acr.json, preserved the evaluator evidence directory, and committed both before retrying the push.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+
+    - Observation: Hosted review found bun.lock retained 0.6.23 for publishable workspaces and internal dependencies after the release mutation.
+      Impact: Frozen installs could use a stale workspace graph even though package manifests and parity checks reported 0.6.24.
+      Resolution: Updated the six workspace and internal dependency entries to 0.6.24, verified frozen install, release parity, and focused release mutation tests, and will refresh the closure head.
       Promotion: incident-candidate
       Fixability: repo-fixable
 extensions:
@@ -234,5 +240,11 @@ Before publication, close or revert the release candidate PR without tagging. Af
 - Observation: The pre-push format gate found the release-bumped ACR example was semantically current at 0.6.24 but not normalized by Prettier.
   Impact: The candidate could not be pushed even though release validation and ACR version checks passed.
   Resolution: Formatted only packages/spec/examples/acr.json, preserved the evaluator evidence directory, and committed both before retrying the push.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+
+- Observation: Hosted review found bun.lock retained 0.6.23 for publishable workspaces and internal dependencies after the release mutation.
+  Impact: Frozen installs could use a stale workspace graph even though package manifests and parity checks reported 0.6.24.
+  Resolution: Updated the six workspace and internal dependency entries to 0.6.24, verified frozen install, release parity, and focused release mutation tests, and will refresh the closure head.
   Promotion: incident-candidate
   Fixability: repo-fixable
