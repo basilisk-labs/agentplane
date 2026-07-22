@@ -5,9 +5,19 @@
   "diffstat_sha256": "sha256:63d2eab8a15e00e9cb1f2ea79508a124877b3fe87c4b170ecd8238839c811b5d",
   "last_verified_at": "2026-07-21T21:33:12.799Z",
   "last_verified_diffstat_sha256": "sha256:63d2eab8a15e00e9cb1f2ea79508a124877b3fe87c4b170ecd8238839c811b5d",
+  "pr_number": 4590,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4590",
+  "pre_merge_closure": {
+    "basis_commit": "28d61bee90050bf2869313d497922f3cfb5fd738",
+    "branch": "task/202607211645-TQ70WD/repair-maximum-assimilation-context-lifecycle",
+    "pr_number": 4590,
+    "recorded_at": "2026-07-22T10:57:45.504Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607211645-TQ70WD",
-  "updated_at": "2026-07-21T16:46:59.883Z",
+  "updated_at": "2026-07-22T10:57:22.306Z",
   "verify": {
     "status": "pass"
   }
