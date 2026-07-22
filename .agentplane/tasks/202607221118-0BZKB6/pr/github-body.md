@@ -30,7 +30,7 @@ warnings.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-22T11:19:23.196Z
+- Updated: 2026-07-22T12:41:46.571Z
 - Branch: task/202607221118-0BZKB6/compile-atomic-linked-wiki-during-context-assimi
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

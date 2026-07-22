@@ -1,10 +1,11 @@
 ---
 id: "202607221118-0BZKB6"
 title: "Compile atomic linked wiki during context assimilation"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -34,24 +35,29 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-22T12:35:15.121Z"
+  updated_at: "2026-07-22T12:36:15.444Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed after PR artifact refresh."
-  evaluated_sha: "2e4acedb14c5c3953781a82598de5c488456fbb8"
+  note: "Quality review passed for published PR snapshot."
+  evaluated_sha: "4f6e73b99146dce7ee05d3c1924700dc98650b22"
   blueprint_digest: "dff6a0df0d14b136f572165d92f43cfd73b7a6276d969d275735147244bdbcc1"
   evidence_refs:
     - ".agentplane/tasks/202607221118-0BZKB6/README.md"
-    - ".agentplane/tasks/202607221118-0BZKB6/quality/20260722-123515121-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221118-0BZKB6/quality/20260722-123515121-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221118-0BZKB6/quality/20260722-123515121-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221118-0BZKB6/quality/20260722-123615444-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221118-0BZKB6/quality/20260722-123615444-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221118-0BZKB6/quality/20260722-123615444-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221118-0BZKB6/blueprint/resolved-snapshot.json"
   findings:
-    - "No blocking findings; full fast lane and context suites passed."
-commit: null
+    - "No blocking findings; verified implementation unchanged by PR metadata refresh."
+commit:
+  hash: "4f6e73b99146dce7ee05d3c1924700dc98650b22"
+  message: "✨ 0BZKB6 context: compile atomic linked wiki"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved deterministic SGR-to-wiki compiler with atomic formal/wiki commits, stable knowledge atoms, compounding navigation, and end-to-end verification."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -66,8 +72,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Atomic wiki compiler verified: focused synthesis/transaction tests, 115 context tests, downloaded-source E2E with idempotent apply and curated-only search after raw deletion, full agentplane suite 1928/1928, typecheck, format, hotspots, routing, builtin assets, docs freshness, local CI smoke, and doctor passed; doctor only reported two historical unrelated DONE-task hash warnings."
+  -
+    type: "status"
+    at: "2026-07-22T12:41:46.203Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-22T12:27:07.407Z"
+doc_updated_at: "2026-07-22T12:41:46.203Z"
 doc_updated_by: "CODER"
 description: "Implement a deterministic maximum-assimilation wiki compiler based on the persistent LLM Wiki pattern: keep raw sources immutable; treat SGR as the typed intermediate representation; atomically materialize formal artifacts and managed wiki blocks; upsert stable atomic claims into existing canonical pages; preserve human-authored prose; maintain entity links, provenance, contradictions, a content-oriented index, and append-only context/wiki/log.md; validate idempotency, raw-deletion resilience, and human/agent usability. Do not touch agentplane-loops. Release/version work is a separate dependent task."
 sections:
