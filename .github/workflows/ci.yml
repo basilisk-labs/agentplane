@@ -105,6 +105,8 @@ jobs:
         run: bun run bench:compatibility:check
       - name: Agent-efficiency baseline (check)
         run: bun run bench:agent-efficiency:check
+      - name: Agent-efficiency replay baseline (check)
+        run: bun run bench:agent-efficiency:replay:check
       - name: Routed local CI
         env:
           AGENTPLANE_FAST_CHANGED_FILES: ${{ needs.plan.outputs.changed_files }}
@@ -151,6 +153,8 @@ jobs:
         run: bun run bench:compatibility:check
       - name: Agent-efficiency baseline (check)
         run: bun run bench:agent-efficiency:check
+      - name: Agent-efficiency replay baseline (check)
+        run: bun run bench:agent-efficiency:replay:check
       - name: Build packages (dist + manifests)
         run: |
           bun run --filter=@agentplaneorg/core build

@@ -4,7 +4,7 @@ title: "Capture anchored multi-run RF-04 replay telemetry"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -47,6 +47,9 @@ comments:
   -
     author: "TESTER"
     body: "Start: capture anchored multi-run RF-04 replay telemetry and wire it into the alpha.1 gate."
+  -
+    author: "TESTER"
+    body: "Blocker (replay capture): repository evidence cannot populate the required 27 provider token cells. The current token accumulator reads input/output/total only; committed anchor run-state/result/events contain no usage and the only committed trace is empty. No global credentials or live provider calls were authorized for this pass. Infrastructure remains fail-closed until an explicitly authorized driver emits 50 sanitized envelopes with provider-reported input_tokens, output_tokens, and reasoning_tokens. The task must remain unverified until that capture succeeds."
 events:
   -
     type: "status"
@@ -55,8 +58,13 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: capture anchored multi-run RF-04 replay telemetry and wire it into the alpha.1 gate."
+  -
+    type: "comment"
+    at: "2026-07-22T21:48:26.389Z"
+    author: "TESTER"
+    body: "Blocker (replay capture): repository evidence cannot populate the required 27 provider token cells. The current token accumulator reads input/output/total only; committed anchor run-state/result/events contain no usage and the only committed trace is empty. No global credentials or live provider calls were authorized for this pass. Infrastructure remains fail-closed until an explicitly authorized driver emits 50 sanitized envelopes with provider-reported input_tokens, output_tokens, and reasoning_tokens. The task must remain unverified until that capture succeeds."
 doc_version: 3
-doc_updated_at: "2026-07-22T21:30:53.047Z"
+doc_updated_at: "2026-07-22T21:48:26.389Z"
 doc_updated_by: "TESTER"
 description: "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording authoritative observed outcomes, provider token usage, cognitive and orchestration proxies, latency, retrieval, and evidence-provenance metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics."
 sections:

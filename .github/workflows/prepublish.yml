@@ -90,6 +90,9 @@ jobs:
       - name: Agent-efficiency baseline (check)
         if: matrix.os == 'ubuntu-24.04'
         run: bun run bench:agent-efficiency:check
+      - name: Agent-efficiency replay baseline (check)
+        if: matrix.os == 'ubuntu-24.04'
+        run: bun run bench:agent-efficiency:replay:check
       - name: Release incidents (check)
         run: bun run release:incidents:check
       - name: Build packages (dist + manifests)
