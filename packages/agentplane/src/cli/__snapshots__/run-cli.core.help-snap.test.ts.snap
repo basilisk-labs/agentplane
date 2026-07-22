@@ -162,6 +162,7 @@ Commands:
     context  Manage local project context, durable derivations, projections, and search surfaces.
     context check  Check context workspace health.
     context dashboard  Serve a read-only local dashboard for the full context knowledge graph.
+    context finalize-task  Generate context reports and indexes, rebuild curated projection, validate the graph and task, and run context doctor.
     context init  Initialize local context workspace and system manifest.
     context learn  Create context processing tasks from files, changes, or completed tasks.
     context learn changes  Create a context assimilation task from changed context sources.
