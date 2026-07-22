@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221313-P57KJ4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T13:31:17.720Z",
+  "verdict": "pass",
+  "summary": "Archived raw-deletion evidence now names the shipped regression test.",
+  "evaluated_sha": "b43f0eeaaa31b8d41c0cce93deabea70a04c09b1",
+  "blueprint_digest": "0bd40064bc833b96f7e0eb1265a1ffdfcf84d9ab957cc95a6442f21cd70912f7",
+  "findings": [
+    "No blocking findings; cited test exists and passes."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221313-P57KJ4/README.md",
+    "packages/agentplane/src/commands/context/release-readiness.raw-deletion.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
