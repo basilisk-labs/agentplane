@@ -1,6 +1,21 @@
  .agentplane/WORKFLOW.md                            |   3 +-
+ .agentplane/workflows/last-known-good.md           |   4 +-
+ docs/assets/header.svg                             |   4 +-
+ docs/assets/readme-headers/adr.svg                 |   4 +-
+ docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
+ docs/assets/readme-headers/agentplane.svg          |   4 +-
+ docs/assets/readme-headers/core.svg                |   4 +-
+ docs/assets/readme-headers/docs.svg                |   4 +-
+ docs/assets/readme-headers/humanizer.svg           |   4 +-
+ docs/assets/readme-headers/recipes.svg             |   4 +-
+ docs/assets/readme-headers/releases.svg            |   4 +-
+ docs/assets/readme-headers/schemas.svg             |   4 +-
+ docs/assets/readme-headers/scripts.svg             |   4 +-
+ docs/assets/readme-headers/skills.svg              |   4 +-
+ docs/assets/readme-headers/spec.svg                |   4 +-
+ docs/assets/readme-headers/testkit.svg             |   4 +-
  docs/reference/generated-reference.mdx             |   6 +--
- docs/releases/v0.6.24.md                           |  56 +++++++++++++++++++++
+ docs/releases/v0.6.24.md                           |  57 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +--
  .../run-cli.core.help-snap.test.ts.snap            |   1 +
  packages/core/package.json                         |   2 +-
@@ -10,4 +25,4 @@
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.24.png    | Bin 0 -> 54287 bytes
  website/static/img/social/manifest.json            |   8 +++
- 12 files changed, 93 insertions(+), 17 deletions(-)
+ 27 files changed, 125 insertions(+), 46 deletions(-)
