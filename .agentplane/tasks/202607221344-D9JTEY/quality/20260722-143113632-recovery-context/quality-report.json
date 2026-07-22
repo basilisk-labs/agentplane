@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221344-D9JTEY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T14:31:13.632Z",
+  "verdict": "pass",
+  "summary": "v0.6.24 release candidate is ready for hosted review and protected-main integration.",
+  "evaluated_sha": "48e34e6e570f479b31b64f7d4d2c0d9a674a1636",
+  "blueprint_digest": "e77ff3804f61ca6e5bc784823f05f7ec8c4a484ce8bef7b48894a007df5e1a1e",
+  "findings": [
+    "Frozen plan coverage, 82-group release prepublish, coverage suites, release-critical tests, version parity, incident clearance, generated artifacts, and package smoke all pass on the candidate branch."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221344-D9JTEY/README.md",
+    ".agentplane/.release/apply/2026-07-22T14-28-33-962Z.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Publication remains deferred until the exact merged main SHA completes the Publish to npm workflow and external registry parity is read back."
+  ]
+}
