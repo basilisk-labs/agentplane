@@ -1,10 +1,10 @@
 ---
 id: "202607221846-SXJ75T"
 title: "Capture 0.6.24 compatibility and agent-efficiency baselines"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,9 +25,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-22T21:03:14.285Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -36,11 +36,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "TESTER"
+    body: "Start: capture deterministic 0.6.24 compatibility and provenance-safe agent-efficiency observability baselines without changing product behavior."
+events:
+  -
+    type: "status"
+    at: "2026-07-22T21:05:12.027Z"
+    author: "TESTER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: capture deterministic 0.6.24 compatibility and provenance-safe agent-efficiency observability baselines without changing product behavior."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:46:37.148Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-22T21:05:12.027Z"
+doc_updated_by: "TESTER"
 description: "RF-04: freeze the pre-refactor public contract and measure agent cognitive, token, orchestration, latency, and evidence-provenance costs on deterministic golden scenarios."
 sections:
   Summary: |-
