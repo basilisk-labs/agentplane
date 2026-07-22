@@ -5,7 +5,7 @@ result_summary: "Archived resolved context incidents before v0.6.24"
 status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-22T13:19:43.357Z"
+  updated_at: "2026-07-22T13:31:12.711Z"
   updated_by: "DOCS"
-  note: "Incident archive verified: 27 context regressions, 8 incident/release tests, empty release incident gate, asset parity, routing, doctor, format, and local smoke passed."
+  note: "Review fix verified: archived evidence now cites the existing release-readiness.raw-deletion.test.ts, which passes."
   attempts: 0
 quality_review:
   state: "pass"
@@ -71,8 +71,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: resolved incidents are archived, active registries are empty, and all required checks passed."
+  -
+    type: "verify"
+    at: "2026-07-22T13:31:12.711Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Review fix verified: archived evidence now cites the existing release-readiness.raw-deletion.test.ts, which passes."
 doc_version: 3
-doc_updated_at: "2026-07-22T13:25:02.610Z"
+doc_updated_at: "2026-07-22T13:31:14.517Z"
 doc_updated_by: "DOCS"
 description: "Verify INC-20260722-01 and INC-20260722-02 are durably mitigated on main, preserve final evidence in docs/developer/incident-archive.mdx, and clear the active incident registry so patch release planning can proceed."
 sections:
@@ -116,6 +122,36 @@ sections:
     - repeat_allowed: false
     - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
     - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+    ### 2026-07-22T13:31:12.711Z — VERIFY — ok
+
+    By: DOCS
+
+    Note: Review fix verified: archived evidence now cites the existing release-readiness.raw-deletion.test.ts, which passes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T13:25:02.610Z, excerpt_hash=sha256:172dc8fb93557aaa29475db5b00742bc1b81a8ccb4f70adce9711c5eb41f4f26
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221313-P57KJ4-archive-resolved-context-incidents-before-v0-6-2/.agentplane/tasks/202607221313-P57KJ4/blueprint/resolved-snapshot.json
+    - old_digest: 0bd40064bc833b96f7e0eb1265a1ffdfcf84d9ab957cc95a6442f21cd70912f7
+    - current_digest: 0bd40064bc833b96f7e0eb1265a1ffdfcf84d9ab957cc95a6442f21cd70912f7
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221313-P57KJ4
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607221313-P57KJ4 --branch task/202607221313-P57KJ4/archive-resolved-context-incidents-before-v0-6-2
+    - diagnostic_command: agentplane pr check 202607221313-P57KJ4
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -175,6 +211,36 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
 - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
+### 2026-07-22T13:31:12.711Z — VERIFY — ok
+
+By: DOCS
+
+Note: Review fix verified: archived evidence now cites the existing release-readiness.raw-deletion.test.ts, which passes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-22T13:25:02.610Z, excerpt_hash=sha256:172dc8fb93557aaa29475db5b00742bc1b81a8ccb4f70adce9711c5eb41f4f26
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221313-P57KJ4-archive-resolved-context-incidents-before-v0-6-2/.agentplane/tasks/202607221313-P57KJ4/blueprint/resolved-snapshot.json
+- old_digest: 0bd40064bc833b96f7e0eb1265a1ffdfcf84d9ab957cc95a6442f21cd70912f7
+- current_digest: 0bd40064bc833b96f7e0eb1265a1ffdfcf84d9ab957cc95a6442f21cd70912f7
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221313-P57KJ4
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607221313-P57KJ4 --branch task/202607221313-P57KJ4/archive-resolved-context-incidents-before-v0-6-2
+- diagnostic_command: agentplane pr check 202607221313-P57KJ4
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 

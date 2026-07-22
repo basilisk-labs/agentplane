@@ -13,7 +13,7 @@ Created: 2026-07-22T13:14:58.240Z
 ## Verification
 
 - State: ok
-- Note: Incident archive verified: 27 context regressions, 8 incident/release tests, empty release incident gate, asset parity, routing, doctor, format, and local smoke passed.
+- Note: Review fix verified: archived evidence now cites the existing release-readiness.raw-deletion.test.ts, which passes.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
