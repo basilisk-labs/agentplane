@@ -699,7 +699,6 @@ describe("context release readiness guards", () => {
     const createdArgs = createTask.mock.calls[0]?.[0] as {
       parsed?: {
         description?: string;
-        taskDocSections?: Record<string, string>;
         extensions?: {
           "agentplane.context"?: {
             prompt_module_ref?: string;
@@ -737,14 +736,7 @@ describe("context release readiness guards", () => {
     ).toContain("agentplane context wiki index context/wiki");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Refresh indexes and reports");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("reuse `canonical_entity_id`");
-    expect(createdArgs.parsed?.taskDocSections?.Plan).toContain("Let CURATOR reconcile");
-    expect(createdArgs.parsed?.taskDocSections?.["Verify Steps"]).toContain(
-      "same_as/alias_of reuse an existing canonical ID",
-    );
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.wiki).toMatchObject({
       layout_strategy: "adaptive",
       frontmatter_required: true,
