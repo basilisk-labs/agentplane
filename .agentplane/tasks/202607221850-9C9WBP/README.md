@@ -8,8 +8,7 @@ revision: 5
 origin:
   system: "manual"
 depends_on:
-  - "202607221846-SXJ75T"
-  - "202607221848-VC4VVS"
+  - "202607221908-9M2FBQ"
 tags:
   - "cognitive-load"
   - "context"

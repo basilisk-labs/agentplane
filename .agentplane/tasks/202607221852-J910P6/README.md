@@ -8,8 +8,7 @@ revision: 5
 origin:
   system: "manual"
 depends_on:
-  - "202607221846-SXJ75T"
-  - "202607221850-8HBF4J"
+  - "202607221908-MR9EA9"
 tags:
   - "context"
   - "milestone-beta2"

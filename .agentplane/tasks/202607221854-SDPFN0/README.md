@@ -1,14 +1,18 @@
 ---
 id: "202607221854-SDPFN0"
-title: "Migrate command families to granular session capabilities"
+title: "Complete CommandSession capability migration"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 10
 origin:
   system: "manual"
 depends_on:
-  - "202607221854-RW8CJF"
+  - "202607221908-TZTE5V"
+  - "202607221908-2NDXVB"
+  - "202607221908-YD5J89"
+  - "202607221908-RC1DX8"
+  - "202607221908-7WV0A7"
 tags:
   - "cli"
   - "command-session"
@@ -41,65 +45,63 @@ commit: null
 comments: []
 events: []
 doc_version: 3
-doc_updated_at: "2026-07-22T18:54:20.483Z"
+doc_updated_at: "2026-07-22T19:12:11.396Z"
 doc_updated_by: "PLANNER"
-description: "RF-24b: move all remaining public and internal command families onto the granular CommandSession model by vertical slice without eager project/task/Git/provider preparation."
+description: "RF-24b fan-in: integrate the five independently verified command-family vertical slices, remove the coarse CommandNeeds compatibility layer, and prove every catalog entry has minimal typed capabilities."
 sections:
   Summary: |-
-    Migrate command families to granular session capabilities
+    Complete CommandSession capability migration
 
-    RF-24b: move all remaining public and internal command families onto the granular CommandSession model by vertical slice without eager project/task/Git/provider preparation.
+    Integrate the five independently verified command-family vertical slices, remove the coarse CommandNeeds compatibility layer after zero consumers remain, and prove catalog-wide minimal capability and lazy preparation invariants.
   Scope: |-
-    - In scope: lifecycle, evaluator, context, runner, Hermes, release/ops, docs/help, and remaining command loaders/catalog entries; deletion of coarse requirements after parity; preparation profiles and compatibility snapshots.
-    - Out of scope: changing user-visible command behavior except documented v0.7 contract migrations.
+    - In scope: integrate the separately verified project/config/help/docs, task/lifecycle/route, context/evaluator, runner/Hermes, and provider/release/ops capability slices; remove the coarse CommandNeeds adapter after zero consumers; validate catalog-wide requirement visibility and lazy preparation profiles.
+    - Out of scope: implementing family-specific migrations inside this fan-in task.
   Plan: |-
-    1. Inventory remaining commands and group migrations by shared capability boundary.
-    2. Migrate each family with typed result/renderer and lazy resolver parity.
-    3. Remove manual loader/session wiring made redundant by declarative manifests where safe.
-    4. Delete coarse CommandNeeds only after zero consumers remain.
-    5. Compare startup/preparation profiles and full command snapshots.
+    1. Confirm all five command-family slice tasks are DONE and based on compatible shared capability contracts.
+    2. Integrate their catalog/session changes and resolve only cross-family type or registry conflicts.
+    3. Remove the coarse CommandNeeds compatibility adapter when zero production consumers remain.
+    4. Run catalog-wide capability, laziness, command snapshot, architecture, and preparation-profile checks.
+    5. Record any residual compatibility adapter as a release blocker rather than widening this task.
   Verify Steps: |-
-    1. Inspect every command catalog entry. Expected: granular requirements are explicit and no handler receives a broader session than declared.
-    2. Run command/help/JSON snapshot suites. Expected: compatibility holds except approved v0.7 migrations.
-    3. Profile simple and complex commands. Expected: unused project/task/Git/provider nodes are absent and preparation cost is attributable.
-    4. Search for coarse CommandNeeds and manual duplicate loader metadata. Expected: no active production consumer remains.
-    5. Run critical tests, arch/guard checks, contract CI, and typecheck.
+    1. Resolve this task's dependency closure. Expected: all five command-family vertical slices are DONE with independent verification.
+    2. Inspect every command catalog entry and handler session type. Expected: granular requirements are explicit and no handler receives undeclared task/Git/provider capabilities.
+    3. Search for active coarse CommandNeeds consumers and duplicate loader requirement metadata. Expected: none remain.
+    4. Run command/help/JSON snapshots, preparation profiles, `bun run arch:check`, `bun run guards:check`, `bun run ci:contract`, and typecheck.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
-    - Revert one vertical slice at a time to the explicit compatibility adapter.
-    - Do not restore removed coarse APIs without updating the architecture baseline and dependent task plans.
-    - Re-run full command snapshots and contract checks.
+    - Revert the fan-in integration commit while leaving independently merged family slices intact.
+    - Restore only the explicit coarse compatibility adapter if cross-family integration fails; do not revert family results wholesale.
+    - Re-run catalog snapshots, architecture checks, and each family verification before retry.
   Findings: ""
 id_source: "generated"
 ---
 ## Summary
 
-Migrate command families to granular session capabilities
+Complete CommandSession capability migration
 
-RF-24b: move all remaining public and internal command families onto the granular CommandSession model by vertical slice without eager project/task/Git/provider preparation.
+Integrate the five independently verified command-family vertical slices, remove the coarse CommandNeeds compatibility layer after zero consumers remain, and prove catalog-wide minimal capability and lazy preparation invariants.
 
 ## Scope
 
-- In scope: lifecycle, evaluator, context, runner, Hermes, release/ops, docs/help, and remaining command loaders/catalog entries; deletion of coarse requirements after parity; preparation profiles and compatibility snapshots.
-- Out of scope: changing user-visible command behavior except documented v0.7 contract migrations.
+- In scope: integrate the separately verified project/config/help/docs, task/lifecycle/route, context/evaluator, runner/Hermes, and provider/release/ops capability slices; remove the coarse CommandNeeds adapter after zero consumers; validate catalog-wide requirement visibility and lazy preparation profiles.
+- Out of scope: implementing family-specific migrations inside this fan-in task.
 
 ## Plan
 
-1. Inventory remaining commands and group migrations by shared capability boundary.
-2. Migrate each family with typed result/renderer and lazy resolver parity.
-3. Remove manual loader/session wiring made redundant by declarative manifests where safe.
-4. Delete coarse CommandNeeds only after zero consumers remain.
-5. Compare startup/preparation profiles and full command snapshots.
+1. Confirm all five command-family slice tasks are DONE and based on compatible shared capability contracts.
+2. Integrate their catalog/session changes and resolve only cross-family type or registry conflicts.
+3. Remove the coarse CommandNeeds compatibility adapter when zero production consumers remain.
+4. Run catalog-wide capability, laziness, command snapshot, architecture, and preparation-profile checks.
+5. Record any residual compatibility adapter as a release blocker rather than widening this task.
 
 ## Verify Steps
 
-1. Inspect every command catalog entry. Expected: granular requirements are explicit and no handler receives a broader session than declared.
-2. Run command/help/JSON snapshot suites. Expected: compatibility holds except approved v0.7 migrations.
-3. Profile simple and complex commands. Expected: unused project/task/Git/provider nodes are absent and preparation cost is attributable.
-4. Search for coarse CommandNeeds and manual duplicate loader metadata. Expected: no active production consumer remains.
-5. Run critical tests, arch/guard checks, contract CI, and typecheck.
+1. Resolve this task's dependency closure. Expected: all five command-family vertical slices are DONE with independent verification.
+2. Inspect every command catalog entry and handler session type. Expected: granular requirements are explicit and no handler receives undeclared task/Git/provider capabilities.
+3. Search for active coarse CommandNeeds consumers and duplicate loader requirement metadata. Expected: none remain.
+4. Run command/help/JSON snapshots, preparation profiles, `bun run arch:check`, `bun run guards:check`, `bun run ci:contract`, and typecheck.
 
 ## Verification
 
@@ -108,8 +110,8 @@ RF-24b: move all remaining public and internal command families onto the granula
 
 ## Rollback Plan
 
-- Revert one vertical slice at a time to the explicit compatibility adapter.
-- Do not restore removed coarse APIs without updating the architecture baseline and dependent task plans.
-- Re-run full command snapshots and contract checks.
+- Revert the fan-in integration commit while leaving independently merged family slices intact.
+- Restore only the explicit coarse compatibility adapter if cross-family integration fails; do not revert family results wholesale.
+- Re-run catalog snapshots, architecture checks, and each family verification before retry.
 
 ## Findings

@@ -8,9 +8,7 @@ revision: 5
 origin:
   system: "manual"
 depends_on:
-  - "202607221848-VBV9B1"
-  - "202607221848-VC4VVS"
-  - "202607221849-NWVCAG"
+  - "202607221908-9M2FBQ"
 tags:
   - "hermes"
   - "milestone-beta1"

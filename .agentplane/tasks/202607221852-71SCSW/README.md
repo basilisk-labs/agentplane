@@ -4,7 +4,7 @@ title: "Extend supervised execution to branch_pr"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -43,7 +43,7 @@ commit: null
 comments: []
 events: []
 doc_version: 3
-doc_updated_at: "2026-07-22T18:52:31.560Z"
+doc_updated_at: "2026-07-22T19:09:39.842Z"
 doc_updated_by: "PLANNER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
@@ -70,9 +70,11 @@ sections:
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
-    - Revert the bounded retrieval or authority slice and restore the previous projection version or compatibility adapter.
-    - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
-    - Re-run equivalence, recall, lifecycle, and type checks.
+    - Before PR open: remove only the task-owned clean worktree/branch through the AgentPlane cleanup route and restore the previous supervisor feature boundary.
+    - After PR open but before queue: close or supersede only the task PR through an authority-recorded provider action; preserve branch and review evidence.
+    - While queued: release the claimed/handoff lane through the integration queue recovery operation before reverting code.
+    - After merge: never rewrite protected main; create a new follow-up task/PR and let hosted close reconcile the merged SHA.
+    - After hosted close: preserve closure evidence and use a new rollback release/task; cleanup only verified clean task-owned worktrees and branches.
   Findings: ""
 id_source: "generated"
 ---
@@ -110,8 +112,10 @@ RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hos
 
 ## Rollback Plan
 
-- Revert the bounded retrieval or authority slice and restore the previous projection version or compatibility adapter.
-- Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
-- Re-run equivalence, recall, lifecycle, and type checks.
+- Before PR open: remove only the task-owned clean worktree/branch through the AgentPlane cleanup route and restore the previous supervisor feature boundary.
+- After PR open but before queue: close or supersede only the task PR through an authority-recorded provider action; preserve branch and review evidence.
+- While queued: release the claimed/handoff lane through the integration queue recovery operation before reverting code.
+- After merge: never rewrite protected main; create a new follow-up task/PR and let hosted close reconcile the merged SHA.
+- After hosted close: preserve closure evidence and use a new rollback release/task; cleanup only verified clean task-owned worktrees and branches.
 
 ## Findings

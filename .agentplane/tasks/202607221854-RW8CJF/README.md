@@ -8,9 +8,7 @@ revision: 5
 origin:
   system: "manual"
 depends_on:
-  - "202607221848-VC4VVS"
-  - "202607221850-DRWR0V"
-  - "202607221852-ECBY56"
+  - "202607221908-AB2SFC"
 tags:
   - "architecture"
   - "cli"

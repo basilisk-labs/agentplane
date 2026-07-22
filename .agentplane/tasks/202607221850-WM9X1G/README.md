@@ -8,8 +8,7 @@ revision: 5
 origin:
   system: "manual"
 depends_on:
-  - "202607221848-0ZAB1F"
-  - "202607221848-1HWR0R"
+  - "202607221908-9M2FBQ"
 tags:
   - "context"
   - "ingest"
