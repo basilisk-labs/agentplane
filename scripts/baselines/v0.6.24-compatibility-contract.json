@@ -1,0 +1,4365 @@
+{
+  "baseline_id": "agentplane.compatibility.v0.6.24",
+  "contract_version": "0.6.24",
+  "preexisting_drift": {
+    "changed_sections": ["agent_facing_context_contracts"],
+    "commit_sha_changed": true,
+    "exact_main_surface_sha256": "4e060a89f891df4062d11ed2fb3ae31ae43cf9784c0108f58d3e6aee12155ae2",
+    "published_surface_sha256": "41efd2422a6e8cf6822d907eec06f27ae9ed1456889c3d9a341ef8148e3cc903",
+    "surface_changed": true
+  },
+  "published_registry": {
+    "captured_on": "2026-07-22",
+    "network_required_for_ci_check": false,
+    "network_used_for_capture": true,
+    "packages": [
+      {
+        "entry_count": 53,
+        "files": [
+          "assets/AGENTS.md",
+          "assets/agents/CODER.json",
+          "assets/agents/CREATOR.json",
+          "assets/agents/CURATOR.json",
+          "assets/agents/DOCS.json",
+          "assets/agents/EVALUATOR.json",
+          "assets/agents/EXTRACTOR.json",
+          "assets/agents/INTAKE.json",
+          "assets/agents/INTEGRATOR.json",
+          "assets/agents/ORCHESTRATOR.json",
+          "assets/agents/PLANNER.json",
+          "assets/agents/REDMINE.json",
+          "assets/agents/REVIEWER.json",
+          "assets/agents/TESTER.json",
+          "assets/agents/UPDATER.json",
+          "assets/agents/UPGRADER.json",
+          "assets/codex-plugin/assets/header.png",
+          "assets/codex-plugin/assets/icon.svg",
+          "assets/codex-plugin/assets/logo.svg",
+          "assets/codex-plugin/skills/agentplane/SKILL.md",
+          "assets/evaluators/recovery-context.md",
+          "assets/framework.manifest.json",
+          "assets/policy/check-routing.mjs",
+          "assets/policy/context.must.md",
+          "assets/policy/dod.code.md",
+          "assets/policy/dod.core.md",
+          "assets/policy/dod.docs.md",
+          "assets/policy/examples/migration-note.md",
+          "assets/policy/examples/pr-note.md",
+          "assets/policy/examples/unit-test-pattern.md",
+          "assets/policy/framework.dev.md",
+          "assets/policy/governance.md",
+          "assets/policy/incidents.md",
+          "assets/policy/security.must.md",
+          "assets/policy/workflow.branch_pr.md",
+          "assets/policy/workflow.direct.md",
+          "assets/policy/workflow.md",
+          "assets/policy/workflow.release.md",
+          "assets/policy/workflow.upgrade.md",
+          "assets/RUNNER.md",
+          "bin/agentplane.js",
+          "bin/ap.js",
+          "bin/dist-guard.js",
+          "bin/framework-dev-contract.js",
+          "bin/runtime-context.js",
+          "bin/runtime-watch.js",
+          "bin/stale-dist-policy.js",
+          "dist/.build-manifest.json",
+          "dist/cli.d.ts",
+          "dist/cli.js",
+          "LICENSE",
+          "package.json",
+          "README.md"
+        ],
+        "files_sha256": "f9f0ec7d5421c04858ca86037665485c2696cce9b0aaa712b9f73d9b397e4c49",
+        "integrity": "sha512-/GNRILlghn9tvoBDQO+ZyNFKzQw8WWvJzDVLYIzx92Jr0wz7zY6PpQR/QXZmmjZwiHgysSalOQDIuB7ZqHnZcQ==",
+        "name": "agentplane",
+        "shasum": "56a5148f90dc139ec9f7bb750118ed5c61414f37",
+        "version": "0.6.24"
+      },
+      {
+        "entry_count": 88,
+        "files": [
+          "dist/.build-manifest.json",
+          "dist/chunk-BVX2EQM3.js",
+          "dist/chunk-JLAOJ4CP.js",
+          "dist/chunk-KPXOX764.js",
+          "dist/chunk-LVB6CDWT.js",
+          "dist/chunk-ST5EXNT6.js",
+          "dist/chunk-TOHQE52A.js",
+          "dist/chunk-U5GBORNO.js",
+          "dist/chunk-VCP74TYX.js",
+          "dist/chunk-WRSJDOQ2.js",
+          "dist/chunk-WXGQX2NN.js",
+          "dist/chunk-WZEUO3U2.js",
+          "dist/commit/commit-policy.d.ts",
+          "dist/commit/index.d.ts",
+          "dist/commit/index.js",
+          "dist/config/config.d.ts",
+          "dist/config/defaults.d.ts",
+          "dist/config/execution-profile.d.ts",
+          "dist/config/index.d.ts",
+          "dist/config/index.js",
+          "dist/config/io.d.ts",
+          "dist/config/schema.impl.d.ts",
+          "dist/config/validation.d.ts",
+          "dist/config/workflow-file.d.ts",
+          "dist/fs/atomic-write.d.ts",
+          "dist/fs/index.d.ts",
+          "dist/fs/index.js",
+          "dist/git/base-branch.d.ts",
+          "dist/git/git-client.d.ts",
+          "dist/git/git-diff.d.ts",
+          "dist/git/git-utils.d.ts",
+          "dist/git/git-worktree.d.ts",
+          "dist/git/index.d.ts",
+          "dist/git/index.js",
+          "dist/index.d.ts",
+          "dist/index.js",
+          "dist/logger.d.ts",
+          "dist/logger.js",
+          "dist/process/index.d.ts",
+          "dist/process/index.js",
+          "dist/process/run-process.d.ts",
+          "dist/project/index.d.ts",
+          "dist/project/index.js",
+          "dist/project/project-root.d.ts",
+          "dist/schemas/index.d.ts",
+          "dist/schemas/index.js",
+          "dist/schemas/zod-error-format.d.ts",
+          "dist/tasks/index.d.ts",
+          "dist/tasks/index.js",
+          "dist/tasks/task-artifact-schema.acr.d.ts",
+          "dist/tasks/task-artifact-schema.d.ts",
+          "dist/tasks/task-artifact-schema.findings.d.ts",
+          "dist/tasks/task-artifact-schema.handoff.d.ts",
+          "dist/tasks/task-artifact-schema.observations.d.ts",
+          "dist/tasks/task-artifact-schema.pr-metadata.d.ts",
+          "dist/tasks/task-artifact-schema.runner-handoff.d.ts",
+          "dist/tasks/task-artifact-schema.shared.d.ts",
+          "dist/tasks/task-artifact-schema.task.d.ts",
+          "dist/tasks/task-artifact-schema.verification.d.ts",
+          "dist/tasks/task-doc-contract.d.ts",
+          "dist/tasks/task-doc-mutation.d.ts",
+          "dist/tasks/task-doc.d.ts",
+          "dist/tasks/task-id.d.ts",
+          "dist/tasks/task-provider-safe-projection.d.ts",
+          "dist/tasks/task-readme-io.d.ts",
+          "dist/tasks/task-readme.d.ts",
+          "dist/tasks/task-status.d.ts",
+          "dist/tasks/task-store.d.ts",
+          "dist/tasks/tasks-export.d.ts",
+          "dist/tasks/tasks-lint.d.ts",
+          "dist/types/guards.d.ts",
+          "LICENSE",
+          "package.json",
+          "README.md",
+          "schemas/acr-v0.1.schema.json",
+          "schemas/agentplane-context.schema.json",
+          "schemas/config.schema.json",
+          "schemas/context-capability-artifact.schema.json",
+          "schemas/context-edge.schema.json",
+          "schemas/context-entity.schema.json",
+          "schemas/context-fact.schema.json",
+          "schemas/context-provenance-edge.schema.json",
+          "schemas/pr-meta.schema.json",
+          "schemas/runner-handoff.schema.json",
+          "schemas/task-handoff.schema.json",
+          "schemas/task-observation.schema.json",
+          "schemas/task-readme-frontmatter.schema.json",
+          "schemas/tasks-export.schema.json"
+        ],
+        "files_sha256": "5525569ba5f7bb022a119b47fcfdd5b528f5200bfa7bb55e201c1fa05d5e1316",
+        "integrity": "sha512-CON9l9E1LjlZrmvSG2jFrI4HmH6OWEYzNFlkj3KU8ZxbYfRr0AvUazZ/xef7FN/57kG7QO4kML13mpvTCN41ew==",
+        "name": "@agentplaneorg/core",
+        "shasum": "c06c2bf2ca01404ed8f215544bef83e757355b85",
+        "version": "0.6.24"
+      },
+      {
+        "entry_count": 21,
+        "files": [
+          "dist/.build-manifest.json",
+          "dist/blueprint-extensions.d.ts",
+          "dist/catalog-contracts.d.ts",
+          "dist/compiled-contracts.d.ts",
+          "dist/constants.d.ts",
+          "dist/index.d.ts",
+          "dist/index.js",
+          "dist/install-contracts.d.ts",
+          "dist/internal-utils.d.ts",
+          "dist/manifest-contracts.d.ts",
+          "dist/manifest-primitives.d.ts",
+          "dist/manifest.d.ts",
+          "dist/normalize.d.ts",
+          "dist/overlay.d.ts",
+          "dist/resolver-contracts.d.ts",
+          "dist/scenario-contracts.d.ts",
+          "dist/scenario.d.ts",
+          "dist/types.d.ts",
+          "LICENSE",
+          "package.json",
+          "README.md"
+        ],
+        "files_sha256": "d1ab47e50f5e16ea813b7f77226a0a60d6030189aad9acb99870f22f287aac3e",
+        "integrity": "sha512-knEFLwIFeh00UmdccAPEAtJbTnJp8TJtF7eQUl6Mz0H7NHQVH+at/ui8pprKKDiTbHi2G/7HV8Mrgd/V3WAUiA==",
+        "name": "@agentplaneorg/recipes",
+        "shasum": "5bf1969659275332b5549ce9297902b034988fde",
+        "version": "0.6.24"
+      }
+    ],
+    "source": "npm_registry",
+    "version": "0.6.24"
+  },
+  "ratchet": {
+    "comparison": "normalized_surface_exact",
+    "reference": "exact_main",
+    "source_evidence_policy": "Raw implementation movement is reviewable; normalized public surfaces must remain exact.",
+    "surface_sha256": "4e060a89f891df4062d11ed2fb3ae31ae43cf9784c0108f58d3e6aee12155ae2"
+  },
+  "references": {
+    "exact_main": {
+      "commit_sha": "1a702e160ba9f0efe7067f2a22fc008defc89ffb",
+      "commit_subject": "🧹 SD1W93 task: drop stale promoted incident",
+      "commit_timestamp": "2026-07-22T22:33:30+03:00",
+      "ref": "1a702e160ba9f0efe7067f2a22fc008defc89ffb",
+      "ref_kind": "commit",
+      "role": "task_parent_main",
+      "section_digests": {
+        "agent_facing_context_contracts": "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
+        "cli_topology": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+        "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+        "machine_output_contract": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
+        "package_manifests": "d8055aed424f5916fb48a36029d52ff673cc3cf1f0f862a289d9abeb7cbf2fde",
+        "tarball_policy": "10906639a9de753839f599072f3a30a05615930e11129c8a9dacae8b75a7802c",
+        "workflow_schema": "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7"
+      },
+      "surface_sha256": "4e060a89f891df4062d11ed2fb3ae31ae43cf9784c0108f58d3e6aee12155ae2",
+      "tree_sha": "63d458ce5ec323a63b80d033f0dfb94b1bcdc093"
+    },
+    "published_tag": {
+      "commit_sha": "30f62b82dff28909dcb3ccc2ace2bf3e356203bb",
+      "commit_subject": "✅ D9JTEY task: verify Bun lock review fix",
+      "commit_timestamp": "2026-07-22T17:50:30+03:00",
+      "ref": "v0.6.24",
+      "ref_kind": "lightweight_tag",
+      "role": "published_tag",
+      "section_digests": {
+        "agent_facing_context_contracts": "8da655b79b8e3588606fda2e94f132def769d3fd7b2c9057e7ecc2a89b08ca06",
+        "cli_topology": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+        "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+        "machine_output_contract": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
+        "package_manifests": "d8055aed424f5916fb48a36029d52ff673cc3cf1f0f862a289d9abeb7cbf2fde",
+        "tarball_policy": "10906639a9de753839f599072f3a30a05615930e11129c8a9dacae8b75a7802c",
+        "workflow_schema": "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7"
+      },
+      "surface_sha256": "41efd2422a6e8cf6822d907eec06f27ae9ed1456889c3d9a341ef8148e3cc903",
+      "tree_sha": "5e92f829c00b10d606c62ff5c21f148b5fe4283f"
+    }
+  },
+  "schema_version": 2,
+  "sections": {
+    "10906639a9de753839f599072f3a30a05615930e11129c8a9dacae8b75a7802c": {
+      "normalized_policy_scope": "Policy-eligible package path inventory only; implementation source formatting is diagnostic, not part of the ratchet.",
+      "packages": [
+        {
+          "name": "agentplane",
+          "package_dir": "packages/agentplane",
+          "source_file_count": 50,
+          "source_files": [
+            "LICENSE",
+            "README.md",
+            "assets/AGENTS.md",
+            "assets/RUNNER.md",
+            "assets/agents/CODER.json",
+            "assets/agents/CREATOR.json",
+            "assets/agents/CURATOR.json",
+            "assets/agents/DOCS.json",
+            "assets/agents/EVALUATOR.json",
+            "assets/agents/EXTRACTOR.json",
+            "assets/agents/INTAKE.json",
+            "assets/agents/INTEGRATOR.json",
+            "assets/agents/ORCHESTRATOR.json",
+            "assets/agents/PLANNER.json",
+            "assets/agents/REDMINE.json",
+            "assets/agents/REVIEWER.json",
+            "assets/agents/TESTER.json",
+            "assets/agents/UPDATER.json",
+            "assets/agents/UPGRADER.json",
+            "assets/codex-plugin/assets/header.png",
+            "assets/codex-plugin/assets/icon.svg",
+            "assets/codex-plugin/assets/logo.svg",
+            "assets/codex-plugin/skills/agentplane/SKILL.md",
+            "assets/evaluators/recovery-context.md",
+            "assets/framework.manifest.json",
+            "assets/policy/check-routing.mjs",
+            "assets/policy/context.must.md",
+            "assets/policy/dod.code.md",
+            "assets/policy/dod.core.md",
+            "assets/policy/dod.docs.md",
+            "assets/policy/examples/migration-note.md",
+            "assets/policy/examples/pr-note.md",
+            "assets/policy/examples/unit-test-pattern.md",
+            "assets/policy/framework.dev.md",
+            "assets/policy/governance.md",
+            "assets/policy/incidents.md",
+            "assets/policy/security.must.md",
+            "assets/policy/workflow.branch_pr.md",
+            "assets/policy/workflow.direct.md",
+            "assets/policy/workflow.md",
+            "assets/policy/workflow.release.md",
+            "assets/policy/workflow.upgrade.md",
+            "bin/agentplane.js",
+            "bin/ap.js",
+            "bin/dist-guard.js",
+            "bin/framework-dev-contract.js",
+            "bin/runtime-context.js",
+            "bin/runtime-watch.js",
+            "bin/stale-dist-policy.js",
+            "package.json"
+          ],
+          "source_files_sha256": "0de1530769fe4185d4b944d1780ba1fbc798aacc897ad6eba19123955845a102"
+        },
+        {
+          "name": "@agentplaneorg/core",
+          "package_dir": "packages/core",
+          "source_file_count": 17,
+          "source_files": [
+            "LICENSE",
+            "README.md",
+            "package.json",
+            "schemas/acr-v0.1.schema.json",
+            "schemas/agentplane-context.schema.json",
+            "schemas/config.schema.json",
+            "schemas/context-capability-artifact.schema.json",
+            "schemas/context-edge.schema.json",
+            "schemas/context-entity.schema.json",
+            "schemas/context-fact.schema.json",
+            "schemas/context-provenance-edge.schema.json",
+            "schemas/pr-meta.schema.json",
+            "schemas/runner-handoff.schema.json",
+            "schemas/task-handoff.schema.json",
+            "schemas/task-observation.schema.json",
+            "schemas/task-readme-frontmatter.schema.json",
+            "schemas/tasks-export.schema.json"
+          ],
+          "source_files_sha256": "73853a90a97cd60e817875421f8a6344f294b5aec5fbb80bc9a4d181fc08fcaf"
+        },
+        {
+          "name": "@agentplaneorg/recipes",
+          "package_dir": "packages/recipes",
+          "source_file_count": 3,
+          "source_files": ["LICENSE", "README.md", "package.json"],
+          "source_files_sha256": "c580ac5a228235eb9f2e31720df2b168df508bea278877f1e7812a15c84912ad"
+        }
+      ],
+      "policy_path": "scripts/release/check-package-tarball.mjs",
+      "source_inventory_kind": "git_tracked_and_nonignored_untracked_policy_eligible",
+      "source_inventory_sha256": "6c71243fec94c6069b694104ea4ad3c50386419c276fe804e0c3cb5de4f28ef2"
+    },
+    "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf": {
+      "contracts": [
+        {
+          "normalized_bytes": 7736,
+          "normalized_sha256": "03428e5d2e9f60aadb2d23c52c2f354f4fb0c70de1afe14e663500b88600efca",
+          "path": "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
+          "scope": "Context extraction SGR types, payload requirements, and canonical examples."
+        },
+        {
+          "normalized_bytes": 7821,
+          "normalized_sha256": "a94525d6336ee46bc30b3e1ed8182d19e37df82c6fe823d6f918a13c1cdbabe8",
+          "path": "packages/agentplane/src/runtime/sgr/context-extraction-payloads.ts",
+          "scope": "Context extraction SGR types, payload requirements, and canonical examples."
+        },
+        {
+          "normalized_bytes": 6471,
+          "normalized_sha256": "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261",
+          "path": "packages/agentplane/src/runtime/sgr/contract-types.ts",
+          "scope": "Context extraction SGR types, payload requirements, and canonical examples."
+        },
+        {
+          "normalized_bytes": 19492,
+          "normalized_sha256": "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63",
+          "path": "packages/agentplane/src/context/ingest-task-pack.ts",
+          "scope": "Generated context task-pack file set, required artifacts, and executor-facing instructions."
+        }
+      ],
+      "normalized_sha256": "e566db6d117ae5c703714c255f4b178e48a4aa045518c3575eae0442197af9b6",
+      "source_contract_kind": "normalized_exact_agent_facing_source_contracts"
+    },
+    "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613": {
+      "error_envelope": {
+        "field_casing": "snake_case_except_nested_next_action_compatibility_payload",
+        "optional_fields": [
+          "context",
+          "state",
+          "likely_cause",
+          "hint",
+          "remediation",
+          "next_action",
+          "reason_decode"
+        ],
+        "remediation_fields": ["code", "why", "fix", "safe_command", "stop_condition"],
+        "required_fields": ["code", "message"],
+        "root_field": "error"
+      },
+      "normalized_sha256": "b339b5854b3260791f73fed9b6df94af63b0462f7ff87fec15042bcdb5eb52ce",
+      "scope": "Global agent_json_v1 success wrapper and global CliError JSON envelope only; command-specific data payloads are not frozen here.",
+      "source_contracts": [
+        {
+          "marker": "runWithOutputMode",
+          "normalized_sha256": "e49652a9a2c411ea7c6a053346c3e376a81c557904b8b9d8979b49b6a1cdbd8a",
+          "path": "packages/agentplane/src/cli/run-cli/globals.ts"
+        },
+        {
+          "marker": "formatJsonError",
+          "normalized_sha256": "21224231c4b7e84e69432130463e188c960e1b0ae26a51f0305833b01de60562",
+          "path": "packages/agentplane/src/shared/errors.ts"
+        }
+      ],
+      "success_envelope": {
+        "data_rule": "present only when captured stdout parses as JSON",
+        "field_casing": "snake_case",
+        "mode": "agent_json_v1",
+        "optional_fields": ["data"],
+        "required_fields": [
+          "schema_version",
+          "mode",
+          "command",
+          "ok",
+          "exit_code",
+          "stdout",
+          "stderr"
+        ],
+        "schema_version": 1
+      }
+    },
+    "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a": {
+      "command_count": 243,
+      "commands": [
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "ACR",
+          "id": ["acr"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "ACR",
+          "id": ["acr", "check"],
+          "options": [
+            {
+              "choices": ["ci"],
+              "default": "ci",
+              "kind": "string",
+              "name": "mode",
+              "valueHint": "<ci>"
+            },
+            {
+              "default": true,
+              "kind": "boolean",
+              "name": "require-plan-approved",
+              "valueHint": null
+            },
+            {
+              "default": true,
+              "kind": "boolean",
+              "name": "require-verification",
+              "valueHint": null
+            },
+            {
+              "default": true,
+              "kind": "boolean",
+              "name": "require-policy-pass",
+              "valueHint": null
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "allow-waived-verification",
+              "valueHint": null
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "allow-manual-override",
+              "valueHint": null
+            },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "task-id-or-path",
+              "required": true,
+              "valueHint": "<task-id-or-path>",
+              "variadic": false
+            }
+          ],
+          "group": "ACR",
+          "id": ["acr", "explain"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "ACR",
+          "id": ["acr", "generate"],
+          "options": [
+            { "kind": "string", "name": "work-commit", "valueHint": "<rev>" },
+            { "kind": "string", "name": "base-commit", "valueHint": "<rev>" },
+            { "kind": "string", "name": "agent", "valueHint": "<id>" },
+            { "kind": "string", "name": "agent-name", "valueHint": "<name>" },
+            {
+              "choices": ["anthropic", "openai", "cursor", "aider", "unknown", "custom"],
+              "kind": "string",
+              "name": "model-provider",
+              "valueHint": "<provider>"
+            },
+            { "kind": "string", "name": "model-name", "valueHint": "<name>" },
+            { "kind": "string", "name": "out", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "write", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "stdout", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "refresh", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "ACR",
+          "id": ["acr", "schema"],
+          "options": [
+            {
+              "choices": ["0.1"],
+              "default": "0.1",
+              "kind": "string",
+              "name": "version",
+              "valueHint": "<version>"
+            },
+            { "kind": "string", "name": "out", "valueHint": "<path>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "task-id-or-path",
+              "required": true,
+              "valueHint": "<task-id-or-path>",
+              "variadic": false
+            }
+          ],
+          "group": "ACR",
+          "id": ["acr", "validate"],
+          "options": [
+            {
+              "choices": ["schema", "local", "ci"],
+              "default": "local",
+              "kind": "string",
+              "name": "mode",
+              "valueHint": "<schema|local|ci>"
+            },
+            { "default": false, "kind": "boolean", "name": "strict", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        { "args": [], "group": "Core", "id": ["agents"], "options": [], "visibility": "user" },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Backend",
+          "id": ["backend"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "id", "required": true, "valueHint": "<id>", "variadic": false }],
+          "group": "Backend",
+          "id": ["backend", "connect"],
+          "options": [
+            { "kind": "string", "name": "endpoint", "valueHint": "<url>" },
+            { "kind": "string", "name": "project-id", "valueHint": "<id>" },
+            { "kind": "string", "name": "provider", "valueHint": "<name>" },
+            { "kind": "string", "name": "token", "valueHint": "<token>" },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "id", "required": true, "valueHint": "<id>", "variadic": false }],
+          "group": "Backend",
+          "id": ["backend", "inspect"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "id", "required": true, "valueHint": "<id>", "variadic": false }],
+          "group": "Backend",
+          "id": ["backend", "migrate-canonical-state"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "internal"
+        },
+        {
+          "args": [{ "name": "id", "required": true, "valueHint": "<id>", "variadic": false }],
+          "group": "Backend",
+          "id": ["backend", "sync"],
+          "options": [
+            {
+              "choices": ["push", "pull"],
+              "default": "push",
+              "kind": "string",
+              "name": "direction",
+              "valueHint": "<push|pull>"
+            },
+            {
+              "choices": ["diff", "prefer-local", "prefer-remote", "fail"],
+              "default": "diff",
+              "kind": "string",
+              "name": "conflict",
+              "valueHint": "<diff|prefer-local|prefer-remote|fail>"
+            },
+            { "default": false, "kind": "boolean", "name": "watch", "valueHint": null },
+            { "default": "30000", "kind": "string", "name": "interval-ms", "valueHint": "<ms>" },
+            { "default": "0", "kind": "string", "name": "max-iterations", "valueHint": "<n>" },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Lifecycle",
+          "id": ["block"],
+          "options": [
+            { "kind": "string", "name": "author", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "body", "valueHint": "<text>" },
+            { "kind": "string", "name": "body-file", "valueHint": "<path>" },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "commit-from-comment",
+              "valueHint": null
+            },
+            { "kind": "string", "name": "commit-emoji", "valueHint": "<emoji>" },
+            {
+              "kind": "string",
+              "name": "commit-allow",
+              "repeatable": true,
+              "valueHint": "<path-prefix>"
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "commit-require-clean",
+              "valueHint": null
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "confirm-status-commit",
+              "valueHint": null
+            },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Blueprints",
+          "id": ["blueprint"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Blueprints",
+          "id": ["blueprint", "drift"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Blueprints",
+          "id": ["blueprint", "examples"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": false, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Blueprints",
+          "id": ["blueprint", "explain"],
+          "options": [
+            {
+              "kind": "string",
+              "name": "kind",
+              "valueHint": "<analysis|content|docs|code|release|ops|context>"
+            },
+            {
+              "choices": ["none", "docs", "code", "release", "ops", "unknown"],
+              "default": "unknown",
+              "kind": "string",
+              "name": "mutation",
+              "valueHint": "<none|docs|code|release|ops|unknown>"
+            },
+            {
+              "choices": ["direct", "branch_pr"],
+              "kind": "string",
+              "name": "workflow-mode",
+              "valueHint": "<direct|branch_pr>"
+            },
+            { "kind": "string", "name": "tag", "valueHint": "<tag>" },
+            { "kind": "string", "name": "title", "valueHint": "<text>" },
+            { "kind": "string", "name": "description", "valueHint": "<text>" },
+            { "kind": "string", "name": "risk", "valueHint": "<risk>" },
+            { "kind": "string", "name": "blueprint", "valueHint": "<id>" },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Blueprints",
+          "id": ["blueprint", "list"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "project", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "trusted", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Blueprints",
+          "id": ["blueprint", "report"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "id", "required": true, "valueHint": "<blueprint-id>", "variadic": false }
+          ],
+          "group": "Blueprints",
+          "id": ["blueprint", "scaffold"],
+          "options": [
+            { "kind": "string", "name": "from", "valueHint": "<builtin-blueprint-id>" },
+            { "kind": "string", "name": "out", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Blueprints",
+          "id": ["blueprint", "snapshot"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "path", "required": false, "valueHint": "<path>", "variadic": false }],
+          "group": "Blueprints",
+          "id": ["blueprint", "validate"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "project", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Blueprints",
+          "id": ["blueprints"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Blueprints",
+          "id": ["blueprints", "catalog"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "id", "required": true, "valueHint": "<id>", "variadic": false }],
+          "group": "Blueprints",
+          "id": ["blueprints", "catalog", "info"],
+          "options": [
+            {
+              "choices": ["blueprint", "pack"],
+              "kind": "string",
+              "name": "kind",
+              "valueHint": "<blueprint|pack>"
+            },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Blueprints",
+          "id": ["blueprints", "catalog", "list"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Blueprints",
+          "id": ["blueprints", "catalog", "refresh"],
+          "options": [
+            { "kind": "string", "name": "index", "required": true, "valueHint": "<path|url>" },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "id",
+              "required": true,
+              "valueHint": "<blueprint-or-pack-id>",
+              "variadic": false
+            }
+          ],
+          "group": "Blueprints",
+          "id": ["blueprints", "install"],
+          "options": [
+            {
+              "choices": ["blueprint", "pack"],
+              "kind": "string",
+              "name": "kind",
+              "valueHint": "<blueprint|pack>"
+            },
+            { "kind": "string", "name": "index", "valueHint": "<path|url>" },
+            { "default": false, "kind": "boolean", "name": "refresh", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "activate", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Branch",
+          "id": ["branch", "base"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Branch",
+          "id": ["branch", "base", "clear"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Branch",
+          "id": ["branch", "base", "explain"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Branch",
+          "id": ["branch", "base", "get"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "name", "required": false, "valueHint": "<name>", "variadic": false }],
+          "group": "Branch",
+          "id": ["branch", "base", "set"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "current", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Branch",
+          "id": ["branch", "remove"],
+          "options": [
+            { "kind": "string", "name": "branch", "valueHint": "<name>" },
+            { "kind": "string", "name": "worktree", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Branch",
+          "id": ["branch", "status"],
+          "options": [
+            { "kind": "string", "name": "branch", "valueHint": "<name>" },
+            { "kind": "string", "name": "base", "valueHint": "<name>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Branch",
+          "id": ["cleanup"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Branch",
+          "id": ["cleanup", "merged"],
+          "options": [
+            { "kind": "string", "name": "base", "valueHint": "<name>" },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "archive", "valueHint": null },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "delete-remote-branches",
+              "valueHint": null
+            },
+            { "default": false, "kind": "boolean", "name": "fetch", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "finalize", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "preserve-dirty", "valueHint": null },
+            { "kind": "string", "name": "report", "valueHint": "<path>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "subcommand",
+              "required": false,
+              "valueHint": "<subcommand>",
+              "variadic": true
+            }
+          ],
+          "group": "Codex",
+          "id": ["codex"],
+          "options": [],
+          "visibility": "framework"
+        },
+        {
+          "args": [
+            {
+              "name": "subcommand",
+              "required": false,
+              "valueHint": "<subcommand>",
+              "variadic": true
+            }
+          ],
+          "group": "Codex",
+          "id": ["codex", "plugin"],
+          "options": [],
+          "visibility": "framework"
+        },
+        {
+          "args": [],
+          "group": "Codex",
+          "id": ["codex", "plugin", "install"],
+          "options": [
+            {
+              "choices": ["user", "repo"],
+              "default": "user",
+              "kind": "string",
+              "name": "scope",
+              "valueHint": "<user|repo>"
+            }
+          ],
+          "visibility": "framework"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Guard",
+          "id": ["commit"],
+          "options": [
+            { "kind": "string", "name": "message", "valueHint": "<message>" },
+            { "default": false, "kind": "boolean", "name": "close", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "unstage-others", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "check-only", "valueHint": null },
+            { "kind": "string", "name": "allow", "repeatable": true, "valueHint": "<path-prefix>" },
+            { "default": false, "kind": "boolean", "name": "allow-tasks", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "allow-base", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "allow-policy", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "allow-config", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "allow-hooks", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "allow-ci", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "require-clean", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "key", "required": true, "valueHint": "<key>", "variadic": false },
+            { "name": "value", "required": true, "valueHint": "<value>", "variadic": false }
+          ],
+          "group": "Config",
+          "id": ["config", "set"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Config",
+          "id": ["config", "show"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Context",
+          "id": ["context"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Context",
+          "id": ["context", "capability"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Context",
+          "id": ["context", "capability", "discover"],
+          "options": [
+            { "kind": "string", "name": "from", "required": true, "valueHint": "<from>" },
+            { "default": "3", "kind": "string", "name": "min-support", "valueHint": "<n>" },
+            { "default": false, "kind": "boolean", "name": "write-proposals", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "query", "required": true, "valueHint": "<query>", "variadic": false }
+          ],
+          "group": "Context",
+          "id": ["context", "capability", "search"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [{ "name": "path", "required": true, "valueHint": "<path>", "variadic": false }],
+          "group": "Context",
+          "id": ["context", "capability", "validate"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Context",
+          "id": ["context", "check"],
+          "options": [{ "default": false, "kind": "boolean", "name": "fix", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Context",
+          "id": ["context", "dashboard"],
+          "options": [
+            { "default": "127.0.0.1", "kind": "string", "name": "host", "valueHint": "<host>" },
+            { "default": "0", "kind": "string", "name": "port", "valueHint": "<port>" },
+            { "default": false, "kind": "boolean", "name": "open", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "dump-json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Context",
+          "id": ["context", "doctor"],
+          "options": [{ "default": false, "kind": "boolean", "name": "fix", "valueHint": null }],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "file", "required": true, "valueHint": "<sgr-json>", "variadic": false }
+          ],
+          "group": "Context",
+          "id": ["context", "extraction", "apply"],
+          "options": [
+            { "kind": "string", "name": "task-id", "valueHint": "<task-id>" },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "synthesize-wiki", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Context",
+          "id": ["context", "finalize-task"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Context",
+          "id": ["context", "graph"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Context",
+          "id": ["context", "graph", "export"],
+          "options": [
+            {
+              "choices": ["json", "jsonl", "csv"],
+              "default": "json",
+              "kind": "string",
+              "name": "format",
+              "valueHint": "<json|jsonl|csv>"
+            }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "entity-id", "required": true, "valueHint": "<entity-id>", "variadic": false }
+          ],
+          "group": "Context",
+          "id": ["context", "graph", "neighbors"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "entity-id", "required": true, "valueHint": "<entity-id>", "variadic": false }
+          ],
+          "group": "Context",
+          "id": ["context", "graph", "show"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Context",
+          "id": ["context", "graph", "summary"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Context",
+          "id": ["context", "graph", "validate"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Context",
+          "id": ["context", "harvest"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Context",
+          "id": ["context", "harvest", "tasks"],
+          "options": [
+            { "kind": "string", "name": "status", "repeatable": true, "valueHint": "<status>" },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            { "kind": "string", "name": "task", "repeatable": true, "valueHint": "<task-id>" },
+            { "kind": "string", "name": "since", "valueHint": "<YYYY-MM-DD|YYYYMMDDHHmm>" },
+            { "kind": "string", "name": "until", "valueHint": "<YYYY-MM-DD|YYYYMMDDHHmm>" },
+            { "kind": "string", "name": "after-task", "valueHint": "<task-id>" },
+            { "kind": "string", "name": "limit", "valueHint": "<n>" },
+            { "default": false, "kind": "boolean", "name": "write-proposals", "valueHint": null },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "create-extraction-tasks",
+              "valueHint": null
+            },
+            { "default": "25", "kind": "string", "name": "batch-size", "valueHint": "<n>" },
+            {
+              "default": "131072",
+              "kind": "string",
+              "name": "batch-bytes",
+              "valueHint": "<bytes>"
+            },
+            { "default": false, "kind": "boolean", "name": "promote", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            {
+              "choices": ["text", "json"],
+              "default": "text",
+              "kind": "string",
+              "name": "format",
+              "valueHint": "<text|json>"
+            }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "sources", "required": false, "valueHint": "<source>", "variadic": true }
+          ],
+          "group": "Context",
+          "id": ["context", "ingest"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "changed", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "all", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "index-only", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Context",
+          "id": ["context", "init"],
+          "options": [
+            {
+              "choices": [
+                "adaptive",
+                "minimal",
+                "wiki",
+                "codebase",
+                "research",
+                "maximum-assimilation"
+              ],
+              "kind": "string",
+              "name": "profile",
+              "valueHint": "<adaptive|minimal|wiki|codebase|research|maximum-assimilation>"
+            },
+            {
+              "choices": ["none", "all"],
+              "default": "none",
+              "kind": "string",
+              "name": "raw-gitignore",
+              "valueHint": "<none|all>"
+            },
+            {
+              "choices": ["none", "all"],
+              "default": "none",
+              "kind": "string",
+              "name": "derived-gitignore",
+              "valueHint": "<none|all>"
+            },
+            { "default": false, "kind": "boolean", "name": "repair", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Context",
+          "id": ["context", "learn"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Context",
+          "id": ["context", "learn", "changes"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "sources", "required": true, "valueHint": "<path>", "variadic": true }
+          ],
+          "group": "Context",
+          "id": ["context", "learn", "files"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Context",
+          "id": ["context", "learn", "tasks"],
+          "options": [
+            { "kind": "string", "name": "status", "repeatable": true, "valueHint": "<status>" },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            { "kind": "string", "name": "task", "repeatable": true, "valueHint": "<task-id>" },
+            { "kind": "string", "name": "since", "valueHint": "<YYYY-MM-DD|YYYYMMDDHHmm>" },
+            { "kind": "string", "name": "until", "valueHint": "<YYYY-MM-DD|YYYYMMDDHHmm>" },
+            { "kind": "string", "name": "after-task", "valueHint": "<task-id>" },
+            { "kind": "string", "name": "limit", "valueHint": "<n>" },
+            { "default": "25", "kind": "string", "name": "batch-size", "valueHint": "<n>" },
+            {
+              "default": "131072",
+              "kind": "string",
+              "name": "batch-bytes",
+              "valueHint": "<bytes>"
+            },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            {
+              "choices": ["text", "json"],
+              "default": "text",
+              "kind": "string",
+              "name": "format",
+              "valueHint": "<text|json>"
+            }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "target",
+              "required": true,
+              "valueHint": "<maximum-assimilation-v2>",
+              "variadic": false
+            }
+          ],
+          "group": "Context",
+          "id": ["context", "migrate"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Context",
+          "id": ["context", "reindex"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "include-tasks", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "include-raw", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "reset", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "query", "required": true, "valueHint": "<query>", "variadic": false }
+          ],
+          "group": "Context",
+          "id": ["context", "search"],
+          "options": [
+            {
+              "default": "wiki,facts,graph,capabilities",
+              "kind": "string",
+              "name": "scope",
+              "valueHint": "<scope>"
+            },
+            {
+              "choices": ["text", "json"],
+              "default": "text",
+              "kind": "string",
+              "name": "format",
+              "valueHint": "<text|json>"
+            },
+            { "default": false, "kind": "boolean", "name": "explain", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "source-ref",
+              "required": true,
+              "valueHint": "<source-ref>",
+              "variadic": false
+            }
+          ],
+          "group": "Context",
+          "id": ["context", "show"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Context",
+          "id": ["context", "verify-task"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Context",
+          "id": ["context", "wiki"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "page", "required": true, "valueHint": "<path-or-slug>", "variadic": false }
+          ],
+          "group": "Context",
+          "id": ["context", "wiki", "explain"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "path", "required": false, "valueHint": "<path>", "variadic": false }],
+          "group": "Context",
+          "id": ["context", "wiki", "index"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "page", "required": true, "valueHint": "<path-or-slug>", "variadic": false }
+          ],
+          "group": "Context",
+          "id": ["context", "wiki", "link"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "path", "required": false, "valueHint": "<path>", "variadic": false }],
+          "group": "Context",
+          "id": ["context", "wiki", "lint"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "page", "required": true, "valueHint": "<path-or-slug>", "variadic": false }
+          ],
+          "group": "Context",
+          "id": ["context", "wiki", "new"],
+          "options": [
+            { "kind": "string", "name": "title", "valueHint": "<title>" },
+            {
+              "default": "factual_claim",
+              "kind": "string",
+              "name": "modality",
+              "valueHint": "<modality>"
+            },
+            {
+              "default": "sourced_claim",
+              "kind": "string",
+              "name": "status",
+              "valueHint": "<epistemic-status>"
+            },
+            {
+              "default": "project",
+              "kind": "string",
+              "name": "visibility",
+              "valueHint": "<scope>"
+            },
+            { "kind": "string", "name": "source", "repeatable": true, "valueHint": "<source-ref>" },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "path", "required": false, "valueHint": "<path>", "variadic": false }],
+          "group": "Context",
+          "id": ["context", "wiki", "report"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Core",
+          "id": ["demo"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Docs",
+          "id": ["docs", "cli"],
+          "options": [{ "kind": "string", "name": "out", "required": true, "valueHint": "<path>" }],
+          "visibility": "framework"
+        },
+        {
+          "args": [],
+          "group": "Quality",
+          "id": ["doctor"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "fix", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "dev", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "deep", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "archive-full", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Quality",
+          "id": ["doctor", "git-locks"],
+          "options": [{ "default": false, "kind": "boolean", "name": "fix", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Evaluators",
+          "id": ["evaluator"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Evaluators",
+          "id": ["evaluator", "list"],
+          "options": [
+            {
+              "choices": ["true", "false"],
+              "default": "true",
+              "kind": "string",
+              "name": "builtin",
+              "valueHint": "<true|false>"
+            },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "taskId", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Evaluators",
+          "id": ["evaluator", "run"],
+          "options": [
+            {
+              "default": "recovery-context",
+              "kind": "string",
+              "name": "evaluator",
+              "valueHint": "<id>"
+            },
+            {
+              "choices": ["pass", "rework", "blocked", "human_review"],
+              "kind": "string",
+              "name": "verdict",
+              "valueHint": "<pass|rework|blocked|human_review>"
+            },
+            { "kind": "string", "name": "summary", "valueHint": "<text>" },
+            { "kind": "string", "name": "finding", "repeatable": true, "valueHint": "<text>" },
+            {
+              "kind": "string",
+              "name": "evidence",
+              "repeatable": true,
+              "valueHint": "<path-or-note>"
+            },
+            { "kind": "string", "name": "missing-test", "repeatable": true, "valueHint": "<text>" },
+            {
+              "kind": "string",
+              "name": "hidden-assumption",
+              "repeatable": true,
+              "valueHint": "<text>"
+            },
+            {
+              "kind": "string",
+              "name": "residual-risk",
+              "repeatable": true,
+              "valueHint": "<text>"
+            },
+            {
+              "kind": "string",
+              "name": "rework-context",
+              "repeatable": true,
+              "valueHint": "<text>"
+            },
+            { "default": false, "kind": "boolean", "name": "no-record", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "id", "required": true, "valueHint": "<id>", "variadic": false }],
+          "group": "Evaluators",
+          "id": ["evaluator", "show"],
+          "options": [
+            {
+              "choices": ["true", "false"],
+              "default": "true",
+              "kind": "string",
+              "name": "builtin",
+              "valueHint": "<true|false>"
+            },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Evidence",
+          "id": ["evidence"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Evidence",
+          "id": ["evidence", "bundle"],
+          "options": [
+            { "kind": "string", "name": "out", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "task-id-or-manifest",
+              "required": true,
+              "valueHint": "<task-id-or-manifest>",
+              "variadic": false
+            }
+          ],
+          "group": "Evidence",
+          "id": ["evidence", "verify"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "strict", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": true }
+          ],
+          "group": "Lifecycle",
+          "id": ["finish"],
+          "options": [
+            { "kind": "string", "name": "author", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "body", "valueHint": "<text>" },
+            { "kind": "string", "name": "body-file", "valueHint": "<path>" },
+            { "kind": "string", "name": "result", "valueHint": "<one-line>" },
+            { "kind": "string", "name": "result-file", "valueHint": "<path>" },
+            {
+              "choices": ["low", "med", "high"],
+              "kind": "string",
+              "name": "risk",
+              "valueHint": "<low|med|high>"
+            },
+            { "default": false, "kind": "boolean", "name": "breaking", "valueHint": null },
+            { "kind": "string", "name": "commit", "valueHint": "<hash>" },
+            { "kind": "string", "name": "implementation-commit", "valueHint": "<hash>" },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "commit-from-comment",
+              "valueHint": null
+            },
+            { "kind": "string", "name": "commit-emoji", "valueHint": "<emoji>" },
+            {
+              "kind": "string",
+              "name": "commit-allow",
+              "repeatable": true,
+              "valueHint": "<path-prefix>"
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "commit-require-clean",
+              "valueHint": null
+            },
+            { "default": false, "kind": "boolean", "name": "status-commit", "valueHint": null },
+            { "kind": "string", "name": "status-commit-emoji", "valueHint": "<emoji>" },
+            {
+              "kind": "string",
+              "name": "status-commit-allow",
+              "repeatable": true,
+              "valueHint": "<path-prefix>"
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "status-commit-require-clean",
+              "valueHint": null
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "confirm-status-commit",
+              "valueHint": null
+            },
+            { "default": false, "kind": "boolean", "name": "close-commit", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "no-close-commit", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "pre-merge-closure", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "no-write-acr", "valueHint": null },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "close-unstage-others",
+              "valueHint": null
+            },
+            { "kind": "string", "name": "base", "valueHint": "<branch>" },
+            { "kind": "string", "name": "observation", "valueHint": "<text>" },
+            { "kind": "string", "name": "impact", "valueHint": "<text>" },
+            { "kind": "string", "name": "resolution", "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "promote", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "external", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "local-only", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "repo-fixable", "valueHint": null },
+            { "kind": "string", "name": "incident-scope", "valueHint": "<text>" },
+            { "kind": "string", "name": "incident-tag", "repeatable": true, "valueHint": "<tag>" },
+            {
+              "kind": "string",
+              "name": "incident-match",
+              "repeatable": true,
+              "valueHint": "<term>"
+            },
+            { "kind": "string", "name": "incident-advice", "valueHint": "<text>" },
+            { "kind": "string", "name": "incident-rule", "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Workflow",
+          "id": ["flow"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Workflow",
+          "id": ["flow", "repair"],
+          "options": [
+            { "default": true, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "safe-apply", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "cmd", "required": false, "valueHint": "<command>", "variadic": true }
+          ],
+          "group": "Guard",
+          "id": ["guard"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Guard",
+          "id": ["guard", "clean"],
+          "options": [{ "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Guard",
+          "id": ["guard", "commit"],
+          "options": [
+            { "kind": "string", "name": "message", "required": true, "valueHint": "<message>" },
+            { "kind": "string", "name": "allow", "repeatable": true, "valueHint": "<path-prefix>" },
+            { "default": false, "kind": "boolean", "name": "allow-tasks", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "allow-base", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "allow-policy", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "allow-config", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "allow-hooks", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "allow-ci", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "require-clean", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Guard",
+          "id": ["guard", "suggest-allow"],
+          "options": [
+            {
+              "choices": ["lines", "args"],
+              "default": "lines",
+              "kind": "string",
+              "name": "format",
+              "valueHint": "<lines|args>"
+            }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Core",
+          "id": ["help"],
+          "options": [
+            { "kind": "boolean", "name": "compact", "valueHint": null },
+            { "kind": "boolean", "name": "json", "valueHint": null },
+            { "kind": "boolean", "name": "all", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Integrations",
+          "id": ["hermes"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Integrations",
+          "id": ["hermes", "doctor"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Integrations",
+          "id": ["hermes", "enqueue"],
+          "options": [
+            { "default": "agentplane", "kind": "string", "name": "board", "valueHint": "<slug>" },
+            {
+              "default": "agentplane-supervisor",
+              "kind": "string",
+              "name": "assignee",
+              "valueHint": "<lane>"
+            },
+            { "default": "CODER", "kind": "string", "name": "role", "valueHint": "<ROLE>" },
+            { "kind": "string", "name": "workspace", "valueHint": "dir:/abs/repo" },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "action",
+              "required": true,
+              "valueHint": "comment|block|complete|heartbeat",
+              "variadic": false
+            }
+          ],
+          "group": "Integrations",
+          "id": ["hermes", "lifecycle"],
+          "options": [
+            { "kind": "string", "name": "body", "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Integrations",
+          "id": ["hermes", "reconcile"],
+          "options": [
+            { "kind": "string", "name": "task-id", "valueHint": "<task-id>" },
+            { "kind": "string", "name": "hermes-state", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Integrations",
+          "id": ["hermes", "supervise"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "execute-step", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "cmd", "required": false, "valueHint": "<command>", "variadic": true }
+          ],
+          "group": "Hooks",
+          "id": ["hooks"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Hooks",
+          "id": ["hooks", "install"],
+          "options": [{ "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "hook", "required": true, "valueHint": "<hook>", "variadic": false },
+            { "name": "args", "required": false, "valueHint": "<args...>", "variadic": true }
+          ],
+          "group": "Hooks",
+          "id": ["hooks", "run"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Hooks",
+          "id": ["hooks", "uninstall"],
+          "options": [{ "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "IDE",
+          "id": ["ide", "sync"],
+          "options": [
+            {
+              "choices": ["cursor", "windsurf"],
+              "kind": "string",
+              "name": "ide",
+              "valueHint": "<cursor|windsurf>"
+            }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "cmd", "required": false, "valueHint": "<command>", "variadic": true }
+          ],
+          "group": "Policy",
+          "id": ["incidents"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": false, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Policy",
+          "id": ["incidents", "advise"],
+          "options": [
+            { "kind": "string", "name": "scope", "valueHint": "<text>" },
+            { "kind": "string", "name": "title", "valueHint": "<text>" },
+            { "kind": "string", "name": "description", "valueHint": "<text>" },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            { "default": "5", "kind": "string", "name": "limit", "valueHint": "<n>" },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Policy",
+          "id": ["incidents", "collect"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "check", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Setup",
+          "id": ["init"],
+          "options": [
+            {
+              "choices": ["quick", "guided", "advanced", "ci"],
+              "kind": "string",
+              "name": "init-mode",
+              "valueHint": "<quick|guided|advanced|ci>"
+            },
+            { "default": false, "kind": "boolean", "name": "quick", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "advanced", "valueHint": null },
+            {
+              "choices": ["codex", "claude", "cursor", "windsurf", "hermes", "multiple", "manual"],
+              "kind": "string",
+              "name": "tool",
+              "valueHint": "<codex|claude|cursor|windsurf|hermes|multiple|manual>"
+            },
+            {
+              "choices": ["light", "normal", "full-harness", "developer", "vibecoder", "manager"],
+              "kind": "string",
+              "name": "setup-profile",
+              "valueHint": "<light|normal|full-harness>"
+            },
+            {
+              "choices": ["codex", "claude"],
+              "kind": "string",
+              "name": "policy-gateway",
+              "valueHint": "<codex|claude>"
+            },
+            {
+              "choices": ["none", "codex", "cursor", "windsurf"],
+              "kind": "string",
+              "name": "ide",
+              "valueHint": "<none|codex|cursor|windsurf>"
+            },
+            {
+              "choices": ["direct", "branch_pr"],
+              "kind": "string",
+              "name": "workflow",
+              "valueHint": "<direct|branch_pr>"
+            },
+            {
+              "choices": ["allow-other-task-readmes", "strict"],
+              "kind": "string",
+              "name": "direct-close-dirty-policy",
+              "valueHint": "<allow-other-task-readmes|strict>"
+            },
+            {
+              "choices": ["local", "cloud"],
+              "kind": "string",
+              "name": "backend",
+              "valueHint": "<local|cloud>"
+            },
+            { "kind": "string", "name": "hooks", "valueHint": "<true|false>" },
+            { "kind": "string", "name": "require-plan-approval", "valueHint": "<true|false>" },
+            { "kind": "string", "name": "require-network-approval", "valueHint": "<true|false>" },
+            { "kind": "string", "name": "require-verify-approval", "valueHint": "<true|false>" },
+            { "kind": "string", "name": "feedback-github-issues", "valueHint": "<true|false>" },
+            { "kind": "string", "name": "feedback-anonymous-cloud", "valueHint": "<true|false>" },
+            {
+              "choices": ["conservative", "balanced", "aggressive"],
+              "kind": "string",
+              "name": "execution-profile",
+              "valueHint": "<conservative|balanced|aggressive>"
+            },
+            {
+              "choices": ["standard", "strict", "paranoid"],
+              "kind": "string",
+              "name": "evaluator-skepticism",
+              "valueHint": "<standard|strict|paranoid>"
+            },
+            { "kind": "string", "name": "strict-unsafe-confirm", "valueHint": "<true|false>" },
+            { "kind": "string", "name": "recipes", "valueHint": "<none|id1,id2,...>" },
+            { "kind": "string", "name": "blueprints", "valueHint": "<none|id1,pack:id2,...>" },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "backup", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "no-input", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "non-interactive", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "gitignore-agents", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Diagnostics",
+          "id": ["insights"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Diagnostics",
+          "id": ["insights", "issue"],
+          "options": [
+            { "kind": "string", "name": "title", "valueHint": "<title>" },
+            { "kind": "string", "name": "body", "valueHint": "<text>" },
+            { "kind": "string", "name": "agent-context", "valueHint": "<text>" },
+            {
+              "choices": ["startup-routing"],
+              "kind": "string",
+              "name": "triage",
+              "valueHint": "<startup-routing>"
+            },
+            { "kind": "string", "name": "agent-context-file", "valueHint": "<path>" },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "allow-missing-agent-context",
+              "valueHint": null
+            },
+            { "kind": "string", "name": "error-code", "valueHint": "<code>" },
+            { "kind": "string", "name": "failure-command", "valueHint": "<command>" },
+            { "kind": "string", "name": "failure-phase", "valueHint": "<phase>" },
+            { "kind": "string", "name": "failure-reason-code", "valueHint": "<code>" },
+            { "kind": "string", "name": "failure-message-class", "valueHint": "<class>" },
+            {
+              "kind": "string",
+              "name": "failure-argv-shape",
+              "repeatable": true,
+              "valueHint": "<token>"
+            },
+            {
+              "choices": ["github", "cloud", "auto"],
+              "kind": "string",
+              "name": "transport",
+              "valueHint": "<github|cloud|auto>"
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "allow-disabled-feedback",
+              "valueHint": null
+            },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Diagnostics",
+          "id": ["insights", "report"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null },
+            { "kind": "string", "name": "recent-limit", "valueHint": "<n>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Diagnostics",
+          "id": ["insights", "triage"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null },
+            {
+              "choices": ["startup-routing"],
+              "kind": "string",
+              "name": "preset",
+              "valueHint": "<startup-routing>"
+            },
+            { "kind": "string", "name": "recent-limit", "valueHint": "<n>" },
+            { "kind": "string", "name": "error-code", "valueHint": "<code>" },
+            { "kind": "string", "name": "failure-command", "valueHint": "<command>" },
+            { "kind": "string", "name": "failure-phase", "valueHint": "<phase>" },
+            { "kind": "string", "name": "failure-reason-code", "valueHint": "<code>" },
+            { "kind": "string", "name": "failure-message-class", "valueHint": "<class>" },
+            {
+              "kind": "string",
+              "name": "failure-argv-shape",
+              "repeatable": true,
+              "valueHint": "<token>"
+            }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "request", "required": true, "valueHint": "<request>", "variadic": true }
+          ],
+          "group": "Diagnostics",
+          "id": ["intake"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "search", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "no-git", "valueHint": null },
+            { "kind": "string", "name": "task", "valueHint": "<task-id>" },
+            { "default": false, "kind": "boolean", "name": "write-manifest", "valueHint": null },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "include-raw-request",
+              "valueHint": null
+            }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "PR",
+          "id": ["integrate"],
+          "options": [
+            { "kind": "string", "name": "branch", "valueHint": "<name>" },
+            { "kind": "string", "name": "base", "valueHint": "<name>" },
+            {
+              "choices": ["squash", "merge", "rebase"],
+              "default": "merge",
+              "kind": "string",
+              "name": "merge-strategy",
+              "valueHint": "<squash|merge|rebase>"
+            },
+            { "default": false, "kind": "boolean", "name": "run-verify", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "PR",
+          "id": ["integrate", "queue"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "PR",
+          "id": ["integrate", "queue", "claim"],
+          "options": [
+            { "kind": "string", "name": "worker", "valueHint": "<id>" },
+            { "kind": "string", "name": "lease-ms", "valueHint": "<ms>" },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "PR",
+          "id": ["integrate", "queue", "doctor"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "fix", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "PR",
+          "id": ["integrate", "queue", "enqueue"],
+          "options": [
+            { "kind": "string", "name": "branch", "valueHint": "<name>" },
+            { "kind": "string", "name": "base", "valueHint": "<name>" },
+            { "default": "0", "kind": "string", "name": "priority", "valueHint": "<number>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "PR",
+          "id": ["integrate", "queue", "list"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "PR",
+          "id": ["integrate", "queue", "release"],
+          "options": [
+            {
+              "choices": ["queued", "done", "rework"],
+              "default": "queued",
+              "kind": "string",
+              "name": "status",
+              "valueHint": "<queued|done|rework>"
+            },
+            { "kind": "string", "name": "reason", "valueHint": "<text>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "PR",
+          "id": ["integrate", "queue", "run-next"],
+          "options": [
+            { "kind": "string", "name": "worker", "valueHint": "<id>" },
+            { "kind": "string", "name": "lease-ms", "valueHint": "<ms>" },
+            { "kind": "string", "name": "poll-interval-ms", "valueHint": "<ms>" },
+            { "kind": "string", "name": "timeout-ms", "valueHint": "<ms>" },
+            { "default": false, "kind": "boolean", "name": "run-verify", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "drain", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "wait", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "hosted", "valueHint": null },
+            { "kind": "string", "name": "stable-polls", "valueHint": "<count>" },
+            { "kind": "string", "name": "hosted-poll-interval-ms", "valueHint": "<ms>" },
+            { "kind": "string", "name": "hosted-timeout-ms", "valueHint": "<ms>" },
+            {
+              "kind": "string",
+              "name": "required-check",
+              "repeatable": true,
+              "valueHint": "<name>"
+            }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Config",
+          "id": ["mode", "get"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "mode",
+              "required": true,
+              "valueHint": "<direct|branch_pr>",
+              "variadic": false
+            }
+          ],
+          "group": "Config",
+          "id": ["mode", "set"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "subcommand",
+              "required": false,
+              "valueHint": "<subcommand>",
+              "variadic": true
+            }
+          ],
+          "group": "Platform",
+          "id": ["platform"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "platform", "required": true, "valueHint": "<platform>", "variadic": false }
+          ],
+          "group": "Platform",
+          "id": ["platform", "doctor"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "platform", "required": true, "valueHint": "<platform>", "variadic": false }
+          ],
+          "group": "Platform",
+          "id": ["platform", "explain"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Platform",
+          "id": ["platform", "list"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Platform",
+          "id": ["platform", "sync"],
+          "options": [
+            {
+              "kind": "string",
+              "name": "platform",
+              "repeatable": true,
+              "valueHint": "<codex|claude|gemini|opencode|copilot|cursor|windsurf|cline|kiro|openclaw|hermes|all>"
+            },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "PR",
+          "id": ["pr"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "PR",
+          "id": ["pr", "check"],
+          "options": [
+            { "kind": "string", "name": "branch", "valueHint": "<name>" },
+            { "default": false, "kind": "boolean", "name": "hosted", "valueHint": null },
+            { "kind": "string", "name": "stable-polls", "valueHint": "<count>" },
+            { "kind": "string", "name": "poll-interval-ms", "valueHint": "<ms>" },
+            { "kind": "string", "name": "timeout-ms", "valueHint": "<ms>" },
+            {
+              "kind": "string",
+              "name": "required-check",
+              "repeatable": true,
+              "valueHint": "<name>"
+            }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "pr-number", "required": true, "valueHint": "<pr-number>", "variadic": false }
+          ],
+          "group": "PR",
+          "id": ["pr", "close"],
+          "options": [
+            { "kind": "string", "name": "repo", "valueHint": "<owner/name>" },
+            { "kind": "string", "name": "comment", "valueHint": "<text>" },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "delete-remote-branch",
+              "valueHint": null
+            }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "PR",
+          "id": ["pr", "close-superseded"],
+          "options": [
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "delete-remote-branch",
+              "valueHint": null
+            }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "PR",
+          "id": ["pr", "flow", "status"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "PR",
+          "id": ["pr", "note"],
+          "options": [
+            { "kind": "string", "name": "author", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "body", "valueHint": "<text>" },
+            { "kind": "string", "name": "body-file", "valueHint": "<path>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "PR",
+          "id": ["pr", "open"],
+          "options": [
+            { "kind": "string", "name": "author", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "branch", "valueHint": "<name>" },
+            {
+              "kind": "string",
+              "name": "include-task",
+              "repeatable": true,
+              "valueHint": "<task-id>"
+            },
+            { "default": false, "kind": "boolean", "name": "sync-only", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "PR",
+          "id": ["pr", "update"],
+          "options": [
+            {
+              "kind": "string",
+              "name": "include-task",
+              "repeatable": true,
+              "valueHint": "<task-id>"
+            }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Core",
+          "id": ["preflight"],
+          "options": [
+            {
+              "choices": ["quick", "full"],
+              "default": "quick",
+              "kind": "string",
+              "name": "mode",
+              "valueHint": "<quick|full>"
+            },
+            { "default": false, "kind": "boolean", "name": "full", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null },
+            { "kind": "string", "name": "role", "valueHint": "<ROLE>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "profile",
+              "required": true,
+              "valueHint": "<light|normal|full-harness>",
+              "variadic": false
+            }
+          ],
+          "group": "Config",
+          "id": ["profile", "set"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Core",
+          "id": ["quickstart"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["ready"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "subcommand",
+              "required": false,
+              "valueHint": "<subcommand>",
+              "variadic": true
+            }
+          ],
+          "group": "Recipes",
+          "id": ["recipes"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Recipes",
+          "id": ["recipes", "active"],
+          "options": [{ "default": false, "kind": "boolean", "name": "full", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "recipe",
+              "required": true,
+              "valueHint": "<id|id@version>",
+              "variadic": false
+            }
+          ],
+          "group": "Recipes",
+          "id": ["recipes", "add"],
+          "options": [
+            {
+              "choices": ["copy", "link"],
+              "kind": "string",
+              "name": "mode",
+              "valueHint": "<copy|link>"
+            }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "subcommand",
+              "required": false,
+              "valueHint": "<subcommand>",
+              "variadic": true
+            }
+          ],
+          "group": "Recipes",
+          "id": ["recipes", "cache"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Recipes",
+          "id": ["recipes", "cache", "prune"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "all", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "id", "required": true, "valueHint": "<id>", "variadic": false }],
+          "group": "Recipes",
+          "id": ["recipes", "detach"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "id", "required": true, "valueHint": "<recipe-id>", "variadic": false }
+          ],
+          "group": "Recipes",
+          "id": ["recipes", "disable"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "id", "required": true, "valueHint": "<recipe-id>", "variadic": false }
+          ],
+          "group": "Recipes",
+          "id": ["recipes", "enable"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "id", "required": true, "valueHint": "<id>", "variadic": false }],
+          "group": "Recipes",
+          "id": ["recipes", "explain"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Recipes",
+          "id": ["recipes", "explain-active"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "id", "required": true, "valueHint": "<id>", "variadic": false }],
+          "group": "Recipes",
+          "id": ["recipes", "info"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "source", "required": false, "valueHint": "<id|path|url>", "variadic": false }
+          ],
+          "group": "Recipes",
+          "id": ["recipes", "install"],
+          "options": [
+            { "kind": "string", "name": "name", "valueHint": "<id>" },
+            { "kind": "string", "name": "path", "valueHint": "<path>" },
+            { "kind": "string", "name": "url", "valueHint": "<url>" },
+            { "kind": "string", "name": "index", "valueHint": "<path|url>" },
+            { "default": false, "kind": "boolean", "name": "refresh", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            {
+              "choices": ["fail", "rename", "overwrite"],
+              "default": "fail",
+              "kind": "string",
+              "name": "on-conflict",
+              "valueHint": "<fail|rename|overwrite>"
+            }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Recipes",
+          "id": ["recipes", "list"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "full", "valueHint": null },
+            { "kind": "string", "name": "tag", "valueHint": "<tag>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Recipes",
+          "id": ["recipes", "list-remote"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "refresh", "valueHint": null },
+            { "kind": "string", "name": "index", "valueHint": "<path|url>" },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "id", "required": true, "valueHint": "<id>", "variadic": false }],
+          "group": "Recipes",
+          "id": ["recipes", "remove"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "id", "required": true, "valueHint": "<id>", "variadic": false }],
+          "group": "Recipes",
+          "id": ["recipes", "update"],
+          "options": [{ "default": false, "kind": "boolean", "name": "force", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "cmd", "required": false, "valueHint": "<command>", "variadic": true }
+          ],
+          "group": "Release",
+          "id": ["release"],
+          "options": [],
+          "visibility": "framework"
+        },
+        {
+          "args": [],
+          "group": "Release",
+          "id": ["release", "apply"],
+          "options": [
+            { "kind": "string", "name": "plan", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "push", "valueHint": null },
+            { "kind": "string", "name": "remote", "valueHint": "<name>" },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null }
+          ],
+          "visibility": "framework"
+        },
+        {
+          "args": [],
+          "group": "Release",
+          "id": ["release", "candidate"],
+          "options": [
+            { "kind": "string", "name": "plan", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "push", "valueHint": null },
+            { "kind": "string", "name": "remote", "valueHint": "<name>" },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null }
+          ],
+          "visibility": "framework"
+        },
+        {
+          "args": [],
+          "group": "Release",
+          "id": ["release", "plan"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "patch", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "minor", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "major", "valueHint": null },
+            { "kind": "string", "name": "since", "valueHint": "<tag>" },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null }
+          ],
+          "visibility": "framework"
+        },
+        {
+          "args": [],
+          "group": "Release",
+          "id": ["release", "tasks", "reconcile"],
+          "options": [
+            { "kind": "string", "name": "task-id", "repeatable": true, "valueHint": "<task-id>" },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "framework"
+        },
+        {
+          "args": [{ "name": "role", "required": true, "valueHint": "<role>", "variadic": false }],
+          "group": "Core",
+          "id": ["role"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+          "group": "Diagnostics",
+          "id": ["runtime"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Diagnostics",
+          "id": ["runtime", "explain"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "compact", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Lifecycle",
+          "id": ["start"],
+          "options": [
+            { "kind": "string", "name": "author", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "body", "valueHint": "<text>" },
+            { "kind": "string", "name": "body-file", "valueHint": "<path>" },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "commit-from-comment",
+              "valueHint": null
+            },
+            { "kind": "string", "name": "commit-emoji", "valueHint": "<emoji>" },
+            {
+              "kind": "string",
+              "name": "commit-allow",
+              "repeatable": true,
+              "valueHint": "<path-prefix>"
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "commit-require-clean",
+              "valueHint": null
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "confirm-status-commit",
+              "valueHint": null
+            },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [{ "name": "id", "required": false, "valueHint": "<id>", "variadic": false }],
+          "group": "Backend",
+          "id": ["sync"],
+          "options": [
+            {
+              "choices": ["push", "pull"],
+              "default": "push",
+              "kind": "string",
+              "name": "direction",
+              "valueHint": "<push|pull>"
+            },
+            {
+              "choices": ["diff", "prefer-local", "prefer-remote", "fail"],
+              "default": "diff",
+              "kind": "string",
+              "name": "conflict",
+              "valueHint": "<diff|prefer-local|prefer-remote|fail>"
+            },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "cmd", "required": false, "valueHint": "<subcommand>", "variadic": true }
+          ],
+          "group": "Task",
+          "id": ["task"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "active"],
+          "options": [
+            { "kind": "string", "name": "status", "repeatable": true, "valueHint": "<status>" },
+            { "kind": "string", "name": "owner", "repeatable": true, "valueHint": "<owner>" },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            { "default": false, "kind": "boolean", "name": "strict-read", "valueHint": null },
+            { "kind": "string", "name": "limit", "valueHint": "<n>" },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": true }
+          ],
+          "group": "Task",
+          "id": ["task", "add"],
+          "options": [
+            { "kind": "string", "name": "title", "required": true, "valueHint": "<text>" },
+            { "kind": "string", "name": "description", "required": true, "valueHint": "<text>" },
+            {
+              "choices": ["TODO", "DOING", "DONE", "BLOCKED"],
+              "default": "TODO",
+              "kind": "string",
+              "name": "status",
+              "valueHint": "<TODO|DOING|DONE|BLOCKED>"
+            },
+            {
+              "choices": ["low", "normal", "med", "high"],
+              "kind": "string",
+              "name": "priority",
+              "required": true,
+              "valueHint": "<low|normal|med|high>"
+            },
+            { "kind": "string", "name": "owner", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            {
+              "kind": "string",
+              "name": "depends-on",
+              "repeatable": true,
+              "valueHint": "<task-id>"
+            },
+            { "kind": "string", "name": "verify", "repeatable": true, "valueHint": "<command>" },
+            { "kind": "string", "name": "comment-author", "valueHint": "<id>" },
+            { "kind": "string", "name": "comment-body", "valueHint": "<text>" }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "answer"],
+          "options": [
+            { "kind": "string", "name": "by", "valueHint": "<USER>" },
+            { "kind": "string", "name": "body", "valueHint": "<text>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "ask"],
+          "options": [
+            { "kind": "string", "name": "author", "valueHint": "<ROLE>" },
+            { "kind": "string", "name": "body", "valueHint": "<text>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "title", "required": true, "valueHint": "<title>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "begin"],
+          "options": [
+            { "kind": "string", "name": "description", "valueHint": "<text>" },
+            { "default": "CODER", "kind": "string", "name": "owner", "valueHint": "<id>" },
+            {
+              "choices": ["low", "normal", "med", "high"],
+              "default": "med",
+              "kind": "string",
+              "name": "priority",
+              "valueHint": "<low|normal|med|high>"
+            },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            { "kind": "string", "name": "plan", "valueHint": "<text>" },
+            { "kind": "string", "name": "verify", "repeatable": true, "valueHint": "<command>" },
+            {
+              "choices": ["analysis", "content", "docs", "code", "release", "ops", "context"],
+              "kind": "string",
+              "name": "task-kind",
+              "valueHint": "<analysis|content|docs|code|release|ops|context>"
+            },
+            {
+              "choices": ["none", "docs", "code", "release", "ops", "context", "unknown"],
+              "kind": "string",
+              "name": "mutation-scope",
+              "valueHint": "<none|docs|code|release|ops|context|unknown>"
+            },
+            {
+              "choices": [
+                "analysis.light",
+                "content.light",
+                "docs.change",
+                "code.direct",
+                "code.branch_pr",
+                "performance.benchmark",
+                "quality.regression",
+                "context.assimilation",
+                "context.maximum_assimilation",
+                "post_run.improvement_review",
+                "release.strict",
+                "ops.approval"
+              ],
+              "kind": "string",
+              "name": "blueprint-request",
+              "valueHint": "<id>"
+            },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "brief"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "remote", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "close-duplicate"],
+          "options": [
+            { "kind": "string", "name": "of", "required": true, "valueHint": "<task-id>" },
+            { "kind": "string", "name": "author", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "note", "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "close-noop"],
+          "options": [
+            { "kind": "string", "name": "author", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "note", "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "comment"],
+          "options": [
+            { "kind": "string", "name": "author", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "body", "valueHint": "<text>" },
+            { "kind": "string", "name": "body-file", "valueHint": "<path>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "complete"],
+          "options": [
+            { "kind": "string", "name": "result", "required": true, "valueHint": "<text>" },
+            { "kind": "string", "name": "commit", "valueHint": "<hash>" },
+            { "default": "CODER", "kind": "string", "name": "by", "valueHint": "<id>" },
+            { "default": "CODER", "kind": "string", "name": "author", "valueHint": "<id>" },
+            { "kind": "string", "name": "note", "valueHint": "<text>" },
+            { "kind": "string", "name": "body", "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "spike-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "derive"],
+          "options": [
+            { "kind": "string", "name": "title", "required": true, "valueHint": "<text>" },
+            { "kind": "string", "name": "description", "required": true, "valueHint": "<text>" },
+            { "kind": "string", "name": "owner", "required": true, "valueHint": "<id>" },
+            {
+              "choices": ["low", "normal", "med", "high"],
+              "default": "med",
+              "kind": "string",
+              "name": "priority",
+              "valueHint": "<low|normal|med|high>"
+            },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            { "kind": "string", "name": "verify", "repeatable": true, "valueHint": "<command>" }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            {
+              "name": "subcommand",
+              "required": false,
+              "valueHint": "<show|set>",
+              "variadic": false
+            }
+          ],
+          "group": "Task",
+          "id": ["task", "doc"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "doc", "set"],
+          "options": [
+            { "kind": "string", "name": "section", "valueHint": "<name>" },
+            { "default": false, "kind": "boolean", "name": "full-doc", "valueHint": null },
+            { "kind": "string", "name": "text", "valueHint": "<text>" },
+            { "kind": "string", "name": "file", "valueHint": "<path>" },
+            { "kind": "string", "name": "updated-by", "valueHint": "<id>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "doc", "show"],
+          "options": [
+            { "kind": "string", "name": "section", "valueHint": "<name>" },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "evidence", "check"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "strict", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "subcommand", "required": false, "valueHint": "<add>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "findings"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "findings", "add"],
+          "options": [
+            { "kind": "string", "name": "observation", "valueHint": "<text>" },
+            { "kind": "string", "name": "impact", "valueHint": "<text>" },
+            { "kind": "string", "name": "resolution", "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "promote", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "external", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "repo-fixable", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "local-only", "valueHint": null },
+            { "kind": "string", "name": "incident-scope", "valueHint": "<text>" },
+            { "kind": "string", "name": "incident-tag", "repeatable": true, "valueHint": "<tag>" },
+            {
+              "kind": "string",
+              "name": "incident-match",
+              "repeatable": true,
+              "valueHint": "<term>"
+            },
+            { "kind": "string", "name": "incident-advice", "valueHint": "<text>" },
+            { "kind": "string", "name": "incident-rule", "valueHint": "<text>" },
+            { "kind": "string", "name": "updated-by", "valueHint": "<id>" }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            {
+              "name": "subcommand",
+              "required": false,
+              "valueHint": "<record|show>",
+              "variadic": false
+            }
+          ],
+          "group": "Task",
+          "id": ["task", "handoff"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "handoff", "record"],
+          "options": [
+            { "kind": "string", "name": "from", "valueHint": "<role>" },
+            { "kind": "string", "name": "to", "valueHint": "<role>" },
+            { "kind": "string", "name": "reason", "valueHint": "<text>" },
+            { "kind": "string", "name": "note", "valueHint": "<text>" },
+            { "kind": "string", "name": "next-action", "repeatable": true, "valueHint": "<text>" },
+            { "kind": "string", "name": "risk", "repeatable": true, "valueHint": "<text>" },
+            { "kind": "string", "name": "question", "repeatable": true, "valueHint": "<text>" },
+            {
+              "kind": "string",
+              "name": "evidence-path",
+              "repeatable": true,
+              "valueHint": "<path>"
+            },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "handoff", "show"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "hosted-close"],
+          "options": [
+            { "kind": "string", "name": "event-json", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": true }
+          ],
+          "group": "Task",
+          "id": ["task", "hosted-close-pr"],
+          "options": [
+            { "kind": "string", "name": "branch", "valueHint": "<name>" },
+            { "kind": "string", "name": "repo", "valueHint": "<owner/name>" }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "lint"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "verify-steps", "valueHint": null },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "verify-steps-changed",
+              "valueHint": null
+            }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "list"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "all", "valueHint": null },
+            { "kind": "string", "name": "status", "repeatable": true, "valueHint": "<status>" },
+            { "kind": "string", "name": "owner", "repeatable": true, "valueHint": "<owner>" },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            { "default": false, "kind": "boolean", "name": "strict-read", "valueHint": null },
+            { "kind": "string", "name": "limit", "valueHint": "<n>" },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "migrate"],
+          "options": [
+            { "kind": "string", "name": "source", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null }
+          ],
+          "visibility": "internal"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": false, "valueHint": "<task-id>", "variadic": true }
+          ],
+          "group": "Task",
+          "id": ["task", "migrate-doc"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "all", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "internal"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "new"],
+          "options": [
+            { "kind": "string", "name": "title", "required": true, "valueHint": "<text>" },
+            { "kind": "string", "name": "description", "required": true, "valueHint": "<text>" },
+            { "kind": "string", "name": "owner", "required": true, "valueHint": "<id>" },
+            {
+              "choices": ["low", "normal", "med", "high"],
+              "default": "med",
+              "kind": "string",
+              "name": "priority",
+              "valueHint": "<low|normal|med|high>"
+            },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            {
+              "choices": ["analysis", "content", "docs", "code", "release", "ops", "context"],
+              "kind": "string",
+              "name": "task-kind",
+              "valueHint": "<analysis|content|docs|code|release|ops|context>"
+            },
+            {
+              "choices": ["none", "docs", "code", "release", "ops", "context", "unknown"],
+              "kind": "string",
+              "name": "mutation-scope",
+              "valueHint": "<none|docs|code|release|ops|context|unknown>"
+            },
+            {
+              "choices": [
+                "network",
+                "credentials",
+                "deploy",
+                "publish",
+                "merge",
+                "security",
+                "external_system"
+              ],
+              "kind": "string",
+              "name": "risk",
+              "repeatable": true,
+              "valueHint": "<risk>"
+            },
+            {
+              "choices": [
+                "analysis.light",
+                "content.light",
+                "docs.change",
+                "code.direct",
+                "code.branch_pr",
+                "performance.benchmark",
+                "quality.regression",
+                "context.assimilation",
+                "context.maximum_assimilation",
+                "post_run.improvement_review",
+                "release.strict",
+                "ops.approval"
+              ],
+              "kind": "string",
+              "name": "blueprint-request",
+              "valueHint": "<id>"
+            },
+            {
+              "kind": "string",
+              "name": "depends-on",
+              "repeatable": true,
+              "valueHint": "<task-id>"
+            },
+            { "kind": "string", "name": "verify", "repeatable": true, "valueHint": "<command>" },
+            { "default": false, "kind": "boolean", "name": "show-blueprint", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "allow-duplicate", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "next"],
+          "options": [
+            { "kind": "string", "name": "status", "repeatable": true, "valueHint": "<status>" },
+            { "kind": "string", "name": "owner", "repeatable": true, "valueHint": "<owner>" },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            { "default": false, "kind": "boolean", "name": "strict-read", "valueHint": null },
+            { "kind": "string", "name": "limit", "valueHint": "<n>" },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "next-action"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "explain", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "remote", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "normalize"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "sync-hosted-merges",
+              "valueHint": null
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "sync-branch-pr-state",
+              "valueHint": null
+            },
+            { "kind": "string", "name": "task-id", "repeatable": true, "valueHint": "<task-id>" }
+          ],
+          "visibility": "internal"
+        },
+        {
+          "args": [
+            {
+              "name": "subcommand",
+              "required": false,
+              "valueHint": "<add|list|check|triage|harvest>",
+              "variadic": false
+            }
+          ],
+          "group": "Task",
+          "id": ["task", "observations"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "observations", "add"],
+          "options": [
+            { "kind": "string", "name": "kind", "valueHint": "<kind>" },
+            { "kind": "string", "name": "summary", "valueHint": "<text>" },
+            { "default": "AGENT", "kind": "string", "name": "author", "valueHint": "<id>" },
+            {
+              "default": "implementation",
+              "kind": "string",
+              "name": "phase",
+              "valueHint": "<phase>"
+            },
+            { "default": "medium", "kind": "string", "name": "severity", "valueHint": "<level>" },
+            { "kind": "string", "name": "decision", "valueHint": "<text>" },
+            { "kind": "string", "name": "impact", "valueHint": "<text>" },
+            { "default": "none", "kind": "string", "name": "action", "valueHint": "<type>" },
+            { "kind": "string", "name": "action-title", "valueHint": "<text>" },
+            { "kind": "string", "name": "action-details", "valueHint": "<text>" },
+            {
+              "kind": "string",
+              "name": "evidence-file",
+              "repeatable": true,
+              "valueHint": "<path>"
+            },
+            {
+              "kind": "string",
+              "name": "evidence-command",
+              "repeatable": true,
+              "valueHint": "<command>"
+            },
+            { "kind": "string", "name": "ref", "repeatable": true, "valueHint": "<ref>" },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            { "default": "open", "kind": "string", "name": "status", "valueHint": "<status>" },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "observations", "check"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "observations", "harvest"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "observations", "list"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "observations", "triage"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "obsidian"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "strict-read", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "obsidian", "clean"],
+          "options": [],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "cmd", "required": false, "valueHint": "<subcommand>", "variadic": true }
+          ],
+          "group": "Task",
+          "id": ["task", "plan"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "plan", "approve"],
+          "options": [
+            { "kind": "string", "name": "by", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "note", "valueHint": "<text>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "plan", "reject"],
+          "options": [
+            { "kind": "string", "name": "by", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "note", "required": true, "valueHint": "<text>" }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "plan", "set"],
+          "options": [
+            { "kind": "string", "name": "text", "valueHint": "<text>" },
+            { "kind": "string", "name": "file", "valueHint": "<path>" },
+            { "kind": "string", "name": "updated-by", "valueHint": "<id>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "rebuild-index"],
+          "options": [],
+          "visibility": "internal"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "reclaim"],
+          "options": [
+            { "kind": "string", "name": "author", "valueHint": "<role>" },
+            { "kind": "string", "name": "reason", "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "resume-context"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "run"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "internal"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "run", "inspect"],
+          "options": [
+            { "kind": "string", "name": "run-id", "valueHint": "<run-id>" },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null },
+            { "default": "10", "kind": "string", "name": "events", "valueHint": "<count>" }
+          ],
+          "visibility": "internal"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "run", "logs"],
+          "options": [
+            { "kind": "string", "name": "run-id", "valueHint": "<run-id>" },
+            {
+              "choices": ["events", "trace", "stderr"],
+              "default": "trace",
+              "kind": "string",
+              "name": "stream",
+              "valueHint": "<events|trace|stderr>"
+            },
+            { "default": false, "kind": "boolean", "name": "follow", "valueHint": null },
+            { "default": "80", "kind": "string", "name": "tail", "valueHint": "<lines>" }
+          ],
+          "visibility": "internal"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "run", "status"],
+          "options": [
+            { "kind": "string", "name": "run-id", "valueHint": "<run-id>" },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "internal"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "scaffold"],
+          "options": [
+            { "kind": "string", "name": "title", "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "overwrite", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [],
+          "group": "Task",
+          "id": ["task", "scrub"],
+          "options": [
+            { "kind": "string", "name": "find", "required": true, "valueHint": "<text>" },
+            { "kind": "string", "name": "replace", "required": true, "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "internal"
+        },
+        {
+          "args": [
+            { "name": "query", "required": true, "valueHint": "<query>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "search"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "regex", "valueHint": null },
+            { "kind": "string", "name": "status", "repeatable": true, "valueHint": "<status>" },
+            { "kind": "string", "name": "owner", "repeatable": true, "valueHint": "<owner>" },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            { "default": false, "kind": "boolean", "name": "strict-read", "valueHint": null },
+            { "kind": "string", "name": "limit", "valueHint": "<n>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false },
+            {
+              "name": "status",
+              "required": true,
+              "valueHint": "<TODO|DOING|DONE|BLOCKED>",
+              "variadic": false
+            }
+          ],
+          "group": "Task",
+          "id": ["task", "set-status"],
+          "options": [
+            { "kind": "string", "name": "author", "valueHint": "<id>" },
+            { "kind": "string", "name": "body", "valueHint": "<text>" },
+            { "kind": "string", "name": "body-file", "valueHint": "<path>" },
+            { "kind": "string", "name": "commit", "valueHint": "<hash>" },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "commit-from-comment",
+              "valueHint": null
+            },
+            { "kind": "string", "name": "commit-emoji", "valueHint": "<emoji>" },
+            {
+              "kind": "string",
+              "name": "commit-allow",
+              "repeatable": true,
+              "valueHint": "<path-prefix>"
+            },
+            { "default": true, "kind": "boolean", "name": "commit-allow-tasks", "valueHint": null },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "commit-require-clean",
+              "valueHint": null
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "confirm-status-commit",
+              "valueHint": null
+            },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "show"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "start-ready"],
+          "options": [
+            { "kind": "string", "name": "author", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "body", "valueHint": "<text>" },
+            { "kind": "string", "name": "body-file", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "status"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "route", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "remote", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "update"],
+          "options": [
+            { "kind": "string", "name": "title", "valueHint": "<text>" },
+            { "kind": "string", "name": "description", "valueHint": "<text>" },
+            {
+              "choices": ["low", "normal", "med", "high"],
+              "kind": "string",
+              "name": "priority",
+              "valueHint": "<low|normal|med|high>"
+            },
+            { "kind": "string", "name": "owner", "valueHint": "<id>" },
+            { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+            { "default": false, "kind": "boolean", "name": "replace-tags", "valueHint": null },
+            {
+              "kind": "string",
+              "name": "depends-on",
+              "repeatable": true,
+              "valueHint": "<task-id>"
+            },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "replace-depends-on",
+              "valueHint": null
+            },
+            { "kind": "string", "name": "verify", "repeatable": true, "valueHint": "<command>" },
+            { "default": false, "kind": "boolean", "name": "replace-verify", "valueHint": null },
+            {
+              "default": false,
+              "kind": "boolean",
+              "name": "allow-primary-change",
+              "valueHint": null
+            }
+          ],
+          "visibility": "advanced"
+        },
+        {
+          "args": [
+            {
+              "name": "subcommand",
+              "required": false,
+              "valueHint": "<ok|rework>",
+              "variadic": false
+            }
+          ],
+          "group": "Task",
+          "id": ["task", "verify"],
+          "options": [],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "verify", "ok"],
+          "options": [
+            { "kind": "string", "name": "by", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "note", "valueHint": "<text>" },
+            { "kind": "string", "name": "note-file", "valueHint": "<path>" },
+            { "kind": "string", "name": "details", "valueHint": "<text>" },
+            { "kind": "string", "name": "file", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "collect-incidents", "valueHint": null },
+            { "kind": "string", "name": "observation", "valueHint": "<text>" },
+            { "kind": "string", "name": "impact", "valueHint": "<text>" },
+            { "kind": "string", "name": "resolution", "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "promote", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "external", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "local-only", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "repo-fixable", "valueHint": null },
+            { "kind": "string", "name": "incident-scope", "valueHint": "<text>" },
+            { "kind": "string", "name": "incident-tag", "repeatable": true, "valueHint": "<tag>" },
+            {
+              "kind": "string",
+              "name": "incident-match",
+              "repeatable": true,
+              "valueHint": "<term>"
+            },
+            { "kind": "string", "name": "incident-advice", "valueHint": "<text>" },
+            { "kind": "string", "name": "incident-rule", "valueHint": "<text>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "verify", "rework"],
+          "options": [
+            { "kind": "string", "name": "by", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "note", "valueHint": "<text>" },
+            { "kind": "string", "name": "note-file", "valueHint": "<path>" },
+            { "kind": "string", "name": "details", "valueHint": "<text>" },
+            { "kind": "string", "name": "file", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "collect-incidents", "valueHint": null },
+            { "kind": "string", "name": "observation", "valueHint": "<text>" },
+            { "kind": "string", "name": "impact", "valueHint": "<text>" },
+            { "kind": "string", "name": "resolution", "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "promote", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "external", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "local-only", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "repo-fixable", "valueHint": null },
+            { "kind": "string", "name": "incident-scope", "valueHint": "<text>" },
+            { "kind": "string", "name": "incident-tag", "repeatable": true, "valueHint": "<tag>" },
+            {
+              "kind": "string",
+              "name": "incident-match",
+              "repeatable": true,
+              "valueHint": "<term>"
+            },
+            { "kind": "string", "name": "incident-advice", "valueHint": "<text>" },
+            { "kind": "string", "name": "incident-rule", "valueHint": "<text>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Task",
+          "id": ["task", "verify-show"],
+          "options": [{ "default": false, "kind": "boolean", "name": "quiet", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [],
+          "group": "Setup",
+          "id": ["upgrade"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "agent", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "auto", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "remote", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "allow-tarball", "valueHint": null },
+            { "kind": "string", "name": "tag", "valueHint": "<tag>" },
+            { "kind": "string", "name": "source", "valueHint": "<repo-url>" },
+            { "kind": "string", "name": "bundle", "valueHint": "<path|url>" },
+            { "kind": "string", "name": "checksum", "valueHint": "<path|url>" },
+            { "kind": "string", "name": "asset", "valueHint": "<name>" },
+            { "kind": "string", "name": "checksum-asset", "valueHint": "<name>" },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "migrate-task-docs", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "no-backup", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "yes", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Lifecycle",
+          "id": ["verify"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "ok", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "rework", "valueHint": null },
+            { "kind": "string", "name": "by", "required": true, "valueHint": "<id>" },
+            { "kind": "string", "name": "note", "valueHint": "<text>" },
+            { "kind": "string", "name": "note-file", "valueHint": "<path>" },
+            { "kind": "string", "name": "details", "valueHint": "<text>" },
+            { "kind": "string", "name": "file", "valueHint": "<path>" },
+            { "default": false, "kind": "boolean", "name": "collect-incidents", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "quiet", "valueHint": null },
+            { "kind": "string", "name": "observation", "valueHint": "<text>" },
+            { "kind": "string", "name": "impact", "valueHint": "<text>" },
+            { "kind": "string", "name": "resolution", "valueHint": "<text>" },
+            { "default": false, "kind": "boolean", "name": "promote", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "external", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "local-only", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "repo-fixable", "valueHint": null },
+            { "kind": "string", "name": "incident-scope", "valueHint": "<text>" },
+            { "kind": "string", "name": "incident-tag", "repeatable": true, "valueHint": "<tag>" },
+            {
+              "kind": "string",
+              "name": "incident-match",
+              "repeatable": true,
+              "valueHint": "<term>"
+            },
+            { "kind": "string", "name": "incident-advice", "valueHint": "<text>" },
+            { "kind": "string", "name": "incident-rule", "valueHint": "<text>" }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Work",
+          "id": ["work", "resume"],
+          "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+          ],
+          "group": "Work",
+          "id": ["work", "start"],
+          "options": [
+            { "kind": "string", "name": "agent", "required": true, "valueHint": "<ID>" },
+            { "kind": "string", "name": "slug", "required": true, "valueHint": "<slug>" },
+            { "default": false, "kind": "boolean", "name": "worktree", "valueHint": null }
+          ],
+          "visibility": "user"
+        },
+        {
+          "args": [
+            {
+              "name": "subcommand",
+              "required": false,
+              "valueHint": "<subcommand>",
+              "variadic": true
+            }
+          ],
+          "group": "Workflow",
+          "id": ["workflow"],
+          "options": [],
+          "visibility": "framework"
+        },
+        {
+          "args": [],
+          "group": "Workflow",
+          "id": ["workflow", "build"],
+          "options": [
+            { "default": false, "kind": "boolean", "name": "validate", "valueHint": null },
+            { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null }
+          ],
+          "visibility": "framework"
+        },
+        {
+          "args": [],
+          "group": "Workflow",
+          "id": ["workflow", "debug"],
+          "options": [],
+          "visibility": "framework"
+        },
+        {
+          "args": [],
+          "group": "Workflow",
+          "id": ["workflow", "land"],
+          "options": [],
+          "visibility": "framework"
+        },
+        {
+          "args": [],
+          "group": "Workflow",
+          "id": ["workflow", "restore"],
+          "options": [],
+          "visibility": "framework"
+        },
+        {
+          "args": [],
+          "group": "Workflow",
+          "id": ["workflow", "sync"],
+          "options": [],
+          "visibility": "framework"
+        }
+      ],
+      "normalized_sha256": "efc6fe62227180f7e8f7cd08b7919f0bdd850b81bc770bf239ce884790d62d69",
+      "option_count": 767,
+      "positional_count": 165,
+      "projection": "id, visibility, group, args(name, required, variadic, valueHint), and options(name, kind, valueHint, required/default/choices/repeatable when present); prose excluded",
+      "source": "source_command_catalog_rendered_as_help_json_all_structural",
+      "visibility_counts": { "advanced": 45, "framework": 15, "internal": 10, "user": 173 }
+    },
+    "8da655b79b8e3588606fda2e94f132def769d3fd7b2c9057e7ecc2a89b08ca06": {
+      "contracts": [
+        {
+          "normalized_bytes": 6409,
+          "normalized_sha256": "e42203e7d13e23401fcb98cfe30dbd122f15342b8c8cf91f09db2e7e55b5a6cc",
+          "path": "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
+          "scope": "Context extraction SGR types, payload requirements, and canonical examples."
+        },
+        {
+          "normalized_bytes": 5788,
+          "normalized_sha256": "47503e1caffa66afb37c0a74ca59d225feaba7b43cc7f8d91a0741446f5fed5f",
+          "path": "packages/agentplane/src/runtime/sgr/context-extraction-payloads.ts",
+          "scope": "Context extraction SGR types, payload requirements, and canonical examples."
+        },
+        {
+          "normalized_bytes": 6073,
+          "normalized_sha256": "9ee51146e3ab3091d358f16fe9f85f7cbc7b088c31146ae087791fd8f2c4db01",
+          "path": "packages/agentplane/src/runtime/sgr/contract-types.ts",
+          "scope": "Context extraction SGR types, payload requirements, and canonical examples."
+        },
+        {
+          "normalized_bytes": 12395,
+          "normalized_sha256": "ed0ccd12b056f7251111a29fb883b30588611b66f7142cea5988bb1aa7ca53c0",
+          "path": "packages/agentplane/src/context/ingest-task-pack.ts",
+          "scope": "Generated context task-pack file set, required artifacts, and executor-facing instructions."
+        }
+      ],
+      "normalized_sha256": "67fb0c7ec9cc1b17dd1b8644c00f7402a50144bef6023abf83c768a805f38fa4",
+      "source_contract_kind": "normalized_exact_agent_facing_source_contracts"
+    },
+    "d8055aed424f5916fb48a36029d52ff673cc3cf1f0f862a289d9abeb7cbf2fde": [
+      {
+        "bin": { "agentplane": "bin/agentplane.js", "ap": "bin/ap.js" },
+        "bundleDependencies": null,
+        "bundledDependencies": null,
+        "cpu": null,
+        "dependencies": {
+          "@agentplaneorg/core": "0.6.24",
+          "@agentplaneorg/recipes": "0.6.24",
+          "@clack/prompts": "^1.5.1",
+          "yaml": "^2.7.1",
+          "yauzl": "^3.4.0",
+          "zod": "^4.4.3",
+          "zod-validation-error": "^5.0.0"
+        },
+        "engines": { "node": ">=24" },
+        "exports": null,
+        "files": [
+          "LICENSE",
+          "README.md",
+          "assets",
+          "bin/agentplane.js",
+          "bin/ap.js",
+          "bin/dist-guard.js",
+          "bin/framework-dev-contract.js",
+          "bin/runtime-context.js",
+          "bin/runtime-watch.js",
+          "bin/stale-dist-policy.js",
+          "dist/.build-manifest.json",
+          "dist/cli.d.ts",
+          "dist/cli.js"
+        ],
+        "license": "MIT",
+        "main": null,
+        "module": null,
+        "name": "agentplane",
+        "normalized_sha256": "c4c50c37544ff9e7d4258405dcb2bfb4b0dfbfce38432c6dd58e19ff0f406e7a",
+        "optionalDependencies": null,
+        "os": null,
+        "path": "packages/agentplane/package.json",
+        "peerDependencies": null,
+        "peerDependenciesMeta": null,
+        "publishConfig": { "access": "public", "provenance": true },
+        "sideEffects": null,
+        "type": "module",
+        "types": null,
+        "version": "0.6.24"
+      },
+      {
+        "bin": null,
+        "bundleDependencies": null,
+        "bundledDependencies": null,
+        "cpu": null,
+        "dependencies": {
+          "canonicalize": "^3.0.0",
+          "execa": "^9.6.1",
+          "yaml": "^2.8.2",
+          "zod": "^4.4.3",
+          "zod-validation-error": "^5.0.0"
+        },
+        "engines": { "node": ">=20.5.0" },
+        "exports": {
+          ".": {
+            "default": "./dist/index.js",
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+          },
+          "./commit": {
+            "default": "./dist/commit/index.js",
+            "import": "./dist/commit/index.js",
+            "types": "./dist/commit/index.d.ts"
+          },
+          "./config": {
+            "default": "./dist/config/index.js",
+            "import": "./dist/config/index.js",
+            "types": "./dist/config/index.d.ts"
+          },
+          "./fs": {
+            "default": "./dist/fs/index.js",
+            "import": "./dist/fs/index.js",
+            "types": "./dist/fs/index.d.ts"
+          },
+          "./git": {
+            "default": "./dist/git/index.js",
+            "import": "./dist/git/index.js",
+            "types": "./dist/git/index.d.ts"
+          },
+          "./logger": {
+            "default": "./dist/logger.js",
+            "import": "./dist/logger.js",
+            "types": "./dist/logger.d.ts"
+          },
+          "./package.json": "./package.json",
+          "./process": {
+            "default": "./dist/process/index.js",
+            "import": "./dist/process/index.js",
+            "types": "./dist/process/index.d.ts"
+          },
+          "./project": {
+            "default": "./dist/project/index.js",
+            "import": "./dist/project/index.js",
+            "types": "./dist/project/index.d.ts"
+          },
+          "./schemas": {
+            "default": "./dist/schemas/index.js",
+            "import": "./dist/schemas/index.js",
+            "types": "./dist/schemas/index.d.ts"
+          },
+          "./tasks": {
+            "default": "./dist/tasks/index.js",
+            "import": "./dist/tasks/index.js",
+            "types": "./dist/tasks/index.d.ts"
+          }
+        },
+        "files": ["LICENSE", "README.md", "dist", "schemas"],
+        "license": "MIT",
+        "main": null,
+        "module": null,
+        "name": "@agentplaneorg/core",
+        "normalized_sha256": "9fc107880379316b38e3bbf97f849173a0d4eeb3f802cd2041df703e5852d0f7",
+        "optionalDependencies": null,
+        "os": null,
+        "path": "packages/core/package.json",
+        "peerDependencies": null,
+        "peerDependenciesMeta": null,
+        "publishConfig": { "access": "public", "provenance": true },
+        "sideEffects": null,
+        "type": "module",
+        "types": "./dist/index.d.ts",
+        "version": "0.6.24"
+      },
+      {
+        "bin": null,
+        "bundleDependencies": null,
+        "bundledDependencies": null,
+        "cpu": null,
+        "dependencies": null,
+        "engines": { "node": ">=20" },
+        "exports": {
+          ".": {
+            "default": "./dist/index.js",
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+          },
+          "./package.json": "./package.json"
+        },
+        "files": ["LICENSE", "README.md", "dist"],
+        "license": "MIT",
+        "main": null,
+        "module": null,
+        "name": "@agentplaneorg/recipes",
+        "normalized_sha256": "b5133b28030603ff9199abeb03865fdc625abbc2628fbbd6986940f8732e5fd0",
+        "optionalDependencies": null,
+        "os": null,
+        "path": "packages/recipes/package.json",
+        "peerDependencies": null,
+        "peerDependenciesMeta": null,
+        "publishConfig": { "access": "public", "provenance": true },
+        "sideEffects": null,
+        "type": "module",
+        "types": "./dist/index.d.ts",
+        "version": "0.6.24"
+      }
+    ],
+    "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7": {
+      "definition_names": [],
+      "normalized_bytes": 1455,
+      "normalized_sha256": "b8e817f3a2b89a8f0163e6e10132a1a12edc6a97849c30b71b387c3ea93d7a9a",
+      "path": "schemas/workflow.schema.json",
+      "property_names": [
+        "approvals",
+        "in_scope_paths",
+        "mode",
+        "owners",
+        "retry_policy",
+        "timeouts",
+        "version"
+      ],
+      "required": [
+        "approvals",
+        "in_scope_paths",
+        "mode",
+        "owners",
+        "retry_policy",
+        "timeouts",
+        "version"
+      ],
+      "schema_id": "https://agentplane.dev/schemas/workflow.schema.json",
+      "schema_uri": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Agentplane Workflow Contract",
+      "type": "object"
+    },
+    "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653": {
+      "default_error_exit_codes": {
+        "E_BACKEND": 6,
+        "E_COMMIT_ALLOW_EMPTY": 2,
+        "E_COMMIT_ALLOW_NO_MATCH": 2,
+        "E_COMMIT_ALLOW_TASK_ARTIFACT_DENIED": 2,
+        "E_DEPRECATED_FLAG": 2,
+        "E_GIT": 5,
+        "E_GIT_LOCKED": 5,
+        "E_GIT_PERMISSION": 5,
+        "E_GIT_RACE": 5,
+        "E_GIT_STAGE_FAILED": 5,
+        "E_HANDOFF": 9,
+        "E_INTERNAL": 1,
+        "E_IO": 4,
+        "E_NETWORK": 7,
+        "E_PHASE_POLICY": 2,
+        "E_RUNTIME": 8,
+        "E_USAGE": 2,
+        "E_VALIDATION": 3
+      },
+      "error_codes": [
+        "E_BACKEND",
+        "E_COMMIT_ALLOW_EMPTY",
+        "E_COMMIT_ALLOW_NO_MATCH",
+        "E_COMMIT_ALLOW_TASK_ARTIFACT_DENIED",
+        "E_DEPRECATED_FLAG",
+        "E_GIT",
+        "E_GIT_LOCKED",
+        "E_GIT_PERMISSION",
+        "E_GIT_RACE",
+        "E_GIT_STAGE_FAILED",
+        "E_HANDOFF",
+        "E_INTERNAL",
+        "E_IO",
+        "E_NETWORK",
+        "E_PHASE_POLICY",
+        "E_RUNTIME",
+        "E_USAGE",
+        "E_VALIDATION"
+      ],
+      "error_to_exit": {
+        "E_BACKEND": 6,
+        "E_COMMIT_ALLOW_EMPTY": 2,
+        "E_COMMIT_ALLOW_NO_MATCH": 2,
+        "E_COMMIT_ALLOW_TASK_ARTIFACT_DENIED": 2,
+        "E_DEPRECATED_FLAG": 2,
+        "E_GIT": 5,
+        "E_GIT_LOCKED": 5,
+        "E_GIT_PERMISSION": 5,
+        "E_GIT_RACE": 5,
+        "E_GIT_STAGE_FAILED": 5,
+        "E_HANDOFF": 9,
+        "E_INTERNAL": 1,
+        "E_IO": 4,
+        "E_NETWORK": 7,
+        "E_PHASE_POLICY": 2,
+        "E_RUNTIME": 8,
+        "E_USAGE": 2,
+        "E_VALIDATION": 3
+      },
+      "exit_code_enum": {
+        "Backend": 6,
+        "Git": 5,
+        "Handoff": 9,
+        "Internal": 1,
+        "Io": 4,
+        "Network": 7,
+        "Runtime": 8,
+        "Usage": 2,
+        "Validation": 3
+      },
+      "normalized_sha256": "7c1f99a1b48ed5c031ea7c67c13b5e30c78b35b6d9e2ef6849634716619813b2",
+      "source_paths": [
+        "packages/agentplane/src/cli/exit-codes.ts",
+        "packages/agentplane/src/shared/errors.ts"
+      ]
+    }
+  }
+}
