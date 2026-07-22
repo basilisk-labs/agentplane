@@ -226,7 +226,7 @@ async function writeUnsafeFixtures(root: string): Promise<void> {
     "packages/agentplane/src/runner/context/task-context.ts",
     [
       `export function buildTaskContext(data: Record<string, unknown>) {`,
-      `  const task = { data, doc: "task", events: [] };`,
+      `  const task = { task_id: "T", data, doc: "task", events: [] };`,
       `  return { task };`,
       `}`,
       ``,
