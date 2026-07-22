@@ -1,11 +1,11 @@
 ---
 id: "202607221313-P57KJ4"
 title: "Archive resolved context incidents before v0.6.24"
-result_summary: "Archived resolved context incidents before v0.6.24"
+result_summary: "Archived resolved context incidents with auditable test evidence"
 status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -26,23 +26,23 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-22T13:20:09.163Z"
+  updated_at: "2026-07-22T13:31:17.720Z"
   updated_by: "EVALUATOR"
-  note: "Resolved context incidents are archived with durable evidence and removed from active registries."
-  evaluated_sha: "24df423ce84fd0f4c045ffaa844cda51df8a68d5"
+  note: "Archived raw-deletion evidence now names the shipped regression test."
+  evaluated_sha: "b43f0eeaaa31b8d41c0cce93deabea70a04c09b1"
   blueprint_digest: "0bd40064bc833b96f7e0eb1265a1ffdfcf84d9ab957cc95a6442f21cd70912f7"
   evidence_refs:
     - ".agentplane/tasks/202607221313-P57KJ4/README.md"
-    - ".agentplane/tasks/202607221313-P57KJ4/quality/20260722-132009163-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221313-P57KJ4/quality/20260722-132009163-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221313-P57KJ4/quality/20260722-132009163-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221313-P57KJ4/quality/20260722-133117720-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221313-P57KJ4/quality/20260722-133117720-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221313-P57KJ4/quality/20260722-133117720-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221313-P57KJ4/blueprint/resolved-snapshot.json"
-    - "docs/developer/incident-archive.mdx"
+    - "packages/agentplane/src/commands/context/release-readiness.raw-deletion.test.ts"
   findings:
-    - "No blocking findings; release incident gate and packaged asset parity pass."
+    - "No blocking findings; cited test exists and passes."
 commit:
-  hash: "24df423ce84fd0f4c045ffaa844cda51df8a68d5"
-  message: "📚 P57KJ4 docs: archive resolved context incidents"
+  hash: "b43f0eeaaa31b8d41c0cce93deabea70a04c09b1"
+  message: "📚 P57KJ4 docs: cite shipped raw deletion test"
 comments:
   -
     author: "DOCS"
@@ -50,6 +50,9 @@ comments:
   -
     author: "DOCS"
     body: "Verified: resolved incidents are archived, active registries are empty, and all required checks passed."
+  -
+    author: "DOCS"
+    body: "Verified: corrected archive evidence names the shipped raw-deletion test and all hosted checks passed."
 events:
   -
     type: "status"
@@ -77,8 +80,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Review fix verified: archived evidence now cites the existing release-readiness.raw-deletion.test.ts, which passes."
+  -
+    type: "status"
+    at: "2026-07-22T13:36:37.459Z"
+    author: "DOCS"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: corrected archive evidence names the shipped raw-deletion test and all hosted checks passed."
 doc_version: 3
-doc_updated_at: "2026-07-22T13:31:14.517Z"
+doc_updated_at: "2026-07-22T13:36:37.460Z"
 doc_updated_by: "DOCS"
 description: "Verify INC-20260722-01 and INC-20260722-02 are durably mitigated on main, preserve final evidence in docs/developer/incident-archive.mdx, and clear the active incident registry so patch release planning can proceed."
 sections:
