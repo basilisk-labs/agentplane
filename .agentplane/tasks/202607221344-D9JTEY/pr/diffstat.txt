@@ -1,0 +1,13 @@
+ .agentplane/WORKFLOW.md                            |   3 +-
+ docs/reference/generated-reference.mdx             |   6 +--
+ docs/releases/v0.6.24.md                           |  56 +++++++++++++++++++++
+ packages/agentplane/package.json                   |   6 +--
+ .../run-cli.core.help-snap.test.ts.snap            |   1 +
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/spec/examples/acr.json                    |  22 +++++---
+ packages/testkit/package.json                      |   2 +-
+ .../static/img/social/docs/releases/v0.6.24.png    | Bin 0 -> 54287 bytes
+ website/static/img/social/manifest.json            |   8 +++
+ 12 files changed, 93 insertions(+), 17 deletions(-)
