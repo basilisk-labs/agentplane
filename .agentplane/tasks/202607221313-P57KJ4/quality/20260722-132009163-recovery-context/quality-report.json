@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221313-P57KJ4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-22T13:20:09.163Z",
+  "verdict": "pass",
+  "summary": "Resolved context incidents are archived with durable evidence and removed from active registries.",
+  "evaluated_sha": "24df423ce84fd0f4c045ffaa844cda51df8a68d5",
+  "blueprint_digest": "0bd40064bc833b96f7e0eb1265a1ffdfcf84d9ab957cc95a6442f21cd70912f7",
+  "findings": [
+    "No blocking findings; release incident gate and packaged asset parity pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221313-P57KJ4/README.md",
+    "docs/developer/incident-archive.mdx"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

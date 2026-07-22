@@ -5,9 +5,18 @@
   "diffstat_sha256": "sha256:888ae6a6dde2e1abefc9581c708614aacedcceb371e068092c10a3ec6816c3fa",
   "last_verified_at": "2026-07-22T13:19:43.357Z",
   "last_verified_diffstat_sha256": "sha256:888ae6a6dde2e1abefc9581c708614aacedcceb371e068092c10a3ec6816c3fa",
+  "pr_number": 4592,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4592",
+  "pre_merge_closure": {
+    "basis_commit": "24df423ce84fd0f4c045ffaa844cda51df8a68d5",
+    "branch": "task/202607221313-P57KJ4/archive-resolved-context-incidents-before-v0-6-2",
+    "recorded_at": "2026-07-22T13:25:02.635Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607221313-P57KJ4",
-  "updated_at": "2026-07-22T13:14:58.240Z",
+  "updated_at": "2026-07-22T13:25:02.942Z",
   "verify": {
     "status": "pass"
   }

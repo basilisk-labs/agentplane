@@ -6,7 +6,7 @@ Created: 2026-07-22T13:14:58.240Z
 
 - Task: `202607221313-P57KJ4`
 - Title: Archive resolved context incidents before v0.6.24
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221313-P57KJ4/archive-resolved-context-incidents-before-v0-6-2`
 - Canonical task record: `.agentplane/tasks/202607221313-P57KJ4/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-07-22T13:14:58.240Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-22T13:14:58.240Z
+- Updated: 2026-07-22T13:25:02.942Z
 - Branch: task/202607221313-P57KJ4/archive-resolved-context-incidents-before-v0-6-2
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
