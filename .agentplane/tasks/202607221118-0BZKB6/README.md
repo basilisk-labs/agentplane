@@ -1,11 +1,11 @@
 ---
 id: "202607221118-0BZKB6"
 title: "Compile atomic linked wiki during context assimilation"
-result_summary: "pre-merge closure"
+result_summary: "pre-merge closure after review fixes"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -35,22 +35,23 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-22T12:36:15.444Z"
+  updated_at: "2026-07-22T12:58:29.602Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed for published PR snapshot."
-  evaluated_sha: "4f6e73b99146dce7ee05d3c1924700dc98650b22"
+  note: "Review fixes preserve wiki metadata and merge duplicate page plans."
+  evaluated_sha: "8e23f7efb8f7c4c97877c15ac19e0d44ffe83235"
   blueprint_digest: "dff6a0df0d14b136f572165d92f43cfd73b7a6276d969d275735147244bdbcc1"
   evidence_refs:
     - ".agentplane/tasks/202607221118-0BZKB6/README.md"
-    - ".agentplane/tasks/202607221118-0BZKB6/quality/20260722-123615444-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221118-0BZKB6/quality/20260722-123615444-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221118-0BZKB6/quality/20260722-123615444-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221118-0BZKB6/quality/20260722-125829602-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221118-0BZKB6/quality/20260722-125829602-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221118-0BZKB6/quality/20260722-125829602-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221118-0BZKB6/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/context/wiki-synthesis.test.ts"
   findings:
-    - "No blocking findings; verified implementation unchanged by PR metadata refresh."
+    - "No blocking findings after focused, full project, typecheck, hotspot, and smoke checks."
 commit:
-  hash: "4f6e73b99146dce7ee05d3c1924700dc98650b22"
-  message: "✨ 0BZKB6 context: compile atomic linked wiki"
+  hash: "8e23f7efb8f7c4c97877c15ac19e0d44ffe83235"
+  message: "🐛 0BZKB6 context: preserve wiki page metadata"
 comments:
   -
     author: "CODER"
@@ -58,6 +59,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: review fixes passed full local tests and all final hosted checks."
 events:
   -
     type: "status"
@@ -85,8 +89,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review fixes verified: focused synthesis 8/8, full project 1930/1930, typecheck, hotspot and local smoke pass."
+  -
+    type: "status"
+    at: "2026-07-22T13:04:30.173Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: review fixes passed full local tests and all final hosted checks."
 doc_version: 3
-doc_updated_at: "2026-07-22T12:57:43.995Z"
+doc_updated_at: "2026-07-22T13:04:30.174Z"
 doc_updated_by: "CODER"
 description: "Implement a deterministic maximum-assimilation wiki compiler based on the persistent LLM Wiki pattern: keep raw sources immutable; treat SGR as the typed intermediate representation; atomically materialize formal artifacts and managed wiki blocks; upsert stable atomic claims into existing canonical pages; preserve human-authored prose; maintain entity links, provenance, contradictions, a content-oriented index, and append-only context/wiki/log.md; validate idempotency, raw-deletion resilience, and human/agent usability. Do not touch agentplane-loops. Release/version work is a separate dependent task."
 sections:
