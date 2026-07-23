@@ -24,7 +24,7 @@ Created: 2026-07-23T14:36:56.091Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-23T14:36:56.091Z
+- Updated: 2026-07-23T14:37:15.639Z
 - Branch: task/202607221846-4CE7EG/split-agent-semantic-results-from-legacy-observe
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
