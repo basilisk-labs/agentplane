@@ -4,7 +4,7 @@ title: "Capture anchored multi-run RF-04 replay telemetry"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 25
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -68,6 +68,9 @@ comments:
   -
     author: "TESTER"
     body: "The authorized full capture advanced through 40/50 scenario runs (45/55 provider episodes) and then failed closed before provider execution for adapter_failure/run-01 with ANCHOR_TASK_NEW. Nine later scenario runs were not started. Transaction cleanup removed all 40 staged envelopes, evidence bundles, and the marker; no baseline or partial artifact was published. Root cause: the logical CURRENT_AGENT telemetry label was passed as a concrete anchor task actor, while the frozen anchor accepts CODER. The fix maps CURRENT_AGENT to CODER only for task owner, plan author, and start author while preserving CURRENT_AGENT in prompts, episode ledger, provider usage, and token usage. Exact-anchor mocked regression and the four focused suites pass 40/40. The user authorized autonomous retries, so no repeated provider approval is required within this RF-04 scope."
+  -
+    author: "TESTER"
+    body: "The autonomous full retry completed successfully: 50/50 scenario runs and 55/55 provider episodes were published as 50 sanitized envelopes and 50 content-addressed evidence bundles. The offline checker resolves 70/70 outcome cells, 27/27 provider token cells, and 170/170 scalar cells under one fixed profile; structural_sha256=sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4 and diagnostics_sha256=sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e. Secret and host-path scans are clean, staging and transaction markers are absent, and the historical baseline blob remains cc5eb8600d41b7da3adf19ee06b58227caaab064. Four focused suites pass 40/40; all 11 critical chunks, TypeScript, workflow lint, task-state, policy routing, format, replay, guards, lint, and architecture checks pass. Full ci:contract reaches clone:check and then exposes a pre-existing main drift (91 clones versus baseline 88); clean main reproduces the same 91, while no reported clone pair touches an RF-04 file. This unrelated baseline reconciliation is being handled separately before final verification."
 events:
   -
     type: "status"
@@ -111,8 +114,13 @@ events:
     at: "2026-07-23T12:20:31.095Z"
     author: "TESTER"
     body: "The authorized full capture advanced through 40/50 scenario runs (45/55 provider episodes) and then failed closed before provider execution for adapter_failure/run-01 with ANCHOR_TASK_NEW. Nine later scenario runs were not started. Transaction cleanup removed all 40 staged envelopes, evidence bundles, and the marker; no baseline or partial artifact was published. Root cause: the logical CURRENT_AGENT telemetry label was passed as a concrete anchor task actor, while the frozen anchor accepts CODER. The fix maps CURRENT_AGENT to CODER only for task owner, plan author, and start author while preserving CURRENT_AGENT in prompts, episode ledger, provider usage, and token usage. Exact-anchor mocked regression and the four focused suites pass 40/40. The user authorized autonomous retries, so no repeated provider approval is required within this RF-04 scope."
+  -
+    type: "comment"
+    at: "2026-07-23T13:19:15.080Z"
+    author: "TESTER"
+    body: "The autonomous full retry completed successfully: 50/50 scenario runs and 55/55 provider episodes were published as 50 sanitized envelopes and 50 content-addressed evidence bundles. The offline checker resolves 70/70 outcome cells, 27/27 provider token cells, and 170/170 scalar cells under one fixed profile; structural_sha256=sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4 and diagnostics_sha256=sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e. Secret and host-path scans are clean, staging and transaction markers are absent, and the historical baseline blob remains cc5eb8600d41b7da3adf19ee06b58227caaab064. Four focused suites pass 40/40; all 11 critical chunks, TypeScript, workflow lint, task-state, policy routing, format, replay, guards, lint, and architecture checks pass. Full ci:contract reaches clone:check and then exposes a pre-existing main drift (91 clones versus baseline 88); clean main reproduces the same 91, while no reported clone pair touches an RF-04 file. This unrelated baseline reconciliation is being handled separately before final verification."
 doc_version: 3
-doc_updated_at: "2026-07-23T12:20:31.397Z"
+doc_updated_at: "2026-07-23T13:19:15.374Z"
 doc_updated_by: "TESTER"
 description: "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording provider-reported token usage and 70 resolved outcome cells with per-field fixture_control or supervisor_observed provenance, collecting cognitive, orchestration, latency, retrieval, and evidence metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics."
 sections:
@@ -160,7 +168,11 @@ sections:
 
     The frozen anchor has no CURRENT_AGENT role: it is a logical executor and telemetry label, not a concrete lifecycle actor. The repair maps CURRENT_AGENT to CODER only for task owner, plan author, and start author. Exact-anchor offline coverage proves the lifecycle succeeds while prompts, episode ledger, provider usage, and token usage retain CURRENT_AGENT; the four focused RF-04 suites pass 40/40 and an independent audit found no P0/P1/P2 issue.
 
-    The user authorized autonomous provider retries and follow-through within this RF-04 scope; no repeated approval is required.
+    The autonomous full retry completed all 50 scenario runs and 55 provider episodes. It published 50 sanitized envelopes and 50 content-addressed evidence bundles under one fixed profile. The offline checker resolves 70/70 outcome cells, 27/27 provider token cells, and 170/170 scalar cells with structural_sha256 sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4 and diagnostics_sha256 sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e. Secret and host-path scans are clean, staging and transaction markers are absent, and the historical baseline blob remains cc5eb8600d41b7da3adf19ee06b58227caaab064.
+
+    The aggregate baseline and per-run capture files are machine-owned canonical, content-addressed JSON. A scoped Prettier exclusion preserves those bytes while replay:check remains the stricter canonical/hash/linkage validator; format:check and replay:check both pass, and an independent audit found no P0/P1/P2 issue.
+
+    All RF-04-specific and critical checks pass. Full ci:contract reaches clone:check and then exposes an unrelated pre-existing main drift: clean main and this branch both report 91 clones against baseline 88, and none of the current 91 clone pairs touches an RF-04 file. That baseline reconciliation must be resolved separately before final task verification.
 id_source: "generated"
 ---
 ## Summary
@@ -220,4 +232,8 @@ An authorized full retry then completed 40 of 50 scenario runs and 45 of 55 prov
 
 The frozen anchor has no CURRENT_AGENT role: it is a logical executor and telemetry label, not a concrete lifecycle actor. The repair maps CURRENT_AGENT to CODER only for task owner, plan author, and start author. Exact-anchor offline coverage proves the lifecycle succeeds while prompts, episode ledger, provider usage, and token usage retain CURRENT_AGENT; the four focused RF-04 suites pass 40/40 and an independent audit found no P0/P1/P2 issue.
 
-The user authorized autonomous provider retries and follow-through within this RF-04 scope; no repeated approval is required.
+The autonomous full retry completed all 50 scenario runs and 55 provider episodes. It published 50 sanitized envelopes and 50 content-addressed evidence bundles under one fixed profile. The offline checker resolves 70/70 outcome cells, 27/27 provider token cells, and 170/170 scalar cells with structural_sha256 sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4 and diagnostics_sha256 sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e. Secret and host-path scans are clean, staging and transaction markers are absent, and the historical baseline blob remains cc5eb8600d41b7da3adf19ee06b58227caaab064.
+
+The aggregate baseline and per-run capture files are machine-owned canonical, content-addressed JSON. A scoped Prettier exclusion preserves those bytes while replay:check remains the stricter canonical/hash/linkage validator; format:check and replay:check both pass, and an independent audit found no P0/P1/P2 issue.
+
+All RF-04-specific and critical checks pass. Full ci:contract reaches clone:check and then exposes an unrelated pre-existing main drift: clean main and this branch both report 91 clones against baseline 88, and none of the current 91 clone pairs touches an RF-04 file. That baseline reconciliation must be resolved separately before final task verification.
