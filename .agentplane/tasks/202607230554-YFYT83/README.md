@@ -1,10 +1,11 @@
 ---
 id: "202607230554-YFYT83"
 title: "Make branch_pr publication and cleanup state-safe"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -36,16 +37,45 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-23T09:03:18.965Z"
+  updated_by: "TESTER"
+  note: "Verified 79ebefac117b: full local CI passed (383 files, 2334 tests), all 8 critical CLI chunks, 91 platform tests, significant coverage, TypeScript, lint, docs, workflows, compatibility, RF-04 efficiency baseline, live dirty-worktree stop, and final independent audit without P0/P1/P2 findings."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-23T09:04:01.962Z"
+  updated_by: "EVALUATOR"
+  note: "The reviewed branch_pr refactor satisfies the approved exact-head, lifecycle serialization, semantic-role, and task-scoped cleanup contract without unresolved P0, P1, or P2 findings."
+  evaluated_sha: "79ebefac117b2169f1c60ae3b35af5cb3edc3b13"
+  blueprint_digest: "bd89742580af112e31a00a36ad85e3f614bd079e9034b47b3c5f5cd9d18b3e1a"
+  evidence_refs:
+    - ".agentplane/tasks/202607230554-YFYT83/README.md"
+    - ".agentplane/tasks/202607230554-YFYT83/quality/20260723-090401962-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607230554-YFYT83/quality/20260723-090401962-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607230554-YFYT83/quality/20260723-090401962-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607230554-YFYT83/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/pr/integrate/cmd.test.ts"
+    - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
+    - "bun run ci:local:full: 383 test files and 2334 tests passed"
+    - "https://github.com/basilisk-labs/agentplane/pull/4601"
+  findings:
+    - "Publication, queue claim/reservation, prepare, local merge, and protected-base provider merge all fail closed on stale heads, dirty task worktrees, unavailable provider truth, or pending verification."
+    - "Every GitHub merge PUT is guarded immediately before mutation; guard failures propagate without transport fallback, while the exact expected SHA remains pinned in the provider request."
+    - "Task-scoped cleanup requires an exact provider merge receipt and closure identity, uses atomic ref deletion, preserves dirty or advanced worktrees, and cannot expand to unrelated historical candidates."
+    - "Route packets now keep formal preparation in the CLI and hand verification, semantic rework, and quality judgement to TESTER, CODER, and EVALUATOR without synthesizing verdicts."
+commit:
+  hash: "79ebefac117b2169f1c60ae3b35af5cb3edc3b13"
+  message: "✨ YFYT83 task: make branch_pr publication state-safe"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce and repair branch publication, exact-head integration, stale closure, remote freshness, and task-scoped merged cleanup failures."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -54,8 +84,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reproduce and repair branch publication, exact-head integration, stale closure, remote freshness, and task-scoped merged cleanup failures."
+  -
+    type: "verify"
+    at: "2026-07-23T09:03:18.965Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified 79ebefac117b: full local CI passed (383 files, 2334 tests), all 8 critical CLI chunks, 91 platform tests, significant coverage, TypeScript, lint, docs, workflows, compatibility, RF-04 efficiency baseline, live dirty-worktree stop, and final independent audit without P0/P1/P2 findings."
+  -
+    type: "status"
+    at: "2026-07-23T09:04:29.817Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-23T09:00:33.176Z"
+doc_updated_at: "2026-07-23T09:04:29.818Z"
 doc_updated_by: "CODER"
 description: "Repair the branch_pr lifecycle so task and pre-merge closure commits are published before queueing, enqueue and integration fail closed when local, upstream, or hosted PR heads disagree, evaluator rework invalidates stale closure evidence, remote freshness telemetry reports checked truth, and cleanup can safely target provider-merged rebase or squash branches without deleting unrelated worktrees."
 sections:
@@ -85,6 +128,36 @@ sections:
     6. Run the declared focused Vitest suite, bun run test:critical, bun run typecheck, bun run docs:cli:check, node .agentplane/policy/check-routing.mjs, and the full local CI gate. Expected: all pass on one reviewed SHA and the compatibility ratchet records only intentional additive CLI changes.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-23T09:03:18.965Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified 79ebefac117b: full local CI passed (383 files, 2334 tests), all 8 critical CLI chunks, 91 platform tests, significant coverage, TypeScript, lint, docs, workflows, compatibility, RF-04 efficiency baseline, live dirty-worktree stop, and final independent audit without P0/P1/P2 findings.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T09:00:33.176Z, excerpt_hash=sha256:255a6844a7f60879c5658d7b2f39c924917ed67b03563c962a7f237e96adfcaa
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607230554-YFYT83-make-branch-pr-publication-and-cleanup-state-saf/.agentplane/tasks/202607230554-YFYT83/blueprint/resolved-snapshot.json
+    - old_digest: bd89742580af112e31a00a36ad85e3f614bd079e9034b47b3c5f5cd9d18b3e1a
+    - current_digest: bd89742580af112e31a00a36ad85e3f614bd079e9034b47b3c5f5cd9d18b3e1a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607230554-YFYT83
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607230554-YFYT83
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task commits and restore the previous route, queue, closure, telemetry, and cleanup behavior together.
@@ -151,6 +224,36 @@ Repair the branch_pr lifecycle so task and pre-merge closure commits are publish
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-23T09:03:18.965Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified 79ebefac117b: full local CI passed (383 files, 2334 tests), all 8 critical CLI chunks, 91 platform tests, significant coverage, TypeScript, lint, docs, workflows, compatibility, RF-04 efficiency baseline, live dirty-worktree stop, and final independent audit without P0/P1/P2 findings.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T09:00:33.176Z, excerpt_hash=sha256:255a6844a7f60879c5658d7b2f39c924917ed67b03563c962a7f237e96adfcaa
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607230554-YFYT83-make-branch-pr-publication-and-cleanup-state-saf/.agentplane/tasks/202607230554-YFYT83/blueprint/resolved-snapshot.json
+- old_digest: bd89742580af112e31a00a36ad85e3f614bd079e9034b47b3c5f5cd9d18b3e1a
+- current_digest: bd89742580af112e31a00a36ad85e3f614bd079e9034b47b3c5f5cd9d18b3e1a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607230554-YFYT83
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607230554-YFYT83
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

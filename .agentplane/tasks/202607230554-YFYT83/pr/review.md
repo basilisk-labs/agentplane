@@ -6,14 +6,14 @@ Created: 2026-07-23T05:57:56.603Z
 
 - Task: `202607230554-YFYT83`
 - Title: Make branch_pr publication and cleanup state-safe
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607230554-YFYT83/make-branch-pr-publication-and-cleanup-state-saf`
 - Canonical task record: `.agentplane/tasks/202607230554-YFYT83/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified 79ebefac117b: full local CI passed (383 files, 2334 tests), all 8 critical CLI chunks, 91 platform tests, significant coverage, TypeScript, lint, docs, workflows, compatibility, RF-04 efficiency baseline, live dirty-worktree stop, and final independent audit without P0/P1/P2 findings.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

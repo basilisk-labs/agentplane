@@ -3,14 +3,22 @@
   "branch": "task/202607230554-YFYT83/make-branch-pr-publication-and-cleanup-state-saf",
   "created_at": "2026-07-23T05:57:56.603Z",
   "diffstat_sha256": "sha256:649d407a87ad90634ff0175951b79c0274cb71ddeb47c0f925bc51af83421aa2",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-23T09:03:18.965Z",
+  "last_verified_diffstat_sha256": "sha256:649d407a87ad90634ff0175951b79c0274cb71ddeb47c0f925bc51af83421aa2",
   "pr_number": 4601,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4601",
+  "pre_merge_closure": {
+    "basis_commit": "79ebefac117b2169f1c60ae3b35af5cb3edc3b13",
+    "branch": "task/202607230554-YFYT83/make-branch-pr-publication-and-cleanup-state-saf",
+    "pr_number": 4601,
+    "recorded_at": "2026-07-23T09:04:29.842Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607230554-YFYT83",
   "updated_at": "2026-07-23T08:09:08.736Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

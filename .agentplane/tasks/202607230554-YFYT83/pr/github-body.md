@@ -15,8 +15,15 @@ Repair the branch_pr lifecycle so task and pre-merge closure commits are publish
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified 79ebefac117b: full local CI passed (383 files, 2334 tests), all 8 critical CLI chunks, 91
+platform tests, significant coverage, TypeScript, lint, docs, workflows, compatibility, RF-04
+efficiency baseline, live dirty-worktree stop, and final independent audit without P0/P1/P2
+findings.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
