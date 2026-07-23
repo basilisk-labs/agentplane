@@ -13,11 +13,14 @@ export type RunnerTimeoutPolicy = RunnerTimeoutConfig;
 export type RunnerInvocation = {
   adapter_id: string;
   run_id: string;
+  work_order_id: string;
+  repository_root: string;
   run_dir: string;
   bundle_path: string;
   state_path: string;
   events_path: string;
   result_path: string;
+  receipt_path: string;
   trace_path: string;
   stderr_path: string;
   trace_policy: RunnerTracePolicy;
@@ -37,11 +40,18 @@ export type RunnerExecutionMetrics = {
 };
 
 type RunnerResultEvidence = {
+  provenance?: "supervisor_observed";
   evidence_paths?: string[];
   changed_paths?: string[];
   conflict_paths?: string[];
   files_changed_count?: number;
   tests_run?: string[];
+  observed_checks?: {
+    id: string;
+    status: "passed" | "failed" | "not_run";
+  }[];
+  receipt_path?: string;
+  receipt_sha256?: string;
   verification_candidates?: string[];
   blocked_reason?: string;
   recommended_parent_action?: string;
@@ -125,6 +135,12 @@ export type RunnerResult = {
   agent_reported_claims?: AgentReportedLegacyClaim[];
   claim_conflicts?: AgentReportedClaimConflict[];
   manifest_warnings?: RunnerResultManifestWarning[];
+  execution_receipt?: {
+    path: string;
+    sha256: string;
+    verification_state: "observed_success" | "rejected" | "unverified" | "compatibility_unverified";
+    observed_by: "agentplane";
+  };
 };
 
 export type RunnerResultRecord = RunnerResult & {

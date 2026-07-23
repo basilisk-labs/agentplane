@@ -82,6 +82,7 @@ export function renderRunnerStatusPayload(inspection: LoadedTaskRunnerInspection
       trace: inspection.paths.trace_path,
       stderr: inspection.paths.stderr_path,
       result: inspection.paths.result_path,
+      receipt: inspection.paths.receipt_path,
       bundle: inspection.paths.bundle_path,
       bootstrap: inspection.paths.bootstrap_path,
     },

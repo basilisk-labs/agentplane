@@ -90,6 +90,7 @@ export type RunnerArtifactPaths = {
   state_path: string;
   events_path: string;
   result_path: string;
+  receipt_path: string;
   trace_path: string;
   stderr_path: string;
 };

@@ -63,11 +63,14 @@ describe("runSupervisedProcess", () => {
     const invocation = {
       adapter_id: "custom",
       run_id: "run-stream",
+      work_order_id: "run-stream",
+      repository_root: tempDir,
       run_dir: runDir,
       bundle_path: path.join(runDir, "bundle.json"),
       state_path: path.join(runDir, "run-state.json"),
       events_path: path.join(runDir, "events.jsonl"),
       result_path: path.join(runDir, "result.json"),
+      receipt_path: path.join(runDir, "execution-receipt.json"),
       trace_path: path.join(runDir, "agent-trace.jsonl"),
       stderr_path: path.join(runDir, "stderr.log"),
       trace_policy: {
@@ -148,11 +151,14 @@ describe("runSupervisedProcess", () => {
     const invocation = {
       adapter_id: "custom",
       run_id: "run-ordering",
+      work_order_id: "run-ordering",
+      repository_root: tempDir,
       run_dir: runDir,
       bundle_path: path.join(runDir, "bundle.json"),
       state_path: path.join(runDir, "run-state.json"),
       events_path: path.join(runDir, "events.jsonl"),
       result_path: path.join(runDir, "result.json"),
+      receipt_path: path.join(runDir, "execution-receipt.json"),
       trace_path: path.join(runDir, "agent-trace.jsonl"),
       stderr_path: path.join(runDir, "stderr.log"),
       trace_policy: {
@@ -214,11 +220,14 @@ describe("runSupervisedProcess", () => {
     const invocation = {
       adapter_id: "custom",
       run_id: "run-failure-flush",
+      work_order_id: "run-failure-flush",
+      repository_root: tempDir,
       run_dir: runDir,
       bundle_path: path.join(runDir, "bundle.json"),
       state_path: path.join(runDir, "run-state.json"),
       events_path: path.join(runDir, "events.jsonl"),
       result_path: path.join(runDir, "result.json"),
+      receipt_path: path.join(runDir, "execution-receipt.json"),
       trace_path: path.join(runDir, "agent-trace.jsonl"),
       stderr_path: path.join(runDir, "stderr.log"),
       trace_policy: {
@@ -268,11 +277,14 @@ describe("runSupervisedProcess", () => {
     const invocation = {
       adapter_id: "custom",
       run_id: "run-policy",
+      work_order_id: "run-policy",
+      repository_root: tempDir,
       run_dir: runDir,
       bundle_path: path.join(runDir, "bundle.json"),
       state_path: path.join(runDir, "run-state.json"),
       events_path: path.join(runDir, "events.jsonl"),
       result_path: path.join(runDir, "result.json"),
+      receipt_path: path.join(runDir, "execution-receipt.json"),
       trace_path: path.join(runDir, "agent-trace.jsonl"),
       stderr_path: path.join(runDir, "stderr.log"),
       trace_policy: {
@@ -322,11 +334,14 @@ describe("runSupervisedProcess", () => {
     const invocation = {
       adapter_id: "custom",
       run_id: "run-retention",
+      work_order_id: "run-retention",
+      repository_root: tempDir,
       run_dir: runDir,
       bundle_path: path.join(runDir, "bundle.json"),
       state_path: path.join(runDir, "run-state.json"),
       events_path: path.join(runDir, "events.jsonl"),
       result_path: path.join(runDir, "result.json"),
+      receipt_path: path.join(runDir, "execution-receipt.json"),
       trace_path: path.join(runDir, "agent-trace.jsonl"),
       stderr_path: path.join(runDir, "stderr.log"),
       trace_policy: {
@@ -389,11 +404,14 @@ describe("runSupervisedProcess", () => {
     const invocation = {
       adapter_id: "custom",
       run_id: "run-idle-timeout",
+      work_order_id: "run-idle-timeout",
+      repository_root: tempDir,
       run_dir: runDir,
       bundle_path: path.join(runDir, "bundle.json"),
       state_path: path.join(runDir, "run-state.json"),
       events_path: path.join(runDir, "events.jsonl"),
       result_path: path.join(runDir, "result.json"),
+      receipt_path: path.join(runDir, "execution-receipt.json"),
       trace_path: path.join(runDir, "agent-trace.jsonl"),
       stderr_path: path.join(runDir, "stderr.log"),
       trace_policy: {
@@ -444,11 +462,14 @@ describe("runSupervisedProcess", () => {
     const invocation = {
       adapter_id: "custom",
       run_id: "run-wall-timeout",
+      work_order_id: "run-wall-timeout",
+      repository_root: tempDir,
       run_dir: runDir,
       bundle_path: path.join(runDir, "bundle.json"),
       state_path: path.join(runDir, "run-state.json"),
       events_path: path.join(runDir, "events.jsonl"),
       result_path: path.join(runDir, "result.json"),
+      receipt_path: path.join(runDir, "execution-receipt.json"),
       trace_path: path.join(runDir, "agent-trace.jsonl"),
       stderr_path: path.join(runDir, "stderr.log"),
       trace_policy: {

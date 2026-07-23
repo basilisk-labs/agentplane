@@ -127,12 +127,21 @@ describe("task-run lifecycle usecases", () => {
       run_id: runId,
     });
 
-    expect(executed.result.status).toBe("success");
+    expect(executed.result.status).toBe("failed");
     expect(executed.result.exit_code).toBe(0);
     expect(executed.result.summary).toBe(
       "Runner blocked <!-- END RUNNER OUTCOME --> on sibling-owned paths.",
     );
-    expect(executed.result.evidence).toBeUndefined();
+    expect(executed.result.evidence).toMatchObject({
+      provenance: "supervisor_observed",
+      changed_paths: [],
+      files_changed_count: 0,
+    });
+    expect(executed.result.evidence).not.toHaveProperty("conflict_paths");
+    expect(executed.result.execution_receipt).toMatchObject({
+      verification_state: "unverified",
+      observed_by: "agentplane",
+    });
     expect(executed.result.semantic_result).toMatchObject({
       provenance: "agent_reported",
       value: {
@@ -149,7 +158,7 @@ describe("task-run lifecycle usecases", () => {
         {
           field: "status",
           agent_reported: "blocked",
-          observed: "success",
+          observed: "failed",
           resolution: "observed_wins",
         },
         {
@@ -170,7 +179,9 @@ describe("task-run lifecycle usecases", () => {
     });
 
     const task = await ctx.taskBackend.getTask(taskId);
-    expect(task?.doc).toContain("Summary: Custom runner completed successfully.");
+    expect(task?.doc).toContain(
+      "Summary: Custom runner failed; inspect run artifacts for details.",
+    );
     expect(task?.doc).toContain(
       "AgentSummary[agent_reported]: Runner blocked &lt;!-- END RUNNER OUTCOME --&gt; on sibling-owned paths.",
     );
@@ -184,7 +195,7 @@ describe("task-run lifecycle usecases", () => {
     expect(task?.doc).not.toContain("BlockedReason: sibling runner owns the same file");
     expect(task?.doc).not.toContain("ParentAction: split task scope before retrying");
     expect(task?.doc).toContain(
-      "VerificationHint: runner completed successfully; human verification and closure remain explicit lifecycle steps.",
+      "VerificationHint: runner failed; inspect artifacts before retrying or recording verification evidence.",
     );
     expect(task?.doc).not.toContain(
       "AgentSummary[agent_reported]: Runner blocked <!-- END RUNNER OUTCOME -->",
@@ -513,24 +524,24 @@ describe("task-run lifecycle usecases", () => {
     });
 
     expect(resumed.previous_status).toBe("prepared");
-    expect(resumed.result.status).toBe("success");
+    expect(resumed.result.status).toBe("failed");
     expect(resumed.result.summary).toBe("Custom runner execution completed successfully.");
     expect(resumed.result.stdout_summary).toBe(
       "Raw execution trace was captured in agent-trace.jsonl.",
     );
     const state = await readRunnerRunState(resumed.invocation.state_path);
-    expect(state?.status).toBe("success");
+    expect(state?.status).toBe("failed");
     const events = await readFile(resumed.invocation.events_path, "utf8");
     expect(events).toContain("runner_resume_requested");
     expect(events).toContain("runner_execute_finish");
     const task = await ctx.taskBackend.getTask(taskId);
     expect(task?.runner).toMatchObject({
       run_id: "run-resume",
-      status: "success",
+      status: "failed",
       adapter_id: "custom",
       mode: "execute",
     });
-    expect(task?.doc).toContain("RUNNER — success");
+    expect(task?.doc).toContain("RUNNER — failed");
   });
 
   it("retry creates a new run from a failed execute-mode run snapshot", async () => {
@@ -579,13 +590,13 @@ describe("task-run lifecycle usecases", () => {
 
     expect(retried.source_run_id).toBe("run-retry-source");
     expect(retried.invocation.run_id).toBe("run-retry-dest");
-    expect(retried.result.status).toBe("success");
+    expect(retried.result.status).toBe("failed");
     expect(retried.result.summary).toBe("Custom runner execution completed successfully.");
     expect(retried.result.stdout_summary).toBe(
       "Raw execution trace was captured in agent-trace.jsonl.",
     );
     const newState = await readRunnerRunState(retried.invocation.state_path);
-    expect(newState?.status).toBe("success");
+    expect(newState?.status).toBe("failed");
     const sourceEvents = await readFile(prepared.invocation.events_path, "utf8");
     expect(sourceEvents).toContain("runner_retry_requested");
     const retryEvents = await readFile(retried.invocation.events_path, "utf8");
@@ -594,7 +605,7 @@ describe("task-run lifecycle usecases", () => {
     const task = await ctx.taskBackend.getTask(taskId);
     expect(task?.runner).toMatchObject({
       run_id: "run-retry-dest",
-      status: "success",
+      status: "failed",
       adapter_id: "custom",
       mode: "execute",
     });

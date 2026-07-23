@@ -106,6 +106,7 @@ export {
   type QualityReviewState,
   type TaskRecord,
   type TaskRunnerEvidence,
+  type TaskRunnerExecutionReceiptRef,
   type TaskRunnerExecutionMetrics,
   type TaskRunnerHistoryEntry,
   type TaskRunnerOutcome,

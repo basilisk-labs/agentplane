@@ -19,6 +19,8 @@ import {
   renderTaskReadmeFrontmatterSchemaJson,
   renderTasksExportSchemaJson,
   renderRunnerResultManifestV1LegacyFixtureJson,
+  renderExecutionReceiptSchemaJson,
+  renderExecutionReceiptV1ValidFixtureJson,
 } from "../../packages/core/src/schemas/index.ts";
 
 const GENERATED_RUNTIME_SCHEMAS = [
@@ -44,11 +46,13 @@ const STATIC_CONTEXT_SCHEMAS = [
 
 const ROOT_ONLY_PUBLIC_SCHEMAS = [
   "agent-semantic-result.schema.json",
+  "execution-receipt.schema.json",
   "recipe-manifest.schema.json",
 ];
 
 const ROOT_ONLY_PUBLIC_EXAMPLES = [
   "agent-semantic-result-v2.valid.json",
+  "execution-receipt-v1.valid.json",
   "runner-result-manifest-v1.legacy.json",
 ];
 
@@ -136,6 +140,16 @@ const main = defineScript({
         targets: [
           path.join(repoRoot, "schemas", "examples", "agent-semantic-result-v2.valid.json"),
         ],
+      },
+      {
+        label: "execution receipt schema",
+        rendered: renderExecutionReceiptSchemaJson(),
+        targets: [path.join(repoRoot, "schemas", "execution-receipt.schema.json")],
+      },
+      {
+        label: "execution receipt v1 valid example",
+        rendered: renderExecutionReceiptV1ValidFixtureJson(),
+        targets: [path.join(repoRoot, "schemas", "examples", "execution-receipt-v1.valid.json")],
       },
       {
         label: "runner result manifest v1 legacy example",

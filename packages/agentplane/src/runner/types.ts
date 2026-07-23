@@ -41,6 +41,7 @@ export type {
   RunnerLifecycleStatus,
   RunnerPreparedMetadata,
   RunnerProcessSignal,
+  RunnerProcessTreeObservation,
   RunnerRunRecord,
   RunnerRunState,
   RunnerSupervisionState,

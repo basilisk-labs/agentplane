@@ -8,6 +8,7 @@ import {
   listTasks,
   type TaskOrigin,
   type TaskRunnerEvidence,
+  type TaskRunnerExecutionReceiptRef,
   type TaskRunnerExecutionMetrics,
   type TaskRunnerHistoryEntry,
   type TaskRunnerOutcome,
@@ -80,6 +81,9 @@ function normalizeStringArray(value: unknown): string[] | undefined {
 function normalizeRunnerEvidence(value: unknown): TaskRunnerEvidence | undefined {
   if (!isRecord(value)) return undefined;
   const evidence: TaskRunnerEvidence = {};
+  if (value.provenance === "supervisor_observed") {
+    evidence.provenance = value.provenance;
+  }
   const evidencePaths = normalizeStringArray(value.evidence_paths);
   if (evidencePaths) evidence.evidence_paths = evidencePaths;
   const changedPaths = normalizeStringArray(value.changed_paths);
@@ -107,6 +111,35 @@ function normalizeRunnerEvidence(value: unknown): TaskRunnerEvidence | undefined
     evidence.files_changed_count = value.files_changed_count;
   }
   return Object.keys(evidence).length > 0 ? evidence : undefined;
+}
+
+function normalizeRunnerExecutionReceiptRef(
+  value: unknown,
+): TaskRunnerExecutionReceiptRef | undefined {
+  if (!isRecord(value)) return undefined;
+  const receiptPath = typeof value.path === "string" ? value.path.trim() : "";
+  const sha256 = typeof value.sha256 === "string" ? value.sha256.trim() : "";
+  const verificationState =
+    value.verification_state === "observed_success" ||
+    value.verification_state === "rejected" ||
+    value.verification_state === "unverified" ||
+    value.verification_state === "compatibility_unverified"
+      ? value.verification_state
+      : null;
+  if (
+    !receiptPath ||
+    !/^sha256:[0-9a-f]{64}$/u.test(sha256) ||
+    !verificationState ||
+    value.observed_by !== "agentplane"
+  ) {
+    return undefined;
+  }
+  return {
+    path: receiptPath,
+    sha256,
+    verification_state: verificationState,
+    observed_by: "agentplane",
+  };
 }
 
 function normalizeTaskVerification(value: unknown): {
@@ -208,6 +241,8 @@ function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry
   if (metrics) outcome.metrics = metrics;
   const evidence = normalizeRunnerEvidence(value.evidence);
   if (evidence) outcome.evidence = evidence;
+  const executionReceipt = normalizeRunnerExecutionReceiptRef(value.execution_receipt);
+  if (executionReceipt) outcome.execution_receipt = executionReceipt;
   return outcome;
 }
 

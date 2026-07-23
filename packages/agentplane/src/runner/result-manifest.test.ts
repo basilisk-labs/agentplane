@@ -472,6 +472,39 @@ describe("runner result manifest", () => {
     expect(await readFile(sourcePath, "utf8")).toBe(agentPayload);
   });
 
+  it("preserves the exact source bytes without UTF-8 normalization", async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-result-source-bytes-"));
+    const resultPath = path.join(tempDir, "result.json");
+    const sourcePath = path.join(tempDir, "result.source.json");
+    const agentPayload = Buffer.from([
+      0x7b, 0x22, 0x76, 0x22, 0x3a, 0x22, 0x0d, 0x0a, 0xff, 0x22, 0x7d, 0x0a,
+    ]);
+    await writeFile(resultPath, agentPayload);
+
+    await expect(preserveRunnerResultManifestSource(resultPath)).resolves.toBe(sourcePath);
+    expect(await readFile(sourcePath)).toEqual(agentPayload);
+  });
+
+  it.skipIf(process.platform === "win32")(
+    "rejects an agent-controlled result symlink that points outside the run directory",
+    async () => {
+      const runDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-result-source-input-link-"));
+      const outsideDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-result-source-outside-"));
+      const resultPath = path.join(runDir, "result.json");
+      const sourcePath = path.join(runDir, "result.source.json");
+      const outsidePath = path.join(outsideDir, "outside.json");
+      const agentPayload = '{"schema_version":1,"summary":"outside source"}\n';
+      await writeFile(outsidePath, agentPayload, "utf8");
+      await symlink(outsidePath, resultPath);
+
+      await expect(preserveRunnerResultManifestSource(resultPath)).rejects.toThrow(
+        "Refusing non-regular runner result manifest",
+      );
+      await expect(readFile(sourcePath)).rejects.toMatchObject({ code: "ENOENT" });
+      expect(await readFile(outsidePath, "utf8")).toBe(agentPayload);
+    },
+  );
+
   it("rejects a pre-created source symlink even when its bytes match", async () => {
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-result-source-symlink-"));
     const resultPath = path.join(tempDir, "result.json");

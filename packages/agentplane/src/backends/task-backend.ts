@@ -26,6 +26,7 @@ export {
   type TaskEvent,
   type TaskEventType,
   type TaskOrigin,
+  type TaskRunnerExecutionReceiptRef,
   type TaskRunnerExecutionMetrics,
   type TaskRunnerHistoryEntry,
   type TaskRunnerOutcome,

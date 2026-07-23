@@ -246,6 +246,64 @@ describe("task-backend helpers", () => {
     expect(data.runner?.evidence?.evidence_paths).toEqual(["artifacts/result.json"]);
   });
 
+  it("taskRecordToData preserves execution receipt references and observed evidence provenance", () => {
+    const receipt = {
+      path: ".agentplane/tasks/202601300000-RECEIPT/runs/run-observed/execution-receipt.json",
+      sha256: `sha256:${"a".repeat(64)}`,
+      verification_state: "observed_success",
+      observed_by: "agentplane",
+    } as const;
+    const historyReceipt = {
+      ...receipt,
+      path: ".agentplane/tasks/202601300000-RECEIPT/runs/run-previous/execution-receipt.json",
+      verification_state: "unverified",
+    } as const;
+    const runnerBase = {
+      adapter_id: "custom",
+      mode: "execute",
+      updated_at: "2026-01-30T00:00:00.000Z",
+      exit_code: 0,
+      target: { kind: "task", task_id: "202601300000-RECEIPT" },
+    } as const;
+    const record = {
+      id: "202601300000-RECEIPT",
+      frontmatter: {
+        id: "202601300000-RECEIPT",
+        title: "Task",
+        description: "Desc",
+        status: "DOING",
+        priority: "high",
+        owner: "CODER",
+        runner: {
+          ...runnerBase,
+          run_id: "run-observed",
+          status: "success",
+          evidence: {
+            provenance: "supervisor_observed",
+            changed_paths: ["context/wiki/index.md"],
+          },
+          execution_receipt: receipt,
+          history: [
+            {
+              ...runnerBase,
+              run_id: "run-previous",
+              status: "failed",
+              exit_code: 1,
+              execution_receipt: historyReceipt,
+            },
+          ],
+        },
+      },
+      body: "## Summary\n\nDoc text\n",
+    } as unknown as TaskRecord;
+
+    const data = taskRecordToData(record);
+
+    expect(data.runner?.evidence?.provenance).toBe("supervisor_observed");
+    expect(data.runner?.execution_receipt).toEqual(receipt);
+    expect(data.runner?.history?.[0]?.execution_receipt).toEqual(historyReceipt);
+  });
+
   it("taskRecordToData preserves specialized blueprint requests", () => {
     const record = {
       id: "202601300000-BENCH",

@@ -7,8 +7,18 @@ import {
   writeRunnerRunState,
 } from "../artifacts.js";
 import { finalizeTraceArtifact } from "../trace-artifacts.js";
-import type { RunnerInvocation, RunnerProcessSignal, RunnerTimeoutReason } from "../types.js";
-import { isProcessAlive, normalizeSignal } from "./signals.js";
+import type {
+  RunnerInvocation,
+  RunnerProcessSignal,
+  RunnerProcessTreeObservation,
+  RunnerTimeoutReason,
+} from "../types.js";
+import {
+  cleanupSupervisedProcessGroup,
+  isPosixProcessGroupSupported,
+  supervisedProcessSignalTarget,
+} from "./process-tree.js";
+import { normalizeSignal } from "./signals.js";
 import {
   buildInvocationEventData,
   mergeSupervisionState,
@@ -34,6 +44,7 @@ export type SupervisedProcessResult = {
   terminate_sent_at: string | null;
   kill_sent_at: string | null;
   force_killed: boolean;
+  process_tree: RunnerProcessTreeObservation;
   heartbeat_at: string;
   trace_artifact_path: string | null;
   trace_archive_path: string | null;
@@ -61,6 +72,7 @@ export async function runSupervisedProcess(opts: {
       stdin: "pipe",
       stdout: "pipe",
       stderr: "pipe",
+      detached: isPosixProcessGroupSupported(),
     });
 
     const pid = typeof child.pid === "number" ? child.pid : null;
@@ -78,6 +90,14 @@ export async function runSupervisedProcess(opts: {
     let timeoutRequestedAt: string | null = null;
     let terminateSentAt: string | null = null;
     let killSentAt: string | null = null;
+    let processGroupCleanupPromise: Promise<RunnerProcessTreeObservation> | null = null;
+    const startProcessGroupCleanup = (): Promise<RunnerProcessTreeObservation> => {
+      processGroupCleanupPromise ??= cleanupSupervisedProcessGroup({
+        pid,
+        terminate_grace_ms: timeoutPolicy.terminate_grace_ms,
+      });
+      return processGroupCleanupPromise;
+    };
     const updateRunningState = async () => {
       const initialState = await readRunnerRunState(opts.invocation.state_path);
       if (!initialState) return;
@@ -117,6 +137,7 @@ export async function runSupervisedProcess(opts: {
     };
 
     const rejectAfterBufferedFlush = async (err: unknown) => {
+      await startProcessGroupCleanup();
       await traceSession.flushWritersSettled();
       reject(err instanceof Error ? err : new Error(String(err)));
     };
@@ -136,6 +157,7 @@ export async function runSupervisedProcess(opts: {
     });
     const timeoutController = createTimeoutController({
       pid,
+      signal_pid: supervisedProcessSignalTarget(pid),
       events_path: opts.invocation.events_path,
       state_path: opts.invocation.state_path,
       timeout_policy: timeoutPolicy,
@@ -175,16 +197,7 @@ export async function runSupervisedProcess(opts: {
       finish_with_error: finishWithError,
     });
 
-    void updateRunningState().catch((err) => {
-      if (pid && isProcessAlive(pid)) {
-        try {
-          process.kill(pid, "SIGKILL");
-        } catch {
-          // best effort
-        }
-      }
-      finishWithError(err);
-    });
+    void updateRunningState().catch(finishWithError);
 
     child.stdout?.on("data", (chunk: Buffer | string) => {
       traceSession.onStdoutData(chunk);
@@ -195,11 +208,16 @@ export async function runSupervisedProcess(opts: {
       ({ stdout_tail, stderr_tail, stdout_bytes, stderr_bytes } = traceSession.getResult());
     });
     void child.on("error", finishWithError);
+    void child.on("exit", () => {
+      timeoutController.clearTimers();
+      void startProcessGroupCleanup();
+    });
     void child.on("close", (code, signal) => {
       void (async () => {
         if (settled) return;
         timeoutController.clearTimers();
-        const ended_at = new Date().toISOString();
+        const processGroupObservation = await startProcessGroupCleanup();
+        const ended_at = processGroupObservation.completed_at;
         traceSession.flushPendingLines();
         await traceSession.flushWriters();
         if (settled) return;
@@ -243,6 +261,7 @@ export async function runSupervisedProcess(opts: {
           terminate_sent_at: supervision?.terminate_sent_at ?? terminateSentAt,
           kill_sent_at: supervision?.kill_sent_at ?? killSentAt,
           force_killed: supervision?.force_killed === true || killSentAt !== null,
+          process_tree: processGroupObservation,
           heartbeat_at: heartbeat_at || ended_at,
           trace_artifact_path: traceArtifact.artifact_path,
           trace_archive_path: traceArtifact.archive_path,

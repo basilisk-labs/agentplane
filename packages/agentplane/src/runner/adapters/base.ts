@@ -41,8 +41,11 @@ export function assertAdapterInvocation(opts: {
     ["state_path", invocation.state_path],
     ["events_path", invocation.events_path],
     ["result_path", invocation.result_path],
+    ["receipt_path", invocation.receipt_path],
     ["trace_path", invocation.trace_path],
     ["stderr_path", invocation.stderr_path],
+    ["repository_root", invocation.repository_root],
+    ["work_order_id", invocation.work_order_id],
   ];
   if (opts.requireBootstrap) {
     requiredPaths.push(["bootstrap_path", invocation.bootstrap_path]);
@@ -82,6 +85,7 @@ export async function writeRunnerExecutionState(opts: {
         terminate_sent_at: opts.processResult.terminate_sent_at,
         kill_sent_at: opts.processResult.kill_sent_at,
         force_killed: opts.processResult.force_killed,
+        process_tree: opts.processResult.process_tree,
       },
     }),
   );
@@ -125,6 +129,7 @@ export async function appendRunnerExecutionEvent(opts: {
       terminate_sent_at: opts.processResult.terminate_sent_at,
       kill_sent_at: opts.processResult.kill_sent_at,
       force_killed: opts.processResult.force_killed,
+      process_tree: opts.processResult.process_tree,
       exit_code: opts.result.exit_code,
       output_paths: opts.outputPaths,
       metrics: opts.result.metrics,

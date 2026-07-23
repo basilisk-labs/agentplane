@@ -13,7 +13,31 @@ import type {
 import type { RunnerPolicyDecision } from "./policy.js";
 import type { RunnerTarget } from "./target.js";
 
-export type RunnerProcessSignal = "SIGHUP" | "SIGINT" | "SIGQUIT" | "SIGTERM" | "SIGKILL";
+export type RunnerProcessSignal = NodeJS.Signals;
+
+type RunnerProcessTreeScope = "posix_process_group" | "direct_child_only";
+
+type RunnerProcessTreeCleanupState =
+  | "not_needed"
+  | "terminated"
+  | "force_killed"
+  | "unsupported"
+  | "failed";
+
+type RunnerProcessContainmentState = "bounded" | "limited";
+
+export type RunnerProcessTreeObservation = {
+  scope: RunnerProcessTreeScope;
+  group_id: number | null;
+  cleanup_state: RunnerProcessTreeCleanupState;
+  terminate_sent_at: string | null;
+  kill_sent_at: string | null;
+  completed_at: string;
+  residual_alive: boolean | null;
+  error: string | null;
+  containment_state: RunnerProcessContainmentState;
+  containment_limitation: string | null;
+};
 
 export type RunnerSupervisionState = {
   pid?: number | null;
@@ -28,6 +52,7 @@ export type RunnerSupervisionState = {
   kill_sent_at?: string | null;
   force_killed?: boolean;
   exit_signal?: RunnerProcessSignal | null;
+  process_tree?: RunnerProcessTreeObservation;
 };
 
 export type RunnerLifecycleStatus = "prepared" | "running" | RunnerResultStatus;
@@ -37,12 +62,15 @@ export type RunnerInvocationSnapshot = {
   argv: string[];
   argv_count: number;
   env_keys: string[];
+  work_order_id: string | null;
+  repository_root: string | null;
   cwd: string | null;
   run_dir: string | null;
   bundle_path: string | null;
   state_path: string | null;
   events_path: string | null;
   result_path: string | null;
+  receipt_path: string | null;
   trace_path: string | null;
   stderr_path: string | null;
   bootstrap_path: string | null;
@@ -78,6 +106,7 @@ export type RunnerRunState = {
   mode: RunnerExecutionContract["mode"];
   bundle_path: string;
   result_path: string;
+  receipt_path?: string | null;
   bootstrap_path?: string | null;
   events_path: string;
   trace_path: string;

@@ -1,9 +1,14 @@
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
+
 import { CliError } from "../../shared/errors.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
 import { runSupervisedProcess, type SupervisedProcessResult } from "../process-supervision/run.js";
 import {
   InvalidRunnerResultManifestError,
   preserveInvalidRunnerResultManifest,
   preserveRunnerResultManifestSource,
+  parseRunnerResultManifestText,
   readRunnerResultManifest,
   runnerResultRecordFromRunnerResult,
   salvageBlockedRunnerResultManifest,
@@ -21,6 +26,11 @@ import {
   writeRunnerExecutionState,
   writeRunnerResultState,
 } from "./base.js";
+import {
+  captureRunnerGitBefore,
+  finalizeRunnerExecutionReceipt,
+  type RunnerReceiptManifestState,
+} from "./execution-receipt-runtime.js";
 import { runnerAdapterFailureResult } from "./shared.js";
 
 type RunnerResultManifest = Awaited<ReturnType<typeof readRunnerResultManifest>>;
@@ -60,106 +70,160 @@ export async function executeSupervisedRunnerAdapter(opts: {
 }): Promise<RunnerResult> {
   const { invocation } = opts;
   const started_at = new Date().toISOString();
+  const repository = RunnerRunRepository.fromInvocation(invocation);
+  const gitBefore = await captureRunnerGitBefore(invocation);
   let processResult: SupervisedProcessResult | null = null;
   let sourceManifestPath: string | null = null;
-
+  let sourceManifestSha256: string | null = null;
+  let invalidManifestPath: string | null = null;
+  let manifest: RunnerResultManifest = null;
+  let manifestState: RunnerReceiptManifestState = "not_reached";
+  let manifestAttempted = false;
+  let executionError: unknown = null;
+  let blockedManifestFallback: ReturnType<typeof salvageBlockedRunnerResultManifest> = null;
+  let artifacts: NonNullable<RunnerResult["artifacts"]> = [];
+  let baseResult: RunnerResult;
   try {
     opts.assertInvocation(invocation);
-    const repository = RunnerRunRepository.fromInvocation(invocation);
     const stdinText = await opts.readStdinText(invocation);
     processResult = await runSupervisedProcess({
       invocation,
       stdin_text: stdinText,
       start_message: opts.startMessage,
     });
+    manifestAttempted = true;
     sourceManifestPath = await preserveRunnerResultManifestSource(invocation.result_path);
-    const manifest = await readRunnerResultManifest(invocation.result_path);
+    if (sourceManifestPath) {
+      const sourceText = await readFile(sourceManifestPath, "utf8");
+      sourceManifestSha256 = `sha256:${createHash("sha256").update(sourceText, "utf8").digest("hex")}`;
+      manifest = parseRunnerResultManifestText(sourceText, sourceManifestPath);
+    } else {
+      manifest = await readRunnerResultManifest(invocation.result_path);
+    }
+    if (manifest && manifest.semantic_result.value.work_order_id !== invocation.work_order_id) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_RUNTIME"),
+        code: "E_RUNTIME",
+        message:
+          `Agent semantic result work_order_id does not match the supervised invocation ` +
+          `(${JSON.stringify(manifest.semantic_result.value.work_order_id)} != ${JSON.stringify(invocation.work_order_id)}).`,
+        context: {
+          adapter_id: invocation.adapter_id,
+          expected_work_order_id: invocation.work_order_id,
+          agent_reported_work_order_id: manifest.semantic_result.value.work_order_id,
+        },
+      });
+    }
     assertRunnerManifestArtifactPolicy({
       adapter_id: invocation.adapter_id,
       allowed_prefixes: readRecipeArtifactPrefixesFromRunnerEnv(invocation.env),
       manifest,
     });
     opts.assertManifest?.({ invocation, processResult, manifest });
+    manifestState = manifest ? "valid" : "missing_allowed";
 
-    const artifacts = opts.buildArtifacts({
+    artifacts = opts.buildArtifacts({
       invocation,
       processResult,
       source_manifest_path: sourceManifestPath,
     });
     const output_paths = artifacts.map((artifact) => artifact.path);
-    const baseResult = await opts.buildBaseResult({
+    baseResult = await opts.buildBaseResult({
       invocation,
       processResult,
       artifacts,
       output_paths,
     });
-    const result = opts.applyManifest({ base: baseResult, manifest });
-    await writeRunnerResultRecord({
-      result_path: invocation.result_path,
-      record: runnerResultRecordFromRunnerResult(result),
-    });
-    await writeRunnerExecutionState({
-      repository,
-      result,
-      processResult,
-      command: invocation.argv.join(" "),
-    });
-    await appendRunnerExecutionEvent({
-      repository,
-      invocation,
-      result,
-      processResult,
-      message: opts.successEventMessage(result),
-      outputPaths: output_paths,
-    });
-    return result;
   } catch (err) {
+    executionError = err;
+    if (manifestAttempted) manifestState = "failed";
     const ended_at = new Date().toISOString();
-    const invalidManifestPath =
+    invalidManifestPath =
       err instanceof InvalidRunnerResultManifestError
         ? await preserveInvalidRunnerResultManifest({
             result_path: invocation.result_path,
             error: err,
           })
         : null;
-    const blockedManifestFallback =
+    blockedManifestFallback =
       err instanceof InvalidRunnerResultManifestError
         ? salvageBlockedRunnerResultManifest(err.raw_content, invocation.result_path)
         : null;
-    const artifacts = opts.buildArtifacts({
+    artifacts = opts.buildArtifacts({
       invocation,
       processResult,
       source_manifest_path: sourceManifestPath,
       invalid_manifest_path: invalidManifestPath,
     });
     const output_paths = artifacts.map((artifact) => artifact.path);
-    const result: RunnerResult = {
+    baseResult = {
       ...runnerAdapterFailureResult({
         err,
         summary: opts.failureSummary,
-        started_at,
+        started_at: processResult?.started_at ?? started_at,
         ended_at,
         exit_code: err instanceof CliError ? err.exitCode : undefined,
         output_paths,
       }),
       artifacts,
       capabilities_used: opts.capabilitiesUsed(invocation),
-      ...(blockedManifestFallback ?? {}),
     };
-    await writeRunnerResultRecord({
-      result_path: invocation.result_path,
-      record: runnerResultRecordFromRunnerResult(result),
+  }
+
+  const finalized = await finalizeRunnerExecutionReceipt({
+    invocation,
+    repository,
+    git_before: gitBefore,
+    process_result: processResult,
+    base_result: baseResult,
+    artifacts,
+    manifest_state: manifestState,
+    source_manifest_sha256: sourceManifestSha256,
+    capabilities_used: opts.capabilitiesUsed(invocation),
+  });
+  let result =
+    executionError === null
+      ? opts.applyManifest({ base: finalized.result, manifest })
+      : finalized.result;
+  if (blockedManifestFallback) {
+    result = {
+      ...result,
+      ...blockedManifestFallback,
+    };
+  }
+  await writeRunnerResultRecord({
+    result_path: invocation.result_path,
+    record: runnerResultRecordFromRunnerResult(result),
+  });
+  const outputPaths = result.output_paths ?? artifacts.map((artifact) => artifact.path);
+  if (processResult) {
+    await writeRunnerExecutionState({
+      repository,
+      result,
+      processResult,
+      command: invocation.argv.join(" "),
     });
-    const repository = RunnerRunRepository.fromInvocation(invocation);
+  } else {
     await writeRunnerResultState({ repository, result });
+  }
+  if (executionError === null && processResult) {
+    await appendRunnerExecutionEvent({
+      repository,
+      invocation,
+      result,
+      processResult,
+      message: opts.successEventMessage(result),
+      outputPaths,
+    });
+  } else {
     await appendRunnerResultEvent({
       repository,
       invocation,
       result,
       type: opts.failureEventType,
       message: opts.failureEventMessage(result),
-      outputPaths: output_paths,
+      outputPaths,
     });
-    return result;
   }
+  return result;
 }

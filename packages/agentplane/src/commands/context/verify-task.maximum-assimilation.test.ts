@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../shared/task-backend.js";
+import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
 
 let tempRoots: string[] = [];
@@ -431,6 +432,11 @@ describe("maximum-assimilation context verify-task gates", () => {
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
     await writeMaximumAssimilationArtifacts(root);
     const task = maxAssimilationTask();
+    await attachObservedExecutionReceiptFixture({
+      root,
+      task,
+      changedPaths: task.runner.evidence.changed_paths,
+    });
     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 
     await cmdContextVerifyTask({
@@ -449,9 +455,11 @@ describe("maximum-assimilation context verify-task gates", () => {
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
     await writeMaximumAssimilationArtifacts(root, { glossary: false });
     const task = maxAssimilationTask();
-    task.runner.evidence.changed_paths = task.runner.evidence.changed_paths.filter(
-      (rel) => rel !== "context/wiki/glossary.md",
-    );
+    await attachObservedExecutionReceiptFixture({
+      root,
+      task,
+      changedPaths: task.runner.evidence.changed_paths,
+    });
 
     await expect(
       cmdContextVerifyTask({

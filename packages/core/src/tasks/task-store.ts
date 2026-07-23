@@ -98,6 +98,7 @@ export type TaskRunnerExecutionMetrics = {
 };
 
 export type TaskRunnerEvidence = {
+  provenance?: "supervisor_observed";
   evidence_paths?: string[];
   changed_paths?: string[];
   conflict_paths?: string[];
@@ -106,6 +107,13 @@ export type TaskRunnerEvidence = {
   verification_candidates?: string[];
   blocked_reason?: string;
   recommended_parent_action?: string;
+};
+
+export type TaskRunnerExecutionReceiptRef = {
+  path: string;
+  sha256: string;
+  verification_state: "observed_success" | "rejected" | "unverified" | "compatibility_unverified";
+  observed_by: "agentplane";
 };
 
 export type TaskRunnerTarget = {
@@ -131,6 +139,7 @@ export type TaskRunnerHistoryEntry = {
   stderr_summary?: string;
   metrics?: TaskRunnerExecutionMetrics;
   evidence?: TaskRunnerEvidence;
+  execution_receipt?: TaskRunnerExecutionReceiptRef;
 };
 
 export type TaskRunnerOutcome = TaskRunnerHistoryEntry & {

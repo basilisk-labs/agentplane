@@ -14,6 +14,7 @@ import {
   RUNNER_BLUEPRINT_EXECUTION_STATE_FILENAME,
   RUNNER_BLUEPRINT_PLAN_FILENAME,
   RUNNER_CONTEXT_MANIFEST_FILENAME,
+  RUNNER_EXECUTION_RECEIPT_FILENAME,
   resolveTaskRunnerPaths,
 } from "./task-run-paths.js";
 import { readTraceArtifactText } from "./trace-artifacts.js";
@@ -143,6 +144,8 @@ export class RunnerRunRepository {
       state_path: invocation.state_path,
       events_path: invocation.events_path,
       result_path: invocation.result_path,
+      receipt_path:
+        invocation.receipt_path || path.join(invocation.run_dir, RUNNER_EXECUTION_RECEIPT_FILENAME),
       trace_path: invocation.trace_path,
       stderr_path: invocation.stderr_path,
     });

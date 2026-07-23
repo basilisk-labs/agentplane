@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import { describe, expect, it } from "vitest";
 
 import { writePreparedRunnerArtifacts } from "../artifacts.js";
@@ -17,6 +18,12 @@ import { CliError } from "../../shared/errors.js";
 const CYRILLIC_RE = /[\u0400-\u04FF]/u;
 const RUSSIAN_TRACE_LINE = "Привет из raw trace";
 const RUSSIAN_LAST_MESSAGE = "Привет из сообщения Codex";
+
+async function makeGitTempRoot(prefix: string): Promise<string> {
+  const root = await mkdtemp(path.join(os.tmpdir(), prefix));
+  await execFileAsync("git", ["init", "--quiet"], { cwd: root });
+  return root;
+}
 
 const codexBundleDefaults = {
   adapterId: "codex",
@@ -209,9 +216,9 @@ describe("CodexRunnerAdapter", () => {
     expect((error as CliError).message).toContain("invalid relative prefixes");
   });
 
-  it("captures success-path result details and persists run-state updates", async () => {
+  it("captures clean-exit result details without claiming success under limited containment", async () => {
     const adapter = createRunnerAdapter(defaultConfig());
-    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-success-"));
+    const tempDir = await makeGitTempRoot("agentplane-codex-adapter-success-");
     const fakeBinDir = path.join(tempDir, "bin");
     const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.repository.git_root = tempDir;
@@ -255,7 +262,7 @@ describe("CodexRunnerAdapter", () => {
     const result = await adapter.execute(invocation);
     const lastMessage = await readFile(invocation.output_last_message_path!, "utf8");
 
-    expect(result.status).toBe("success");
+    expect(result.status).toBe("failed");
     expect(result.exit_code).toBe(0);
     expect(result.summary).toBe("custom codex success");
     expect(result.stdout_summary).toBe(
@@ -277,10 +284,10 @@ describe("CodexRunnerAdapter", () => {
         metrics?: { stdout_bytes?: number; output_last_message_bytes?: number | null };
       };
     };
-    expect(state.status).toBe("success");
+    expect(state.status).toBe("failed");
     expect(state.prepared_metadata?.bundle_bytes).toBeGreaterThan(0);
     expect(state.prepared_metadata?.bundle_sha256).toMatch(/^[a-f0-9]{64}$/);
-    expect(state.result?.status).toBe("success");
+    expect(state.result?.status).toBe("failed");
     expect(state.result?.exit_code).toBe(0);
     expect(state.result?.summary).toBe("custom codex success");
     expect(state.result?.summary).not.toMatch(CYRILLIC_RE);
@@ -299,7 +306,7 @@ describe("CodexRunnerAdapter", () => {
     };
     expect(resultManifest.kind).toBe("runner_result_record");
     expect(resultManifest.observed_by).toBe("agentplane");
-    expect(resultManifest.status).toBe("success");
+    expect(resultManifest.status).toBe("failed");
     expect(resultManifest.summary).toBe("custom codex success");
     expect(resultManifest.stdout_summary).toBe(
       "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
@@ -352,7 +359,7 @@ describe("CodexRunnerAdapter", () => {
 
   it("fails execute-mode success when codex exits 0 without writing a result manifest", async () => {
     const adapter = createRunnerAdapter(defaultConfig());
-    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-missing-"));
+    const tempDir = await makeGitTempRoot("agentplane-codex-adapter-missing-");
     const fakeBinDir = path.join(tempDir, "bin");
     const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.repository.git_root = tempDir;
@@ -431,7 +438,7 @@ describe("CodexRunnerAdapter", () => {
 
   it("captures failure-path stderr and persists failed run-state", async () => {
     const adapter = createRunnerAdapter(defaultConfig());
-    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-fail-"));
+    const tempDir = await makeGitTempRoot("agentplane-codex-adapter-fail-");
     const fakeBinDir = path.join(tempDir, "bin");
     const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.repository.git_root = tempDir;
@@ -516,7 +523,7 @@ describe("CodexRunnerAdapter", () => {
 
   it("keeps process failure authoritative over conflicting legacy success claims", async () => {
     const adapter = createRunnerAdapter(defaultConfig());
-    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-conflict-"));
+    const tempDir = await makeGitTempRoot("agentplane-codex-adapter-conflict-");
     const fakeBinDir = path.join(tempDir, "bin");
     const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.repository.git_root = tempDir;
@@ -559,6 +566,11 @@ describe("CodexRunnerAdapter", () => {
     expect(result.exit_code).toBe(42);
     expect(result.summary).toBe("Agent claims success.");
     expect(result.metrics?.duration_ms).not.toBe(999_999_999);
+    expect(result.execution_receipt).toMatchObject({
+      path: "runs/run-conflict/execution-receipt.json",
+      verification_state: "rejected",
+      observed_by: "agentplane",
+    });
     expect(result.claim_conflicts).toEqual(
       expect.arrayContaining([
         {
@@ -588,13 +600,19 @@ describe("CodexRunnerAdapter", () => {
     ).toBe(
       '{"schema_version":1,"status":"success","exit_code":0,"summary":"Agent claims success.","metrics":{"duration_ms":999999999}}\n',
     );
+    const receipt = JSON.parse(await readFile(invocation.receipt_path, "utf8")) as {
+      process?: { exit_code?: number | null; outcome?: string };
+      success_policy?: { outcome?: string };
+    };
+    expect(receipt.process).toMatchObject({ exit_code: 42, outcome: "exited" });
+    expect(receipt.success_policy?.outcome).toBe("rejected");
 
     await rm(tempDir, { recursive: true, force: true });
   });
 
   it("fails deterministically and preserves malformed codex result manifests", async () => {
     const adapter = createRunnerAdapter(defaultConfig());
-    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-invalid-"));
+    const tempDir = await makeGitTempRoot("agentplane-codex-adapter-invalid-");
     const fakeBinDir = path.join(tempDir, "bin");
     const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.repository.git_root = tempDir;
@@ -668,7 +686,7 @@ describe("CodexRunnerAdapter", () => {
 
   it("fails when codex result manifest paths escape declared recipe prefixes", async () => {
     const adapter = createRunnerAdapter(defaultConfig());
-    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-scope-"));
+    const tempDir = await makeGitTempRoot("agentplane-codex-adapter-scope-");
     const fakeBinDir = path.join(tempDir, "bin");
     const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.repository.git_root = tempDir;

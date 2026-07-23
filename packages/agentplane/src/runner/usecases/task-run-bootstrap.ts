@@ -157,6 +157,7 @@ export function renderTaskRunnerBootstrap(
     `- run_id: ${bundle.execution.run_id}`,
     `- bundle_path: ${bundle.execution.artifact_paths.bundle_path}`,
     `- result_path: ${bundle.execution.artifact_paths.result_path}`,
+    `- receipt_path: ${bundle.execution.artifact_paths.receipt_path}`,
     `- bootstrap_path: ${bundle.execution.artifact_paths.bootstrap_path}`,
     ...(routeDecision
       ? [

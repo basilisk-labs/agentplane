@@ -18,6 +18,7 @@ type TimeoutRefState = {
 
 export function createTimeoutController(opts: {
   pid: number | null;
+  signal_pid: number | null;
   events_path: string;
   state_path: string;
   timeout_policy: {
@@ -71,9 +72,9 @@ export function createTimeoutController(opts: {
         },
       },
     }).catch(opts.finish_with_error);
-    if (opts.pid && isProcessAlive(opts.pid)) {
+    if (opts.signal_pid && isProcessAlive(opts.signal_pid)) {
       try {
-        process.kill(opts.pid, "SIGTERM");
+        process.kill(opts.signal_pid, "SIGTERM");
       } catch (err) {
         const code = (err as NodeJS.ErrnoException | null)?.code;
         if (code !== "ESRCH") {
@@ -84,7 +85,7 @@ export function createTimeoutController(opts: {
     }
     const graceMs = opts.timeout_policy.terminate_grace_ms;
     if (graceMs <= 0) {
-      if (opts.pid && isProcessAlive(opts.pid)) {
+      if (opts.signal_pid && isProcessAlive(opts.signal_pid)) {
         opts.mutable.killSentAt = new Date().toISOString();
         void patchRunningSupervision({
           timeout_reason: reason,
@@ -95,7 +96,7 @@ export function createTimeoutController(opts: {
           heartbeat_at: opts.mutable.killSentAt,
         }).catch(opts.finish_with_error);
         try {
-          process.kill(opts.pid, "SIGKILL");
+          process.kill(opts.signal_pid, "SIGKILL");
         } catch (err) {
           const code = (err as NodeJS.ErrnoException | null)?.code;
           if (code !== "ESRCH") {
@@ -107,7 +108,7 @@ export function createTimeoutController(opts: {
     }
     killTimer = setTimeout(() => {
       if (opts.is_settled() || !opts.mutable.timeoutReason) return;
-      if (!opts.pid || !isProcessAlive(opts.pid)) return;
+      if (!opts.signal_pid || !isProcessAlive(opts.signal_pid)) return;
       opts.mutable.killSentAt = new Date().toISOString();
       void patchRunningSupervision({
         timeout_reason: opts.mutable.timeoutReason,
@@ -130,9 +131,9 @@ export function createTimeoutController(opts: {
           },
         },
       }).catch(opts.finish_with_error);
-      if (opts.pid && isProcessAlive(opts.pid)) {
+      if (opts.signal_pid && isProcessAlive(opts.signal_pid)) {
         try {
-          process.kill(opts.pid, "SIGKILL");
+          process.kill(opts.signal_pid, "SIGKILL");
         } catch (err) {
           const code = (err as NodeJS.ErrnoException | null)?.code;
           if (code !== "ESRCH") {
