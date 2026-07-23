@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -33,11 +33,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-23T02:44:41.310Z"
+  state: "ok"
+  updated_at: "2026-07-23T03:07:18.006Z"
   updated_by: "CODER"
-  note: "Hosted CI found a backward-compatibility defect in v1 optional sections and new unused exports; reopen for bounded correction."
-  attempts: 1
+  note: "PASS after CI rework at implementation 816b1f592: 41 focused and 2216/2216 full tests pass; hosted-equivalent static, critical, schema, docs, workflow and compatibility gates pass; independent evaluator found no P0-P2 issues."
+  attempts: 0
 quality_review:
   state: "pass"
   updated_at: "2026-07-23T03:06:42.939Z"
@@ -92,8 +92,14 @@ events:
     author: "CODER"
     state: "needs_rework"
     note: "Hosted CI found a backward-compatibility defect in v1 optional sections and new unused exports; reopen for bounded correction."
+  -
+    type: "verify"
+    at: "2026-07-23T03:07:18.006Z"
+    author: "CODER"
+    state: "ok"
+    note: "PASS after CI rework at implementation 816b1f592: 41 focused and 2216/2216 full tests pass; hosted-equivalent static, critical, schema, docs, workflow and compatibility gates pass; independent evaluator found no P0-P2 issues."
 doc_version: 3
-doc_updated_at: "2026-07-23T02:44:43.349Z"
+doc_updated_at: "2026-07-23T03:07:18.117Z"
 doc_updated_by: "CODER"
 description: "Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing, the public v1 JSON Schema/docs, future-version acceptance, and upgrade behavior."
 sections:
@@ -150,6 +156,36 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T02:31:36.727Z, excerpt_hash=sha256:af5ea8abec88124a9c949254e987364e763f794ade7f69ed80c53fe80741acd7
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-4VB97J-align-workflow-schema-migration-and-runtime-vers/.agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json
+    - old_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+    - current_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221846-4VB97J
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607221846-4VB97J --branch task/202607221846-4VB97J/align-workflow-schema-migration-and-runtime-vers
+    - diagnostic_command: agentplane pr check 202607221846-4VB97J
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-23T03:07:18.006Z — VERIFY — ok
+
+    By: CODER
+
+    Note: PASS after CI rework at implementation 816b1f592: 41 focused and 2216/2216 full tests pass; hosted-equivalent static, critical, schema, docs, workflow and compatibility gates pass; independent evaluator found no P0-P2 issues.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T02:44:43.349Z, excerpt_hash=sha256:af5ea8abec88124a9c949254e987364e763f794ade7f69ed80c53fe80741acd7
 
     Details:
 
@@ -254,6 +290,36 @@ Note: Hosted CI found a backward-compatibility defect in v1 optional sections an
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T02:31:36.727Z, excerpt_hash=sha256:af5ea8abec88124a9c949254e987364e763f794ade7f69ed80c53fe80741acd7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-4VB97J-align-workflow-schema-migration-and-runtime-vers/.agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json
+- old_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+- current_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221846-4VB97J
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607221846-4VB97J --branch task/202607221846-4VB97J/align-workflow-schema-migration-and-runtime-vers
+- diagnostic_command: agentplane pr check 202607221846-4VB97J
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-23T03:07:18.006Z — VERIFY — ok
+
+By: CODER
+
+Note: PASS after CI rework at implementation 816b1f592: 41 focused and 2216/2216 full tests pass; hosted-equivalent static, critical, schema, docs, workflow and compatibility gates pass; independent evaluator found no P0-P2 issues.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T02:44:43.349Z, excerpt_hash=sha256:af5ea8abec88124a9c949254e987364e763f794ade7f69ed80c53fe80741acd7
 
 Details:
 
