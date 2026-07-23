@@ -6,14 +6,14 @@ Created: 2026-07-23T14:36:56.091Z
 
 - Task: `202607221846-4CE7EG`
 - Title: Split agent semantic results from legacy observed claims
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221846-4CE7EG/split-agent-semantic-results-from-legacy-observe`
 - Canonical task record: `.agentplane/tasks/202607221846-4CE7EG/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: No implementation changes are present at the current task head; return to CODER for RF-01a implementation before evidence-based verification.
+- State: ok
+- Note: RF-01a rework verified: v2 excludes observed process, check, metric, and path truth; v1 preserves those values only as agent_reported claims; observed runtime values win with auditable conflicts. schemas:check, 69 focused tests, typecheck, trust ratchet, all 11 critical chunks, ci:contract, and independent review pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

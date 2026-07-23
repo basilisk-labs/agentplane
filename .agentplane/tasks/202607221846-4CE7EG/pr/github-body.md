@@ -15,12 +15,14 @@ RF-01a: define the agent-writable AgentSemanticResult contract and a compatibili
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-No implementation changes are present at the current task head; return to CODER for RF-01a
-implementation before evidence-based verification.
+RF-01a rework verified: v2 excludes observed process, check, metric, and path truth; v1 preserves
+those values only as agent_reported claims; observed runtime values win with auditable conflicts.
+schemas:check, 69 focused tests, typecheck, trust ratchet, all 11 critical chunks, ci:contract, and
+independent review pass.
 ```
 - Canonical workflow state lives in the task README.
 

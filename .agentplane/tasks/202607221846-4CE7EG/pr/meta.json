@@ -3,15 +3,22 @@
   "branch": "task/202607221846-4CE7EG/split-agent-semantic-results-from-legacy-observe",
   "created_at": "2026-07-23T14:36:56.091Z",
   "diffstat_sha256": "sha256:ed2e873ac10b50f88e474daa960c9d3e83a6d25a9d9f164c662ea386615e2813",
-  "last_verified_at": "2026-07-23T14:48:10.137Z",
-  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-07-23T15:40:05.193Z",
+  "last_verified_diffstat_sha256": "sha256:ed2e873ac10b50f88e474daa960c9d3e83a6d25a9d9f164c662ea386615e2813",
   "pr_number": 4604,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4604",
+  "pre_merge_closure": {
+    "basis_commit": "dfc9d19279e56349cdffefbe0fd15ab378ddce27",
+    "branch": "task/202607221846-4CE7EG/split-agent-semantic-results-from-legacy-observe",
+    "pr_number": 4604,
+    "recorded_at": "2026-07-23T15:46:46.488Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221846-4CE7EG",
   "updated_at": "2026-07-23T14:37:15.639Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }
