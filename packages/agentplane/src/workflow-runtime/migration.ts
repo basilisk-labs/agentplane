@@ -26,7 +26,7 @@ const WorkflowMigrationReceiptSchema = z
   })
   .strict();
 
-export type WorkflowMigrationReceipt = z.infer<typeof WorkflowMigrationReceiptSchema>;
+type WorkflowMigrationReceipt = z.infer<typeof WorkflowMigrationReceiptSchema>;
 
 export type WorkflowMigrationPlan = {
   changed: boolean;

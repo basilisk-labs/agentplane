@@ -95,6 +95,23 @@ const WORKFLOW_OBSERVABILITY_SCHEMA = z
   })
   .passthrough();
 
+const WORKFLOW_V1_OPTIONAL_ROOT_SHAPE = {
+  workspace: WORKFLOW_WORKSPACE_SCHEMA.optional(),
+  paths: configShape.paths.unwrap().optional(),
+  tasks: WORKFLOW_TASKS_SCHEMA.optional(),
+  branch: configShape.branch.unwrap().optional(),
+  framework: configShape.framework.unwrap().optional(),
+  execution: configShape.execution.unwrap().optional(),
+  runner: configShape.runner.unwrap().optional(),
+  feedback: configShape.feedback.unwrap().optional(),
+  recipes: configShape.recipes.unwrap().optional(),
+  commit: configShape.commit.unwrap().optional(),
+  acr: configShape.acr.unwrap().optional(),
+  scheduler: WORKFLOW_SCHEDULER_SCHEMA.optional(),
+  evaluator: WORKFLOW_EVALUATOR_SCHEMA.optional(),
+  observability: WORKFLOW_OBSERVABILITY_SCHEMA.optional(),
+};
+
 export const WorkflowV1FrontMatterSchema = z
   .object({
     version: z.literal(1),
@@ -104,6 +121,7 @@ export const WorkflowV1FrontMatterSchema = z
     retry_policy: WORKFLOW_RETRY_POLICY_SCHEMA,
     timeouts: WORKFLOW_TIMEOUTS_SCHEMA,
     in_scope_paths: z.array(nonEmptyString).min(1),
+    ...WORKFLOW_V1_OPTIONAL_ROOT_SHAPE,
   })
   .strict();
 
@@ -138,7 +156,7 @@ export const WorkflowFrontMatterInputSchema = z.union([
   WorkflowV2FrontMatterSchema,
 ]);
 
-export type WorkflowV1FrontMatter = z.infer<typeof WorkflowV1FrontMatterSchema>;
+export type WorkflowV1FrontMatter = z.input<typeof WorkflowV1FrontMatterSchema>;
 export type WorkflowV2FrontMatter = z.input<typeof WorkflowV2FrontMatterSchema>;
 export type WorkflowFrontMatterInput = z.input<typeof WorkflowFrontMatterInputSchema>;
 
@@ -171,22 +189,24 @@ function assertSupportedWorkflowVersion(raw: unknown): void {
 export function migrateWorkflowFrontMatterV1ToV2(
   input: WorkflowV1FrontMatter,
 ): WorkflowV2FrontMatter {
-  const source = WorkflowV1FrontMatterSchema.parse(input);
-  return {
+  WorkflowV1FrontMatterSchema.parse(input);
+  const source = structuredClone(input);
+  const { version: _version, mode, ...preserved } = source;
+  const candidate: WorkflowV2FrontMatter = {
     version: WORKFLOW_CONTRACT_VERSION,
-    workflow: { mode: source.mode },
-    owners: structuredClone(source.owners),
-    approvals: structuredClone(source.approvals),
-    retry_policy: structuredClone(source.retry_policy),
-    timeouts: structuredClone(source.timeouts),
-    in_scope_paths: [...source.in_scope_paths],
+    workflow: { mode },
+    ...preserved,
   };
+  WorkflowV2FrontMatterSchema.parse(candidate);
+  return candidate;
 }
 
 export function parseWorkflowFrontMatter(raw: unknown): WorkflowV2FrontMatter {
   assertSupportedWorkflowVersion(raw);
   const parsed = WorkflowFrontMatterInputSchema.parse(raw);
-  if (parsed.version === 1) return migrateWorkflowFrontMatterV1ToV2(parsed);
+  if (parsed.version === 1) {
+    return migrateWorkflowFrontMatterV1ToV2(raw as WorkflowV1FrontMatter);
+  }
 
   // Parsing is validation-only for v2. Returning the source shape prevents defaults in the
   // config schema fragments from materializing fields that were absent in the persisted file.
