@@ -277,6 +277,9 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
         `type Authority = { sandbox: { danger_full_access_authorized: boolean } };`,
         `type FeatureFlags = { sandbox: { danger_full_access_authorized: boolean } };`,
         `type Choice = { sandbox: "danger-full-access" | "workspace-write" };`,
+        `type PermissionChoice = {`,
+        `  sandbox_permissions: "danger-full-access" | "workspace-write";`,
+        `};`,
         `export const computed = () => ["danger", "full", "access"].join("-");`,
         `export const safeObject = (authority: Authority): Choice =>`,
         `  authority.sandbox.danger_full_access_authorized`,
@@ -300,6 +303,30 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
         `  { danger_full_access_authorized: authorized }: Record<string, unknown>,`,
         `  enabled: boolean,`,
         `): string => authorized && enabled ? "danger-full-access" : "workspace-write";`,
+        `export function localDestructured(`,
+        `  authority: Authority,`,
+        `  enabled: boolean,`,
+        `): PermissionChoice {`,
+        `  const { sandbox: { danger_full_access_authorized: authorized } } = authority;`,
+        `  return authorized && enabled`,
+        `    ? { sandbox_permissions: "danger-full-access" }`,
+        `    : { sandbox_permissions: "workspace-write" };`,
+        `}`,
+        `export function localLookalike(`,
+        `  flags: FeatureFlags,`,
+        `  enabled: boolean,`,
+        `): PermissionChoice {`,
+        `  const { sandbox: { danger_full_access_authorized: authorized } } = flags;`,
+        `  return authorized && enabled`,
+        `    ? { sandbox_permissions: "danger-full-access" }`,
+        `    : { sandbox_permissions: "workspace-write" };`,
+        `}`,
+        `export function localUntyped(flags: any, enabled: boolean): PermissionChoice {`,
+        `  const { sandbox: { danger_full_access_authorized: authorized } } = flags;`,
+        `  return authorized && enabled`,
+        `    ? { sandbox_permissions: "danger-full-access" }`,
+        `    : { sandbox_permissions: "workspace-write" };`,
+        `}`,
         ``,
       ].join("\n"),
     );
@@ -310,12 +337,18 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
     );
     expect(sandbox.some((entry) => entry.locator.startsWith("fallback:computed:"))).toBe(true);
     expect(
-      sandbox.some((entry) => /(?:safeObject|guarded|destructured)/u.test(entry.locator)),
+      sandbox.some((entry) =>
+        /(?:safeObject|guarded|destructured|localDestructured)/u.test(entry.locator),
+      ),
     ).toBe(false);
     expect(sandbox.some((entry) => entry.locator.startsWith("fallback:lookalike:"))).toBe(true);
     expect(sandbox.some((entry) => entry.locator.startsWith("fallback:typedLookalike:"))).toBe(
       true,
     );
+    expect(sandbox.some((entry) => entry.locator.startsWith("fallback:localLookalike:"))).toBe(
+      true,
+    );
+    expect(sandbox.some((entry) => entry.locator.startsWith("fallback:localUntyped:"))).toBe(true);
   });
 
   it("makes branch structure part of stable IDs and resolves shell import aliases", async () => {
@@ -393,6 +426,16 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
         `export function task(data: TaskData): RunnerTaskContext {`,
         `  return { task_id: "T", data, events: [], doc: "task" };`,
         `}`,
+        `export const asserted = (data: TaskData) =>`,
+        `  ({ task_id: "A", data, events: [], doc: "asserted" } as RunnerTaskContext);`,
+        `export const satisfied = (data: TaskData) =>`,
+        `  ({ task_id: "S", data, events: [], doc: "satisfied" } satisfies RunnerTaskContext);`,
+        `export const contextual: (data: TaskData) => RunnerTaskContext = (data) => ({`,
+        `  task_id: "C",`,
+        `  data,`,
+        `  events: [],`,
+        `  doc: "contextual",`,
+        `});`,
         ``,
       ].join("\n"),
     );
@@ -408,5 +451,15 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
     expect(duplicate.some((entry) => entry.locator.startsWith("builder:task.data+events:"))).toBe(
       true,
     );
+    for (const builder of ["asserted", "satisfied", "contextual"]) {
+      expect(
+        duplicate.some((entry) => entry.locator.startsWith(`builder:${builder}.data+doc:`)),
+        builder,
+      ).toBe(true);
+      expect(
+        duplicate.some((entry) => entry.locator.startsWith(`builder:${builder}.data+events:`)),
+        builder,
+      ).toBe(true);
+    }
   });
 });

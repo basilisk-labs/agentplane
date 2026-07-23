@@ -15,8 +15,14 @@ RF-27a: baseline and prohibit new automatic semantic verdicts, agent-writable ob
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Local contract passed on aa9f3987d: trust checker accepted exactly 63 reviewed violations
+(37/4/10/1/4/7); accumulated regression matrix 17/17; independent bounded audit VERIFY_OK; ESLint,
+TypeScript, guards, routing, hotspot, dependency architecture, Prettier and diff checks passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,17 +34,21 @@ RF-27a: baseline and prohibit new automatic semantic verdicts, agent-writable ob
 
 ```text
  package.json                                       |   3 +-
+ ...ical.trust-boundary-ratchet-regressions.test.ts | 465 ++++++++++++
  ...run-cli.critical.trust-boundary-ratchet.test.ts | 821 +++++++++++++++++++++
  scripts/README.md                                  |   4 +-
  scripts/baselines/trust-boundary-violations.json   | 680 +++++++++++++++++
  scripts/checks/check-trust-boundary-ratchet.mjs    |  88 +++
- scripts/lib/trust-boundary-ast.mjs                 | 202 +++++
+ scripts/lib/trust-boundary-ast.mjs                 | 274 +++++++
  scripts/lib/trust-boundary-baseline.mjs            | 278 +++++++
- scripts/lib/trust-boundary-observed.mjs            | 574 ++++++++++++++
- scripts/lib/trust-boundary-ratchet.mjs             | 548 ++++++++++++++
- scripts/lib/trust-boundary-sandbox.mjs             | 224 ++++++
- scripts/lib/trust-boundary-types.mjs               | 403 ++++++++++
- 11 files changed, 3823 insertions(+), 2 deletions(-)
+ scripts/lib/trust-boundary-context.mjs             | 148 ++++
+ scripts/lib/trust-boundary-observed-taint.mjs      | 374 ++++++++++
+ scripts/lib/trust-boundary-observed.mjs            | 565 ++++++++++++++
+ scripts/lib/trust-boundary-ratchet.mjs             | 512 +++++++++++++
+ scripts/lib/trust-boundary-sandbox.mjs             | 304 ++++++++
+ scripts/lib/trust-boundary-semantic.mjs            | 127 ++++
+ scripts/lib/trust-boundary-types.mjs               | 507 +++++++++++++
+ 15 files changed, 5148 insertions(+), 2 deletions(-)
 ```
 
 </details>
