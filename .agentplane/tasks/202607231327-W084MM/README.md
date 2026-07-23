@@ -4,7 +4,7 @@ title: "Reconcile semantic clone baseline drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -25,10 +25,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-23T13:49:28.104Z"
+  updated_by: "TESTER"
+  note: "Focused Vitest passed 20/20; clone report/check restored 88 clones with unchanged baseline blob 007f3b87; schemas, typecheck, scoped lint, formatting, all 8 critical CLI chunks, and full ci:contract passed. Independent review PASS after retry/env/argsPrefix characterization was added; RF-04 and agentplane-loops remained untouched."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: remove two deduplicable main clone regressions without changing the clone baseline or public API."
+  -
+    type: "verify"
+    at: "2026-07-23T13:49:28.104Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Focused Vitest passed 20/20; clone report/check restored 88 clones with unchanged baseline blob 007f3b87; schemas, typecheck, scoped lint, formatting, all 8 critical CLI chunks, and full ci:contract passed. Independent review PASS after retry/env/argsPrefix characterization was added; RF-04 and agentplane-loops remained untouched."
 doc_version: 3
-doc_updated_at: "2026-07-23T13:29:09.073Z"
+doc_updated_at: "2026-07-23T13:49:28.377Z"
 doc_updated_by: "CODER"
 description: "Remove the two deduplicable semantic clone regressions already present on main, preserve intentional public barrel parity, then refresh the reviewed jscpd baseline so clone:check is truthful before RF-04 integration."
 sections:
@@ -71,6 +77,36 @@ sections:
     5. Confirm RF-04 task branch and agentplane-loops remain unchanged by this task.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-23T13:49:28.104Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Focused Vitest passed 20/20; clone report/check restored 88 clones with unchanged baseline blob 007f3b87; schemas, typecheck, scoped lint, formatting, all 8 critical CLI chunks, and full ci:contract passed. Independent review PASS after retry/env/argsPrefix characterization was added; RF-04 and agentplane-loops remained untouched.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T13:29:09.073Z, excerpt_hash=sha256:28f5df4d5115492140c57c7dc84792e377d081f044122ce93581756968dcff3a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607231327-W084MM-reconcile-semantic-clone-baseline-drift/.agentplane/tasks/202607231327-W084MM/blueprint/resolved-snapshot.json
+    - old_digest: 184054b8946d30b879c0d991fc150e42c70c1345fa909de5794a8fbe17aecbc3
+    - current_digest: 184054b8946d30b879c0d991fc150e42c70c1345fa909de5794a8fbe17aecbc3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607231327-W084MM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607231327-W084MM
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert only the two helper extractions and their focused tests.
@@ -111,6 +147,36 @@ Remove the two deduplicable semantic clone regressions already present on main, 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-23T13:49:28.104Z — VERIFY — ok
+
+By: TESTER
+
+Note: Focused Vitest passed 20/20; clone report/check restored 88 clones with unchanged baseline blob 007f3b87; schemas, typecheck, scoped lint, formatting, all 8 critical CLI chunks, and full ci:contract passed. Independent review PASS after retry/env/argsPrefix characterization was added; RF-04 and agentplane-loops remained untouched.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T13:29:09.073Z, excerpt_hash=sha256:28f5df4d5115492140c57c7dc84792e377d081f044122ce93581756968dcff3a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607231327-W084MM-reconcile-semantic-clone-baseline-drift/.agentplane/tasks/202607231327-W084MM/blueprint/resolved-snapshot.json
+- old_digest: 184054b8946d30b879c0d991fc150e42c70c1345fa909de5794a8fbe17aecbc3
+- current_digest: 184054b8946d30b879c0d991fc150e42c70c1345fa909de5794a8fbe17aecbc3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607231327-W084MM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607231327-W084MM
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
