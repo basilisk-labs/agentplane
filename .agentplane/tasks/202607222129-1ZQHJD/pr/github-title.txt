@@ -1,1 +1,1 @@
-🚧 1ZQHJD task: Capture anchored multi-run RF-04 replay telemetry [202607222129-1ZQHJD]
+✅ 1ZQHJD task: Capture anchored multi-run RF-04 replay telemetry [202607222129-1ZQHJD]
