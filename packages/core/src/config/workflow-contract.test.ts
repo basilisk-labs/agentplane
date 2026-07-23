@@ -57,9 +57,9 @@ describe("WORKFLOW front matter contract", () => {
   });
 
   it("publishes v1 and v2 branches from the same Zod source", () => {
-    const branches = WORKFLOW_FRONT_MATTER_JSON_SCHEMA.anyOf as Array<{
+    const branches = WORKFLOW_FRONT_MATTER_JSON_SCHEMA.anyOf as {
       properties?: { version?: { const?: number } };
-    }>;
+    }[];
 
     expect(branches.map((branch) => branch.properties?.version?.const)).toEqual([1, 2]);
     expect(JSON.parse(renderWorkflowV1FrontMatterFixtureJson())).toEqual(

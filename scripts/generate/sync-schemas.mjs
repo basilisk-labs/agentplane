@@ -1,5 +1,6 @@
 import path from "node:path";
 import { readdirSync, readFileSync } from "node:fs";
+import { format } from "prettier";
 import { findDriftedRenderedArtifacts, syncRenderedArtifacts } from "../lib/sync-artifacts.mjs";
 import { defineScript, parseCheckSyncMode, runScriptMain } from "../lib/script-runtime.mjs";
 
@@ -42,7 +43,7 @@ const ROOT_ONLY_PUBLIC_SCHEMAS = ["recipe-manifest.schema.json"];
 
 const main = defineScript({
   name: "sync-schemas",
-  run({ argv }) {
+  async run({ argv }) {
     const mode = parseCheckSyncMode(argv, "scripts/sync-schemas.mjs");
 
     const repoRoot = process.cwd();
@@ -70,7 +71,7 @@ const main = defineScript({
       },
       {
         label: "workflow schema",
-        rendered: renderWorkflowFrontMatterSchemaJson(),
+        rendered: await format(renderWorkflowFrontMatterSchemaJson(), { parser: "json" }),
         targets: schemaTargets("workflow.schema.json"),
       },
       {

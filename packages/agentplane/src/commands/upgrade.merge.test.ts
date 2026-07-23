@@ -136,10 +136,8 @@ describe("upgrade merge behavior", () => {
     await writeDefaultConfig(root);
     const agentplaneDir = path.join(root, ".agentplane");
     const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
-    const futureWorkflow = (await readFile(workflowPath, "utf8")).replace(
-      "version: 2",
-      "version: 3",
-    );
+    const currentWorkflow = await readFile(workflowPath, "utf8");
+    const futureWorkflow = currentWorkflow.replace("version: 2", "version: 3");
     await writeFile(workflowPath, futureWorkflow, "utf8");
 
     const upgradeStateDir = path.join(agentplaneDir, ".upgrade");
