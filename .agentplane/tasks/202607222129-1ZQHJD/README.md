@@ -4,7 +4,7 @@ title: "Capture anchored multi-run RF-04 replay telemetry"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 11
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -33,7 +33,7 @@ verify:
   - "bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-07-22T21:30:26.197Z"
+  updated_at: "2026-07-23T01:28:43.355Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
@@ -88,38 +88,35 @@ events:
     author: "TESTER"
     body: "Pre-pilot driver contract ready: exact detached anchor checkout, lock-matched subject-local dependencies, canonical bundle manifests, fixture-scoped AgentPlane HOME/XDG/tmp, sanitized Codex runtime, no raw prompt/final/JSONL persistence, and all-or-nothing capture. Exact-anchor offline init/task/dry-run probe passed with six preparation CLI calls; live pilot remains gated on independent commit audit."
 doc_version: 3
-doc_updated_at: "2026-07-22T23:32:05.755Z"
+doc_updated_at: "2026-07-23T01:28:36.874Z"
 doc_updated_by: "TESTER"
-description: "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording authoritative observed outcomes, provider token usage, cognitive and orchestration proxies, latency, retrieval, and evidence-provenance metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics."
+description: "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording provider-reported token usage and 70 resolved outcome cells with per-field fixture_control or supervisor_observed provenance, collecting cognitive, orchestration, latency, retrieval, and evidence metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics."
 sections:
   Summary: |-
     Capture anchored multi-run RF-04 replay telemetry
 
     Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording authoritative observed outcomes, provider token usage, cognitive and orchestration proxies, latency, retrieval, and evidence-provenance metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics.
   Scope: |-
-    - In scope: execute exactly the ten existing RF-04 scenarios at least five valid times each in isolated fixture-backed repositories; record an immutable anchor manifest with subject SHA, scenario and harness digests, runtime and adapter/model profile, sandbox/cache mode, and hashes of every run envelope.
-    - Resolve 70/70 observed outcome cells, 27/27 provider-reported role token cells, and all 170 scalar cells as an observed number or typed not_applicable; never encode unknown as zero and never persist hidden reasoning.
-    - Measure prompt and duplicate bytes, LLM episodes, lifecycle/tool calls, preparation/search latency, time to first scoped mutation, time to verified result, retrieval hits/gaps, and evidence provenance.
-    - Preserve scripts/baselines/agent-efficiency-pre-v0.7-main.json unchanged; the replay baseline is additive and anchored to exact historical main 1a702e160ba9f0efe7067f2a22fc008defc89ffb.
-    - Structural projection is deterministic; token and latency distributions are diagnostic and comparable only for an identical model/runtime profile; capture may use network, but CI checks are offline.
-    - Out of scope: product semantic/lifecycle changes, live PR/merge/publish effects, cross-model comparisons, hard latency thresholds, secrets, or reasoning text.
-    - Stop rule: if the selected provider does not expose required usage fields, record a blocker or switch to an authoritative provider source; do not estimate reasoning tokens from bytes.
+    - Resolve 70/70 outcome cells with field-level provenance: golden expectations and declared lifecycle controls are fixture_control; filesystem effects, final status, scope violations, and other independently measured facts are supervisor_observed. Never relabel fixture controls as observations.
+    - Resolve 27/27 provider-reported role token cells and all 170 scalar cells as an observed value or typed not_applicable; never encode unknown as zero and never persist prompts, final text, stderr, credentials, or hidden reasoning.
+    - Capture ten RF-04 scenarios at five runs each as 50 sanitized envelopes and 55 declared provider episodes under one fixed model/runtime profile, using exact-anchor CLI preparation and the reviewed Codex driver.
+    - Preserve scripts/baselines/agent-efficiency-pre-v0.7-main.json unchanged; the replay baseline remains additive and anchored to exact historical main 1a702e160ba9f0efe7067f2a22fc008defc89ffb.
+    - Keep product semantics unchanged; this task measures and verifies the pre-v0.7 control.
   Plan: |-
-    1. Define the replay schema, applicability rules, immutable anchor manifest, and comparison policy.
-    2. Build an isolated exact-SHA driver with disposable repositories and fixture-backed external operations.
-    3. Add passive observers for CLI events, provider usage, Git/filesystem effects, checks, retrieval, and evidence provenance.
-    4. Execute at least five valid runs for each of the ten RF-04 scenarios and store sanitized envelopes plus hashes.
-    5. Build a deterministic structural projection and separate diagnostic distributions with sample count, median, p95, mean, and standard deviation.
-    6. Add offline rebuild and tamper checks for anchor, coverage, usage, outcomes, provenance, run count, artifact hashes, self-rehash, safety regression, and structural-digest exclusions.
-    7. Integrate the check into critical, contract, and prepublish lanes; update the roadmap and make this task a required alpha.1 dependency.
+    1. Keep the immutable anchor, replay schema, applicability rules, per-field provenance, and comparison policy fail-closed.
+    2. Use the audited capture runtime, canonical targets, transaction recovery, sterile Git/environment, and separate portable versus capture-platform dependency receipts.
+    3. Run one non-persisting direct/run-01 pilot with no retry; continue only if exact provider usage includes reasoning_output_tokens and every safety/linkage check passes.
+    4. Execute five valid runs for each of the ten RF-04 scenarios with the reviewed driver, producing 50 sanitized envelopes and 55 declared provider episodes under one fixed model/runtime profile.
+    5. Validate and publish envelopes, evidence bundles, and replay baseline as one rollback transaction with the baseline installed last.
+    6. Rebuild offline and reject anchor, dependency, usage, resolved-outcome, provenance, run-count, artifact-hash, self-rehash, safety, or structural-digest tampering.
+    7. Keep the alpha.1 gate dependent on the completed replay task.
   Verify Steps: |-
-    1. Run bun run bench:agent-efficiency:replay:capture -- --anchor 1a702e160ba9f0efe7067f2a22fc008defc89ffb --runs 5. Expected: ten scenarios, at least fifty valid envelopes, one fixed model/runtime profile, no secrets or absolute host paths.
-    2. Run bun run bench:agent-efficiency:replay:check. Expected: 70/70 outcomes, 27/27 provider token cells, and 170/170 scalar cells resolved as observed or typed not_applicable; every hash and anchor matches.
-    3. Rebuild the summary twice from the same frozen envelopes. Expected: byte-identical structural projection/digest and exactly reproducible diagnostic statistics.
-    4. Run tamper fixtures. Expected: changed anchor, usage, outcome, provenance, run count, or artifact hash fails; timestamp, host, and latency samples do not alter structural digest.
-    5. Run bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts. Expected: focused replay contract passes.
-    6. Run bun run test:critical, bun run typecheck, and bun run ci:contract. Expected: all full gates pass on one reviewed SHA.
-    7. Verify alpha.1 dependency closure. Expected: 202607221907-DK2CJF directly depends on this task and cannot qualify before replay telemetry is DONE.
+    1. Run the reviewed capture command with --pilot and the Codex replay driver. Expected: only direct/run-01 executes, nothing is persisted, no retry occurs, exact provider input/output/reasoning usage is present, and all receipt, effect, status, dependency, and path checks pass.
+    2. Run the full capture at anchor 1a702e160ba9f0efe7067f2a22fc008defc89ffb with --runs 5 and the reviewed driver. Expected: ten scenarios, 50 valid sanitized envelopes, 55 declared provider episodes, one fixed model/runtime profile, no secrets or absolute host paths.
+    3. Run the offline replay checker. Expected: 70/70 resolved outcome cells carry exact fixture_control or supervisor_observed provenance, 27/27 provider token cells and 170/170 scalar cells are resolved as observed values or typed not_applicable, and every artifact, dependency, harness, anchor, and transaction hash matches.
+    4. Run the four focused RF-04 replay test files and tamper cases. Expected: 33/33 pass and changes to anchor, portable or platform dependency receipt, usage, outcome, provenance, run count, target safety, or artifact hash fail closed.
+    5. Confirm scripts/baselines/agent-efficiency-pre-v0.7-main.json is byte-identical and the alpha.1 gate directly depends on this task.
+    6. Run formatting, scoped lint, TypeScript, policy routing, critical-route, hotspot, and diff checks. Expected: all pass without live-data exceptions.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -139,33 +136,30 @@ Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f
 
 ## Scope
 
-- In scope: execute exactly the ten existing RF-04 scenarios at least five valid times each in isolated fixture-backed repositories; record an immutable anchor manifest with subject SHA, scenario and harness digests, runtime and adapter/model profile, sandbox/cache mode, and hashes of every run envelope.
-- Resolve 70/70 observed outcome cells, 27/27 provider-reported role token cells, and all 170 scalar cells as an observed number or typed not_applicable; never encode unknown as zero and never persist hidden reasoning.
-- Measure prompt and duplicate bytes, LLM episodes, lifecycle/tool calls, preparation/search latency, time to first scoped mutation, time to verified result, retrieval hits/gaps, and evidence provenance.
-- Preserve scripts/baselines/agent-efficiency-pre-v0.7-main.json unchanged; the replay baseline is additive and anchored to exact historical main 1a702e160ba9f0efe7067f2a22fc008defc89ffb.
-- Structural projection is deterministic; token and latency distributions are diagnostic and comparable only for an identical model/runtime profile; capture may use network, but CI checks are offline.
-- Out of scope: product semantic/lifecycle changes, live PR/merge/publish effects, cross-model comparisons, hard latency thresholds, secrets, or reasoning text.
-- Stop rule: if the selected provider does not expose required usage fields, record a blocker or switch to an authoritative provider source; do not estimate reasoning tokens from bytes.
+- Resolve 70/70 outcome cells with field-level provenance: golden expectations and declared lifecycle controls are fixture_control; filesystem effects, final status, scope violations, and other independently measured facts are supervisor_observed. Never relabel fixture controls as observations.
+- Resolve 27/27 provider-reported role token cells and all 170 scalar cells as an observed value or typed not_applicable; never encode unknown as zero and never persist prompts, final text, stderr, credentials, or hidden reasoning.
+- Capture ten RF-04 scenarios at five runs each as 50 sanitized envelopes and 55 declared provider episodes under one fixed model/runtime profile, using exact-anchor CLI preparation and the reviewed Codex driver.
+- Preserve scripts/baselines/agent-efficiency-pre-v0.7-main.json unchanged; the replay baseline remains additive and anchored to exact historical main 1a702e160ba9f0efe7067f2a22fc008defc89ffb.
+- Keep product semantics unchanged; this task measures and verifies the pre-v0.7 control.
 
 ## Plan
 
-1. Define the replay schema, applicability rules, immutable anchor manifest, and comparison policy.
-2. Build an isolated exact-SHA driver with disposable repositories and fixture-backed external operations.
-3. Add passive observers for CLI events, provider usage, Git/filesystem effects, checks, retrieval, and evidence provenance.
-4. Execute at least five valid runs for each of the ten RF-04 scenarios and store sanitized envelopes plus hashes.
-5. Build a deterministic structural projection and separate diagnostic distributions with sample count, median, p95, mean, and standard deviation.
-6. Add offline rebuild and tamper checks for anchor, coverage, usage, outcomes, provenance, run count, artifact hashes, self-rehash, safety regression, and structural-digest exclusions.
-7. Integrate the check into critical, contract, and prepublish lanes; update the roadmap and make this task a required alpha.1 dependency.
+1. Keep the immutable anchor, replay schema, applicability rules, per-field provenance, and comparison policy fail-closed.
+2. Use the audited capture runtime, canonical targets, transaction recovery, sterile Git/environment, and separate portable versus capture-platform dependency receipts.
+3. Run one non-persisting direct/run-01 pilot with no retry; continue only if exact provider usage includes reasoning_output_tokens and every safety/linkage check passes.
+4. Execute five valid runs for each of the ten RF-04 scenarios with the reviewed driver, producing 50 sanitized envelopes and 55 declared provider episodes under one fixed model/runtime profile.
+5. Validate and publish envelopes, evidence bundles, and replay baseline as one rollback transaction with the baseline installed last.
+6. Rebuild offline and reject anchor, dependency, usage, resolved-outcome, provenance, run-count, artifact-hash, self-rehash, safety, or structural-digest tampering.
+7. Keep the alpha.1 gate dependent on the completed replay task.
 
 ## Verify Steps
 
-1. Run bun run bench:agent-efficiency:replay:capture -- --anchor 1a702e160ba9f0efe7067f2a22fc008defc89ffb --runs 5. Expected: ten scenarios, at least fifty valid envelopes, one fixed model/runtime profile, no secrets or absolute host paths.
-2. Run bun run bench:agent-efficiency:replay:check. Expected: 70/70 outcomes, 27/27 provider token cells, and 170/170 scalar cells resolved as observed or typed not_applicable; every hash and anchor matches.
-3. Rebuild the summary twice from the same frozen envelopes. Expected: byte-identical structural projection/digest and exactly reproducible diagnostic statistics.
-4. Run tamper fixtures. Expected: changed anchor, usage, outcome, provenance, run count, or artifact hash fails; timestamp, host, and latency samples do not alter structural digest.
-5. Run bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts. Expected: focused replay contract passes.
-6. Run bun run test:critical, bun run typecheck, and bun run ci:contract. Expected: all full gates pass on one reviewed SHA.
-7. Verify alpha.1 dependency closure. Expected: 202607221907-DK2CJF directly depends on this task and cannot qualify before replay telemetry is DONE.
+1. Run the reviewed capture command with --pilot and the Codex replay driver. Expected: only direct/run-01 executes, nothing is persisted, no retry occurs, exact provider input/output/reasoning usage is present, and all receipt, effect, status, dependency, and path checks pass.
+2. Run the full capture at anchor 1a702e160ba9f0efe7067f2a22fc008defc89ffb with --runs 5 and the reviewed driver. Expected: ten scenarios, 50 valid sanitized envelopes, 55 declared provider episodes, one fixed model/runtime profile, no secrets or absolute host paths.
+3. Run the offline replay checker. Expected: 70/70 resolved outcome cells carry exact fixture_control or supervisor_observed provenance, 27/27 provider token cells and 170/170 scalar cells are resolved as observed values or typed not_applicable, and every artifact, dependency, harness, anchor, and transaction hash matches.
+4. Run the four focused RF-04 replay test files and tamper cases. Expected: 33/33 pass and changes to anchor, portable or platform dependency receipt, usage, outcome, provenance, run count, target safety, or artifact hash fail closed.
+5. Confirm scripts/baselines/agent-efficiency-pre-v0.7-main.json is byte-identical and the alpha.1 gate directly depends on this task.
+6. Run formatting, scoped lint, TypeScript, policy routing, critical-route, hotspot, and diff checks. Expected: all pass without live-data exceptions.
 
 ## Verification
 
