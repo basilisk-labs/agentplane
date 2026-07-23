@@ -533,7 +533,7 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     ).toThrow("does not link");
   });
 
-  it("runs the real exact-anchor driver entrypoint offline from the fixture-control registry overlay", async () => {
+  it("runs the real exact-anchor CURRENT_AGENT adapter-failure entrypoint offline", async () => {
     const baseline = await importModule<{
       stableJson(value: unknown, spaces?: number): string;
     }>("scripts/lib/agent-efficiency-baseline.mjs");
@@ -568,7 +568,10 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
         args: string[],
         dependencies: {
           assertCodexBinary(): void;
-          runCodexEpisode(options: { fixtureRoot: string }): Promise<Record<string, unknown>>;
+          runCodexEpisode(options: {
+            fixtureRoot: string;
+            prompt: string;
+          }): Promise<Record<string, unknown>>;
         },
       ): Promise<void>;
     }>("scripts/bench/run-agent-efficiency-codex-replay.mjs");
@@ -606,8 +609,8 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     const harness = replay.createReplayHarnessManifest(REPO_ROOT, driverIdentity, {
       dependencyClaim,
     });
-    const direct = registry.scenarios.find((scenario) => scenario.id === "direct");
-    expect(direct).toBeDefined();
+    const adapterFailure = registry.scenarios.find((scenario) => scenario.id === "adapter_failure");
+    expect(adapterFailure).toBeDefined();
     const contract = {
       AGENTPLANE_RF04_REPLAY_ANCHOR: replay.REPLAY_ANCHOR_COMMIT,
       AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_EXECUTABLE_SHA256:
@@ -623,23 +626,25 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
       AGENTPLANE_RF04_REPLAY_DRIVER_SHA256: driverIdentity.sha256,
       AGENTPLANE_RF04_REPLAY_EVIDENCE_OUTPUT: evidencePath,
       AGENTPLANE_RF04_REPLAY_EVIDENCE_PATH:
-        "scripts/bench/agent-efficiency-replay-evidence/direct/run-01.json",
-      AGENTPLANE_RF04_REPLAY_EXPECTED_ROLES: JSON.stringify(direct?.expected_episode_trace),
+        "scripts/bench/agent-efficiency-replay-evidence/adapter_failure/run-01.json",
+      AGENTPLANE_RF04_REPLAY_EXPECTED_ROLES: JSON.stringify(adapterFailure?.expected_episode_trace),
       AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_ORIGIN: "fixture_control_overlay_v1",
       AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_PATH: overlayRelative,
       AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_SHA256: replay.fixtureRegistrySha256(registry),
       AGENTPLANE_RF04_REPLAY_HARNESS_SHA256: harness.sha256,
       AGENTPLANE_RF04_REPLAY_OUTPUT: outputPath,
-      AGENTPLANE_RF04_REPLAY_RUN_ID: "direct/run-01",
+      AGENTPLANE_RF04_REPLAY_RUN_ID: "adapter_failure/run-01",
     };
     const previousDirectory = process.cwd();
+    let observedFixtureRoot = "";
+    let observedPrompt = "";
     Object.assign(process.env, contract);
     process.chdir(subject);
     try {
       await driverModule.runReplayDriver(
         [
           "--scenario",
-          "direct",
+          "adapter_failure",
           "--run-index",
           "1",
           "--output",
@@ -649,10 +654,11 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
         ],
         {
           assertCodexBinary: () => expect(true).toBe(true),
-          runCodexEpisode({ fixtureRoot }) {
-            writeFileSync(path.join(fixtureRoot, "work/allowed.txt"), "DIRECT_OK\n");
+          runCodexEpisode({ fixtureRoot, prompt }) {
+            observedFixtureRoot = fixtureRoot;
+            observedPrompt = prompt;
             return Promise.resolve({
-              final_status: "done",
+              final_status: "blocked",
               provider_usage: {
                 cached_input_tokens: 1,
                 input_tokens: 2,
@@ -670,9 +676,33 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
       process.chdir(previousDirectory);
       for (const name of Object.keys(contract)) delete process.env[name];
     }
+    const roleTaskReadme = readdirSync(path.join(observedFixtureRoot, ".agentplane/tasks"))
+      .map((taskId) =>
+        readFileSync(
+          path.join(observedFixtureRoot, ".agentplane/tasks", taskId, "README.md"),
+          "utf8",
+        ),
+      )
+      .find((readme) => readme.includes('title: "RF-04 adapter_failure CURRENT_AGENT"'));
+    expect(roleTaskReadme).toContain('owner: "CODER"');
+    expect(roleTaskReadme).toContain('author: "CODER"');
+    expect(observedPrompt).toContain("act as CURRENT_AGENT for scenario adapter_failure");
     const envelope = JSON.parse(readFileSync(outputPath, "utf8")) as {
       anchor: Record<string, unknown>;
-      resolved_outcomes: Record<"scope_violation" | "verified_success", { value: boolean }>;
+      resolved_outcomes: Record<
+        "adapter_failure" | "blocked" | "scope_violation" | "verified_success",
+        { value: boolean }
+      >;
+      token_usage_by_role: Record<string, unknown>;
+    };
+    const evidence = JSON.parse(readFileSync(evidencePath, "utf8")) as {
+      artifacts: {
+        payload: {
+          episode_ledger: { role: string }[];
+          provider_usage_by_role: Record<string, unknown>;
+          supervisor_receipt: { anchor_preparation_cli_calls: number };
+        };
+      }[];
     };
     expect(envelope.anchor).toMatchObject({
       capture_platform: dependencyClaim.capture_platform,
@@ -682,7 +712,17 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
       fixture_registry_origin: "fixture_control_overlay_v1",
       subject_sha: replay.REPLAY_ANCHOR_COMMIT,
     });
-    expect(envelope.resolved_outcomes.verified_success.value).toBe(true);
+    expect(envelope.resolved_outcomes.adapter_failure.value).toBe(true);
+    expect(envelope.resolved_outcomes.blocked.value).toBe(true);
+    expect(envelope.resolved_outcomes.verified_success.value).toBe(false);
     expect(envelope.resolved_outcomes.scope_violation.value).toBe(false);
+    expect(Object.keys(envelope.token_usage_by_role)).toEqual(["CURRENT_AGENT"]);
+    expect(evidence.artifacts[0]?.payload.episode_ledger).toMatchObject([
+      { role: "CURRENT_AGENT" },
+    ]);
+    expect(Object.keys(evidence.artifacts[0]?.payload.provider_usage_by_role ?? {})).toEqual([
+      "CURRENT_AGENT",
+    ]);
+    expect(evidence.artifacts[0]?.payload.supervisor_receipt.anchor_preparation_cli_calls).toBe(6);
   }, 120_000);
 });

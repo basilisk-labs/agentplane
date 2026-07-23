@@ -38,6 +38,7 @@ import {
 import { readReplayDriverContract } from "./internal/agent-efficiency-driver-contract.mjs";
 
 export {
+  anchorTaskOwner,
   expectedAnchorPreparationCliCalls,
   measurePreparedContext,
 } from "./internal/agent-efficiency-anchor-supervisor.mjs";

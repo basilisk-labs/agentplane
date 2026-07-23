@@ -186,7 +186,12 @@ export function initializeFixture(subjectRoot, scenarioId, runIndex, cliPath, co
   return fixtureRoot;
 }
 
+export function anchorTaskOwner(role) {
+  return role === "CURRENT_AGENT" ? "CODER" : role;
+}
+
 export function createRoleTask(cliPath, fixtureRoot, scenarioId, role, counters) {
+  const taskOwner = anchorTaskOwner(role);
   const taskId = agentplane(
     cliPath,
     fixtureRoot,
@@ -198,7 +203,7 @@ export function createRoleTask(cliPath, fixtureRoot, scenarioId, role, counters)
       "--description",
       `Execute the deterministic ${scenarioId} fixture episode as ${role}.`,
       "--owner",
-      role,
+      taskOwner,
       "--priority",
       "med",
       "--tag",
@@ -222,7 +227,7 @@ export function createRoleTask(cliPath, fixtureRoot, scenarioId, role, counters)
       "--text",
       "1. Follow the bounded fixture episode.\n2. Leave verification to the supervisor.",
       "--updated-by",
-      role,
+      taskOwner,
     ],
     "ANCHOR_TASK_PLAN",
     counters,
@@ -244,7 +249,7 @@ export function createRoleTask(cliPath, fixtureRoot, scenarioId, role, counters)
       "start-ready",
       taskId,
       "--author",
-      role,
+      taskOwner,
       "--body",
       "Start: execute the bounded RF-04 deterministic fixture episode.",
     ],
