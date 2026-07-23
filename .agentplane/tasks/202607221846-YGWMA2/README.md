@@ -1,10 +1,11 @@
 ---
 id: "202607221846-YGWMA2"
 title: "Remove automatic semantic pass verdicts"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -65,11 +66,16 @@ quality_review:
     - "RF-00 trust ratchet reports zero current automatic-semantic-verdict violations, with no fixed pass verdict in production or template surfaces."
     - "Fresh rework returns implementation_rework_required to CODER with null argv and blocks PR publication or integration until verification."
     - "All 220 social images pass strict rendered-width validation and inspected regenerated cards have no clipping."
-commit: null
+commit:
+  hash: "d0a23d1ba1274c45ff7a908b1ffcf4bfb64e7689"
+  message: "🧐 YGWMA2 task: record final quality review"
 comments:
   -
     author: "CODER"
     body: "Start: remove automatic semantic pass verdicts and replace missing or stale review routes with typed quality-review stops while preserving human provenance."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -96,8 +102,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rework resolved: typed CODER handoff now blocks PR actions for evaluator rework, social titles wrap with rendered-width enforcement, and full local CI passed with 2229 unit tests plus critical CLI, docs, platform, and coverage gates."
+  -
+    type: "status"
+    at: "2026-07-23T05:19:41.444Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-23T05:05:50.415Z"
+doc_updated_at: "2026-07-23T05:19:41.444Z"
 doc_updated_by: "CODER"
 description: "RF-00: remove preselected evaluator pass outcomes from route control, repair guidance, context task contracts, templates, and fixtures; emit a typed evaluator episode or quality-review stop instead."
 sections:
@@ -224,6 +237,10 @@ sections:
     - Observation: Independent review found a clipped workflow-migration social title and a fresh evaluator rework route that fell through to PR artifact handling.
       Impact: The visual artifact regressed and the CLI did not formalize the implementation handoff before publication.
       Resolution: Added deterministic title wrapping and overflow/truncation guards, introduced implementation_rework_required with a bounded CODER task-worktree handoff, and reran the full local CI successfully.
+extensions:
+  implementation_commit:
+    hash: "0fcb2e16939fb9d3aa7c639d8e8fcec8d292a3c6"
+    message: "🚧 YGWMA2 task: address evaluator rework"
 id_source: "generated"
 ---
 ## Summary

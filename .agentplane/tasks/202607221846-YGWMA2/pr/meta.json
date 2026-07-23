@@ -5,9 +5,19 @@
   "diffstat_sha256": "sha256:f5ac825191c4f59926c9eb30aa74afec82617ec6d5a494f7242f099c4360b1f2",
   "last_verified_at": "2026-07-23T05:05:50.295Z",
   "last_verified_diffstat_sha256": "sha256:f5ac825191c4f59926c9eb30aa74afec82617ec6d5a494f7242f099c4360b1f2",
+  "pr_number": 4600,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4600",
+  "pre_merge_closure": {
+    "basis_commit": "d0a23d1ba1274c45ff7a908b1ffcf4bfb64e7689",
+    "branch": "task/202607221846-YGWMA2/remove-automatic-semantic-pass-verdicts",
+    "pr_number": 4600,
+    "recorded_at": "2026-07-23T05:19:41.466Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607221846-YGWMA2",
-  "updated_at": "2026-07-23T03:42:12.404Z",
+  "updated_at": "2026-07-23T05:19:11.314Z",
   "verify": {
     "status": "pass"
   }
