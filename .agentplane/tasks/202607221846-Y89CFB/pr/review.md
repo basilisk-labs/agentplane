@@ -64,7 +64,7 @@ Created: 2026-07-23T15:58:38.987Z
  .../src/runner/observation/git-snapshot/compare.ts | 388 ++++++++++++
  .../src/runner/observation/git-snapshot/model.ts   | 125 ++++
  .../src/runner/observation/git-snapshot/parse.ts   | 110 ++++
- .../process-supervision.process-tree.test.ts       | 352 +++++++++++
+ .../process-supervision.process-tree.test.ts       | 387 ++++++++++++
  .../src/runner/process-supervision.test.ts         |  21 +
  .../src/runner/process-supervision/process-tree.ts | 195 ++++++
  .../src/runner/process-supervision/run.ts          |  45 +-
@@ -104,7 +104,7 @@ Created: 2026-07-23T15:58:38.987Z
  schemas/task-readme-frontmatter.schema.json        |  59 ++
  schemas/tasks-export.schema.json                   |  64 ++
  scripts/generate/sync-schemas.mjs                  |  14 +
- 75 files changed, 7246 insertions(+), 252 deletions(-)
+ 75 files changed, 7281 insertions(+), 252 deletions(-)
 ```
 
 </details>

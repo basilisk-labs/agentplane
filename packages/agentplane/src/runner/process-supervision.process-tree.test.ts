@@ -17,6 +17,84 @@ import type { RunnerInvocation } from "./types.js";
 const tempRoots: string[] = [];
 const escapedPids: number[] = [];
 
+const BACKGROUND_DESCENDANT_SOURCE = `
+import { writeFileSync } from "node:fs";
+
+const [pidPath, readyPath, latePath] = process.argv.slice(2);
+if (!pidPath || !readyPath || !latePath) process.exit(64);
+process.on("SIGTERM", () => {});
+writeFileSync(pidPath, String(process.pid));
+writeFileSync(readyPath, "ready");
+setTimeout(() => writeFileSync(latePath, "late"), 700);
+setInterval(() => {}, 1000);
+`.trimStart();
+
+const BACKGROUND_PARENT_SOURCE = `
+import { existsSync } from "node:fs";
+import { spawn } from "node:child_process";
+
+const [childScriptPath, pidPath, readyPath, latePath] = process.argv.slice(2);
+if (!childScriptPath || !pidPath || !readyPath || !latePath) process.exit(64);
+spawn(process.execPath, [childScriptPath, pidPath, readyPath, latePath], {
+  stdio: "ignore",
+}).unref();
+const deadline = Date.now() + 2000;
+const readyPoll = setInterval(() => {
+  if (existsSync(readyPath)) {
+    clearInterval(readyPoll);
+    process.exit(0);
+  }
+  if (Date.now() >= deadline) {
+    clearInterval(readyPoll);
+    process.exit(2);
+  }
+}, 10);
+`.trimStart();
+
+const DETACHED_DESCENDANT_SOURCE = `
+import { existsSync, writeFileSync } from "node:fs";
+
+const [pidPath, readyPath, releasePath, latePath] = process.argv.slice(2);
+if (!pidPath || !readyPath || !releasePath || !latePath) process.exit(64);
+writeFileSync(pidPath, String(process.pid));
+writeFileSync(readyPath, "ready");
+const deadline = Date.now() + 5000;
+const releasePoll = setInterval(() => {
+  if (existsSync(releasePath)) {
+    clearInterval(releasePoll);
+    writeFileSync(latePath, "late");
+    process.exit(0);
+  }
+  if (Date.now() >= deadline) {
+    clearInterval(releasePoll);
+    process.exit(3);
+  }
+}, 10);
+`.trimStart();
+
+const DETACHED_PARENT_SOURCE = `
+import { existsSync } from "node:fs";
+import { spawn } from "node:child_process";
+
+const [childScriptPath, pidPath, readyPath, releasePath, latePath] = process.argv.slice(2);
+if (!childScriptPath || !pidPath || !readyPath || !releasePath || !latePath) process.exit(64);
+spawn(process.execPath, [childScriptPath, pidPath, readyPath, releasePath, latePath], {
+  detached: true,
+  stdio: "ignore",
+}).unref();
+const deadline = Date.now() + 2000;
+const readyPoll = setInterval(() => {
+  if (existsSync(readyPath)) {
+    clearInterval(readyPoll);
+    process.exit(0);
+  }
+  if (Date.now() >= deadline) {
+    clearInterval(readyPoll);
+    process.exit(2);
+  }
+}, 10);
+`.trimStart();
+
 afterEach(async () => {
   for (const pid of escapedPids.splice(0)) {
     try {
@@ -59,6 +137,7 @@ function invocationFor(opts: {
   root: string;
   runDir: string;
   scriptPath: string;
+  scriptArgs?: string[];
   terminateGraceMs: number;
 }): RunnerInvocation {
   return {
@@ -86,7 +165,7 @@ function invocationFor(opts: {
     },
     bootstrap_path: null,
     output_last_message_path: null,
-    argv: [process.execPath, opts.scriptPath],
+    argv: [process.execPath, opts.scriptPath, ...(opts.scriptArgs ?? [])],
     env: {},
     dry_run: false,
   };
@@ -132,45 +211,27 @@ describe.skipIf(process.platform === "win32")("POSIX process-group supervision",
     tempRoots.push(root);
     const runDir = path.join(root, "run");
     const scriptPath = path.join(root, "runner.mjs");
+    const descendantScriptPath = path.join(root, "descendant.mjs");
     const descendantPidPath = path.join(runDir, "descendant.pid");
     const descendantReadyPath = path.join(runDir, "descendant.ready");
     const lateRepositoryPath = path.join(root, "late-write.txt");
     await mkdir(runDir, { recursive: true });
-
-    const descendantSource = [
-      'const { writeFileSync } = require("node:fs");',
-      "process.on('SIGTERM', () => {});",
-      `writeFileSync(${JSON.stringify(descendantPidPath)}, String(process.pid));`,
-      `writeFileSync(${JSON.stringify(descendantReadyPath)}, "ready");`,
-      `setTimeout(() => writeFileSync(${JSON.stringify(lateRepositoryPath)}, "late"), 700);`,
-      "setInterval(() => {}, 1000);",
-    ].join("\n");
-    await writeFile(
-      scriptPath,
-      [
-        'import { existsSync } from "node:fs";',
-        'import { spawn } from "node:child_process";',
-        `spawn(process.execPath, ["-e", ${JSON.stringify(descendantSource)}], { stdio: "ignore" }).unref();`,
-        "const deadline = Date.now() + 2000;",
-        "const readyPoll = setInterval(() => {",
-        `  if (existsSync(${JSON.stringify(descendantReadyPath)})) {`,
-        "    clearInterval(readyPoll);",
-        "    process.exit(0);",
-        "  }",
-        "  if (Date.now() >= deadline) {",
-        "    clearInterval(readyPoll);",
-        "    process.exit(2);",
-        "  }",
-        "}, 10);",
-      ].join("\n"),
-      "utf8",
-    );
+    await Promise.all([
+      writeFile(scriptPath, BACKGROUND_PARENT_SOURCE, "utf8"),
+      writeFile(descendantScriptPath, BACKGROUND_DESCENDANT_SOURCE, "utf8"),
+    ]);
 
     const result = await runSupervisedProcess({
       invocation: invocationFor({
         root,
         runDir,
         scriptPath,
+        scriptArgs: [
+          descendantScriptPath,
+          descendantPidPath,
+          descendantReadyPath,
+          lateRepositoryPath,
+        ],
         terminateGraceMs: 75,
       }),
       stdin_text: "",
@@ -202,54 +263,28 @@ describe.skipIf(process.platform === "win32")("POSIX process-group supervision",
     tempRoots.push(root);
     const runDir = path.join(root, "run");
     const scriptPath = path.join(root, "runner.mjs");
+    const descendantScriptPath = path.join(root, "detached.mjs");
     const descendantPidPath = path.join(runDir, "detached.pid");
     const descendantReadyPath = path.join(runDir, "detached.ready");
     const releasePath = path.join(runDir, "release");
     const lateRepositoryPath = path.join(root, "late-detached-write.txt");
     await mkdir(runDir, { recursive: true });
-
-    const descendantSource = [
-      'const { existsSync, writeFileSync } = require("node:fs");',
-      `writeFileSync(${JSON.stringify(descendantPidPath)}, String(process.pid));`,
-      `writeFileSync(${JSON.stringify(descendantReadyPath)}, "ready");`,
-      "const deadline = Date.now() + 5000;",
-      "const releasePoll = setInterval(() => {",
-      `  if (existsSync(${JSON.stringify(releasePath)})) {`,
-      "    clearInterval(releasePoll);",
-      `    writeFileSync(${JSON.stringify(lateRepositoryPath)}, "late");`,
-      "    process.exit(0);",
-      "  }",
-      "  if (Date.now() >= deadline) {",
-      "    clearInterval(releasePoll);",
-      "    process.exit(3);",
-      "  }",
-      "}, 10);",
-    ].join("\n");
-    await writeFile(
-      scriptPath,
-      [
-        'import { existsSync } from "node:fs";',
-        'import { spawn } from "node:child_process";',
-        `spawn(process.execPath, ["-e", ${JSON.stringify(descendantSource)}], { detached: true, stdio: "ignore" }).unref();`,
-        "const deadline = Date.now() + 2000;",
-        "const readyPoll = setInterval(() => {",
-        `  if (existsSync(${JSON.stringify(descendantReadyPath)})) {`,
-        "    clearInterval(readyPoll);",
-        "    process.exit(0);",
-        "  }",
-        "  if (Date.now() >= deadline) {",
-        "    clearInterval(readyPoll);",
-        "    process.exit(2);",
-        "  }",
-        "}, 10);",
-      ].join("\n"),
-      "utf8",
-    );
+    await Promise.all([
+      writeFile(scriptPath, DETACHED_PARENT_SOURCE, "utf8"),
+      writeFile(descendantScriptPath, DETACHED_DESCENDANT_SOURCE, "utf8"),
+    ]);
 
     const invocation = invocationFor({
       root,
       runDir,
       scriptPath,
+      scriptArgs: [
+        descendantScriptPath,
+        descendantPidPath,
+        descendantReadyPath,
+        releasePath,
+        lateRepositoryPath,
+      ],
       terminateGraceMs: 75,
     });
     const result = await runSupervisedProcess({
