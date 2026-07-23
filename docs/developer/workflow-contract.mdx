@@ -64,9 +64,10 @@ The version-specific mode key is required:
 - v1: `mode: direct | branch_pr`
 - v2: `workflow.mode: direct | branch_pr`
 
-Unknown root keys are rejected. Selected v2 sections such as `workflow`, `workspace`, `tasks`,
-`scheduler`, `evaluator`, and `observability` allow extension fields so supported writers can retain
-them without data loss.
+Unknown root keys are rejected. Known optional sections such as `workspace`, `tasks`, `framework`,
+`scheduler`, `evaluator`, and `observability` are accepted in both supported versions and retain
+typed extension fields without data loss. The `workflow` section remains v2-only; v1 uses the flat
+`mode` discriminant.
 
 ## Failure behavior
 

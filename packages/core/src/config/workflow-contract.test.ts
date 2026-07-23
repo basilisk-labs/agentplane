@@ -26,6 +26,47 @@ describe("WORKFLOW front matter contract", () => {
     });
   });
 
+  it("preserves typed legacy v1 sections without materializing defaults", () => {
+    const legacy = {
+      ...WORKFLOW_V1_FRONT_MATTER_FIXTURE,
+      tasks: {
+        backend: { config_path: ".agentplane/backends/redmine/backend.json" },
+        legacy_extension: { retain: true },
+      },
+      framework: {
+        source: "https://github.com/basilisk-labs/agentplane",
+        last_update: null,
+        cli: { expected_version: "0.6.24" },
+        legacy_extension: { retain: true },
+      },
+    };
+
+    const expected = {
+      version: 2,
+      workflow: { mode: "branch_pr" },
+      owners: legacy.owners,
+      approvals: legacy.approvals,
+      retry_policy: legacy.retry_policy,
+      timeouts: legacy.timeouts,
+      in_scope_paths: legacy.in_scope_paths,
+      tasks: legacy.tasks,
+      framework: legacy.framework,
+    };
+
+    expect(migrateWorkflowFrontMatterV1ToV2(legacy)).toEqual(expected);
+    expect(parseWorkflowFrontMatter(legacy)).toEqual(expected);
+    expect(parseWorkflowFrontMatter(legacy).tasks).not.toHaveProperty("id_suffix_length_default");
+  });
+
+  it.each(["arbitrary_root", "workflow"])("rejects unsupported v1 root key %s", (key) => {
+    expect(() =>
+      parseWorkflowFrontMatter({
+        ...WORKFLOW_V1_FRONT_MATTER_FIXTURE,
+        [key]: { unexpected: true },
+      }),
+    ).toThrow();
+  });
+
   it("keeps valid v2 fields without materializing absent defaults", () => {
     const normalized = parseWorkflowFrontMatter(WORKFLOW_V2_FRONT_MATTER_FIXTURE);
 

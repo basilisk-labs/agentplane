@@ -15,13 +15,12 @@ Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-PASS at 827ea46e: v1/v2 normalization, deterministic migration and exact rollback, future-version
-rejection, schema parity, upgrade parity, and compatibility candidate verified; 82/82 focused tests
-and independent evaluator PASS.
+Hosted CI found a backward-compatibility defect in v1 optional sections and new unused exports;
+reopen for bounded correction.
 ```
 - Canonical workflow state lives in the task README.
 

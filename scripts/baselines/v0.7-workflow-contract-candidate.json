@@ -9,12 +9,12 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "9e01ec2caf6911cde24991aed270e7156e1e0f40ab70fc39459df8e6873effb6",
+    "surface_sha256": "50b75ff102b8b4a90dc74d559fabd4b7417b898eae6fe83a39c551d1382d6070",
     "section_digests": {
       "cli_topology": "3848fb22f961d029de98f88ed754623cac8ac4c445340d6d3162f9cc1d6988c5",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
-      "workflow_schema": "dc24f8d1c7249e95a9ea3bac0257e7eab83c3a78f85a871c5148653af4123937",
+      "workflow_schema": "cf7655030253435f2808b8c92e2de6b05d8f4f4483d4849788c00da798cb1989",
       "agent_facing_context_contracts": "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
       "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
       "tarball_policy": "a13f8e06e2c2cb4aa9d7fc69aaf01998c33cd010444cba8b6670a97d85d816e6"
@@ -43,9 +43,9 @@
     {
       "section": "workflow_schema",
       "from_sha256": "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7",
-      "to_sha256": "dc24f8d1c7249e95a9ea3bac0257e7eab83c3a78f85a871c5148653af4123937",
+      "to_sha256": "cf7655030253435f2808b8c92e2de6b05d8f4f4483d4849788c00da798cb1989",
       "classification": "backward_compatible",
-      "summary": "Replaces the v1-only schema with a v1-or-v2 input union while preserving the public schema identity.",
+      "summary": "Replaces the v1-only schema with a v1-or-v2 input union, retaining the finite typed legacy v1 sections accepted by the runtime while preserving the public schema identity.",
       "evidence": {
         "schema_id": "https://agentplane.dev/schemas/workflow.schema.json",
         "title": "Agentplane Workflow Contract",
