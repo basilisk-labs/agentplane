@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -32,22 +32,36 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-23T05:24:59.105Z"
-  updated_by: "EVALUATOR"
-  note: "Hosted gates require rework: finding-free evaluator rework is misrouted as stale, and Ubuntu font metrics overflow one social title."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-07-23T05:33:00.881Z"
+  updated_by: "CODER"
+  note: "Hosted rework resolved: evaluator rework now requires an actionable finding, five social titles wrap below the cross-platform limit, and full local CI passed with 2230 unit tests plus critical CLI, docs, Windows, and coverage gates."
+  attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-07-23T05:24:59.105Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-23T05:36:43.003Z"
   updated_by: "EVALUATOR"
-  note: "Hosted gates require rework: finding-free evaluator rework is misrouted as stale, and Ubuntu font metrics overflow one social title."
-  evaluated_sha: "c5d664b2fb001974d3ca56fe75f8804d8589e67e"
+  note: "Hosted rework is complete: actionable rework routing, verdict neutrality, and cross-platform social-title safety satisfy the task contract."
+  evaluated_sha: "8b62546ba7994eb6a5d79633e94cc680845f34fe"
   blueprint_digest: "0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b"
   evidence_refs:
     - ".agentplane/tasks/202607221846-YGWMA2/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-YGWMA2-remove-automatic-semantic-pass-verdicts/.agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-053643003-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-053643003-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-053643003-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/evaluator/evaluator.command.ts"
+    - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+    - "website/scripts/generate-social-images.mjs"
+    - "bun run ci:local:full: 372 test files / 2230 tests plus critical CLI, docs, Windows, and coverage gates passed"
+    - "social strict check: 220 images passed"
+  findings:
+    - "Evaluator rework recording rejects empty findings, while a fresh actionable rework review produces an implementation_rework_required stop routed to CODER with no PR command and preserves the evaluator report."
+    - "Missing or stale review routes remain verdict-neutral, and the trust-boundary ratchet reports zero automatic-semantic-verdict violations."
+    - "All five regenerated social cards are unclipped; deterministic wrapping plus truncation and rendered-width guards fail closed before an overflowing asset can pass validation."
+    - "Focused evaluator, route, quality-gate, trust-ratchet, and strict 220-image checks pass, with full repository CI covering the remaining regression surface."
 commit: null
 comments:
   -
@@ -95,8 +109,14 @@ events:
     author: "EVALUATOR"
     state: "needs_rework"
     note: "Hosted gates require rework: finding-free evaluator rework is misrouted as stale, and Ubuntu font metrics overflow one social title."
+  -
+    type: "verify"
+    at: "2026-07-23T05:33:00.881Z"
+    author: "CODER"
+    state: "ok"
+    note: "Hosted rework resolved: evaluator rework now requires an actionable finding, five social titles wrap below the cross-platform limit, and full local CI passed with 2230 unit tests plus critical CLI, docs, Windows, and coverage gates."
 doc_version: 3
-doc_updated_at: "2026-07-23T05:25:01.503Z"
+doc_updated_at: "2026-07-23T05:33:01.117Z"
 doc_updated_by: "CODER"
 description: "RF-00: remove preselected evaluator pass outcomes from route control, repair guidance, context task contracts, templates, and fixtures; emit a typed evaluator episode or quality-review stop instead."
 sections:
@@ -240,6 +260,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-23T05:33:00.881Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Hosted rework resolved: evaluator rework now requires an actionable finding, five social titles wrap below the cross-platform limit, and full local CI passed with 2230 unit tests plus critical CLI, docs, Windows, and coverage gates.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T05:25:01.503Z, excerpt_hash=sha256:e5191b3bfe3839fd43f388edb72efc40ec3afb7f27cb5430ec928ec14af5e8e8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-YGWMA2-remove-automatic-semantic-pass-verdicts/.agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json
+    - old_digest: 0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b
+    - current_digest: 0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221846-YGWMA2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) without changing unrelated task state.
@@ -257,6 +307,10 @@ sections:
     - Observation: A valid rework record without findings is accepted but not routed to CODER; Ubuntu rendered Cloud backend integration plan at 1188 px against a 1184 px limit.
       Impact: The CLI can request another semantic review instead of implementation rework, and Docs CI blocks publication despite a local pass.
       Resolution: Make rework freshness independent of findings or require them consistently, add regression coverage, and use a deterministic title layout with cross-platform width margin.
+
+    - Observation: GitHub review and Ubuntu Docs CI exposed a finding-free rework route gap and fallback-font width drift.
+      Impact: Unactionable rework could miss the CODER handoff, while platform-specific rendering blocked the PR.
+      Resolution: Require findings for rework, add regression coverage, reduce deterministic wrap width to 29 characters, regenerate five cards, and rerun full CI.
 extensions:
   implementation_commit:
     hash: "0fcb2e16939fb9d3aa7c639d8e8fcec8d292a3c6"
@@ -412,6 +466,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-23T05:33:00.881Z — VERIFY — ok
+
+By: CODER
+
+Note: Hosted rework resolved: evaluator rework now requires an actionable finding, five social titles wrap below the cross-platform limit, and full local CI passed with 2230 unit tests plus critical CLI, docs, Windows, and coverage gates.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T05:25:01.503Z, excerpt_hash=sha256:e5191b3bfe3839fd43f388edb72efc40ec3afb7f27cb5430ec928ec14af5e8e8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-YGWMA2-remove-automatic-semantic-pass-verdicts/.agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json
+- old_digest: 0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b
+- current_digest: 0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221846-YGWMA2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -433,3 +517,7 @@ DecisionContextRef:
 - Observation: A valid rework record without findings is accepted but not routed to CODER; Ubuntu rendered Cloud backend integration plan at 1188 px against a 1184 px limit.
   Impact: The CLI can request another semantic review instead of implementation rework, and Docs CI blocks publication despite a local pass.
   Resolution: Make rework freshness independent of findings or require them consistently, add regression coverage, and use a deterministic title layout with cross-platform width margin.
+
+- Observation: GitHub review and Ubuntu Docs CI exposed a finding-free rework route gap and fallback-font width drift.
+  Impact: Unactionable rework could miss the CODER handoff, while platform-specific rendering blocked the PR.
+  Resolution: Require findings for rework, add regression coverage, reduce deterministic wrap width to 29 characters, regenerate five cards, and rerun full CI.
