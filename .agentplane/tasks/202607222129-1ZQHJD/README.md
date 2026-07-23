@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on:
@@ -69,8 +69,8 @@ quality_review:
     - "JSONL parsing remains fail-closed: one turn.completed, required provider usage, last valid pre-completion status, no post-completion status, and bounded output channels."
     - "Post-main rebase preserved the exact RF-04 patch by range-diff and patch SHA256; historical baseline blob remains cc5eb8600d41b7da3adf19ee06b58227caaab064."
 commit:
-  hash: "b17723dd746a9aed7c6e3d3dca25f276e43657cd"
-  message: "🧐 1ZQHJD task: record final replay quality review"
+  hash: "d43f49d290b33c0231f121adb8cdad28d71850c9"
+  message: "🧩 1ZQHJD task: refresh task artifacts after commit"
 comments:
   -
     author: "TESTER"
@@ -102,6 +102,9 @@ comments:
   -
     author: "TESTER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "TESTER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -169,8 +172,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-23T14:20:08.522Z"
+    author: "TESTER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-23T14:16:33.318Z"
+doc_updated_at: "2026-07-23T14:20:08.522Z"
 doc_updated_by: "TESTER"
 description: "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording provider-reported token usage and 70 resolved outcome cells with per-field fixture_control or supervisor_observed provenance, collecting cognitive, orchestration, latency, retrieval, and evidence metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics."
 sections:
