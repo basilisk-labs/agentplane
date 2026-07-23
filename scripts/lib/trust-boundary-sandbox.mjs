@@ -76,7 +76,13 @@ function booleanAuthorityPath(typeIndex, sourceFile, typeNode, pathSegments) {
   return currentType?.kind === ts.SyntaxKind.BooleanKeyword;
 }
 
-function expressionHasAuthorityProvenance(sourceFile, expression, typeIndex, seen = new Set()) {
+function expressionHasAuthorityProvenance(
+  sourceFile,
+  expression,
+  typeIndex,
+  seen = new Set(),
+  trailingPath = [],
+) {
   const constants = collectStringConstants(sourceFile);
   const renderedPath = expressionPath(expression, constants);
   if (!renderedPath) return false;
@@ -85,10 +91,16 @@ function expressionHasAuthorityProvenance(sourceFile, expression, typeIndex, see
   const binding = authorityBinding(functionNode, root);
   if (!binding || seen.has(root)) return false;
   seen.add(root);
-  if (segments.length === 0 && binding.path.length === 0 && binding.initializer) {
-    return expressionHasAuthorityProvenance(sourceFile, binding.initializer, typeIndex, seen);
+  const authorityPath = [...binding.path, ...segments, ...trailingPath];
+  if (!binding.type && binding.initializer) {
+    return expressionHasAuthorityProvenance(
+      sourceFile,
+      binding.initializer,
+      typeIndex,
+      seen,
+      authorityPath,
+    );
   }
-  const authorityPath = [...binding.path, ...segments];
   if (!binding.type || authorityPath.length === 0) return false;
   const typeText = binding.type.getText();
   const semanticPath = `${typeText} ${root} ${authorityPath.join(" ")}`;

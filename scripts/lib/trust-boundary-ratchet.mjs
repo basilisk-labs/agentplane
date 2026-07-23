@@ -12,6 +12,7 @@ import {
   structuralNodeIdentity,
 } from "./trust-boundary-ast.mjs";
 import { ruleById } from "./trust-boundary-baseline.mjs";
+import { objectContextMatchesType } from "./trust-boundary-context.mjs";
 import { collectAgentWritableObservedFields } from "./trust-boundary-observed.mjs";
 import { collectImplicitDangerSandboxes } from "./trust-boundary-sandbox.mjs";
 import { collectAutomaticVerdicts } from "./trust-boundary-semantic.mjs";
@@ -350,81 +351,6 @@ function functionContainsText(node, text) {
   return node.body?.getText().includes(text) ?? false;
 }
 
-function expectedObjectType(sourceFile, node, typeIndex) {
-  const pathSegments = [];
-  let expression = node;
-  let current = node.parent;
-  while (current) {
-    if (
-      ts.isParenthesizedExpression(current) ||
-      ts.isAsExpression(current) ||
-      ts.isSatisfiesExpression(current)
-    ) {
-      expression = current;
-      current = current.parent;
-      continue;
-    }
-    if (
-      ts.isPropertyAssignment(current) &&
-      current.initializer === expression &&
-      ts.isObjectLiteralExpression(current.parent)
-    ) {
-      const name = propertyName(current);
-      if (!name) return null;
-      pathSegments.unshift(name);
-      expression = current.parent;
-      current = expression.parent;
-      continue;
-    }
-    let typeNode = null;
-    if (ts.isVariableDeclaration(current) && current.initializer === expression) {
-      typeNode = current.type;
-    } else if (ts.isReturnStatement(current)) {
-      let owner = current.parent;
-      while (owner && !ts.isFunctionLike(owner)) owner = owner.parent;
-      typeNode = owner?.type ?? null;
-    } else if (ts.isArrowFunction(current) && current.body === expression) {
-      typeNode = current.type;
-    }
-    if (!typeNode) return null;
-    let resolvedType = typeNode;
-    let resolvedSourceFile = sourceFile;
-    if (
-      ts.isTypeReferenceNode(resolvedType) &&
-      ts.isIdentifier(resolvedType.typeName) &&
-      resolvedType.typeName.text === "Promise" &&
-      resolvedType.typeArguments?.length === 1
-    ) {
-      resolvedType = resolvedType.typeArguments[0];
-    }
-    for (const segment of pathSegments) {
-      const resolution = typeIndex.resolveTypeNode(resolvedSourceFile, resolvedType);
-      const candidates = resolution.members.filter(
-        ({ member }) => ts.isPropertySignature(member) && propertyName(member) === segment,
-      );
-      if (candidates.length !== 1 || !candidates[0].member.type) return null;
-      resolvedType = candidates[0].member.type;
-      resolvedSourceFile = candidates[0].sourceFile;
-    }
-    return { sourceFile: resolvedSourceFile, typeNode: resolvedType };
-  }
-  return null;
-}
-
-function typeMatchesResolution(typeIndex, sourceFile, typeNode, target) {
-  if (!typeNode || !target) return false;
-  const resolution = typeIndex.resolveTypeNode(sourceFile, typeNode);
-  if (resolution.identity === target.identity) return true;
-  const targetKeys = new Set(
-    target.declarations.map(
-      (entry) => `${normalizeRepoPath(entry.sourceFile.fileName)}#${entry.node.name.text}`,
-    ),
-  );
-  return resolution.declarations.some((entry) =>
-    targetKeys.has(`${normalizeRepoPath(entry.sourceFile.fileName)}#${entry.node.name.text}`),
-  );
-}
-
 function collectRenderedCommandOrchestration(sourceFiles) {
   const ruleId = "trust.no-rendered-command-orchestration";
   const violations = [];
@@ -525,12 +451,10 @@ function collectDuplicateRunnerTaskRepresentations(sourceFiles, typeIndex) {
         const byName = new Map(
           node.properties.map((property) => [propertyName(property), property]),
         );
-        const expected = expectedObjectType(sourceFile, node, typeIndex);
         if (
           /\/runner\//u.test(sourceFile.fileName) &&
           byName.has("data") &&
-          expected &&
-          typeMatchesResolution(typeIndex, expected.sourceFile, expected.typeNode, declaration)
+          objectContextMatchesType(sourceFile, node, typeIndex, declaration)
         ) {
           for (const name of DUPLICATE_TASK_FIELDS) {
             const property = byName.get(name);
