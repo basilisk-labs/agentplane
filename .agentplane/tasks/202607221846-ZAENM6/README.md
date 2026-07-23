@@ -4,7 +4,7 @@ title: "Add trust-boundary architecture ratchets"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -37,16 +37,16 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-23T00:17:38.325Z"
+  updated_at: "2026-07-23T00:18:13.875Z"
   updated_by: "EVALUATOR"
   note: "Quality review passed."
-  evaluated_sha: "aa9f3987d364854d3960d7c9a55afc19b8c6224a"
+  evaluated_sha: "f0095f3b5fae3b0f4da38d4f19f1ff026be37a6e"
   blueprint_digest: "7d20d7a390d13b10443643e53f39c63dcdae67537533a9f1aec40a2695ad1d56"
   evidence_refs:
     - ".agentplane/tasks/202607221846-ZAENM6/README.md"
-    - ".agentplane/tasks/202607221846-ZAENM6/quality/20260723-001738325-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221846-ZAENM6/quality/20260723-001738325-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221846-ZAENM6/quality/20260723-001738325-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221846-ZAENM6/quality/20260723-001813875-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221846-ZAENM6/quality/20260723-001813875-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221846-ZAENM6/quality/20260723-001813875-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221846-ZAENM6/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
