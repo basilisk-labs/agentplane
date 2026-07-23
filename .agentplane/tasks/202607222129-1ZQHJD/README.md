@@ -4,7 +4,7 @@ title: "Capture anchored multi-run RF-04 replay telemetry"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 17
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -59,6 +59,9 @@ comments:
   -
     author: "TESTER"
     body: "Pre-pilot driver contract ready: exact detached anchor checkout, lock-matched subject-local dependencies, canonical bundle manifests, fixture-scoped AgentPlane HOME/XDG/tmp, sanitized Codex runtime, no raw prompt/final/JSONL persistence, and all-or-nothing capture. Exact-anchor offline init/task/dry-run probe passed with six preparation CLI calls; live pilot remains gated on independent commit audit."
+  -
+    author: "TESTER"
+    body: "Replacement pilot executed exactly once with no retry. The direct/run-01 driver failed closed before artifact publication with diagnostic CODEX_FINAL_STATUS_COUNT. Transaction marker, replay envelopes, evidence bundles, and replay baseline are absent; the worktree remained clean. Full 50-run capture was not started. Offline remediation is limited to resolving repeated schema-valid status events only when their sanitized status values agree; conflicting values remain a hard failure. A new provider call requires separate approval after tests and independent audit pass."
 events:
   -
     type: "status"
@@ -87,8 +90,13 @@ events:
     at: "2026-07-22T23:32:05.755Z"
     author: "TESTER"
     body: "Pre-pilot driver contract ready: exact detached anchor checkout, lock-matched subject-local dependencies, canonical bundle manifests, fixture-scoped AgentPlane HOME/XDG/tmp, sanitized Codex runtime, no raw prompt/final/JSONL persistence, and all-or-nothing capture. Exact-anchor offline init/task/dry-run probe passed with six preparation CLI calls; live pilot remains gated on independent commit audit."
+  -
+    type: "comment"
+    at: "2026-07-23T10:46:35.188Z"
+    author: "TESTER"
+    body: "Replacement pilot executed exactly once with no retry. The direct/run-01 driver failed closed before artifact publication with diagnostic CODEX_FINAL_STATUS_COUNT. Transaction marker, replay envelopes, evidence bundles, and replay baseline are absent; the worktree remained clean. Full 50-run capture was not started. Offline remediation is limited to resolving repeated schema-valid status events only when their sanitized status values agree; conflicting values remain a hard failure. A new provider call requires separate approval after tests and independent audit pass."
 doc_version: 3
-doc_updated_at: "2026-07-23T01:28:36.874Z"
+doc_updated_at: "2026-07-23T10:51:38.479Z"
 doc_updated_by: "TESTER"
 description: "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording provider-reported token usage and 70 resolved outcome cells with per-field fixture_control or supervisor_observed provenance, collecting cognitive, orchestration, latency, retrieval, and evidence metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics."
 sections:
@@ -114,7 +122,7 @@ sections:
     1. Run the reviewed capture command with --pilot and the Codex replay driver. Expected: only direct/run-01 executes, nothing is persisted, no retry occurs, exact provider input/output/reasoning usage is present, and all receipt, effect, status, dependency, and path checks pass.
     2. Run the full capture at anchor 1a702e160ba9f0efe7067f2a22fc008defc89ffb with --runs 5 and the reviewed driver. Expected: ten scenarios, 50 valid sanitized envelopes, 55 declared provider episodes, one fixed model/runtime profile, no secrets or absolute host paths.
     3. Run the offline replay checker. Expected: 70/70 resolved outcome cells carry exact fixture_control or supervisor_observed provenance, 27/27 provider token cells and 170/170 scalar cells are resolved as observed values or typed not_applicable, and every artifact, dependency, harness, anchor, and transaction hash matches.
-    4. Run the four focused RF-04 replay test files and tamper cases. Expected: 33/33 pass and changes to anchor, portable or platform dependency receipt, usage, outcome, provenance, run count, target safety, or artifact hash fail closed.
+    4. Run the four focused RF-04 replay test files and tamper cases. Expected: 39/39 pass and changes to anchor, portable or platform dependency receipt, usage, outcome, provenance, run count, target safety, status-event conflict, or artifact hash fail closed.
     5. Confirm scripts/baselines/agent-efficiency-pre-v0.7-main.json is byte-identical and the alpha.1 gate directly depends on this task.
     6. Run formatting, scoped lint, TypeScript, policy routing, critical-route, hotspot, and diff checks. Expected: all pass without live-data exceptions.
   Verification: |-
@@ -125,7 +133,10 @@ sections:
     - Do not alter the historical RF-04 baseline or immutable anchor SHA.
     - Do not remove the alpha.1 dependency merely to pass the gate; if capture is impossible, replace it with another bounded task that records the blocker.
     - Delete unpublished provider traces; never overwrite a published baseline artifact.
-  Findings: ""
+  Findings: |-
+    The authorized replacement pilot ran once with no retry and failed closed before publication with CODEX_FINAL_STATUS_COUNT. The full capture was not started, no replay artifacts or transaction marker remained, and no raw prompt, final text, or JSONL was persisted.
+
+    Offline analysis found that the collector rejected a second schema-valid status without comparing normalized values. The bounded repair independently validates every status message, collapses repeated identical enum values, and rejects conflicting values with CODEX_FINAL_STATUS_CONFLICT. A new provider call remains approval-gated after offline verification and independent audit.
 id_source: "generated"
 ---
 ## Summary
@@ -157,7 +168,7 @@ Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f
 1. Run the reviewed capture command with --pilot and the Codex replay driver. Expected: only direct/run-01 executes, nothing is persisted, no retry occurs, exact provider input/output/reasoning usage is present, and all receipt, effect, status, dependency, and path checks pass.
 2. Run the full capture at anchor 1a702e160ba9f0efe7067f2a22fc008defc89ffb with --runs 5 and the reviewed driver. Expected: ten scenarios, 50 valid sanitized envelopes, 55 declared provider episodes, one fixed model/runtime profile, no secrets or absolute host paths.
 3. Run the offline replay checker. Expected: 70/70 resolved outcome cells carry exact fixture_control or supervisor_observed provenance, 27/27 provider token cells and 170/170 scalar cells are resolved as observed values or typed not_applicable, and every artifact, dependency, harness, anchor, and transaction hash matches.
-4. Run the four focused RF-04 replay test files and tamper cases. Expected: 33/33 pass and changes to anchor, portable or platform dependency receipt, usage, outcome, provenance, run count, target safety, or artifact hash fail closed.
+4. Run the four focused RF-04 replay test files and tamper cases. Expected: 39/39 pass and changes to anchor, portable or platform dependency receipt, usage, outcome, provenance, run count, target safety, status-event conflict, or artifact hash fail closed.
 5. Confirm scripts/baselines/agent-efficiency-pre-v0.7-main.json is byte-identical and the alpha.1 gate directly depends on this task.
 6. Run formatting, scoped lint, TypeScript, policy routing, critical-route, hotspot, and diff checks. Expected: all pass without live-data exceptions.
 
@@ -174,3 +185,7 @@ Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f
 - Delete unpublished provider traces; never overwrite a published baseline artifact.
 
 ## Findings
+
+The authorized replacement pilot ran once with no retry and failed closed before publication with CODEX_FINAL_STATUS_COUNT. The full capture was not started, no replay artifacts or transaction marker remained, and no raw prompt, final text, or JSONL was persisted.
+
+Offline analysis found that the collector rejected a second schema-valid status without comparing normalized values. The bounded repair independently validates every status message, collapses repeated identical enum values, and rejects conflicting values with CODEX_FINAL_STATUS_CONFLICT. A new provider call remains approval-gated after offline verification and independent audit.

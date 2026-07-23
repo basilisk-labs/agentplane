@@ -56,6 +56,11 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     }>("scripts/bench/capture-agent-efficiency-replay.mjs");
     const exact = Buffer.from("RF04_DRIVER_ERROR:CODEX_EXIT\n");
     expect(safety.replayDriverDiagnosticCode(exact)).toBe("CODEX_EXIT");
+    expect(
+      safety.replayDriverDiagnosticCode(
+        Buffer.from("RF04_DRIVER_ERROR:CODEX_FINAL_STATUS_CONFLICT\n"),
+      ),
+    ).toBe("CODEX_FINAL_STATUS_CONFLICT");
     const rejectedDiagnostics = [
       Buffer.from("RF04_DRIVER_ERROR:CODEX_EXIT\nraw-secret"),
       Buffer.from("RF04_DRIVER_ERROR:CODEX_EXIT\nRF04_DRIVER_ERROR:SECOND\n"),
