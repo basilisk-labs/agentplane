@@ -24,7 +24,7 @@ Created: 2026-07-23T00:32:03.635Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-23T00:32:03.635Z
+- Updated: 2026-07-23T02:31:14.653Z
 - Branch: task/202607221846-4VB97J/align-workflow-schema-migration-and-runtime-vers
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
