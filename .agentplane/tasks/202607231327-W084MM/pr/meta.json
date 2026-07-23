@@ -8,10 +8,10 @@
   "pr_number": 4603,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4603",
   "pre_merge_closure": {
-    "basis_commit": "665ef5e2c7d92d4943e4d5a8e87fbcf07790d5d0",
+    "basis_commit": "1bcad08236ba09101f3e0be6ef00f8daf4ad24df",
     "branch": "task/202607231327-W084MM/reconcile-semantic-clone-baseline-drift",
     "pr_number": 4603,
-    "recorded_at": "2026-07-23T13:50:46.369Z",
+    "recorded_at": "2026-07-23T13:52:19.553Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

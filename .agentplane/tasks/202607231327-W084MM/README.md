@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -54,8 +54,8 @@ quality_review:
     - "WORKFLOW_OPTIONAL_ROOT_SHAPE is structurally shared while v1/v2 discriminants, approvals, required fields, and generated schema order remain unchanged."
     - "runGithubApiJson preserves retry, ghEnv, custom argsPrefix, cwd, endpoint, maxBuffer, JSON parsing, and each caller's validation/catch semantics; the initial test-coverage gap was corrected before approval."
 commit:
-  hash: "665ef5e2c7d92d4943e4d5a8e87fbcf07790d5d0"
-  message: "🧐 W084MM task: record semantic quality review"
+  hash: "1bcad08236ba09101f3e0be6ef00f8daf4ad24df"
+  message: "🧩 W084MM task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -63,6 +63,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -84,8 +87,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-23T13:52:19.531Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-23T13:50:46.347Z"
+doc_updated_at: "2026-07-23T13:52:19.531Z"
 doc_updated_by: "CODER"
 description: "Remove the two deduplicable semantic clone regressions already present on main, preserve intentional public barrel parity, then refresh the reviewed jscpd baseline so clone:check is truthful before RF-04 integration."
 sections:
