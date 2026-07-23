@@ -102,7 +102,7 @@ const WORKFLOW_OBSERVABILITY_SCHEMA = z
   })
   .passthrough();
 
-const WORKFLOW_V1_OPTIONAL_ROOT_SHAPE = {
+const WORKFLOW_OPTIONAL_ROOT_SHAPE = {
   workspace: WORKFLOW_WORKSPACE_SCHEMA.optional(),
   paths: configShape.paths.unwrap().optional(),
   tasks: WORKFLOW_TASKS_SCHEMA.optional(),
@@ -128,7 +128,7 @@ export const WorkflowV1FrontMatterSchema = z
     retry_policy: WORKFLOW_RETRY_POLICY_SCHEMA,
     timeouts: WORKFLOW_TIMEOUTS_SCHEMA,
     in_scope_paths: z.array(nonEmptyString).min(1),
-    ...WORKFLOW_V1_OPTIONAL_ROOT_SHAPE,
+    ...WORKFLOW_OPTIONAL_ROOT_SHAPE,
   })
   .strict();
 
@@ -138,20 +138,7 @@ export const WorkflowV2FrontMatterSchema = z
     workflow: WORKFLOW_SECTION_SCHEMA,
     owners: WORKFLOW_OWNERS_SCHEMA,
     approvals: WORKFLOW_APPROVALS_V2_SCHEMA,
-    workspace: WORKFLOW_WORKSPACE_SCHEMA.optional(),
-    paths: configShape.paths.unwrap().optional(),
-    tasks: WORKFLOW_TASKS_SCHEMA.optional(),
-    branch: configShape.branch.unwrap().optional(),
-    framework: configShape.framework.unwrap().optional(),
-    execution: configShape.execution.unwrap().optional(),
-    runner: configShape.runner.unwrap().optional(),
-    feedback: configShape.feedback.unwrap().optional(),
-    recipes: configShape.recipes.unwrap().optional(),
-    commit: configShape.commit.unwrap().optional(),
-    acr: configShape.acr.unwrap().optional(),
-    scheduler: WORKFLOW_SCHEDULER_SCHEMA.optional(),
-    evaluator: WORKFLOW_EVALUATOR_SCHEMA.optional(),
-    observability: WORKFLOW_OBSERVABILITY_SCHEMA.optional(),
+    ...WORKFLOW_OPTIONAL_ROOT_SHAPE,
     retry_policy: WORKFLOW_RETRY_POLICY_SCHEMA,
     timeouts: WORKFLOW_TIMEOUTS_SCHEMA,
     in_scope_paths: z.array(nonEmptyString).min(1),

@@ -11,6 +11,23 @@ import {
   renderWorkflowV2FrontMatterFixtureJson,
 } from "./workflow-contract.js";
 
+const WORKFLOW_OPTIONAL_ROOT_FIXTURE = {
+  workspace: { agents_dir: ".agentplane/agents" },
+  paths: { tasks_path: ".agentplane/tasks.json" },
+  tasks: { backend: { config_path: ".agentplane/backends/local/backend.json" } },
+  branch: { task_prefix: "task" },
+  framework: { source: "https://github.com/basilisk-labs/agentplane" },
+  execution: { profile: "balanced" },
+  runner: { default_adapter: "codex" },
+  feedback: { github_issues: { enabled: false } },
+  recipes: { storage_default: "copy" },
+  commit: { generic_tokens: ["update"] },
+  acr: { enabled: false },
+  scheduler: { concurrency: 1 },
+  evaluator: { max_rework_attempts: 3 },
+  observability: { events: "jsonl" },
+} as const;
+
 describe("WORKFLOW front matter contract", () => {
   it("normalizes supported v1 input to v2 meaning", () => {
     const normalized = parseWorkflowFrontMatter(WORKFLOW_V1_FRONT_MATTER_FIXTURE);
@@ -100,6 +117,17 @@ describe("WORKFLOW front matter contract", () => {
     expect(parseWorkflowFrontMatter(input).approvals).toEqual(input.approvals);
   });
 
+  it.each([
+    ["v1", { ...WORKFLOW_V1_FRONT_MATTER_FIXTURE, ...WORKFLOW_OPTIONAL_ROOT_FIXTURE }],
+    ["v2", { ...WORKFLOW_V2_FRONT_MATTER_FIXTURE, ...WORKFLOW_OPTIONAL_ROOT_FIXTURE }],
+  ])("accepts every optional root section in %s", (_version, input) => {
+    const normalized = parseWorkflowFrontMatter(input);
+
+    for (const [key, value] of Object.entries(WORKFLOW_OPTIONAL_ROOT_FIXTURE)) {
+      expect(normalized).toHaveProperty(key, value);
+    }
+  });
+
   it("rejects unsupported future versions with a typed error", () => {
     expect(() =>
       parseWorkflowFrontMatter({
@@ -122,10 +150,42 @@ describe("WORKFLOW front matter contract", () => {
 
   it("publishes v1 and v2 branches from the same Zod source", () => {
     const branches = WORKFLOW_FRONT_MATTER_JSON_SCHEMA.anyOf as {
-      properties?: { version?: { const?: number } };
+      properties?: Record<string, unknown> & { version?: { const?: number } };
+      required?: string[];
     }[];
 
     expect(branches.map((branch) => branch.properties?.version?.const)).toEqual([1, 2]);
+    for (const branch of branches) {
+      expect(Object.keys(branch.properties ?? {})).toEqual(
+        expect.arrayContaining(Object.keys(WORKFLOW_OPTIONAL_ROOT_FIXTURE)),
+      );
+    }
+    expect(branches[0]?.properties).toHaveProperty("mode");
+    expect(branches[0]?.properties).not.toHaveProperty("workflow");
+    expect(branches[0]?.required).toEqual(
+      expect.arrayContaining([
+        "version",
+        "mode",
+        "owners",
+        "approvals",
+        "retry_policy",
+        "timeouts",
+        "in_scope_paths",
+      ]),
+    );
+    expect(branches[1]?.properties).toHaveProperty("workflow");
+    expect(branches[1]?.properties).not.toHaveProperty("mode");
+    expect(branches[1]?.required).toEqual(
+      expect.arrayContaining([
+        "version",
+        "workflow",
+        "owners",
+        "approvals",
+        "retry_policy",
+        "timeouts",
+        "in_scope_paths",
+      ]),
+    );
     expect(JSON.parse(renderWorkflowV1FrontMatterFixtureJson())).toEqual(
       WORKFLOW_V1_FRONT_MATTER_FIXTURE,
     );
