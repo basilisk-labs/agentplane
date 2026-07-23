@@ -4,7 +4,7 @@ title: "Capture anchored multi-run RF-04 replay telemetry"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -37,11 +37,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-23T14:02:48.535Z"
+  updated_by: "TESTER"
+  note: "Fresh clone:check on RF-04 head ba30ea2a fails only because the branch is eight main commits behind W084MM: 91 clones versus baseline 88. Update the task branch from main fd1e52a7, keep RF-04 artifacts and immutable anchor unchanged, then rerun the full declared verification contract."
+  attempts: 1
 commit: null
 comments:
   -
@@ -119,8 +119,14 @@ events:
     at: "2026-07-23T13:19:15.080Z"
     author: "TESTER"
     body: "The autonomous full retry completed successfully: 50/50 scenario runs and 55/55 provider episodes were published as 50 sanitized envelopes and 50 content-addressed evidence bundles. The offline checker resolves 70/70 outcome cells, 27/27 provider token cells, and 170/170 scalar cells under one fixed profile; structural_sha256=sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4 and diagnostics_sha256=sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e. Secret and host-path scans are clean, staging and transaction markers are absent, and the historical baseline blob remains cc5eb8600d41b7da3adf19ee06b58227caaab064. Four focused suites pass 40/40; all 11 critical chunks, TypeScript, workflow lint, task-state, policy routing, format, replay, guards, lint, and architecture checks pass. Full ci:contract reaches clone:check and then exposes a pre-existing main drift (91 clones versus baseline 88); clean main reproduces the same 91, while no reported clone pair touches an RF-04 file. This unrelated baseline reconciliation is being handled separately before final verification."
+  -
+    type: "verify"
+    at: "2026-07-23T14:02:48.535Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Fresh clone:check on RF-04 head ba30ea2a fails only because the branch is eight main commits behind W084MM: 91 clones versus baseline 88. Update the task branch from main fd1e52a7, keep RF-04 artifacts and immutable anchor unchanged, then rerun the full declared verification contract."
 doc_version: 3
-doc_updated_at: "2026-07-23T13:19:15.374Z"
+doc_updated_at: "2026-07-23T14:02:48.808Z"
 doc_updated_by: "TESTER"
 description: "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording provider-reported token usage and 70 resolved outcome cells with per-field fixture_control or supervisor_observed provenance, collecting cognitive, orchestration, latency, retrieval, and evidence metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics."
 sections:
@@ -151,6 +157,36 @@ sections:
     6. Run formatting, scoped lint, TypeScript, policy routing, critical-route, hotspot, and diff checks. Expected: all pass without live-data exceptions.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-23T14:02:48.535Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Fresh clone:check on RF-04 head ba30ea2a fails only because the branch is eight main commits behind W084MM: 91 clones versus baseline 88. Update the task branch from main fd1e52a7, keep RF-04 artifacts and immutable anchor unchanged, then rerun the full declared verification contract.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T13:19:15.374Z, excerpt_hash=sha256:ebef1420355cb6aa0b63e71b4bebb4392cc88acd42e080b39d63f6ccf9e2a9c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607222129-1ZQHJD-capture-anchored-multi-run-rf-04-replay-telemetr/.agentplane/tasks/202607222129-1ZQHJD/blueprint/resolved-snapshot.json
+    - old_digest: c623f4d584bdb41f52b4f3ff3de5ffc857f8654dc401d312940b98493af8189b
+    - current_digest: c623f4d584bdb41f52b4f3ff3de5ffc857f8654dc401d312940b98493af8189b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607222129-1ZQHJD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert only the new replay scripts, sanitized artifacts, tests, CI entries, roadmap row, and dependency edge.
@@ -211,6 +247,36 @@ Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-23T14:02:48.535Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Fresh clone:check on RF-04 head ba30ea2a fails only because the branch is eight main commits behind W084MM: 91 clones versus baseline 88. Update the task branch from main fd1e52a7, keep RF-04 artifacts and immutable anchor unchanged, then rerun the full declared verification contract.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T13:19:15.374Z, excerpt_hash=sha256:ebef1420355cb6aa0b63e71b4bebb4392cc88acd42e080b39d63f6ccf9e2a9c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607222129-1ZQHJD-capture-anchored-multi-run-rf-04-replay-telemetr/.agentplane/tasks/202607222129-1ZQHJD/blueprint/resolved-snapshot.json
+- old_digest: c623f4d584bdb41f52b4f3ff3de5ffc857f8654dc401d312940b98493af8189b
+- current_digest: c623f4d584bdb41f52b4f3ff3de5ffc857f8654dc401d312940b98493af8189b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607222129-1ZQHJD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -12,8 +12,8 @@ Created: 2026-07-22T21:30:53.096Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Fresh clone:check on RF-04 head ba30ea2a fails only because the branch is eight main commits behind W084MM: 91 clones versus baseline 88. Update the task branch from main fd1e52a7, keep RF-04 artifacts and immutable anchor unchanged, then rerun the full declared verification contract.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
