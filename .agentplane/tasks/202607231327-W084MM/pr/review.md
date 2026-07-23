@@ -6,7 +6,7 @@ Created: 2026-07-23T13:29:09.130Z
 
 - Task: `202607231327-W084MM`
 - Title: Reconcile semantic clone baseline drift
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607231327-W084MM/reconcile-semantic-clone-baseline-drift`
 - Canonical task record: `.agentplane/tasks/202607231327-W084MM/README.md`
 
