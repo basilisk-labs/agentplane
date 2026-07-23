@@ -15,12 +15,15 @@ RF-01b: create ExecutionReceipt from observed process, Git, check, artifact, and
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Current PR head contains only task and PR lifecycle metadata; no ExecutionReceipt implementation or
-acceptance evidence exists yet. Return to CODER for RF-01b implementation before verification.
+Verified supervisor-owned receipt truth against conflicting agent claims, unreported writes,
+pre-existing dirt, legacy compatibility, detached descendants, replay and file-identity attacks, and
+arbitrary terminal signals. Focused 110/110, full 2421/2421, lifecycle invariants, typecheck, and
+ci:contract passed. POSIX process-group containment remains explicitly limited and fail-closed until
+RF03.
 ```
 - Canonical workflow state lives in the task README.
 

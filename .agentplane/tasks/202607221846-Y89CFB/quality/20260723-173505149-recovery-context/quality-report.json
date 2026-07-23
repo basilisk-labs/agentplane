@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221846-Y89CFB",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-23T17:35:05.149Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Independent semantic review found no remaining P0-P2 defect after fail-closed containment, signal, replay, and stable-file fixes.",
+  "evaluated_sha": "c989777ba53545e457dbd24793a5cf454ca9ffaa",
+  "blueprint_digest": "504aba551a29f040c1ef51d538e2b0132564d1e27dc199a4110ded1506a9ebb5",
+  "findings": [
+    "Supervisor observations are authoritative and agent claims remain separately auditable; observed_success requires bounded containment, complete Git and artifact evidence, clean process exit, and passed required checks.",
+    "Receipt path/run binding rejects cross-task traversal and the verifier reads the receipt through a stable no-follow file handle."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221846-Y89CFB/README.md",
+    "packages/core/src/runner/execution-receipt.ts",
+    "packages/agentplane/src/runner/adapters/execution-receipt-runtime.ts",
+    "packages/agentplane/src/runner/process-supervision.process-tree.test.ts",
+    "packages/agentplane/src/context/verify-task.ts",
+    "bun run test:fast: 390 files, 2421 tests passed",
+    "bun run ci:contract: passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Current POSIX process-group execution cannot contain descendants that create a new session; RF01b records this as limited/unverified and fails closed. RF03 must provide bounded sandbox containment before such runs can reach observed_success."
+  ]
+}
