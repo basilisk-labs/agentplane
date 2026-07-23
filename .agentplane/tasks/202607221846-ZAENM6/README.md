@@ -1,10 +1,11 @@
 ---
 id: "202607221846-ZAENM6"
 title: "Add trust-boundary architecture ratchets"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -50,11 +51,16 @@ quality_review:
     - ".agentplane/tasks/202607221846-ZAENM6/blueprint/resolved-snapshot.json"
   findings:
     - "No blocking findings."
-commit: null
+commit:
+  hash: "68bf1f7a7038eb0a9edeb30d92695bc028902cb0"
+  message: "🧪 ZAENM6 task: record quality review"
 comments:
   -
     author: "CODER"
     body: "Start: implement trust-boundary architecture ratchets from the approved alpha.1 plan."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -69,8 +75,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local contract passed on aa9f3987d: trust checker accepted exactly 63 reviewed violations (37/4/10/1/4/7); accumulated regression matrix 17/17; independent bounded audit VERIFY_OK; ESLint, TypeScript, guards, routing, hotspot, dependency architecture, Prettier and diff checks passed."
+  -
+    type: "status"
+    at: "2026-07-23T00:21:20.478Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-23T00:17:11.504Z"
+doc_updated_at: "2026-07-23T00:21:20.479Z"
 doc_updated_by: "CODER"
 description: "RF-27a: baseline and prohibit new automatic semantic verdicts, agent-writable observed fields, implicit danger sandboxes, untyped durable boundaries, shell-string orchestration, and duplicate runner task representations."
 sections:
@@ -133,6 +146,10 @@ sections:
     - Observation: The canonical critical-cli route reaches two existing init tests whose harness invokes bun directly; Bun is not installed in this local environment. The same failures were reproduced on clean main and are unrelated to ZAENM6.
       Impact: Local Node-based trust-boundary evidence is complete, but Bun-dependent critical coverage must be confirmed by hosted CI before integration.
       Resolution: Keep verification local-only and require the hosted Bun lanes plus PR verification before merge.
+extensions:
+  implementation_commit:
+    hash: "f0095f3b5fae3b0f4da38d4f19f1ff026be37a6e"
+    message: "🐛 ZAENM6 guard: resolve typed context variants"
 id_source: "generated"
 ---
 ## Summary
