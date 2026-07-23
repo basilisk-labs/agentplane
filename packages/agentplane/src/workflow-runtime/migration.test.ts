@@ -87,6 +87,35 @@ describe("workflow migration", () => {
     expect(plan.targetText).toContain("Keep {{ runtime.repo_name }} exactly.\r\n");
   });
 
+  it("rejects invalid UTF-8 before creating migration artifacts", async () => {
+    const root = await makeRepo();
+    const workflowPath = path.join(root, ".agentplane", "WORKFLOW.md");
+    const sourceBytes = Buffer.from(V1_WORKFLOW, "utf8");
+    const promptOffset = sourceBytes.indexOf(Buffer.from("Keep ", "utf8"));
+    if (promptOffset === -1) {
+      throw new Error("Invalid migration test fixture: prompt marker missing.");
+    }
+    const invalidSourceBytes = Buffer.concat([
+      sourceBytes.subarray(0, promptOffset + "Keep ".length),
+      Buffer.from([0xff]),
+      sourceBytes.subarray(promptOffset + "Keep ".length),
+    ]);
+    try {
+      await fs.writeFile(workflowPath, invalidSourceBytes);
+
+      await expect(applyWorkflowMigration(root)).rejects.toThrow(
+        "requires valid UTF-8 bytes; re-encode or restore .agentplane/WORKFLOW.md before retrying",
+      );
+      const activeAfter = await fs.readFile(workflowPath);
+      expect(activeAfter.equals(invalidSourceBytes)).toBe(true);
+      await expect(fs.readdir(path.join(root, ".agentplane", "workflows"))).resolves.toEqual([]);
+      const agentplaneEntries = await fs.readdir(path.join(root, ".agentplane"));
+      expect(agentplaneEntries.toSorted()).toEqual(["WORKFLOW.md", "workflows"]);
+    } finally {
+      await fs.rm(root, { recursive: true, force: true });
+    }
+  });
+
   it("uses an active commit point, is idempotent, and rolls back exact source bytes", async () => {
     const root = await makeRepo();
     try {
