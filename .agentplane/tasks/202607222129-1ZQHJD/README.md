@@ -4,7 +4,7 @@ title: "Capture anchored multi-run RF-04 replay telemetry"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on:
@@ -42,6 +42,31 @@ verification:
   updated_by: "TESTER"
   note: "Post-rebase verification passed on ba22c6f7: immutable RF-04 patch parity confirmed by range-diff and SHA256; offline replay validates 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, structural 006ddc6d and diagnostics 01c7b818; four focused suites pass 40/40; all 11 critical chunks, typecheck, routing, full ci:contract, architecture, clone=88, Knip, and coverage gates pass. Historical baseline blob remains cc5eb860, 50 envelopes and 50 evidence bundles remain canonical, transaction marker is absent, and alpha.1 still directly depends on this task."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-23T14:15:49.348Z"
+  updated_by: "EVALUATOR"
+  note: "RF-04 satisfies scope and Verify Steps: offline replay is reproducible, trust boundaries, provenance, immutable anchor, counts, and fail-closed behavior are confirmed with no P0/P1/P2 findings."
+  evaluated_sha: "a9da018bfb163b09bfb2c0b7a0b59b6e647c5719"
+  blueprint_digest: "c623f4d584bdb41f52b4f3ff3de5ffc857f8654dc401d312940b98493af8189b"
+  evidence_refs:
+    - ".agentplane/tasks/202607222129-1ZQHJD/README.md"
+    - ".agentplane/tasks/202607222129-1ZQHJD/quality/20260723-141549348-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607222129-1ZQHJD/quality/20260723-141549348-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607222129-1ZQHJD/quality/20260723-141549348-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607222129-1ZQHJD/blueprint/resolved-snapshot.json"
+    - "scripts/checks/check-agent-efficiency-replay.mjs"
+    - "scripts/bench/internal/agent-efficiency-anchor-supervisor.mjs"
+    - "scripts/bench/internal/agent-efficiency-codex-runtime.mjs"
+    - "scripts/lib/agent-efficiency-replay.mjs"
+    - "scripts/lib/agent-efficiency-replay-safety.mjs"
+    - "Focused Vitest: 4 files, 40/40 passed; offline checker structural 006ddc6d and diagnostics 01c7b818; full ci:contract passed"
+  findings:
+    - "50/50 runs and 55/55 provider episodes link to 50 canonical envelopes and 50 content-addressed evidence bundles; 70/70 outcomes, 27/27 provider-token cells, and 170/170 scalar cells resolve exactly."
+    - "CURRENT_AGENT maps to CODER only for immutable-anchor lifecycle actors while prompts, episode ledger, role usage, and telemetry retain CURRENT_AGENT."
+    - "JSONL parsing remains fail-closed: one turn.completed, required provider usage, last valid pre-completion status, no post-completion status, and bounded output channels."
+    - "Post-main rebase preserved the exact RF-04 patch by range-diff and patch SHA256; historical baseline blob remains cc5eb8600d41b7da3adf19ee06b58227caaab064."
 commit: null
 comments:
   -
