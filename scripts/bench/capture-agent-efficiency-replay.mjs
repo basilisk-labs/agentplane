@@ -38,6 +38,7 @@ import {
   assertRepoPathNoSymlinkEscape,
   assertReplayCaptureTargets,
   installReplayArtifactTransaction,
+  replayDriverDiagnosticCode,
 } from "../lib/agent-efficiency-replay-safety.mjs";
 import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
 import {
@@ -141,9 +142,13 @@ function expectedRoles(scenario) {
   return [...new Set(scenario.expected_episode_trace)];
 }
 
-function runChecked(command, args, options, label) {
+export function runChecked(command, args, options, label) {
   const { exposeStderr = true, ...spawnOptions } = options;
-  const encoding = Object.hasOwn(spawnOptions, "encoding") ? spawnOptions.encoding : "utf8";
+  const encoding = exposeStderr
+    ? Object.hasOwn(spawnOptions, "encoding")
+      ? spawnOptions.encoding
+      : "utf8"
+    : null;
   const result = spawnSync(command, args, {
     ...spawnOptions,
     encoding,
@@ -157,13 +162,17 @@ function runChecked(command, args, options, label) {
     );
   }
   if (result.status !== 0) {
+    const diagnosticCode = exposeStderr ? null : replayDriverDiagnosticCode(result.stderr);
     const stderr =
       exposeStderr && typeof result.stderr === "string"
         ? result.stderr.trim()
         : exposeStderr && Buffer.isBuffer(result.stderr)
           ? result.stderr.toString("utf8").trim()
           : "";
-    throw new Error(`${label} failed with exit ${result.status}${stderr ? `: ${stderr}` : ""}`);
+    const diagnostic = diagnosticCode ? `; diagnostic=${diagnosticCode}` : "";
+    throw new Error(
+      `${label} failed with exit ${result.status}${stderr ? `: ${stderr}` : ""}${diagnostic}`,
+    );
   }
   return result;
 }

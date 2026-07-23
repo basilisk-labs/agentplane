@@ -1,8 +1,10 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
+  readdirSync,
   readFileSync,
   rmSync,
   symlinkSync,
@@ -40,6 +42,116 @@ afterEach(() => {
 });
 
 describeCritical("critical: RF-04 replay hardening boundaries", () => {
+  it("surfaces only a whole bounded UTF-8 replay driver diagnostic code", async () => {
+    const safety = await importModule<{
+      replayDriverDiagnosticCode(stderr: Uint8Array): string | null;
+    }>("scripts/lib/agent-efficiency-replay-safety.mjs");
+    const capture = await importModule<{
+      runChecked(
+        command: string,
+        args: string[],
+        options: Record<string, unknown>,
+        label: string,
+      ): unknown;
+    }>("scripts/bench/capture-agent-efficiency-replay.mjs");
+    const exact = Buffer.from("RF04_DRIVER_ERROR:CODEX_EXIT\n");
+    expect(safety.replayDriverDiagnosticCode(exact)).toBe("CODEX_EXIT");
+    const rejectedDiagnostics = [
+      Buffer.from("RF04_DRIVER_ERROR:CODEX_EXIT\nraw-secret"),
+      Buffer.from("RF04_DRIVER_ERROR:CODEX_EXIT\nRF04_DRIVER_ERROR:SECOND\n"),
+      Buffer.from("\u001B[31mRF04_DRIVER_ERROR:CODEX_EXIT\u001B[0m\n"),
+      Buffer.from(`RF04_DRIVER_ERROR:${"A".repeat(65)}\n`),
+      Buffer.concat([Buffer.from("RF04_DRIVER_ERROR:CODEX_EXIT"), Buffer.from([0xff])]),
+    ];
+    for (const rejected of rejectedDiagnostics) {
+      expect(safety.replayDriverDiagnosticCode(rejected)).toBeNull();
+    }
+
+    expect(() =>
+      capture.runChecked(
+        process.execPath,
+        ["-e", 'process.stderr.write("RF04_DRIVER_ERROR:CODEX_EXIT\\n"); process.exit(1);'],
+        { exposeStderr: false },
+        "synthetic replay driver",
+      ),
+    ).toThrow("synthetic replay driver failed with exit 1; diagnostic=CODEX_EXIT");
+
+    for (const rejected of rejectedDiagnostics) {
+      let rejectedFailure = "";
+      try {
+        capture.runChecked(
+          process.execPath,
+          [
+            "-e",
+            "process.stderr.write(Buffer.from(process.argv[1], 'base64')); process.exit(1);",
+            rejected.toString("base64"),
+          ],
+          { exposeStderr: false },
+          "synthetic replay driver",
+        );
+      } catch (error) {
+        rejectedFailure = error instanceof Error ? error.message : String(error);
+      }
+      expect(rejectedFailure).toBe("synthetic replay driver failed with exit 1");
+      expect(rejectedFailure).not.toContain("CODEX_EXIT");
+      expect(rejectedFailure).not.toContain("raw-secret");
+    }
+  });
+
+  it("cleans failed pilot staging without publishing artifacts", async () => {
+    const replay = await importModule<{
+      MINIMUM_REPLAY_RUNS: number;
+      REPLAY_ANCHOR_COMMIT: string;
+    }>("scripts/lib/agent-efficiency-replay.mjs");
+    const capture = await importModule<{
+      captureAgentEfficiencyReplay(options: Record<string, unknown>): unknown;
+    }>("scripts/bench/capture-agent-efficiency-replay.mjs");
+    const root = temporaryRoot();
+    const sourceDirectory = path.join(root, "envelopes");
+    const evidenceDirectory = path.join(root, "evidence");
+    const outputPath = path.join(root, "baseline.json");
+    const driverPath = path.join(
+      REPO_ROOT,
+      "scripts/bench",
+      `.rf04-test-failing-driver-${process.pid}.mjs`,
+    );
+    const cacheRoot = path.join(REPO_ROOT, ".agentplane/cache");
+    const replayCacheBefore = readdirSync(cacheRoot)
+      .filter((name) => name.startsWith("rf04-replay-"))
+      .toSorted();
+    writeFileSync(
+      driverPath,
+      'process.stderr.write("RF04_DRIVER_ERROR:CODEX_EXIT\\n");\nprocess.exitCode = 1;\n',
+    );
+    try {
+      expect(() =>
+        capture.captureAgentEfficiencyReplay({
+          allowTestTargets: true,
+          anchor: replay.REPLAY_ANCHOR_COMMIT,
+          driverPath,
+          evidenceDirectory,
+          outputPath,
+          pilot: true,
+          registryPath: path.join(REPO_ROOT, "scripts/bench/agent-efficiency-fixtures.json"),
+          replace: false,
+          runs: replay.MINIMUM_REPLAY_RUNS,
+          sourceDirectory,
+        }),
+      ).toThrow("direct/run-01 replay driver failed with exit 1; diagnostic=CODEX_EXIT");
+    } finally {
+      rmSync(driverPath, { force: true });
+    }
+    expect(existsSync(sourceDirectory)).toBe(false);
+    expect(existsSync(evidenceDirectory)).toBe(false);
+    expect(existsSync(outputPath)).toBe(false);
+    expect(existsSync(path.join(cacheRoot, "rf04-replay-transaction.json"))).toBe(false);
+    expect(
+      readdirSync(cacheRoot)
+        .filter((name) => name.startsWith("rf04-replay-"))
+        .toSorted(),
+    ).toEqual(replayCacheBefore);
+  }, 120_000);
+
   it("rejects symlinked parents, leaf links, and overlapping publication targets", async () => {
     const safety = await importModule<{
       assertRepoPathNoSymlinkEscape(root: string, candidate: string, label: string): string;

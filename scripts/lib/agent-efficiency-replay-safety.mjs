@@ -11,11 +11,18 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
+import { TextDecoder } from "node:util";
 
 import { stableJson } from "./agent-efficiency-baseline.mjs";
 
 export const TRUSTED_REPLAY_DRIVER_PATH =
   "/Applications/ChatGPT.app/Contents/Resources:/opt/homebrew/bin:/usr/bin:/bin";
+
+const REPLAY_DRIVER_DIAGNOSTIC_PATTERN = /^RF04_DRIVER_ERROR:([A-Z][A-Z0-9_]{0,63})\n?$/u;
+const MAX_REPLAY_DRIVER_DIAGNOSTIC_BYTES = Buffer.byteLength(
+  `RF04_DRIVER_ERROR:${"A".repeat(64)}\n`,
+);
+const UTF8_DECODER = new TextDecoder("utf-8", { fatal: true });
 
 export const REPLAY_CONTRACT_ENV_KEYS = Object.freeze([
   "AGENTPLANE_RF04_REPLAY_ANCHOR",
@@ -36,6 +43,22 @@ export const REPLAY_CONTRACT_ENV_KEYS = Object.freeze([
   "AGENTPLANE_RF04_REPLAY_OUTPUT",
   "AGENTPLANE_RF04_REPLAY_RUN_ID",
 ]);
+
+export function replayDriverDiagnosticCode(stderrBytes) {
+  if (!(stderrBytes instanceof Uint8Array)) return null;
+  if (stderrBytes.byteLength === 0 || stderrBytes.byteLength > MAX_REPLAY_DRIVER_DIAGNOSTIC_BYTES) {
+    return null;
+  }
+  const bytes = Buffer.from(stderrBytes);
+  let decoded;
+  try {
+    decoded = UTF8_DECODER.decode(bytes);
+  } catch {
+    return null;
+  }
+  if (!Buffer.from(decoded, "utf8").equals(bytes)) return null;
+  return REPLAY_DRIVER_DIAGNOSTIC_PATTERN.exec(decoded)?.[1] ?? null;
+}
 
 export function buildReplayGitEnvironment(source = process.env) {
   return {
