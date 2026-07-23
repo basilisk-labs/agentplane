@@ -1,10 +1,10 @@
 ---
 id: "202607221846-4CE7EG"
 title: "Split agent semantic results from legacy observed claims"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,9 +25,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-23T14:36:25.428Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -36,11 +36,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: implement RF-01 semantic result trust boundary with compatibility and provenance tests."
+events:
+  -
+    type: "status"
+    at: "2026-07-23T14:36:56.043Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: implement RF-01 semantic result trust boundary with compatibility and provenance tests."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:46:49.391Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-23T14:36:56.043Z"
+doc_updated_by: "CODER"
 description: "RF-01a: define the agent-writable AgentSemanticResult contract and a compatibility reader that cannot treat process status, exit, timing, metrics, checks, or filesystem evidence as observed truth."
 sections:
   Summary: |-

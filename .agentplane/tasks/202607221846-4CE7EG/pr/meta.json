@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607221846-4CE7EG/split-agent-semantic-results-from-legacy-observe",
+  "created_at": "2026-07-23T14:36:56.091Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607221846-4CE7EG",
+  "updated_at": "2026-07-23T14:36:56.091Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
