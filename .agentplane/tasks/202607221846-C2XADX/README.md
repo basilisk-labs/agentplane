@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -61,8 +61,8 @@ quality_review:
     - "The real bootstrap output is parsed byte-for-byte by the production manifest parser and rejects status-specific omissions, malformed JSON, and supervisor-owned exit_code."
     - "Bootstrap now receives only resolved mutation constraints and returns lifecycle control to the parent supervisor instead of asking the execution agent to recompute the workflow route."
 commit:
-  hash: "e1a327cf74f173b2f518ebb73cff6a0d3293b674"
-  message: "🚧 C2XADX task: generate canonical runner result examples"
+  hash: "dfee69368e1334c4ba056d8f303fb75d282c5282"
+  message: "🚧 C2XADX task: pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -70,6 +70,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -91,8 +94,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-23T18:34:49.246Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-23T18:33:31.765Z"
+doc_updated_at: "2026-07-23T18:34:49.247Z"
 doc_updated_by: "CODER"
 description: "RF-02: eliminate bootstrap/parser drift by deriving runner success, blocked, and failure examples from canonical schema fixtures that round-trip through the production parser."
 sections:
@@ -152,6 +162,10 @@ sections:
     - Restore the previous persisted contract or schema version where applicable.
     - Re-run the task-specific checks and record any data requiring explicit migration repair.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "e1a327cf74f173b2f518ebb73cff6a0d3293b674"
+    message: "🚧 C2XADX task: generate canonical runner result examples"
 id_source: "generated"
 ---
 ## Summary
