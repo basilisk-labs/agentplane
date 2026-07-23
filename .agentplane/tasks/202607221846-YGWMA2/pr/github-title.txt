@@ -1,1 +1,1 @@
-🚧 YGWMA2 task: Remove automatic semantic pass verdicts [202607221846-YGWMA2]
+✅ YGWMA2 task: Remove automatic semantic pass verdicts [202607221846-YGWMA2]
