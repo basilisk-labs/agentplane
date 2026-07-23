@@ -22,7 +22,7 @@ RF-01b: create ExecutionReceipt from observed process, Git, check, artifact, and
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-23T15:58:38.987Z
+- Updated: 2026-07-23T15:58:42.393Z
 - Branch: task/202607221846-Y89CFB/build-supervisor-owned-execution-receipts
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
