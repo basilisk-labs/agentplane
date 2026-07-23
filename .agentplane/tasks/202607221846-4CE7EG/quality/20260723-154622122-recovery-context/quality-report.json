@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221846-4CE7EG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-23T15:46:22.122Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Commit dfc9d1927 satisfies RF-01a: v2 contains only agent semantic claims, legacy v1 remains agent_reported, and supervisor observations stay authoritative with auditable conflicts.",
+  "evaluated_sha": "dfc9d19279e56349cdffefbe0fd15ab378ddce27",
+  "blueprint_digest": "6809d84737a34a8695daada16e6b5bd91aa915e289b2a85128ec18a4641191d2",
+  "findings": [
+    "PASS: the strict v2 schema excludes process, timing, metric, path, artifact, and provenance truth; adapters prevent legacy claims from overriding status, exit code, artifacts, metrics, or evidence, including repeat/history/source-snapshot negative paths."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221846-4CE7EG/README.md",
+    "commit dfc9d19279e56349cdffefbe0fd15ab378ddce27",
+    "packages/core/src/runner/agent-semantic-result.test.ts",
+    "packages/agentplane/src/runner/result-manifest.test.ts",
+    "packages/agentplane/src/runner/adapters/codex.test.ts",
+    "packages/agentplane/src/runner/adapters/custom.test.ts",
+    "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
+    "bun run schemas:check: pass",
+    "6 focused test files, 70 tests: pass",
+    "bun run typecheck: pass"
+  ],
+  "missing_tests": [
+    "No positive end-to-end supervised-adapter test writes a valid v2 manifest through persisted runner_result_record; RF-02 should add the bootstrap round-trip."
+  ],
+  "hidden_assumptions": [
+    "work_order_id is agent-reported and is not checked against invocation run_id; first-party bootstrap intentionally remains v1 until RF-02."
+  ],
+  "residual_risks": [
+    "A hostile background writer could race source-manifest copy and later read; destination write-once, mismatch, and symlink cases are covered, while atomic byte binding belongs to later receipt/artifact hardening."
+  ]
+}
