@@ -15,12 +15,13 @@ Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Hosted CI found a backward-compatibility defect in v1 optional sections and new unused exports;
-reopen for bounded correction.
+PASS after CI rework at implementation 816b1f592: 41 focused and 2216/2216 full tests pass;
+hosted-equivalent static, critical, schema, docs, workflow and compatibility gates pass; independent
+evaluator found no P0-P2 issues.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,7 +33,7 @@ reopen for bounded correction.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/workflow-contract.mdx               |  106 +-
+ docs/developer/workflow-contract.mdx               |  107 +-
  docs/user/cli-reference.generated.mdx              |   36 +
  docs/user/workflow-migration.mdx                   |   64 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |    5 +-
@@ -42,37 +43,36 @@ reopen for bounded correction.
  packages/agentplane/src/commands/doctor.run.ts     |   78 +-
  .../agentplane/src/commands/doctor/workflow.ts     |   33 +-
  .../agentplane/src/commands/upgrade.merge.test.ts  |   42 +
- .../src/commands/workflow-migrate.command.ts       |   84 ++
+ .../src/commands/workflow-migrate.command.ts       |   84 +
  packages/agentplane/src/workflow-runtime/build.ts  |   15 +-
  .../src/workflow-runtime/file-ops.test.ts          |   28 +
  .../agentplane/src/workflow-runtime/file-ops.ts    |   58 +-
- packages/agentplane/src/workflow-runtime/fix.ts    |  149 +--
+ packages/agentplane/src/workflow-runtime/fix.ts    |  149 +-
  packages/agentplane/src/workflow-runtime/index.ts  |    1 +
  .../agentplane/src/workflow-runtime/markdown.ts    |   20 +
- .../src/workflow-runtime/migration.test.ts         |  374 +++++++
- .../agentplane/src/workflow-runtime/migration.ts   |  307 ++++++
+ .../src/workflow-runtime/migration.test.ts         |  374 ++++
+ .../agentplane/src/workflow-runtime/migration.ts   |  307 +++
  packages/agentplane/src/workflow-runtime/types.ts  |   35 +-
- .../src/workflow-runtime/validate-frontmatter.ts   |  415 ++------
+ .../src/workflow-runtime/validate-frontmatter.ts   |  415 ++---
  .../src/workflow-runtime/validate.test.ts          |   42 +
- .../src/workflow-runtime/validation-helpers.ts     |    3 +-
- packages/core/schemas/workflow.schema.json         | 1061 +++++++++++++++++++
- packages/core/src/config/config.test.ts            |   87 ++
- packages/core/src/config/config.ts                 |   22 +
+ .../src/workflow-runtime/validation-helpers.ts     |  110 +-
+ packages/core/schemas/workflow.schema.json         | 1894 +++++++++++++++++++
+ packages/core/src/config/config.test.ts            |   87 +
  packages/core/src/config/index.ts                  |   22 +
- packages/core/src/config/workflow-contract.test.ts |   79 ++
- packages/core/src/config/workflow-contract.ts      |  304 ++++++
- packages/core/src/config/workflow-file.ts          |  210 ++--
+ packages/core/src/config/workflow-contract.test.ts |  120 ++
+ packages/core/src/config/workflow-contract.ts      |  324 ++++
+ packages/core/src/config/workflow-file.ts          |  210 ++-
  packages/core/src/schemas/index.ts                 |    7 +
  packages/spec/README.md                            |    9 +-
  packages/spec/examples/workflow-v1.json            |   21 +
  packages/spec/examples/workflow-v2.json            |   52 +
- packages/spec/schemas/workflow.schema.json         | 1061 +++++++++++++++++++
- schemas/workflow.schema.json                       | 1118 ++++++++++++++++++--
- .../v0.7-workflow-contract-candidate.json          |   69 ++
- .../check-compatibility-contract-baseline.mjs      |  240 ++++-
+ packages/spec/schemas/workflow.schema.json         | 1894 +++++++++++++++++++
+ schemas/workflow.schema.json                       | 1951 +++++++++++++++++++-
+ .../v0.7-workflow-contract-candidate.json          |   69 +
+ .../check-compatibility-contract-baseline.mjs      |  240 ++-
  scripts/checks/check-spec-examples.mjs             |    2 +
  scripts/generate/sync-schemas.mjs                  |   26 +-
- 40 files changed, 5625 insertions(+), 689 deletions(-)
+ 39 files changed, 8164 insertions(+), 796 deletions(-)
 ```
 
 </details>
