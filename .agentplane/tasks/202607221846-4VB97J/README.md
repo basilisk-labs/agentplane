@@ -4,7 +4,7 @@ title: "Align Workflow schema, migration, and runtime version contracts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -32,11 +32,26 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-23T02:23:56.271Z"
+  updated_by: "CODER"
+  note: "PASS at 827ea46e: v1/v2 normalization, deterministic migration and exact rollback, future-version rejection, schema parity, upgrade parity, and compatibility candidate verified; 82/82 focused tests and independent evaluator PASS."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-23T02:24:52.137Z"
+  updated_by: "EVALUATOR"
+  note: "Quality review passed for the current PR-artifact head; code delta from independently reviewed 827ea46e is unchanged."
+  evaluated_sha: "be8809984b2b6810a2ad6dd13d17a02ded2c9c4a"
+  blueprint_digest: "c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c"
+  evidence_refs:
+    - ".agentplane/tasks/202607221846-4VB97J/README.md"
+    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-022452137-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-022452137-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-022452137-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json"
+  findings:
+    - "All recovery integrity findings are closed and the current implementation retains 82/82 focused tests, exact compatibility digest, schema parity, and verified task evidence."
 commit: null
 comments:
   -
@@ -50,8 +65,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement the approved WORKFLOW v1/v2 contract, migration, writer parity, and compatibility-ledger scope from main SHA 0e2d4b1c6523."
+  -
+    type: "verify"
+    at: "2026-07-23T02:23:56.271Z"
+    author: "CODER"
+    state: "ok"
+    note: "PASS at 827ea46e: v1/v2 normalization, deterministic migration and exact rollback, future-version rejection, schema parity, upgrade parity, and compatibility candidate verified; 82/82 focused tests and independent evaluator PASS."
 doc_version: 3
-doc_updated_at: "2026-07-23T00:32:03.585Z"
+doc_updated_at: "2026-07-23T02:23:56.380Z"
 doc_updated_by: "CODER"
 description: "Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing, the public v1 JSON Schema/docs, future-version acceptance, and upgrade behavior."
 sections:
@@ -70,12 +91,45 @@ sections:
     4. Run `bun run schemas:check`, `bun run workflows:command-check`, `bun run docs:cli:check`, and focused migration tests. Expected: runtime, schema, upgrade, and docs surfaces are in parity.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-23T02:23:56.271Z — VERIFY — ok
+
+    By: CODER
+
+    Note: PASS at 827ea46e: v1/v2 normalization, deterministic migration and exact rollback, future-version rejection, schema parity, upgrade parity, and compatibility candidate verified; 82/82 focused tests and independent evaluator PASS.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T00:32:03.585Z, excerpt_hash=sha256:af5ea8abec88124a9c949254e987364e763f794ade7f69ed80c53fe80741acd7
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-4VB97J-align-workflow-schema-migration-and-runtime-vers/.agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json
+    - old_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+    - current_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221846-4VB97J
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr update 202607221846-4VB97J
+    - diagnostic_command: agentplane pr check 202607221846-4VB97J
+    - source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+    - risks: pr_artifact_freshness_loop, git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) without changing unrelated task state.
     - Restore the previous persisted contract or schema version where applicable.
     - Re-run the task-specific checks and record any data requiring explicit migration repair.
-  Findings: ""
+  Findings: |-
+    - Observation: Recovery paths now reject forged receipts, active future workflow versions, and invalid UTF-8 before writes.
+      Impact: Workflow migrations cannot silently produce unrecoverable state or overwrite unsupported future contracts.
+      Resolution: Recomputed receipt transitions, pre-write future-version guard, exact UTF-8 round-trip validation, and regression coverage for dry-run/apply.
 id_source: "generated"
 ---
 ## Summary
@@ -103,6 +157,36 @@ Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-23T02:23:56.271Z — VERIFY — ok
+
+By: CODER
+
+Note: PASS at 827ea46e: v1/v2 normalization, deterministic migration and exact rollback, future-version rejection, schema parity, upgrade parity, and compatibility candidate verified; 82/82 focused tests and independent evaluator PASS.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T00:32:03.585Z, excerpt_hash=sha256:af5ea8abec88124a9c949254e987364e763f794ade7f69ed80c53fe80741acd7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-4VB97J-align-workflow-schema-migration-and-runtime-vers/.agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json
+- old_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+- current_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221846-4VB97J
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr update 202607221846-4VB97J
+- diagnostic_command: agentplane pr check 202607221846-4VB97J
+- source_of_truth: route=task_next_action diagnostic=pr_check remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: if PR check passes but next-action still requests PR artifact update, verify live PR state before rerunning mutation
+- risks: pr_artifact_freshness_loop, git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -112,3 +196,7 @@ Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing
 - Re-run the task-specific checks and record any data requiring explicit migration repair.
 
 ## Findings
+
+- Observation: Recovery paths now reject forged receipts, active future workflow versions, and invalid UTF-8 before writes.
+  Impact: Workflow migrations cannot silently produce unrecoverable state or overwrite unsupported future contracts.
+  Resolution: Recomputed receipt transitions, pre-write future-version guard, exact UTF-8 round-trip validation, and regression coverage for dry-run/apply.

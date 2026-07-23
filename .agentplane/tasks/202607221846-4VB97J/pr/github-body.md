@@ -15,8 +15,14 @@ Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+PASS at 827ea46e: v1/v2 normalization, deterministic migration and exact rollback, future-version
+rejection, schema parity, upgrade parity, and compatibility candidate verified; 82/82 focused tests
+and independent evaluator PASS.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -39,12 +45,13 @@ Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing
  .../agentplane/src/commands/upgrade.merge.test.ts  |   42 +
  .../src/commands/workflow-migrate.command.ts       |   84 ++
  packages/agentplane/src/workflow-runtime/build.ts  |   15 +-
- .../agentplane/src/workflow-runtime/file-ops.ts    |   16 +-
+ .../src/workflow-runtime/file-ops.test.ts          |   28 +
+ .../agentplane/src/workflow-runtime/file-ops.ts    |   58 +-
  packages/agentplane/src/workflow-runtime/fix.ts    |  149 +--
  packages/agentplane/src/workflow-runtime/index.ts  |    1 +
  .../agentplane/src/workflow-runtime/markdown.ts    |   20 +
- .../src/workflow-runtime/migration.test.ts         |  260 +++++
- .../agentplane/src/workflow-runtime/migration.ts   |  267 +++++
+ .../src/workflow-runtime/migration.test.ts         |  374 +++++++
+ .../agentplane/src/workflow-runtime/migration.ts   |  307 ++++++
  packages/agentplane/src/workflow-runtime/types.ts  |   35 +-
  .../src/workflow-runtime/validate-frontmatter.ts   |  415 ++------
  .../src/workflow-runtime/validate.test.ts          |   42 +
@@ -66,7 +73,7 @@ Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing
  .../check-compatibility-contract-baseline.mjs      |  240 ++++-
  scripts/checks/check-spec-examples.mjs             |    2 +
  scripts/generate/sync-schemas.mjs                  |   26 +-
- 39 files changed, 5401 insertions(+), 689 deletions(-)
+ 40 files changed, 5625 insertions(+), 689 deletions(-)
 ```
 
 </details>
