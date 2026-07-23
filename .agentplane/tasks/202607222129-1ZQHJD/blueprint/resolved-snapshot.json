@@ -4,7 +4,7 @@
   "resolverInput": {
     "taskId": "202607222129-1ZQHJD",
     "title": "Capture anchored multi-run RF-04 replay telemetry",
-    "description": "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording authoritative observed outcomes, provider token usage, cognitive and orchestration proxies, latency, retrieval, and evidence-provenance metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics.",
+    "description": "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording provider-reported token usage and 70 resolved outcome cells with per-field fixture_control or supervisor_observed provenance, collecting cognitive, orchestration, latency, retrieval, and evidence metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics.",
     "tags": [
       "benchmark",
       "instrumentation",
@@ -205,7 +205,7 @@
         "required": true,
         "protected": true,
         "allowedCommands": [
-          "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review"
+          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
         ],
         "policyModules": [],
         "evidenceKinds": [
@@ -318,7 +318,7 @@
       ".agentplane/policy/workflow.branch_pr.md"
     ],
     "allowedCommands": [
-      "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
+      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
       "agentplane integrate <task-id> --branch <branch> --run-verify",
       "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
       "agentplane task verify-show <task-id>",
@@ -473,7 +473,7 @@
       "required": true,
       "protected": true,
       "allowedCommands": [
-        "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review"
+        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
       ],
       "policyModules": [],
       "evidenceKinds": [
@@ -586,7 +586,7 @@
     ".agentplane/policy/workflow.branch_pr.md"
   ],
   "allowedCommands": [
-    "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
+    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
     "agentplane integrate <task-id> --branch <branch> --run-verify",
     "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
     "agentplane task verify-show <task-id>",
@@ -619,6 +619,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "15900ca9b3125c3b726b148e4b625b67ce2720f91f5144664770833fed7ab0c5"
+    "value": "c623f4d584bdb41f52b4f3ff3de5ffc857f8654dc401d312940b98493af8189b"
   }
 }
