@@ -272,24 +272,6 @@
       "rationale": "durable route_decision payload uses Record<string, unknown> instead of a validated contract"
     },
     {
-      "violation_id": "trust.no-untyped-durable-route-workorder:packages/agentplane/src/runner/usecases/task-run-bootstrap.ts:assertion:routeDecision:route-decision-inline-shape:ast:FunctionDeclaration:renderTaskRunnerBootstrap:1/VariableDeclaration:routeDecision:1:AsExpression:1003c0454516:1",
-      "rule_id": "trust.no-untyped-durable-route-workorder",
-      "rf_owners": ["RF-05a", "RF-05b"],
-      "owner_task_ids": ["202607221848-T9B3PS", "202607221848-VC4VVS"],
-      "path": "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts",
-      "locator": "assertion:routeDecision:route-decision-inline-shape:ast:FunctionDeclaration:renderTaskRunnerBootstrap:1/VariableDeclaration:routeDecision:1:AsExpression:1003c0454516:1",
-      "rationale": "route_decision is decoded through an inline bootstrap assertion instead of a shared contract"
-    },
-    {
-      "violation_id": "trust.no-untyped-durable-route-workorder:packages/agentplane/src/runner/usecases/task-run-bootstrap.ts:bootstrap:renderTaskRunnerBootstrap:route-decision-projection:ast:FunctionDeclaration:renderTaskRunnerBootstrap:1:StringLiteral:60a29463f97d:1",
-      "rule_id": "trust.no-untyped-durable-route-workorder",
-      "rf_owners": ["RF-05a", "RF-05b"],
-      "owner_task_ids": ["202607221848-T9B3PS", "202607221848-VC4VVS"],
-      "path": "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts",
-      "locator": "bootstrap:renderTaskRunnerBootstrap:route-decision-projection:ast:FunctionDeclaration:renderTaskRunnerBootstrap:1:StringLiteral:60a29463f97d:1",
-      "rationale": "runner bootstrap duplicates route_decision field paths instead of consuming a typed work order"
-    },
-    {
       "violation_id": "trust.no-untyped-durable-route-workorder:packages/agentplane/src/runner/usecases/task-run.ts:assertion:bundle:route-decision-inline-shape:ast:FunctionDeclaration:prepareTaskRunnerExecution:1/VariableDeclaration:bundle:1:AsExpression:4f48903a04d2:1",
       "rule_id": "trust.no-untyped-durable-route-workorder",
       "rf_owners": ["RF-05a", "RF-05b"],

@@ -23,7 +23,7 @@ Operate as the agentplane execution runner.
 - For multi-step or tool-heavy work, emit a short visible preamble before the first tool call and then update only at meaningful phase boundaries.
 - Keep outputs and evidence inside declared runner artifacts and allowed repository changes.
 - Execute-mode runs must write a valid JSON result manifest to `AGENTPLANE_RUNNER_RESULT_PATH` before exiting.
-- Minimal manifest example: `{"schema_version":1,"status":"success","summary":"Completed.","capabilities_used":["runner.exec"]}`
+- The generated bootstrap provides canonical AgentSemanticResult v2 examples bound to the current `work_order_id`; select the matching semantic outcome and do not add supervisor-owned process, Git, artifact, or check fields.
 - The current Codex adapter captures Codex CLI JSON trace and `--output-last-message`; it does not replay Responses API output items. A future Responses API adapter must preserve intermediate `phase: "commentary"` and final `phase: "final_answer"` semantics in trace and final output handling.
 - When the requested task outcome is satisfied, stop immediately instead of re-running repository bootstrap or lifecycle flows.
 <!-- /ap:fragment -->

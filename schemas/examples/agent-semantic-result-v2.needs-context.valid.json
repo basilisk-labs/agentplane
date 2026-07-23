@@ -1,0 +1,13 @@
+{
+  "schema_version": 2,
+  "kind": "agent_semantic_result",
+  "work_order_id": "work-order-example-001",
+  "status": "needs_context",
+  "summary": "The requested work needs one additional canonical contract.",
+  "findings": ["The current work order does not contain the required contract."],
+  "uncertainty": ["Inventing the missing contract could widen task scope."],
+  "knowledge_request": {
+    "query": "Provide the canonical contract required by this work order.",
+    "reason": "The runner cannot safely infer the missing semantic input."
+  }
+}

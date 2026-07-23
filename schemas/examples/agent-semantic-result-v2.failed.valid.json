@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "kind": "agent_semantic_result",
+  "work_order_id": "work-order-example-001",
+  "status": "failed",
+  "summary": "The semantic implementation attempt did not satisfy the requested outcome.",
+  "findings": ["The attempted change did not meet the work-order acceptance criteria."],
+  "uncertainty": [],
+  "claimed_checks": [
+    {
+      "check": "task-specific verification",
+      "claimed_status": "failed",
+      "details": "The agent reports that task-specific verification failed."
+    }
+  ]
+}
