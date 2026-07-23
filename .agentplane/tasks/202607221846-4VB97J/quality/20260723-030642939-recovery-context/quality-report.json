@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221846-4VB97J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-23T03:06:42.939Z",
+  "verdict": "pass",
+  "summary": "CI rework at 816b1f592 preserves the finite typed legacy v1 surface, removes only dead exports, and passes the full hosted-equivalent local suite.",
+  "evaluated_sha": "816b1f5920215469790609d2b34d5336ec410921",
+  "blueprint_digest": "c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c",
+  "findings": [
+    "No P0-P2 finding: v1 tasks/framework and extension fields survive raw migration without materialized defaults, while arbitrary roots and v1.workflow remain rejected.",
+    "Static cleanup keeps the public core config subpath intact and returns the Knip baseline to zero new debt."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221846-4VB97J/README.md",
+    "commit 816b1f592",
+    "bun run test:fast: 372 files, 2216 tests passed",
+    "format, schemas, compatibility, lint, typecheck, arch, knip, docs, workflow and test:critical passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The intentionally unsupported permissive legacy shapes v1.workflow and scheduler-only retry/timeouts are not part of the finite compatibility contract."
+  ]
+}
