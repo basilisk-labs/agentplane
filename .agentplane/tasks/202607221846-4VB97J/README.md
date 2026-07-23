@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -33,11 +33,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-23T03:07:18.006Z"
+  state: "needs_rework"
+  updated_at: "2026-07-23T03:08:41.438Z"
   updated_by: "CODER"
-  note: "PASS after CI rework at implementation 816b1f592: 41 focused and 2216/2216 full tests pass; hosted-equivalent static, critical, schema, docs, workflow and compatibility gates pass; independent evaluator found no P0-P2 issues."
-  attempts: 0
+  note: "PR review found that v2 approvals reused defaulting config fields, allowing omitted required flags; reopen for explicit persisted workflow approval validation."
+  attempts: 1
 quality_review:
   state: "pass"
   updated_at: "2026-07-23T03:06:42.939Z"
@@ -98,8 +98,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "PASS after CI rework at implementation 816b1f592: 41 focused and 2216/2216 full tests pass; hosted-equivalent static, critical, schema, docs, workflow and compatibility gates pass; independent evaluator found no P0-P2 issues."
+  -
+    type: "verify"
+    at: "2026-07-23T03:08:41.438Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "PR review found that v2 approvals reused defaulting config fields, allowing omitted required flags; reopen for explicit persisted workflow approval validation."
 doc_version: 3
-doc_updated_at: "2026-07-23T03:07:18.117Z"
+doc_updated_at: "2026-07-23T03:08:41.568Z"
 doc_updated_by: "CODER"
 description: "Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing, the public v1 JSON Schema/docs, future-version acceptance, and upgrade behavior."
 sections:
@@ -208,6 +214,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-23T03:08:41.438Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: PR review found that v2 approvals reused defaulting config fields, allowing omitted required flags; reopen for explicit persisted workflow approval validation.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T03:07:18.117Z, excerpt_hash=sha256:af5ea8abec88124a9c949254e987364e763f794ade7f69ed80c53fe80741acd7
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-4VB97J-align-workflow-schema-migration-and-runtime-vers/.agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json
+    - old_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+    - current_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221846-4VB97J
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607221846-4VB97J --branch task/202607221846-4VB97J/align-workflow-schema-migration-and-runtime-vers
+    - diagnostic_command: agentplane pr check 202607221846-4VB97J
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) without changing unrelated task state.
@@ -221,6 +257,10 @@ sections:
     - Observation: The v1 Zod branch rejects legacy tasks/framework sections previously accepted by runtime, and knip reports redundant new exports.
       Impact: Doctor behavior regresses for supported v1 repositories and the PR cannot merge.
       Resolution: Broaden the versioned v1 schema only across known legacy root sections, preserve them during v1-to-v2 migration, remove redundant exports, and rerun hosted-equivalent checks.
+
+    - Observation: WorkflowV2FrontMatterSchema accepts missing require_plan, require_verify, or require_network because the reused config fragment supplies defaults.
+      Impact: Doctor can accept an incomplete persisted policy and downstream resolution silently changes its meaning.
+      Resolution: Use a workflow-specific v2 approvals schema with three required booleans, preserve optional typed extensions, and add focused regression coverage.
 extensions:
   implementation_commit:
     hash: "48c84a7f468ab71235cc6af34e0d8f3d6afbb4e2"
@@ -342,6 +382,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-23T03:08:41.438Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: PR review found that v2 approvals reused defaulting config fields, allowing omitted required flags; reopen for explicit persisted workflow approval validation.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T03:07:18.117Z, excerpt_hash=sha256:af5ea8abec88124a9c949254e987364e763f794ade7f69ed80c53fe80741acd7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-4VB97J-align-workflow-schema-migration-and-runtime-vers/.agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json
+- old_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+- current_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221846-4VB97J
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607221846-4VB97J --branch task/202607221846-4VB97J/align-workflow-schema-migration-and-runtime-vers
+- diagnostic_command: agentplane pr check 202607221846-4VB97J
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -359,3 +429,7 @@ DecisionContextRef:
 - Observation: The v1 Zod branch rejects legacy tasks/framework sections previously accepted by runtime, and knip reports redundant new exports.
   Impact: Doctor behavior regresses for supported v1 repositories and the PR cannot merge.
   Resolution: Broaden the versioned v1 schema only across known legacy root sections, preserve them during v1-to-v2 migration, remove redundant exports, and rerun hosted-equivalent checks.
+
+- Observation: WorkflowV2FrontMatterSchema accepts missing require_plan, require_verify, or require_network because the reused config fragment supplies defaults.
+  Impact: Doctor can accept an incomplete persisted policy and downstream resolution silently changes its meaning.
+  Resolution: Use a workflow-specific v2 approvals schema with three required booleans, preserve optional typed extensions, and add focused regression coverage.

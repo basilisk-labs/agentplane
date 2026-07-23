@@ -988,22 +988,19 @@
           "type": "object",
           "properties": {
             "require_plan": {
-              "default": true,
-              "type": "boolean"
-            },
-            "require_network": {
-              "default": true,
               "type": "boolean"
             },
             "require_verify": {
-              "default": true,
+              "type": "boolean"
+            },
+            "require_network": {
               "type": "boolean"
             },
             "require_force": {
-              "default": false,
               "type": "boolean"
             }
           },
+          "required": ["require_plan", "require_verify", "require_network"],
           "additionalProperties": {}
         },
         "workspace": {
