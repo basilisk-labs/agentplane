@@ -3,7 +3,7 @@
   "branch": "task/202607221846-YGWMA2/remove-automatic-semantic-pass-verdicts",
   "created_at": "2026-07-23T03:42:12.404Z",
   "diffstat_sha256": "sha256:f5ac825191c4f59926c9eb30aa74afec82617ec6d5a494f7242f099c4360b1f2",
-  "last_verified_at": "2026-07-23T05:05:50.295Z",
+  "last_verified_at": "2026-07-23T05:24:59.105Z",
   "last_verified_diffstat_sha256": "sha256:f5ac825191c4f59926c9eb30aa74afec82617ec6d5a494f7242f099c4360b1f2",
   "pr_number": 4600,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4600",
@@ -19,6 +19,6 @@
   "task_id": "202607221846-YGWMA2",
   "updated_at": "2026-07-23T05:19:11.314Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

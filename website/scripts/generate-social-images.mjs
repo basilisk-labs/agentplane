@@ -18,6 +18,7 @@ const manifestPath = path.join(socialRoot, "manifest.json");
 const WIDTH = 1280;
 const HEIGHT = 640;
 const TITLE_MAX_RENDERED_WIDTH = 1184;
+const TITLE_LONG_WRAP_MAX_CHARS = 29;
 const TITLE_MEASURE_CANVAS_WIDTH = 4096;
 const SOCIAL_PREVIEW_SUBTITLE =
   "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.";
@@ -181,7 +182,7 @@ async function renderCard(entry, logoDataUri) {
 }
 
 function titleLayout(title) {
-  const lines = wrapWords(title, title.length > 28 ? 30 : 25, 2);
+  const lines = wrapWords(title, title.length > 28 ? TITLE_LONG_WRAP_MAX_CHARS : 25, 2);
   return {
     lines,
     fontSize: lines.length > 1 ? 64 : 80,

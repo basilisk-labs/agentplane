@@ -195,11 +195,11 @@ function assertRunnableReviewInput(parsed: EvaluatorRunParsed): void {
       message: "Provide --summary for evaluator run.",
     });
   }
-  if (parsed.verdict === "pass" && parsed.findings.length === 0) {
+  if ((parsed.verdict === "pass" || parsed.verdict === "rework") && parsed.findings.length === 0) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: "EVALUATOR pass requires at least one --finding.",
+      message: `EVALUATOR ${parsed.verdict} requires at least one --finding.`,
     });
   }
   if (parsed.record && parsed.evidenceRefs.length === 0) {

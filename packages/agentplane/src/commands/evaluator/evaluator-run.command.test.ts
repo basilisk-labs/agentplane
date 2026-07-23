@@ -122,6 +122,28 @@ describe("evaluator run command", () => {
     );
   });
 
+  it("requires an actionable finding for rework verdicts", async () => {
+    await expect(
+      runEvaluatorRun(
+        { cwd: process.cwd(), rootOverride: undefined },
+        {
+          taskId: "T-1",
+          evaluator: "recovery-context",
+          provenance: "evaluator_supplied",
+          verdict: "rework",
+          summary: "Implementation rework is required.",
+          findings: [],
+          evidenceRefs: ["src/review-target.txt"],
+          missingTests: [],
+          hiddenAssumptions: [],
+          residualRisks: [],
+          json: false,
+          record: true,
+        },
+      ),
+    ).rejects.toThrow("EVALUATOR rework requires at least one --finding.");
+  });
+
   it("preserves supplied review values with explicit human provenance", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
