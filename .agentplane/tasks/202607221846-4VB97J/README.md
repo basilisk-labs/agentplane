@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -40,23 +40,24 @@ verification:
   attempts: 1
 quality_review:
   state: "pass"
-  updated_at: "2026-07-23T03:06:42.939Z"
+  updated_at: "2026-07-23T03:19:55.847Z"
   updated_by: "EVALUATOR"
-  note: "CI rework at 816b1f592 preserves the finite typed legacy v1 surface, removes only dead exports, and passes the full hosted-equivalent local suite."
-  evaluated_sha: "816b1f5920215469790609d2b34d5336ec410921"
+  note: "Workflow v2 approval requirements are explicit and the full contract remains coherent."
+  evaluated_sha: "58e553847d99e3245d6d8150326f13fccd34524b"
   blueprint_digest: "c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c"
   evidence_refs:
     - ".agentplane/tasks/202607221846-4VB97J/README.md"
-    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-030642939-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-030642939-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-030642939-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-031955847-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-031955847-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-031955847-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json"
-    - "commit 816b1f592"
-    - "bun run test:fast: 372 files, 2216 tests passed"
-    - "format, schemas, compatibility, lint, typecheck, arch, knip, docs, workflow and test:critical passed"
+    - "implementation commit 58e553847"
+    - "bun run test:fast: 372 files, 2220 tests passed"
+    - "bun run test:critical: 8 of 8 chunks passed"
+    - "format, schemas, compatibility, knip, lint, typecheck, architecture, docs, and workflow checks passed"
+    - "independent workflow_final_audit: PASS"
   findings:
-    - "No P0-P2 finding: v1 tasks/framework and extension fields survive raw migration without materialized defaults, while arbitrary roots and v1.workflow remain rejected."
-    - "Static cleanup keeps the public core config subpath intact and returns the Knip baseline to zero new debt."
+    - "No P0-P2 findings: required approval flags, optional extensions, v1 migration preservation, generated schemas, and compatibility ledger are aligned."
 commit: null
 comments:
   -
