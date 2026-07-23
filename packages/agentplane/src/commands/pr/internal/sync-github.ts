@@ -103,6 +103,20 @@ function githubLookupUnavailable(err: unknown): GithubPrLookupResult {
   };
 }
 
+async function runGithubApiJson(gitRoot: string, endpoint: string): Promise<unknown> {
+  const gh = resolveGhCommand();
+  const { stdout } = await withGhTransportRetry(
+    () =>
+      execFileAsync(gh.command, [...gh.argsPrefix, "api", endpoint], {
+        cwd: gitRoot,
+        env: ghEnv(),
+        maxBuffer: 10 * 1024 * 1024,
+      }),
+    { label: `running gh api ${endpoint}` },
+  );
+  return JSON.parse(stdout) as unknown;
+}
+
 export async function observeExistingGithubPrByBranch(opts: {
   gitRoot: string;
   branch: string;
@@ -124,19 +138,9 @@ export async function observeExistingGithubPrByBranch(opts: {
   const baseBranch = opts.baseBranch?.trim() ?? "";
   if (baseBranch) query.set("base", baseBranch);
   const endpoint = `repos/${repo}/pulls?${query.toString()}`;
-  const gh = resolveGhCommand();
 
   try {
-    const { stdout } = await withGhTransportRetry(
-      () =>
-        execFileAsync(gh.command, [...gh.argsPrefix, "api", endpoint], {
-          cwd: opts.gitRoot,
-          env: ghEnv(),
-          maxBuffer: 10 * 1024 * 1024,
-        }),
-      { label: `running gh api ${endpoint}` },
-    );
-    const parsed = JSON.parse(stdout) as GithubPullLookupRecord[];
+    const parsed = (await runGithubApiJson(opts.gitRoot, endpoint)) as GithubPullLookupRecord[];
     if (!Array.isArray(parsed)) {
       return { state: "unavailable", reason: "GitHub branch lookup returned a non-array payload" };
     }
@@ -180,19 +184,9 @@ export async function observeExistingGithubPrByNumber(opts: {
     };
   }
   const endpoint = `repos/${repo}/pulls/${opts.prNumber}`;
-  const gh = resolveGhCommand();
 
   try {
-    const { stdout } = await withGhTransportRetry(
-      () =>
-        execFileAsync(gh.command, [...gh.argsPrefix, "api", endpoint], {
-          cwd: opts.gitRoot,
-          env: ghEnv(),
-          maxBuffer: 10 * 1024 * 1024,
-        }),
-      { label: `running gh api ${endpoint}` },
-    );
-    const parsed = JSON.parse(stdout) as unknown;
+    const parsed = await runGithubApiJson(opts.gitRoot, endpoint);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       return { state: "unavailable", reason: "GitHub PR lookup returned an invalid payload" };
     }
@@ -242,19 +236,9 @@ export async function tryLookupExistingGithubPrByBranchPrefix(opts: {
   const endpoint = `repos/${repo}/pulls?${query.toString()}`;
   const branchPrefix = opts.branchPrefix.trim();
   if (!branchPrefix) return null;
-  const gh = resolveGhCommand();
 
   try {
-    const { stdout } = await withGhTransportRetry(
-      () =>
-        execFileAsync(gh.command, [...gh.argsPrefix, "api", endpoint], {
-          cwd: opts.gitRoot,
-          env: ghEnv(),
-          maxBuffer: 10 * 1024 * 1024,
-        }),
-      { label: `running gh api ${endpoint}` },
-    );
-    const parsed = JSON.parse(stdout) as GithubPullLookupRecord[];
+    const parsed = (await runGithubApiJson(opts.gitRoot, endpoint)) as GithubPullLookupRecord[];
     if (!Array.isArray(parsed) || parsed.length === 0) return null;
     for (const record of parsed) {
       const headRef = record.head && "ref" in record.head ? String(record.head.ref ?? "") : "";

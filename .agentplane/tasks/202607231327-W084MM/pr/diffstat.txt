@@ -1,0 +1,5 @@
+ .../src/commands/pr/internal/sync-github.test.ts   | 91 +++++++++++++++++++++-
+ .../src/commands/pr/internal/sync-github.ts        | 50 ++++--------
+ packages/core/src/config/workflow-contract.test.ts | 62 ++++++++++++++-
+ packages/core/src/config/workflow-contract.ts      | 19 +----
+ 4 files changed, 170 insertions(+), 52 deletions(-)
