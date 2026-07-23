@@ -2,10 +2,10 @@
 id: "202607221846-YGWMA2"
 title: "Remove automatic semantic pass verdicts"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -62,7 +62,9 @@ quality_review:
     - "Missing or stale review routes remain verdict-neutral, and the trust-boundary ratchet reports zero automatic-semantic-verdict violations."
     - "All five regenerated social cards are unclipped; deterministic wrapping plus truncation and rendered-width guards fail closed before an overflowing asset can pass validation."
     - "Focused evaluator, route, quality-gate, trust-ratchet, and strict 220-image checks pass, with full repository CI covering the remaining regression surface."
-commit: null
+commit:
+  hash: "8b62546ba7994eb6a5d79633e94cc680845f34fe"
+  message: "🚧 YGWMA2 task: address hosted rework"
 comments:
   -
     author: "CODER"
@@ -70,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: hosted review and Ubuntu Docs CI rework are resolved on the current implementation."
 events:
   -
     type: "status"
@@ -115,8 +120,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Hosted rework resolved: evaluator rework now requires an actionable finding, five social titles wrap below the cross-platform limit, and full local CI passed with 2230 unit tests plus critical CLI, docs, Windows, and coverage gates."
+  -
+    type: "status"
+    at: "2026-07-23T05:37:29.267Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: hosted review and Ubuntu Docs CI rework are resolved on the current implementation."
 doc_version: 3
-doc_updated_at: "2026-07-23T05:33:01.117Z"
+doc_updated_at: "2026-07-23T05:37:29.268Z"
 doc_updated_by: "CODER"
 description: "RF-00: remove preselected evaluator pass outcomes from route control, repair guidance, context task contracts, templates, and fixtures; emit a typed evaluator episode or quality-review stop instead."
 sections:
