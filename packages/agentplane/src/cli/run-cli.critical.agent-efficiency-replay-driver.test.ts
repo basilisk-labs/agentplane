@@ -29,6 +29,7 @@ type DriverModule = {
     "context_search_latency_ms" | "retrieval_gaps" | "retrieval_hits" | "retrieval_recall_proxy",
     null
   >;
+  anchorTaskOwner(role: string): string;
   CODEX_REPLAY_BINARY: string;
   CODEX_REPLAY_CLI_VERSION: string;
   CODEX_REPLAY_MODEL: string;
@@ -232,6 +233,7 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
       scenarios: { expected_episode_trace: string[]; id: string }[];
     };
     const context = registry.scenarios.find((scenario) => scenario.id === "context_assimilation");
+    const adapterFailure = registry.scenarios.find((scenario) => scenario.id === "adapter_failure");
     const hermes = registry.scenarios.find((scenario) => scenario.id === "hermes_one_step");
     const evaluator = registry.scenarios.find((scenario) => scenario.id === "evaluator_rework");
 
@@ -251,9 +253,13 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
       ) * 5,
     ).toBe(55);
     expect(context?.expected_episode_trace).toEqual([]);
+    expect(adapterFailure?.expected_episode_trace).toEqual(["CURRENT_AGENT"]);
     expect(hermes?.expected_episode_trace).toEqual(["CURRENT_AGENT"]);
     expect(
       replayDriver.expectedAnchorPreparationCliCalls(context?.expected_episode_trace ?? []),
+    ).toBe(6);
+    expect(
+      replayDriver.expectedAnchorPreparationCliCalls(adapterFailure?.expected_episode_trace ?? []),
     ).toBe(6);
     expect(
       replayDriver.expectedAnchorPreparationCliCalls(hermes?.expected_episode_trace ?? []),
@@ -261,6 +267,8 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
     expect(
       replayDriver.expectedAnchorPreparationCliCalls(evaluator?.expected_episode_trace ?? []),
     ).toBe(13);
+    expect(replayDriver.anchorTaskOwner("CURRENT_AGENT")).toBe("CODER");
+    expect(replayDriver.anchorTaskOwner("EVALUATOR")).toBe("EVALUATOR");
   });
 
   it("keeps the parent timeout above every per-turn budget while retaining a hard cap", async () => {
