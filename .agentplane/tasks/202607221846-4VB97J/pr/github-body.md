@@ -15,12 +15,13 @@ Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-PR review found that v2 approvals reused defaulting config fields, allowing omitted required flags;
-reopen for explicit persisted workflow approval validation.
+PASS at implementation 58e553847: explicit v2 approvals regression fixed; 2220/2220 fast tests and
+all 8 critical chunks pass; schema, compatibility, format, knip, lint, typecheck, architecture,
+docs, workflow, build, and independent P0-P2 review pass.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -55,23 +56,23 @@ reopen for explicit persisted workflow approval validation.
  .../src/workflow-runtime/validate-frontmatter.ts   |  415 ++---
  .../src/workflow-runtime/validate.test.ts          |   42 +
  .../src/workflow-runtime/validation-helpers.ts     |  110 +-
- packages/core/schemas/workflow.schema.json         | 1894 +++++++++++++++++++
+ packages/core/schemas/workflow.schema.json         | 1891 +++++++++++++++++++
  packages/core/src/config/config.test.ts            |   87 +
  packages/core/src/config/index.ts                  |   22 +
- packages/core/src/config/workflow-contract.test.ts |  120 ++
- packages/core/src/config/workflow-contract.ts      |  324 ++++
+ packages/core/src/config/workflow-contract.test.ts |  143 ++
+ packages/core/src/config/workflow-contract.ts      |  331 ++++
  packages/core/src/config/workflow-file.ts          |  210 ++-
  packages/core/src/schemas/index.ts                 |    7 +
  packages/spec/README.md                            |    9 +-
  packages/spec/examples/workflow-v1.json            |   21 +
  packages/spec/examples/workflow-v2.json            |   52 +
- packages/spec/schemas/workflow.schema.json         | 1894 +++++++++++++++++++
- schemas/workflow.schema.json                       | 1951 +++++++++++++++++++-
+ packages/spec/schemas/workflow.schema.json         | 1891 +++++++++++++++++++
+ schemas/workflow.schema.json                       | 1948 +++++++++++++++++++-
  .../v0.7-workflow-contract-candidate.json          |   69 +
  .../check-compatibility-contract-baseline.mjs      |  240 ++-
  scripts/checks/check-spec-examples.mjs             |    2 +
  scripts/generate/sync-schemas.mjs                  |   26 +-
- 39 files changed, 8164 insertions(+), 796 deletions(-)
+ 39 files changed, 8185 insertions(+), 796 deletions(-)
 ```
 
 </details>
