@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -40,26 +40,24 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-23T17:35:05.149Z"
+  updated_at: "2026-07-23T17:45:47.222Z"
   updated_by: "EVALUATOR"
-  note: "Independent semantic review found no remaining P0-P2 defect after fail-closed containment, signal, replay, and stable-file fixes."
-  evaluated_sha: "c989777ba53545e457dbd24793a5cf454ca9ffaa"
+  note: "Review follow-up removes dynamic executable-code construction without changing process-supervision behavior."
+  evaluated_sha: "2bd094a42f1f33a7b83c5a6e0700690084b3fda2"
   blueprint_digest: "504aba551a29f040c1ef51d538e2b0132564d1e27dc199a4110ded1506a9ebb5"
   evidence_refs:
     - ".agentplane/tasks/202607221846-Y89CFB/README.md"
-    - ".agentplane/tasks/202607221846-Y89CFB/quality/20260723-173505149-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221846-Y89CFB/quality/20260723-173505149-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221846-Y89CFB/quality/20260723-173505149-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221846-Y89CFB/quality/20260723-174547222-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221846-Y89CFB/quality/20260723-174547222-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221846-Y89CFB/quality/20260723-174547222-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221846-Y89CFB/blueprint/resolved-snapshot.json"
-    - "packages/core/src/runner/execution-receipt.ts"
-    - "packages/agentplane/src/runner/adapters/execution-receipt-runtime.ts"
     - "packages/agentplane/src/runner/process-supervision.process-tree.test.ts"
-    - "packages/agentplane/src/context/verify-task.ts"
-    - "bun run test:fast: 390 files, 2421 tests passed"
-    - "bun run ci:contract: passed"
+    - "bunx vitest run packages/agentplane/src/runner/process-supervision.process-tree.test.ts: 4/4 passed"
+    - "scoped ESLint and bun run typecheck: passed"
+    - "https://github.com/basilisk-labs/agentplane/pull/4605#discussion_r3640191488"
   findings:
-    - "Supervisor observations are authoritative and agent claims remain separately auditable; observed_success requires bounded containment, complete Git and artifact evidence, clean process exit, and passed required checks."
-    - "Receipt path/run binding rejects cross-task traversal and the verifier reads the receipt through a stable no-follow file handle."
+    - "Temporary filesystem paths are now passed to static parent and descendant scripts through argv; no repository-controlled or generated path is interpolated into executable JavaScript."
+    - "The production supervisor contract is unchanged, and both process-group cleanup and detached-child fail-closed regressions still pass."
 commit:
   hash: "c989777ba53545e457dbd24793a5cf454ca9ffaa"
   message: "🛡️ Y89CFB task: add supervisor-owned execution receipts"
