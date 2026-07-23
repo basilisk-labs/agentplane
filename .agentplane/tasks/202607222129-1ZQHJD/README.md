@@ -4,7 +4,7 @@ title: "Capture anchored multi-run RF-04 replay telemetry"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -37,11 +37,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-23T14:02:48.535Z"
+  state: "ok"
+  updated_at: "2026-07-23T14:10:16.897Z"
   updated_by: "TESTER"
-  note: "Fresh clone:check on RF-04 head ba30ea2a fails only because the branch is eight main commits behind W084MM: 91 clones versus baseline 88. Update the task branch from main fd1e52a7, keep RF-04 artifacts and immutable anchor unchanged, then rerun the full declared verification contract."
-  attempts: 1
+  note: "Post-rebase verification passed on ba22c6f7: immutable RF-04 patch parity confirmed by range-diff and SHA256; offline replay validates 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, structural 006ddc6d and diagnostics 01c7b818; four focused suites pass 40/40; all 11 critical chunks, typecheck, routing, full ci:contract, architecture, clone=88, Knip, and coverage gates pass. Historical baseline blob remains cc5eb860, 50 envelopes and 50 evidence bundles remain canonical, transaction marker is absent, and alpha.1 still directly depends on this task."
+  attempts: 0
 commit: null
 comments:
   -
@@ -125,8 +125,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Fresh clone:check on RF-04 head ba30ea2a fails only because the branch is eight main commits behind W084MM: 91 clones versus baseline 88. Update the task branch from main fd1e52a7, keep RF-04 artifacts and immutable anchor unchanged, then rerun the full declared verification contract."
+  -
+    type: "verify"
+    at: "2026-07-23T14:10:16.897Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Post-rebase verification passed on ba22c6f7: immutable RF-04 patch parity confirmed by range-diff and SHA256; offline replay validates 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, structural 006ddc6d and diagnostics 01c7b818; four focused suites pass 40/40; all 11 critical chunks, typecheck, routing, full ci:contract, architecture, clone=88, Knip, and coverage gates pass. Historical baseline blob remains cc5eb860, 50 envelopes and 50 evidence bundles remain canonical, transaction marker is absent, and alpha.1 still directly depends on this task."
 doc_version: 3
-doc_updated_at: "2026-07-23T14:02:48.808Z"
+doc_updated_at: "2026-07-23T14:10:17.280Z"
 doc_updated_by: "TESTER"
 description: "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording provider-reported token usage and 70 resolved outcome cells with per-field fixture_control or supervisor_observed provenance, collecting cognitive, orchestration, latency, retrieval, and evidence metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics."
 sections:
@@ -165,6 +171,36 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T13:19:15.374Z, excerpt_hash=sha256:ebef1420355cb6aa0b63e71b4bebb4392cc88acd42e080b39d63f6ccf9e2a9c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607222129-1ZQHJD-capture-anchored-multi-run-rf-04-replay-telemetr/.agentplane/tasks/202607222129-1ZQHJD/blueprint/resolved-snapshot.json
+    - old_digest: c623f4d584bdb41f52b4f3ff3de5ffc857f8654dc401d312940b98493af8189b
+    - current_digest: c623f4d584bdb41f52b4f3ff3de5ffc857f8654dc401d312940b98493af8189b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607222129-1ZQHJD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-23T14:10:16.897Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Post-rebase verification passed on ba22c6f7: immutable RF-04 patch parity confirmed by range-diff and SHA256; offline replay validates 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, structural 006ddc6d and diagnostics 01c7b818; four focused suites pass 40/40; all 11 critical chunks, typecheck, routing, full ci:contract, architecture, clone=88, Knip, and coverage gates pass. Historical baseline blob remains cc5eb860, 50 envelopes and 50 evidence bundles remain canonical, transaction marker is absent, and alpha.1 still directly depends on this task.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T14:02:48.808Z, excerpt_hash=sha256:ebef1420355cb6aa0b63e71b4bebb4392cc88acd42e080b39d63f6ccf9e2a9c6
 
     Details:
 
@@ -255,6 +291,36 @@ Note: Fresh clone:check on RF-04 head ba30ea2a fails only because the branch is 
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T13:19:15.374Z, excerpt_hash=sha256:ebef1420355cb6aa0b63e71b4bebb4392cc88acd42e080b39d63f6ccf9e2a9c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607222129-1ZQHJD-capture-anchored-multi-run-rf-04-replay-telemetr/.agentplane/tasks/202607222129-1ZQHJD/blueprint/resolved-snapshot.json
+- old_digest: c623f4d584bdb41f52b4f3ff3de5ffc857f8654dc401d312940b98493af8189b
+- current_digest: c623f4d584bdb41f52b4f3ff3de5ffc857f8654dc401d312940b98493af8189b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607222129-1ZQHJD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-23T14:10:16.897Z — VERIFY — ok
+
+By: TESTER
+
+Note: Post-rebase verification passed on ba22c6f7: immutable RF-04 patch parity confirmed by range-diff and SHA256; offline replay validates 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, structural 006ddc6d and diagnostics 01c7b818; four focused suites pass 40/40; all 11 critical chunks, typecheck, routing, full ci:contract, architecture, clone=88, Knip, and coverage gates pass. Historical baseline blob remains cc5eb860, 50 envelopes and 50 evidence bundles remain canonical, transaction marker is absent, and alpha.1 still directly depends on this task.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T14:02:48.808Z, excerpt_hash=sha256:ebef1420355cb6aa0b63e71b4bebb4392cc88acd42e080b39d63f6ccf9e2a9c6
 
 Details:
 
