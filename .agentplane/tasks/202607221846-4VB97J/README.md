@@ -1,10 +1,11 @@
 ---
 id: "202607221846-4VB97J"
 title: "Align Workflow schema, migration, and runtime version contracts"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -52,11 +53,16 @@ quality_review:
     - ".agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json"
   findings:
     - "All recovery integrity findings remain closed; 82/82 focused tests, exact compatibility digest, schema parity, and verified task evidence pass."
-commit: null
+commit:
+  hash: "96b0c85105edd82ba99a7f25f777373dc69f9058"
+  message: "🧪 4VB97J task: record quality review"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved WORKFLOW v1/v2 contract, migration, writer parity, and compatibility-ledger scope from main SHA 0e2d4b1c6523."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -71,8 +77,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "PASS at 827ea46e: v1/v2 normalization, deterministic migration and exact rollback, future-version rejection, schema parity, upgrade parity, and compatibility candidate verified; 82/82 focused tests and independent evaluator PASS."
+  -
+    type: "status"
+    at: "2026-07-23T02:31:36.726Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-23T02:23:56.380Z"
+doc_updated_at: "2026-07-23T02:31:36.727Z"
 doc_updated_by: "CODER"
 description: "Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing, the public v1 JSON Schema/docs, future-version acceptance, and upgrade behavior."
 sections:
@@ -130,6 +143,10 @@ sections:
     - Observation: Recovery paths now reject forged receipts, active future workflow versions, and invalid UTF-8 before writes.
       Impact: Workflow migrations cannot silently produce unrecoverable state or overwrite unsupported future contracts.
       Resolution: Recomputed receipt transitions, pre-write future-version guard, exact UTF-8 round-trip validation, and regression coverage for dry-run/apply.
+extensions:
+  implementation_commit:
+    hash: "48c84a7f468ab71235cc6af34e0d8f3d6afbb4e2"
+    message: "🧪 4VB97J migration: cover dry-run UTF-8 rejection"
 id_source: "generated"
 ---
 ## Summary
