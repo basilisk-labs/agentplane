@@ -100,6 +100,7 @@ export function stripRunnerHistory(
     ...(outcome.output_paths?.length ? { output_paths: [...outcome.output_paths] } : {}),
     ...(outcome.metrics ? { metrics: { ...outcome.metrics } } : {}),
     ...(outcome.evidence ? { evidence: { ...outcome.evidence } } : {}),
+    ...(outcome.execution_receipt ? { execution_receipt: { ...outcome.execution_receipt } } : {}),
   };
 }
 
@@ -301,6 +302,7 @@ function renderRunnerOutcomeEntry(opts: {
   const entryOutputPaths = opts.entry.output_paths;
   const entryMetrics = opts.entry.metrics;
   const entryEvidence = opts.entry.evidence;
+  const executionReceipt = opts.entry.execution_receipt;
   const lines = [
     `#### ${opts.entry.updated_at} — RUNNER — ${opts.entry.status}`,
     "",
@@ -349,13 +351,45 @@ function renderRunnerOutcomeEntry(opts: {
   if (evidenceLines.length > 0) {
     lines.push("", ...evidenceLines);
   }
+  if (executionReceipt) {
+    lines.push(
+      "",
+      `ExecutionReceipt: ${executionReceipt.path}`,
+      `ExecutionReceiptSha256: ${executionReceipt.sha256}`,
+      `ExecutionReceiptVerification: ${executionReceipt.verification_state}`,
+    );
+  }
   lines.push("", `VerificationHint: ${renderVerificationHint(opts.entry.status, entryEvidence)}`);
   return `${lines.join("\n").trimEnd()}\n`;
 }
 
+function projectTaskRunnerEvidence(
+  result: RunnerRunState["result"] | null | undefined,
+): TaskRunnerHistoryEntry["evidence"] | undefined {
+  const source = result?.evidence;
+  if (!source && !result?.execution_receipt) return undefined;
+  return {
+    ...(result?.execution_receipt ? { provenance: "supervisor_observed" as const } : {}),
+    ...(source?.evidence_paths?.length ? { evidence_paths: [...source.evidence_paths] } : {}),
+    ...(source?.changed_paths?.length ? { changed_paths: [...source.changed_paths] } : {}),
+    ...(source?.conflict_paths?.length ? { conflict_paths: [...source.conflict_paths] } : {}),
+    ...(typeof source?.files_changed_count === "number"
+      ? { files_changed_count: source.files_changed_count }
+      : {}),
+    ...(source?.tests_run?.length ? { tests_run: [...source.tests_run] } : {}),
+    ...(source?.verification_candidates?.length
+      ? { verification_candidates: [...source.verification_candidates] }
+      : {}),
+    ...(source?.blocked_reason ? { blocked_reason: source.blocked_reason } : {}),
+    ...(source?.recommended_parent_action
+      ? { recommended_parent_action: source.recommended_parent_action }
+      : {}),
+  };
+}
+
 function buildTaskRunnerHistoryEntry(projection: RunnerOutcomeProjection): TaskRunnerHistoryEntry {
   const { state, result } = projection;
-  const evidence = result?.evidence ? { ...result.evidence } : undefined;
+  const evidence = projectTaskRunnerEvidence(result);
   const outcome: TaskRunnerHistoryEntry = {
     run_id: state.run_id,
     status: state.status,
@@ -379,6 +413,9 @@ function buildTaskRunnerHistoryEntry(projection: RunnerOutcomeProjection): TaskR
   if (result?.output_paths?.length) outcome.output_paths = [...result.output_paths];
   if (result?.metrics) outcome.metrics = { ...result.metrics };
   if (evidence) outcome.evidence = evidence;
+  if (result?.execution_receipt) {
+    outcome.execution_receipt = { ...result.execution_receipt };
+  }
   return outcome;
 }
 

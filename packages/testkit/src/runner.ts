@@ -33,6 +33,7 @@ type MakeRunnerContextBundleOptions = {
 };
 
 export function setRunnerBundleRunDir(bundle: RunnerContextBundle, runDir: string): void {
+  bundle.execution.run_id = path.basename(runDir);
   bundle.execution.artifact_paths.run_dir = runDir;
   bundle.execution.artifact_paths.bundle_path = path.join(runDir, "bundle.json");
   bundle.execution.artifact_paths.blueprint_plan_path = path.join(runDir, "blueprint-plan.json");
@@ -52,6 +53,7 @@ export function setRunnerBundleRunDir(bundle: RunnerContextBundle, runDir: strin
   bundle.execution.artifact_paths.state_path = path.join(runDir, "run-state.json");
   bundle.execution.artifact_paths.events_path = path.join(runDir, "events.jsonl");
   bundle.execution.artifact_paths.result_path = path.join(runDir, "result.json");
+  bundle.execution.artifact_paths.receipt_path = path.join(runDir, "execution-receipt.json");
   bundle.execution.artifact_paths.trace_path = path.join(runDir, "agent-trace.jsonl");
   bundle.execution.artifact_paths.stderr_path = path.join(runDir, "stderr.log");
 }
@@ -96,6 +98,7 @@ export function makeRunnerContextBundle(
       state_path: path.join(runDir, "run-state.json"),
       events_path: path.join(runDir, "events.jsonl"),
       result_path: path.join(runDir, "result.json"),
+      receipt_path: path.join(runDir, "execution-receipt.json"),
       trace_path: path.join(runDir, "agent-trace.jsonl"),
       stderr_path: path.join(runDir, "stderr.log"),
       ...executionPathOverrides,

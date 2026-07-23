@@ -177,6 +177,9 @@ function normalizeStringArray(value: unknown): string[] | null {
 function normalizeTaskRunnerEvidence(value: unknown): TaskRunnerEvidence | null {
   if (!isRecord(value)) return null;
   const evidence: TaskRunnerEvidence = {};
+  if (value.provenance === "supervisor_observed") {
+    evidence.provenance = value.provenance;
+  }
   const evidencePaths = normalizeStringArray(value.evidence_paths);
   if (evidencePaths) evidence.evidence_paths = evidencePaths;
   const changedPaths = normalizeStringArray(value.changed_paths);
@@ -204,6 +207,35 @@ function normalizeTaskRunnerEvidence(value: unknown): TaskRunnerEvidence | null 
     evidence.files_changed_count = value.files_changed_count;
   }
   return Object.keys(evidence).length > 0 ? evidence : null;
+}
+
+function normalizeTaskRunnerExecutionReceiptRef(
+  value: unknown,
+): NonNullable<TaskRunnerHistoryEntry["execution_receipt"]> | null {
+  if (!isRecord(value)) return null;
+  const receiptPath = typeof value.path === "string" ? value.path.trim() : "";
+  const sha256 = typeof value.sha256 === "string" ? value.sha256.trim() : "";
+  const verificationState =
+    value.verification_state === "observed_success" ||
+    value.verification_state === "rejected" ||
+    value.verification_state === "unverified" ||
+    value.verification_state === "compatibility_unverified"
+      ? value.verification_state
+      : null;
+  if (
+    !receiptPath ||
+    !/^sha256:[0-9a-f]{64}$/u.test(sha256) ||
+    !verificationState ||
+    value.observed_by !== "agentplane"
+  ) {
+    return null;
+  }
+  return {
+    path: receiptPath,
+    sha256,
+    verification_state: verificationState,
+    observed_by: "agentplane",
+  };
 }
 
 function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry | null {
@@ -261,6 +293,8 @@ function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry
   if (metrics) outcome.metrics = metrics;
   const evidence = normalizeTaskRunnerEvidence(value.evidence);
   if (evidence) outcome.evidence = evidence;
+  const executionReceipt = normalizeTaskRunnerExecutionReceiptRef(value.execution_receipt);
+  if (executionReceipt) outcome.execution_receipt = executionReceipt;
   return outcome;
 }
 

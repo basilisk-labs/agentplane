@@ -1,8 +1,9 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import { describe, expect, it } from "vitest";
 
 import { writePreparedRunnerArtifacts } from "../artifacts.js";
@@ -12,6 +13,12 @@ import {
   writeRunnerExecutable,
 } from "@agentplane/testkit/runner";
 import { createRunnerAdapter } from "./index.js";
+
+async function makeGitTempRoot(prefix: string): Promise<string> {
+  const root = await mkdtemp(path.join(os.tmpdir(), prefix));
+  await execFileAsync("git", ["init", "--quiet"], { cwd: root });
+  return root;
+}
 
 function currentCodexSandboxPlatform(): "macos" | "linux" | "windows" {
   switch (process.platform) {
@@ -314,7 +321,7 @@ describe("CustomRunnerAdapter", () => {
     );
   });
 
-  it("captures success-path stdout and persists custom runner state", async () => {
+  it("captures clean-exit stdout without claiming success under limited containment", async () => {
     const raw = defaultConfig();
     raw.runner.default_adapter = "custom";
     raw.runner.custom = {
@@ -324,7 +331,7 @@ describe("CustomRunnerAdapter", () => {
       },
     };
     const adapter = createRunnerAdapter(raw);
-    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-success-"));
+    const tempDir = await makeGitTempRoot("agentplane-custom-adapter-success-");
     const fakeBinDir = path.join(tempDir, "bin");
     const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
@@ -347,7 +354,7 @@ describe("CustomRunnerAdapter", () => {
 
     const result = await adapter.execute(invocation);
 
-    expect(result.status).toBe("success");
+    expect(result.status).toBe("failed");
     expect(result.exit_code).toBe(0);
     expect(result.summary).toBe("Custom runner execution completed successfully.");
     expect(result.stdout_summary).toBe("Raw execution trace was captured in agent-trace.jsonl.");
@@ -363,9 +370,9 @@ describe("CustomRunnerAdapter", () => {
         metrics?: { stdout_bytes?: number };
       };
     };
-    expect(state.status).toBe("success");
+    expect(state.status).toBe("failed");
     expect(state.prepared_metadata?.bootstrap_sha256).toMatch(/^[a-f0-9]{64}$/);
-    expect(state.result?.status).toBe("success");
+    expect(state.result?.status).toBe("failed");
     expect(state.result?.exit_code).toBe(0);
     expect(state.result?.summary).toBe("Custom runner execution completed successfully.");
     expect(state.result?.stdout_summary).toBe(
@@ -379,7 +386,7 @@ describe("CustomRunnerAdapter", () => {
       artifacts?: { path: string; label?: string }[];
       capabilities_used?: string[];
     };
-    expect(resultManifest.status).toBe("success");
+    expect(resultManifest.status).toBe("failed");
     expect(resultManifest.summary).toBe("Custom runner execution completed successfully.");
     expect(resultManifest.stdout_summary).toBe(
       "Raw execution trace was captured in agent-trace.jsonl.",
@@ -410,7 +417,7 @@ describe("CustomRunnerAdapter", () => {
       command: ["custom-runner"],
     };
     const adapter = createRunnerAdapter(raw);
-    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-invalid-"));
+    const tempDir = await makeGitTempRoot("agentplane-custom-adapter-invalid-");
     const fakeBinDir = path.join(tempDir, "bin");
     const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
@@ -498,7 +505,7 @@ describe("CustomRunnerAdapter", () => {
       command: ["custom-runner"],
     };
     const adapter = createRunnerAdapter(raw);
-    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-source-"));
+    const tempDir = await makeGitTempRoot("agentplane-custom-adapter-source-");
     const fakeBinDir = path.join(tempDir, "bin");
     const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
@@ -583,11 +590,20 @@ describe("CustomRunnerAdapter", () => {
       verification_hints?: string[];
       capabilities_used?: string[];
       evidence?: {
+        provenance?: string;
         evidence_paths?: string[];
         changed_paths?: string[];
         files_changed_count?: number;
         tests_run?: string[];
         verification_candidates?: string[];
+        receipt_path?: string;
+        receipt_sha256?: string;
+      };
+      execution_receipt?: {
+        path?: string;
+        sha256?: string;
+        verification_state?: string;
+        observed_by?: string;
       };
       semantic_result?: { provenance?: string; value?: { kind?: string; summary?: string } };
       agent_reported_claims?: { field?: string; provenance?: string; value?: unknown }[];
@@ -610,7 +626,19 @@ describe("CustomRunnerAdapter", () => {
       expect.arrayContaining([expect.objectContaining({ path: "reports/out.txt" })]),
     );
     expect(normalized.verification_hints).toBeUndefined();
-    expect(normalized.evidence).toBeUndefined();
+    expect(normalized.evidence).toMatchObject({
+      provenance: "supervisor_observed",
+      changed_paths: [],
+      files_changed_count: 0,
+      receipt_path: "runs/run-source/execution-receipt.json",
+    });
+    expect(normalized.evidence?.tests_run).toBeUndefined();
+    expect(normalized.execution_receipt).toMatchObject({
+      path: "runs/run-source/execution-receipt.json",
+      verification_state: "unverified",
+      observed_by: "agentplane",
+    });
+    expect(normalized.execution_receipt?.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
     expect(normalized.agent_reported_claims).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -631,6 +659,135 @@ describe("CustomRunnerAdapter", () => {
     await rm(tempDir, { recursive: true, force: true });
   });
 
+  it("attributes unreported repository writes without inheriting pre-existing dirt", async () => {
+    const raw = defaultConfig();
+    raw.runner.default_adapter = "custom";
+    raw.runner.custom = {
+      command: ["custom-runner"],
+    };
+    const adapter = createRunnerAdapter(raw);
+    const tempDir = await makeGitTempRoot("agentplane-custom-adapter-observed-delta-");
+    const fakeBinDir = path.join(tempDir, "bin");
+    await writeFile(path.join(tempDir, "tracked.txt"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "--", "tracked.txt"], { cwd: tempDir });
+    await execFileAsync(
+      "git",
+      [
+        "-c",
+        "user.name=AgentPlane Test",
+        "-c",
+        "user.email=agentplane@example.test",
+        "commit",
+        "--quiet",
+        "-m",
+        "seed",
+      ],
+      { cwd: tempDir },
+    );
+    await writeFile(path.join(tempDir, "pre-existing-untracked.txt"), "existing dirt\n", "utf8");
+
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
+    bundle.repository.git_root = tempDir;
+    bundle.task!.data.verify = ["bun run focused-check"];
+    bundle.execution.mode = "execute";
+    setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-observed-delta"));
+    await writeRunnerExecutable(tempDir, "custom-runner", [
+      [
+        "#!/bin/sh",
+        "cat >/dev/null",
+        String.raw`printf "runner change\n" > "$TEST_REPOSITORY_ROOT/tracked.txt"`,
+        String.raw`printf "unreported output\n" > "$TEST_REPOSITORY_ROOT/observed-untracked.txt"`,
+        String.raw`printf '{"schema_version":1,"summary":"Agent claimed a different delta.","evidence":{"changed_paths":["claimed-only.txt"],"files_changed_count":1}}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        "exit 0",
+      ].join("\n"),
+    ]);
+
+    const invocation = await adapter.prepare(bundle);
+    invocation.env.PATH = `${fakeBinDir}:${process.env.PATH ?? ""}`;
+    invocation.env.TEST_REPOSITORY_ROOT = tempDir;
+    await writePreparedRunnerArtifacts({
+      bundle,
+      bootstrap_markdown: "Read the bundle from env.\n",
+      invocation,
+    });
+
+    const result = await adapter.execute(invocation);
+
+    expect(result.status).toBe("failed");
+    expect(result.evidence).toMatchObject({
+      provenance: "supervisor_observed",
+      changed_paths: ["observed-untracked.txt", "tracked.txt"],
+      files_changed_count: 2,
+    });
+    expect(result.evidence?.changed_paths).not.toContain("pre-existing-untracked.txt");
+    expect(result.evidence?.changed_paths).not.toContain("claimed-only.txt");
+    expect(result.agent_reported_claims).toEqual(
+      expect.arrayContaining([
+        {
+          field: "evidence.changed_paths",
+          value: ["claimed-only.txt"],
+          provenance: "agent_reported",
+        },
+      ]),
+    );
+
+    const receipt = JSON.parse(await readFile(invocation.receipt_path, "utf8")) as {
+      git?: {
+        state?: string;
+        before?: { dirty_paths?: string[] };
+        delta?: { changed_paths?: string[] };
+      };
+      process?: {
+        process_tree?: {
+          scope?: string;
+          cleanup_state?: string;
+          residual_alive?: boolean | null;
+          containment_state?: string;
+          containment_limitation?: string | null;
+        };
+      };
+      success_policy?: { outcome?: string };
+      checks?: { id?: string; required?: boolean; status?: string; details?: string }[];
+    };
+    expect(receipt.git?.state).toBe("observed");
+    expect(receipt.git?.before?.dirty_paths).toEqual(
+      expect.arrayContaining(["bin/custom-runner", "pre-existing-untracked.txt"]),
+    );
+    expect(receipt.git?.delta?.changed_paths).toEqual(["observed-untracked.txt", "tracked.txt"]);
+    expect(receipt.process?.process_tree).toMatchObject({
+      scope: "posix_process_group",
+      cleanup_state: "not_needed",
+      residual_alive: false,
+      containment_state: "limited",
+    });
+    expect(receipt.process?.process_tree?.containment_limitation).toContain("new session");
+    expect(receipt.success_policy?.outcome).toBe("unverified");
+    expect(receipt.checks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "runner.process_group_cleanup",
+          required: true,
+          status: "passed",
+        }),
+        expect.objectContaining({
+          id: "runner.process_containment",
+          required: true,
+          status: "not_run",
+        }),
+        expect.objectContaining({
+          id: "task.verify.deferred",
+          required: false,
+          status: "not_run",
+        }),
+      ]),
+    );
+    expect(receipt.checks?.find((check) => check.id === "task.verify.deferred")?.details).toContain(
+      "does not claim task or semantic success",
+    );
+
+    await rm(tempDir, { recursive: true, force: true });
+  });
+
   it("fails when external custom manifest paths escape declared recipe prefixes", async () => {
     const raw = defaultConfig();
     raw.runner.default_adapter = "custom";
@@ -638,7 +795,7 @@ describe("CustomRunnerAdapter", () => {
       command: ["custom-runner"],
     };
     const adapter = createRunnerAdapter(raw);
-    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-scope-"));
+    const tempDir = await makeGitTempRoot("agentplane-custom-adapter-scope-");
     const fakeBinDir = path.join(tempDir, "bin");
     const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
@@ -681,6 +838,20 @@ describe("CustomRunnerAdapter", () => {
     expect(result.output_paths).toContain(
       path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
     );
+    const receipt = JSON.parse(await readFile(invocation.receipt_path, "utf8")) as {
+      observed_by?: string;
+      process?: { exit_code?: number | null };
+      checks?: { id?: string; status?: string }[];
+      success_policy?: { outcome?: string };
+    };
+    expect(receipt.observed_by).toBe("agentplane");
+    expect(receipt.process?.exit_code).toBe(0);
+    expect(receipt.checks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "runner.manifest.valid", status: "failed" }),
+      ]),
+    );
+    expect(receipt.success_policy?.outcome).toBe("rejected");
     expect(
       await readFile(
         path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),

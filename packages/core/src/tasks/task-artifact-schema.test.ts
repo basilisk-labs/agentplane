@@ -644,6 +644,86 @@ describe("task-artifact-schema", () => {
     expect(() => validateTaskReadmeFrontmatter(invalid)).toThrow(/quality_review\.provenance/);
   });
 
+  it("validates execution receipt task projections while preserving legacy outcomes", () => {
+    const frontmatter = {
+      id: "202607231000-RECEIPT",
+      title: "Execution receipt projection fixture",
+      status: "DOING",
+      priority: "high",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["runner"],
+      verify: [],
+      plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+      verification: {
+        state: "pending",
+        attempts: 0,
+        updated_at: null,
+        updated_by: null,
+        note: null,
+      },
+      runner: {
+        run_id: "run-receipt",
+        status: "success",
+        adapter_id: "custom",
+        mode: "execute",
+        updated_at: "2026-07-23T10:00:00.000Z",
+        exit_code: 0,
+        target: { kind: "task", task_id: "202607231000-RECEIPT" },
+        evidence: {
+          provenance: "supervisor_observed",
+          changed_paths: ["context/wiki/index.md"],
+        },
+        execution_receipt: {
+          path: ".agentplane/tasks/202607231000-RECEIPT/runs/run-receipt/execution-receipt.json",
+          sha256: `sha256:${"a".repeat(64)}`,
+          verification_state: "observed_success",
+          observed_by: "agentplane",
+        },
+      },
+      comments: [],
+      events: [],
+      doc_version: 3,
+      doc_updated_at: "2026-07-23T10:00:00.000Z",
+      doc_updated_by: "CODER",
+      description: "Fixture",
+      id_source: "generated",
+    } satisfies Record<string, unknown>;
+
+    expect(() => validateTaskReadmeFrontmatter(frontmatter)).not.toThrow();
+
+    const unverified = structuredClone(frontmatter);
+    (
+      (unverified.runner as Record<string, unknown>).execution_receipt as Record<string, unknown>
+    ).verification_state = "unverified";
+    expect(() => validateTaskReadmeFrontmatter(unverified)).not.toThrow();
+
+    const legacy = structuredClone(frontmatter);
+    delete (legacy.runner as Record<string, unknown>).execution_receipt;
+    delete ((legacy.runner as Record<string, unknown>).evidence as Record<string, unknown>)
+      .provenance;
+    expect(() => validateTaskReadmeFrontmatter(legacy)).not.toThrow();
+
+    const invalidDigest = structuredClone(frontmatter);
+    (
+      (invalidDigest.runner as Record<string, unknown>).execution_receipt as Record<string, unknown>
+    ).sha256 = "sha256:not-a-digest";
+    expect(() => validateTaskReadmeFrontmatter(invalidDigest)).toThrow(
+      /runner\.execution_receipt\.sha256/u,
+    );
+
+    const forgedObserver = structuredClone(frontmatter);
+    (
+      (forgedObserver.runner as Record<string, unknown>).execution_receipt as Record<
+        string,
+        unknown
+      >
+    ).observed_by = "agent";
+    expect(() => validateTaskReadmeFrontmatter(forgedObserver)).toThrow(
+      /runner\.execution_receipt\.observed_by/u,
+    );
+  });
+
   it("defaults missing verification attempts in task README frontmatter", () => {
     expect(() =>
       validateTaskReadmeFrontmatter({

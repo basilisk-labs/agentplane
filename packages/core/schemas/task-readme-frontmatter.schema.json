@@ -431,6 +431,10 @@
         "evidence": {
           "type": "object",
           "properties": {
+            "provenance": {
+              "type": "string",
+              "const": "supervisor_observed"
+            },
             "evidence_paths": {
               "type": "array",
               "items": {
@@ -466,6 +470,29 @@
             }
           },
           "additionalProperties": {}
+        },
+        "execution_receipt": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "verification_state": {
+              "type": "string",
+              "enum": ["observed_success", "rejected", "unverified", "compatibility_unverified"]
+            },
+            "observed_by": {
+              "type": "string",
+              "const": "agentplane"
+            }
+          },
+          "required": ["path", "sha256", "verification_state", "observed_by"],
+          "additionalProperties": false
         },
         "history": {
           "type": "array",
@@ -582,6 +609,10 @@
               "evidence": {
                 "type": "object",
                 "properties": {
+                  "provenance": {
+                    "type": "string",
+                    "const": "supervisor_observed"
+                  },
                   "evidence_paths": {
                     "type": "array",
                     "items": {
@@ -617,6 +648,34 @@
                   }
                 },
                 "additionalProperties": {}
+              },
+              "execution_receipt": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^sha256:[0-9a-f]{64}$"
+                  },
+                  "verification_state": {
+                    "type": "string",
+                    "enum": [
+                      "observed_success",
+                      "rejected",
+                      "unverified",
+                      "compatibility_unverified"
+                    ]
+                  },
+                  "observed_by": {
+                    "type": "string",
+                    "const": "agentplane"
+                  }
+                },
+                "required": ["path", "sha256", "verification_state", "observed_by"],
+                "additionalProperties": false
               }
             },
             "required": [

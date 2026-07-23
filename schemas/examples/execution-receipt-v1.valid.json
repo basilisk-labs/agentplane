@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "kind": "execution_receipt",
+  "observed_by": "agentplane",
+  "run_id": "run-example-001",
+  "work_order_id": "work-order-example-001",
+  "process": {
+    "provenance": "supervisor_observed",
+    "outcome": "exited",
+    "started_at": "2026-07-23T10:00:00.000Z",
+    "ended_at": "2026-07-23T10:00:01.250Z",
+    "exit_code": 0,
+    "exit_signal": null,
+    "timeout_reason": null,
+    "process_tree": {
+      "scope": "posix_process_group",
+      "group_id": 4242,
+      "cleanup_state": "not_needed",
+      "terminate_sent_at": null,
+      "kill_sent_at": null,
+      "completed_at": "2026-07-23T10:00:01.250Z",
+      "residual_alive": false,
+      "error": null,
+      "containment_state": "bounded",
+      "containment_limitation": null
+    },
+    "capabilities_invoked": ["codex.exec"],
+    "metrics": {
+      "duration_ms": 1250,
+      "stdout_bytes": 96,
+      "stderr_bytes": 0,
+      "output_last_message_bytes": 64
+    }
+  },
+  "git": {
+    "provenance": "supervisor_observed",
+    "state": "observed",
+    "before": {
+      "head_commit": "1111111111111111111111111111111111111111",
+      "snapshot_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "dirty_paths": ["pre-existing.txt"]
+    },
+    "after": {
+      "head_commit": "1111111111111111111111111111111111111111",
+      "snapshot_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "dirty_paths": ["packages/core/src/runner/execution-receipt.ts", "pre-existing.txt"]
+    },
+    "delta": {
+      "changed_paths": ["packages/core/src/runner/execution-receipt.ts"],
+      "entries": [
+        {
+          "path": "packages/core/src/runner/execution-receipt.ts",
+          "change": "added",
+          "before_sha256": null,
+          "after_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        }
+      ],
+      "sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "excluded_paths": [".agentplane/tasks/work-order-example-001/runs/run-example-001"]
+  },
+  "artifacts": [
+    {
+      "provenance": "supervisor_observed",
+      "path": ".agentplane/tasks/work-order-example-001/runs/run-example-001/result.source.json",
+      "label": "source-result-manifest",
+      "required": true,
+      "state": "present",
+      "bytes": 384,
+      "sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+    }
+  ],
+  "checks": [
+    {
+      "provenance": "supervisor_observed",
+      "id": "runner.process_containment",
+      "required": true,
+      "status": "passed",
+      "details": "The supervisor used bounded descendant containment."
+    },
+    {
+      "provenance": "supervisor_observed",
+      "id": "runner.manifest.valid",
+      "required": true,
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 4,
+      "details": "The supervisor parsed the source manifest with the canonical schema."
+    }
+  ],
+  "collection": {
+    "provenance": "supervisor_observed",
+    "status": "complete",
+    "errors": []
+  },
+  "scope_evaluation": {
+    "provenance": "supervisor_observed",
+    "state": "not_evaluated"
+  },
+  "success_policy": {
+    "provenance": "supervisor_observed",
+    "outcome": "observed_success",
+    "reasons": []
+  }
+}

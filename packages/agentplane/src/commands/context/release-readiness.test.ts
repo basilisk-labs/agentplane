@@ -5,6 +5,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../shared/task-backend.js";
+import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
 import { cmdContextDoctor } from "./doctor.js";
 import { cmdContextIngest } from "./ingest.js";
 import { cmdContextInit } from "./init.js";
@@ -14,12 +15,7 @@ import { cmdContextShow } from "./show.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
 import { createTaskNewParsed } from "../../context/ingest-task.js";
 import type { ManifestEntry } from "../../context/ingest.js";
-import {
-  cmdContextWikiExplain,
-  cmdContextWikiIndex,
-  cmdContextWikiLint,
-  cmdContextWikiNew,
-} from "./wiki.js";
+import { cmdContextWikiExplain, cmdContextWikiLint, cmdContextWikiNew } from "./wiki.js";
 
 let tempRoots: string[] = [];
 
@@ -535,6 +531,11 @@ describe("context release readiness guards", () => {
         },
       },
     };
+    await attachObservedExecutionReceiptFixture({
+      root,
+      task,
+      changedPaths: [".agentplane/context/derived/facts/facts.jsonl"],
+    });
     const ctx = {
       resolvedProject: { gitRoot: root },
       config: { paths: { workflow_dir: ".agentplane/tasks" } },
@@ -578,6 +579,11 @@ describe("context release readiness guards", () => {
         },
       },
     };
+    await attachObservedExecutionReceiptFixture({
+      root,
+      task,
+      changedPaths: [".agentplane/context/agentplane.context.yaml", "context/wiki/AGENTS.md"],
+    });
     const ctx = {
       resolvedProject: { gitRoot: root },
       config: { paths: { workflow_dir: ".agentplane/tasks" } },
@@ -622,6 +628,11 @@ describe("context release readiness guards", () => {
         },
       },
     };
+    await attachObservedExecutionReceiptFixture({
+      root,
+      task,
+      changedPaths: [],
+    });
     const ctx = {
       resolvedProject: { gitRoot: root },
       config: { paths: { workflow_dir: ".agentplane/tasks" } },
@@ -915,83 +926,5 @@ describe("context release readiness guards", () => {
     expect(output).toContain("context wiki lint: ok (1 page(s))");
     expect(output).toContain("canonical_id:");
     expect(output).toContain("modality: decision");
-  });
-
-  it("updates generated wiki index sections for pages and subdirectories", async () => {
-    const root = await tempRoot();
-    await cmdContextWikiNew({
-      cwd: root,
-      parsed: {
-        page: "modules/meridian-relay",
-        title: "Meridian Relay",
-        modality: "definition",
-        status: "reviewed_claim",
-        visibility: "project",
-        source: ["context/raw/specs/meridian-relay.md"],
-        force: false,
-      },
-    });
-    await cmdContextWikiNew({
-      cwd: root,
-      parsed: {
-        page: "decisions/meridian-relay-pull-sync",
-        title: "Meridian Relay pull sync",
-        modality: "decision",
-        status: "reviewed_claim",
-        visibility: "project",
-        source: ["context/raw/specs/meridian-relay.md"],
-        force: false,
-      },
-    });
-    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
-
-    await cmdContextWikiIndex({
-      cwd: root,
-      parsed: { path: "context/wiki" },
-    });
-
-    const rootIndex = await readFile(path.join(root, "context/wiki/index.md"), "utf8");
-    const modulesIndex = await readFile(path.join(root, "context/wiki/modules/index.md"), "utf8");
-    expect(rootIndex).toContain("<!-- agentplane-context-wiki-index:start -->");
-    expect(rootIndex).toContain("[Modules](modules/index.md)");
-    expect(rootIndex).toContain("[Decisions](decisions/index.md)");
-    expect(modulesIndex).toContain("agentplane_context:");
-    expect(modulesIndex).toContain("[Meridian Relay](meridian-relay.md)");
-    await cmdContextWikiLint({
-      cwd: root,
-      parsed: { path: "context/wiki" },
-    });
-    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
-      "context wiki index: updated",
-    );
-  });
-
-  it("updates ancestor index pages when wiki index is run for a single page", async () => {
-    const root = await tempRoot();
-    await cmdContextWikiNew({
-      cwd: root,
-      parsed: {
-        page: "modules/meridian-relay",
-        title: "Meridian Relay",
-        modality: "definition",
-        status: "reviewed_claim",
-        visibility: "project",
-        source: ["context/raw/specs/meridian-relay.md"],
-        force: false,
-      },
-    });
-
-    await cmdContextWikiIndex({
-      cwd: root,
-      parsed: { path: "context/wiki/modules/meridian-relay.md" },
-    });
-
-    const modulesIndex = await readFile(path.join(root, "context/wiki/modules/index.md"), "utf8");
-    expect(modulesIndex).toContain("agentplane_context:");
-    expect(modulesIndex).toContain("[Meridian Relay](meridian-relay.md)");
-    await cmdContextWikiLint({
-      cwd: root,
-      parsed: { path: "context/wiki/modules" },
-    });
   });
 });

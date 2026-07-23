@@ -1,5 +1,7 @@
 import path from "node:path";
 
+import type { ExecutionReceipt } from "@agentplaneorg/core/schemas";
+
 import { isRecord } from "../shared/guards.js";
 import { toPosix } from "./context-utils.js";
 
@@ -26,7 +28,16 @@ type ContextRunnerEvidence = {
 };
 
 type TaskRunner = {
+  run_id?: string;
   evidence?: ContextRunnerEvidence;
+  execution_receipt?: unknown;
+};
+
+export type ContextExecutionReceiptRef = {
+  path: string;
+  sha256: string;
+  verification_state: string;
+  observed_by: string;
 };
 
 export type VerificationInput = {
@@ -117,13 +128,39 @@ export function readForbidden(context: ContextExtension): string[] {
   ].map(String);
 }
 
-export function readChangedPaths(task: VerificationInput): string[] {
-  const evidence = task.runner?.evidence;
-  if (!isRecord(evidence)) return [];
-  const changed = evidence.changed_paths;
-  return Array.isArray(changed)
-    ? changed.filter((path) => typeof path === "string" && path.trim())
-    : [];
+export function hasExecutionReceiptReference(task: VerificationInput): boolean {
+  return task.runner?.execution_receipt !== undefined;
+}
+
+export function readExecutionReceiptRef(
+  task: VerificationInput,
+): ContextExecutionReceiptRef | null {
+  const raw = task.runner?.execution_receipt;
+  if (!isRecord(raw)) return null;
+  if (
+    typeof raw.path !== "string" ||
+    typeof raw.sha256 !== "string" ||
+    typeof raw.verification_state !== "string" ||
+    typeof raw.observed_by !== "string"
+  ) {
+    return null;
+  }
+  const receiptPath = raw.path.trim();
+  const sha256 = raw.sha256.trim();
+  const verificationState = raw.verification_state.trim();
+  const observedBy = raw.observed_by.trim();
+  if (!receiptPath || !sha256 || !verificationState || !observedBy) return null;
+  return {
+    path: receiptPath,
+    sha256,
+    verification_state: verificationState,
+    observed_by: observedBy,
+  };
+}
+
+export function readChangedPaths(receipt: ExecutionReceipt): string[] {
+  if (receipt.git.state !== "observed") return [];
+  return receipt.git.delta.changed_paths.filter((changedPath) => changedPath.trim().length > 0);
 }
 
 export function isRawMutationAllowed(context: ContextExtension): boolean {

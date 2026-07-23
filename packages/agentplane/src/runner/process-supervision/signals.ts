@@ -2,14 +2,6 @@ import { runProcess } from "@agentplaneorg/core/process";
 
 import type { RunnerProcessSignal } from "../types.js";
 
-const SUPPORTED_SIGNALS = new Set<RunnerProcessSignal>([
-  "SIGHUP",
-  "SIGINT",
-  "SIGQUIT",
-  "SIGTERM",
-  "SIGKILL",
-]);
-
 export type ObservedProcessIdentity = {
   pid: number;
   command: string | null;
@@ -17,10 +9,7 @@ export type ObservedProcessIdentity = {
 };
 
 export function normalizeSignal(signal: NodeJS.Signals | null): RunnerProcessSignal | null {
-  if (!signal) return null;
-  return SUPPORTED_SIGNALS.has(signal as RunnerProcessSignal)
-    ? (signal as RunnerProcessSignal)
-    : null;
+  return signal;
 }
 
 export function exitCodeForSignal(signal: RunnerProcessSignal | null): number | null {

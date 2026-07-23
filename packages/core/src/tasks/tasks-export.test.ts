@@ -8,6 +8,7 @@ import {
   computeTasksChecksum,
   createTask,
   defaultConfig,
+  renderTaskReadme,
   saveConfig,
   type TasksExportTask,
 } from "../index.js";
@@ -91,6 +92,65 @@ describe("tasks-export", () => {
 
     const malformed = snapshot.tasks.find((t) => t.id === malformedId);
     expect(malformed).toBeUndefined();
+  });
+
+  it("preserves execution receipt references and observed evidence in export snapshots", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607231000-RECEIPT";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const receipt = {
+      path: `.agentplane/tasks/${taskId}/runs/run-receipt/execution-receipt.json`,
+      sha256: `sha256:${"a".repeat(64)}`,
+      verification_state: "unverified",
+      observed_by: "agentplane",
+    } as const;
+    const frontmatter = {
+      id: taskId,
+      title: "Receipt export",
+      status: "DOING",
+      priority: "high",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["runner"],
+      verify: [],
+      plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+      verification: {
+        state: "pending",
+        attempts: 0,
+        updated_at: null,
+        updated_by: null,
+        note: null,
+      },
+      runner: {
+        run_id: "run-receipt",
+        status: "success",
+        adapter_id: "custom",
+        mode: "execute",
+        updated_at: "2026-07-23T10:00:00.000Z",
+        exit_code: 0,
+        target: { kind: "task", task_id: taskId },
+        evidence: {
+          provenance: "supervisor_observed",
+          changed_paths: ["context/wiki/index.md"],
+        },
+        execution_receipt: receipt,
+      },
+      commit: null,
+      comments: [],
+      events: [],
+      doc_version: 3,
+      doc_updated_at: "2026-07-23T10:00:00.000Z",
+      doc_updated_by: "CODER",
+      description: "Receipt export fixture",
+    };
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(readmePath, renderTaskReadme(frontmatter, "## Summary\n"), "utf8");
+
+    const snapshot = await buildTasksExportSnapshot({ cwd: root, rootOverride: root });
+    const exported = snapshot.tasks.find((task) => task.id === taskId);
+
+    expect(exported?.runner?.execution_receipt).toEqual(receipt);
+    expect(exported?.runner?.evidence?.provenance).toBe("supervisor_observed");
   });
 
   it("buildTasksExportSnapshot skips readmes that violate the canonical frontmatter schema", async () => {

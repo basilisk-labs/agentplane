@@ -1,5 +1,5 @@
-import { constants } from "node:fs";
-import { copyFile, lstat, mkdir, readFile } from "node:fs/promises";
+import { constants, type BigIntStats } from "node:fs";
+import { lstat, mkdir, open } from "node:fs/promises";
 import path from "node:path";
 import { isDeepStrictEqual } from "node:util";
 
@@ -18,6 +18,68 @@ import type {
 
 const INVALID_RESULT_MANIFEST_SUFFIX = ".invalid.json";
 const SOURCE_RESULT_MANIFEST_SUFFIX = ".source.json";
+const NO_FOLLOW = constants.O_NOFOLLOW ?? 0;
+const NON_BLOCKING = constants.O_NONBLOCK ?? 0;
+
+type StableFileIdentity = {
+  dev: bigint;
+  ino: bigint;
+  size: bigint;
+  mtime_ns: bigint;
+  ctime_ns: bigint;
+};
+
+function stableFileIdentity(stat: BigIntStats): StableFileIdentity {
+  return {
+    dev: BigInt(stat.dev),
+    ino: BigInt(stat.ino),
+    size: BigInt(stat.size),
+    mtime_ns: BigInt(stat.mtimeNs),
+    ctime_ns: BigInt(stat.ctimeNs),
+  };
+}
+
+function stableFileIdentitiesMatch(left: StableFileIdentity, right: StableFileIdentity): boolean {
+  return (
+    left.dev === right.dev &&
+    left.ino === right.ino &&
+    left.size === right.size &&
+    left.mtime_ns === right.mtime_ns &&
+    left.ctime_ns === right.ctime_ns
+  );
+}
+
+async function readStableRegularFileNoFollow(filePath: string, label: string): Promise<Buffer> {
+  const pathStat = await lstat(filePath, { bigint: true });
+  if (!pathStat.isFile() || pathStat.isSymbolicLink()) {
+    throw new Error(`Refusing non-regular ${label}: ${filePath}`);
+  }
+  const pathIdentity = stableFileIdentity(pathStat);
+  let handle;
+  try {
+    handle = await open(filePath, constants.O_RDONLY | NO_FOLLOW | NON_BLOCKING);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException | null)?.code === "ELOOP") {
+      throw new Error(`Refusing non-regular ${label}: ${filePath}`);
+    }
+    throw error;
+  }
+  try {
+    const before = await handle.stat({ bigint: true });
+    if (!before.isFile() || !stableFileIdentitiesMatch(pathIdentity, stableFileIdentity(before))) {
+      throw new Error(`${label} changed before it could be snapshotted: ${filePath}`);
+    }
+    const beforeIdentity = stableFileIdentity(before);
+    const content = await handle.readFile();
+    const after = await handle.stat({ bigint: true });
+    if (!after.isFile() || !stableFileIdentitiesMatch(beforeIdentity, stableFileIdentity(after))) {
+      throw new Error(`${label} changed while it was being snapshotted: ${filePath}`);
+    }
+    return content;
+  } finally {
+    await handle.close();
+  }
+}
 
 export function invalidRunnerResultManifestPath(resultPath: string): string {
   const dir = path.dirname(resultPath);
@@ -31,22 +93,50 @@ function sourceRunnerResultManifestPath(resultPath: string): string {
   return path.join(dir, `${base}${SOURCE_RESULT_MANIFEST_SUFFIX}`);
 }
 
-async function assertExistingSourceMatchesResult(
-  resultPath: string,
+async function writeOrCompareSourceSnapshot(
   sourcePath: string,
+  resultContent: Buffer,
 ): Promise<void> {
-  const sourceStat = await lstat(sourcePath);
-  if (!sourceStat.isFile() || sourceStat.isSymbolicLink()) {
-    throw new Error(`Refusing non-regular runner result source snapshot: ${sourcePath}`);
-  }
-  const [resultContent, sourceContent] = await Promise.all([
-    readFile(resultPath),
-    readFile(sourcePath),
-  ]);
-  if (!sourceContent.equals(resultContent)) {
-    throw new Error(
-      `Existing runner result source snapshot does not match the current agent manifest: ${sourcePath}`,
+  let handle;
+  try {
+    handle = await open(
+      sourcePath,
+      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | NO_FOLLOW,
+      0o600,
     );
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
+    const sourceContent = await readStableRegularFileNoFollow(
+      sourcePath,
+      "runner result source snapshot",
+    );
+    if (!sourceContent.equals(resultContent)) {
+      throw new Error(
+        `Existing runner result source snapshot does not match the current agent manifest: ${sourcePath}`,
+      );
+    }
+    return;
+  }
+  try {
+    const initial = await handle.stat({ bigint: true });
+    if (!initial.isFile()) {
+      throw new Error(`Refusing non-regular runner result source snapshot: ${sourcePath}`);
+    }
+    await handle.writeFile(resultContent);
+    await handle.sync();
+    const persisted = await handle.stat({ bigint: true });
+    if (!persisted.isFile() || persisted.size !== BigInt(resultContent.byteLength)) {
+      throw new Error(`Runner result source snapshot write was incomplete: ${sourcePath}`);
+    }
+  } finally {
+    await handle.close();
+  }
+  const sourceContent = await readStableRegularFileNoFollow(
+    sourcePath,
+    "runner result source snapshot",
+  );
+  if (!sourceContent.equals(resultContent)) {
+    throw new Error(`Runner result source snapshot changed after creation: ${sourcePath}`);
   }
 }
 
@@ -64,19 +154,16 @@ export async function preserveRunnerResultManifestSource(
   resultPath: string,
 ): Promise<string | null> {
   const sourcePath = sourceRunnerResultManifestPath(resultPath);
-  await mkdir(path.dirname(sourcePath), { recursive: true });
+  let resultContent: Buffer;
   try {
-    await copyFile(resultPath, sourcePath, constants.COPYFILE_EXCL);
-    return sourcePath;
+    resultContent = await readStableRegularFileNoFollow(resultPath, "runner result manifest");
   } catch (err) {
-    const code = (err as NodeJS.ErrnoException | null)?.code;
-    if (code === "EEXIST") {
-      await assertExistingSourceMatchesResult(resultPath, sourcePath);
-      return sourcePath;
-    }
-    if (code === "ENOENT") return null;
+    if ((err as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
     throw err;
   }
+  await mkdir(path.dirname(sourcePath), { recursive: true });
+  await writeOrCompareSourceSnapshot(sourcePath, resultContent);
+  return sourcePath;
 }
 
 function observedValueForClaim(result: RunnerResult, field: string): unknown {
@@ -87,6 +174,9 @@ function observedValueForClaim(result: RunnerResult, field: string): unknown {
   if (field === "timeout_reason") return result.timeout_reason;
   if (field === "artifacts") return result.artifacts;
   if (field === "capabilities_used") return result.capabilities_used;
+  if (field === "execution_receipt") return result.execution_receipt;
+  if (field === "kind") return "runner_result_record";
+  if (field === "observed_by") return "agentplane";
   if (field.startsWith("metrics.")) {
     return result.metrics?.[
       field.slice("metrics.".length) as keyof NonNullable<RunnerResult["metrics"]>
@@ -109,11 +199,18 @@ function claimHasObservedCounterpart(field: string): boolean {
     field === "timeout_reason" ||
     field === "artifacts" ||
     field === "capabilities_used" ||
+    field === "execution_receipt" ||
+    field === "kind" ||
+    field === "observed_by" ||
     field.startsWith("metrics.") ||
     field === "evidence.evidence_paths" ||
     field === "evidence.changed_paths" ||
     field === "evidence.conflict_paths" ||
     field === "evidence.files_changed_count" ||
+    field === "evidence.observed_checks" ||
+    field === "evidence.provenance" ||
+    field === "evidence.receipt_path" ||
+    field === "evidence.receipt_sha256" ||
     field === "evidence.tests_run"
   );
 }

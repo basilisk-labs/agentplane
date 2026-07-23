@@ -126,7 +126,10 @@ function collectLegacyClaims(raw: Record<string, unknown>): AgentReportedLegacyC
 const LEGACY_OBSERVED_DIRECT_FIELDS = new Set([
   "artifacts",
   "capabilities_used",
+  "execution_receipt",
   "exit_code",
+  "kind",
+  "observed_by",
   "status",
   "stderr_summary",
   "stdout_summary",
@@ -138,6 +141,10 @@ const LEGACY_OBSERVED_EXACT_FIELDS = new Set([
   "evidence.conflict_paths",
   "evidence.evidence_paths",
   "evidence.files_changed_count",
+  "evidence.observed_checks",
+  "evidence.provenance",
+  "evidence.receipt_path",
+  "evidence.receipt_sha256",
   "evidence.tests_run",
 ]);
 
@@ -273,34 +280,41 @@ export async function readRunnerResultManifest(
 ): Promise<RunnerResultManifest | null> {
   try {
     const rawText = await readFile(resultPath, "utf8");
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(rawText);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      invalidManifest(resultPath, `result.json must contain valid JSON (${message})`, rawText);
-    }
-    if (!isJsonObject(parsed)) {
-      invalidManifest(resultPath, "result.json must contain a JSON object", rawText);
-    }
-    if (parsed.schema_version === LEGACY_RUNNER_RESULT_MANIFEST_SCHEMA_VERSION) {
-      return parseLegacyRunnerResultManifest({
-        raw: parsed,
-        raw_content: rawText,
-        result_path: resultPath,
-      });
-    }
-    if (parsed.schema_version === RUNNER_RESULT_MANIFEST_SCHEMA_VERSION) {
-      return parseAgentSemanticResultManifest({
-        raw: parsed,
-        raw_content: rawText,
-        result_path: resultPath,
-      });
-    }
-    invalidManifest(resultPath, "schema_version must be 1 or 2", rawText);
+    return parseRunnerResultManifestText(rawText, resultPath);
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ENOENT") return null;
     throw err;
   }
+}
+
+export function parseRunnerResultManifestText(
+  rawText: string,
+  resultPath: string,
+): RunnerResultManifest {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rawText);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    invalidManifest(resultPath, `result.json must contain valid JSON (${message})`, rawText);
+  }
+  if (!isJsonObject(parsed)) {
+    invalidManifest(resultPath, "result.json must contain a JSON object", rawText);
+  }
+  if (parsed.schema_version === LEGACY_RUNNER_RESULT_MANIFEST_SCHEMA_VERSION) {
+    return parseLegacyRunnerResultManifest({
+      raw: parsed,
+      raw_content: rawText,
+      result_path: resultPath,
+    });
+  }
+  if (parsed.schema_version === RUNNER_RESULT_MANIFEST_SCHEMA_VERSION) {
+    return parseAgentSemanticResultManifest({
+      raw: parsed,
+      raw_content: rawText,
+      result_path: resultPath,
+    });
+  }
+  invalidManifest(resultPath, "schema_version must be 1 or 2", rawText);
 }

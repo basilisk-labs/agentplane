@@ -5,6 +5,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../shared/task-backend.js";
+import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
 import { cmdContextDoctor } from "./doctor.js";
 import { cmdContextIngest } from "./ingest.js";
 import { cmdContextInit } from "./init.js";
@@ -420,6 +421,11 @@ describe("context GitHub issue regression gates", () => {
       },
       runner: { evidence: { changed_paths: ["context/wiki/managed-agents.md"] } },
     };
+    await attachObservedExecutionReceiptFixture({
+      root,
+      task,
+      changedPaths: ["context/wiki/managed-agents.md"],
+    });
     const ctx = {
       resolvedProject: { gitRoot: root },
       config: { paths: { workflow_dir: ".agentplane/tasks" } },

@@ -141,6 +141,7 @@ const RUNNER_METRICS_SCHEMA = z
 
 const RUNNER_EVIDENCE_SCHEMA = z
   .object({
+    provenance: z.literal("supervisor_observed").optional(),
     evidence_paths: z.array(NON_EMPTY_STRING).optional(),
     changed_paths: z.array(NON_EMPTY_STRING).optional(),
     files_changed_count: z.number().int().min(0).optional(),
@@ -148,6 +149,20 @@ const RUNNER_EVIDENCE_SCHEMA = z
     verification_candidates: z.array(NON_EMPTY_STRING).optional(),
   })
   .passthrough();
+
+const RUNNER_EXECUTION_RECEIPT_REF_SCHEMA = z
+  .object({
+    path: NON_EMPTY_STRING,
+    sha256: z.string().regex(/^sha256:[0-9a-f]{64}$/u),
+    verification_state: z.enum([
+      "observed_success",
+      "rejected",
+      "unverified",
+      "compatibility_unverified",
+    ]),
+    observed_by: z.literal("agentplane"),
+  })
+  .strict();
 
 const RUNNER_HISTORY_ENTRY_SCHEMA = z
   .object({
@@ -166,6 +181,7 @@ const RUNNER_HISTORY_ENTRY_SCHEMA = z
     stderr_summary: z.string().optional(),
     metrics: RUNNER_METRICS_SCHEMA.optional(),
     evidence: RUNNER_EVIDENCE_SCHEMA.optional(),
+    execution_receipt: RUNNER_EXECUTION_RECEIPT_REF_SCHEMA.optional(),
   })
   .passthrough();
 

@@ -1,7 +1,7 @@
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { cmdContextWikiLint, cmdContextWikiNew, cmdContextWikiIndex } from "./wiki.js";
 
@@ -14,6 +14,7 @@ async function tempRoot(): Promise<string> {
 }
 
 afterEach(async () => {
+  vi.restoreAllMocks();
   for (const root of tempRoots) await rm(root, { recursive: true, force: true });
   tempRoots = [];
 });
@@ -25,6 +26,84 @@ async function write(root: string, rel: string, text: string): Promise<void> {
 }
 
 describe("context wiki index", () => {
+  it("updates generated wiki index sections for pages and subdirectories", async () => {
+    const root = await tempRoot();
+    await cmdContextWikiNew({
+      cwd: root,
+      parsed: {
+        page: "modules/meridian-relay",
+        title: "Meridian Relay",
+        modality: "definition",
+        status: "reviewed_claim",
+        visibility: "project",
+        source: ["context/raw/specs/meridian-relay.md"],
+        force: false,
+      },
+    });
+    await cmdContextWikiNew({
+      cwd: root,
+      parsed: {
+        page: "decisions/meridian-relay-pull-sync",
+        title: "Meridian Relay pull sync",
+        modality: "decision",
+        status: "reviewed_claim",
+        visibility: "project",
+        source: ["context/raw/specs/meridian-relay.md"],
+        force: false,
+      },
+    });
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextWikiIndex({
+      cwd: root,
+      parsed: { path: "context/wiki" },
+    });
+
+    const rootIndex = await readFile(path.join(root, "context/wiki/index.md"), "utf8");
+    const modulesIndex = await readFile(path.join(root, "context/wiki/modules/index.md"), "utf8");
+    expect(rootIndex).toContain("<!-- agentplane-context-wiki-index:start -->");
+    expect(rootIndex).toContain("[Modules](modules/index.md)");
+    expect(rootIndex).toContain("[Decisions](decisions/index.md)");
+    expect(modulesIndex).toContain("agentplane_context:");
+    expect(modulesIndex).toContain("[Meridian Relay](meridian-relay.md)");
+    await cmdContextWikiLint({
+      cwd: root,
+      parsed: { path: "context/wiki" },
+    });
+    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
+      "context wiki index: updated",
+    );
+  });
+
+  it("updates ancestor index pages when wiki index is run for a single page", async () => {
+    const root = await tempRoot();
+    await cmdContextWikiNew({
+      cwd: root,
+      parsed: {
+        page: "modules/meridian-relay",
+        title: "Meridian Relay",
+        modality: "definition",
+        status: "reviewed_claim",
+        visibility: "project",
+        source: ["context/raw/specs/meridian-relay.md"],
+        force: false,
+      },
+    });
+
+    await cmdContextWikiIndex({
+      cwd: root,
+      parsed: { path: "context/wiki/modules/meridian-relay.md" },
+    });
+
+    const modulesIndex = await readFile(path.join(root, "context/wiki/modules/index.md"), "utf8");
+    expect(modulesIndex).toContain("agentplane_context:");
+    expect(modulesIndex).toContain("[Meridian Relay](meridian-relay.md)");
+    await cmdContextWikiLint({
+      cwd: root,
+      parsed: { path: "context/wiki/modules" },
+    });
+  });
+
   it("heals legacy generated index pages before replacing generated links", async () => {
     const root = await tempRoot();
     await cmdContextWikiNew({

@@ -104,11 +104,14 @@ describe("runner artifacts", () => {
     const invocation = {
       adapter_id: "codex",
       run_id: "2026-03-23T13-00-00-000Z",
+      work_order_id: "2026-03-23T13-00-00-000Z",
+      repository_root: tempDir,
       run_dir: paths.run_dir,
       bundle_path: paths.bundle_path,
       state_path: paths.state_path,
       events_path: paths.events_path,
       result_path: paths.result_path,
+      receipt_path: paths.receipt_path,
       trace_path: paths.trace_path,
       stderr_path: paths.stderr_path,
       trace_policy: {

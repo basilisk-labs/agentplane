@@ -36,6 +36,37 @@ export {
 } from "../runner/agent-semantic-result.js";
 
 export {
+  EXECUTION_RECEIPT_ARTIFACT_STATE_VALUES,
+  EXECUTION_RECEIPT_CHECK_STATUS_VALUES,
+  EXECUTION_RECEIPT_COLLECTION_STATUS_VALUES,
+  EXECUTION_RECEIPT_GIT_CHANGE_VALUES,
+  EXECUTION_RECEIPT_GIT_STATE_VALUES,
+  EXECUTION_RECEIPT_KIND,
+  EXECUTION_RECEIPT_OBSERVER,
+  EXECUTION_RECEIPT_PROCESS_OUTCOME_VALUES,
+  EXECUTION_RECEIPT_PROVENANCE,
+  EXECUTION_RECEIPT_SCHEMA_VERSION,
+  EXECUTION_RECEIPT_SUCCESS_POLICY_OUTCOME_VALUES,
+  EXECUTION_RECEIPT_V1_VALID_FIXTURE,
+  EXECUTION_RECEIPT_ZOD_SCHEMA,
+  listExecutionReceiptSchemaErrors,
+  renderExecutionReceiptSchemaJson,
+  renderExecutionReceiptV1ValidFixtureJson,
+  validateExecutionReceipt,
+  type ExecutionReceipt,
+  type ExecutionReceiptArtifactObservation,
+  type ExecutionReceiptCollection,
+  type ExecutionReceiptGitDelta,
+  type ExecutionReceiptGitDeltaEntry,
+  type ExecutionReceiptGitObservation,
+  type ExecutionReceiptGitSnapshot,
+  type ExecutionReceiptObservedCheck,
+  type ExecutionReceiptProcessObservation,
+  type ExecutionReceiptScopeEvaluation,
+  type ExecutionReceiptSuccessPolicy,
+} from "../runner/execution-receipt.js";
+
+export {
   ACR_VERSION,
   computeAcrRecordDigest,
   listAgentPlaneRunnerHandoffJsonSchemaErrors,
