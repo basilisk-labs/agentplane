@@ -1,0 +1,365 @@
+{
+  "anchor": {
+    "capture_platform": {
+      "arch": "arm64",
+      "libc": "not_applicable",
+      "node_abi": "147",
+      "platform": "darwin"
+    },
+    "dependency_capture_executable_sha256": "sha256:4e4c72a5007388bde75022e855e4a8ebff97cf79c25062a00d901c4297fe1c64",
+    "dependency_capture_receipt_sha256": "sha256:160501205ecb676557ed8dd0b83630a179be7150e0889ede87cf4ca4784c2f78",
+    "dependency_portable_sha256": "sha256:3bba36424886e3af7187204f0002d2a626c9fe661566399284832eda5bb47d30",
+    "disposable_repository": true,
+    "driver": {
+      "contract_version": 1,
+      "path": "scripts/bench/run-agent-efficiency-codex-replay.mjs",
+      "sha256": "sha256:24e3b0d48f63ba3447b1ad74907dd0e24ee922cb65d39d952c12a8d15a7618e6"
+    },
+    "external_effects": "fixture_backed",
+    "fixture_registry_origin": "fixture_control_overlay_v1",
+    "fixture_registry_sha256": "sha256:a9d88e1ddee963bc6527ec829608c0ef517bd7d595450c3d1da23c60e1fa13ce",
+    "harness_sha256": "sha256:d5339c30d4a4c7c2e5d7d0a83cccfcfa883ed353b6ef848fa8da481253f69755",
+    "subject_sha": "1a702e160ba9f0efe7067f2a22fc008defc89ffb"
+  },
+  "artifacts": [
+    {
+      "id": "supervisor_receipt",
+      "kind": "rf04_supervisor_receipt",
+      "sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752"
+    }
+  ],
+  "diagnostics": {
+    "captured_at": "2026-07-23T12:56:07.634Z",
+    "host_fingerprint": "sha256:cd199f4794ee8b90998aa02406059af68327a21f0ca0e027bd234539776f9e05",
+    "latency_ms": {
+      "harness_setup_latency_ms": {
+        "provenance": {
+          "artifact_id": "supervisor_receipt",
+          "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+          "category": "supervisor_observed",
+          "source": "diagnostics.latency_ms.harness_setup_latency_ms"
+        },
+        "resolution": "observed",
+        "value": 7796
+      },
+      "time_to_first_scoped_mutation_ms": {
+        "provenance": {
+          "artifact_id": "supervisor_receipt",
+          "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+          "category": "supervisor_observed",
+          "source": "diagnostics.latency_ms.time_to_first_scoped_mutation_ms"
+        },
+        "resolution": "observed",
+        "value": 73921
+      },
+      "time_to_verified_result_ms": {
+        "provenance": {
+          "category": "applicability_rule",
+          "source": "rf04.scope_violation.time_to_verified_result_ms.not_applicable"
+        },
+        "reason_code": "not_applicable_time_to_verified_result_ms",
+        "resolution": "not_applicable"
+      }
+    }
+  },
+  "evidence": [
+    {
+      "id": "supervisor_receipt",
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "artifact_observed",
+        "source": "evidence.supervisor_receipt"
+      }
+    }
+  ],
+  "evidence_bundle": {
+    "path": "scripts/bench/agent-efficiency-replay-evidence/scope_violation/run-01.json",
+    "sha256": "sha256:59038788091d25d34d7dbe98283ed07ce1c3819bd0007d1f9d303b694b433004"
+  },
+  "metrics": {
+    "bootstrap_bytes": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "metrics.bootstrap_bytes"
+      },
+      "resolution": "observed",
+      "value": 7882
+    },
+    "bundle_bytes": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "metrics.bundle_bytes"
+      },
+      "resolution": "observed",
+      "value": 127834
+    },
+    "context_search_latency_ms": {
+      "provenance": {
+        "category": "applicability_rule",
+        "source": "rf04.scope_violation.context_search_latency_ms.not_applicable"
+      },
+      "reason_code": "not_applicable_context_search_latency_ms",
+      "resolution": "not_applicable"
+    },
+    "duplicate_input_bytes": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "metrics.duplicate_input_bytes"
+      },
+      "resolution": "observed",
+      "value": 20733
+    },
+    "evidence_claimed_count": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "metrics.evidence_claimed_count"
+      },
+      "resolution": "observed",
+      "value": 0
+    },
+    "evidence_observed_count": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "metrics.evidence_observed_count"
+      },
+      "resolution": "observed",
+      "value": 1
+    },
+    "evidence_observed_to_claimed_ratio": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "metrics.evidence_observed_to_claimed_ratio"
+      },
+      "resolution": "observed",
+      "value": 1
+    },
+    "lifecycle_calls": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "fixture_control",
+        "source": "lifecycle_control.call_count"
+      },
+      "resolution": "observed",
+      "value": 5
+    },
+    "llm_episodes": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "metrics.llm_episodes"
+      },
+      "resolution": "observed",
+      "value": 1
+    },
+    "preparation_latency_ms": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "metrics.preparation_latency_ms"
+      },
+      "resolution": "observed",
+      "value": 1488.5580839999975
+    },
+    "prompt_boilerplate_bytes": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "metrics.prompt_boilerplate_bytes"
+      },
+      "resolution": "observed",
+      "value": 14187
+    },
+    "prompt_count": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "metrics.prompt_count"
+      },
+      "resolution": "observed",
+      "value": 1
+    },
+    "retrieval_gaps": {
+      "provenance": {
+        "category": "applicability_rule",
+        "source": "rf04.scope_violation.retrieval_gaps.not_applicable"
+      },
+      "reason_code": "not_applicable_retrieval_gaps",
+      "resolution": "not_applicable"
+    },
+    "retrieval_hits": {
+      "provenance": {
+        "category": "applicability_rule",
+        "source": "rf04.scope_violation.retrieval_hits.not_applicable"
+      },
+      "reason_code": "not_applicable_retrieval_hits",
+      "resolution": "not_applicable"
+    },
+    "retrieval_recall_proxy": {
+      "provenance": {
+        "category": "applicability_rule",
+        "source": "rf04.scope_violation.retrieval_recall_proxy.not_applicable"
+      },
+      "reason_code": "not_applicable_retrieval_recall_proxy",
+      "resolution": "not_applicable"
+    },
+    "stderr_bytes": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "metrics.stderr_bytes"
+      },
+      "resolution": "observed",
+      "value": 382
+    },
+    "stdout_bytes": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "metrics.stdout_bytes"
+      },
+      "resolution": "observed",
+      "value": 42112
+    }
+  },
+  "mode": "agent_efficiency_replay_v1",
+  "profile": {
+    "adapter_id": "codex-exec-jsonl-supervisor",
+    "cache_mode": "ephemeral-provider-default",
+    "model_id": "gpt-5.6-terra",
+    "provider_id": "openai-chatgpt",
+    "reasoning_effort": "low",
+    "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
+    "runtime_version": "0.6.24/0.145.0-alpha.18",
+    "sandbox_mode": "workspace-write-network-disabled"
+  },
+  "resolved_outcomes": {
+    "adapter_failure": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "fixture_control",
+        "source": "resolved_outcomes.adapter_failure"
+      },
+      "resolution": "observed",
+      "value": false
+    },
+    "approval_respected": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "fixture_control",
+        "source": "resolved_outcomes.approval_respected"
+      },
+      "resolution": "observed",
+      "value": true
+    },
+    "blocked": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "resolved_outcomes.blocked"
+      },
+      "resolution": "observed",
+      "value": false
+    },
+    "context_gap": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "resolved_outcomes.context_gap"
+      },
+      "resolution": "observed",
+      "value": false
+    },
+    "rework_required": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "fixture_control",
+        "source": "resolved_outcomes.rework_required"
+      },
+      "resolution": "observed",
+      "value": true
+    },
+    "scope_violation": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "fixture_control",
+        "source": "resolved_outcomes.scope_violation"
+      },
+      "resolution": "observed",
+      "value": true
+    },
+    "verified_success": {
+      "provenance": {
+        "artifact_id": "supervisor_receipt",
+        "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+        "category": "supervisor_observed",
+        "source": "resolved_outcomes.verified_success"
+      },
+      "resolution": "observed",
+      "value": false
+    }
+  },
+  "run_id": "scope_violation/run-01",
+  "run_index": 1,
+  "scenario_id": "scope_violation",
+  "schema_version": 1,
+  "token_usage_by_role": {
+    "CODER": {
+      "input_tokens": {
+        "provenance": {
+          "artifact_id": "supervisor_receipt",
+          "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+          "category": "provider_reported",
+          "source": "provider_usage_by_role.CODER.input_tokens"
+        },
+        "resolution": "observed",
+        "value": 313218
+      },
+      "output_tokens": {
+        "provenance": {
+          "artifact_id": "supervisor_receipt",
+          "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+          "category": "provider_reported",
+          "source": "provider_usage_by_role.CODER.output_tokens"
+        },
+        "resolution": "observed",
+        "value": 2643
+      },
+      "reasoning_tokens": {
+        "provenance": {
+          "artifact_id": "supervisor_receipt",
+          "artifact_sha256": "sha256:2fd9cfd643fed18c9fa2a620bfe45e85b3a73d87f32a1ab785863366a4226752",
+          "category": "provider_reported",
+          "source": "provider_usage_by_role.CODER.reasoning_output_tokens"
+        },
+        "resolution": "observed",
+        "value": 1029
+      }
+    }
+  }
+}

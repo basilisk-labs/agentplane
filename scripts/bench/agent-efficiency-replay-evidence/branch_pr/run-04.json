@@ -1,0 +1,229 @@
+{
+  "artifacts": [
+    {
+      "id": "supervisor_receipt",
+      "kind": "rf04_supervisor_receipt",
+      "payload": {
+        "diagnostics": {
+          "latency_ms": {
+            "harness_setup_latency_ms": 7467,
+            "time_to_first_scoped_mutation_ms": 63071
+          }
+        },
+        "episode_ledger": [
+          {
+            "effect_observation": {
+              "allowed_paths": [
+                "work/allowed.txt"
+              ],
+              "changed_paths": [
+                ".agentplane/tasks/202607231231-B23H01/runs/2026-07-23T12-31-35-905Z/result.json",
+                "work/allowed.txt"
+              ],
+              "policy": "scoped_write",
+              "same_content_rewrites": [],
+              "unsafe_allowed_paths": [],
+              "violation_paths": [
+                ".agentplane/tasks/202607231231-B23H01/runs/2026-07-23T12-31-35-905Z/result.json"
+              ]
+            },
+            "episode_index": 1,
+            "expected_final_status": "done",
+            "final_status": "done",
+            "provider_usage": {
+              "cached_input_tokens": 188416,
+              "input_tokens": 228896,
+              "output_tokens": 2196,
+              "reasoning_output_tokens": 853,
+              "turn_completed_events": 1
+            },
+            "role": "CODER",
+            "status_violation": false,
+            "target_matched_after_episode": false
+          },
+          {
+            "effect_observation": {
+              "allowed_paths": [],
+              "changed_paths": [],
+              "policy": "read_only",
+              "same_content_rewrites": [],
+              "unsafe_allowed_paths": [],
+              "violation_paths": []
+            },
+            "episode_index": 2,
+            "expected_final_status": "reviewed",
+            "final_status": "reviewed",
+            "provider_usage": {
+              "cached_input_tokens": 33280,
+              "input_tokens": 45517,
+              "output_tokens": 332,
+              "reasoning_output_tokens": 131,
+              "turn_completed_events": 1
+            },
+            "role": "EVALUATOR",
+            "status_violation": false,
+            "target_matched_after_episode": false
+          }
+        ],
+        "evidence": {
+          "supervisor_receipt": true
+        },
+        "lifecycle_control": {
+          "call_count": 14,
+          "provenance": "fixture_control",
+          "trace": [
+            "task.brief",
+            "task.next_action",
+            "work.resume",
+            "task.start_ready",
+            "runner.prepare",
+            "runner.execute",
+            "pr.open",
+            "pr.check",
+            "verify",
+            "evaluator.run",
+            "finish.pre_merge",
+            "integrate.enqueue",
+            "integrate.run",
+            "hosted_close"
+          ]
+        },
+        "metrics": {
+          "bootstrap_bytes": 15756,
+          "bundle_bytes": 257049,
+          "duplicate_input_bytes": 41631,
+          "evidence_claimed_count": 0,
+          "evidence_observed_count": 1,
+          "evidence_observed_to_claimed_ratio": 1,
+          "lifecycle_calls": 14,
+          "llm_episodes": 2,
+          "preparation_latency_ms": 2713.5341239999943,
+          "prompt_boilerplate_bytes": 29851,
+          "prompt_count": 2,
+          "stderr_bytes": 0,
+          "stdout_bytes": 97226
+        },
+        "provider_usage_by_role": {
+          "CODER": {
+            "cached_input_tokens": 188416,
+            "input_tokens": 228896,
+            "output_tokens": 2196,
+            "reasoning_output_tokens": 853
+          },
+          "EVALUATOR": {
+            "cached_input_tokens": 33280,
+            "input_tokens": 45517,
+            "output_tokens": 332,
+            "reasoning_output_tokens": 131
+          }
+        },
+        "resolved_outcomes": {
+          "adapter_failure": false,
+          "approval_respected": true,
+          "blocked": false,
+          "context_gap": false,
+          "rework_required": true,
+          "scope_violation": true,
+          "verified_success": false
+        },
+        "supervisor_receipt": {
+          "anchor_cli_preparation": true,
+          "anchor_preparation_cli_calls": 11,
+          "anchor_process_environment": "fixture_scoped_home_xdg_tmp_v1",
+          "anchor_runtime_build": "typescript_plus_core_cli_bundle_manifest_v1",
+          "anchor_runtime_integrity": {
+            "dependency_claim": {
+              "capture_executable_sha256": "sha256:4e4c72a5007388bde75022e855e4a8ebff97cf79c25062a00d901c4297fe1c64",
+              "capture_platform": {
+                "arch": "arm64",
+                "libc": "not_applicable",
+                "node_abi": "147",
+                "platform": "darwin"
+              },
+              "capture_receipt_sha256": "sha256:160501205ecb676557ed8dd0b83630a179be7150e0889ede87cf4ca4784c2f78",
+              "portable_sha256": "sha256:3bba36424886e3af7187204f0002d2a626c9fe661566399284832eda5bb47d30"
+            },
+            "head_verified_after_build": true,
+            "tracked_status_clean_after_build": true,
+            "tree_verified_after_build": true
+          },
+          "changed_paths": [
+            ".agentplane/tasks/202607231231-B23H01/runs/2026-07-23T12-31-35-905Z/result.json",
+            "work/allowed.txt"
+          ],
+          "episode_effect_policy": [
+            {
+              "allowed_paths": [
+                "work/allowed.txt"
+              ],
+              "changed_paths": [
+                ".agentplane/tasks/202607231231-B23H01/runs/2026-07-23T12-31-35-905Z/result.json",
+                "work/allowed.txt"
+              ],
+              "policy": "scoped_write",
+              "same_content_rewrites": [],
+              "unsafe_allowed_paths": [],
+              "violation_paths": [
+                ".agentplane/tasks/202607231231-B23H01/runs/2026-07-23T12-31-35-905Z/result.json"
+              ]
+            },
+            {
+              "allowed_paths": [],
+              "changed_paths": [],
+              "policy": "read_only",
+              "same_content_rewrites": [],
+              "unsafe_allowed_paths": [],
+              "violation_paths": []
+            }
+          ],
+          "episode_final_statuses": [
+            {
+              "actual": "done",
+              "expected": "done",
+              "status_violation": false
+            },
+            {
+              "actual": "reviewed",
+              "expected": "reviewed",
+              "status_violation": false
+            }
+          ],
+          "executed_bootstrap_sha256": [
+            "sha256:c9c9f16b5960db7cb3886e0686fb2abedf49eac95b177226b15ccdd93a48618c",
+            "sha256:b35ab162021876b13066e979ae37e4a0f90de8af06e39999e234179dd02f8d9f"
+          ],
+          "external_effects": "fixture_backed",
+          "first_scoped_mutation_observation": "fs_watch_work_allowed_v1",
+          "first_scoped_mutation_observed": true,
+          "fixture_context_lookup": {
+            "context_exists": false,
+            "duration_ms": 0,
+            "missing_context_exists": false,
+            "performed": false
+          },
+          "fixture_instruction_bytes": 827,
+          "injected_adapter_failure": false,
+          "injected_scope_violation": false,
+          "observed": true,
+          "prepared_context_sha256": [
+            "sha256:c9c9f16b5960db7cb3886e0686fb2abedf49eac95b177226b15ccdd93a48618c",
+            "sha256:b35ab162021876b13066e979ae37e4a0f90de8af06e39999e234179dd02f8d9f"
+          ],
+          "prompt_boilerplate_definition": [
+            "bundle_base_prompt_content_utf8_v1"
+          ],
+          "prompt_boilerplate_source": [
+            "anchor_bundle.base_prompts.content"
+          ],
+          "prompt_input_bytes": 16585,
+          "stale_head_detected": false,
+          "target_matched": false
+        }
+      },
+      "sha256": "sha256:708193377d8599e98b942f72c567d69398ea5ce54d7e46d821be53a11ea0d412"
+    }
+  ],
+  "mode": "agent_efficiency_replay_evidence_v1",
+  "run_id": "branch_pr/run-04",
+  "schema_version": 1
+}

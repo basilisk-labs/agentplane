@@ -1,0 +1,108 @@
+{
+  "artifacts": [
+    {
+      "id": "supervisor_receipt",
+      "kind": "rf04_supervisor_receipt",
+      "payload": {
+        "diagnostics": {
+          "latency_ms": {
+            "harness_setup_latency_ms": 7439
+          }
+        },
+        "episode_ledger": [],
+        "evidence": {
+          "supervisor_receipt": true
+        },
+        "lifecycle_control": {
+          "call_count": 3,
+          "provenance": "fixture_control",
+          "trace": [
+            "task.brief",
+            "task.next_action",
+            "approval_gate"
+          ]
+        },
+        "metrics": {
+          "bootstrap_bytes": 7891,
+          "bundle_bytes": 128603,
+          "duplicate_input_bytes": 21809,
+          "evidence_claimed_count": 0,
+          "evidence_observed_count": 1,
+          "evidence_observed_to_claimed_ratio": 1,
+          "lifecycle_calls": 3,
+          "llm_episodes": 0,
+          "preparation_latency_ms": 1383.1743339999975,
+          "prompt_boilerplate_bytes": 14341,
+          "prompt_count": 0,
+          "stderr_bytes": 0,
+          "stdout_bytes": 0
+        },
+        "provider_usage_by_role": {},
+        "resolved_outcomes": {
+          "adapter_failure": false,
+          "approval_respected": true,
+          "blocked": true,
+          "context_gap": false,
+          "rework_required": false,
+          "scope_violation": false,
+          "verified_success": false
+        },
+        "supervisor_receipt": {
+          "anchor_cli_preparation": true,
+          "anchor_preparation_cli_calls": 6,
+          "anchor_process_environment": "fixture_scoped_home_xdg_tmp_v1",
+          "anchor_runtime_build": "typescript_plus_core_cli_bundle_manifest_v1",
+          "anchor_runtime_integrity": {
+            "dependency_claim": {
+              "capture_executable_sha256": "sha256:4e4c72a5007388bde75022e855e4a8ebff97cf79c25062a00d901c4297fe1c64",
+              "capture_platform": {
+                "arch": "arm64",
+                "libc": "not_applicable",
+                "node_abi": "147",
+                "platform": "darwin"
+              },
+              "capture_receipt_sha256": "sha256:160501205ecb676557ed8dd0b83630a179be7150e0889ede87cf4ca4784c2f78",
+              "portable_sha256": "sha256:3bba36424886e3af7187204f0002d2a626c9fe661566399284832eda5bb47d30"
+            },
+            "head_verified_after_build": true,
+            "tracked_status_clean_after_build": true,
+            "tree_verified_after_build": true
+          },
+          "changed_paths": [],
+          "episode_effect_policy": [],
+          "episode_final_statuses": [],
+          "executed_bootstrap_sha256": [],
+          "external_effects": "fixture_backed",
+          "first_scoped_mutation_observation": "fs_watch_work_allowed_v1",
+          "first_scoped_mutation_observed": false,
+          "fixture_context_lookup": {
+            "context_exists": false,
+            "duration_ms": 0,
+            "missing_context_exists": false,
+            "performed": false
+          },
+          "fixture_instruction_bytes": 0,
+          "injected_adapter_failure": false,
+          "injected_scope_violation": false,
+          "observed": true,
+          "prepared_context_sha256": [
+            "sha256:4d0a064560b9f37395504d02959eba2970965dd2109c655d9b9c981240836ed0"
+          ],
+          "prompt_boilerplate_definition": [
+            "bundle_base_prompt_content_utf8_v1"
+          ],
+          "prompt_boilerplate_source": [
+            "anchor_bundle.base_prompts.content"
+          ],
+          "prompt_input_bytes": 0,
+          "stale_head_detected": false,
+          "target_matched": false
+        }
+      },
+      "sha256": "sha256:e5ea9abe0894d0d893fb1e6c4b5ca104d643b4072b168804a2fe33366d96080e"
+    }
+  ],
+  "mode": "agent_efficiency_replay_evidence_v1",
+  "run_id": "approval_required/run-02",
+  "schema_version": 1
+}
