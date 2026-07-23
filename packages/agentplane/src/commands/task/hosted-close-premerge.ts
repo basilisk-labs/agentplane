@@ -51,6 +51,103 @@ export function legacyPreMergeClosureWasRecordedAfterVerification(meta: PrMeta):
   return Number.isFinite(markerTime) && Number.isFinite(verifiedTime) && markerTime >= verifiedTime;
 }
 
+export type PreMergeClosureFreshness =
+  | { fresh: true; basisCommit: string }
+  | { fresh: false; reason: string };
+
+async function gitCommitIsAncestor(opts: {
+  gitRoot: string;
+  ancestor: string;
+  descendant: string;
+}): Promise<boolean> {
+  if (opts.ancestor === opts.descendant) return true;
+  try {
+    await execFileAsync("git", ["merge-base", "--is-ancestor", opts.ancestor, opts.descendant], {
+      cwd: opts.gitRoot,
+      env: process.env,
+    });
+    return true;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1 || isMissingGitCommitNameError(err)) return false;
+    throw err;
+  }
+}
+
+function markerPredates(value: string | null | undefined, markerTime: number): boolean {
+  const comparedTime = Date.parse(value ?? "");
+  return Number.isFinite(comparedTime) && Number.isFinite(markerTime) && markerTime < comparedTime;
+}
+
+export async function assessPreMergeClosureFreshness(opts: {
+  gitRoot: string;
+  task: TaskData;
+  meta: PrMeta;
+  branch: string;
+  prNumber: number;
+  branchHeadSha: string;
+}): Promise<PreMergeClosureFreshness> {
+  const marker = readPreMergeClosureMarker(opts.meta);
+  if (!marker) return { fresh: false, reason: "pre-merge closure marker is missing" };
+  if (
+    !taskIsClosedByPreMergeClosure({
+      task: opts.task,
+      meta: opts.meta,
+      branch: opts.branch,
+      prNumber: opts.prNumber,
+    })
+  ) {
+    return { fresh: false, reason: "pre-merge closure identity or DONE task state is invalid" };
+  }
+  if (opts.task.verification?.state !== "ok") {
+    return { fresh: false, reason: "task verification is not ok" };
+  }
+  const review = opts.task.quality_review;
+  const reviewedSha = review?.evaluated_sha?.trim() ?? "";
+  if (review?.state !== "pass" || !reviewedSha) {
+    return { fresh: false, reason: "passing head-scoped quality review is unavailable" };
+  }
+
+  const markerTime = Date.parse(marker.recordedAt ?? "");
+  if (markerPredates(opts.task.verification.updated_at, markerTime)) {
+    return { fresh: false, reason: "pre-merge closure predates the latest verification" };
+  }
+  if (markerPredates(review.updated_at, markerTime)) {
+    return { fresh: false, reason: "pre-merge closure predates the latest quality review" };
+  }
+
+  const taskCommit = opts.task.commit?.hash?.trim() ?? "";
+  if (
+    !taskCommit ||
+    !(await gitCommitIsAncestor({
+      gitRoot: opts.gitRoot,
+      ancestor: taskCommit,
+      descendant: marker.basisCommit,
+    }))
+  ) {
+    return { fresh: false, reason: "task commit is not covered by the closure basis commit" };
+  }
+  if (
+    !(await gitCommitIsAncestor({
+      gitRoot: opts.gitRoot,
+      ancestor: reviewedSha,
+      descendant: marker.basisCommit,
+    }))
+  ) {
+    return { fresh: false, reason: "quality-reviewed commit is not covered by the closure basis" };
+  }
+  if (
+    !(await gitCommitIsAncestor({
+      gitRoot: opts.gitRoot,
+      ancestor: marker.basisCommit,
+      descendant: opts.branchHeadSha,
+    }))
+  ) {
+    return { fresh: false, reason: "closure basis is not an ancestor of the current branch head" };
+  }
+  return { fresh: true, basisCommit: marker.basisCommit };
+}
+
 export function isExplicitHostedCloseFollowupBranch(opts: {
   branch: string;
   taskBranchPrefix: string;

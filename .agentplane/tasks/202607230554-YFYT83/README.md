@@ -4,7 +4,7 @@ title: "Make branch_pr publication and cleanup state-safe"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -55,7 +55,7 @@ events:
     to: "DOING"
     note: "Start: reproduce and repair branch publication, exact-head integration, stale closure, remote freshness, and task-scoped merged cleanup failures."
 doc_version: 3
-doc_updated_at: "2026-07-23T05:57:56.540Z"
+doc_updated_at: "2026-07-23T09:00:33.176Z"
 doc_updated_by: "CODER"
 description: "Repair the branch_pr lifecycle so task and pre-merge closure commits are published before queueing, enqueue and integration fail closed when local, upstream, or hosted PR heads disagree, evaluator rework invalidates stale closure evidence, remote freshness telemetry reports checked truth, and cleanup can safely target provider-merged rebase or squash branches without deleting unrelated worktrees."
 sections:
@@ -92,12 +92,28 @@ sections:
     - Preserve task/PR evidence and any still-orphaned worktree; never compensate by deleting unrelated candidates manually.
   Findings: |-
     - Observation: During YGWMA2, the local task branch advanced after pre-merge closure while the hosted PR still pointed at an older head; next-action offered queue enqueue and the queue did not reject the mismatch.
-      Impact: The integration lane can merge a stale remote head that omits the latest verification or closure evidence.
+      Impact: The integration lane could merge a stale remote head that omitted the latest verification or closure evidence.
       Resolution: Require an explicit AgentPlane-owned publication step and exact local, upstream, and hosted head agreement before queue ownership or merge.
 
     - Observation: After PR 4600 was rebase-merged, hosted-close correctly no-oped on pre-merge closure but tracked PR metadata stayed OPEN; cleanup merged skipped YGWMA2 and next-action counted unrelated global cleanup candidates.
-      Impact: A correctly merged task can retain an orphan worktree while the route recommends a non-targeted destructive command affecting unrelated candidates.
-      Resolution: Carry provider merge truth into task-scoped cleanup and bind cleanup guidance to the requested task rather than a global candidate count.
+      Impact: A correctly merged task could retain an orphan worktree while the route recommended a non-targeted destructive command affecting unrelated candidates.
+      Resolution: Carry exact provider merge truth into task-scoped cleanup and bind cleanup guidance to the requested task.
+
+    - Observation: Immediately after work start created the dedicated branch and worktree, next-action still reported missing_pr_branch and attempted to repeat work start until PR metadata existed.
+      Impact: The route oracle could encourage duplicate bootstrap actions and operator reconstruction.
+      Resolution: Derive task checkout and branch presence from live Git state and route local artifacts without remote identity to the single AgentPlane-owned publish path.
+
+    - Observation: A clean base checkout could enqueue an immutable old task HEAD while the actual task worktree contained staged, unstaged, or untracked implementation changes.
+      Impact: Publication and integration could omit the implementation while reporting a coherent local, upstream, and hosted SHA.
+      Resolution: Probe the registered task worktree and fail closed in next-action, enqueue, claim, reservation, critical-section, prepare, verification, provider merge, and local merge paths; pending verification now hands control to TESTER without enqueue argv.
+
+    - Observation: The protected-base path originally checked cleanliness before provider observation, leaving a TOCTOU window before GitHub merge PUT requests.
+      Impact: The worktree could become dirty during provider preflight while the still-valid committed SHA was merged.
+      Resolution: Propagate a pre-mutation guard to the transport layer, run it immediately before every gh and REST merge PUT, and rethrow guard failures without transport fallback.
+
+    - Observation: The first live route probe on the completed implementation reported task_worktree_dirty for 75 changed paths and exposed no publication, queue, or integration command.
+      Impact: The implemented contract demonstrably minimizes executor reconstruction and prevents lifecycle advancement from incomplete local state.
+      Resolution: Preserve this behavior with route, queue, direct integration, transport, fake-provider, compatibility, and full-CI regression coverage; the final audit found no P0, P1, or P2 issue.
 id_source: "generated"
 ---
 ## Summary
@@ -146,9 +162,25 @@ Repair the branch_pr lifecycle so task and pre-merge closure commits are publish
 ## Findings
 
 - Observation: During YGWMA2, the local task branch advanced after pre-merge closure while the hosted PR still pointed at an older head; next-action offered queue enqueue and the queue did not reject the mismatch.
-  Impact: The integration lane can merge a stale remote head that omits the latest verification or closure evidence.
+  Impact: The integration lane could merge a stale remote head that omitted the latest verification or closure evidence.
   Resolution: Require an explicit AgentPlane-owned publication step and exact local, upstream, and hosted head agreement before queue ownership or merge.
 
 - Observation: After PR 4600 was rebase-merged, hosted-close correctly no-oped on pre-merge closure but tracked PR metadata stayed OPEN; cleanup merged skipped YGWMA2 and next-action counted unrelated global cleanup candidates.
-  Impact: A correctly merged task can retain an orphan worktree while the route recommends a non-targeted destructive command affecting unrelated candidates.
-  Resolution: Carry provider merge truth into task-scoped cleanup and bind cleanup guidance to the requested task rather than a global candidate count.
+  Impact: A correctly merged task could retain an orphan worktree while the route recommended a non-targeted destructive command affecting unrelated candidates.
+  Resolution: Carry exact provider merge truth into task-scoped cleanup and bind cleanup guidance to the requested task.
+
+- Observation: Immediately after work start created the dedicated branch and worktree, next-action still reported missing_pr_branch and attempted to repeat work start until PR metadata existed.
+  Impact: The route oracle could encourage duplicate bootstrap actions and operator reconstruction.
+  Resolution: Derive task checkout and branch presence from live Git state and route local artifacts without remote identity to the single AgentPlane-owned publish path.
+
+- Observation: A clean base checkout could enqueue an immutable old task HEAD while the actual task worktree contained staged, unstaged, or untracked implementation changes.
+  Impact: Publication and integration could omit the implementation while reporting a coherent local, upstream, and hosted SHA.
+  Resolution: Probe the registered task worktree and fail closed in next-action, enqueue, claim, reservation, critical-section, prepare, verification, provider merge, and local merge paths; pending verification now hands control to TESTER without enqueue argv.
+
+- Observation: The protected-base path originally checked cleanliness before provider observation, leaving a TOCTOU window before GitHub merge PUT requests.
+  Impact: The worktree could become dirty during provider preflight while the still-valid committed SHA was merged.
+  Resolution: Propagate a pre-mutation guard to the transport layer, run it immediately before every gh and REST merge PUT, and rethrow guard failures without transport fallback.
+
+- Observation: The first live route probe on the completed implementation reported task_worktree_dirty for 75 changed paths and exposed no publication, queue, or integration command.
+  Impact: The implemented contract demonstrably minimizes executor reconstruction and prevents lifecycle advancement from incomplete local state.
+  Resolution: Preserve this behavior with route, queue, direct integration, transport, fake-provider, compatibility, and full-CI regression coverage; the final audit found no P0, P1, or P2 issue.

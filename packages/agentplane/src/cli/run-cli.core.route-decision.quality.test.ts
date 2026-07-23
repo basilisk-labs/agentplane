@@ -56,7 +56,6 @@ async function createVerifiedOpenPrFixture(
   title: string,
 ): Promise<{
   branch: string;
-  implementationHead: string;
   taskId: string;
 }> {
   const taskId = await createBranchPrTask(root);
@@ -91,9 +90,6 @@ async function createVerifiedOpenPrFixture(
   await writeFile(path.join(root, "impl.txt"), "implementation\n");
   await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
   await execFileAsync("git", ["commit", "-m", "feat: implementation"], { cwd: root });
-  const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-    cwd: root,
-  });
   await runCliSilent([
     "verify",
     taskId,
@@ -106,6 +102,13 @@ async function createVerifiedOpenPrFixture(
     root,
   ]);
   await markTaskDoing(root, taskId);
+  await execFileAsync("git", ["add", "-A"], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "task: seed verified lifecycle state"], {
+    cwd: root,
+  });
+  const { stdout: publicationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: root,
+  });
 
   const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
   await mkdir(prDir, { recursive: true });
@@ -116,7 +119,7 @@ async function createVerifiedOpenPrFixture(
         base: "main",
         branch,
         created_at: "2026-01-01T00:00:00.000Z",
-        head_sha: implementationHead.trim(),
+        head_sha: publicationHead.trim(),
         pr_number: 123,
         pr_url: "https://github.com/example/repo/pull/123",
         schema_version: 1,
@@ -129,7 +132,7 @@ async function createVerifiedOpenPrFixture(
     )}\n`,
   );
 
-  return { branch, implementationHead: implementationHead.trim(), taskId };
+  return { branch, taskId };
 }
 
 async function setupRoot(): Promise<string> {

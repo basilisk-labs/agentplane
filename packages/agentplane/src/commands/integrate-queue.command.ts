@@ -9,6 +9,7 @@ import { CliError } from "../shared/errors.js";
 import { sleep } from "../backends/task-backend/shared/concurrency.js";
 import type { CommandContext } from "./shared/task-backend.js";
 import { gitRevParse } from "./shared/git-ops.js";
+import { isExternalStateUnavailableError } from "./shared/external-unavailability.js";
 import { cmdIntegrate } from "./pr/integrate/cmd.js";
 import { prepareIntegrate } from "./pr/integrate/internal/prepare.js";
 import {
@@ -19,6 +20,13 @@ import {
   withIntegrationQueueMutex,
   writeIntegrationQueue,
 } from "./pr/integrate/queue-state.js";
+import {
+  assertIntegrationReservationStillFresh,
+  completeIntegrationReservation,
+  reserveClaimedEntryForIntegration,
+  runReservedIntegrationCriticalSection,
+  validateClaimedEntryPublication,
+} from "./integrate-queue-reservation.js";
 import { runIntegrationQueueDoctor } from "./integrate-queue-doctor-command.js";
 import {
   defaultIntegrationQueueWorker,
@@ -88,24 +96,39 @@ export function makeRunIntegrateQueueEnqueueHandler(
     const baseSha = await gitRevParse(prepared.resolved.gitRoot, [prepared.base]);
     await withIntegrationQueueMutex(prepared.resolved.gitRoot, async () => {
       const queue = await readIntegrationQueue(prepared.resolved.gitRoot);
-      await writeIntegrationQueue(
-        prepared.resolved.gitRoot,
-        upsertQueuedEntry(queue, {
-          task_id: prepared.task.id,
-          branch: prepared.branch,
-          base: prepared.base,
-          head_sha: prepared.branchHeadSha,
-          base_sha: baseSha,
-          changed_paths: prepared.changedPaths,
-          pr_number:
-            typeof prepared.metaSource.pr_number === "number"
-              ? prepared.metaSource.pr_number
-              : null,
-          pr_url:
-            typeof prepared.metaSource.pr_url === "string" ? prepared.metaSource.pr_url : null,
-          priority: p.priority,
-        }),
-      );
+      const refreshed = upsertQueuedEntry(queue, {
+        task_id: prepared.task.id,
+        branch: prepared.branch,
+        base: prepared.base,
+        head_sha: prepared.branchHeadSha,
+        base_sha: baseSha,
+        changed_paths: prepared.changedPaths,
+        pr_number: prepared.hostedPr.prNumber,
+        pr_url: prepared.hostedPr.prUrl,
+        priority: p.priority,
+      });
+      const candidate = refreshed.entries.find((entry) => entry.task_id === prepared.task.id);
+      if (!candidate) {
+        throw new CliError({
+          code: "E_GIT_RACE",
+          message: `Unable to materialize integration queue entry ${prepared.task.id}`,
+        });
+      }
+      const stale = await rejectIfQueuedEntryIsStale({
+        gitRoot: prepared.resolved.gitRoot,
+        entry: candidate,
+      });
+      if (stale) {
+        await writeIntegrationQueue(
+          prepared.resolved.gitRoot,
+          markQueueEntry(refreshed, stale.task_id, "rework", stale.reason),
+        );
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: stale.reason ?? "queued entry became stale before enqueue",
+        });
+      }
+      await writeIntegrationQueue(prepared.resolved.gitRoot, refreshed);
     });
     createCliEmitter().success("queued integration", prepared.task.id, `branch=${prepared.branch}`);
     return 0;
@@ -175,17 +198,18 @@ export function makeRunIntegrateQueueClaimHandler(
       await writeIntegrationQueue(gitRoot, next.state);
       return next;
     });
-    if (!claimed.entry) {
+    const retainedEntry = await validateClaimedEntryPublication({ gitRoot, entry: claimed.entry });
+    if (!retainedEntry) {
       createCliEmitter().line(emptyStateMessage("queued integration entries"));
       return 0;
     }
     const output = createCliEmitter();
-    if (p.json) output.json(claimed.entry);
+    if (p.json) output.json(retainedEntry);
     else
       output.success(
         "claimed integration",
-        claimed.entry.task_id,
-        `branch=${claimed.entry.branch}`,
+        retainedEntry.task_id,
+        `branch=${retainedEntry.branch}`,
       );
     return 0;
   };
@@ -248,7 +272,11 @@ export function makeRunIntegrateQueueRunNextHandler(
         await writeIntegrationQueue(gitRoot, next.state);
         return next;
       });
-      if (!claimed.entry) {
+      const retainedEntry = await validateClaimedEntryPublication({
+        gitRoot,
+        entry: claimed.entry,
+      });
+      if (!retainedEntry) {
         const activeLane = findActiveIntegrationLane(claimed.state.entries);
         if (p.wait && (activeLane || hasQueuedIntegrationEntries(claimed.state.entries))) {
           if (
@@ -289,7 +317,12 @@ export function makeRunIntegrateQueueRunNextHandler(
       }
 
       ranEntry = true;
-      const claimedEntry = claimed.entry;
+      const claimedEntry = retainedEntry;
+      const integrationEntry = await reserveClaimedEntryForIntegration({
+        gitRoot,
+        entry: claimedEntry,
+      });
+      let criticalSectionStarted = false;
       try {
         if (p.hosted) {
           await waitForHostedChecks({
@@ -302,42 +335,41 @@ export function makeRunIntegrateQueueRunNextHandler(
             quiet: p.quiet,
           });
         }
-        lastResult = await cmdIntegrate({
-          ctx: commandCtx,
-          cwd: ctx.cwd,
-          rootOverride: ctx.rootOverride,
-          taskId: claimedEntry.task_id,
-          branch: claimedEntry.branch,
-          base: claimedEntry.base,
-          mergeStrategy: "merge",
-          runVerify: p.runVerify,
-          dryRun: p.dryRun,
-          quiet: p.quiet,
+        await assertIntegrationReservationStillFresh({
+          gitRoot,
+          entry: integrationEntry,
         });
-        await withIntegrationQueueMutex(gitRoot, async () => {
-          const nextQueue = await readIntegrationQueue(gitRoot);
-          await writeIntegrationQueue(
-            gitRoot,
-            markQueueEntry(nextQueue, claimedEntry.task_id, p.dryRun ? "queued" : "done"),
-          );
+        criticalSectionStarted = true;
+        lastResult = await runReservedIntegrationCriticalSection({
+          gitRoot,
+          entry: integrationEntry,
+          terminalStatus: p.dryRun ? "queued" : "done",
+          run: () =>
+            cmdIntegrate({
+              ctx: commandCtx,
+              cwd: ctx.cwd,
+              rootOverride: ctx.rootOverride,
+              taskId: integrationEntry.task_id,
+              branch: integrationEntry.branch,
+              base: integrationEntry.base,
+              expectedHeadSha: integrationEntry.head_sha,
+              expectedBaseSha: integrationEntry.base_sha,
+              mergeStrategy: "merge",
+              runVerify: p.runVerify,
+              dryRun: p.dryRun,
+              quiet: p.quiet,
+            }),
         });
       } catch (err) {
-        const handoff = err instanceof CliError && err.code === "E_HANDOFF";
-        await withIntegrationQueueMutex(gitRoot, async () => {
-          const nextQueue = await readIntegrationQueue(gitRoot);
-          await writeIntegrationQueue(
-            gitRoot,
-            markQueueEntry(
-              nextQueue,
-              claimedEntry.task_id,
-              handoff ? "handoff" : "rework",
-              handoff
-                ? "GitHub PR merge pending; wait for hosted merge/close before releasing lane"
-                : err instanceof Error
-                  ? err.message
-                  : String(err),
-            ),
-          );
+        if (criticalSectionStarted) throw err;
+        const handoff =
+          (err instanceof CliError && err.code === "E_HANDOFF") ||
+          isExternalStateUnavailableError(err);
+        await completeIntegrationReservation({
+          gitRoot,
+          entry: integrationEntry,
+          status: handoff ? "handoff" : "rework",
+          reason: err instanceof Error ? err.message : String(err),
         });
         throw err;
       }

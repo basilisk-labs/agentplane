@@ -2,7 +2,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { RouteBatchOwnership } from "./route-batch-ownership.js";
-import type { RouteNextAction } from "./route-decision-types.js";
+import type { RouteCleanupProbe, RouteNextAction } from "./route-decision-types.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { workStartCommand } from "./work-start-command.js";
 import { isRecord } from "../../shared/guards.js";
@@ -73,11 +73,19 @@ export function deriveNextAction(opts: {
   resume: TaskResumeContext;
   workflowMode: string;
   prFlow: PrFlowStatusReport | null;
-  cleanupCandidateCount: number | null;
+  cleanupProbe: RouteCleanupProbe;
   blockers: readonly RouteBlocker[];
   batchOwnership: RouteBatchOwnership;
 }): RouteNextAction {
   const id = opts.task.id;
+  const taskWorktreeBlocker =
+    opts.workflowMode === "branch_pr"
+      ? opts.blockers.find(
+          (blocker) =>
+            blocker.code === "task_worktree_dirty" ||
+            blocker.code === "task_worktree_state_unavailable",
+        )
+      : null;
   if (opts.task.status === "DONE" && opts.workflowMode !== "branch_pr") {
     if (opts.blockers.some((blocker) => blocker.code === "dirty_task_artifacts")) {
       return {
@@ -96,6 +104,90 @@ export function deriveNextAction(opts: {
     };
   }
   if (opts.task.status === "DONE" && opts.workflowMode === "branch_pr") {
+    if (opts.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
+      return {
+        code: "implementation_rework_required",
+        command: null,
+        summary:
+          "return control to the CODER for implementation rework in the task worktree, then verify and close again",
+        requiresApproval: false,
+      };
+    }
+    if (taskWorktreeBlocker) {
+      return {
+        code: "resolve_task_worktree_state",
+        command: null,
+        summary:
+          `${taskWorktreeBlocker.summary}; inspect the task worktree, commit intended changes or ` +
+          "restore unintended changes, then repeat verification and recompute the route",
+        requiresApproval: false,
+      };
+    }
+    if (opts.blockers.some((blocker) => blocker.code === "verification_required")) {
+      return {
+        code: "verification_required",
+        command: null,
+        summary:
+          "hand the committed task implementation to TESTER for evidence-based verification; " +
+          "record the verification outcome before hosted checks or integration",
+        requiresApproval: false,
+      };
+    }
+    if (
+      opts.prFlow?.providerObservation?.state === "unavailable" ||
+      (opts.prFlow?.pr.state === "OPEN" &&
+        opts.prFlow.pr.source === "metadata" &&
+        !opts.prFlow.providerObservation)
+    ) {
+      return {
+        code: "refresh_remote_route",
+        command: `agentplane task next-action ${id} --remote --explain`,
+        summary: "recompute the DONE task route with live provider state before integration",
+        requiresApproval: false,
+      };
+    }
+    if (opts.blockers.some((blocker) => blocker.code === "pre_merge_closure_stale")) {
+      const commit = opts.prFlow?.branch.headSha ?? opts.resume.head_sha ?? "HEAD";
+      return {
+        code: "record_pre_merge_closure",
+        command:
+          `agentplane finish ${id} --author ${opts.task.owner} ` +
+          `--body "Verified: refreshed pre-merge closure packet is ready for the task PR." ` +
+          `--result "pre-merge closure" --commit ${commit} --pre-merge-closure --force`,
+        summary: "record a fresh pre-merge closure before queueing integration",
+        requiresApproval: false,
+      };
+    }
+    if (opts.prFlow?.pr.state === "not_found") {
+      return {
+        code: "open_pr",
+        command: `agentplane pr open ${id} --author ${opts.task.owner}`,
+        summary: "publish/link the closed task branch and its PR",
+        requiresApproval: false,
+      };
+    }
+    if (
+      opts.blockers.some(
+        (blocker) =>
+          blocker.code === "pr_head_unpublished" || blocker.code === "hosted_pr_head_mismatch",
+      )
+    ) {
+      return {
+        code: "publish_pr_head",
+        command: `agentplane pr open ${id} --author ${opts.task.owner}`,
+        summary:
+          "publish the final task branch head and confirm the hosted PR points to the same commit",
+        requiresApproval: false,
+      };
+    }
+    if (opts.blockers.some((blocker) => blocker.code === "provider_pr_unavailable")) {
+      return {
+        code: "retry_provider_lookup",
+        command: `agentplane pr flow status ${id}`,
+        summary: "retry GitHub PR observation before queueing integration",
+        requiresApproval: false,
+      };
+    }
     if (opts.prFlow?.pr.state === "OPEN") {
       return {
         code: "wait_hosted_checks",
@@ -113,7 +205,17 @@ export function deriveNextAction(opts: {
         requiresApproval: false,
       };
     }
-    if (opts.cleanupCandidateCount === 0) {
+    if (opts.cleanupProbe.state === "blocked") {
+      return {
+        code: "cleanup_blocked",
+        command: null,
+        summary:
+          `targeted cleanup is blocked because merged identity is not proven: ` +
+          opts.cleanupProbe.reasons.join("; "),
+        requiresApproval: false,
+      };
+    }
+    if (opts.cleanupProbe.state === "already_clean") {
       return {
         code: "done",
         command: null,
@@ -121,11 +223,19 @@ export function deriveNextAction(opts: {
         requiresApproval: false,
       };
     }
+    if (opts.cleanupProbe.state === "unavailable" || opts.cleanupProbe.state === "not_requested") {
+      return {
+        code: "refresh_remote_route",
+        command: `agentplane task next-action ${id} --remote --explain`,
+        summary: "load per-task provider and cleanup truth before finalizing the DONE task",
+        requiresApproval: false,
+      };
+    }
+    const cleanupBase = opts.resume.base_branch ?? "main";
     return {
       code: "cleanup",
-      command: "agentplane cleanup merged",
-      summary:
-        "task is already done; pull the base branch and clean merged task branches/worktrees",
+      command: `agentplane cleanup merged --task-id ${id} --finalize ` + `--base ${cleanupBase}`,
+      summary: "task is already done; finalize base sync and clean only this task branch/worktree",
       requiresApproval: false,
     };
   }
@@ -212,11 +322,39 @@ export function deriveNextAction(opts: {
       requiresApproval: false,
     };
   }
+  if (taskWorktreeBlocker) {
+    return {
+      code: "resolve_task_worktree_state",
+      command: null,
+      summary:
+        `${taskWorktreeBlocker.summary}; inspect the task worktree, commit intended changes or ` +
+        "restore unintended changes, then repeat verification and recompute the route",
+      requiresApproval: false,
+    };
+  }
   if (opts.blockers.some((blocker) => blocker.code === "pr_meta_stale")) {
     return {
       code: "update_pr_artifacts",
       command: `agentplane pr update ${id}`,
       summary: "refresh stale PR metadata before hosted checks or integration",
+      requiresApproval: false,
+    };
+  }
+  if (opts.prFlow?.pr.state === "not_found") {
+    return {
+      code: "open_pr",
+      command: `agentplane pr open ${id} --author ${opts.task.owner}`,
+      summary: "publish/link the task PR",
+      requiresApproval: false,
+    };
+  }
+  if (opts.blockers.some((blocker) => blocker.code === "verification_required")) {
+    return {
+      code: "verification_required",
+      command: null,
+      summary:
+        "hand the committed task implementation to TESTER for evidence-based verification; " +
+        "record the verification outcome before closure, hosted checks, or integration",
       requiresApproval: false,
     };
   }
@@ -234,14 +372,6 @@ export function deriveNextAction(opts: {
       requiresApproval: false,
     };
   }
-  if (opts.prFlow?.pr.state === "not_found") {
-    return {
-      code: "open_pr",
-      command: `agentplane pr open ${id} --author ${opts.task.owner}`,
-      summary: "publish/link the task PR",
-      requiresApproval: false,
-    };
-  }
   if (opts.blockers.some((blocker) => blocker.code === "pre_merge_closure_missing")) {
     const commit = opts.prFlow?.branch.headSha ?? opts.resume.head_sha ?? "HEAD";
     return {
@@ -252,6 +382,27 @@ export function deriveNextAction(opts: {
         `--result "pre-merge closure" --commit ${commit} --pre-merge-closure`,
       summary:
         "record task DONE and pre-merge closure on the task branch before queueing integration",
+      requiresApproval: false,
+    };
+  }
+  if (
+    opts.blockers.some(
+      (blocker) =>
+        blocker.code === "pr_head_unpublished" || blocker.code === "hosted_pr_head_mismatch",
+    )
+  ) {
+    return {
+      code: "publish_pr_head",
+      command: `agentplane pr open ${id} --author ${opts.task.owner}`,
+      summary: "publish the local task branch head and align the hosted PR head",
+      requiresApproval: false,
+    };
+  }
+  if (opts.blockers.some((blocker) => blocker.code === "provider_pr_unavailable")) {
+    return {
+      code: "retry_provider_lookup",
+      command: `agentplane pr flow status ${id}`,
+      summary: "retry GitHub PR observation before publication or integration",
       requiresApproval: false,
     };
   }
@@ -281,7 +432,7 @@ export function deriveNextAction(opts: {
         : (opts.prFlow.pr.base ?? "main");
     return {
       code: "sync_hosted_close",
-      command: `agentplane cleanup merged --finalize --base ${base}`,
+      command: `agentplane cleanup merged --task-id ${id} --finalize ` + `--base ${base}`,
       summary:
         "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
       requiresApproval: false,

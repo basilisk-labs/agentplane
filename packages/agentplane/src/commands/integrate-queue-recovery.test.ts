@@ -53,6 +53,15 @@ describe("integration queue recovery decisions", () => {
     });
   });
 
+  it("keeps an interrupted integration reservation fail-closed while the PR is open", () => {
+    const decision = decideIntegrationQueueRecovery({
+      entry: { ...queueEntry("handoff"), active_operation: "integration" },
+      report: report({}),
+    });
+    expect(decision.action).toBe("keep");
+    expect(decision.reason).toContain("integration reservation is fail-closed");
+  });
+
   it("keeps active claimed lanes occupied even when provider state is terminal", () => {
     expect(
       decideIntegrationQueueRecovery({
@@ -131,6 +140,27 @@ describe("integration queue recovery decisions", () => {
     ).toMatchObject({ action: "mark", status: "done" });
   });
 
+  it("reconciles an interrupted integration only after merged close-tail proof", () => {
+    expect(
+      decideIntegrationQueueRecovery({
+        entry: { ...queueEntry("handoff"), active_operation: "integration" },
+        report: report({
+          pr: {
+            provider: "github",
+            state: "MERGED",
+            source: "lookup",
+            prNumber: 101,
+            prUrl: "https://example.invalid/pull/101",
+            base: "main",
+            headSha: "head",
+            mergeCommit: "merge",
+          },
+          closeTail: { state: "recorded_on_base", base: "main" },
+        }),
+      }),
+    ).toMatchObject({ action: "mark", status: "done" });
+  });
+
   it("keeps merged lanes in handoff until close-tail work completes", () => {
     expect(
       decideIntegrationQueueRecovery({
@@ -178,4 +208,45 @@ describe("integration queue recovery decisions", () => {
       status: "rework",
     });
   });
+
+  it.each(["CLOSED", "MERGED"] as const)(
+    "does not trust local %s fallback while provider lookup is unavailable",
+    (state) => {
+      const pr =
+        state === "MERGED"
+          ? {
+              provider: "github" as const,
+              state,
+              source: "meta" as const,
+              prNumber: 101,
+              prUrl: "https://example.invalid/pull/101",
+              base: "main",
+              headSha: "head",
+              mergeCommit: "merge",
+            }
+          : {
+              provider: "github" as const,
+              state,
+              source: "meta" as const,
+              prNumber: 101,
+              prUrl: "https://example.invalid/pull/101",
+              base: "main",
+              headSha: "head",
+              mergeCommit: null,
+            };
+      const decision = decideIntegrationQueueRecovery({
+        entry: { ...queueEntry("handoff"), active_operation: "integration" },
+        report: report({
+          pr,
+          providerObservation: { state: "unavailable", reason: "authentication required" },
+          closeTail:
+            state === "MERGED"
+              ? { state: "recorded_on_base", base: "main" }
+              : { state: "not_applicable", reason: "not merged" },
+        }),
+      });
+      expect(decision.action).toBe("keep");
+      expect(decision.reason).toContain("provider state is unavailable");
+    },
+  );
 });

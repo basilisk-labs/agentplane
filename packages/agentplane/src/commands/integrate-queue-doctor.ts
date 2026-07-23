@@ -1,28 +1,34 @@
 import {
+  integrationQueueEntryMatchesSnapshot,
   markQueueEntry,
+  type IntegrationQueueEntry,
   type IntegrationQueueStatus,
   type readIntegrationQueue,
 } from "./pr/integrate/queue-state.js";
 
 type IntegrationQueueState = Awaited<ReturnType<typeof readIntegrationQueue>>;
 
-export type IntegrationQueueDoctorFinding = {
+type IntegrationQueueDoctorFinding = {
   task_id: string;
   status: string;
   reason: string;
   repair: string | null;
 };
 
+export type IntegrationQueueDoctorRepair = IntegrationQueueDoctorFinding & {
+  expected_entry: IntegrationQueueEntry;
+};
+
 export function applyIntegrationQueueDoctorRepairs(
   queue: IntegrationQueueState,
-  findings: readonly IntegrationQueueDoctorFinding[],
+  findings: readonly IntegrationQueueDoctorRepair[],
 ): IntegrationQueueState {
   let nextQueue = queue;
   for (const finding of findings) {
     const status = parseDoctorRepairStatus(finding.repair);
     if (!status) continue;
     const latestEntry = nextQueue.entries.find((entry) => entry.task_id === finding.task_id);
-    if (latestEntry?.status !== finding.status) continue;
+    if (!integrationQueueEntryMatchesSnapshot(latestEntry, finding.expected_entry)) continue;
     nextQueue = markQueueEntry(nextQueue, finding.task_id, status, finding.reason);
   }
   return nextQueue;

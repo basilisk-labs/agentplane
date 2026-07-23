@@ -43,6 +43,9 @@ function renderPrLine(pr: RemotePrStatus): string {
 function renderCloseTailLine(closeTail: CloseTailStatus): string {
   if (closeTail.state === "not_applicable") return `not_applicable: ${closeTail.reason}`;
   if (closeTail.state === "recorded_on_base") return `recorded_on_base: ${closeTail.base}`;
+  if (closeTail.state === "unavailable") {
+    return `unavailable: ${closeTail.branch} (${closeTail.reason})`;
+  }
   const number = closeTail.prNumber ? ` #${closeTail.prNumber}` : "";
   const url = closeTail.prUrl ? ` ${closeTail.prUrl}` : "";
   return `${closeTail.state}: ${closeTail.branch}${number}${url}`;

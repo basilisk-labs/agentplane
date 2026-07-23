@@ -5,7 +5,13 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { withGitMutationMutex } from "../../../shared/git-mutation.js";
-import { withIntegrationQueueMutex } from "./queue-state.js";
+import {
+  emptyIntegrationQueue,
+  readIntegrationQueue,
+  upsertQueuedEntry,
+  withIntegrationQueueMutex,
+  writeIntegrationQueue,
+} from "./queue-state.js";
 
 const mocks = vi.hoisted(() => ({
   gitCurrentBranch: vi.fn(),
@@ -97,5 +103,54 @@ describe("integration queue mutex coordination", () => {
     expect(results).toEqual(["task-a", "task-b"]);
     release();
     await queueHolder;
+  });
+
+  it("rejects a legacy enqueue writer while the final integration critical section is held", async () => {
+    const root = await makeRoot("legacy-writer");
+    const initial = upsertQueuedEntry(emptyIntegrationQueue(), {
+      task_id: "T-1",
+      branch: "task/T-1/work",
+      base: "main",
+      head_sha: "head-1",
+      base_sha: "base-1",
+      changed_paths: ["src/work.ts"],
+      pr_number: 101,
+      pr_url: "https://example.invalid/pull/101",
+      priority: 0,
+    });
+    await writeIntegrationQueue(root, initial);
+
+    let release!: () => void;
+    const critical = withIntegrationQueueMutex(root, async () => {
+      await new Promise<void>((resolve) => {
+        release = resolve;
+      });
+    });
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    await expect(
+      withIntegrationQueueMutex(root, async () => {
+        const current = await readIntegrationQueue(root);
+        await writeIntegrationQueue(
+          root,
+          upsertQueuedEntry(current, {
+            task_id: "T-1",
+            branch: "task/T-1/work",
+            base: "main",
+            head_sha: "head-2",
+            base_sha: "base-1",
+            changed_paths: ["src/work.ts"],
+            pr_number: 101,
+            pr_url: "https://example.invalid/pull/101",
+            priority: 0,
+          }),
+        );
+      }),
+    ).rejects.toMatchObject({ code: "E_GIT_RACE" });
+    const currentQueue = await readIntegrationQueue(root);
+    expect(currentQueue.entries[0]?.head_sha).toBe("head-1");
+
+    release();
+    await critical;
   });
 });

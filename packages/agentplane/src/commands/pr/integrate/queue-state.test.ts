@@ -1,4 +1,4 @@
-import { mkdtemp, readdir, rm, stat } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -11,6 +11,9 @@ import {
   expireClaimedEntries,
   markQueueEntry,
   queueBaseConflictReason,
+  inspectIntegrationQueueMutex,
+  readIntegrationQueue,
+  reserveQueueEntryForIntegration,
   withIntegrationQueueMutex,
   upsertQueuedEntry,
   type QueueClock,
@@ -138,6 +141,72 @@ describe("integration queue state", () => {
     );
   });
 
+  it("uses a legacy-compatible handoff as the non-expiring integration reservation", () => {
+    const queued = upsertQueuedEntry(
+      upsertQueuedEntry(emptyIntegrationQueue(), enqueue("T-1"), clock("2026-01-01T00:00:00Z")),
+      enqueue("T-2"),
+      clock("2026-01-01T00:00:01Z"),
+    );
+    const claimed = claimNextQueuedEntry(queued, {
+      worker: "integrator",
+      leaseMs: 1,
+      clock: clock("2026-01-01T00:00:02Z"),
+    });
+    const reserved = reserveQueueEntryForIntegration(
+      claimed.state,
+      "T-1",
+      clock("2026-01-01T00:00:03Z"),
+    );
+
+    const legacySeesActive = reserved.entries.some(
+      (entry) => entry.status === "claimed" || entry.status === "handoff",
+    );
+    const secondClaim = claimNextQueuedEntry(reserved, {
+      worker: "legacy-worker",
+      clock: clock("2030-01-01T00:00:00Z"),
+    });
+
+    expect(legacySeesActive).toBe(true);
+    const reservedEntry = reserved.entries.find((entry) => entry.task_id === "T-1");
+    expect(reservedEntry).toMatchObject({
+      status: "handoff",
+      active_operation: "integration",
+    });
+    expect(typeof reservedEntry?.claim_token).toBe("string");
+    expect(secondClaim.entry).toBeNull();
+  });
+
+  it("rejects same-task refresh for every active lane status", () => {
+    const queued = upsertQueuedEntry(
+      emptyIntegrationQueue(),
+      enqueue("T-1"),
+      clock("2026-01-01T00:00:00Z"),
+    );
+    const claimed = claimNextQueuedEntry(queued, {
+      worker: "integrator",
+      clock: clock("2026-01-01T00:00:01Z"),
+    }).state;
+    const handoff = reserveQueueEntryForIntegration(claimed, "T-1", clock("2026-01-01T00:00:02Z"));
+
+    for (const active of [claimed, handoff]) {
+      expect(() => upsertQueuedEntry(active, enqueue("T-1"))).toThrowError(
+        expect.objectContaining({ code: "E_HANDOFF" }),
+      );
+    }
+  });
+
+  it("uses a unique claim token even for same-worker same-timestamp reclaim", () => {
+    const now = clock("2026-01-01T00:00:01Z");
+    const queued = upsertQueuedEntry(emptyIntegrationQueue(), enqueue("T-1"), now);
+    const first = claimNextQueuedEntry(queued, { worker: "integrator", clock: now });
+    const released = markQueueEntry(first.state, "T-1", "queued", "retry", now);
+    const second = claimNextQueuedEntry(released, { worker: "integrator", clock: now });
+
+    expect(first.entry?.claim_token).toEqual(expect.any(String));
+    expect(second.entry?.claim_token).toEqual(expect.any(String));
+    expect(second.entry?.claim_token).not.toBe(first.entry?.claim_token);
+  });
+
   it("keeps handoff entries out of automatic lease expiry", () => {
     const claimed = claimNextQueuedEntry(
       upsertQueuedEntry(emptyIntegrationQueue(), enqueue("T-1"), clock("2026-01-01T00:00:00Z")),
@@ -180,7 +249,7 @@ describe("integration queue state", () => {
     });
   });
 
-  it("detects base movement only when queued paths overlap", () => {
+  it("invalidates a queued entry whenever the pinned base moves", () => {
     const entry = {
       ...enqueue("T-1"),
       base_sha: "base-before",
@@ -200,7 +269,7 @@ describe("integration queue state", () => {
         currentBaseSha: "base-after",
         baseChangedPaths: ["src/other.ts"],
       }),
-    ).toBeNull();
+    ).toBe("base branch advanced after enqueue: queued=base-before current=base-after");
     expect(
       queueBaseConflictReason({
         entry,
@@ -229,7 +298,7 @@ describe("integration queue state", () => {
           mutation_kind: "integration",
           integration_queue_lock_path: lockPath,
           remediation:
-            "Wait for the active integration queue operation to finish, then retry. Worktree Git mutation mutexes remain independent.",
+            "Inspect the lock with `agentplane integrate queue doctor --json`, reconcile queue state against provider/base evidence, then manually remove the exact lock path only after confirming no active writer.",
         },
       });
 
@@ -239,5 +308,139 @@ describe("integration queue state", () => {
     } finally {
       await rm(root, { recursive: true, force: true });
     }
+  });
+
+  it("rolls back the mutex directory when owner metadata cannot be written", async () => {
+    const root = await makeRoot("integration-owner-write");
+    const lockPath = path.join(root, ".agentplane", "cache", "locks", "integration-queue.lock");
+    try {
+      await expect(
+        withIntegrationQueueMutex(root, () => Promise.resolve(null), {
+          writeOwner: () => Promise.reject(new Error("disk full")),
+        }),
+      ).rejects.toThrow("disk full");
+      await expect(stat(lockPath)).rejects.toMatchObject({ code: "ENOENT" });
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("reports a proven dead same-host mutex without deleting it", async () => {
+    const root = await makeRoot("integration-stale-lock");
+    const lockPath = path.join(root, ".agentplane", "cache", "locks", "integration-queue.lock");
+    await mkdir(lockPath, { recursive: true });
+    await writeFile(
+      path.join(lockPath, "owner.json"),
+      `${JSON.stringify({ pid: 424_242, host: "local-test" })}\n`,
+      "utf8",
+    );
+
+    await expect(
+      inspectIntegrationQueueMutex(root, {
+        currentHost: "local-test",
+        isProcessAlive: () => false,
+      }),
+    ).resolves.toEqual({
+      state: "dead_same_host",
+      owner: { pid: 424_242, host: "local-test" },
+    });
+    await expect(stat(lockPath)).resolves.toBeDefined();
+  });
+
+  it("keeps live, foreign-host, and invalid mutex owners fail-closed", async () => {
+    const root = await makeRoot("integration-live-lock");
+    const lockPath = path.join(root, ".agentplane", "cache", "locks", "integration-queue.lock");
+    await mkdir(lockPath, { recursive: true });
+    await writeFile(
+      path.join(lockPath, "owner.json"),
+      `${JSON.stringify({ pid: 42, host: "local-test" })}\n`,
+      "utf8",
+    );
+    await expect(
+      inspectIntegrationQueueMutex(root, {
+        currentHost: "local-test",
+        isProcessAlive: () => true,
+      }),
+    ).resolves.toMatchObject({ state: "live" });
+    await expect(
+      inspectIntegrationQueueMutex(root, {
+        currentHost: "other-host",
+        isProcessAlive: () => false,
+      }),
+    ).resolves.toMatchObject({ state: "foreign_host" });
+
+    await writeFile(path.join(lockPath, "owner.json"), "{invalid", "utf8");
+    await expect(
+      inspectIntegrationQueueMutex(root, {
+        currentHost: "local-test",
+        isProcessAlive: () => false,
+      }),
+    ).resolves.toMatchObject({ state: "invalid" });
+    await expect(stat(lockPath)).resolves.toBeDefined();
+  });
+
+  it.each([
+    {
+      name: "unsupported schema",
+      payload: { schema_version: 2, entries: [] },
+    },
+    {
+      name: "unknown status",
+      payload: {
+        schema_version: 1,
+        entries: [
+          {
+            ...enqueue("T-1"),
+            status: "future_active",
+            enqueued_at: "2026-01-01T00:00:00.000Z",
+            updated_at: "2026-01-01T00:00:00.000Z",
+          },
+        ],
+      },
+    },
+    {
+      name: "malformed active entry",
+      payload: {
+        schema_version: 1,
+        entries: [
+          {
+            ...enqueue("T-1"),
+            status: "claimed",
+            enqueued_at: "2026-01-01T00:00:00.000Z",
+            updated_at: "2026-01-01T00:00:00.000Z",
+          },
+        ],
+      },
+    },
+    {
+      name: "duplicate task id",
+      payload: {
+        schema_version: 1,
+        entries: [
+          {
+            ...enqueue("T-1"),
+            status: "queued",
+            enqueued_at: "2026-01-01T00:00:00.000Z",
+            updated_at: "2026-01-01T00:00:00.000Z",
+          },
+          {
+            ...enqueue("T-1"),
+            status: "rework",
+            enqueued_at: "2026-01-01T00:00:01.000Z",
+            updated_at: "2026-01-01T00:00:01.000Z",
+          },
+        ],
+      },
+    },
+  ])("fails closed for $name", async ({ payload }) => {
+    const root = await makeRoot("integration-invalid-state");
+    const queuePath = path.join(root, ".agentplane", "cache", "integration-queue.json");
+    await mkdir(path.dirname(queuePath), { recursive: true });
+    await writeFile(queuePath, `${JSON.stringify(payload)}\n`, "utf8");
+
+    await expect(readIntegrationQueue(root)).rejects.toMatchObject({
+      code: "E_GIT_RACE",
+      context: { reason_code: "integration_queue_state_invalid" },
+    });
   });
 });

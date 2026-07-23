@@ -8,7 +8,7 @@ import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { unknownEntityMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 import { ensureGitClean } from "../../../guard/index.js";
-import { gitBranchExists, gitRevParse } from "../../../shared/git-ops.js";
+import { gitBranchExists, gitBranchUpstream, gitRevParse } from "../../../shared/git-ops.js";
 import {
   ensureBranchPrBaseCheckout,
   resolveBranchPrLifecycleContext,
@@ -19,13 +19,16 @@ import {
   resolveTaskBranchFromContext,
   type CommandContext,
 } from "../../../shared/task-backend.js";
+import { requireCleanTaskWorktree } from "../../../shared/task-worktree-cleanliness.js";
 import {
   ensurePlanApprovedIfRequired,
   ensureVerificationSatisfiedIfRequired,
 } from "../../../task/shared.js";
 import { assertEvaluatorQualityReviewPassed } from "../../../task/quality-review-gate.js";
+import { assessPreMergeClosureFreshness } from "../../../task/hosted-close-premerge.js";
 
 import { readPrArtifact, resolvePrPaths } from "../../internal/pr-paths.js";
+import { requireOpenGithubPrAtHead } from "../../provider-head.js";
 import { ensurePrArtifactsSynced } from "../../internal/sync.js";
 import { computePrDiffstat } from "../../internal/sync-branch.js";
 
@@ -63,10 +66,12 @@ type PreparedIntegrate = {
   verifyLogText: string;
 
   branchHeadSha: string;
+  baseHeadSha: string;
   changedPaths: string[];
   verifyCommands: string[];
   alreadyVerifiedSha: string | null;
   shouldRunVerify: boolean;
+  hostedPr: Awaited<ReturnType<typeof requireOpenGithubPrAtHead>>;
 };
 
 async function resolveQualityReviewExpectedSha(
@@ -110,6 +115,8 @@ export async function prepareIntegrate(opts: {
   taskId: string;
   branch?: string;
   base?: string;
+  expectedHeadSha?: string;
+  expectedBaseSha?: string;
   runVerify: boolean;
 }): Promise<PreparedIntegrate> {
   const ctx =
@@ -182,6 +189,12 @@ export async function prepareIntegrate(opts: {
     taskBranch: branch,
   });
 
+  await requireCleanTaskWorktree({
+    gitRoot: resolved.gitRoot,
+    branch,
+    taskId: opts.taskId,
+  });
+
   await ensureCommittedPrArtifactsOnBranch({
     resolved,
     prDir,
@@ -234,8 +247,43 @@ export async function prepareIntegrate(opts: {
     baseBranch: base,
   });
 
-  const changedPaths = await gitDiffNames(resolved.gitRoot, base, branch);
   const branchHeadSha = await gitRevParse(resolved.gitRoot, [branch]);
+  const expectedHeadSha = opts.expectedHeadSha?.trim() ?? "";
+  if (expectedHeadSha && branchHeadSha !== expectedHeadSha) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Task branch head changed after queue reservation for ${opts.taskId}: ` +
+        `queued=${expectedHeadSha} current=${branchHeadSha}`,
+      context: {
+        reason_code: "integration_queue_head_changed",
+        task_id: opts.taskId,
+        branch,
+        expected_head_sha: expectedHeadSha,
+        current_head_sha: branchHeadSha,
+      },
+    });
+  }
+  const baseHeadSha = await gitRevParse(resolved.gitRoot, [base]);
+  const expectedBaseSha = opts.expectedBaseSha?.trim() ?? "";
+  if (expectedBaseSha && baseHeadSha !== expectedBaseSha) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT_RACE"),
+      code: "E_GIT_RACE",
+      message:
+        `Base branch head changed after queue reservation for ${opts.taskId}: ` +
+        `queued=${expectedBaseSha} current=${baseHeadSha}`,
+      context: {
+        reason_code: "integration_queue_base_changed",
+        task_id: opts.taskId,
+        base,
+        expected_base_sha: expectedBaseSha,
+        current_base_sha: baseHeadSha,
+      },
+    });
+  }
+  const changedPaths = await gitDiffNames(resolved.gitRoot, baseHeadSha, branchHeadSha);
   const currentDiffstat = await computePrDiffstat({
     gitRoot: resolved.gitRoot,
     baseBranch: base,
@@ -326,13 +374,55 @@ export async function prepareIntegrate(opts: {
   }
   ensurePlanApprovedIfRequired(task, loadedConfig);
   ensureVerificationSatisfiedIfRequired(task, loadedConfig);
+  const qualityReviewExpectedSha = await resolveQualityReviewExpectedSha(
+    resolved.gitRoot,
+    opts.taskId,
+    branchHeadSha,
+  );
   assertEvaluatorQualityReviewPassed({
     task,
-    expectedSha: protectedBaseRequiresPrMerge
-      ? null
-      : await resolveQualityReviewExpectedSha(resolved.gitRoot, opts.taskId, branchHeadSha),
+    expectedSha: qualityReviewExpectedSha,
     command: "integrate",
   });
+  const upstreamRef = await gitBranchUpstream(resolved.gitRoot, branch);
+  const upstreamHeadSha = upstreamRef
+    ? await gitRevParse(resolved.gitRoot, [upstreamRef]).catch(() => null)
+    : null;
+  if (!upstreamRef || upstreamHeadSha !== branchHeadSha) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Task branch head is not published upstream for ${opts.taskId}: ` +
+        `local=${branchHeadSha} upstream=${upstreamHeadSha ?? "<missing>"} ` +
+        "(run `agentplane pr open` from the task worktree)",
+    });
+  }
+  const hostedPr = await requireOpenGithubPrAtHead({
+    gitRoot: resolved.gitRoot,
+    branch,
+    base,
+    expectedHeadSha: branchHeadSha,
+    prNumber:
+      typeof metaSource.pr_number === "number" && metaSource.pr_number > 0
+        ? metaSource.pr_number
+        : null,
+  });
+  const closureFreshness = await assessPreMergeClosureFreshness({
+    gitRoot: resolved.gitRoot,
+    task,
+    meta: metaSource,
+    branch,
+    prNumber: hostedPr.prNumber,
+    branchHeadSha,
+  });
+  if (!closureFreshness.fresh) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Pre-merge closure is stale or missing for ${opts.taskId}: ${closureFreshness.reason}`,
+    });
+  }
   const initialVerifyState = computeVerifyState({
     rawVerify: task.verify,
     metaLastVerifiedSha: freshness.effectiveVerifiedSha,
@@ -359,9 +449,11 @@ export async function prepareIntegrate(opts: {
     base,
     verifyLogText,
     branchHeadSha,
+    baseHeadSha,
     changedPaths,
     verifyCommands: initialVerifyState.verifyCommands,
     alreadyVerifiedSha: initialVerifyState.alreadyVerifiedSha,
     shouldRunVerify: initialVerifyState.shouldRunVerify,
+    hostedPr,
   };
 }

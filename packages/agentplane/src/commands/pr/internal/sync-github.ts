@@ -36,6 +36,11 @@ export type ObservedGithubPr = {
   headSha: string | null;
 };
 
+export type GithubPrLookupResult =
+  | { state: "found"; pr: ObservedGithubPr }
+  | { state: "not_found" }
+  | { state: "unavailable"; reason: string };
+
 function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {
   const trimmed = remoteUrl.trim();
   if (!trimmed) return null;
@@ -87,15 +92,33 @@ function normalizeObservedGithubPr(record: GithubPullLookupRecord): ObservedGith
   };
 }
 
-export async function tryLookupExistingGithubPrByBranch(opts: {
+function githubLookupUnavailable(err: unknown): GithubPrLookupResult {
+  if ((err as { code?: string } | null)?.code === "ENOENT") {
+    return { state: "unavailable", reason: "gh CLI is unavailable" };
+  }
+  const reason = normalizeGhTransportError(err).trim();
+  return {
+    state: "unavailable",
+    reason: reason.length > 0 ? reason : "GitHub lookup failed without diagnostic output",
+  };
+}
+
+export async function observeExistingGithubPrByBranch(opts: {
   gitRoot: string;
   branch: string;
   baseBranch?: string | null;
-}): Promise<ObservedGithubPr | null> {
+}): Promise<GithubPrLookupResult> {
   const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
-  if (!repo) return null;
+  if (!repo) {
+    return {
+      state: "unavailable",
+      reason: "origin is unavailable or is not a GitHub repository",
+    };
+  }
   const owner = repo.split("/")[0]?.trim() ?? "";
-  if (!owner) return null;
+  if (!owner) {
+    return { state: "unavailable", reason: "GitHub repository owner could not be resolved" };
+  }
 
   const query = new URLSearchParams({ state: "all", head: `${owner}:${opts.branch}` });
   const baseBranch = opts.baseBranch?.trim() ?? "";
@@ -114,30 +137,48 @@ export async function tryLookupExistingGithubPrByBranch(opts: {
       { label: `running gh api ${endpoint}` },
     );
     const parsed = JSON.parse(stdout) as GithubPullLookupRecord[];
-    if (!Array.isArray(parsed) || parsed.length === 0) return null;
+    if (!Array.isArray(parsed)) {
+      return { state: "unavailable", reason: "GitHub branch lookup returned a non-array payload" };
+    }
+    if (parsed.length === 0) return { state: "not_found" };
     for (const record of parsed) {
       const observed = normalizeObservedGithubPr(record);
-      if (observed) return observed;
+      if (observed) return { state: "found", pr: observed };
     }
-    return null;
+    return {
+      state: "unavailable",
+      reason: "GitHub branch lookup returned no valid PR records",
+    };
   } catch (err) {
-    const code = (err as { code?: string } | null)?.code;
-    if (code === "ENOENT") return null;
-    const message = normalizeGhTransportError(err);
-    if (message.trim().length > 0) return null;
-    return null;
+    return githubLookupUnavailable(err);
   }
 }
 
-export async function tryLookupExistingGithubPrByNumber(opts: {
+export async function tryLookupExistingGithubPrByBranch(opts: {
+  gitRoot: string;
+  branch: string;
+  baseBranch?: string | null;
+}): Promise<ObservedGithubPr | null> {
+  const result = await observeExistingGithubPrByBranch(opts);
+  return result.state === "found" ? result.pr : null;
+}
+
+export async function observeExistingGithubPrByNumber(opts: {
   gitRoot: string;
   prNumber: number;
   branch?: string | null;
   baseBranch?: string | null;
-}): Promise<ObservedGithubPr | null> {
-  if (!Number.isInteger(opts.prNumber) || opts.prNumber <= 0) return null;
+}): Promise<GithubPrLookupResult> {
+  if (!Number.isInteger(opts.prNumber) || opts.prNumber <= 0) {
+    return { state: "unavailable", reason: "GitHub PR number is invalid" };
+  }
   const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
-  if (!repo) return null;
+  if (!repo) {
+    return {
+      state: "unavailable",
+      reason: "origin is unavailable or is not a GitHub repository",
+    };
+  }
   const endpoint = `repos/${repo}/pulls/${opts.prNumber}`;
   const gh = resolveGhCommand();
 
@@ -151,21 +192,41 @@ export async function tryLookupExistingGithubPrByNumber(opts: {
         }),
       { label: `running gh api ${endpoint}` },
     );
-    const record = JSON.parse(stdout) as GithubPullLookupRecord;
+    const parsed = JSON.parse(stdout) as unknown;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return { state: "unavailable", reason: "GitHub PR lookup returned an invalid payload" };
+    }
+    const record = parsed as GithubPullLookupRecord;
+    const observed = normalizeObservedGithubPr(record);
+    if (!observed) {
+      return { state: "unavailable", reason: "GitHub PR lookup returned an invalid PR record" };
+    }
     const expectedBranch = opts.branch?.trim() ?? "";
     const observedBranch = record.head?.ref?.trim() ?? "";
-    if (expectedBranch && observedBranch !== expectedBranch) return null;
+    if (expectedBranch && !observedBranch) {
+      return { state: "unavailable", reason: "GitHub PR lookup omitted the head branch" };
+    }
+    if (expectedBranch && observedBranch !== expectedBranch) return { state: "not_found" };
     const expectedBase = opts.baseBranch?.trim() ?? "";
     const observedBase = record.base?.ref?.trim() ?? "";
-    if (expectedBase && observedBase !== expectedBase) return null;
-    return normalizeObservedGithubPr(record);
+    if (expectedBase && !observedBase) {
+      return { state: "unavailable", reason: "GitHub PR lookup omitted the base branch" };
+    }
+    if (expectedBase && observedBase !== expectedBase) return { state: "not_found" };
+    return { state: "found", pr: observed };
   } catch (err) {
-    const code = (err as { code?: string } | null)?.code;
-    if (code === "ENOENT") return null;
-    const message = normalizeGhTransportError(err);
-    if (message.trim().length > 0) return null;
-    return null;
+    return githubLookupUnavailable(err);
   }
+}
+
+export async function tryLookupExistingGithubPrByNumber(opts: {
+  gitRoot: string;
+  prNumber: number;
+  branch?: string | null;
+  baseBranch?: string | null;
+}): Promise<ObservedGithubPr | null> {
+  const result = await observeExistingGithubPrByNumber(opts);
+  return result.state === "found" ? result.pr : null;
 }
 
 export async function tryLookupExistingGithubPrByBranchPrefix(opts: {

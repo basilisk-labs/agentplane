@@ -3,13 +3,14 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { CliError } from "../../../../shared/errors.js";
+import { CliError } from "../../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
   execFileAsync: vi.fn(),
   gitRevParse: vi.fn(),
   extractTaskSuffix: vi.fn(),
   validateCommitSubject: vi.fn(),
+  requireCleanTaskWorktree: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core/process", () => ({
@@ -26,6 +27,9 @@ vi.mock("../../../shared/git-ops.js", () => ({
 vi.mock("@agentplaneorg/core/commit", () => ({
   extractTaskSuffix: mocks.extractTaskSuffix,
   validateCommitSubject: mocks.validateCommitSubject,
+}));
+vi.mock("../../../shared/task-worktree-cleanliness.js", () => ({
+  requireCleanTaskWorktree: mocks.requireCleanTaskWorktree,
 }));
 
 async function withTempGitRoot<T>(run: (gitRoot: string) => Promise<T>): Promise<T> {
@@ -52,6 +56,13 @@ function expectGitCommandOptions(value: unknown): void {
 describe("pr/integrate/internal/merge", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.gitRevParse.mockResolvedValue("deadbeefcafebabe");
+    mocks.requireCleanTaskWorktree.mockResolvedValue({
+      state: "clean",
+      branch: "task/T-1",
+      worktreePath: "/repo/.agentplane/worktrees/T-1",
+      changedPaths: [],
+    });
   });
 
   it("runSquashMerge falls back to deterministic subject when branch head subject is invalid", async () => {
@@ -70,6 +81,8 @@ describe("pr/integrate/internal/merge", () => {
         gitRoot,
         base: "main",
         branch: "task/T-1",
+        sourceSha: "deadbeefcafebabe",
+        expectedBaseSha: "deadbeefcafebabe",
         headBeforeMerge: "before",
         taskId: "202602111653-X32XPT",
         taskTitle: "Improve PR UX",
@@ -108,6 +121,8 @@ describe("pr/integrate/internal/merge", () => {
         gitRoot,
         base: "main",
         branch: "task/T-1",
+        sourceSha: "deadbeefcafebabe",
+        expectedBaseSha: "deadbeefcafebabe",
         headBeforeMerge: "before",
         taskId: "202602111653-X32XPT",
         taskTitle: "Improve PR UX",
@@ -137,6 +152,8 @@ describe("pr/integrate/internal/merge", () => {
           gitRoot,
           base: "main",
           branch: "task/T-2",
+          sourceSha: "deadbeefcafebabe",
+          expectedBaseSha: "deadbeefcafebabe",
           headBeforeMerge: "before",
           taskId: "202602111653-X32XPT",
           taskTitle: "Improve PR UX",
@@ -163,7 +180,10 @@ describe("pr/integrate/internal/merge", () => {
       await expect(
         runMergeCommit({
           gitRoot,
+          base: "main",
           branch: "task/T-3",
+          sourceSha: "deadbeefcafebabe",
+          expectedBaseSha: "deadbeefcafebabe",
           taskId: "202602111653-X32XPT",
           taskTitle: "Improve PR UX",
           taskTags: ["workflow", "cli"],
@@ -188,7 +208,10 @@ describe("pr/integrate/internal/merge", () => {
     const hash = await withTempGitRoot((gitRoot) =>
       runMergeCommit({
         gitRoot,
+        base: "main",
         branch: "task/T-3",
+        sourceSha: "deadbeefcafebabe",
+        expectedBaseSha: "deadbeefcafebabe",
         taskId: "202602111653-X32XPT",
         taskTitle: "Improve PR UX",
         taskTags: ["workflow", "cli"],
@@ -204,10 +227,91 @@ describe("pr/integrate/internal/merge", () => {
       "merge",
       "--no-ff",
       "--signoff",
-      "task/T-3",
+      "deadbeefcafebabe",
       "-m",
       "🔀 ABC123 integrate: Improve PR UX",
     ]);
     expectGitCommandOptions(mergeCall?.[2]);
+  });
+
+  it("runMergeCommit refuses to merge when the pinned base advances", async () => {
+    const { runMergeCommit } = await import("./merge.js");
+    mocks.extractTaskSuffix.mockReturnValue("ABC123");
+    mocks.gitRevParse.mockResolvedValueOnce("base-after");
+
+    await withTempGitRoot(async (gitRoot) => {
+      await expect(
+        runMergeCommit({
+          gitRoot,
+          base: "main",
+          branch: "task/T-3",
+          sourceSha: "head-1",
+          expectedBaseSha: "base-before",
+          taskId: "202602111653-X32XPT",
+          taskTitle: "Improve PR UX",
+          taskTags: ["workflow", "cli"],
+          workflowDir: ".agentplane/tasks",
+          changedPaths: [],
+        }),
+      ).rejects.toMatchObject<CliError>({
+        code: "E_GIT_RACE",
+        context: {
+          reason_code: "integration_queue_base_changed",
+          expected_base_sha: "base-before",
+          current_base_sha: "base-after",
+        },
+      });
+    });
+
+    expect(mocks.execFileAsync).not.toHaveBeenCalledWith(
+      "git",
+      expect.arrayContaining(["--no-ff"]),
+      expect.anything(),
+    );
+  });
+
+  it("runRebaseFastForward rechecks the task worktree before fast-forwarding base", async () => {
+    const { runRebaseFastForward } = await import("./merge.js");
+    mocks.execFileAsync.mockResolvedValue({});
+    mocks.requireCleanTaskWorktree.mockRejectedValueOnce(
+      new CliError({
+        code: "E_VALIDATION",
+        message: "Task worktree contains uncommitted changes",
+        context: { reason_code: "task_worktree_dirty" },
+      }),
+    );
+
+    await withTempGitRoot(async (gitRoot) => {
+      await expect(
+        runRebaseFastForward({
+          gitRoot,
+          worktreePath: path.join(gitRoot, ".agentplane", "worktrees", "T-1"),
+          base: "main",
+          branch: "task/T-1",
+          expectedBranchHeadSha: "deadbeefcafebabe",
+          expectedBaseSha: "deadbeefcafebabe",
+          headBeforeMerge: "deadbeefcafebabe",
+          rawVerify: [],
+          metaSource: null,
+          verifyLogText: "",
+          runVerify: false,
+          verifyCommands: [],
+          alreadyVerifiedSha: null,
+          shouldRunVerify: false,
+          quiet: true,
+          taskId: "202602111653-X32XPT",
+          workflowDir: ".agentplane/tasks",
+          changedPaths: [],
+        }),
+      ).rejects.toMatchObject<CliError>({
+        code: "E_VALIDATION",
+        context: { reason_code: "task_worktree_dirty" },
+      });
+    });
+    expect(mocks.execFileAsync).not.toHaveBeenCalledWith(
+      "git",
+      expect.arrayContaining(["merge", "--ff-only"]),
+      expect.anything(),
+    );
   });
 });

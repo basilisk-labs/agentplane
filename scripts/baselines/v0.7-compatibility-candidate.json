@@ -1,0 +1,162 @@
+{
+  "schema_version": 2,
+  "candidate_id": "agentplane.compatibility.v0.7.cumulative",
+  "source_tasks": ["202607221846-4VB97J", "202607221846-YGWMA2", "202607230554-YFYT83"],
+  "base": {
+    "baseline_id": "agentplane.compatibility.v0.6.24",
+    "reference": "exact_main",
+    "commit_sha": "1a702e160ba9f0efe7067f2a22fc008defc89ffb",
+    "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+  },
+  "candidate": {
+    "surface_sha256": "cd5fb5b60eb7d554c6fe2bd14cdf9cfbe31625c4ba2d5f9a787968a4c6d31246",
+    "section_digests": {
+      "cli_topology": "f44122c97483b733ffa7c1de543d95f37672532562e2f5526525c1f6a0b23e4a",
+      "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+      "machine_output_contract": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
+      "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+      "agent_facing_context_contracts": "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
+      "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+      "tarball_policy": "a13f8e06e2c2cb4aa9d7fc69aaf01998c33cd010444cba8b6670a97d85d816e6"
+    }
+  },
+  "review": {
+    "state": "approved",
+    "reviewed_by": "ORCHESTRATOR",
+    "scope": "exact_delta_set",
+    "conditions": [
+      "final_focused_tests_pass",
+      "baseline_anchor_byte_identical",
+      "source_task_provenance_exact"
+    ]
+  },
+  "deltas": [
+    {
+      "section": "cli_topology",
+      "source_tasks": ["202607221846-4VB97J", "202607221846-YGWMA2", "202607230554-YFYT83"],
+      "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+      "to_sha256": "f44122c97483b733ffa7c1de543d95f37672532562e2f5526525c1f6a0b23e4a",
+      "classification": "additive",
+      "summary": "Adds workflow migration controls, explicit evaluator provenance, and task-scoped merged cleanup; no command or option is removed or mutated.",
+      "evidence": {
+        "command_count": { "from": 243, "to": 244 },
+        "positional_count": { "from": 165, "to": 165 },
+        "option_count": { "from": 767, "to": 771 },
+        "added_commands": ["workflow migrate"],
+        "removed_commands": [],
+        "added_command_descriptors": [
+          {
+            "id": ["workflow", "migrate"],
+            "visibility": "user",
+            "group": "Workflow",
+            "args": [],
+            "options": [
+              {
+                "name": "dry-run",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              },
+              {
+                "name": "rollback",
+                "kind": "string",
+                "valueHint": "<receipt-path>"
+              }
+            ]
+          }
+        ],
+        "removed_command_descriptors": [],
+        "mutated_command_shells": [],
+        "added_options": [
+          {
+            "command": "cleanup merged",
+            "name": "task-id",
+            "kind": "string",
+            "valueHint": "<task-id>",
+            "repeatable": true
+          },
+          {
+            "command": "evaluator run",
+            "name": "provenance",
+            "kind": "string",
+            "valueHint": "<human_supplied|evaluator_supplied>",
+            "choices": ["human_supplied", "evaluator_supplied"]
+          },
+          {
+            "command": "workflow migrate",
+            "name": "dry-run",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "workflow migrate",
+            "name": "rollback",
+            "kind": "string",
+            "valueHint": "<receipt-path>"
+          }
+        ],
+        "removed_options": [],
+        "mutated_options": [],
+        "addition_sources": [
+          {
+            "kind": "command",
+            "command": "workflow migrate",
+            "source_task": "202607221846-4VB97J"
+          },
+          {
+            "kind": "option",
+            "command": "cleanup merged",
+            "name": "task-id",
+            "source_task": "202607230554-YFYT83"
+          },
+          {
+            "kind": "option",
+            "command": "evaluator run",
+            "name": "provenance",
+            "source_task": "202607221846-YGWMA2"
+          },
+          {
+            "kind": "option",
+            "command": "workflow migrate",
+            "name": "dry-run",
+            "source_task": "202607221846-4VB97J"
+          },
+          {
+            "kind": "option",
+            "command": "workflow migrate",
+            "name": "rollback",
+            "source_task": "202607221846-4VB97J"
+          }
+        ]
+      }
+    },
+    {
+      "section": "workflow_schema",
+      "source_tasks": ["202607221846-4VB97J"],
+      "from_sha256": "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7",
+      "to_sha256": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+      "classification": "backward_compatible",
+      "summary": "Replaces the v1-only schema with a v1-or-v2 input union, retaining the finite typed legacy v1 sections, requiring explicit v2 approval flags, and preserving the public schema identity.",
+      "evidence": {
+        "schema_id": "https://agentplane.dev/schemas/workflow.schema.json",
+        "title": "Agentplane Workflow Contract",
+        "supported_input_versions": [1, 2]
+      }
+    },
+    {
+      "section": "tarball_policy",
+      "source_tasks": ["202607221846-4VB97J"],
+      "from_sha256": "c37264a69d57cd40bd519115b084430c590a71b0df3fe6b541b44bad02e4b61d",
+      "to_sha256": "a13f8e06e2c2cb4aa9d7fc69aaf01998c33cd010444cba8b6670a97d85d816e6",
+      "classification": "additive",
+      "summary": "Publishes the generated workflow schema from the core package; no package source file is removed.",
+      "evidence": {
+        "package": "@agentplaneorg/core",
+        "source_file_count": { "from": 17, "to": 18 },
+        "added_source_files": ["schemas/workflow.schema.json"],
+        "removed_source_files": []
+      }
+    }
+  ]
+}

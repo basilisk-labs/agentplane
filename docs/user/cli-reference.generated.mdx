@@ -1779,6 +1779,7 @@ agentplane cleanup merged [options]
 Options:
 
 - `--base <name>`: Base branch override.
+- `--task-id <task-id>`: Repeatable. Limit cleanup to explicit task ids. (repeatable)
 - `--yes`: Confirm deletions. (default=false)
 - `--archive`: Archive PR artifacts before deletion. (default=false)
 - `--delete-remote-branches`: Also delete matching remote task branches on origin. (default=false)
@@ -1795,6 +1796,18 @@ agentplane cleanup merged
 ```
 
 - List candidates without deleting.
+
+```sh
+agentplane cleanup merged --task-id 202607230554-YFYT83
+```
+
+- Inspect cleanup proof for one completed task without touching unrelated branches.
+
+```sh
+agentplane cleanup merged --task-id 202607230554-YFYT83 --yes
+```
+
+- Delete only the proven merged branch/worktree for one completed task.
 
 ```sh
 agentplane cleanup merged --yes --archive

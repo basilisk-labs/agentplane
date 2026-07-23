@@ -327,6 +327,30 @@ describe("pr-meta shell invocations", () => {
     );
   });
 
+  it("invalidates a pre-merge closure marker when verification records rework", () => {
+    const nextMeta = buildVerifiedPrMeta({
+      meta: {
+        schema_version: 1,
+        task_id: "202601010101-ABCDE",
+        branch: "task/202601010101-ABCDE/example",
+        created_at: "2026-01-27T00:00:00Z",
+        updated_at: "2026-01-27T00:00:00Z",
+        verify: { status: "pass" },
+        pre_merge_closure: {
+          state: "closed_before_merge",
+          branch: "task/202601010101-ABCDE/example",
+          basis_commit: "abc123",
+          recorded_at: "2026-01-27T01:00:00Z",
+        },
+      },
+      at: "2026-01-28T00:00:00Z",
+      state: "fail",
+    });
+
+    expect(nextMeta.verify?.status).toBe("fail");
+    expect(nextMeta).not.toHaveProperty("pre_merge_closure");
+  });
+
   it("hydrates observed remote PR identity without disturbing stable timestamps", () => {
     expect(
       buildObservedGithubPrMeta({

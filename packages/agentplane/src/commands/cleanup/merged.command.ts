@@ -26,6 +26,7 @@ export const cleanupSpec: CommandSpec<CleanupGroupParsed> = {
 
 export type CleanupMergedParsed = {
   base: string | null;
+  taskIds: string[];
   yes: boolean;
   archive: boolean;
   deleteRemoteBranches: boolean;
@@ -42,6 +43,13 @@ export const cleanupMergedSpec: CommandSpec<CleanupMergedParsed> = {
   summary: "Delete merged task branches/worktrees (branch_pr workflow).",
   options: [
     { kind: "string", name: "base", valueHint: "<name>", description: "Base branch override." },
+    {
+      kind: "string",
+      name: "task-id",
+      valueHint: "<task-id>",
+      repeatable: true,
+      description: "Repeatable. Limit cleanup to explicit task ids.",
+    },
     { kind: "boolean", name: "yes", default: false, description: "Confirm deletions." },
     {
       kind: "boolean",
@@ -85,6 +93,14 @@ export const cleanupMergedSpec: CommandSpec<CleanupMergedParsed> = {
   examples: [
     { cmd: "agentplane cleanup merged", why: "List candidates without deleting." },
     {
+      cmd: "agentplane cleanup merged --task-id 202607230554-YFYT83",
+      why: "Inspect cleanup proof for one completed task without touching unrelated branches.",
+    },
+    {
+      cmd: "agentplane cleanup merged --task-id 202607230554-YFYT83 --yes",
+      why: "Delete only the proven merged branch/worktree for one completed task.",
+    },
+    {
       cmd: "agentplane cleanup merged --yes --archive",
       why: "Delete candidates and archive PR artifacts.",
     },
@@ -106,9 +122,19 @@ export const cleanupMergedSpec: CommandSpec<CleanupMergedParsed> = {
     if (raw.opts.base !== undefined && !base) {
       throw usageError({ spec: cleanupMergedSpec, message: "Invalid value for --base: empty." });
     }
+    const taskIds = (raw.opts["task-id"] as string[] | undefined) ?? [];
+    for (const taskId of taskIds) {
+      if (typeof taskId !== "string" || taskId.trim().length === 0) {
+        throw usageError({
+          spec: cleanupMergedSpec,
+          message: "Invalid value for --task-id: empty.",
+        });
+      }
+    }
   },
   parse: (raw) => ({
     base: typeof raw.opts.base === "string" ? raw.opts.base : null,
+    taskIds: ((raw.opts["task-id"] as string[] | undefined) ?? []).map((taskId) => taskId.trim()),
     yes: raw.opts.yes === true || raw.opts.finalize === true,
     archive: raw.opts.archive === true,
     deleteRemoteBranches: raw.opts["delete-remote-branches"] === true || raw.opts.finalize === true,
@@ -137,6 +163,7 @@ export function makeRunCleanupMergedHandler(getCtx: (cmd: string) => Promise<Com
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       base: p.base ?? undefined,
+      taskIds: p.taskIds,
       yes: p.yes,
       archive: p.archive,
       deleteRemoteBranches: p.deleteRemoteBranches,

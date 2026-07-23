@@ -155,9 +155,12 @@ function worktreeProjectionRisk(decision: TaskRouteDecision): RouteOperatorRisk 
 
 function hostedCloseFinalizeRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
   if (decision.nextAction.code !== "sync_hosted_close") return null;
+  const base = decision.workspace?.baseBranch ?? "main";
+  const fallback =
+    `agentplane cleanup merged --task-id ${decision.task.id} --finalize ` + `--base ${base}`;
   const command = commandIsArgvSafeCandidate(decision.nextAction.command)
-    ? (decision.nextAction.command ?? "agentplane cleanup merged --finalize")
-    : "agentplane cleanup merged --finalize";
+    ? (decision.nextAction.command ?? fallback)
+    : fallback;
   return {
     code: "hosted_close_finalize",
     summary:

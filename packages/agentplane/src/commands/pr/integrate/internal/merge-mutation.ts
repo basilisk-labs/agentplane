@@ -70,6 +70,7 @@ export async function runWithIntegrationMutation<T>(opts: {
       try {
         return await opts.run();
       } catch (err) {
+        if (err instanceof CliError) throw err;
         const message = err instanceof Error ? err.message : `${opts.command} failed`;
         const code = classifyGitMutationFailure(message);
         const remediation =

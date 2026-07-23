@@ -15,7 +15,10 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { chmod, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { tryLookupExistingGithubPrByNumber } from "../commands/pr/internal/sync-github.js";
+import {
+  observeExistingGithubPrByBranch,
+  tryLookupExistingGithubPrByNumber,
+} from "../commands/pr/internal/sync-github.js";
 
 function expectLabeledValue(output: string, label: string, expected: string): void {
   const line = output.split(/\r?\n/u).find((line) => line.trimStart().startsWith(`${label}:`));
@@ -33,7 +36,10 @@ type FakePull = {
   base: { ref: string };
 };
 
-async function installFakeGh(root: string, opts: { checksExitCode: number; pull?: FakePull }) {
+async function installFakeGh(
+  root: string,
+  opts: { checksExitCode: number; pull?: FakePull; lookupFailure?: string },
+) {
   const fakeBin = path.join(root, "fake-bin");
   await mkdir(fakeBin, { recursive: true });
   const scriptPath = path.join(fakeBin, "fake-gh.mjs");
@@ -43,6 +49,11 @@ async function installFakeGh(root: string, opts: { checksExitCode: number; pull?
     [
       "const args = process.argv.slice(2);",
       `const pull = ${JSON.stringify(opts.pull ?? null)};`,
+      `const lookupFailure = ${JSON.stringify(opts.lookupFailure ?? null)};`,
+      'if (args[0] === "api" && (args[1] ?? "").startsWith("repos/example/repo/pulls") && lookupFailure) {',
+      "  console.error(lookupFailure);",
+      "  process.exit(1);",
+      "}",
       'if (args[0] === "api" && /^repos\\/example\\/repo\\/pulls\\/\\d+$/.test(args[1] ?? "")) {',
       "  if (!pull || args[1] !== `repos/example/repo/pulls/${pull.number}`) process.exit(1);",
       "  console.log(JSON.stringify(pull));",
@@ -80,6 +91,45 @@ async function installFakeGh(root: string, opts: { checksExitCode: number; pull?
 }
 
 describe("runCli pr flow status", () => {
+  it("distinguishes a confirmed missing PR from unavailable GitHub lookup", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await execFileAsync("git", ["remote", "add", "origin", "git@github.com:example/repo.git"], {
+      cwd: root,
+    });
+    const branch = "task/T-1/lookup";
+    const oldPath = process.env.PATH;
+
+    const availableBin = await installFakeGh(root, { checksExitCode: 0 });
+    process.env.PATH = `${availableBin}${path.delimiter}${oldPath ?? ""}`;
+    await expect(
+      observeExistingGithubPrByBranch({
+        gitRoot: root,
+        branch,
+        baseBranch: "main",
+      }),
+    ).resolves.toEqual({ state: "not_found" });
+
+    const unavailableBin = await installFakeGh(root, {
+      checksExitCode: 0,
+      lookupFailure: "authentication required",
+    });
+    process.env.PATH = `${unavailableBin}${path.delimiter}${oldPath ?? ""}`;
+    try {
+      const unavailable = await observeExistingGithubPrByBranch({
+        gitRoot: root,
+        branch,
+        baseBranch: "main",
+      });
+      expect(unavailable.state).toBe("unavailable");
+      if (unavailable.state !== "unavailable") {
+        throw new Error("expected unavailable GitHub observation");
+      }
+      expect(unavailable.reason).toContain("authentication required");
+    } finally {
+      process.env.PATH = oldPath;
+    }
+  });
+
   it("reports task branch, local PR metadata, close-tail state, and next action", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

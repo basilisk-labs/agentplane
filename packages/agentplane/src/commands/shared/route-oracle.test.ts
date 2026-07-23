@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import { deriveRouteExecutionPacket, type RouteOracle } from "./route-oracle.js";
+import { deriveRouteExecutionPacket, deriveRouteOracle, type RouteOracle } from "./route-oracle.js";
 
 describe("route oracle execution packet", () => {
   it("classifies actionable wait_hosted_checks commands as local commands", () => {
@@ -128,6 +128,70 @@ describe("route oracle execution packet", () => {
     expect(packet.mustNot).toContain(
       "do not reclaim or force progress without explicit parent approval",
     );
+  });
+
+  it("hands pending verification to TESTER without exposing enqueue argv", () => {
+    const task = {
+      id: "202605281713-VERIFY",
+      title: "Verify task",
+      description: "Require evidence before integration.",
+      status: "DOING",
+      priority: "med",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["code"],
+      verify: ["bun test"],
+      plan_approval: {
+        state: "approved",
+        approved_by: "ORCHESTRATOR",
+        approved_at: "2026-05-28T00:00:00.000Z",
+      },
+      verification: { state: "pending" },
+    } satisfies TaskData;
+    const blocker = {
+      code: "verification_required" as const,
+      summary: "the committed implementation has no passing verification record",
+    };
+    const nextAction = {
+      code: "verification_required",
+      command: null,
+      summary: "hand the committed implementation to TESTER",
+      requiresApproval: false,
+    };
+    const oracle = deriveRouteOracle({
+      task,
+      workflowMode: "branch_pr",
+      nextAction,
+      blockers: [blocker],
+      batchOwnership: { role: "none" },
+      paths: {
+        baseCheckoutPath: "/repo",
+        taskWorktreePath: "/repo/.agentplane/worktrees/task",
+        currentCheckoutPath: "/repo",
+      },
+    });
+    const packet = deriveRouteExecutionPacket({
+      task,
+      blockers: [blocker],
+      nextAction,
+      oracle,
+    });
+
+    expect(oracle).toMatchObject({
+      phase: "verification_required",
+      authoritativeCheckout: "task_worktree",
+      authoritativeCheckoutPath: "/repo/.agentplane/worktrees/task",
+      mutationPathHint: null,
+      nextCommand: null,
+    });
+    expect(packet).toMatchObject({
+      actionKind: "stop",
+      safeToMutate: false,
+      recommendedRole: "TESTER",
+      exactArgv: null,
+      evidenceMissing: ["verification_record"],
+      verificationCandidate: "agentplane task verify-show <task-id>",
+    });
   });
 
   it("keeps hybrid verify_or_update_pr packets on the CODER rail", () => {

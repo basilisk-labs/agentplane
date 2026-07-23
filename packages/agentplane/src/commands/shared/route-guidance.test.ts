@@ -367,11 +367,13 @@ describe("route operator guidance", () => {
     expect(deriveRouteOperatorGuidance(decision)).toMatchObject({
       canExecuteNow: false,
       operatorAction: "stop",
-      diagnosticCommand: "agentplane cleanup merged --finalize",
+      diagnosticCommand:
+        "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
       risks: [
         {
           code: "hosted_close_finalize",
-          mitigationCommand: "agentplane cleanup merged --finalize",
+          mitigationCommand:
+            "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
         },
         {
           code: "unsafe_shell_chain_route",

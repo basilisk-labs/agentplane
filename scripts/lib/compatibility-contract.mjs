@@ -111,6 +111,83 @@ export function hashJson(value) {
   return sha256Text(canonicalJson(value));
 }
 
+function cliCommandIdentity(command) {
+  return command.id.join(" ");
+}
+
+function cliCommandShell(command) {
+  return {
+    id: command.id,
+    visibility: command.visibility,
+    group: command.group,
+    args: command.args,
+  };
+}
+
+function cliOptionsByIdentity(surface) {
+  const options = new Map();
+  for (const command of surface.cli_topology.commands) {
+    const commandId = cliCommandIdentity(command);
+    for (const option of command.options) {
+      options.set(`${commandId} --${option.name}`, { command: commandId, ...option });
+    }
+  }
+  return options;
+}
+
+export function diffCliTopology(beforeSurface, afterSurface) {
+  const beforeCommands = new Map(
+    beforeSurface.cli_topology.commands.map((command) => [cliCommandIdentity(command), command]),
+  );
+  const afterCommands = new Map(
+    afterSurface.cli_topology.commands.map((command) => [cliCommandIdentity(command), command]),
+  );
+  const addedCommandDescriptors = [...afterCommands.entries()]
+    .filter(([identity]) => !beforeCommands.has(identity))
+    .toSorted(([left], [right]) => left.localeCompare(right))
+    .map(([, command]) => command);
+  const removedCommandDescriptors = [...beforeCommands.entries()]
+    .filter(([identity]) => !afterCommands.has(identity))
+    .toSorted(([left], [right]) => left.localeCompare(right))
+    .map(([, command]) => command);
+  const mutatedCommandShells = [...afterCommands.entries()]
+    .filter(([identity]) => beforeCommands.has(identity))
+    .map(([identity, after]) => ({
+      identity,
+      before: cliCommandShell(beforeCommands.get(identity)),
+      after: cliCommandShell(after),
+    }))
+    .filter(({ before, after }) => hashJson(before) !== hashJson(after))
+    .toSorted((left, right) => left.identity.localeCompare(right.identity));
+
+  const beforeOptions = cliOptionsByIdentity(beforeSurface);
+  const afterOptions = cliOptionsByIdentity(afterSurface);
+  const addedOptions = [...afterOptions.entries()]
+    .filter(([identity]) => !beforeOptions.has(identity))
+    .toSorted(([left], [right]) => left.localeCompare(right))
+    .map(([, option]) => option);
+  const removedOptions = [...beforeOptions.entries()]
+    .filter(([identity]) => !afterOptions.has(identity))
+    .toSorted(([left], [right]) => left.localeCompare(right))
+    .map(([, option]) => option);
+  const mutatedOptions = [...afterOptions.entries()]
+    .filter(
+      ([identity, option]) =>
+        beforeOptions.has(identity) && hashJson(beforeOptions.get(identity)) !== hashJson(option),
+    )
+    .toSorted(([left], [right]) => left.localeCompare(right))
+    .map(([identity, after]) => ({ identity, before: beforeOptions.get(identity), after }));
+
+  return {
+    added_command_descriptors: addedCommandDescriptors,
+    removed_command_descriptors: removedCommandDescriptors,
+    mutated_command_shells: mutatedCommandShells,
+    added_options: addedOptions,
+    removed_options: removedOptions,
+    mutated_options: mutatedOptions,
+  };
+}
+
 function normalizeText(value) {
   return value.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
 }

@@ -9,7 +9,7 @@ import {
   resolveTaskHandoffPaths,
   writeTaskHandoff,
 } from "../../../shared/task-handoff.js";
-import { tryLookupExistingGithubPrByBranch } from "../../internal/sync-github.js";
+import { requireOpenGithubPrAtHead } from "../../provider-head.js";
 import { runProtectedBaseGithubMerge } from "./github-pr-merge.js";
 
 type IntegratePrMetaSource = {
@@ -85,24 +85,29 @@ export async function handleProtectedBaseIntegrate(opts: {
   base: string;
   branchHeadSha: string | null;
   metaSource: IntegratePrMetaSource;
+  preMutationGuard: () => Promise<void>;
 }): Promise<never> {
   const recordedPrNumber =
     typeof opts.metaSource.pr_number === "number" && opts.metaSource.pr_number > 0
       ? opts.metaSource.pr_number
       : null;
-  const observedPr =
-    recordedPrNumber === null
-      ? await tryLookupExistingGithubPrByBranch({
-          gitRoot: opts.ctx.resolvedProject.gitRoot,
-          branch: opts.branch,
-          baseBranch: opts.base,
-        })
-      : null;
-  const prNumber = recordedPrNumber ?? observedPr?.prNumber ?? null;
-  const prUrl =
-    typeof opts.metaSource.pr_url === "string"
-      ? opts.metaSource.pr_url
-      : (observedPr?.prUrl ?? null);
+  const expectedHeadSha = opts.branchHeadSha?.trim() ?? "";
+  if (!expectedHeadSha) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Cannot merge protected-base PR for ${opts.taskId}: local branch head is unavailable`,
+    });
+  }
+  const observedPr = await requireOpenGithubPrAtHead({
+    gitRoot: opts.ctx.resolvedProject.gitRoot,
+    branch: opts.branch,
+    base: opts.base,
+    expectedHeadSha,
+    prNumber: recordedPrNumber,
+  });
+  const prNumber = observedPr.prNumber;
+  const prUrl = observedPr.prUrl;
   const prUrlTarget = prUrl?.trim() ?? "";
   const prTarget = prUrlTarget.length > 0 ? prUrlTarget : prNumber === null ? "" : String(prNumber);
   const prHint =
@@ -114,6 +119,8 @@ export async function handleProtectedBaseIntegrate(opts: {
       const githubMerge = await runProtectedBaseGithubMerge({
         gitRoot: opts.ctx.resolvedProject.gitRoot,
         prTarget,
+        expectedHeadSha,
+        preMutationGuard: opts.preMutationGuard,
       });
       await recordProtectedBaseIntegrateHandoff({ ...opts, prNumber, prUrl });
       if (githubMerge.status === "merged") {

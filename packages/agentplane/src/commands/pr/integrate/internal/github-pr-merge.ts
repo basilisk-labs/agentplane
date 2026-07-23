@@ -21,17 +21,24 @@ type GithubToken = {
   token: string;
 };
 
-type GithubGraphqlResponse<T> = {
-  data?: T;
-  errors?: { message?: string }[];
-};
-
 type ProtectedBaseGithubMergeResult = {
-  status: "merged" | "auto_merge_enabled";
+  status: "merged";
   detail: string;
 };
 
-const GITHUB_GRAPHQL_URL = "https://api.github.com/graphql";
+type PreMutationGuard = () => Promise<void>;
+
+class PreMutationGuardFailure extends Error {
+  readonly originalError: Error;
+
+  constructor(error: unknown) {
+    const originalError = error instanceof Error ? error : new Error(String(error));
+    super(originalError.message);
+    this.name = "PreMutationGuardFailure";
+    this.originalError = originalError;
+  }
+}
+
 const GITHUB_REST_URL = "https://api.github.com";
 const GITHUB_CLI_INSTALL_HINT =
   "Install GitHub CLI yourself (macOS: `brew install gh`; Windows: `winget install --id GitHub.cli`; Linux: see `https://cli.github.com/manual/installation`), then run `gh auth login`.";
@@ -39,11 +46,6 @@ const GITHUB_CLI_INSTALL_HINT =
 function summarizeGithubFailure(err: unknown): string {
   const text = normalizeGhTransportError(err).trim();
   return text || "unknown failure";
-}
-
-function isAlreadyMergedGithubPrFailure(err: unknown): boolean {
-  const text = summarizeGithubFailure(err).toLowerCase();
-  return /\bpull request\b/.test(text) && /\balready merged\b/.test(text);
 }
 
 function getGithubToken(): GithubToken | null {
@@ -95,90 +97,104 @@ async function checkGithubCli(cwd: string): Promise<{ ok: true } | { ok: false; 
 async function runGhCliMerge(opts: {
   gitRoot: string;
   prTarget: string;
+  expectedHeadSha: string;
+  preMutationGuard: PreMutationGuard;
 }): Promise<ProtectedBaseGithubMergeResult> {
   const cli = await checkGithubCli(opts.gitRoot);
   if (!cli.ok) throw new Error(cli.reason);
   const gh = resolveGhCommand();
-  let autoRebaseErr: unknown = null;
-  try {
-    await execFileAsync(
-      gh.command,
-      [...gh.argsPrefix, "pr", "merge", "--auto", "--rebase", "--delete-branch", opts.prTarget],
-      {
-        cwd: opts.gitRoot,
-        env: ghEnv(),
-      },
-    );
-    return {
-      status: "auto_merge_enabled",
-      detail: `GitHub PR merge queued with gh --auto --rebase: ${opts.prTarget}`,
-    };
-  } catch (autoErr) {
-    autoRebaseErr = autoErr;
-  }
+  const pr = await resolveGithubPrRef(opts);
+  const endpoint = `repos/${pr.owner}/${pr.repo}/pulls/${pr.number}/merge`;
 
   let directRebaseErr: unknown = null;
+  await runPreMutationGuard(opts.preMutationGuard);
   try {
-    await execFileAsync(
+    const { stdout } = await execFileAsync(
       gh.command,
-      [...gh.argsPrefix, "pr", "merge", "--rebase", "--delete-branch", opts.prTarget],
+      [
+        ...gh.argsPrefix,
+        "api",
+        "-X",
+        "PUT",
+        endpoint,
+        "-f",
+        "merge_method=rebase",
+        "-f",
+        `sha=${opts.expectedHeadSha}`,
+      ],
       {
         cwd: opts.gitRoot,
         env: ghEnv(),
       },
     );
+    assertImmediateMergeReceipt(stdout, "gh api rebase merge");
     return {
       status: "merged",
-      detail: `GitHub PR merged with gh --rebase: ${opts.prTarget}`,
+      detail: `GitHub PR rebase-merged immediately with gh api: ${opts.prTarget}`,
     };
   } catch (directErr) {
-    if (isAlreadyMergedGithubPrFailure(directErr)) {
-      return {
-        status: "merged",
-        detail: `GitHub PR was already merged with gh --rebase: ${opts.prTarget}`,
-      };
-    }
     directRebaseErr = directErr;
   }
 
+  await runPreMutationGuard(opts.preMutationGuard);
   try {
-    await execFileAsync(
+    const { stdout } = await execFileAsync(
       gh.command,
-      [...gh.argsPrefix, "pr", "merge", "--auto", "--merge", "--delete-branch", opts.prTarget],
+      [
+        ...gh.argsPrefix,
+        "api",
+        "-X",
+        "PUT",
+        endpoint,
+        "-f",
+        "merge_method=merge",
+        "-f",
+        `sha=${opts.expectedHeadSha}`,
+      ],
       {
         cwd: opts.gitRoot,
         env: ghEnv(),
       },
     );
+    assertImmediateMergeReceipt(stdout, "gh api merge");
     return {
-      status: "auto_merge_enabled",
-      detail: `GitHub PR merge queued with gh --auto --merge fallback: ${opts.prTarget}`,
+      status: "merged",
+      detail: `GitHub PR merged immediately with gh api fallback: ${opts.prTarget}`,
     };
-  } catch (autoMergeErr) {
-    try {
-      await execFileAsync(
-        gh.command,
-        [...gh.argsPrefix, "pr", "merge", "--merge", "--delete-branch", opts.prTarget],
-        {
-          cwd: opts.gitRoot,
-          env: ghEnv(),
-        },
-      );
-      return {
-        status: "merged",
-        detail: `GitHub PR merged with gh --merge fallback: ${opts.prTarget}`,
-      };
-    } catch (directErr) {
-      if (isAlreadyMergedGithubPrFailure(directErr)) {
-        return {
-          status: "merged",
-          detail: `GitHub PR was already merged with gh --merge fallback: ${opts.prTarget}`,
-        };
-      }
-      throw new Error(
-        `gh auto_rebase=${summarizeGithubFailure(autoRebaseErr)}; gh direct_rebase=${summarizeGithubFailure(directRebaseErr)}; gh auto_merge=${summarizeGithubFailure(autoMergeErr)}; gh direct_merge=${summarizeGithubFailure(directErr)}`,
-      );
-    }
+  } catch (directErr) {
+    throw new Error(
+      `gh direct_rebase=${summarizeGithubFailure(directRebaseErr)}; gh direct_merge=${summarizeGithubFailure(directErr)}`,
+    );
+  }
+}
+
+async function runPreMutationGuard(preMutationGuard: PreMutationGuard): Promise<void> {
+  try {
+    await preMutationGuard();
+  } catch (error) {
+    throw new PreMutationGuardFailure(error);
+  }
+}
+
+function throwOriginalPreMutationGuardFailure(error: unknown): void {
+  if (error instanceof PreMutationGuardFailure) {
+    throw error.originalError;
+  }
+}
+
+function assertImmediateMergeReceipt(stdout: string, label: string): void {
+  let parsed: { merged?: unknown; message?: unknown };
+  try {
+    parsed = JSON.parse(stdout) as { merged?: unknown; message?: unknown };
+  } catch {
+    throw new Error(`${label} returned an invalid JSON receipt`);
+  }
+  if (parsed.merged !== true) {
+    throw new Error(
+      `${label} did not confirm an immediate merge: ${
+        typeof parsed.message === "string" ? parsed.message : "merged=true is missing"
+      }`,
+    );
   }
 }
 
@@ -213,32 +229,6 @@ async function readJsonResponse<T>(response: Response, label: string): Promise<T
   return (body.trim().length > 0 ? JSON.parse(body) : {}) as T;
 }
 
-async function githubGraphql<T>(opts: {
-  token: GithubToken;
-  query: string;
-  variables: Record<string, unknown>;
-}): Promise<T> {
-  const response = await fetch(GITHUB_GRAPHQL_URL, {
-    method: "POST",
-    headers: {
-      accept: "application/vnd.github+json",
-      authorization: `Bearer ${opts.token.token}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({ query: opts.query, variables: opts.variables }),
-  });
-  const payload = await readJsonResponse<GithubGraphqlResponse<T>>(response, "GitHub GraphQL");
-  if (payload.errors && payload.errors.length > 0) {
-    throw new Error(
-      `GitHub GraphQL errors: ${payload.errors
-        .map((error) => error.message ?? "unknown error")
-        .join("; ")}`,
-    );
-  }
-  if (!payload.data) throw new Error("GitHub GraphQL returned no data");
-  return payload.data;
-}
-
 async function githubRestJson<T>(opts: {
   token: GithubToken;
   method: "PUT";
@@ -260,6 +250,8 @@ async function githubRestJson<T>(opts: {
 async function runGithubApiMerge(opts: {
   gitRoot: string;
   prTarget: string;
+  expectedHeadSha: string;
+  preMutationGuard: PreMutationGuard;
 }): Promise<ProtectedBaseGithubMergeResult> {
   const token = getGithubToken();
   if (!token) {
@@ -269,41 +261,22 @@ async function runGithubApiMerge(opts: {
   }
   const pr = await resolveGithubPrRef(opts);
   const ownerRepo = `${pr.owner}/${pr.repo}`;
-  let pullRequestId = "";
-  let autoRebaseErr: unknown = null;
-  try {
-    const data = await githubGraphql<{
-      repository?: { pullRequest?: { id?: string } | null } | null;
-    }>({
-      token,
-      query:
-        "query($owner:String!,$repo:String!,$number:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$number){id}}}",
-      variables: { owner: pr.owner, repo: pr.repo, number: pr.number },
-    });
-    pullRequestId = data.repository?.pullRequest?.id ?? "";
-    if (!pullRequestId) throw new Error(`GitHub PR #${pr.number} was not found in ${ownerRepo}`);
-    await githubGraphql({
-      token,
-      query:
-        "mutation($pullRequestId:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$pullRequestId,mergeMethod:REBASE}){pullRequest{number}}}",
-      variables: { pullRequestId },
-    });
-    return {
-      status: "auto_merge_enabled",
-      detail: `GitHub PR rebase merge queued through GitHub API auto-merge: ${ownerRepo}#${pr.number}`,
-    };
-  } catch (autoErr) {
-    autoRebaseErr = autoErr;
-  }
-
   let directRebaseErr: unknown = null;
+  await runPreMutationGuard(opts.preMutationGuard);
   try {
-    await githubRestJson({
+    const receipt = await githubRestJson<{ merged?: unknown; message?: unknown }>({
       token,
       method: "PUT",
       path: `/repos/${encodeURIComponent(pr.owner)}/${encodeURIComponent(pr.repo)}/pulls/${pr.number}/merge`,
-      body: { merge_method: "rebase" },
+      body: { merge_method: "rebase", sha: opts.expectedHeadSha },
     });
+    if (receipt.merged !== true) {
+      throw new Error(
+        `GitHub REST rebase merge did not confirm merged=true: ${
+          typeof receipt.message === "string" ? receipt.message : "missing receipt"
+        }`,
+      );
+    }
     return {
       status: "merged",
       detail: `GitHub PR rebase-merged through GitHub API: ${ownerRepo}#${pr.number}`,
@@ -312,38 +285,28 @@ async function runGithubApiMerge(opts: {
     directRebaseErr = directErr;
   }
 
-  let autoMergeErr: unknown = "skipped because pullRequestId was not resolved";
-  if (pullRequestId) {
-    try {
-      await githubGraphql({
-        token,
-        query:
-          "mutation($pullRequestId:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$pullRequestId,mergeMethod:MERGE}){pullRequest{number}}}",
-        variables: { pullRequestId },
-      });
-      return {
-        status: "auto_merge_enabled",
-        detail: `GitHub PR merge queued through GitHub API auto-merge fallback: ${ownerRepo}#${pr.number}`,
-      };
-    } catch (err) {
-      autoMergeErr = err;
-    }
-  }
-
+  await runPreMutationGuard(opts.preMutationGuard);
   try {
-    await githubRestJson({
+    const receipt = await githubRestJson<{ merged?: unknown; message?: unknown }>({
       token,
       method: "PUT",
       path: `/repos/${encodeURIComponent(pr.owner)}/${encodeURIComponent(pr.repo)}/pulls/${pr.number}/merge`,
-      body: { merge_method: "merge" },
+      body: { merge_method: "merge", sha: opts.expectedHeadSha },
     });
+    if (receipt.merged !== true) {
+      throw new Error(
+        `GitHub REST merge did not confirm merged=true: ${
+          typeof receipt.message === "string" ? receipt.message : "missing receipt"
+        }`,
+      );
+    }
     return {
       status: "merged",
       detail: `GitHub PR merged through GitHub API fallback: ${ownerRepo}#${pr.number}`,
     };
   } catch (directErr) {
     throw new Error(
-      `api auto_rebase=${summarizeGithubFailure(autoRebaseErr)}; api direct_rebase=${summarizeGithubFailure(directRebaseErr)}; api auto_merge=${summarizeGithubFailure(autoMergeErr)}; api direct_merge=${summarizeGithubFailure(directErr)}`,
+      `api direct_rebase=${summarizeGithubFailure(directRebaseErr)}; api direct_merge=${summarizeGithubFailure(directErr)}`,
     );
   }
 }
@@ -351,6 +314,8 @@ async function runGithubApiMerge(opts: {
 export async function runProtectedBaseGithubMerge(opts: {
   gitRoot: string;
   prTarget: string;
+  expectedHeadSha: string;
+  preMutationGuard: PreMutationGuard;
 }): Promise<ProtectedBaseGithubMergeResult> {
   const prNumber = /^[1-9]\d*$/.test(opts.prTarget.trim())
     ? Number(opts.prTarget.trim())
@@ -359,22 +324,34 @@ export async function runProtectedBaseGithubMerge(opts: {
     gitRoot: opts.gitRoot,
     prNumber,
   });
-  if (reviewThreads.checked && prNumber !== null) {
-    throwIfGithubReviewThreadsUnresolved({
-      prNumber,
-      unresolved: reviewThreads.unresolved,
+  if (!reviewThreads.checked || prNumber === null) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_NETWORK"),
+      code: "E_NETWORK",
+      message:
+        "GitHub review-thread state is unavailable; refusing exact-head merge until it can be checked",
+      context: {
+        reason_code: "github_review_threads_unavailable",
+        pr_target: opts.prTarget,
+      },
     });
   }
+  throwIfGithubReviewThreadsUnresolved({
+    prNumber,
+    unresolved: reviewThreads.unresolved,
+  });
 
   const failures: string[] = [];
   try {
     return await runGhCliMerge(opts);
   } catch (err) {
+    throwOriginalPreMutationGuardFailure(err);
     failures.push(summarizeGithubFailure(err));
   }
   try {
     return await runGithubApiMerge(opts);
   } catch (err) {
+    throwOriginalPreMutationGuardFailure(err);
     failures.push(summarizeGithubFailure(err));
   }
   throw new CliError({

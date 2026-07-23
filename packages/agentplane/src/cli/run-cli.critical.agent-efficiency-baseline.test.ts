@@ -21,6 +21,10 @@ const COMPATIBILITY_BASELINE = path.join(
   REPO_ROOT,
   "scripts/baselines/v0.6.24-compatibility-contract.json",
 );
+const COMPATIBILITY_CANDIDATE = path.join(
+  REPO_ROOT,
+  "scripts/baselines/v0.7-compatibility-candidate.json",
+);
 const EFFICIENCY_BASELINE = path.join(
   REPO_ROOT,
   "scripts/baselines/agent-efficiency-pre-v0.7-main.json",
@@ -109,9 +113,9 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const efficiency = await runNode([EFFICIENCY_CHECK]);
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("244commands/165args/770options");
+      expect(compatibility.stdout).toContain("244commands/165args/771options");
       expect(compatibility.stdout).toContain(
-        "candidate=approved:agentplane.compatibility.v0.7.workflow-contract",
+        "candidate=approved:agentplane.compatibility.v0.7.cumulative",
       );
       expect(compatibility.stdout).toContain("surface:agent_facing_context_contracts");
       expect(efficiency).toMatchObject({ exitCode: 0, stderr: "" });
@@ -142,6 +146,29 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           0,
         ),
       ).toBe(162);
+      expect(
+        createHash("sha256")
+          .update(await readFile(COMPATIBILITY_BASELINE))
+          .digest("hex"),
+      ).toBe("29fa03085735dd881e7f2101a84766169c43f1397fd3fff1134a61fe30ff913b");
+
+      const compatibilityCandidate = await readJson<{
+        schema_version: number;
+        candidate_id: string;
+        source_tasks: string[];
+        candidate: { surface_sha256: string; section_digests: Record<string, string> };
+      }>(COMPATIBILITY_CANDIDATE);
+      expect(compatibilityCandidate).toMatchObject({
+        schema_version: 2,
+        candidate_id: "agentplane.compatibility.v0.7.cumulative",
+        source_tasks: ["202607221846-4VB97J", "202607221846-YGWMA2", "202607230554-YFYT83"],
+        candidate: {
+          surface_sha256: "cd5fb5b60eb7d554c6fe2bd14cdf9cfbe31625c4ba2d5f9a787968a4c6d31246",
+          section_digests: {
+            cli_topology: "f44122c97483b733ffa7c1de543d95f37672532562e2f5526525c1f6a0b23e4a",
+          },
+        },
+      });
 
       const efficiencyBaseline = await readJson<{
         scenario_count: number;
@@ -192,6 +219,48 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
     },
     TEST_TIMEOUT_MS,
   );
+
+  it("detects extra CLI options and command-shell mutations before candidate review", async () => {
+    const source = `
+      import { diffCliTopology } from ${JSON.stringify(COMPATIBILITY_LIBRARY_URL)};
+      const before = {
+        cli_topology: {
+          commands: [{
+            id: ["example"],
+            visibility: "user",
+            group: "Example",
+            args: [{ name: "id", required: true, variadic: false, valueHint: "<id>" }],
+            options: [],
+          }],
+        },
+      };
+      const withExtraOption = structuredClone(before);
+      withExtraOption.cli_topology.commands[0].options.push({
+        name: "unsafe-extra",
+        kind: "boolean",
+        valueHint: null,
+        default: false,
+      });
+      const withMutatedArg = structuredClone(before);
+      withMutatedArg.cli_topology.commands[0].args[0].required = false;
+      process.stdout.write(JSON.stringify({
+        extra: diffCliTopology(before, withExtraOption),
+        mutated: diffCliTopology(before, withMutatedArg),
+      }));
+    `;
+    const result = await runNode(["--input-type=module", "--eval", source]);
+    expect(result).toMatchObject({ exitCode: 0, stderr: "" });
+    const payload = JSON.parse(result.stdout) as {
+      extra: { added_options: { command: string; name: string }[] };
+      mutated: { mutated_command_shells: { identity: string }[] };
+    };
+    expect(payload.extra.added_options).toEqual([
+      expect.objectContaining({ command: "example", name: "unsafe-extra" }),
+    ]);
+    expect(payload.mutated.mutated_command_shells).toEqual([
+      expect.objectContaining({ identity: "example" }),
+    ]);
+  });
 
   it(
     "rejects a self-rehashed baseline that relaxes a measured ceiling",
