@@ -4,7 +4,7 @@ title: "Capture anchored multi-run RF-04 replay telemetry"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 23
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -65,6 +65,9 @@ comments:
   -
     author: "TESTER"
     body: "The approved replacement pilot passed with exact provider input/output/reasoning usage. The immediately following full capture stopped fail-closed on the first direct/run-01 episode with CODEX_FINAL_STATUS_CONFLICT; the remaining 49 runs were not started. All publication targets and the transaction marker are absent, and the worktree had no generated capture residue. Live evidence and the pinned Codex --output-last-message contract show that schema-constrained intermediate agent messages may legitimately change status; the bounded repair now resolves the last independently validated status before the single turn.completed boundary and rejects any post-completion status with CODEX_FINAL_STATUS_ORDER. No further provider run is authorized by this repair."
+  -
+    author: "TESTER"
+    body: "The authorized full capture advanced through 40/50 scenario runs (45/55 provider episodes) and then failed closed before provider execution for adapter_failure/run-01 with ANCHOR_TASK_NEW. Nine later scenario runs were not started. Transaction cleanup removed all 40 staged envelopes, evidence bundles, and the marker; no baseline or partial artifact was published. Root cause: the logical CURRENT_AGENT telemetry label was passed as a concrete anchor task actor, while the frozen anchor accepts CODER. The fix maps CURRENT_AGENT to CODER only for task owner, plan author, and start author while preserving CURRENT_AGENT in prompts, episode ledger, provider usage, and token usage. Exact-anchor mocked regression and the four focused suites pass 40/40. The user authorized autonomous retries, so no repeated provider approval is required within this RF-04 scope."
 events:
   -
     type: "status"
@@ -103,8 +106,13 @@ events:
     at: "2026-07-23T11:04:47.308Z"
     author: "TESTER"
     body: "The approved replacement pilot passed with exact provider input/output/reasoning usage. The immediately following full capture stopped fail-closed on the first direct/run-01 episode with CODEX_FINAL_STATUS_CONFLICT; the remaining 49 runs were not started. All publication targets and the transaction marker are absent, and the worktree had no generated capture residue. Live evidence and the pinned Codex --output-last-message contract show that schema-constrained intermediate agent messages may legitimately change status; the bounded repair now resolves the last independently validated status before the single turn.completed boundary and rejects any post-completion status with CODEX_FINAL_STATUS_ORDER. No further provider run is authorized by this repair."
+  -
+    type: "comment"
+    at: "2026-07-23T12:20:31.095Z"
+    author: "TESTER"
+    body: "The authorized full capture advanced through 40/50 scenario runs (45/55 provider episodes) and then failed closed before provider execution for adapter_failure/run-01 with ANCHOR_TASK_NEW. Nine later scenario runs were not started. Transaction cleanup removed all 40 staged envelopes, evidence bundles, and the marker; no baseline or partial artifact was published. Root cause: the logical CURRENT_AGENT telemetry label was passed as a concrete anchor task actor, while the frozen anchor accepts CODER. The fix maps CURRENT_AGENT to CODER only for task owner, plan author, and start author while preserving CURRENT_AGENT in prompts, episode ledger, provider usage, and token usage. Exact-anchor mocked regression and the four focused suites pass 40/40. The user authorized autonomous retries, so no repeated provider approval is required within this RF-04 scope."
 doc_version: 3
-doc_updated_at: "2026-07-23T11:05:24.076Z"
+doc_updated_at: "2026-07-23T12:20:31.397Z"
 doc_updated_by: "TESTER"
 description: "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording provider-reported token usage and 70 resolved outcome cells with per-field fixture_control or supervisor_observed provenance, collecting cognitive, orchestration, latency, retrieval, and evidence metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics."
 sections:
@@ -148,7 +156,11 @@ sections:
 
     The second live result invalidated the assumption that every schema-valid streamed status is final. The pinned Codex CLI exposes all streaming item events but defines --output-last-message as the final agent response; the official Codex SDK likewise overwrites finalResponse on each agent_message. The bounded repair therefore validates every pre-completion status independently, resolves the last enum before the single turn.completed boundary, and rejects post-completion messages with CODEX_FINAL_STATUS_ORDER. Raw JSON remains unpersisted.
 
-    A new provider capture remains separately approval-gated after offline verification and independent audit.
+    An authorized full retry then completed 40 of 50 scenario runs and 45 of 55 provider episodes in staging. The driver failed before provider execution on adapter_failure/run-01 with ANCHOR_TASK_NEW; nine later scenario runs did not start. All-or-nothing cleanup removed the 40 staged envelopes, evidence bundles, and transaction marker, so no replay baseline or partial artifact was published.
+
+    The frozen anchor has no CURRENT_AGENT role: it is a logical executor and telemetry label, not a concrete lifecycle actor. The repair maps CURRENT_AGENT to CODER only for task owner, plan author, and start author. Exact-anchor offline coverage proves the lifecycle succeeds while prompts, episode ledger, provider usage, and token usage retain CURRENT_AGENT; the four focused RF-04 suites pass 40/40 and an independent audit found no P0/P1/P2 issue.
+
+    The user authorized autonomous provider retries and follow-through within this RF-04 scope; no repeated approval is required.
 id_source: "generated"
 ---
 ## Summary
@@ -204,4 +216,8 @@ A second separately approved pilot passed and returned exact provider input, out
 
 The second live result invalidated the assumption that every schema-valid streamed status is final. The pinned Codex CLI exposes all streaming item events but defines --output-last-message as the final agent response; the official Codex SDK likewise overwrites finalResponse on each agent_message. The bounded repair therefore validates every pre-completion status independently, resolves the last enum before the single turn.completed boundary, and rejects post-completion messages with CODEX_FINAL_STATUS_ORDER. Raw JSON remains unpersisted.
 
-A new provider capture remains separately approval-gated after offline verification and independent audit.
+An authorized full retry then completed 40 of 50 scenario runs and 45 of 55 provider episodes in staging. The driver failed before provider execution on adapter_failure/run-01 with ANCHOR_TASK_NEW; nine later scenario runs did not start. All-or-nothing cleanup removed the 40 staged envelopes, evidence bundles, and transaction marker, so no replay baseline or partial artifact was published.
+
+The frozen anchor has no CURRENT_AGENT role: it is a logical executor and telemetry label, not a concrete lifecycle actor. The repair maps CURRENT_AGENT to CODER only for task owner, plan author, and start author. Exact-anchor offline coverage proves the lifecycle succeeds while prompts, episode ledger, provider usage, and token usage retain CURRENT_AGENT; the four focused RF-04 suites pass 40/40 and an independent audit found no P0/P1/P2 issue.
+
+The user authorized autonomous provider retries and follow-through within this RF-04 scope; no repeated approval is required.
