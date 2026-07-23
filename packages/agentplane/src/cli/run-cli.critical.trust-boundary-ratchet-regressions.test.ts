@@ -107,6 +107,19 @@ function soleShellSource(branch: "then" | "else"): string {
   ].join("\n");
 }
 
+function stableSiblingShellSource(withSafeSibling: boolean): string {
+  return [
+    `import { spawn as launch } from "node:child_process";`,
+    `export function stable(flag: boolean, command: string): void {`,
+    ...(withSafeSibling ? [`  if (flag) {`, `    void command.trim();`, `  }`] : []),
+    `  if (flag) {`,
+    `    launch("sh", ["-lc", command]);`,
+    `  }`,
+    `}`,
+    ``,
+  ].join("\n");
+}
+
 afterEach(async () => {
   while (tempRoots.length > 0) {
     const root = tempRoots.pop();
@@ -115,6 +128,36 @@ afterEach(async () => {
 });
 
 describeCritical("critical: trust-boundary ratchet correctness regressions", () => {
+  it("constant-folds semantic pass verdicts without raw source-text matching", async () => {
+    const module = await library();
+    const root = await makeFixtureRoot();
+    await writeFixture(
+      root,
+      "packages/agentplane/src/commands/route-semantic-constants.ts",
+      [
+        `const PASS = "pass";`,
+        `export const joined = ["agentplane evaluator run X --verdict", PASS].join(" ");`,
+        `export const templated = \`agentplane evaluator run X --verdict \${PASS}\`;`,
+        `export const concatenated = "agentplane evaluator run X --verdict " + PASS;`,
+        `export const packet = { verdict: PASS };`,
+        `export const safe = { verdict: "human_review" };`,
+        ``,
+      ].join("\n"),
+    );
+
+    const verdicts = byRule(
+      module.collectTrustBoundaryViolations(root),
+      "trust.no-automatic-semantic-verdict",
+    );
+    expect(verdicts.some((entry) => entry.locator.startsWith("literal:joined:"))).toBe(true);
+    expect(verdicts.some((entry) => entry.locator.startsWith("literal:templated:"))).toBe(true);
+    expect(verdicts.some((entry) => entry.locator.startsWith("literal:concatenated:"))).toBe(true);
+    expect(
+      verdicts.some((entry) => entry.locator.startsWith("property:packet:verdict-pass:")),
+    ).toBe(true);
+    expect(verdicts.some((entry) => entry.locator.includes("safe"))).toBe(false);
+  });
+
   it("tracks aliased and contextual observed-field flows without flagging safe controls", async () => {
     const module = await library();
     const root = await makeFixtureRoot();
@@ -155,6 +198,23 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
         `export function assigned(base: RunnerResult, claims: RunnerResultManifest): RunnerResult {`,
         `  return Object.assign({}, base, claims);`,
         `}`,
+        `export function mutateAssigned(`,
+        `  output: RunnerResult,`,
+        `  claims: RunnerResultManifest,`,
+        `): RunnerResult {`,
+        `  Object.assign(output, claims);`,
+        `  return output;`,
+        `}`,
+        `export function nestedMutation(output: RunnerResult, raw: Raw): RunnerResult {`,
+        `  output.metrics!.duration_ms = raw.duration_ms as number;`,
+        `  return output;`,
+        `}`,
+        `export function safeAssigned(`,
+        `  base: RunnerResult,`,
+        `  claims: RunnerResultManifest,`,
+        `): RunnerResult {`,
+        `  return Object.assign({}, base, { summary: claims.summary });`,
+        `}`,
         `type Merge = (base: RunnerResult, claims: RunnerResultManifest) => RunnerResult;`,
         `export const contextual: Merge = (base, claims) => {`,
         `  const merged = { ...base, ...claims };`,
@@ -192,6 +252,8 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
       "parser:nested.evidence.tests_run:",
       "parser:nested.artifacts:",
       "override:assigned.assign:",
+      "override:mutateAssigned.assign:",
+      "parser:nestedMutation.metrics.duration_ms:",
       "override:contextual.spread:",
       "override:namespaced.spread:",
     ]) {
@@ -200,7 +262,9 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
         prefix,
       ).toBe(true);
     }
-    expect(observed.some((entry) => /(?:safeParser|safeMerge)/u.test(entry.locator))).toBe(false);
+    expect(
+      observed.some((entry) => /(?:safeAssigned|safeParser|safeMerge)/u.test(entry.locator)),
+    ).toBe(false);
   });
 
   it("evaluates computed danger values and recognizes dominating typed authority", async () => {
@@ -211,6 +275,7 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
       "packages/agentplane/src/runner/adapters/sandbox-regressions.ts",
       [
         `type Authority = { sandbox: { danger_full_access_authorized: boolean } };`,
+        `type FeatureFlags = { sandbox: { danger_full_access_authorized: boolean } };`,
         `type Choice = { sandbox: "danger-full-access" | "workspace-write" };`,
         `export const computed = () => ["danger", "full", "access"].join("-");`,
         `export const safeObject = (authority: Authority): Choice =>`,
@@ -223,6 +288,18 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
         `  if (value.trim().length === 0) return "workspace-write";`,
         `  return "danger-full-access";`,
         `}`,
+        `export const destructured = (`,
+        `  { sandbox: { danger_full_access_authorized: authorized } }: Authority,`,
+        `  enabled: boolean,`,
+        `): string => authorized && enabled ? "danger-full-access" : "workspace-write";`,
+        `export const typedLookalike = (`,
+        `  { sandbox: { danger_full_access_authorized: authorized } }: FeatureFlags,`,
+        `  enabled: boolean,`,
+        `): string => authorized && enabled ? "danger-full-access" : "workspace-write";`,
+        `export const lookalike = (`,
+        `  { danger_full_access_authorized: authorized }: Record<string, unknown>,`,
+        `  enabled: boolean,`,
+        `): string => authorized && enabled ? "danger-full-access" : "workspace-write";`,
         ``,
       ].join("\n"),
     );
@@ -232,7 +309,13 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
       "trust.no-implicit-danger-sandbox",
     );
     expect(sandbox.some((entry) => entry.locator.startsWith("fallback:computed:"))).toBe(true);
-    expect(sandbox.some((entry) => /(?:safeObject|guarded)/u.test(entry.locator))).toBe(false);
+    expect(
+      sandbox.some((entry) => /(?:safeObject|guarded|destructured)/u.test(entry.locator)),
+    ).toBe(false);
+    expect(sandbox.some((entry) => entry.locator.startsWith("fallback:lookalike:"))).toBe(true);
+    expect(sandbox.some((entry) => entry.locator.startsWith("fallback:typedLookalike:"))).toBe(
+      true,
+    );
   });
 
   it("makes branch structure part of stable IDs and resolves shell import aliases", async () => {
@@ -267,6 +350,18 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
       "trust.no-rendered-command-orchestration",
     )[0]!.violation_id;
     expect(elseId).not.toBe(thenId);
+
+    await writeFixture(root, relativePath, stableSiblingShellSource(false));
+    const withoutSibling = byRule(
+      module.collectTrustBoundaryViolations(root),
+      "trust.no-rendered-command-orchestration",
+    )[0]!.violation_id;
+    await writeFixture(root, relativePath, stableSiblingShellSource(true));
+    const withSibling = byRule(
+      module.collectTrustBoundaryViolations(root),
+      "trust.no-rendered-command-orchestration",
+    )[0]!.violation_id;
+    expect(withSibling).toBe(withoutSibling);
   });
 
   it("does not treat unrelated runner telemetry as a task-context projection", async () => {
@@ -293,7 +388,7 @@ describeCritical("critical: trust-boundary ratchet correctness regressions", () 
         `import type { RunnerTaskContext } from "./types/context.js";`,
         `type TaskData = { title: string };`,
         `export function telemetry(data: unknown, events: unknown[]) {`,
-        `  return { data, events, doc: "diagnostic payload" };`,
+        `  return { task_id: "telemetry", data, events, doc: "diagnostic payload" };`,
         `}`,
         `export function task(data: TaskData): RunnerTaskContext {`,
         `  return { task_id: "T", data, events: [], doc: "task" };`,

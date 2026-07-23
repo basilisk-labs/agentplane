@@ -9,12 +9,12 @@ import {
   nearestSymbol,
   normalizeRepoPath,
   propertyName,
-  sha256,
   structuralNodeIdentity,
 } from "./trust-boundary-ast.mjs";
 import { ruleById } from "./trust-boundary-baseline.mjs";
 import { collectAgentWritableObservedFields } from "./trust-boundary-observed.mjs";
 import { collectImplicitDangerSandboxes } from "./trust-boundary-sandbox.mjs";
+import { collectAutomaticVerdicts } from "./trust-boundary-semantic.mjs";
 import { createTypeDeclarationIndex } from "./trust-boundary-types.mjs";
 
 export {
@@ -101,75 +101,6 @@ function resolutionViolations(ruleId, typeName, resolution) {
       `${typeName} type resolution failed closed: ${diagnostic.message}`,
     ),
   );
-}
-
-function collectAutomaticVerdicts(sourceFiles, textFiles) {
-  const ruleId = "trust.no-automatic-semantic-verdict";
-  const violations = [];
-  for (const sourceFile of sourceFiles) {
-    if (sourceFile.fileName.endsWith(".spec.ts")) continue;
-    const visit = (node) => {
-      if (
-        ts.isStringLiteralLike(node) ||
-        ts.isNoSubstitutionTemplateLiteral(node) ||
-        ts.isTemplateExpression(node)
-      ) {
-        const rendered = node.getText(sourceFile);
-        if (/--verdict\s+pass(?=\s|["'`])/u.test(rendered)) {
-          const digest = sha256(rendered.replaceAll(/\s+/g, " ")).slice(0, 12);
-          violations.push(
-            makeViolation(
-              ruleId,
-              sourceFile,
-              node,
-              `literal:${nearestSymbol(node)}:${digest}`,
-              "fixed --verdict pass command manufactures a semantic verdict",
-            ),
-          );
-        }
-      }
-      if (
-        ts.isPropertyAssignment(node) &&
-        propertyName(node) === "verdict" &&
-        /(?:route|template|bootstrap|ingest|quality-review)/u.test(sourceFile.fileName)
-      ) {
-        const initializer = node.initializer;
-        if (ts.isStringLiteralLike(initializer) && initializer.text === "pass") {
-          violations.push(
-            makeViolation(
-              ruleId,
-              sourceFile,
-              node,
-              `property:${nearestSymbol(node)}:verdict-pass`,
-              "verdict: pass is emitted by production routing/template code",
-            ),
-          );
-        }
-      }
-      ts.forEachChild(node, visit);
-    };
-    visit(sourceFile);
-  }
-  for (const { filePath, text } of textFiles) {
-    const occurrences = new Map();
-    for (const [index, line] of text.split("\n").entries()) {
-      if (!/--verdict\s+pass(?=\s|["'`])/u.test(line)) continue;
-      const normalized = line.trim().replaceAll(/\s+/g, " ");
-      const digest = sha256(normalized).slice(0, 12);
-      const ordinal = (occurrences.get(digest) ?? 0) + 1;
-      occurrences.set(digest, ordinal);
-      violations.push(
-        makeTextViolation(
-          ruleId,
-          filePath,
-          index + 1,
-          `text:${digest}:${String(ordinal)}`,
-          "fixed --verdict pass command appears in an agent-facing template",
-        ),
-      );
-    }
-  }
-  return violations;
 }
 
 function normalizedFieldName(name) {
@@ -419,6 +350,81 @@ function functionContainsText(node, text) {
   return node.body?.getText().includes(text) ?? false;
 }
 
+function expectedObjectType(sourceFile, node, typeIndex) {
+  const pathSegments = [];
+  let expression = node;
+  let current = node.parent;
+  while (current) {
+    if (
+      ts.isParenthesizedExpression(current) ||
+      ts.isAsExpression(current) ||
+      ts.isSatisfiesExpression(current)
+    ) {
+      expression = current;
+      current = current.parent;
+      continue;
+    }
+    if (
+      ts.isPropertyAssignment(current) &&
+      current.initializer === expression &&
+      ts.isObjectLiteralExpression(current.parent)
+    ) {
+      const name = propertyName(current);
+      if (!name) return null;
+      pathSegments.unshift(name);
+      expression = current.parent;
+      current = expression.parent;
+      continue;
+    }
+    let typeNode = null;
+    if (ts.isVariableDeclaration(current) && current.initializer === expression) {
+      typeNode = current.type;
+    } else if (ts.isReturnStatement(current)) {
+      let owner = current.parent;
+      while (owner && !ts.isFunctionLike(owner)) owner = owner.parent;
+      typeNode = owner?.type ?? null;
+    } else if (ts.isArrowFunction(current) && current.body === expression) {
+      typeNode = current.type;
+    }
+    if (!typeNode) return null;
+    let resolvedType = typeNode;
+    let resolvedSourceFile = sourceFile;
+    if (
+      ts.isTypeReferenceNode(resolvedType) &&
+      ts.isIdentifier(resolvedType.typeName) &&
+      resolvedType.typeName.text === "Promise" &&
+      resolvedType.typeArguments?.length === 1
+    ) {
+      resolvedType = resolvedType.typeArguments[0];
+    }
+    for (const segment of pathSegments) {
+      const resolution = typeIndex.resolveTypeNode(resolvedSourceFile, resolvedType);
+      const candidates = resolution.members.filter(
+        ({ member }) => ts.isPropertySignature(member) && propertyName(member) === segment,
+      );
+      if (candidates.length !== 1 || !candidates[0].member.type) return null;
+      resolvedType = candidates[0].member.type;
+      resolvedSourceFile = candidates[0].sourceFile;
+    }
+    return { sourceFile: resolvedSourceFile, typeNode: resolvedType };
+  }
+  return null;
+}
+
+function typeMatchesResolution(typeIndex, sourceFile, typeNode, target) {
+  if (!typeNode || !target) return false;
+  const resolution = typeIndex.resolveTypeNode(sourceFile, typeNode);
+  if (resolution.identity === target.identity) return true;
+  const targetKeys = new Set(
+    target.declarations.map(
+      (entry) => `${normalizeRepoPath(entry.sourceFile.fileName)}#${entry.node.name.text}`,
+    ),
+  );
+  return resolution.declarations.some((entry) =>
+    targetKeys.has(`${normalizeRepoPath(entry.sourceFile.fileName)}#${entry.node.name.text}`),
+  );
+}
+
 function collectRenderedCommandOrchestration(sourceFiles) {
   const ruleId = "trust.no-rendered-command-orchestration";
   const violations = [];
@@ -519,10 +525,12 @@ function collectDuplicateRunnerTaskRepresentations(sourceFiles, typeIndex) {
         const byName = new Map(
           node.properties.map((property) => [propertyName(property), property]),
         );
+        const expected = expectedObjectType(sourceFile, node, typeIndex);
         if (
           /\/runner\//u.test(sourceFile.fileName) &&
-          byName.has("task_id") &&
-          byName.has("data")
+          byName.has("data") &&
+          expected &&
+          typeMatchesResolution(typeIndex, expected.sourceFile, expected.typeNode, declaration)
         ) {
           for (const name of DUPLICATE_TASK_FIELDS) {
             const property = byName.get(name);
@@ -570,7 +578,7 @@ export function collectTrustBoundaryViolations(root) {
   }
   const typeIndex = createTypeDeclarationIndex(sourceFiles);
   return [
-    ...collectAutomaticVerdicts(sourceFiles, textFiles),
+    ...collectAutomaticVerdicts(sourceFiles, textFiles, makeViolation, makeTextViolation),
     ...collectAgentWritableObservedFields(sourceFiles, typeIndex, makeViolation),
     ...collectImplicitDangerSandboxes(sourceFiles, typeIndex, makeViolation),
     ...collectUntypedDurableBoundaries(sourceFiles, typeIndex),

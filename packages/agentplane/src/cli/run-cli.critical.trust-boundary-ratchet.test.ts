@@ -117,7 +117,7 @@ async function writeUnsafeFixtures(root: string): Promise<void> {
     root,
     "packages/agentplane/src/runner/types/context.ts",
     [
-      `type TaskData = { doc?: string };`,
+      `export type TaskData = { doc?: string };`,
       `type RouteDecision = { kind: string };`,
       `type TaskProjection = { data: TaskData; doc: string };`,
       `export interface RunnerTaskContext extends TaskProjection { task_id: string }`,
@@ -225,9 +225,9 @@ async function writeUnsafeFixtures(root: string): Promise<void> {
     root,
     "packages/agentplane/src/runner/context/task-context.ts",
     [
-      `export function buildTaskContext(data: Record<string, unknown>) {`,
-      `  const task = { task_id: "T", data, doc: "task", events: [] };`,
-      `  return { task };`,
+      `import type { RunnerTaskContext, TaskData } from "../types/context.js";`,
+      `export function buildTaskContext(data: TaskData): RunnerTaskContext {`,
+      `  return { task_id: "T", data, doc: "task", events: [] } as RunnerTaskContext;`,
       `}`,
       ``,
     ].join("\n"),
