@@ -125,22 +125,6 @@ function isHierarchyNode(node) {
   );
 }
 
-function controlSiblingOrdinal(node, sourceFile, signature) {
-  if (!node.parent) return 1;
-  let ordinal = 0;
-  let selected = 0;
-  ts.forEachChild(node.parent, (candidate) => {
-    if (candidate.kind !== node.kind) return;
-    const candidateSignature = ts.isIfStatement(candidate)
-      ? sha256(normalizedNodeText(sourceFile, candidate.expression)).slice(0, 12)
-      : "";
-    if (candidateSignature !== signature) return;
-    ordinal += 1;
-    if (candidate === node) selected = ordinal;
-  });
-  return selected || 1;
-}
-
 function structuralAncestorHierarchy(sourceFile, node) {
   const segments = [];
   const includeControlFlow = ts.isCallExpression(node);
@@ -155,11 +139,8 @@ function structuralAncestorHierarchy(sourceFile, node) {
             ? "else"
             : "condition";
       const condition = sha256(normalizedNodeText(sourceFile, current.expression)).slice(0, 12);
-      segments.unshift(
-        `IfStatement:${branch}:${condition}:${String(
-          controlSiblingOrdinal(current, sourceFile, condition),
-        )}`,
-      );
+      const content = sha256(normalizedNodeText(sourceFile, current)).slice(0, 12);
+      segments.unshift(`IfStatement:${branch}:${condition}:${content}`);
     } else if (isHierarchyNode(current)) {
       const kind = ts.SyntaxKind[current.kind] ?? String(current.kind);
       const name = hierarchyNodeName(current);
@@ -176,10 +157,15 @@ function structuralAncestorHierarchy(sourceFile, node) {
 export function structuralNodeIdentity(sourceFile, node) {
   const container = structuralContainer(node);
   const normalized = normalizedNodeText(sourceFile, node);
+  const hierarchy = structuralAncestorHierarchy(sourceFile, node);
   let ordinal = 0;
   let selectedOrdinal = 0;
   const visit = (candidate) => {
-    if (candidate.kind === node.kind && normalizedNodeText(sourceFile, candidate) === normalized) {
+    if (
+      candidate.kind === node.kind &&
+      normalizedNodeText(sourceFile, candidate) === normalized &&
+      structuralAncestorHierarchy(sourceFile, candidate) === hierarchy
+    ) {
       ordinal += 1;
       if (candidate === node) selectedOrdinal = ordinal;
     }
@@ -187,7 +173,6 @@ export function structuralNodeIdentity(sourceFile, node) {
   };
   visit(container);
   const kind = ts.SyntaxKind[node.kind] ?? String(node.kind);
-  const hierarchy = structuralAncestorHierarchy(sourceFile, node);
   return `ast:${hierarchy}:${kind}:${sha256(normalized).slice(0, 12)}:${String(
     selectedOrdinal || 1,
   )}`;
@@ -205,6 +190,15 @@ export function staticStringValue(node, constants = new Map()) {
     return staticStringValue(node.expression, constants);
   }
   if (ts.isIdentifier(node)) return constants.get(node.text) ?? null;
+  if (ts.isTemplateExpression(node)) {
+    let value = node.head.text;
+    for (const span of node.templateSpans) {
+      const expression = staticStringValue(span.expression, constants);
+      if (expression === null) return null;
+      value += expression + span.literal.text;
+    }
+    return value;
+  }
   if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
     const left = staticStringValue(node.left, constants);
     const right = staticStringValue(node.right, constants);

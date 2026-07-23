@@ -3,6 +3,7 @@ import ts from "typescript";
 import {
   collectStringConstants,
   declarationName,
+  expressionPath,
   nearestSymbol,
   propertyName,
   resolvedPropertyField,
@@ -149,6 +150,52 @@ function parserObservedPaths(field, value, parserNames, constants, jsonParserNam
   return paths;
 }
 
+function observedTargetPath(node, constants) {
+  const path = expressionPath(node, constants);
+  if (!path) return null;
+  const [, field, nestedField] = path.split(".");
+  if (!field) return null;
+  if (OBSERVED_DIRECT_FIELDS.has(field)) return field;
+  const nested = OBSERVED_NESTED_FIELDS.get(field);
+  return nestedField && nested?.has(nestedField) ? `${field}.${nestedField}` : null;
+}
+
+function manifestObservedPaths(source, manifestNames, manifestPaths, constants) {
+  if (ts.isObjectLiteralExpression(source)) {
+    const paths = [];
+    for (const property of source.properties) {
+      if (
+        ts.isSpreadAssignment(property) &&
+        expressionHasManifestSource(property.expression, manifestNames, manifestPaths, constants)
+      ) {
+        paths.push("spread");
+        continue;
+      }
+      if (!ts.isPropertyAssignment(property) && !ts.isShorthandPropertyAssignment(property)) {
+        continue;
+      }
+      const field = declaredPropertyField(property, constants);
+      const value = ts.isPropertyAssignment(property) ? property.initializer : property.name;
+      if (
+        field &&
+        (OBSERVED_DIRECT_FIELDS.has(field) || OBSERVED_NESTED_FIELDS.has(field)) &&
+        expressionHasManifestSource(value, manifestNames, manifestPaths, constants)
+      ) {
+        paths.push(field);
+      }
+    }
+    return paths;
+  }
+  const sourcePath = expressionPath(source, constants);
+  if (sourcePath && (manifestNames.has(sourcePath) || manifestPaths.has(sourcePath))) {
+    return ["assign"];
+  }
+  if (!sourcePath && expressionHasManifestSource(source, manifestNames, manifestPaths, constants)) {
+    return ["assign"];
+  }
+  return [];
+}
+
 function returnedIdentifier(node) {
   let current = node;
   while (
@@ -179,10 +226,21 @@ function collectReturnedSinkNames(functionNode, enabled) {
 
 function rootExpressionName(node) {
   let current = node;
-  while (ts.isPropertyAccessExpression(current) || ts.isElementAccessExpression(current)) {
-    current = current.expression;
+  while (!ts.isIdentifier(current)) {
+    if (
+      ts.isPropertyAccessExpression(current) ||
+      ts.isElementAccessExpression(current) ||
+      ts.isParenthesizedExpression(current) ||
+      ts.isAsExpression(current) ||
+      ts.isNonNullExpression(current) ||
+      ts.isSatisfiesExpression(current)
+    ) {
+      current = current.expression;
+      continue;
+    }
+    return "";
   }
-  return ts.isIdentifier(current) ? current.text : "";
+  return current.text;
 }
 
 function analyzeObservedFunctionDataflow(sourceFile, functionNode, model) {
@@ -273,6 +331,16 @@ function analyzeObservedFunctionDataflow(sourceFile, functionNode, model) {
           if (!parser.has(observedPath)) parser.set(observedPath, node);
         }
       }
+      if (resultSinkNames.has(targetName)) {
+        const targetPath = observedTargetPath(node.left, constants);
+        if (
+          targetPath &&
+          parserValueIsAccepted(node.right, parserNames, constants, jsonParserNames) &&
+          !parser.has(targetPath)
+        ) {
+          parser.set(targetPath, node);
+        }
+      }
     }
     if (ts.isObjectLiteralExpression(node)) {
       const sinkFields = expressionParserFields(
@@ -355,13 +423,18 @@ function analyzeObservedFunctionDataflow(sourceFile, functionNode, model) {
       node.expression.expression.text === "Object" &&
       node.expression.name.text === "assign"
     ) {
-      if (
-        expressionIsResultSink(node, sourceFile, functionKinds, model, resultSinkNames) &&
-        node.arguments.some((argument) =>
-          expressionHasManifestSource(argument, manifestNames, manifestPaths, constants),
-        ) &&
-        !override.has("assign")
-      ) {
+      const receiverName = node.arguments[0] ? rootExpressionName(node.arguments[0]) : "";
+      const writesResult =
+        resultSinkNames.has(receiverName) ||
+        expressionIsResultSink(node, sourceFile, functionKinds, model, resultSinkNames);
+      const assignedObservedPaths = writesResult
+        ? node.arguments
+            .slice(1)
+            .flatMap((argument) =>
+              manifestObservedPaths(argument, manifestNames, manifestPaths, constants),
+            )
+        : [];
+      if (assignedObservedPaths.length > 0 && !override.has("assign")) {
         override.set("assign", node);
       }
       const parserFields = expressionParserFields(

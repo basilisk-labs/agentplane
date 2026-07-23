@@ -27,18 +27,33 @@ function containingFunction(node) {
   return null;
 }
 
+function bindingPath(name, target, path = []) {
+  if (ts.isIdentifier(name)) return name.text === target ? path : null;
+  if (!ts.isObjectBindingPattern(name)) return null;
+  for (const element of name.elements) {
+    if (!ts.isBindingElement(element)) continue;
+    const key = element.propertyName ?? element.name;
+    if (!ts.isIdentifier(key) && !ts.isStringLiteralLike(key)) continue;
+    const nested = bindingPath(element.name, target, [...path, key.text]);
+    if (nested) return nested;
+  }
+  return null;
+}
+
 function authorityBinding(functionNode, name) {
   for (const parameter of functionNode?.parameters ?? []) {
-    if (ts.isIdentifier(parameter.name) && parameter.name.text === name) {
-      return { initializer: null, type: parameter.type };
-    }
+    const path = bindingPath(parameter.name, name);
+    if (path) return { initializer: null, path, type: parameter.type };
   }
   let found = null;
   const visit = (node) => {
     if (found || (node !== functionNode && ts.isFunctionLike(node))) return;
-    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === name) {
-      found = { initializer: node.initializer ?? null, type: node.type };
-      return;
+    if (ts.isVariableDeclaration(node)) {
+      const path = bindingPath(node.name, name);
+      if (path) {
+        found = { initializer: node.initializer ?? null, path, type: node.type };
+        return;
+      }
     }
     ts.forEachChild(node, visit);
   };
@@ -70,19 +85,21 @@ function expressionHasAuthorityProvenance(sourceFile, expression, typeIndex, see
   const binding = authorityBinding(functionNode, root);
   if (!binding || seen.has(root)) return false;
   seen.add(root);
-  if (segments.length === 0 && binding.initializer) {
+  if (segments.length === 0 && binding.path.length === 0 && binding.initializer) {
     return expressionHasAuthorityProvenance(sourceFile, binding.initializer, typeIndex, seen);
   }
-  if (!binding.type || segments.length === 0) return false;
-  const semanticPath = `${binding.type.getText()} ${root} ${segments.join(" ")}`;
-  const explicitAuthority = /(?:authorit|approval|permission|grant)/iu.test(semanticPath);
+  const authorityPath = [...binding.path, ...segments];
+  if (!binding.type || authorityPath.length === 0) return false;
+  const typeText = binding.type.getText();
+  const semanticPath = `${typeText} ${root} ${authorityPath.join(" ")}`;
+  const explicitAuthority = /(?:authorit|approval|permission|grant)/iu.test(typeText);
   const dangerScope = /(?:danger|sandbox|full[_-]?access)/iu.test(semanticPath);
   const positiveGrant = /(?:approved|authorized|allowed|granted|permit)/iu.test(semanticPath);
   return (
     explicitAuthority &&
     dangerScope &&
     positiveGrant &&
-    booleanAuthorityPath(typeIndex, sourceFile, binding.type, segments)
+    booleanAuthorityPath(typeIndex, sourceFile, binding.type, authorityPath)
   );
 }
 
@@ -106,6 +123,18 @@ function conditionAuthorizesDanger(sourceFile, condition, dangerWhenTrue, typeIn
   }
   if (ts.isBinaryExpression(condition)) {
     const operator = condition.operatorToken.kind;
+    if (operator === ts.SyntaxKind.AmpersandAmpersandToken && dangerWhenTrue) {
+      return (
+        conditionAuthorizesDanger(sourceFile, condition.left, true, typeIndex) ||
+        conditionAuthorizesDanger(sourceFile, condition.right, true, typeIndex)
+      );
+    }
+    if (operator === ts.SyntaxKind.BarBarToken && !dangerWhenTrue) {
+      return (
+        conditionAuthorizesDanger(sourceFile, condition.left, false, typeIndex) ||
+        conditionAuthorizesDanger(sourceFile, condition.right, false, typeIndex)
+      );
+    }
     const booleanSide =
       condition.right.kind === ts.SyntaxKind.TrueKeyword ||
       condition.right.kind === ts.SyntaxKind.FalseKeyword
