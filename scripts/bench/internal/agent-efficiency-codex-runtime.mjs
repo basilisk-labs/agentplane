@@ -99,6 +99,7 @@ export function acceptCodexJsonlLine(collector, line) {
     fail("CODEX_JSONL_PARSE");
   }
   if (event?.type === "item.completed" && event.item?.type === "agent_message") {
+    if (collector.turnCompletedEvents !== 0) fail("CODEX_FINAL_STATUS_ORDER");
     const candidate =
       typeof event.item.text === "string"
         ? event.item.text
@@ -121,11 +122,7 @@ export function acceptCodexJsonlLine(collector, line) {
     ) {
       fail("CODEX_FINAL_STATUS_SHAPE");
     }
-    if (collector.finalStatus === null) {
-      collector.finalStatus = parsed.status;
-    } else if (collector.finalStatus !== parsed.status) {
-      fail("CODEX_FINAL_STATUS_CONFLICT");
-    }
+    collector.finalStatus = parsed.status;
     return;
   }
   if (event?.type !== "turn.completed") return;
