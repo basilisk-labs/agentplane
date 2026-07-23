@@ -40,7 +40,7 @@ jobs:
       changed_files: ${{ steps.plan.outputs.changed_files }}
       changed_files_count: ${{ steps.plan.outputs.changed_files_count }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
           fetch-depth: 0
@@ -75,7 +75,7 @@ jobs:
       needs.plan.outputs.route != 'full-fast'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
           fetch-depth: 0
@@ -121,7 +121,7 @@ jobs:
       needs.plan.outputs.route == 'full-fast'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
           fetch-depth: 0
@@ -174,7 +174,7 @@ jobs:
       needs.plan.outputs.route == 'full-fast'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
@@ -215,7 +215,7 @@ jobs:
       needs.plan.outputs.route == 'full-fast'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
@@ -258,7 +258,7 @@ jobs:
       needs.plan.outputs.route == 'full-fast'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
           fetch-depth: 0
@@ -301,7 +301,7 @@ jobs:
       needs.plan.outputs.route == 'full-fast'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
@@ -345,7 +345,7 @@ jobs:
       needs.plan.outputs.route == 'full-fast'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
@@ -385,7 +385,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
@@ -427,7 +427,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.sha != ''
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
@@ -514,7 +514,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - name: Resolve release-ready target
