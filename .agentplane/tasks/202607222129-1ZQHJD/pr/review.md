@@ -24,7 +24,7 @@ Created: 2026-07-22T21:30:53.096Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-22T21:30:53.096Z
+- Updated: 2026-07-23T12:19:22.838Z
 - Branch: task/202607222129-1ZQHJD/capture-anchored-multi-run-rf-04-replay-telemetr
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
