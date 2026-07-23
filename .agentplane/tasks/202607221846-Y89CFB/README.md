@@ -1,10 +1,10 @@
 ---
 id: "202607221846-Y89CFB"
 title: "Build supervisor-owned execution receipts"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -37,11 +37,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: implement supervisor-owned ExecutionReceipt with observed process, Git delta, check, artifact hash, compatibility, and success-policy evidence."
+events:
+  -
+    type: "status"
+    at: "2026-07-23T16:00:07.277Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: implement supervisor-owned ExecutionReceipt with observed process, Git delta, check, artifact hash, compatibility, and success-policy evidence."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:46:55.422Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-23T16:00:07.277Z"
+doc_updated_by: "CODER"
 description: "RF-01b: create ExecutionReceipt from observed process, Git, check, artifact, and hash evidence; prevent agent output from overriding it and consume it in success and verification policy."
 sections:
   Summary: |-
