@@ -419,7 +419,7 @@ describe("CustomRunnerAdapter", () => {
     await writeRunnerExecutable(tempDir, "custom-runner", [
       [
         "#!/bin/sh",
-        String.raw`printf '{"schema_version":1,"artifacts":[{"path":"reports/out.txt","label":"Bad Label"}],"capabilities_used":["custom report"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        String.raw`printf '{"schema_version":2,"kind":"agent_semantic_result","work_order_id":"run-invalid","status":"completed","summary":"Invalid semantic result.","findings":[],"uncertainty":[],"artifacts":[{"path":"reports/out.txt"}]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "cat >/dev/null",
         String.raw`printf "custom runner wrote invalid manifest\n"`,
         "exit 0",
@@ -453,14 +453,12 @@ describe("CustomRunnerAdapter", () => {
       path.join(bundle.execution.artifact_paths.run_dir, "result.invalid.json"),
       "utf8",
     );
-    expect(preserved).toContain('"label":"Bad Label"');
-    expect(preserved).toContain('"capabilities_used":["custom report"]');
+    expect(preserved).toContain('"artifacts":[{"path":"reports/out.txt"}]');
     const sourceManifest = await readFile(
       path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
       "utf8",
     );
-    expect(sourceManifest).toContain('"label":"Bad Label"');
-    expect(sourceManifest).toContain('"capabilities_used":["custom report"]');
+    expect(sourceManifest).toContain('"artifacts":[{"path":"reports/out.txt"}]');
     const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
       status?: string;
       summary?: string;
@@ -493,7 +491,7 @@ describe("CustomRunnerAdapter", () => {
     await rm(tempDir, { recursive: true, force: true });
   });
 
-  it("preserves the original custom manifest as a side artifact while keeping normalized prose machine-English", async () => {
+  it("preserves the original custom manifest while separating semantic and observed data", async () => {
     const raw = defaultConfig();
     raw.runner.default_adapter = "custom";
     raw.runner.custom = {
@@ -525,22 +523,60 @@ describe("CustomRunnerAdapter", () => {
 
     const result = await adapter.execute(invocation);
 
-    expect(result.summary).toBe("Custom runner execution completed successfully.");
-    expect(result.findings).toBeUndefined();
+    expect(result.summary).toBe("Привет из custom manifest");
+    expect(result.findings).toEqual(["русский finding"]);
     expect(result.verification_hints).toBeUndefined();
-    expect(result.capabilities_used).toEqual(["custom.report"]);
+    expect(result.capabilities_used).toEqual(["custom:custom-runner"]);
     expect(result.artifacts).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ path: invocation.result_path, label: "result-manifest" }),
-        expect.objectContaining({ path: "reports/out.txt", label: "report" }),
         expect.objectContaining({
           path: path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
           label: "source-result-manifest",
         }),
       ]),
     );
+    expect(result.artifacts).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: "reports/out.txt", label: "report" }),
+      ]),
+    );
+    expect(result.semantic_result).toMatchObject({
+      provenance: "agent_reported",
+      value: {
+        kind: "legacy_agent_semantic_result",
+        summary: "Привет из custom manifest",
+        findings: ["русский finding"],
+      },
+    });
+    expect(result.agent_reported_claims).toEqual(
+      expect.arrayContaining([
+        {
+          field: "artifacts",
+          value: [{ path: "reports/out.txt", label: "report" }],
+          provenance: "agent_reported",
+        },
+        {
+          field: "capabilities_used",
+          value: ["custom.report"],
+          provenance: "agent_reported",
+        },
+        {
+          field: "evidence.changed_paths",
+          value: ["src/runner/task-state.ts", "src/runner/result-manifest.ts"],
+          provenance: "agent_reported",
+        },
+        {
+          field: "evidence.tests_run",
+          value: ["bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts"],
+          provenance: "agent_reported",
+        },
+      ]),
+    );
 
     const normalized = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
+      kind?: string;
+      observed_by?: string;
       summary?: string;
       artifacts?: { path: string; label?: string }[];
       findings?: string[];
@@ -553,32 +589,44 @@ describe("CustomRunnerAdapter", () => {
         tests_run?: string[];
         verification_candidates?: string[];
       };
+      semantic_result?: { provenance?: string; value?: { kind?: string; summary?: string } };
+      agent_reported_claims?: { field?: string; provenance?: string; value?: unknown }[];
     };
-    expect(normalized.summary).toBe("Custom runner execution completed successfully.");
-    expect(normalized.artifacts).toEqual(
+    expect(normalized).toMatchObject({
+      kind: "runner_result_record",
+      observed_by: "agentplane",
+      summary: "Привет из custom manifest",
+      findings: ["русский finding"],
+      capabilities_used: ["custom:custom-runner"],
+      semantic_result: {
+        provenance: "agent_reported",
+        value: {
+          kind: "legacy_agent_semantic_result",
+          summary: "Привет из custom manifest",
+        },
+      },
+    });
+    expect(normalized.artifacts).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ path: "reports/out.txt" })]),
+    );
+    expect(normalized.verification_hints).toBeUndefined();
+    expect(normalized.evidence).toBeUndefined();
+    expect(normalized.agent_reported_claims).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ path: "reports/out.txt", label: "report" }),
+        expect.objectContaining({
+          field: "evidence.evidence_paths",
+          provenance: "agent_reported",
+        }),
       ]),
     );
-    expect(normalized.findings).toBeUndefined();
-    expect(normalized.verification_hints).toBeUndefined();
-    expect(normalized.capabilities_used).toEqual(["custom.report"]);
-    expect(normalized.evidence).toEqual({
-      evidence_paths: ["reports/out.txt", "logs/out.log"],
-      changed_paths: ["src/runner/task-state.ts", "src/runner/result-manifest.ts"],
-      files_changed_count: 2,
-      tests_run: ["bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts"],
-      verification_candidates: ["inspect reports/out.txt", "inspect logs/out.log"],
-    });
 
     const sourceManifest = await readFile(
       path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
       "utf8",
     );
-    expect(sourceManifest).toContain("Привет из custom manifest");
-    expect(sourceManifest).toContain("русский finding");
-    expect(sourceManifest).toContain("русский hint");
-    expect(sourceManifest).toContain('"files_changed_count":2');
+    expect(sourceManifest).toBe(
+      '{"schema_version":1,"summary":"Привет из custom manifest","artifacts":[{"path":"reports/out.txt","label":"report"}],"findings":["русский finding"],"verification_hints":["русский hint"],"capabilities_used":["custom.report"],"evidence":{"evidence_paths":["reports/out.txt","logs/out.log"],"changed_paths":["src/runner/task-state.ts","src/runner/result-manifest.ts"],"files_changed_count":2,"tests_run":["bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts"],"verification_candidates":["inspect reports/out.txt","inspect logs/out.log"]}}\n',
+    );
 
     await rm(tempDir, { recursive: true, force: true });
   });

@@ -20,12 +20,17 @@ export type {
   RunnerTracePolicy,
 } from "./types/context.js";
 export type {
+  AgentReportedClaimConflict,
+  AgentReportedLegacyClaim,
+  AgentReportedSemanticResult,
+  LegacyAgentSemanticResult,
   RunnerExecutionMetrics,
   RunnerInvocation,
   RunnerResult,
   RunnerResultArtifact,
-  RunnerResultEvidence,
   RunnerResultManifest,
+  RunnerResultManifestWarning,
+  RunnerResultRecord,
   RunnerResultStatus,
   RunnerTimeoutReason,
 } from "./types/invocation.js";

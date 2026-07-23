@@ -3,6 +3,7 @@ import type {
   RunnerTimeoutReason,
   RunnerTraceConfig,
 } from "@agentplaneorg/core/config";
+import type { AgentSemanticResult } from "@agentplaneorg/core/schemas";
 
 export type { RunnerTimeoutReason } from "@agentplaneorg/core/config";
 
@@ -35,7 +36,7 @@ export type RunnerExecutionMetrics = {
   output_last_message_bytes?: number | null;
 };
 
-export type RunnerResultEvidence = {
+type RunnerResultEvidence = {
   evidence_paths?: string[];
   changed_paths?: string[];
   conflict_paths?: string[];
@@ -53,20 +54,55 @@ export type RunnerResultArtifact = {
 
 export type RunnerResultStatus = "success" | "failed" | "blocked" | "cancelled";
 
-export type RunnerResultManifest = {
-  schema_version: 1;
-  status?: RunnerResultStatus;
-  exit_code?: number | null;
+type AgentReportProvenance = "agent_reported";
+
+export type AgentReportedSemanticResult = {
+  provenance: AgentReportProvenance;
+  value: AgentSemanticResult | LegacyAgentSemanticResult;
+};
+
+export type LegacyAgentSemanticResult = {
+  schema_version: 2;
+  kind: "legacy_agent_semantic_result";
+  work_order_id: string;
+  status?: "completed" | "blocked" | "failed";
   summary?: string;
-  stdout_summary?: string;
-  stderr_summary?: string;
-  timeout_reason?: RunnerTimeoutReason | null;
-  artifacts?: RunnerResultArtifact[];
   findings?: string[];
-  verification_hints?: string[];
-  capabilities_used?: string[];
-  metrics?: RunnerExecutionMetrics;
-  evidence?: RunnerResultEvidence;
+  blocker?: {
+    summary: string;
+    recommended_action?: string;
+  };
+};
+
+export type AgentReportedLegacyClaim = {
+  field: string;
+  value: unknown;
+  provenance: AgentReportProvenance;
+};
+
+export type RunnerResultManifestWarning =
+  | {
+      code: "legacy_manifest_v1";
+      message: string;
+    }
+  | {
+      code: "legacy_agent_observed_claim";
+      field: string;
+      message: string;
+    };
+
+export type AgentReportedClaimConflict = {
+  field: string;
+  agent_reported: unknown;
+  observed: unknown;
+  resolution: "observed_wins";
+};
+
+export type RunnerResultManifest = {
+  source_schema_version: 1 | 2;
+  semantic_result: AgentReportedSemanticResult;
+  legacy_claims: AgentReportedLegacyClaim[];
+  warnings: RunnerResultManifestWarning[];
 };
 
 export type RunnerResult = {
@@ -85,4 +121,14 @@ export type RunnerResult = {
   capabilities_used?: string[];
   metrics?: RunnerExecutionMetrics;
   evidence?: RunnerResultEvidence;
+  semantic_result?: AgentReportedSemanticResult;
+  agent_reported_claims?: AgentReportedLegacyClaim[];
+  claim_conflicts?: AgentReportedClaimConflict[];
+  manifest_warnings?: RunnerResultManifestWarning[];
+};
+
+export type RunnerResultRecord = RunnerResult & {
+  schema_version: 1;
+  kind: "runner_result_record";
+  observed_by: "agentplane";
 };

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "success",
+  "exit_code": 0,
+  "summary": "Implemented the requested semantic change.",
+  "stdout_summary": "Schema check completed.",
+  "stderr_summary": "",
+  "timeout_reason": null,
+  "artifacts": [
+    {
+      "path": "schemas/agent-semantic-result.schema.json",
+      "label": "Generated schema"
+    }
+  ],
+  "findings": ["The compatibility reader still needs to preserve legacy claims."],
+  "verification_hints": ["bun run schemas:check"],
+  "capabilities_used": ["filesystem-write"],
+  "metrics": {
+    "duration_ms": 1250,
+    "stdout_bytes": 96,
+    "stderr_bytes": 0,
+    "output_last_message_bytes": 64
+  },
+  "evidence": {
+    "evidence_paths": ["schemas/agent-semantic-result.schema.json"],
+    "changed_paths": ["packages/core/src/runner/agent-semantic-result.ts"],
+    "conflict_paths": [],
+    "files_changed_count": 1,
+    "tests_run": ["bun run schemas:check"],
+    "verification_candidates": ["bun run typecheck"]
+  }
+}

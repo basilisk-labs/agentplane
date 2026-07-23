@@ -6,6 +6,23 @@ import {
   assertRunnerManifestArtifactPolicy,
   readRecipeArtifactPrefixesFromRunnerEnv,
 } from "./result-manifest-policy.js";
+import type { AgentReportedLegacyClaim, RunnerResultManifest } from "./types.js";
+
+function legacyManifest(claims: AgentReportedLegacyClaim[]): RunnerResultManifest {
+  return {
+    source_schema_version: 1,
+    semantic_result: {
+      provenance: "agent_reported",
+      value: {
+        schema_version: 2,
+        kind: "legacy_agent_semantic_result",
+        work_order_id: "policy-test",
+      },
+    },
+    legacy_claims: claims,
+    warnings: [],
+  };
+}
 
 describe("result-manifest-policy", () => {
   it("accepts normalized relative paths under declared prefixes", () => {
@@ -13,14 +30,18 @@ describe("result-manifest-policy", () => {
       assertRunnerManifestArtifactPolicy({
         adapter_id: "custom",
         allowed_prefixes: ["reports/", "logs"],
-        manifest: {
-          schema_version: 1,
-          status: "success",
-          artifacts: [{ path: "./reports//out.txt", label: "report" }],
-          evidence: {
-            evidence_paths: ["logs/trace.log"],
+        manifest: legacyManifest([
+          {
+            field: "artifacts",
+            value: [{ path: "./reports//out.txt", label: "report" }],
+            provenance: "agent_reported",
           },
-        },
+          {
+            field: "evidence.evidence_paths",
+            value: ["logs/trace.log"],
+            provenance: "agent_reported",
+          },
+        ]),
       }),
     ).not.toThrow();
   });
@@ -31,17 +52,21 @@ describe("result-manifest-policy", () => {
       assertRunnerManifestArtifactPolicy({
         adapter_id: "custom",
         allowed_prefixes: ["reports", "logs/"],
-        manifest: {
-          schema_version: 1,
-          status: "success",
-          artifacts: [
-            { path: "reports/../outside.txt", label: "report" },
-            { path: "reports2/out.txt", label: "report" },
-          ],
-          evidence: {
-            evidence_paths: ["/tmp/out.log"],
+        manifest: legacyManifest([
+          {
+            field: "artifacts",
+            value: [
+              { path: "reports/../outside.txt", label: "report" },
+              { path: "reports2/out.txt", label: "report" },
+            ],
+            provenance: "agent_reported",
           },
-        },
+          {
+            field: "evidence.evidence_paths",
+            value: ["/tmp/out.log"],
+            provenance: "agent_reported",
+          },
+        ]),
       });
     } catch (err) {
       error = err;

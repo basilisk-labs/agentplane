@@ -6,7 +6,6 @@ import type {
   RunnerAdapterCapabilities,
   RunnerContextBundle,
   RunnerInvocation,
-  RunnerResultArtifact,
   RunnerResult,
 } from "../types.js";
 import {
@@ -17,7 +16,7 @@ import {
 } from "./shared.js";
 import { buildRunnerExecutionArtifacts, durationMs } from "./runtime-shared.js";
 import { exitCodeForSignal } from "../process-supervision/signals.js";
-import type { readRunnerResultManifest } from "../result-manifest.js";
+import { applyRunnerResultManifest } from "../result-manifest.js";
 import { assertAdapterBundle, assertAdapterInvocation } from "./base.js";
 import {
   buildCustomCapabilities,
@@ -50,48 +49,6 @@ function buildCustomArtifacts(
     invalid_manifest_path: opts.invalid_manifest_path,
     include_output_last_message: false,
   });
-}
-
-function mergeRunnerArtifacts(
-  base: RunnerResult["artifacts"],
-  extra: RunnerResultArtifact[] | undefined,
-): RunnerResult["artifacts"] {
-  const merged: NonNullable<RunnerResult["artifacts"]> = [];
-  const seen = new Set<string>();
-  for (const artifact of [...(base ?? []), ...(extra ?? [])]) {
-    const key = `${artifact.path}::${artifact.label ?? ""}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    merged.push(artifact);
-  }
-  return merged.length > 0 ? merged : undefined;
-}
-
-function applyCustomRunnerResultManifest(opts: {
-  base: RunnerResult;
-  manifest: Awaited<ReturnType<typeof readRunnerResultManifest>>;
-}): RunnerResult {
-  if (!opts.manifest) return opts.base;
-  const merged: RunnerResult = {
-    ...opts.base,
-    status:
-      opts.base.status === "cancelled" ? "cancelled" : (opts.manifest.status ?? opts.base.status),
-    exit_code:
-      opts.base.status === "cancelled"
-        ? opts.base.exit_code
-        : (opts.manifest.exit_code ?? opts.base.exit_code),
-    artifacts: mergeRunnerArtifacts(opts.base.artifacts, opts.manifest.artifacts),
-    capabilities_used: opts.manifest.capabilities_used ?? opts.base.capabilities_used,
-    metrics: {
-      ...opts.base.metrics,
-      ...opts.manifest.metrics,
-    },
-    evidence: opts.manifest.evidence ?? opts.base.evidence,
-  };
-  if (merged.artifacts && merged.artifacts.length > 0) {
-    merged.output_paths = merged.artifacts.map((artifact) => artifact.path);
-  }
-  return merged;
 }
 
 export class CustomRunnerAdapter implements RunnerAdapter {
@@ -132,9 +89,8 @@ export class CustomRunnerAdapter implements RunnerAdapter {
         input.bootstrap_path ? await readFile(input.bootstrap_path, "utf8") : "",
       startMessage: `${this.id} runner started`,
       buildArtifacts: buildCustomArtifacts,
-      preserveSourceManifestOnSuccess: (manifest) => manifest !== null,
       capabilitiesUsed: (input) => [`${this.id}:${input.argv[0] ?? "runner"}`],
-      applyManifest: applyCustomRunnerResultManifest,
+      applyManifest: ({ base, manifest }) => applyRunnerResultManifest({ base, manifest }),
       successEventMessage: (result) => `${this.id} runner finished with status=${result.status}`,
       failureSummary: `${customAdapterLabel(this.id)} runner execution failed before producing a valid result manifest.`,
       failureEventType: "runner_execute_finish",

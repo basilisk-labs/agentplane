@@ -12,7 +12,24 @@ Generated public schemas are rendered from Zod contracts in `packages/core/src/*
 bun run schemas:sync
 ```
 
-The same generated schemas are mirrored into:
+Generated repository-artifact schemas are mirrored into:
 
 - `packages/spec/schemas/*.schema.json` for tooling and published distribution
 - `packages/core/schemas/*.schema.json` for runtime-package consumers
+
+Runner-facing public contracts can remain root-only when their runtime validator is exported from
+`@agentplaneorg/core` and they are not repository artifact formats.
+
+## Agent semantic result
+
+`agent-semantic-result.schema.json` is the root-only public contract for semantic output written by
+an agent. It intentionally excludes process status, exit codes, timing, metrics, observed checks,
+artifacts, Git state, filesystem paths, and provenance. AgentPlane adds claim provenance and records
+observed execution facts separately.
+
+Generated examples:
+
+- `examples/agent-semantic-result-v2.valid.json` is a valid agent-writable v2 result.
+- `examples/runner-result-manifest-v1.legacy.json` is an intentionally legacy v1 compatibility
+  input. It is not valid against the v2 schema, and its observed-looking fields must remain
+  untrusted agent claims during migration.

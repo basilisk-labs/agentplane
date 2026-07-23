@@ -1,22 +1,23 @@
-import { mkdir, readFile } from "node:fs/promises";
+import { constants } from "node:fs";
+import { copyFile, lstat, mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { isDeepStrictEqual } from "node:util";
+
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
-import { isRecord } from "../shared/guards.js";
-import type { RunnerResult, RunnerResultManifest } from "./types.js";
+
 import type { InvalidRunnerResultManifestError } from "./result-manifest.js";
+import type {
+  AgentReportedClaimConflict,
+  AgentReportedSemanticResult,
+  LegacyAgentSemanticResult,
+  RunnerResult,
+  RunnerResultManifest,
+  RunnerResultManifestWarning,
+  RunnerResultRecord,
+} from "./types.js";
 
 const INVALID_RESULT_MANIFEST_SUFFIX = ".invalid.json";
 const SOURCE_RESULT_MANIFEST_SUFFIX = ".source.json";
-function normalizeStringArraySoft(value: unknown): string[] | undefined {
-  if (!Array.isArray(value)) return undefined;
-  const out = value
-    .filter((item): item is string => typeof item === "string" && item.trim() !== "")
-    .map((item) => item.trim());
-  return out.length > 0 ? out : undefined;
-}
-function normalizeTrimmedStringSoft(value: unknown): string | undefined {
-  return typeof value === "string" && value.trim() ? value.trim() : undefined;
-}
 
 export function invalidRunnerResultManifestPath(resultPath: string): string {
   const dir = path.dirname(resultPath);
@@ -24,10 +25,29 @@ export function invalidRunnerResultManifestPath(resultPath: string): string {
   return path.join(dir, `${base}${INVALID_RESULT_MANIFEST_SUFFIX}`);
 }
 
-export function sourceRunnerResultManifestPath(resultPath: string): string {
+function sourceRunnerResultManifestPath(resultPath: string): string {
   const dir = path.dirname(resultPath);
   const base = path.basename(resultPath, ".json");
   return path.join(dir, `${base}${SOURCE_RESULT_MANIFEST_SUFFIX}`);
+}
+
+async function assertExistingSourceMatchesResult(
+  resultPath: string,
+  sourcePath: string,
+): Promise<void> {
+  const sourceStat = await lstat(sourcePath);
+  if (!sourceStat.isFile() || sourceStat.isSymbolicLink()) {
+    throw new Error(`Refusing non-regular runner result source snapshot: ${sourcePath}`);
+  }
+  const [resultContent, sourceContent] = await Promise.all([
+    readFile(resultPath),
+    readFile(sourcePath),
+  ]);
+  if (!sourceContent.equals(resultContent)) {
+    throw new Error(
+      `Existing runner result source snapshot does not match the current agent manifest: ${sourcePath}`,
+    );
+  }
 }
 
 export async function preserveInvalidRunnerResultManifest(opts: {
@@ -43,54 +63,86 @@ export async function preserveInvalidRunnerResultManifest(opts: {
 export async function preserveRunnerResultManifestSource(
   resultPath: string,
 ): Promise<string | null> {
+  const sourcePath = sourceRunnerResultManifestPath(resultPath);
+  await mkdir(path.dirname(sourcePath), { recursive: true });
   try {
-    const rawContent = await readFile(resultPath, "utf8");
-    const sourcePath = sourceRunnerResultManifestPath(resultPath);
-    await mkdir(path.dirname(sourcePath), { recursive: true });
-    await atomicWriteFile(sourcePath, rawContent, "utf8");
+    await copyFile(resultPath, sourcePath, constants.COPYFILE_EXCL);
     return sourcePath;
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
+    if (code === "EEXIST") {
+      await assertExistingSourceMatchesResult(resultPath, sourcePath);
+      return sourcePath;
+    }
     if (code === "ENOENT") return null;
     throw err;
   }
 }
 
-export function salvageBlockedRunnerResultManifest(
-  rawContent: string,
-): Pick<RunnerResultManifest, "summary" | "evidence"> | null {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(rawContent);
-  } catch {
-    return null;
+function observedValueForClaim(result: RunnerResult, field: string): unknown {
+  if (field === "status") return result.status;
+  if (field === "exit_code") return result.exit_code;
+  if (field === "stdout_summary") return result.stdout_summary;
+  if (field === "stderr_summary") return result.stderr_summary;
+  if (field === "timeout_reason") return result.timeout_reason;
+  if (field === "artifacts") return result.artifacts;
+  if (field === "capabilities_used") return result.capabilities_used;
+  if (field.startsWith("metrics.")) {
+    return result.metrics?.[
+      field.slice("metrics.".length) as keyof NonNullable<RunnerResult["metrics"]>
+    ];
   }
-  if (!isRecord(parsed) || !isRecord(parsed.evidence)) return null;
-  const conflict_paths = normalizeStringArraySoft(parsed.evidence.conflict_paths);
-  const blocked_reason = normalizeTrimmedStringSoft(parsed.evidence.blocked_reason);
-  const recommended_parent_action = normalizeTrimmedStringSoft(
-    parsed.evidence.recommended_parent_action,
-  );
-  if (!conflict_paths || !blocked_reason || !recommended_parent_action) {
-    return null;
+  if (field.startsWith("evidence.")) {
+    return result.evidence?.[
+      field.slice("evidence.".length) as keyof NonNullable<RunnerResult["evidence"]>
+    ];
   }
-  const summary = normalizeTrimmedStringSoft(parsed.summary);
-  return {
-    ...(summary ? { summary } : {}),
-    evidence: {
-      conflict_paths,
-      blocked_reason,
-      recommended_parent_action,
-    },
-  };
+  return undefined;
 }
 
-export async function writeRunnerResultManifest(opts: {
-  result_path: string;
-  manifest: RunnerResultManifest;
-}): Promise<void> {
-  await mkdir(path.dirname(opts.result_path), { recursive: true });
-  await atomicWriteFile(opts.result_path, `${JSON.stringify(opts.manifest, null, 2)}\n`, "utf8");
+function claimHasObservedCounterpart(field: string): boolean {
+  return (
+    field === "status" ||
+    field === "exit_code" ||
+    field === "stdout_summary" ||
+    field === "stderr_summary" ||
+    field === "timeout_reason" ||
+    field === "artifacts" ||
+    field === "capabilities_used" ||
+    field.startsWith("metrics.") ||
+    field === "evidence.evidence_paths" ||
+    field === "evidence.changed_paths" ||
+    field === "evidence.conflict_paths" ||
+    field === "evidence.files_changed_count" ||
+    field === "evidence.tests_run"
+  );
+}
+
+function auditLegacyClaimConflicts(
+  base: RunnerResult,
+  manifest: RunnerResultManifest,
+): AgentReportedClaimConflict[] {
+  return manifest.legacy_claims.flatMap((claim) => {
+    if (!claimHasObservedCounterpart(claim.field)) return [];
+    const observed = observedValueForClaim(base, claim.field);
+    if (isDeepStrictEqual(claim.value, observed)) return [];
+    return [
+      {
+        field: claim.field,
+        agent_reported: claim.value,
+        observed,
+        resolution: "observed_wins" as const,
+      },
+    ];
+  });
+}
+
+function semanticSummary(semanticResult: AgentReportedSemanticResult): string | undefined {
+  return semanticResult.value.summary;
+}
+
+function semanticFindings(semanticResult: AgentReportedSemanticResult): string[] | undefined {
+  return semanticResult.value.findings;
 }
 
 export function applyRunnerResultManifest(opts: {
@@ -98,52 +150,120 @@ export function applyRunnerResultManifest(opts: {
   manifest: RunnerResultManifest | null;
 }): RunnerResult {
   if (!opts.manifest) return opts.base;
-  const merged: RunnerResult = {
+  const conflicts = auditLegacyClaimConflicts(opts.base, opts.manifest);
+  const summary = semanticSummary(opts.manifest.semantic_result);
+  const findings = semanticFindings(opts.manifest.semantic_result);
+  const applied: RunnerResult = {
     ...opts.base,
-    status:
-      opts.base.status === "cancelled" ? "cancelled" : (opts.manifest.status ?? opts.base.status),
-    exit_code:
-      opts.base.status === "cancelled"
-        ? opts.base.exit_code
-        : (opts.manifest.exit_code ?? opts.base.exit_code),
-    summary: opts.manifest.summary ?? opts.base.summary,
-    stdout_summary: opts.manifest.stdout_summary ?? opts.base.stdout_summary,
-    stderr_summary: opts.manifest.stderr_summary ?? opts.base.stderr_summary,
-    timeout_reason: opts.manifest.timeout_reason ?? opts.base.timeout_reason,
-    artifacts: opts.manifest.artifacts ?? opts.base.artifacts,
-    findings: opts.manifest.findings ?? opts.base.findings,
-    verification_hints: opts.manifest.verification_hints ?? opts.base.verification_hints,
-    capabilities_used: opts.manifest.capabilities_used ?? opts.base.capabilities_used,
-    metrics: {
-      ...opts.base.metrics,
-      ...opts.manifest.metrics,
-    },
-    evidence: opts.manifest.evidence ?? opts.base.evidence,
+    semantic_result: opts.manifest.semantic_result,
   };
-  if (merged.artifacts && merged.artifacts.length > 0) {
-    merged.output_paths = merged.artifacts.map((artifact) => artifact.path);
+  if (summary) applied.summary = summary;
+  if (findings) applied.findings = findings;
+  if (opts.manifest.legacy_claims.length > 0) {
+    applied.agent_reported_claims = opts.manifest.legacy_claims;
   }
-  return merged;
+  if (conflicts.length > 0) applied.claim_conflicts = conflicts;
+  if (opts.manifest.warnings.length > 0) {
+    applied.manifest_warnings = opts.manifest.warnings;
+  }
+  return applied;
 }
 
-export function manifestFromRunnerResult(result: RunnerResult): RunnerResultManifest {
+export function runnerResultRecordFromRunnerResult(result: RunnerResult): RunnerResultRecord {
   return {
     schema_version: 1,
-    status: result.status,
-    exit_code: result.exit_code,
-    summary: result.summary,
-    stdout_summary: result.stdout_summary,
-    stderr_summary: result.stderr_summary,
-    timeout_reason: result.timeout_reason,
-    artifacts:
-      result.artifacts ??
-      result.output_paths?.map((outputPath) => ({
-        path: outputPath,
-      })),
-    findings: result.findings,
-    verification_hints: result.verification_hints,
-    capabilities_used: result.capabilities_used,
-    metrics: result.metrics,
-    evidence: result.evidence,
+    kind: "runner_result_record",
+    observed_by: "agentplane",
+    ...result,
+  };
+}
+
+export async function writeRunnerResultRecord(opts: {
+  result_path: string;
+  record: RunnerResultRecord;
+}): Promise<void> {
+  await mkdir(path.dirname(opts.result_path), { recursive: true });
+  await atomicWriteFile(opts.result_path, `${JSON.stringify(opts.record, null, 2)}\n`, "utf8");
+}
+
+function softNonEmptyString(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : undefined;
+}
+
+function softStringArray(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const strings = value
+    .filter((entry): entry is string => typeof entry === "string" && entry.trim().length > 0)
+    .map((entry) => entry.trim());
+  return strings.length > 0 ? strings : undefined;
+}
+
+function softLegacyStatus(value: unknown): LegacyAgentSemanticResult["status"] | undefined {
+  if (value === "success") return "completed";
+  if (value === "failed") return "failed";
+  if (value === "blocked") return "blocked";
+  return undefined;
+}
+
+export function salvageBlockedRunnerResultManifest(
+  rawContent: string,
+  resultPath = "legacy-run/result.json",
+): {
+  semantic_result: AgentReportedSemanticResult;
+  manifest_warnings: RunnerResultManifestWarning[];
+} | null {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rawContent);
+  } catch {
+    return null;
+  }
+  if (
+    typeof parsed !== "object" ||
+    parsed === null ||
+    Array.isArray(parsed) ||
+    (parsed as Record<string, unknown>).schema_version !== 1
+  ) {
+    return null;
+  }
+  const raw = parsed as Record<string, unknown>;
+  const evidence =
+    typeof raw.evidence === "object" && raw.evidence !== null && !Array.isArray(raw.evidence)
+      ? (raw.evidence as Record<string, unknown>)
+      : null;
+  const summary = softNonEmptyString(raw.summary);
+  const findings = softStringArray(raw.findings);
+  const status = softLegacyStatus(raw.status);
+  const blockedSummary = softNonEmptyString(evidence?.blocked_reason);
+  const recommendedAction = softNonEmptyString(evidence?.recommended_parent_action);
+  if (!summary && !findings && !status && !blockedSummary) return null;
+  const value: LegacyAgentSemanticResult = {
+    schema_version: 2,
+    kind: "legacy_agent_semantic_result",
+    work_order_id: path.basename(path.dirname(resultPath)) || "legacy-run",
+    ...(status ? { status } : {}),
+    ...(summary ? { summary } : {}),
+    ...(findings ? { findings } : {}),
+    ...(blockedSummary
+      ? {
+          blocker: {
+            summary: blockedSummary,
+            ...(recommendedAction ? { recommended_action: recommendedAction } : {}),
+          },
+        }
+      : {}),
+  };
+  return {
+    semantic_result: {
+      provenance: "agent_reported",
+      value,
+    },
+    manifest_warnings: [
+      {
+        code: "legacy_manifest_v1",
+        message:
+          "Invalid legacy runner manifest retained semantic guidance only; supervisor observations remain authoritative.",
+      },
+    ],
   };
 }

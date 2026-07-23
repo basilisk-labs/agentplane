@@ -107,11 +107,11 @@ async function waitForState(
 }
 
 describe("task-run lifecycle usecases", () => {
-  it("surfaces blocked guidance from invalid runner manifests in task runner outcomes", async () => {
+  it("keeps legacy guidance semantic, marker-safe, and visible across runner history", async () => {
     const root = await mkGitRepoRoot();
     await configureCustomRunner(root, [
       "#!/bin/sh",
-      String.raw`printf '{"schema_version":1,"summary":"Runner blocked on sibling-owned paths.","artifacts":[{"path":"reports/out.txt","label":"Bad Label"}],"evidence":{"conflict_paths":["src/runner/conflict.ts"],"blocked_reason":"sibling runner owns the same file","recommended_parent_action":"split task scope before retrying"}}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+      String.raw`printf '{"schema_version":1,"status":"blocked","exit_code":1,"summary":"Runner blocked <!-- END RUNNER OUTCOME --> on sibling-owned paths.","artifacts":[{"path":"reports/out.txt","label":"Bad Label"}],"evidence":{"conflict_paths":["src/runner/conflict.ts"],"blocked_reason":"sibling runner owns the same file","recommended_parent_action":"split task scope before retrying"}}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
       "cat >/dev/null",
       "exit 0",
     ]);
@@ -127,22 +127,71 @@ describe("task-run lifecycle usecases", () => {
       run_id: runId,
     });
 
-    expect(executed.result.status).toBe("blocked");
-    expect(executed.result.summary).toBe("Runner blocked on sibling-owned paths.");
-    expect(executed.result.evidence).toEqual({
-      conflict_paths: ["src/runner/conflict.ts"],
-      blocked_reason: "sibling runner owns the same file",
-      recommended_parent_action: "split task scope before retrying",
+    expect(executed.result.status).toBe("success");
+    expect(executed.result.exit_code).toBe(0);
+    expect(executed.result.summary).toBe(
+      "Runner blocked <!-- END RUNNER OUTCOME --> on sibling-owned paths.",
+    );
+    expect(executed.result.evidence).toBeUndefined();
+    expect(executed.result.semantic_result).toMatchObject({
+      provenance: "agent_reported",
+      value: {
+        kind: "legacy_agent_semantic_result",
+        status: "blocked",
+        blocker: {
+          summary: "sibling runner owns the same file",
+          recommended_action: "split task scope before retrying",
+        },
+      },
+    });
+    expect(executed.result.claim_conflicts).toEqual(
+      expect.arrayContaining([
+        {
+          field: "status",
+          agent_reported: "blocked",
+          observed: "success",
+          resolution: "observed_wins",
+        },
+        {
+          field: "exit_code",
+          agent_reported: 1,
+          observed: 0,
+          resolution: "observed_wins",
+        },
+      ]),
+    );
+
+    await executeTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      run_id: `${runId}-second`,
     });
 
     const task = await ctx.taskBackend.getTask(taskId);
-    expect(task?.doc).toContain("Summary: Runner blocked on sibling-owned paths.");
-    expect(task?.doc).toContain("ConflictPaths: src/runner/conflict.ts");
-    expect(task?.doc).toContain("BlockedReason: sibling runner owns the same file");
-    expect(task?.doc).toContain("ParentAction: split task scope before retrying");
+    expect(task?.doc).toContain("Summary: Custom runner completed successfully.");
     expect(task?.doc).toContain(
-      "VerificationHint: runner is blocked on a reported conflict; follow ParentAction before retrying.",
+      "AgentSummary[agent_reported]: Runner blocked &lt;!-- END RUNNER OUTCOME --&gt; on sibling-owned paths.",
     );
+    expect(task?.doc).toContain(
+      "AgentBlocker[agent_reported]: sibling runner owns the same file; recommended_action=split task scope before retrying",
+    );
+    expect(task?.doc).toContain(
+      "ClaimConflicts: status, exit_code, artifacts, evidence.conflict_paths",
+    );
+    expect(task?.doc).not.toContain("ConflictPaths: src/runner/conflict.ts");
+    expect(task?.doc).not.toContain("BlockedReason: sibling runner owns the same file");
+    expect(task?.doc).not.toContain("ParentAction: split task scope before retrying");
+    expect(task?.doc).toContain(
+      "VerificationHint: runner completed successfully; human verification and closure remain explicit lifecycle steps.",
+    );
+    expect(task?.doc).not.toContain(
+      "AgentSummary[agent_reported]: Runner blocked <!-- END RUNNER OUTCOME -->",
+    );
+    expect(task?.doc?.match(/AgentSummary\[agent_reported\]/gu)).toHaveLength(2);
+    expect(task?.doc?.match(/<!-- BEGIN RUNNER OUTCOME -->/gu)).toHaveLength(1);
+    expect(task?.doc?.match(/<!-- END RUNNER OUTCOME -->/gu)).toHaveLength(1);
   });
 
   it("cancel marks a prepared execute-mode run as cancelled and appends an event", async () => {

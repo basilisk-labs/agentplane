@@ -288,12 +288,17 @@ describe("CodexRunnerAdapter", () => {
     expect(state.result?.metrics?.stdout_bytes).toBeGreaterThan(0);
     expect(state.result?.metrics?.output_last_message_bytes).toBeGreaterThan(0);
     const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
+      kind?: string;
+      observed_by?: string;
       status?: string;
       summary?: string;
       stdout_summary?: string;
       artifacts?: { path: string; label?: string }[];
       capabilities_used?: string[];
+      semantic_result?: { provenance?: string; value?: { kind?: string; summary?: string } };
     };
+    expect(resultManifest.kind).toBe("runner_result_record");
+    expect(resultManifest.observed_by).toBe("agentplane");
     expect(resultManifest.status).toBe("success");
     expect(resultManifest.summary).toBe("custom codex success");
     expect(resultManifest.stdout_summary).toBe(
@@ -309,9 +314,28 @@ describe("CodexRunnerAdapter", () => {
           path: invocation.output_last_message_path,
           label: "assistant-last-message",
         }),
+        expect.objectContaining({
+          path: path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
+          label: "source-result-manifest",
+        }),
       ]),
     );
     expect(resultManifest.capabilities_used).toEqual(["codex.exec"]);
+    expect(resultManifest.semantic_result).toMatchObject({
+      provenance: "agent_reported",
+      value: {
+        kind: "legacy_agent_semantic_result",
+        summary: "custom codex success",
+      },
+    });
+    expect(
+      await readFile(
+        path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
+        "utf8",
+      ),
+    ).toBe(
+      '{"schema_version":1,"status":"success","summary":"custom codex success","capabilities_used":["codex.exec"],"evidence":{"evidence_paths":["codex-last-message.md"],"verification_candidates":["inspect codex-last-message.md"]}}\n',
+    );
     const events = await readFile(invocation.events_path, "utf8");
     const trace = await readFile(invocation.trace_path, "utf8");
     expect(events).toContain('"type":"runner_prepared"');
@@ -490,6 +514,84 @@ describe("CodexRunnerAdapter", () => {
     await rm(tempDir, { recursive: true, force: true });
   });
 
+  it("keeps process failure authoritative over conflicting legacy success claims", async () => {
+    const adapter = createRunnerAdapter(defaultConfig());
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-conflict-"));
+    const fakeBinDir = path.join(tempDir, "bin");
+    const bundle = makeRunnerContextBundle(codexBundleDefaults);
+    bundle.repository.git_root = tempDir;
+    bundle.execution.mode = "execute";
+    setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-conflict"));
+    await writeRunnerExecutable(tempDir, "codex", [
+      [
+        "#!/bin/sh",
+        'while [ "$#" -gt 0 ]; do',
+        '  case "$1" in',
+        "    exec|--json|-|danger-full-access|never)",
+        "      shift",
+        "      ;;",
+        "    --output-last-message|-C|-s|-a)",
+        "      shift 2",
+        "      ;;",
+        "    *)",
+        "      shift",
+        "      ;;",
+        "  esac",
+        "done",
+        "cat >/dev/null",
+        String.raw`printf '{"schema_version":1,"status":"success","exit_code":0,"summary":"Agent claims success.","metrics":{"duration_ms":999999999}}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        String.raw`printf 'fake stderr fail\n' >&2`,
+        "exit 42",
+      ].join("\n"),
+    ]);
+
+    const invocation = await adapter.prepare(bundle);
+    invocation.env.PATH = `${fakeBinDir}:${process.env.PATH ?? ""}`;
+    await writePreparedRunnerArtifacts({
+      bundle,
+      bootstrap_markdown: "Read the bundle and act on it.\n",
+      invocation,
+    });
+
+    const result = await adapter.execute(invocation);
+
+    expect(result.status).toBe("failed");
+    expect(result.exit_code).toBe(42);
+    expect(result.summary).toBe("Agent claims success.");
+    expect(result.metrics?.duration_ms).not.toBe(999_999_999);
+    expect(result.claim_conflicts).toEqual(
+      expect.arrayContaining([
+        {
+          field: "status",
+          agent_reported: "success",
+          observed: "failed",
+          resolution: "observed_wins",
+        },
+        {
+          field: "exit_code",
+          agent_reported: 0,
+          observed: 42,
+          resolution: "observed_wins",
+        },
+        expect.objectContaining({
+          field: "metrics.duration_ms",
+          agent_reported: 999_999_999,
+          resolution: "observed_wins",
+        }),
+      ]),
+    );
+    expect(
+      await readFile(
+        path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
+        "utf8",
+      ),
+    ).toBe(
+      '{"schema_version":1,"status":"success","exit_code":0,"summary":"Agent claims success.","metrics":{"duration_ms":999999999}}\n',
+    );
+
+    await rm(tempDir, { recursive: true, force: true });
+  });
+
   it("fails deterministically and preserves malformed codex result manifests", async () => {
     const adapter = createRunnerAdapter(defaultConfig());
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-invalid-"));
@@ -516,7 +618,7 @@ describe("CodexRunnerAdapter", () => {
         "      ;;",
         "  esac",
         "done",
-        String.raw`printf '{"schema_version":1,"capabilities_used":["ok",42]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        String.raw`printf '{"schema_version":2,"kind":"agent_semantic_result","work_order_id":"run-invalid","status":"completed","summary":"Invalid semantic result.","findings":[],"uncertainty":[],"exit_code":0}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "cat >/dev/null",
         String.raw`printf 'Final fake Codex message\n' > "$out"`,
         String.raw`printf 'fake stdout ok\n'`,
@@ -545,7 +647,7 @@ describe("CodexRunnerAdapter", () => {
       path.join(bundle.execution.artifact_paths.run_dir, "result.invalid.json"),
       "utf8",
     );
-    expect(preserved).toContain('"capabilities_used":["ok",42]');
+    expect(preserved).toContain('"exit_code":0');
     const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
       status?: string;
       summary?: string;

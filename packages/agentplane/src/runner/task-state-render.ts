@@ -197,6 +197,95 @@ function renderRunnerEvidence(
   return lines;
 }
 
+function compactRunnerText(value: string): string {
+  return value.replaceAll(/\s+/gu, " ").trim();
+}
+
+function encodeRunnerManagedText(value: string): string {
+  return compactRunnerText(value).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}
+
+function renderAgentSemanticResult(result: RunnerRunState["result"] | null | undefined): string[] {
+  const report = result?.semantic_result;
+  if (!report) return [];
+  const semantic = report.value;
+  const lines: string[] = [];
+  if (semantic.status) {
+    lines.push(`AgentSemanticStatus[${report.provenance}]: ${semantic.status}`);
+  }
+  if (semantic.summary) {
+    lines.push(`AgentSummary[${report.provenance}]: ${encodeRunnerManagedText(semantic.summary)}`);
+  }
+  if (semantic.findings?.length) {
+    lines.push(
+      `AgentFindings[${report.provenance}]: ${semantic.findings
+        .map((finding) => encodeRunnerManagedText(finding))
+        .join(" | ")}`,
+    );
+  }
+  if ("uncertainty" in semantic && semantic.uncertainty.length > 0) {
+    lines.push(
+      `AgentUncertainty[${report.provenance}]: ${semantic.uncertainty
+        .map((uncertainty) => encodeRunnerManagedText(uncertainty))
+        .join(" | ")}`,
+    );
+  }
+  if (semantic.blocker) {
+    lines.push(
+      `AgentBlocker[${report.provenance}]: ${encodeRunnerManagedText(semantic.blocker.summary)}${
+        semantic.blocker.recommended_action
+          ? `; recommended_action=${encodeRunnerManagedText(semantic.blocker.recommended_action)}`
+          : ""
+      }`,
+    );
+  }
+  if ("knowledge_request" in semantic && semantic.knowledge_request) {
+    lines.push(
+      `AgentKnowledgeRequest[${report.provenance}]: ${encodeRunnerManagedText(
+        semantic.knowledge_request.query,
+      )}; reason=${encodeRunnerManagedText(semantic.knowledge_request.reason)}`,
+    );
+  }
+  if ("claimed_checks" in semantic && semantic.claimed_checks?.length) {
+    lines.push(
+      `ClaimedChecks[${report.provenance}]: ${semantic.claimed_checks
+        .map(
+          (check) =>
+            `${encodeRunnerManagedText(check.check)}=${check.claimed_status}${
+              check.details ? ` (${encodeRunnerManagedText(check.details)})` : ""
+            }`,
+        )
+        .join(" | ")}`,
+    );
+  }
+  if (result?.agent_reported_claims?.length) {
+    lines.push(
+      `LegacyClaims[agent_reported]: ${result.agent_reported_claims
+        .map((claim) => encodeRunnerManagedText(claim.field))
+        .join(", ")}`,
+    );
+  }
+  if (result?.claim_conflicts?.length) {
+    lines.push(
+      `ClaimConflicts: ${result.claim_conflicts
+        .map((conflict) => encodeRunnerManagedText(conflict.field))
+        .join(", ")} (observed_wins over agent_reported)`,
+    );
+  }
+  if (result?.manifest_warnings?.length) {
+    lines.push(
+      `ManifestWarnings: ${result.manifest_warnings
+        .map((warning) =>
+          warning.code === "legacy_agent_observed_claim"
+            ? `${warning.code}:${encodeRunnerManagedText(warning.field)}`
+            : warning.code,
+        )
+        .join(", ")}`,
+    );
+  }
+  return lines;
+}
+
 function renderRunnerOutcomeEntry(opts: {
   task_id: string;
   entry: TaskRunnerHistoryEntry;
@@ -236,7 +325,7 @@ function renderRunnerOutcomeEntry(opts: {
     lines.push("", `EndedAt: ${opts.entry.ended_at}`);
   }
   if (summary) {
-    lines.push("", `Summary: ${summary}`);
+    lines.push("", `Summary: ${encodeRunnerManagedText(summary)}`);
   }
   if (opts.projection?.result?.artifacts?.length) {
     lines.push(
@@ -278,12 +367,15 @@ function buildTaskRunnerHistoryEntry(projection: RunnerOutcomeProjection): TaskR
   };
   if (result?.started_at) outcome.started_at = result.started_at;
   if (result?.ended_at) outcome.ended_at = result.ended_at;
-  outcome.summary = renderTaskRunnerSummary({
+  const machineSummary = renderTaskRunnerSummary({
     adapter_id: state.adapter_id,
     status: state.status,
     evidence,
     runner_summary: result?.summary,
   });
+  const semanticLines = renderAgentSemanticResult(result);
+  outcome.summary =
+    semanticLines.length > 0 ? [machineSummary, ...semanticLines].join(" | ") : machineSummary;
   if (result?.output_paths?.length) outcome.output_paths = [...result.output_paths];
   if (result?.metrics) outcome.metrics = { ...result.metrics };
   if (evidence) outcome.evidence = evidence;

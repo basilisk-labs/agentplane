@@ -1,0 +1,307 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentplane.org/schemas/agent-semantic-result.schema.json",
+  "title": "Agent semantic result (v2)",
+  "description": "Agent-writable semantic output. Process, Git, filesystem, artifact, and observed check facts are intentionally excluded and remain supervisor-owned.",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "number",
+          "const": 2
+        },
+        "kind": {
+          "type": "string",
+          "const": "agent_semantic_result"
+        },
+        "work_order_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uncertainty": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "claimed_checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "check": {
+                "type": "string",
+                "minLength": 1
+              },
+              "claimed_status": {
+                "type": "string",
+                "enum": ["passed", "failed", "not_run"]
+              },
+              "details": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["check", "claimed_status"],
+            "additionalProperties": false
+          }
+        },
+        "status": {
+          "type": "string",
+          "const": "blocked"
+        },
+        "blocker": {
+          "type": "object",
+          "properties": {
+            "summary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "recommended_action": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["summary"],
+          "additionalProperties": false
+        },
+        "knowledge_request": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["query", "reason"],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "work_order_id",
+        "summary",
+        "findings",
+        "uncertainty",
+        "status",
+        "blocker"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "number",
+          "const": 2
+        },
+        "kind": {
+          "type": "string",
+          "const": "agent_semantic_result"
+        },
+        "work_order_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uncertainty": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "claimed_checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "check": {
+                "type": "string",
+                "minLength": 1
+              },
+              "claimed_status": {
+                "type": "string",
+                "enum": ["passed", "failed", "not_run"]
+              },
+              "details": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["check", "claimed_status"],
+            "additionalProperties": false
+          }
+        },
+        "status": {
+          "type": "string",
+          "const": "needs_context"
+        },
+        "blocker": {
+          "type": "object",
+          "properties": {
+            "summary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "recommended_action": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["summary"],
+          "additionalProperties": false
+        },
+        "knowledge_request": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["query", "reason"],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "work_order_id",
+        "summary",
+        "findings",
+        "uncertainty",
+        "status",
+        "knowledge_request"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "number",
+          "const": 2
+        },
+        "kind": {
+          "type": "string",
+          "const": "agent_semantic_result"
+        },
+        "work_order_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uncertainty": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "claimed_checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "check": {
+                "type": "string",
+                "minLength": 1
+              },
+              "claimed_status": {
+                "type": "string",
+                "enum": ["passed", "failed", "not_run"]
+              },
+              "details": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["check", "claimed_status"],
+            "additionalProperties": false
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": ["completed", "failed"]
+        },
+        "blocker": {
+          "type": "object",
+          "properties": {
+            "summary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "recommended_action": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["summary"],
+          "additionalProperties": false
+        },
+        "knowledge_request": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["query", "reason"],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "work_order_id",
+        "summary",
+        "findings",
+        "uncertainty",
+        "status"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

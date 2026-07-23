@@ -4,7 +4,7 @@ title: "Split agent semantic results from legacy observed claims"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -30,11 +30,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-23T14:48:10.137Z"
+  updated_by: "TESTER"
+  note: "No implementation changes are present at the current task head; return to CODER for RF-01a implementation before evidence-based verification."
+  attempts: 1
 commit: null
 comments:
   -
@@ -48,8 +48,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement RF-01 semantic result trust boundary with compatibility and provenance tests."
+  -
+    type: "verify"
+    at: "2026-07-23T14:48:10.137Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "No implementation changes are present at the current task head; return to CODER for RF-01a implementation before evidence-based verification."
 doc_version: 3
-doc_updated_at: "2026-07-23T14:36:56.043Z"
+doc_updated_at: "2026-07-23T14:48:11.595Z"
 doc_updated_by: "CODER"
 description: "RF-01a: define the agent-writable AgentSemanticResult contract and a compatibility reader that cannot treat process status, exit, timing, metrics, checks, or filesystem evidence as observed truth."
 sections:
@@ -73,12 +79,45 @@ sections:
     4. Run `bun run schemas:check`, focused manifest tests, and `bun run typecheck`. Expected: schema and runtime types stay synchronized.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-23T14:48:10.137Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: No implementation changes are present at the current task head; return to CODER for RF-01a implementation before evidence-based verification.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T14:36:56.043Z, excerpt_hash=sha256:f4ceb507797791a87c43979903da31a5e91cce5774bb8263f8074ecde692a131
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-4CE7EG-split-agent-semantic-results-from-legacy-observe/.agentplane/tasks/202607221846-4CE7EG/blueprint/resolved-snapshot.json
+    - old_digest: 6809d84737a34a8695daada16e6b5bd91aa915e289b2a85128ec18a4641191d2
+    - current_digest: 6809d84737a34a8695daada16e6b5bd91aa915e289b2a85128ec18a4641191d2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221846-4CE7EG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221846-4CE7EG
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) without changing unrelated task state.
     - Restore the previous persisted contract or schema version where applicable.
     - Re-run the task-specific checks and record any data requiring explicit migration repair.
-  Findings: ""
+  Findings: |-
+    - Observation: PR head contains only task and PR metadata commits; implementation diff against main is empty.
+      Impact: RF-01a acceptance criteria cannot be evaluated.
+      Resolution: Implement the approved semantic-result and legacy-claim split, then rerun the listed verification steps.
 id_source: "generated"
 ---
 ## Summary
@@ -110,6 +149,36 @@ RF-01a: define the agent-writable AgentSemanticResult contract and a compatibili
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-23T14:48:10.137Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: No implementation changes are present at the current task head; return to CODER for RF-01a implementation before evidence-based verification.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T14:36:56.043Z, excerpt_hash=sha256:f4ceb507797791a87c43979903da31a5e91cce5774bb8263f8074ecde692a131
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-4CE7EG-split-agent-semantic-results-from-legacy-observe/.agentplane/tasks/202607221846-4CE7EG/blueprint/resolved-snapshot.json
+- old_digest: 6809d84737a34a8695daada16e6b5bd91aa915e289b2a85128ec18a4641191d2
+- current_digest: 6809d84737a34a8695daada16e6b5bd91aa915e289b2a85128ec18a4641191d2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221846-4CE7EG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221846-4CE7EG
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -119,3 +188,7 @@ RF-01a: define the agent-writable AgentSemanticResult contract and a compatibili
 - Re-run the task-specific checks and record any data requiring explicit migration repair.
 
 ## Findings
+
+- Observation: PR head contains only task and PR metadata commits; implementation diff against main is empty.
+  Impact: RF-01a acceptance criteria cannot be evaluated.
+  Resolution: Implement the approved semantic-result and legacy-claim split, then rerun the listed verification steps.
