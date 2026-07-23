@@ -1,3 +1,8 @@
+import {
+  AGENT_SEMANTIC_RESULT_STATUS_VALUES,
+  buildAgentSemanticResultV2ValidFixtures,
+} from "@agentplaneorg/core/schemas";
+
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
 
 type EvaluatorSkepticismLevel = NonNullable<
@@ -57,38 +62,42 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
   ];
 }
 
-function runnerDecisionContext(routeDecision: {
-  oracle?: { nextCommand?: string | null; phase?: string };
-  executionPacket?: { actionKind?: string; safeToMutate?: boolean; returnControlWhen?: string };
-  nextAction?: { code?: string };
-}): {
-  runnerIsRequired: boolean;
-  runnerIsAllowedNow: boolean;
-  localWorkAllowedIfRunnerFails: boolean;
-  runnerFailureMeans: string;
-  returnControlWhen: string;
-} {
-  const command = routeDecision.oracle?.nextCommand ?? "";
-  const runnerIsAllowedNow =
-    routeDecision.executionPacket?.actionKind === "local_command" &&
-    routeDecision.executionPacket.safeToMutate === true &&
-    /\b(agentplane|ap)\s+task\s+run\b/.test(command);
-  const runnerIsRequired =
-    runnerIsAllowedNow ||
-    routeDecision.nextAction?.code === "wait_runner" ||
-    routeDecision.oracle?.phase === "runner_wait";
-  return {
-    runnerIsRequired,
-    runnerIsAllowedNow,
-    localWorkAllowedIfRunnerFails:
-      runnerIsRequired === false && routeDecision.executionPacket?.safeToMutate === true,
-    runnerFailureMeans: runnerIsRequired
-      ? "runner failure is run evidence; inspect artifacts before marking task verification"
-      : "not a runner route; do not introduce task run unless bundle explicitly delegates it",
-    returnControlWhen:
-      routeDecision.executionPacket?.returnControlWhen ??
-      "after this run completes; recompute task next-action",
-  };
+function objectField(
+  source: Record<string, unknown> | undefined,
+  field: string,
+): Record<string, unknown> | undefined {
+  const value = source?.[field];
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
+}
+
+function stringField(
+  source: Record<string, unknown> | undefined,
+  field: string,
+): string | undefined {
+  const value = source?.[field];
+  return typeof value === "string" ? value : undefined;
+}
+
+function booleanField(
+  source: Record<string, unknown> | undefined,
+  field: string,
+): boolean | undefined {
+  const value = source?.[field];
+  return typeof value === "boolean" ? value : undefined;
+}
+
+function stringArrayField(source: Record<string, unknown> | undefined, field: string): string[] {
+  const value = source?.[field];
+  return Array.isArray(value) && value.every((entry) => typeof entry === "string") ? value : [];
+}
+
+function renderRunnerResultManifestExampleLines(workOrderId: string): string[] {
+  const fixtures = buildAgentSemanticResultV2ValidFixtures(workOrderId);
+  return AGENT_SEMANTIC_RESULT_STATUS_VALUES.map(
+    (status) => `- ${status}: ${JSON.stringify(fixtures[status])}`,
+  );
 }
 
 export function renderTaskRunnerBootstrap(
@@ -105,40 +114,11 @@ export function renderTaskRunnerBootstrap(
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
   const evaluatorSkepticismLevel =
     bundle.execution.evaluator_skepticism_level ?? ("standard" satisfies EvaluatorSkepticismLevel);
-  const routeDecision = bundle.route_decision as
-    | {
-        oracle?: {
-          phase?: string;
-          authoritativeCheckout?: string;
-          authoritativeCheckoutPath?: string | null;
-          mutationPathHint?: string | null;
-          blocker?: { code?: string; summary?: string } | null;
-          nextCommand?: string | null;
-        };
-        executionPacket?: {
-          actionKind?: string;
-          evidenceMissing?: string[];
-          exactArgv?: string[] | null;
-          humanProviderAction?: string | null;
-          mustNot?: string[];
-          mustRunFrom?: string | null;
-          recommendedRole?: string;
-          requiresProviderAction?: boolean;
-          returnControlWhen?: string;
-          safeToMutate?: boolean;
-          staleStateCheck?: string;
-          verificationCandidate?: string | null;
-        };
-        nextAction?: { code?: string; command?: string | null; summary?: string };
-        workspace?: { checkoutRole?: string };
-        approval?: {
-          effectiveMutationApprovalRequired?: boolean;
-          gatewayMutationApprovalRequired?: boolean;
-          routeRequiresApproval?: boolean;
-        };
-      }
-    | undefined;
-  const runnerContext = routeDecision ? runnerDecisionContext(routeDecision) : null;
+  const routeDecision = bundle.route_decision;
+  const routeOracle = objectField(routeDecision, "oracle");
+  const routeExecutionPacket = objectField(routeDecision, "executionPacket");
+  const routeWorkspace = objectField(routeDecision, "workspace");
+  const routeMustNot = stringArrayField(routeExecutionPacket, "mustNot");
   return [
     ...(codexGoalLine ? [codexGoalLine, ""] : []),
     "# agentplane runner bootstrap",
@@ -161,95 +141,31 @@ export function renderTaskRunnerBootstrap(
     `- bootstrap_path: ${bundle.execution.artifact_paths.bootstrap_path}`,
     ...(routeDecision
       ? [
-          `- checkout_role: ${routeDecision.workspace?.checkoutRole ?? "unknown"}`,
-          `- route_phase: ${routeDecision.oracle?.phase ?? "unknown"}`,
-          `- route_authoritative_checkout: ${
-            routeDecision.oracle?.authoritativeCheckout ??
-            routeDecision.workspace?.checkoutRole ??
-            "unknown"
-          }`,
-          `- route_authoritative_checkout_path: ${
-            routeDecision.oracle?.authoritativeCheckoutPath ?? "unknown"
-          }`,
-          `- route_mutation_path_hint: ${routeDecision.oracle?.mutationPathHint ?? "none"}`,
-          `- route_next_action: ${routeDecision.nextAction?.code ?? "unknown"}`,
-          `- route_next_command: ${
-            routeDecision.oracle?.nextCommand ?? routeDecision.nextAction?.command ?? "none"
-          }`,
-          `- route_primary_blocker: ${
-            routeDecision.oracle?.blocker
-              ? `${routeDecision.oracle.blocker.code ?? "unknown"}: ${
-                  routeDecision.oracle.blocker.summary ?? "blocked"
-                }`
-              : "none"
-          }`,
-          `- route_requires_approval: ${String(
-            routeDecision.approval?.routeRequiresApproval ??
-              routeDecision.approval?.effectiveMutationApprovalRequired ??
-              true,
+          `- checkout_role: ${stringField(routeWorkspace, "checkoutRole") ?? "unknown"}`,
+          `- route_phase: ${stringField(routeOracle, "phase") ?? "unknown"}`,
+          `- route_mutation_path_hint: ${stringField(routeOracle, "mutationPathHint") ?? "none"}`,
+          `- route_safe_to_mutate: ${String(
+            booleanField(routeExecutionPacket, "safeToMutate") ?? false,
           )}`,
-          `- gateway_mutation_policy: ${String(
-            routeDecision.approval?.gatewayMutationApprovalRequired ?? true,
-          )}`,
-          `- effective_mutation_approval: ${String(
-            routeDecision.approval?.effectiveMutationApprovalRequired ??
-              routeDecision.approval?.routeRequiresApproval ??
-              true,
-          )}`,
-          `- route_action_kind: ${routeDecision.executionPacket?.actionKind ?? "unknown"}`,
-          `- route_safe_to_mutate: ${String(routeDecision.executionPacket?.safeToMutate ?? false)}`,
           `- route_recommended_role: ${
-            routeDecision.executionPacket?.recommendedRole ?? "unknown"
+            stringField(routeExecutionPacket, "recommendedRole") ?? "unknown"
           }`,
-          `- route_must_run_from: ${
-            routeDecision.executionPacket?.mustRunFrom ??
-            routeDecision.oracle?.authoritativeCheckoutPath ??
-            "unknown"
-          }`,
-          `- route_exact_argv: ${routeDecision.executionPacket?.exactArgv?.join(" ") ?? "none"}`,
+          `- route_must_run_from: ${stringField(routeExecutionPacket, "mustRunFrom") ?? "unknown"}`,
           `- route_return_control_when: ${
-            routeDecision.executionPacket?.returnControlWhen ??
-            "after this run completes; recompute task next-action"
+            stringField(routeExecutionPacket, "returnControlWhen") ??
+            "after this run completes; return control to the parent supervisor"
           }`,
-          `- route_stale_state_check: ${
-            routeDecision.executionPacket?.staleStateCheck ??
-            "agentplane task next-action <task-id> --explain"
-          }`,
-          `- route_requires_provider_action: ${String(
-            routeDecision.executionPacket?.requiresProviderAction ?? false,
-          )}`,
-          `- route_human_provider_action: ${
-            routeDecision.executionPacket?.humanProviderAction ?? "none"
-          }`,
-          `- route_evidence_missing: ${
-            routeDecision.executionPacket?.evidenceMissing?.join(", ") ?? "none"
-          }`,
-          `- route_verification_candidate: ${
-            routeDecision.executionPacket?.verificationCandidate ?? "none"
-          }`,
-          `- runner_is_required: ${String(runnerContext?.runnerIsRequired ?? false)}`,
-          `- runner_is_allowed_now: ${String(runnerContext?.runnerIsAllowedNow ?? false)}`,
-          `- local_work_allowed_if_runner_fails: ${String(
-            runnerContext?.localWorkAllowedIfRunnerFails ?? false,
-          )}`,
-          `- runner_failure_means: ${runnerContext?.runnerFailureMeans ?? "unknown"}`,
         ]
       : []),
     "",
     "Use bundle.json as the complete runner input. Do not reconstruct prompts or route decisions from CLI argv.",
-    "Follow route_decision in bundle.json unless local state has changed; if it may be stale, run `agentplane task next-action <task-id> --explain` before mutating.",
-    "Route oracle contract: follow route_exact_argv when present, run it from route_must_run_from, treat route_primary_blocker as the current stop reason, and use route_phase instead of manually reconstructing branch/worktree/PR state.",
+    "Treat the rendered route fields as supervisor-resolved constraints. Do not recompute workflow state or invoke task lifecycle commands from this run.",
     "For file-edit tools that do not accept cwd/workdir, use absolute paths under route_mutation_path_hint when route_safe_to_mutate is true; otherwise stop before mutating files.",
-    "Return control according to route_return_control_when. Do not continue to a second route step until route_stale_state_check has been recomputed.",
-    "Runner rail contract: only think about runner execution when runner_is_required or runner_is_allowed_now is true; otherwise treat runner failures from earlier attempts as diagnostic evidence, not as the current route.",
-    "When reading bundle.json directly, use camelCase JSON paths: route_decision.oracle.nextCommand, route_decision.oracle.authoritativeCheckout, route_decision.oracle.authoritativeCheckoutPath, route_decision.oracle.mutationPathHint, route_decision.oracle.blocker, and route_decision.oracle.phase.",
-    ...(routeDecision?.executionPacket?.mustNot?.length
-      ? [
-          "Route must-not rules:",
-          ...routeDecision.executionPacket.mustNot.map((rule) => `- ${rule}`),
-        ]
+    "Stop according to route_return_control_when; the parent supervisor owns the next state transition.",
+    ...(routeMustNot.length > 0
+      ? ["Route must-not rules:", ...routeMustNot.map((rule) => `- ${rule}`)]
       : []),
-    "If the requested work cannot be completed without widening lifecycle authority or touching likely sibling-owned files, stop and write a blocked result manifest with the conflict, affected paths, and recommended parent action.",
+    "If the requested work cannot be completed without widening lifecycle authority or touching likely sibling-owned files, stop and write a blocked semantic result with blocker.summary and blocker.recommended_action; the supervisor owns path and conflict observation.",
     "",
     ...renderEvaluatorSkepticismLines(evaluatorSkepticismLevel),
     ...(stopRules.length > 0
@@ -275,9 +191,9 @@ export function renderTaskRunnerBootstrap(
             : []),
         ]
       : []),
-    "Execute-mode runs must write a valid JSON result manifest to result_path before exiting.",
-    "Minimal manifest example:",
-    '{"schema_version":1,"status":"success","summary":"Completed.","capabilities_used":["runner.exec"]}',
+    "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest to result_path before exiting.",
+    "Select the example matching the semantic outcome, keep work_order_id unchanged, and edit only semantic fields:",
+    ...renderRunnerResultManifestExampleLines(invocation?.work_order_id ?? bundle.execution.run_id),
     "",
     "Prepared invocation:",
     "",

@@ -29,7 +29,13 @@ observed execution facts separately.
 
 Generated examples:
 
-- `examples/agent-semantic-result-v2.valid.json` is a valid agent-writable v2 result.
+- `examples/agent-semantic-result-v2.valid.json` is the canonical `completed` result.
+- `examples/agent-semantic-result-v2.blocked.valid.json` is the canonical `blocked` result.
+- `examples/agent-semantic-result-v2.needs-context.valid.json` is the canonical `needs_context`
+  result.
+- `examples/agent-semantic-result-v2.failed.valid.json` is the canonical `failed` result.
+- All four v2 examples are rendered from one typed fixture builder, validated against the public
+  schema, and rebound to the active `work_order_id` before they are shown in runner bootstrap.
 - `examples/runner-result-manifest-v1.legacy.json` is an intentionally legacy v1 compatibility
   input. It is not valid against the v2 schema, and its observed-looking fields must remain
   untrusted agent claims during migration.

@@ -1,1 +1,1 @@
-🧩 C2XADX task: Generate runner manifest examples from canonical fixtures [202607221846-C2XADX]
+🚧 C2XADX task: Generate runner manifest examples from canonical fixtures [202607221846-C2XADX]

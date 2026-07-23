@@ -85,32 +85,24 @@ describe("runner blueprint guards", () => {
     const bootstrap = renderTaskRunnerBootstrap(bundle);
 
     expect(bootstrap).toContain("- route_phase: worktree_needed");
-    expect(bootstrap).toContain("- route_authoritative_checkout: base_checkout");
-    expect(bootstrap).toContain("- route_authoritative_checkout_path: /repo");
     expect(bootstrap).toContain("- route_mutation_path_hint: /repo");
     expect(bootstrap).toContain("- route_safe_to_mutate: true");
     expect(bootstrap).toContain("- route_must_run_from: /repo");
-    expect(bootstrap).toContain(
-      "- route_exact_argv: agentplane work start 202603231410-ABC123 --agent CODER --worktree",
-    );
     expect(bootstrap).toContain("- route_return_control_when: after the exact command exits");
     expect(bootstrap).toContain(
-      "- route_stale_state_check: agentplane task next-action 202603231410-ABC123 --explain",
+      "Treat the rendered route fields as supervisor-resolved constraints",
     );
-    expect(bootstrap).toContain("- route_primary_blocker: missing_pr_branch");
-    expect(bootstrap).toContain("- runner_is_required: false");
-    expect(bootstrap).toContain("- runner_is_allowed_now: false");
-    expect(bootstrap).toContain("- local_work_allowed_if_runner_fails: true");
-    expect(bootstrap).toContain(
-      "- runner_failure_means: not a runner route; do not introduce task run unless bundle explicitly delegates it",
-    );
-    expect(bootstrap).toContain("follow route_exact_argv when present");
-    expect(bootstrap).toContain("run it from route_must_run_from");
+    expect(bootstrap).toContain("Do not recompute workflow state");
     expect(bootstrap).toContain("use absolute paths under route_mutation_path_hint");
-    expect(bootstrap).toContain("Return control according to route_return_control_when");
-    expect(bootstrap).toContain("Runner rail contract:");
+    expect(bootstrap).toContain("the parent supervisor owns the next state transition");
     expect(bootstrap).toContain("Route must-not rules:");
-    expect(bootstrap).toContain("route_decision.oracle.nextCommand");
+    expect(bootstrap).not.toContain("- route_next_command:");
+    expect(bootstrap).not.toContain("- route_exact_argv:");
+    expect(bootstrap).not.toContain("- route_stale_state_check:");
+    expect(bootstrap).not.toContain("- route_requires_provider_action:");
+    expect(bootstrap).not.toContain(
+      "run `agentplane task next-action <task-id> --explain` before mutating",
+    );
   });
 
   it("renders configured evaluator skepticism into the runner bootstrap", () => {

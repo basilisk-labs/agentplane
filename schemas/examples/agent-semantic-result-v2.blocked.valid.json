@@ -1,0 +1,13 @@
+{
+  "schema_version": 2,
+  "kind": "agent_semantic_result",
+  "work_order_id": "work-order-example-001",
+  "status": "blocked",
+  "summary": "The requested work cannot continue within the current authority.",
+  "findings": ["The required provider action is outside the delegated runner scope."],
+  "uncertainty": [],
+  "blocker": {
+    "summary": "The runner needs a provider action from the parent workflow.",
+    "recommended_action": "Return control to the parent workflow for the provider action."
+  }
+}

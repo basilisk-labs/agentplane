@@ -3,8 +3,12 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
+  AGENT_SEMANTIC_RESULT_STATUS_VALUES,
   AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
+  AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURES,
+  AGENT_SEMANTIC_RESULT_V2_INVALID_FIXTURES,
   RUNNER_RESULT_MANIFEST_V1_LEGACY_FIXTURE,
+  buildAgentSemanticResultV2ValidFixtures,
   listAgentSemanticResultSchemaErrors,
   renderAgentSemanticResultSchemaJson,
   validateAgentSemanticResult,
@@ -23,6 +27,30 @@ describe("agent semantic result contract", () => {
     expect(validateAgentSemanticResult(fixture)).toEqual(AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE);
   });
 
+  it.each([
+    ["blocked", "agent-semantic-result-v2.blocked.valid.json"],
+    ["needs_context", "agent-semantic-result-v2.needs-context.valid.json"],
+    ["failed", "agent-semantic-result-v2.failed.valid.json"],
+  ] as const)("accepts the generated %s fixture", async (status, fileName) => {
+    const fixture = JSON.parse(
+      await readFile(path.join(process.cwd(), "schemas", "examples", fileName), "utf8"),
+    ) as unknown;
+
+    expect(validateAgentSemanticResult(fixture)).toEqual(
+      AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURES[status],
+    );
+  });
+
+  it("builds every advertised status for the supplied work order", () => {
+    const fixtures = buildAgentSemanticResultV2ValidFixtures("run-current");
+
+    expect(Object.keys(fixtures)).toEqual(AGENT_SEMANTIC_RESULT_STATUS_VALUES);
+    for (const status of AGENT_SEMANTIC_RESULT_STATUS_VALUES) {
+      expect(validateAgentSemanticResult(fixtures[status])).toEqual(fixtures[status]);
+      expect(fixtures[status].work_order_id).toBe("run-current");
+    }
+  });
+
   it("publishes the legacy v1 fixture only as incompatible migration input", async () => {
     const fixturePath = path.join(
       process.cwd(),
@@ -38,16 +66,14 @@ describe("agent semantic result contract", () => {
 
   it("requires status-specific semantic details", () => {
     expect(
-      listAgentSemanticResultSchemaErrors({
-        ...AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
-        status: "blocked",
-      }),
+      listAgentSemanticResultSchemaErrors(
+        AGENT_SEMANTIC_RESULT_V2_INVALID_FIXTURES.blocked_without_blocker,
+      ),
     ).not.toEqual([]);
     expect(
-      listAgentSemanticResultSchemaErrors({
-        ...AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
-        status: "needs_context",
-      }),
+      listAgentSemanticResultSchemaErrors(
+        AGENT_SEMANTIC_RESULT_V2_INVALID_FIXTURES.needs_context_without_knowledge_request,
+      ),
     ).not.toEqual([]);
     expect(
       listAgentSemanticResultSchemaErrors({

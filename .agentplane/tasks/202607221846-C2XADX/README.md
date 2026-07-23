@@ -1,10 +1,10 @@
 ---
 id: "202607221846-C2XADX"
 title: "Generate runner manifest examples from canonical fixtures"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -38,11 +38,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Generate canonical runner fixtures, render bootstrap examples from them, and prove production parser round-trips plus typed negative cases."
+events:
+  -
+    type: "status"
+    at: "2026-07-23T18:00:27.403Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Generate canonical runner fixtures, render bootstrap examples from them, and prove production parser round-trips plus typed negative cases."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:46:52.407Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-23T18:00:27.403Z"
+doc_updated_by: "CODER"
 description: "RF-02: eliminate bootstrap/parser drift by deriving runner success, blocked, and failure examples from canonical schema fixtures that round-trip through the production parser."
 sections:
   Summary: |-

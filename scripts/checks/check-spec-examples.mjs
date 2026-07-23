@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { inspect } from "node:util";
 
-const EXAMPLE_ROUTES = [
+const SPEC_EXAMPLE_ROUTES = [
   ["acr.json", "acr-v0.1.schema.json"],
   ["config.json", "config.schema.json"],
   ["pr-meta.json", "pr-meta.schema.json"],
@@ -15,8 +15,18 @@ const EXAMPLE_ROUTES = [
 ];
 
 const repoRoot = process.cwd();
-const examplesDir = path.join(repoRoot, "packages", "spec", "examples");
+const specExamplesDir = path.join(repoRoot, "packages", "spec", "examples");
 const generatedSchemasDir = path.join(repoRoot, "packages", "core", "schemas");
+const publicExamplesDir = path.join(repoRoot, "schemas", "examples");
+const publicSchemasDir = path.join(repoRoot, "schemas");
+const PUBLIC_EXAMPLE_ROUTES = [
+  ["agent-semantic-result-v2.blocked.valid.json", "agent-semantic-result.schema.json"],
+  ["agent-semantic-result-v2.failed.valid.json", "agent-semantic-result.schema.json"],
+  ["agent-semantic-result-v2.needs-context.valid.json", "agent-semantic-result.schema.json"],
+  ["agent-semantic-result-v2.valid.json", "agent-semantic-result.schema.json"],
+  ["execution-receipt-v1.valid.json", "execution-receipt.schema.json"],
+];
+const PUBLIC_COMPATIBILITY_ONLY_EXAMPLES = ["runner-result-manifest-v1.legacy.json"];
 
 function readJson(filePath) {
   try {
@@ -67,9 +77,14 @@ function validateSchema(schema, value, location, errors) {
     return;
   }
 
-  if (Array.isArray(schema.anyOf)) {
+  const alternatives = Array.isArray(schema.oneOf)
+    ? schema.oneOf
+    : Array.isArray(schema.anyOf)
+      ? schema.anyOf
+      : null;
+  if (alternatives) {
     const branchErrors = [];
-    for (const branch of schema.anyOf) {
+    for (const branch of alternatives) {
       const nextErrors = [];
       validateSchema(branch, value, location, nextErrors);
       if (nextErrors.length === 0) return;
@@ -152,11 +167,11 @@ function validateSchema(schema, value, location, errors) {
   }
 }
 
-function verifyRouteCoverage() {
+function verifyRouteCoverage(examplesDir, routes, ignoredNames = []) {
   const exampleNames = readdirSync(examplesDir)
     .filter((name) => name.endsWith(".json"))
     .toSorted();
-  const routedNames = EXAMPLE_ROUTES.map(([exampleName]) => exampleName).toSorted();
+  const routedNames = [...routes.map(([exampleName]) => exampleName), ...ignoredNames].toSorted();
   const missingRoutes = exampleNames.filter((name) => !routedNames.includes(name));
   const staleRoutes = routedNames.filter((name) => !exampleNames.includes(name));
   if (missingRoutes.length > 0 || staleRoutes.length > 0) {
@@ -172,13 +187,10 @@ function verifyRouteCoverage() {
   }
 }
 
-function main() {
-  verifyRouteCoverage();
-  const failures = [];
-
-  for (const [exampleName, schemaName] of EXAMPLE_ROUTES) {
+function validateExamples(routes, examplesDir, schemasDir, failures) {
+  for (const [exampleName, schemaName] of routes) {
     const examplePath = path.join(examplesDir, exampleName);
-    const schemaPath = path.join(generatedSchemasDir, schemaName);
+    const schemaPath = path.join(schemasDir, schemaName);
     const schema = readJson(schemaPath);
     const value = readJson(examplePath);
     const errors = [];
@@ -190,13 +202,22 @@ function main() {
       );
     }
   }
+}
+
+function main() {
+  verifyRouteCoverage(specExamplesDir, SPEC_EXAMPLE_ROUTES);
+  verifyRouteCoverage(publicExamplesDir, PUBLIC_EXAMPLE_ROUTES, PUBLIC_COMPATIBILITY_ONLY_EXAMPLES);
+  const failures = [];
+
+  validateExamples(SPEC_EXAMPLE_ROUTES, specExamplesDir, generatedSchemasDir, failures);
+  validateExamples(PUBLIC_EXAMPLE_ROUTES, publicExamplesDir, publicSchemasDir, failures);
 
   if (failures.length > 0) {
     throw new Error(`spec example validation failed\n${failures.join("\n")}`);
   }
 
   process.stdout.write(
-    `spec examples OK (${EXAMPLE_ROUTES.length} examples validated against packages/core/schemas)\n`,
+    `spec examples OK (${SPEC_EXAMPLE_ROUTES.length + PUBLIC_EXAMPLE_ROUTES.length} examples validated; ${PUBLIC_COMPATIBILITY_ONLY_EXAMPLES.length} compatibility-only example routed)\n`,
   );
 }
 

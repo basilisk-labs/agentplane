@@ -51,6 +51,9 @@ const ROOT_ONLY_PUBLIC_SCHEMAS = [
 ];
 
 const ROOT_ONLY_PUBLIC_EXAMPLES = [
+  "agent-semantic-result-v2.blocked.valid.json",
+  "agent-semantic-result-v2.failed.valid.json",
+  "agent-semantic-result-v2.needs-context.valid.json",
   "agent-semantic-result-v2.valid.json",
   "execution-receipt-v1.valid.json",
   "runner-result-manifest-v1.legacy.json",
@@ -136,9 +139,47 @@ const main = defineScript({
       },
       {
         label: "agent semantic result v2 valid example",
-        rendered: renderAgentSemanticResultV2ValidFixtureJson(),
+        rendered: await format(renderAgentSemanticResultV2ValidFixtureJson(), {
+          parser: "json",
+          printWidth: 100,
+        }),
         targets: [
           path.join(repoRoot, "schemas", "examples", "agent-semantic-result-v2.valid.json"),
+        ],
+      },
+      {
+        label: "agent semantic result v2 blocked example",
+        rendered: await format(renderAgentSemanticResultV2ValidFixtureJson("blocked"), {
+          parser: "json",
+          printWidth: 100,
+        }),
+        targets: [
+          path.join(repoRoot, "schemas", "examples", "agent-semantic-result-v2.blocked.valid.json"),
+        ],
+      },
+      {
+        label: "agent semantic result v2 needs-context example",
+        rendered: await format(renderAgentSemanticResultV2ValidFixtureJson("needs_context"), {
+          parser: "json",
+          printWidth: 100,
+        }),
+        targets: [
+          path.join(
+            repoRoot,
+            "schemas",
+            "examples",
+            "agent-semantic-result-v2.needs-context.valid.json",
+          ),
+        ],
+      },
+      {
+        label: "agent semantic result v2 failed example",
+        rendered: await format(renderAgentSemanticResultV2ValidFixtureJson("failed"), {
+          parser: "json",
+          printWidth: 100,
+        }),
+        targets: [
+          path.join(repoRoot, "schemas", "examples", "agent-semantic-result-v2.failed.valid.json"),
         ],
       },
       {
