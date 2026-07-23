@@ -1,10 +1,11 @@
 ---
 id: "202607222129-1ZQHJD"
 title: "Capture anchored multi-run RF-04 replay telemetry"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on:
@@ -67,7 +68,9 @@ quality_review:
     - "CURRENT_AGENT maps to CODER only for immutable-anchor lifecycle actors while prompts, episode ledger, role usage, and telemetry retain CURRENT_AGENT."
     - "JSONL parsing remains fail-closed: one turn.completed, required provider usage, last valid pre-completion status, no post-completion status, and bounded output channels."
     - "Post-main rebase preserved the exact RF-04 patch by range-diff and patch SHA256; historical baseline blob remains cc5eb8600d41b7da3adf19ee06b58227caaab064."
-commit: null
+commit:
+  hash: "b17723dd746a9aed7c6e3d3dca25f276e43657cd"
+  message: "🧐 1ZQHJD task: record final replay quality review"
 comments:
   -
     author: "TESTER"
@@ -96,6 +99,9 @@ comments:
   -
     author: "TESTER"
     body: "The autonomous full retry completed successfully: 50/50 scenario runs and 55/55 provider episodes were published as 50 sanitized envelopes and 50 content-addressed evidence bundles. The offline checker resolves 70/70 outcome cells, 27/27 provider token cells, and 170/170 scalar cells under one fixed profile; structural_sha256=sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4 and diagnostics_sha256=sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e. Secret and host-path scans are clean, staging and transaction markers are absent, and the historical baseline blob remains cc5eb8600d41b7da3adf19ee06b58227caaab064. Four focused suites pass 40/40; all 11 critical chunks, TypeScript, workflow lint, task-state, policy routing, format, replay, guards, lint, and architecture checks pass. Full ci:contract reaches clone:check and then exposes a pre-existing main drift (91 clones versus baseline 88); clean main reproduces the same 91, while no reported clone pair touches an RF-04 file. This unrelated baseline reconciliation is being handled separately before final verification."
+  -
+    author: "TESTER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -156,8 +162,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Post-rebase verification passed on ba22c6f7: immutable RF-04 patch parity confirmed by range-diff and SHA256; offline replay validates 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, structural 006ddc6d and diagnostics 01c7b818; four focused suites pass 40/40; all 11 critical chunks, typecheck, routing, full ci:contract, architecture, clone=88, Knip, and coverage gates pass. Historical baseline blob remains cc5eb860, 50 envelopes and 50 evidence bundles remain canonical, transaction marker is absent, and alpha.1 still directly depends on this task."
+  -
+    type: "status"
+    at: "2026-07-23T14:16:33.317Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-23T14:10:17.280Z"
+doc_updated_at: "2026-07-23T14:16:33.318Z"
 doc_updated_by: "TESTER"
 description: "Add an additive replay baseline for immutable pre-v0.7 main commit 1a702e160ba9f0efe7067f2a22fc008defc89ffb by executing all ten RF-04 scenarios at least five times in isolated fixtures, recording provider-reported token usage and 70 resolved outcome cells with per-field fixture_control or supervisor_observed provenance, collecting cognitive, orchestration, latency, retrieval, and evidence metrics, and enforcing offline provenance and coverage checks without rewriting the historical RF-04 baseline or changing product semantics."
 sections:
@@ -270,6 +283,10 @@ sections:
     The aggregate baseline and per-run capture files are machine-owned canonical, content-addressed JSON. A scoped Prettier exclusion preserves those bytes while replay:check remains the stricter canonical/hash/linkage validator; format:check and replay:check both pass, and an independent audit found no P0/P1/P2 issue.
 
     All RF-04-specific and critical checks pass. Full ci:contract reaches clone:check and then exposes an unrelated pre-existing main drift: clean main and this branch both report 91 clones against baseline 88, and none of the current 91 clone pairs touches an RF-04 file. That baseline reconciliation must be resolved separately before final task verification.
+extensions:
+  implementation_commit:
+    hash: "a9da018bfb163b09bfb2c0b7a0b59b6e647c5719"
+    message: "📊 1ZQHJD task: capture anchored RF-04 replay"
 id_source: "generated"
 ---
 ## Summary
