@@ -1,11 +1,11 @@
 ---
 id: "202607221846-4VB97J"
 title: "Align Workflow schema, migration, and runtime version contracts"
-result_summary: "pre-merge closure"
-status: "DOING"
+result_summary: "Aligned workflow schema, migration, runtime versioning, and explicit approval persistence for v0.7."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -58,7 +58,9 @@ quality_review:
     - "independent workflow_final_audit: PASS"
   findings:
     - "No P0-P2 findings: required approval flags, optional extensions, v1 migration preservation, generated schemas, and compatibility ledger are aligned."
-commit: null
+commit:
+  hash: "65003955f31a787c0bd080cfabd001c589f95760"
+  message: "✅ 4VB97J task: record approval contract verification"
 comments:
   -
     author: "CODER"
@@ -66,6 +68,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: WORKFLOW v1/v2 runtime, migration, generated schemas, explicit v2 approvals, compatibility baseline, full fast and critical tests, and independent review pass."
 events:
   -
     type: "status"
@@ -111,8 +116,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "PASS at implementation 58e553847: explicit v2 approvals regression fixed; 2220/2220 fast tests and all 8 critical chunks pass; schema, compatibility, format, knip, lint, typecheck, architecture, docs, workflow, build, and independent P0-P2 review pass."
+  -
+    type: "status"
+    at: "2026-07-23T03:21:34.229Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: WORKFLOW v1/v2 runtime, migration, generated schemas, explicit v2 approvals, compatibility baseline, full fast and critical tests, and independent review pass."
 doc_version: 3
-doc_updated_at: "2026-07-23T03:20:24.043Z"
+doc_updated_at: "2026-07-23T03:21:34.229Z"
 doc_updated_by: "CODER"
 description: "Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing, the public v1 JSON Schema/docs, future-version acceptance, and upgrade behavior."
 sections:
@@ -300,8 +312,8 @@ sections:
       Resolution: Use a workflow-specific v2 approvals schema with three required booleans, preserve optional typed extensions, and add focused regression coverage.
 extensions:
   implementation_commit:
-    hash: "48c84a7f468ab71235cc6af34e0d8f3d6afbb4e2"
-    message: "🧪 4VB97J migration: cover dry-run UTF-8 rejection"
+    hash: "58e553847d99e3245d6d8150326f13fccd34524b"
+    message: "🐛 4VB97J workflow: require explicit approvals"
 id_source: "generated"
 ---
 ## Summary
