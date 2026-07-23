@@ -15,13 +15,12 @@ Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-PASS after CI rework at implementation 816b1f592: 41 focused and 2216/2216 full tests pass;
-hosted-equivalent static, critical, schema, docs, workflow and compatibility gates pass; independent
-evaluator found no P0-P2 issues.
+PR review found that v2 approvals reused defaulting config fields, allowing omitted required flags;
+reopen for explicit persisted workflow approval validation.
 ```
 - Canonical workflow state lives in the task README.
 

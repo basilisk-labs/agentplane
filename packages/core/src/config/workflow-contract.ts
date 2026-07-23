@@ -8,8 +8,6 @@ export const SUPPORTED_WORKFLOW_VERSIONS = [1, WORKFLOW_CONTRACT_VERSION] as con
 
 const nonEmptyString = z.string().min(1);
 const configShape = AgentplaneConfigSchema.shape;
-const agentsConfigSchema = configShape.agents.unwrap();
-const approvalsConfigSchema = agentsConfigSchema.shape.approvals.unwrap();
 const tasksConfigSchema = configShape.tasks.unwrap();
 
 const WORKFLOW_RETRY_POLICY_SCHEMA = z
@@ -39,6 +37,15 @@ const WORKFLOW_APPROVALS_V1_SCHEMA = z
     require_network: z.boolean(),
   })
   .strict();
+
+const WORKFLOW_APPROVALS_V2_SCHEMA = z
+  .object({
+    require_plan: z.boolean(),
+    require_verify: z.boolean(),
+    require_network: z.boolean(),
+    require_force: z.boolean().optional(),
+  })
+  .passthrough();
 
 const WORKFLOW_SECTION_SCHEMA = z
   .object({
@@ -130,7 +137,7 @@ export const WorkflowV2FrontMatterSchema = z
     version: z.literal(WORKFLOW_CONTRACT_VERSION),
     workflow: WORKFLOW_SECTION_SCHEMA,
     owners: WORKFLOW_OWNERS_SCHEMA,
-    approvals: approvalsConfigSchema,
+    approvals: WORKFLOW_APPROVALS_V2_SCHEMA,
     workspace: WORKFLOW_WORKSPACE_SCHEMA.optional(),
     paths: configShape.paths.unwrap().optional(),
     tasks: WORKFLOW_TASKS_SCHEMA.optional(),

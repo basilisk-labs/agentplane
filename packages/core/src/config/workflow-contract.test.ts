@@ -77,6 +77,29 @@ describe("WORKFLOW front matter contract", () => {
     });
   });
 
+  it.each(["require_plan", "require_verify", "require_network"])(
+    "requires explicit v2 approval flag %s",
+    (key) => {
+      const invalid = structuredClone(WORKFLOW_V2_FRONT_MATTER_FIXTURE);
+      delete (invalid.approvals as Record<string, unknown>)[key];
+
+      expect(() => parseWorkflowFrontMatter(invalid)).toThrow();
+    },
+  );
+
+  it("preserves optional v2 approval fields without defaults", () => {
+    const input = {
+      ...WORKFLOW_V2_FRONT_MATTER_FIXTURE,
+      approvals: {
+        ...WORKFLOW_V2_FRONT_MATTER_FIXTURE.approvals,
+        require_force: true,
+        approval_extension: "retain",
+      },
+    };
+
+    expect(parseWorkflowFrontMatter(input).approvals).toEqual(input.approvals);
+  });
+
   it("rejects unsupported future versions with a typed error", () => {
     expect(() =>
       parseWorkflowFrontMatter({
