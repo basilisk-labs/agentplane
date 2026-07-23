@@ -4,7 +4,7 @@ title: "Reconcile semantic clone baseline drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -30,6 +30,28 @@ verification:
   updated_by: "TESTER"
   note: "Focused Vitest passed 20/20; clone report/check restored 88 clones with unchanged baseline blob 007f3b87; schemas, typecheck, scoped lint, formatting, all 8 critical CLI chunks, and full ci:contract passed. Independent review PASS after retry/env/argsPrefix characterization was added; RF-04 and agentplane-loops remained untouched."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-23T13:50:15.822Z"
+  updated_by: "EVALUATOR"
+  note: "Independent semantic review confirms the clone-removal refactor preserves both workflow-schema contracts and all GitHub lookup transport and caller-specific failure semantics."
+  evaluated_sha: "a57eedded82e3790470e8e32155e9a28ab51503f"
+  blueprint_digest: "184054b8946d30b879c0d991fc150e42c70c1345fa909de5794a8fbe17aecbc3"
+  evidence_refs:
+    - ".agentplane/tasks/202607231327-W084MM/README.md"
+    - ".agentplane/tasks/202607231327-W084MM/quality/20260723-135015822-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607231327-W084MM/quality/20260723-135015822-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607231327-W084MM/quality/20260723-135015822-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607231327-W084MM/blueprint/resolved-snapshot.json"
+    - "packages/core/src/config/workflow-contract.ts"
+    - "packages/core/src/config/workflow-contract.test.ts"
+    - "packages/agentplane/src/commands/pr/internal/sync-github.ts"
+    - "packages/agentplane/src/commands/pr/internal/sync-github.test.ts"
+    - "clone count 88; unchanged baseline blob 007f3b87e4a6f30b9bc0d8b2e3ff78fb1f16d11d"
+  findings:
+    - "WORKFLOW_OPTIONAL_ROOT_SHAPE is structurally shared while v1/v2 discriminants, approvals, required fields, and generated schema order remain unchanged."
+    - "runGithubApiJson preserves retry, ghEnv, custom argsPrefix, cwd, endpoint, maxBuffer, JSON parsing, and each caller's validation/catch semantics; the initial test-coverage gap was corrected before approval."
 commit: null
 comments:
   -

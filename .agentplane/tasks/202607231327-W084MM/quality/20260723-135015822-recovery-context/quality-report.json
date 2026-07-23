@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607231327-W084MM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-23T13:50:15.822Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Independent semantic review confirms the clone-removal refactor preserves both workflow-schema contracts and all GitHub lookup transport and caller-specific failure semantics.",
+  "evaluated_sha": "a57eedded82e3790470e8e32155e9a28ab51503f",
+  "blueprint_digest": "184054b8946d30b879c0d991fc150e42c70c1345fa909de5794a8fbe17aecbc3",
+  "findings": [
+    "WORKFLOW_OPTIONAL_ROOT_SHAPE is structurally shared while v1/v2 discriminants, approvals, required fields, and generated schema order remain unchanged.",
+    "runGithubApiJson preserves retry, ghEnv, custom argsPrefix, cwd, endpoint, maxBuffer, JSON parsing, and each caller's validation/catch semantics; the initial test-coverage gap was corrected before approval."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607231327-W084MM/README.md",
+    "packages/core/src/config/workflow-contract.ts",
+    "packages/core/src/config/workflow-contract.test.ts",
+    "packages/agentplane/src/commands/pr/internal/sync-github.ts",
+    "packages/agentplane/src/commands/pr/internal/sync-github.test.ts",
+    "clone count 88; unchanged baseline blob 007f3b87e4a6f30b9bc0d8b2e3ff78fb1f16d11d"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "GitHub provider availability remains external, but unavailable/null behavior and retry boundaries are unchanged."
+  ]
+}
