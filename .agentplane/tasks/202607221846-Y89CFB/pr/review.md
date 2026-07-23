@@ -6,7 +6,7 @@ Created: 2026-07-23T15:58:38.987Z
 
 - Task: `202607221846-Y89CFB`
 - Title: Build supervisor-owned execution receipts
-- Status: TODO
+- Status: DOING
 - Branch: `task/202607221846-Y89CFB/build-supervisor-owned-execution-receipts`
 - Canonical task record: `.agentplane/tasks/202607221846-Y89CFB/README.md`
 
