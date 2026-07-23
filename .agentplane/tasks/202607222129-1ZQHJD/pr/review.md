@@ -12,8 +12,8 @@ Created: 2026-07-22T21:30:53.096Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Fresh clone:check on RF-04 head ba30ea2a fails only because the branch is eight main commits behind W084MM: 91 clones versus baseline 88. Update the task branch from main fd1e52a7, keep RF-04 artifacts and immutable anchor unchanged, then rerun the full declared verification contract.
+- State: ok
+- Note: Post-rebase verification passed on ba22c6f7: immutable RF-04 patch parity confirmed by range-diff and SHA256; offline replay validates 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, structural 006ddc6d and diagnostics 01c7b818; four focused suites pass 40/40; all 11 critical chunks, typecheck, routing, full ci:contract, architecture, clone=88, Knip, and coverage gates pass. Historical baseline blob remains cc5eb860, 50 envelopes and 50 evidence bundles remain canonical, transaction marker is absent, and alpha.1 still directly depends on this task.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
