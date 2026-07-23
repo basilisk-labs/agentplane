@@ -156,6 +156,11 @@ export async function applyWorkflowMigration(
   );
   const sourceBuffer = await readFile(paths.workflowPath);
   const sourceText = sourceBuffer.toString("utf8");
+  if (!Buffer.from(sourceText, "utf8").equals(sourceBuffer)) {
+    throw new Error(
+      "WORKFLOW migration requires valid UTF-8 bytes; re-encode or restore .agentplane/WORKFLOW.md before retrying.",
+    );
+  }
   const plan = planWorkflowMigration(sourceText);
   if (!plan.changed || opts.dryRun) {
     return { ...plan, applied: false, receiptPath: null };
