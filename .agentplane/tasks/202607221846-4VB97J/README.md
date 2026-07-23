@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -33,11 +33,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-23T03:08:41.438Z"
+  state: "ok"
+  updated_at: "2026-07-23T03:20:23.933Z"
   updated_by: "CODER"
-  note: "PR review found that v2 approvals reused defaulting config fields, allowing omitted required flags; reopen for explicit persisted workflow approval validation."
-  attempts: 1
+  note: "PASS at implementation 58e553847: explicit v2 approvals regression fixed; 2220/2220 fast tests and all 8 critical chunks pass; schema, compatibility, format, knip, lint, typecheck, architecture, docs, workflow, build, and independent P0-P2 review pass."
+  attempts: 0
 quality_review:
   state: "pass"
   updated_at: "2026-07-23T03:19:55.847Z"
@@ -105,8 +105,14 @@ events:
     author: "CODER"
     state: "needs_rework"
     note: "PR review found that v2 approvals reused defaulting config fields, allowing omitted required flags; reopen for explicit persisted workflow approval validation."
+  -
+    type: "verify"
+    at: "2026-07-23T03:20:23.933Z"
+    author: "CODER"
+    state: "ok"
+    note: "PASS at implementation 58e553847: explicit v2 approvals regression fixed; 2220/2220 fast tests and all 8 critical chunks pass; schema, compatibility, format, knip, lint, typecheck, architecture, docs, workflow, build, and independent P0-P2 review pass."
 doc_version: 3
-doc_updated_at: "2026-07-23T03:08:41.568Z"
+doc_updated_at: "2026-07-23T03:20:24.043Z"
 doc_updated_by: "CODER"
 description: "Correct the verified v0.7 prerequisite drift between WORKFLOW v2 runtime parsing, the public v1 JSON Schema/docs, future-version acceptance, and upgrade behavior."
 sections:
@@ -223,6 +229,36 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T03:07:18.117Z, excerpt_hash=sha256:af5ea8abec88124a9c949254e987364e763f794ade7f69ed80c53fe80741acd7
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-4VB97J-align-workflow-schema-migration-and-runtime-vers/.agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json
+    - old_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+    - current_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221846-4VB97J
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607221846-4VB97J --branch task/202607221846-4VB97J/align-workflow-schema-migration-and-runtime-vers
+    - diagnostic_command: agentplane pr check 202607221846-4VB97J
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-23T03:20:23.933Z — VERIFY — ok
+
+    By: CODER
+
+    Note: PASS at implementation 58e553847: explicit v2 approvals regression fixed; 2220/2220 fast tests and all 8 critical chunks pass; schema, compatibility, format, knip, lint, typecheck, architecture, docs, workflow, build, and independent P0-P2 review pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T03:08:41.568Z, excerpt_hash=sha256:af5ea8abec88124a9c949254e987364e763f794ade7f69ed80c53fe80741acd7
 
     Details:
 
@@ -391,6 +427,36 @@ Note: PR review found that v2 approvals reused defaulting config fields, allowin
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T03:07:18.117Z, excerpt_hash=sha256:af5ea8abec88124a9c949254e987364e763f794ade7f69ed80c53fe80741acd7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-4VB97J-align-workflow-schema-migration-and-runtime-vers/.agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json
+- old_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+- current_digest: c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221846-4VB97J
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607221846-4VB97J --branch task/202607221846-4VB97J/align-workflow-schema-migration-and-runtime-vers
+- diagnostic_command: agentplane pr check 202607221846-4VB97J
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-23T03:20:23.933Z — VERIFY — ok
+
+By: CODER
+
+Note: PASS at implementation 58e553847: explicit v2 approvals regression fixed; 2220/2220 fast tests and all 8 critical chunks pass; schema, compatibility, format, knip, lint, typecheck, architecture, docs, workflow, build, and independent P0-P2 review pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T03:08:41.568Z, excerpt_hash=sha256:af5ea8abec88124a9c949254e987364e763f794ade7f69ed80c53fe80741acd7
 
 Details:
 
