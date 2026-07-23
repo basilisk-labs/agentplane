@@ -4,7 +4,7 @@ title: "Remove automatic semantic pass verdicts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -39,19 +39,19 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-23T05:13:22.168Z"
+  updated_at: "2026-07-23T05:14:43.959Z"
   updated_by: "EVALUATOR"
-  note: "The audited RF-00 implementation and rework fixes remain unchanged at 6f8a8590f; only managed task and PR evidence was refreshed."
-  evaluated_sha: "6f8a8590f2e2875067b0805bf698ea133a41bf08"
+  note: "The audited RF-00 implementation and rework fixes remain unchanged at 0fcb2e169; only the managed YGWMA2 README advanced after PR artifact synchronization."
+  evaluated_sha: "0fcb2e16939fb9d3aa7c639d8e8fcec8d292a3c6"
   blueprint_digest: "0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b"
   evidence_refs:
     - ".agentplane/tasks/202607221846-YGWMA2/README.md"
-    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-051322168-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-051322168-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-051322168-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-051443959-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-051443959-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-051443959-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json"
-    - "git diff --name-status d836982ea..6f8a8590f: only YGWMA2 README and managed PR artifacts"
-    - "git diff --quiet d836982ea..6f8a8590f excluding YGWMA2 task/PR artifacts: exit 0"
+    - "git diff --name-status 6f8a8590f..0fcb2e169: only YGWMA2 README"
+    - "git diff --quiet 6f8a8590f..0fcb2e169 excluding YGWMA2 README: exit 0"
     - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
     - "packages/agentplane/src/commands/shared/route-execution-packet.ts"
     - "scripts/baselines/trust-boundary-violations.json"
@@ -61,10 +61,10 @@ quality_review:
     - "bun run ci:local:full: 372 test files / 2229 tests plus critical CLI, docs, platform, and coverage gates passed"
     - "social strict check: 220 images passed"
   findings:
-    - "No implementation drift from audited d836982ea was found, so the prior semantic, provenance, routing, and visual conclusions still apply."
-    - "RF-00 trust ratchet reports zero current automatic-semantic-verdict violations, and no production or template surface constructs a fixed pass verdict."
+    - "The implementation diff from audited d836982ea remains byte-identical, so the prior semantic, provenance, routing, and visual conclusions remain valid."
+    - "RF-00 trust ratchet reports zero current automatic-semantic-verdict violations, with no fixed pass verdict in production or template surfaces."
     - "Fresh rework returns implementation_rework_required to CODER with null argv and blocks PR publication or integration until verification."
-    - "All 220 social images pass strict rendered-width validation and the inspected workflow migration card is not clipped."
+    - "All 220 social images pass strict rendered-width validation and inspected regenerated cards have no clipping."
 commit: null
 comments:
   -
