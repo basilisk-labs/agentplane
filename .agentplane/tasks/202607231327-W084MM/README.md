@@ -1,10 +1,11 @@
 ---
 id: "202607231327-W084MM"
 title: "Reconcile semantic clone baseline drift"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -52,11 +53,16 @@ quality_review:
   findings:
     - "WORKFLOW_OPTIONAL_ROOT_SHAPE is structurally shared while v1/v2 discriminants, approvals, required fields, and generated schema order remain unchanged."
     - "runGithubApiJson preserves retry, ghEnv, custom argsPrefix, cwd, endpoint, maxBuffer, JSON parsing, and each caller's validation/catch semantics; the initial test-coverage gap was corrected before approval."
-commit: null
+commit:
+  hash: "665ef5e2c7d92d4943e4d5a8e87fbcf07790d5d0"
+  message: "🧐 W084MM task: record semantic quality review"
 comments:
   -
     author: "CODER"
     body: "Start: remove two deduplicable main clone regressions without changing the clone baseline or public API."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -71,8 +77,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused Vitest passed 20/20; clone report/check restored 88 clones with unchanged baseline blob 007f3b87; schemas, typecheck, scoped lint, formatting, all 8 critical CLI chunks, and full ci:contract passed. Independent review PASS after retry/env/argsPrefix characterization was added; RF-04 and agentplane-loops remained untouched."
+  -
+    type: "status"
+    at: "2026-07-23T13:50:46.346Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-23T13:49:28.377Z"
+doc_updated_at: "2026-07-23T13:50:46.347Z"
 doc_updated_by: "CODER"
 description: "Remove the two deduplicable semantic clone regressions already present on main, preserve intentional public barrel parity, then refresh the reviewed jscpd baseline so clone:check is truthful before RF-04 integration."
 sections:
@@ -135,6 +148,10 @@ sections:
     - Do not raise or regenerate scripts/baselines/clone-baseline.json to make the check pass.
     - Do not modify RF-04 capture artifacts or dependency edges.
   Findings: "Clean main d7a29cb4 and the RF-04 branch both report 91 clones against the unchanged baseline ceiling of 88. Historical jscpd v5 tracing attributes the three increments to 4VB97J workflow optional roots, YGWMA2 intentional mirrored public task exports, and YFYT83 repeated GitHub lookup transport. RF-04 files occur in none of the 91 clone pairs. This task removes the two deduplicable sources and preserves the intentional public entrypoint mirror without changing the baseline."
+extensions:
+  implementation_commit:
+    hash: "a57eedded82e3790470e8e32155e9a28ab51503f"
+    message: "♻️ W084MM task: reconcile semantic clone drift"
 id_source: "generated"
 ---
 ## Summary
