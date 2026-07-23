@@ -6,14 +6,14 @@ Created: 2026-07-23T15:58:38.987Z
 
 - Task: `202607221846-Y89CFB`
 - Title: Build supervisor-owned execution receipts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221846-Y89CFB/build-supervisor-owned-execution-receipts`
 - Canonical task record: `.agentplane/tasks/202607221846-Y89CFB/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Current PR head contains only task and PR lifecycle metadata; no ExecutionReceipt implementation or acceptance evidence exists yet. Return to CODER for RF-01b implementation before verification.
+- State: ok
+- Note: Verified supervisor-owned receipt truth against conflicting agent claims, unreported writes, pre-existing dirt, legacy compatibility, detached descendants, replay and file-identity attacks, and arbitrary terminal signals. Focused 110/110, full 2421/2421, lifecycle invariants, typecheck, and ci:contract passed. POSIX process-group containment remains explicitly limited and fail-closed until RF03.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

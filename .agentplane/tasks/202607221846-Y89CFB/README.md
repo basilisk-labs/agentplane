@@ -1,10 +1,11 @@
 ---
 id: "202607221846-Y89CFB"
 title: "Build supervisor-owned execution receipts"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -31,16 +32,44 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-23T16:01:37.741Z"
+  state: "ok"
+  updated_at: "2026-07-23T17:34:21.326Z"
   updated_by: "TESTER"
-  note: "Current PR head contains only task and PR lifecycle metadata; no ExecutionReceipt implementation or acceptance evidence exists yet. Return to CODER for RF-01b implementation before verification."
-  attempts: 1
-commit: null
+  note: "Verified supervisor-owned receipt truth against conflicting agent claims, unreported writes, pre-existing dirt, legacy compatibility, detached descendants, replay and file-identity attacks, and arbitrary terminal signals. Focused 110/110, full 2421/2421, lifecycle invariants, typecheck, and ci:contract passed. POSIX process-group containment remains explicitly limited and fail-closed until RF03."
+  attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-23T17:35:05.149Z"
+  updated_by: "EVALUATOR"
+  note: "Independent semantic review found no remaining P0-P2 defect after fail-closed containment, signal, replay, and stable-file fixes."
+  evaluated_sha: "c989777ba53545e457dbd24793a5cf454ca9ffaa"
+  blueprint_digest: "504aba551a29f040c1ef51d538e2b0132564d1e27dc199a4110ded1506a9ebb5"
+  evidence_refs:
+    - ".agentplane/tasks/202607221846-Y89CFB/README.md"
+    - ".agentplane/tasks/202607221846-Y89CFB/quality/20260723-173505149-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221846-Y89CFB/quality/20260723-173505149-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221846-Y89CFB/quality/20260723-173505149-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221846-Y89CFB/blueprint/resolved-snapshot.json"
+    - "packages/core/src/runner/execution-receipt.ts"
+    - "packages/agentplane/src/runner/adapters/execution-receipt-runtime.ts"
+    - "packages/agentplane/src/runner/process-supervision.process-tree.test.ts"
+    - "packages/agentplane/src/context/verify-task.ts"
+    - "bun run test:fast: 390 files, 2421 tests passed"
+    - "bun run ci:contract: passed"
+  findings:
+    - "Supervisor observations are authoritative and agent claims remain separately auditable; observed_success requires bounded containment, complete Git and artifact evidence, clean process exit, and passed required checks."
+    - "Receipt path/run binding rejects cross-task traversal and the verifier reads the receipt through a stable no-follow file handle."
+commit:
+  hash: "c989777ba53545e457dbd24793a5cf454ca9ffaa"
+  message: "🛡️ Y89CFB task: add supervisor-owned execution receipts"
 comments:
   -
     author: "CODER"
     body: "Start: implement supervisor-owned ExecutionReceipt with observed process, Git delta, check, artifact hash, compatibility, and success-policy evidence."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -55,8 +84,21 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Current PR head contains only task and PR lifecycle metadata; no ExecutionReceipt implementation or acceptance evidence exists yet. Return to CODER for RF-01b implementation before verification."
+  -
+    type: "verify"
+    at: "2026-07-23T17:34:21.326Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified supervisor-owned receipt truth against conflicting agent claims, unreported writes, pre-existing dirt, legacy compatibility, detached descendants, replay and file-identity attacks, and arbitrary terminal signals. Focused 110/110, full 2421/2421, lifecycle invariants, typecheck, and ci:contract passed. POSIX process-group containment remains explicitly limited and fail-closed until RF03."
+  -
+    type: "status"
+    at: "2026-07-23T17:35:24.701Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-23T16:01:38.094Z"
+doc_updated_at: "2026-07-23T17:35:24.702Z"
 doc_updated_by: "CODER"
 description: "RF-01b: create ExecutionReceipt from observed process, Git, check, artifact, and hash evidence; prevent agent output from overriding it and consume it in success and verification policy."
 sections:
@@ -111,6 +153,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-23T17:34:21.326Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified supervisor-owned receipt truth against conflicting agent claims, unreported writes, pre-existing dirt, legacy compatibility, detached descendants, replay and file-identity attacks, and arbitrary terminal signals. Focused 110/110, full 2421/2421, lifecycle invariants, typecheck, and ci:contract passed. POSIX process-group containment remains explicitly limited and fail-closed until RF03.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T16:01:38.094Z, excerpt_hash=sha256:ec48a7fc8b7c538d34a85034609c18462910b0b7b405358e5eed4214a1a6b69c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-Y89CFB-build-supervisor-owned-execution-receipts/.agentplane/tasks/202607221846-Y89CFB/blueprint/resolved-snapshot.json
+    - old_digest: 504aba551a29f040c1ef51d538e2b0132564d1e27dc199a4110ded1506a9ebb5
+    - current_digest: 504aba551a29f040c1ef51d538e2b0132564d1e27dc199a4110ded1506a9ebb5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221846-Y89CFB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) without changing unrelated task state.
@@ -120,6 +192,10 @@ sections:
     - Observation: No implementation diff against main exists for the supervisor-owned receipt, Git delta observer, observed checks, artifact hashes, or compatibility policy.
       Impact: The RF-01b Verify Steps cannot be evaluated and the metadata-only PR must not enter integration.
       Resolution: Implement the approved scope in the task worktree, then rerun focused and repository-level checks.
+
+    - Observation: Observed process, Git delta, artifact hashes, checks, and receipt bindings come from supervisor evidence; agent claims cannot override them.
+      Impact: Execution success can no longer be inferred from agent output or incomplete process containment.
+      Resolution: Accept RF01b with bounded-containment required for observed_success and limited containment recorded as unverified.
 id_source: "generated"
 ---
 ## Summary
@@ -182,6 +258,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-23T17:34:21.326Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified supervisor-owned receipt truth against conflicting agent claims, unreported writes, pre-existing dirt, legacy compatibility, detached descendants, replay and file-identity attacks, and arbitrary terminal signals. Focused 110/110, full 2421/2421, lifecycle invariants, typecheck, and ci:contract passed. POSIX process-group containment remains explicitly limited and fail-closed until RF03.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T16:01:38.094Z, excerpt_hash=sha256:ec48a7fc8b7c538d34a85034609c18462910b0b7b405358e5eed4214a1a6b69c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-Y89CFB-build-supervisor-owned-execution-receipts/.agentplane/tasks/202607221846-Y89CFB/blueprint/resolved-snapshot.json
+- old_digest: 504aba551a29f040c1ef51d538e2b0132564d1e27dc199a4110ded1506a9ebb5
+- current_digest: 504aba551a29f040c1ef51d538e2b0132564d1e27dc199a4110ded1506a9ebb5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221846-Y89CFB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -195,3 +301,7 @@ DecisionContextRef:
 - Observation: No implementation diff against main exists for the supervisor-owned receipt, Git delta observer, observed checks, artifact hashes, or compatibility policy.
   Impact: The RF-01b Verify Steps cannot be evaluated and the metadata-only PR must not enter integration.
   Resolution: Implement the approved scope in the task worktree, then rerun focused and repository-level checks.
+
+- Observation: Observed process, Git delta, artifact hashes, checks, and receipt bindings come from supervisor evidence; agent claims cannot override them.
+  Impact: Execution success can no longer be inferred from agent output or incomplete process containment.
+  Resolution: Accept RF01b with bounded-containment required for observed_success and limited containment recorded as unverified.
