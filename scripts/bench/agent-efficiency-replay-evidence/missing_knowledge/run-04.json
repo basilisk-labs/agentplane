@@ -1,0 +1,158 @@
+{
+  "artifacts": [
+    {
+      "id": "supervisor_receipt",
+      "kind": "rf04_supervisor_receipt",
+      "payload": {
+        "diagnostics": {
+          "latency_ms": {
+            "harness_setup_latency_ms": 11047
+          }
+        },
+        "episode_ledger": [
+          {
+            "effect_observation": {
+              "allowed_paths": [],
+              "changed_paths": [],
+              "policy": "read_only",
+              "same_content_rewrites": [],
+              "unsafe_allowed_paths": [],
+              "violation_paths": []
+            },
+            "episode_index": 1,
+            "expected_final_status": "blocked",
+            "final_status": "blocked",
+            "provider_usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 20228,
+              "output_tokens": 247,
+              "reasoning_output_tokens": 212,
+              "turn_completed_events": 1
+            },
+            "role": "CODER",
+            "status_violation": false,
+            "target_matched_after_episode": false
+          }
+        ],
+        "evidence": {
+          "supervisor_receipt": true
+        },
+        "lifecycle_control": {
+          "call_count": 5,
+          "provenance": "fixture_control",
+          "trace": [
+            "task.brief",
+            "context.search",
+            "runner.prepare",
+            "runner.execute",
+            "context_gap_return"
+          ]
+        },
+        "metrics": {
+          "bootstrap_bytes": 8228,
+          "bundle_bytes": 129436,
+          "duplicate_input_bytes": 20771,
+          "evidence_claimed_count": 0,
+          "evidence_observed_count": 1,
+          "evidence_observed_to_claimed_ratio": 1,
+          "lifecycle_calls": 5,
+          "llm_episodes": 1,
+          "preparation_latency_ms": 1570.6124599999966,
+          "prompt_boilerplate_bytes": 14187,
+          "prompt_count": 1,
+          "stderr_bytes": 0,
+          "stdout_bytes": 473
+        },
+        "provider_usage_by_role": {
+          "CODER": {
+            "cached_input_tokens": 0,
+            "input_tokens": 20228,
+            "output_tokens": 247,
+            "reasoning_output_tokens": 212
+          }
+        },
+        "resolved_outcomes": {
+          "adapter_failure": false,
+          "approval_respected": true,
+          "blocked": true,
+          "context_gap": true,
+          "rework_required": true,
+          "scope_violation": false,
+          "verified_success": false
+        },
+        "supervisor_receipt": {
+          "anchor_cli_preparation": true,
+          "anchor_preparation_cli_calls": 6,
+          "anchor_process_environment": "fixture_scoped_home_xdg_tmp_v1",
+          "anchor_runtime_build": "typescript_plus_core_cli_bundle_manifest_v1",
+          "anchor_runtime_integrity": {
+            "dependency_claim": {
+              "capture_executable_sha256": "sha256:4e4c72a5007388bde75022e855e4a8ebff97cf79c25062a00d901c4297fe1c64",
+              "capture_platform": {
+                "arch": "arm64",
+                "libc": "not_applicable",
+                "node_abi": "147",
+                "platform": "darwin"
+              },
+              "capture_receipt_sha256": "sha256:160501205ecb676557ed8dd0b83630a179be7150e0889ede87cf4ca4784c2f78",
+              "portable_sha256": "sha256:3bba36424886e3af7187204f0002d2a626c9fe661566399284832eda5bb47d30"
+            },
+            "head_verified_after_build": true,
+            "tracked_status_clean_after_build": true,
+            "tree_verified_after_build": true
+          },
+          "changed_paths": [],
+          "episode_effect_policy": [
+            {
+              "allowed_paths": [],
+              "changed_paths": [],
+              "policy": "read_only",
+              "same_content_rewrites": [],
+              "unsafe_allowed_paths": [],
+              "violation_paths": []
+            }
+          ],
+          "episode_final_statuses": [
+            {
+              "actual": "blocked",
+              "expected": "blocked",
+              "status_violation": false
+            }
+          ],
+          "executed_bootstrap_sha256": [
+            "sha256:82105a0735261e5e1aa205bdde7cc030c7e02327c706bf5d8d2282a1179d30b5"
+          ],
+          "external_effects": "fixture_backed",
+          "first_scoped_mutation_observation": "fs_watch_work_allowed_v1",
+          "first_scoped_mutation_observed": false,
+          "fixture_context_lookup": {
+            "context_exists": false,
+            "duration_ms": 0,
+            "missing_context_exists": false,
+            "performed": true
+          },
+          "fixture_instruction_bytes": 447,
+          "injected_adapter_failure": false,
+          "injected_scope_violation": false,
+          "observed": true,
+          "prepared_context_sha256": [
+            "sha256:82105a0735261e5e1aa205bdde7cc030c7e02327c706bf5d8d2282a1179d30b5"
+          ],
+          "prompt_boilerplate_definition": [
+            "bundle_base_prompt_content_utf8_v1"
+          ],
+          "prompt_boilerplate_source": [
+            "anchor_bundle.base_prompts.content"
+          ],
+          "prompt_input_bytes": 8676,
+          "stale_head_detected": false,
+          "target_matched": false
+        }
+      },
+      "sha256": "sha256:d850183fabb342b2edcc8b9c95bf44b9ed6dbbb3dfac397dd9093d49b9b9210a"
+    }
+  ],
+  "mode": "agent_efficiency_replay_evidence_v1",
+  "run_id": "missing_knowledge/run-04",
+  "schema_version": 1
+}
