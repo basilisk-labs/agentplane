@@ -22,7 +22,7 @@ RF-02: eliminate bootstrap/parser drift by deriving runner success, blocked, and
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-23T17:58:52.150Z
+- Updated: 2026-07-23T17:58:56.069Z
 - Branch: task/202607221846-C2XADX/generate-runner-manifest-examples-from-canonical
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
