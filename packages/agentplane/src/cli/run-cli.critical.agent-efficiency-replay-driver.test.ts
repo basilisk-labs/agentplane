@@ -16,6 +16,7 @@ const CAPTURE_URL = pathToFileURL(
 const REGISTRY_PATH = path.join(process.cwd(), "scripts/bench/agent-efficiency-fixtures.json");
 
 type Collector = {
+  finalStatus: null | "blocked" | "done" | "reviewed";
   lineBuffer: string;
   stderrBytes: number;
   stdoutBytes: number;
@@ -51,6 +52,7 @@ type DriverModule = {
   createCodexJsonlCollector(): Collector;
   expectedAnchorPreparationCliCalls(expectedTrace: string[]): number;
   finalizeCodexJsonlCollector(collector: Collector): {
+    final_status: "blocked" | "done" | "reviewed";
     provider_usage: Record<string, number>;
     stderr_bytes: number;
     stdout_bytes: number;
@@ -160,6 +162,8 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
       AGENTPLANE_HOME: "/isolated-fixture/.rf04-runtime/process/agentplane-home",
       GIT_CONFIG_GLOBAL: "/dev/null",
       GIT_CONFIG_NOSYSTEM: "1",
+      GIT_OPTIONAL_LOCKS: "0",
+      GIT_PAGER: "cat",
       GIT_TERMINAL_PROMPT: "0",
       HOME: "/isolated-fixture/.rf04-runtime/process/home",
       TMPDIR: "/isolated-fixture/.rf04-runtime/process/tmp",
@@ -293,6 +297,8 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
     ).toEqual({
       GIT_CONFIG_GLOBAL: "/dev/null",
       GIT_CONFIG_NOSYSTEM: "1",
+      GIT_OPTIONAL_LOCKS: "0",
+      GIT_PAGER: "cat",
       GIT_TERMINAL_PROMPT: "0",
       LANG: "en_US.UTF-8",
       LC_ALL: "en_US.UTF-8",
@@ -356,7 +362,14 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
     replayDriver.acceptCodexJsonlLine(
       collector,
       JSON.stringify({
-        item: { content: "raw final and hidden reasoning must not be retained" },
+        item: { content: "raw hidden reasoning must not be retained" },
+        type: "item.completed",
+      }),
+    );
+    replayDriver.acceptCodexJsonlLine(
+      collector,
+      JSON.stringify({
+        item: { text: '{"status":"done"}', type: "agent_message" },
         type: "item.completed",
       }),
     );
@@ -364,6 +377,7 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
     const result = replayDriver.finalizeCodexJsonlCollector(collector);
 
     expect(result).toEqual({
+      final_status: "done",
       provider_usage: {
         cached_input_tokens: 40,
         input_tokens: 100,
@@ -374,7 +388,6 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
       stderr_bytes: 56,
       stdout_bytes: 1234,
     });
-    expect(JSON.stringify(result)).not.toContain("raw final");
     expect(JSON.stringify(result)).not.toContain("hidden reasoning");
   });
 
@@ -406,6 +419,12 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
     const absent = replayDriver.createCodexJsonlCollector();
     expect(() => replayDriver.finalizeCodexJsonlCollector(absent)).toThrow(
       "CODEX_TURN_COMPLETED_MISSING",
+    );
+
+    const missingStatus = replayDriver.createCodexJsonlCollector();
+    replayDriver.acceptCodexJsonlLine(missingStatus, completed());
+    expect(() => replayDriver.finalizeCodexJsonlCollector(missingStatus)).toThrow(
+      "CODEX_FINAL_STATUS_MISSING",
     );
   });
 });

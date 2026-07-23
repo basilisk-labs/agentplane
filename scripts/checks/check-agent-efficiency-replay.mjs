@@ -1,13 +1,8 @@
-import { execFileSync } from "node:child_process";
 import { lstatSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import {
-  readFixtureRegistry,
-  relativeRepoPath,
-  stableJson,
-} from "../lib/agent-efficiency-baseline.mjs";
+import { readFixtureRegistry, stableJson } from "../lib/agent-efficiency-baseline.mjs";
 import {
   MINIMUM_REPLAY_RUNS,
   REPLAY_ANCHOR_COMMIT,
@@ -16,10 +11,16 @@ import {
   createReplayHarnessManifest,
   readReplayEvidenceRecords,
   readReplayEnvelopeRecords,
+  replayDependencyClaimFromEnvelopeRecords,
   replayDriverIdentityFromEnvelopeRecords,
   replayBaselineBytes,
 } from "../lib/agent-efficiency-replay.mjs";
+import {
+  assertGitCommitAvailable,
+  assertRepoPathNoSymlinkEscape,
+} from "../lib/agent-efficiency-replay-safety.mjs";
 import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
+import { assertReplayDependencyClaim } from "../bench/internal/agent-efficiency-dependency-manifest.mjs";
 
 const SCRIPT_NAME = "check-agent-efficiency-replay.mjs";
 const scriptPath = fileURLToPath(import.meta.url);
@@ -86,24 +87,11 @@ function parseArgs(argv) {
 }
 
 function assertInsideRepository(filePath, label) {
-  relativeRepoPath(repoRoot, filePath, label);
-  return filePath;
+  return assertRepoPathNoSymlinkEscape(repoRoot, filePath, label);
 }
 
 function assertAnchorAvailable() {
-  let type;
-  try {
-    type = execFileSync("git", ["cat-file", "-t", REPLAY_ANCHOR_COMMIT], {
-      cwd: repoRoot,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-    }).trim();
-  } catch {
-    throw new Error(`replay anchor is unavailable in Git: ${REPLAY_ANCHOR_COMMIT}`);
-  }
-  if (type !== "commit") {
-    throw new Error(`replay anchor must resolve to a commit, got ${type}`);
-  }
+  assertGitCommitAvailable(repoRoot, REPLAY_ANCHOR_COMMIT);
 }
 
 function readFrozenBaseline(filePath) {
@@ -137,7 +125,11 @@ export function checkAgentEfficiencyReplay(options) {
   const records = readReplayEnvelopeRecords(repoRoot, options.sourceDirectory);
   const evidenceRecords = readReplayEvidenceRecords(repoRoot, options.evidenceDirectory);
   const driverIdentity = replayDriverIdentityFromEnvelopeRecords(repoRoot, records);
-  const harnessManifest = createReplayHarnessManifest(repoRoot, driverIdentity);
+  const dependencyClaim = replayDependencyClaimFromEnvelopeRecords(records);
+  assertReplayDependencyClaim(repoRoot, dependencyClaim);
+  const harnessManifest = createReplayHarnessManifest(repoRoot, driverIdentity, {
+    dependencyClaim,
+  });
   const first = buildReplayBaseline({
     driverIdentity,
     envelopeRecords: records,
@@ -176,7 +168,7 @@ const main = defineCheck({
     const baseline = checkAgentEfficiencyReplay(options);
     stdout.write(
       `RF-04 replay baseline OK (${baseline.coverage.replay_runs.actual} runs; ` +
-        `${baseline.coverage.observed_outcome_cells.actual}/70 outcomes; ` +
+        `${baseline.coverage.resolved_outcome_cells.actual}/70 outcomes; ` +
         `${baseline.coverage.provider_token_cells.actual}/27 provider token cells; ` +
         `${baseline.coverage.resolved_scalar_cells.actual}/170 scalar cells; ` +
         `structural_sha256=${baseline.structural_projection_sha256}; diagnostics_sha256=${baseline.diagnostics_sha256})\n`,

@@ -11,6 +11,13 @@ import {
   relativeRepoPath,
   stableJson,
 } from "./agent-efficiency-baseline.mjs";
+import {
+  assertRepoPathNoSymlinkEscape,
+  REPLAY_CONTRACT_ENV_KEYS,
+  TRUSTED_REPLAY_DRIVER_PATH,
+} from "./agent-efficiency-replay-safety.mjs";
+
+export { createReplayHarnessManifest } from "./agent-efficiency-replay-harness.mjs";
 
 export const AGENT_EFFICIENCY_REPLAY_MODE = "agent_efficiency_replay_v1";
 export const AGENT_EFFICIENCY_REPLAY_EVIDENCE_MODE = "agent_efficiency_replay_evidence_v1";
@@ -29,14 +36,6 @@ export const DIAGNOSTIC_LATENCY_FIELDS = Object.freeze([
   "time_to_first_scoped_mutation_ms",
   "time_to_verified_result_ms",
 ]);
-export const REPLAY_HARNESS_FILES = Object.freeze([
-  "scripts/lib/agent-efficiency-replay.mjs",
-  "scripts/bench/capture-agent-efficiency-replay.mjs",
-  "scripts/bench/internal/agent-efficiency-anchor-runtime.mjs",
-  "scripts/bench/internal/agent-efficiency-anchor-supervisor.mjs",
-  "scripts/bench/internal/agent-efficiency-codex-runtime.mjs",
-  "scripts/checks/check-agent-efficiency-replay.mjs",
-]);
 
 const LATENCY_SCALAR_FIELDS = new Set(["preparation_latency_ms", "context_search_latency_ms"]);
 const RATIO_FIELDS = new Set(["retrieval_recall_proxy", "evidence_observed_to_claimed_ratio"]);
@@ -50,6 +49,11 @@ const PROVENANCE_CATEGORIES = new Set([
   "fixture_control",
   "applicability_rule",
   "test_control",
+]);
+const RESOLVED_OUTCOME_CATEGORIES = new Set([
+  "supervisor_observed",
+  "artifact_observed",
+  "fixture_control",
 ]);
 const OBSERVED_CELL_CATEGORIES = new Set(["supervisor_observed", "artifact_observed"]);
 const SHA256_PATTERN = /^sha256:[a-f0-9]{64}$/;
@@ -111,6 +115,50 @@ function assertSha256(value, label) {
     throw new Error(`${label} must be a lowercase sha256:<64 hex> digest`);
   }
   return value;
+}
+
+function assertCapturePlatform(value, label) {
+  const platform = object(value, label);
+  exactKeys(platform, ["arch", "libc", "node_abi", "platform"], label);
+  if (!/^[a-z0-9_+-]+$/i.test(platform.arch) || !/^(?:[0-9]+|unknown)$/.test(platform.node_abi)) {
+    throw new Error(`${label} has an invalid architecture or Node ABI`);
+  }
+  if (!new Set(["darwin", "linux", "win32"]).has(platform.platform)) {
+    throw new Error(`${label}.platform is unsupported`);
+  }
+  if (!new Set(["glibc", "musl_or_unknown", "not_applicable"]).has(platform.libc)) {
+    throw new Error(`${label}.libc is unsupported`);
+  }
+  if (platform.platform !== "linux" && platform.libc !== "not_applicable") {
+    throw new Error(`${label}.libc must be not_applicable outside Linux`);
+  }
+  return platform;
+}
+
+function assertDependencyClaim(value, label) {
+  const claim = object(value, label);
+  exactKeys(
+    claim,
+    ["capture_executable_sha256", "capture_platform", "capture_receipt_sha256", "portable_sha256"],
+    label,
+  );
+  assertSha256(claim.capture_executable_sha256, `${label}.capture_executable_sha256`);
+  assertSha256(claim.capture_receipt_sha256, `${label}.capture_receipt_sha256`);
+  assertSha256(claim.portable_sha256, `${label}.portable_sha256`);
+  const capturePlatform = assertCapturePlatform(
+    claim.capture_platform,
+    `${label}.capture_platform`,
+  );
+  const receipt = {
+    capture_platform: capturePlatform,
+    executable_sha256: claim.capture_executable_sha256,
+    portable_sha256: claim.portable_sha256,
+    schema_version: 1,
+  };
+  if (prefixedSha256(canonicalBytes(receipt)) !== claim.capture_receipt_sha256) {
+    throw new Error(`${label}.capture_receipt_sha256 does not link its platform and digests`);
+  }
+  return claim;
 }
 
 function assertSafeString(value, label) {
@@ -245,10 +293,12 @@ function assertOutcomeCell(value, label, artifactById, options = {}) {
   const { cell, provenance } = assertObservedCell(value, label, options);
   if (typeof cell.value !== "boolean") throw new Error(`${label}.value must be a boolean`);
   if (
-    !OBSERVED_CELL_CATEGORIES.has(provenance.category) &&
+    !RESOLVED_OUTCOME_CATEGORIES.has(provenance.category) &&
     provenance.category !== "test_control"
   ) {
-    throw new Error(`${label} must come from supervisor_observed or artifact_observed evidence`);
+    throw new Error(
+      `${label} must come from supervisor_observed, artifact_observed, or fixture_control evidence`,
+    );
   }
   assertArtifactSource(provenance, artifactById, cell.value, `${label}.provenance`);
 }
@@ -421,6 +471,31 @@ function assertEvidence(value, label, artifactById, options = {}) {
   }
 }
 
+function expectedEpisodeContract(scenarioId, role) {
+  const readOnly =
+    role === "EVALUATOR" || scenarioId === "missing_knowledge" || scenarioId === "adapter_failure";
+  return {
+    allowedPaths: readOnly ? [] : ["work/allowed.txt"],
+    finalStatus:
+      role === "EVALUATOR"
+        ? "reviewed"
+        : scenarioId === "missing_knowledge" || scenarioId === "adapter_failure"
+          ? "blocked"
+          : "done",
+    policy: readOnly ? "read_only" : "scoped_write",
+  };
+}
+
+function assertSortedUniquePaths(value, label) {
+  if (!Array.isArray(value)) throw new TypeError(`${label} must be an array`);
+  for (const item of value) assertRelativePath(item, label);
+  const normalized = [...new Set(value)].toSorted();
+  if (stableJson(value) !== stableJson(normalized)) {
+    throw new Error(`${label} must contain sorted unique relative paths`);
+  }
+  return value;
+}
+
 function assertEpisodeLedger(artifactById, scenario, label) {
   const candidates = [...artifactById.values()].filter((artifact) =>
     Object.hasOwn(artifact.payload, "episode_ledger"),
@@ -452,7 +527,16 @@ function assertEpisodeLedger(artifactById, scenario, label) {
     const episode = object(rawEpisode, `${label}.episode_ledger[${index}]`);
     exactKeys(
       episode,
-      ["episode_index", "provider_usage", "role"],
+      [
+        "effect_observation",
+        "episode_index",
+        "expected_final_status",
+        "final_status",
+        "provider_usage",
+        "role",
+        "status_violation",
+        "target_matched_after_episode",
+      ],
       `${label}.episode_ledger[${index}]`,
     );
     if (episode.episode_index !== index + 1) {
@@ -461,6 +545,104 @@ function assertEpisodeLedger(artifactById, scenario, label) {
     if (episode.role !== expectedTrace[index]) {
       throw new Error(
         `${label}.episode_ledger[${index}].role must preserve expected trace role ${expectedTrace[index]}`,
+      );
+    }
+    if (!["blocked", "done", "reviewed"].includes(episode.final_status)) {
+      throw new Error(`${label}.episode_ledger[${index}].final_status is invalid`);
+    }
+    if (!["blocked", "done", "reviewed"].includes(episode.expected_final_status)) {
+      throw new Error(`${label}.episode_ledger[${index}].expected_final_status is invalid`);
+    }
+    const expectedContract = expectedEpisodeContract(scenario.id, episode.role);
+    if (episode.expected_final_status !== expectedContract.finalStatus) {
+      throw new Error(
+        `${label}.episode_ledger[${index}].expected_final_status must be ${expectedContract.finalStatus}`,
+      );
+    }
+    if (
+      typeof episode.status_violation !== "boolean" ||
+      episode.status_violation !== (episode.final_status !== episode.expected_final_status)
+    ) {
+      throw new Error(`${label}.episode_ledger[${index}].status_violation is inconsistent`);
+    }
+    if (
+      episode.target_matched_after_episode !== null &&
+      typeof episode.target_matched_after_episode !== "boolean"
+    ) {
+      throw new Error(`${label}.episode_ledger[${index}].target_matched_after_episode is invalid`);
+    }
+    const effect = object(
+      episode.effect_observation,
+      `${label}.episode_ledger[${index}].effect_observation`,
+    );
+    exactKeys(
+      effect,
+      [
+        "allowed_paths",
+        "changed_paths",
+        "policy",
+        "same_content_rewrites",
+        "unsafe_allowed_paths",
+        "violation_paths",
+      ],
+      `${label}.episode_ledger[${index}].effect_observation`,
+    );
+    for (const field of [
+      "allowed_paths",
+      "changed_paths",
+      "same_content_rewrites",
+      "unsafe_allowed_paths",
+      "violation_paths",
+    ]) {
+      assertSortedUniquePaths(
+        effect[field],
+        `${label}.episode_ledger[${index}].effect_observation.${field}`,
+      );
+    }
+    if (!["read_only", "scoped_write"].includes(effect.policy)) {
+      throw new Error(`${label}.episode_ledger[${index}].effect_observation.policy is invalid`);
+    }
+    if (
+      effect.policy !== expectedContract.policy ||
+      stableJson(effect.allowed_paths) !== stableJson(expectedContract.allowedPaths)
+    ) {
+      throw new Error(
+        `${label}.episode_ledger[${index}].effect_observation must use the role-specific policy`,
+      );
+    }
+    if (
+      effect.unsafe_allowed_paths.some(
+        (candidate) =>
+          !effect.allowed_paths.includes(candidate) ||
+          !effect.changed_paths.includes(candidate) ||
+          !effect.violation_paths.includes(candidate),
+      )
+    ) {
+      throw new Error(
+        `${label}.episode_ledger[${index}].effect_observation.unsafe_allowed_paths is inconsistent`,
+      );
+    }
+    const requiredViolations = effect.changed_paths.filter(
+      (candidate) =>
+        effect.policy === "read_only" ||
+        !effect.allowed_paths.includes(candidate) ||
+        effect.unsafe_allowed_paths.includes(candidate),
+    );
+    if (requiredViolations.some((candidate) => !effect.violation_paths.includes(candidate))) {
+      throw new Error(
+        `${label}.episode_ledger[${index}].effect_observation.violation_paths omits a forbidden path`,
+      );
+    }
+    if (effect.violation_paths.some((candidate) => !effect.changed_paths.includes(candidate))) {
+      throw new Error(
+        `${label}.episode_ledger[${index}].effect_observation.violation_paths must be changed paths`,
+      );
+    }
+    if (
+      effect.same_content_rewrites.some((candidate) => !effect.changed_paths.includes(candidate))
+    ) {
+      throw new Error(
+        `${label}.episode_ledger[${index}].effect_observation.same_content_rewrites must be changed paths`,
       );
     }
     const usage = object(
@@ -508,7 +690,45 @@ function assertEpisodeLedger(artifactById, scenario, label) {
   if (metrics.llm_episodes !== ledger.length || metrics.prompt_count !== ledger.length) {
     throw new Error(`${label}.metrics must count the exact episode ledger length`);
   }
-  return { artifact, providerUsageByRole };
+  return { artifact, episodeLedger: ledger, providerUsageByRole };
+}
+
+function assertResolvedOutcomeImplications(resolvedOutcomes, episodeLedger, label, options = {}) {
+  const effectViolation = episodeLedger.some(
+    (episode) => episode.effect_observation.violation_paths.length > 0,
+  );
+  const statusViolation = episodeLedger.some((episode) => episode.status_violation);
+  const blocked = episodeLedger.some((episode) => episode.final_status === "blocked");
+  const values = Object.fromEntries(
+    Object.entries(resolvedOutcomes).map(([field, cell]) => [field, cell.value]),
+  );
+  const isObservedProvenance = (cell) =>
+    cell.provenance.category === "supervisor_observed" ||
+    (options.allowTestControls === true && cell.provenance.category === "test_control");
+  if (effectViolation && values.scope_violation !== true) {
+    throw new Error(`${label}.scope_violation must include actual episode effect violations`);
+  }
+  if (effectViolation && !isObservedProvenance(resolvedOutcomes.scope_violation)) {
+    throw new Error(`${label}.scope_violation must identify its observed episode provenance`);
+  }
+  if ((effectViolation || statusViolation) && values.rework_required !== true) {
+    throw new Error(`${label}.rework_required must include actual episode contract violations`);
+  }
+  if (
+    (effectViolation || statusViolation) &&
+    !isObservedProvenance(resolvedOutcomes.rework_required)
+  ) {
+    throw new Error(`${label}.rework_required must identify its observed episode provenance`);
+  }
+  if ((effectViolation || statusViolation) && values.verified_success !== false) {
+    throw new Error(`${label}.verified_success must reject actual episode contract violations`);
+  }
+  if (blocked && values.blocked !== true) {
+    throw new Error(`${label}.blocked must include an observed blocked final status`);
+  }
+  if (blocked && !isObservedProvenance(resolvedOutcomes.blocked)) {
+    throw new Error(`${label}.blocked must identify its observed final-status provenance`);
+  }
 }
 
 function assertLifecycleControl(artifact, scenario, label) {
@@ -550,7 +770,10 @@ export function fixtureRegistrySha256(registry) {
 }
 
 export function createReplayDriverIdentity(repoRoot, driverPath) {
-  const relativePath = relativeRepoPath(repoRoot, driverPath, "replay driver");
+  const safeDriverPath = assertRepoPathNoSymlinkEscape(repoRoot, driverPath, "replay driver", {
+    kind: "file",
+  });
+  const relativePath = relativeRepoPath(repoRoot, safeDriverPath, "replay driver");
   if (!relativePath.startsWith("scripts/bench/")) {
     throw new Error("replay driver must remain inside the reviewed scripts/bench task scope");
   }
@@ -584,47 +807,35 @@ export function replayDriverIdentityFromEnvelopeRecords(repoRoot, records) {
   return actual;
 }
 
-export function createReplayHarnessManifest(repoRoot, driverIdentity) {
-  const driver = object(driverIdentity, "replay driver identity");
-  exactKeys(driver, ["contract_version", "path", "sha256"], "replay driver identity");
-  if (driver.contract_version !== REPLAY_DRIVER_CONTRACT_VERSION) {
-    throw new Error(`replay driver contract must be version ${REPLAY_DRIVER_CONTRACT_VERSION}`);
+export function replayDependencyClaimFromEnvelopeRecords(records) {
+  if (!Array.isArray(records) || records.length === 0) {
+    throw new Error("replay dependency claim is unavailable because no envelopes were captured");
   }
-  assertSha256(driver.sha256, "replay driver identity.sha256");
-  const files = [...new Set([...REPLAY_HARNESS_FILES, driver.path])];
-  const entries = files.map((relativePath) => {
-    const normalized = assertRelativePath(relativePath, "harness file path");
-    return {
-      path: normalized,
-      sha256: prefixedSha256(readFileSync(path.join(repoRoot, normalized))),
-    };
-  });
-  return {
-    driver_contract_version: REPLAY_DRIVER_CONTRACT_VERSION,
-    files: entries,
-    sha256: prefixedSha256(
-      canonicalBytes({ driver_contract_version: REPLAY_DRIVER_CONTRACT_VERSION, files: entries }),
-    ),
-  };
+  const claims = records.map((record) => ({
+    capture_executable_sha256: record.value?.anchor?.dependency_capture_executable_sha256,
+    capture_platform: record.value?.anchor?.capture_platform,
+    capture_receipt_sha256: record.value?.anchor?.dependency_capture_receipt_sha256,
+    portable_sha256: record.value?.anchor?.dependency_portable_sha256,
+  }));
+  const values = [...new Set(claims.map((claim) => stableJson(claim)))];
+  if (values.length !== 1) throw new Error("replay envelopes use inconsistent dependency claims");
+  return assertDependencyClaim(claims[0], "replay envelope dependency claim");
 }
 
-const SAFE_DRIVER_ENV_KEYS = Object.freeze(["LANG", "LC_ALL", "PATH", "TZ"]);
-const FORBIDDEN_DRIVER_ENV_KEYS = new Set(["CODEX_HOME", "HOME", "XDG_CONFIG_HOME"]);
-
-export function buildReplayDriverEnvironment(sourceEnv, requestedNames, contractEnv) {
-  const result = {};
-  for (const name of [...SAFE_DRIVER_ENV_KEYS, ...requestedNames]) {
-    if (!/^[A-Z][A-Z0-9_]*$/.test(name)) {
-      throw new Error(`invalid replay driver environment field: ${name}`);
-    }
-    if (FORBIDDEN_DRIVER_ENV_KEYS.has(name) || name.startsWith("AGENTPLANE_RF04_REPLAY_")) {
-      throw new Error(`replay driver environment field is forbidden: ${name}`);
-    }
-    const value = sourceEnv[name];
-    if (typeof value === "string") result[name] = value;
+export function buildReplayDriverEnvironment(sourceEnv, contractEnv) {
+  const actualKeys = Object.keys(contractEnv).toSorted();
+  if (stableJson(actualKeys) !== stableJson([...REPLAY_CONTRACT_ENV_KEYS].toSorted())) {
+    throw new Error("replay driver contract environment must contain the exact reviewed key set");
   }
-  for (const [name, value] of Object.entries(contractEnv)) {
-    if (!name.startsWith("AGENTPLANE_RF04_REPLAY_") || typeof value !== "string") {
+  const result = {
+    LANG: sourceEnv.LANG || "C.UTF-8",
+    LC_ALL: sourceEnv.LC_ALL || "C.UTF-8",
+    PATH: TRUSTED_REPLAY_DRIVER_PATH,
+    TZ: "UTC",
+  };
+  for (const name of REPLAY_CONTRACT_ENV_KEYS) {
+    const value = contractEnv[name];
+    if (typeof value !== "string" || value.length === 0) {
       throw new Error(`invalid replay driver contract environment field: ${name}`);
     }
     result[name] = value;
@@ -645,7 +856,7 @@ export function assertReplayEnvelope(envelope, context) {
       "evidence_bundle",
       "metrics",
       "mode",
-      "observed_outcomes",
+      "resolved_outcomes",
       "profile",
       "run_id",
       "run_index",
@@ -675,9 +886,14 @@ export function assertReplayEnvelope(envelope, context) {
   exactKeys(
     value.anchor,
     [
+      "capture_platform",
+      "dependency_capture_executable_sha256",
+      "dependency_capture_receipt_sha256",
+      "dependency_portable_sha256",
       "disposable_repository",
       "driver",
       "external_effects",
+      "fixture_registry_origin",
       "fixture_registry_sha256",
       "harness_sha256",
       "subject_sha",
@@ -689,6 +905,21 @@ export function assertReplayEnvelope(envelope, context) {
   }
   if (value.anchor.fixture_registry_sha256 !== context.fixtureRegistrySha256) {
     throw new Error("replay envelope fixture registry digest does not match the capture registry");
+  }
+  if (value.anchor.fixture_registry_origin !== "fixture_control_overlay_v1") {
+    throw new Error("replay envelope fixture registry must come from the capture control overlay");
+  }
+  const envelopeDependencyClaim = assertDependencyClaim(
+    {
+      capture_executable_sha256: value.anchor.dependency_capture_executable_sha256,
+      capture_platform: value.anchor.capture_platform,
+      capture_receipt_sha256: value.anchor.dependency_capture_receipt_sha256,
+      portable_sha256: value.anchor.dependency_portable_sha256,
+    },
+    "replay envelope dependency claim",
+  );
+  if (stableJson(envelopeDependencyClaim) !== stableJson(context.dependencyClaim)) {
+    throw new Error("replay envelope dependency claim does not match the capture harness");
   }
   if (value.anchor.harness_sha256 !== context.harnessSha256) {
     throw new Error("replay envelope harness digest does not match the capture harness");
@@ -723,22 +954,39 @@ export function assertReplayEnvelope(envelope, context) {
   );
   assertArtifacts(value.artifacts, "replay envelope.artifacts", artifactById);
   assertEvidence(value.evidence, "replay envelope.evidence", artifactById, context);
-  const { artifact: episodeArtifact, providerUsageByRole } = assertEpisodeLedger(
-    artifactById,
-    scenario,
-    "replay evidence",
-  );
+  const {
+    artifact: episodeArtifact,
+    episodeLedger,
+    providerUsageByRole,
+  } = assertEpisodeLedger(artifactById, scenario, "replay evidence");
   assertLifecycleControl(episodeArtifact, scenario, "replay evidence");
+  const supervisorReceipt = object(
+    episodeArtifact.payload.supervisor_receipt,
+    "replay evidence.supervisor_receipt",
+  );
+  const anchorRuntimeIntegrity = object(
+    supervisorReceipt.anchor_runtime_integrity,
+    "replay evidence.supervisor_receipt.anchor_runtime_integrity",
+  );
+  if (stableJson(anchorRuntimeIntegrity.dependency_claim) !== stableJson(context.dependencyClaim)) {
+    throw new Error("replay evidence anchor runtime receipt does not link the dependency claim");
+  }
 
-  exactKeys(value.observed_outcomes, OUTCOME_FIELDS, "replay envelope.observed_outcomes");
+  exactKeys(value.resolved_outcomes, OUTCOME_FIELDS, "replay envelope.resolved_outcomes");
   for (const field of OUTCOME_FIELDS) {
     assertOutcomeCell(
-      value.observed_outcomes[field],
-      `replay envelope.observed_outcomes.${field}`,
+      value.resolved_outcomes[field],
+      `replay envelope.resolved_outcomes.${field}`,
       artifactById,
       context,
     );
   }
+  assertResolvedOutcomeImplications(
+    value.resolved_outcomes,
+    episodeLedger,
+    "replay envelope.resolved_outcomes",
+    context,
+  );
 
   exactKeys(value.metrics, SCALAR_TELEMETRY_FIELDS, "replay envelope.metrics");
   for (const field of SCALAR_TELEMETRY_FIELDS) {
@@ -853,7 +1101,7 @@ function evidenceProjection(envelopes) {
 function scenarioProjection(scenario, envelopes) {
   const outcomes = {};
   for (const field of OUTCOME_FIELDS) {
-    const cells = valuesForCells(envelopes, (envelope) => envelope.observed_outcomes[field]);
+    const cells = valuesForCells(envelopes, (envelope) => envelope.resolved_outcomes[field]);
     const expected = scenario.expected_outcomes[field];
     const trueCount = cells.filter((cell) => cell.value === true).length;
     const matchCount = cells.filter((cell) => cell.value === expected).length;
@@ -892,7 +1140,7 @@ function scenarioProjection(scenario, envelopes) {
     evidence_provenance_counts: evidenceProjection(envelopes),
     id: scenario.id,
     metrics,
-    observed_outcomes: outcomes,
+    resolved_outcomes: outcomes,
     run_count: envelopes.length,
     token_usage_by_role: tokenUsage,
   };
@@ -900,13 +1148,13 @@ function scenarioProjection(scenario, envelopes) {
 
 function goldenOutcomeComparison(registry, grouped) {
   const mismatches = [];
-  let observedCells = 0;
+  let resolvedCells = 0;
   for (const scenario of registry.scenarios) {
     for (const envelope of grouped.get(scenario.id) ?? []) {
       for (const field of OUTCOME_FIELDS) {
-        observedCells += 1;
+        resolvedCells += 1;
         const expected = scenario.expected_outcomes[field];
-        const actual = envelope.observed_outcomes[field].value;
+        const actual = envelope.resolved_outcomes[field].value;
         if (actual !== expected) {
           mismatches.push({
             actual,
@@ -920,10 +1168,10 @@ function goldenOutcomeComparison(registry, grouped) {
     }
   }
   return {
-    golden_match_count: observedCells - mismatches.length,
+    golden_match_count: resolvedCells - mismatches.length,
     golden_mismatch_count: mismatches.length,
     mismatches,
-    observed_run_outcome_cells: observedCells,
+    resolved_run_outcome_cells: resolvedCells,
     verdict: mismatches.length === 0 ? "matches_control" : "regression_observed",
   };
 }
@@ -970,7 +1218,7 @@ function coverageFor(registry, grouped, runs) {
     tokens += expectedRoles(scenario).length * TOKEN_FIELDS.length;
   }
   return {
-    observed_outcome_cells: { actual: outcomes, required: 70 },
+    resolved_outcome_cells: { actual: outcomes, required: 70 },
     provider_token_cells: { actual: tokens, required: 27 },
     replay_runs: {
       actual: [...grouped.values()].flat().length,
@@ -1020,6 +1268,10 @@ export function buildReplayBaseline({
     throw new Error(`replay driver contract must be version ${REPLAY_DRIVER_CONTRACT_VERSION}`);
   }
   const driverHarnessEntry = harnessManifest.files?.find((entry) => entry.path === driver.path);
+  const dependencyClaim = assertDependencyClaim(
+    harnessManifest.dependency_claim,
+    "replay harness dependency claim",
+  );
   if (
     harnessManifest.driver_contract_version !== REPLAY_DRIVER_CONTRACT_VERSION ||
     driverHarnessEntry?.sha256 !== driver.sha256
@@ -1055,6 +1307,7 @@ export function buildReplayBaseline({
       evidenceByPath,
       fixtureRegistrySha256: registryDigest,
       harnessSha256: harnessManifest.sha256,
+      dependencyClaim,
       runs,
       scenarioById,
     });
@@ -1183,6 +1436,9 @@ function collectJsonFiles(directory) {
 }
 
 function readReplayRecords(repoRoot, sourceDirectory, options) {
+  assertRepoPathNoSymlinkEscape(repoRoot, sourceDirectory, `${options.kind} directory`, {
+    kind: "directory",
+  });
   const stats = lstatSync(sourceDirectory, { throwIfNoEntry: false });
   if (!stats?.isDirectory()) {
     throw new Error(

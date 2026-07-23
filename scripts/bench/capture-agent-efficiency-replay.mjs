@@ -1,5 +1,14 @@
-import { execFileSync, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import {
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -11,6 +20,7 @@ import {
 import {
   MINIMUM_REPLAY_RUNS,
   REPLAY_ANCHOR_COMMIT,
+  assertFrozenReplayBaseline,
   assertReplayEnvelope,
   buildReplayBaseline,
   buildReplayDriverEnvironment,
@@ -19,38 +29,39 @@ import {
   fixtureRegistrySha256,
   readReplayEvidenceRecords,
   readReplayEnvelopeRecords,
+  replayDependencyClaimFromEnvelopeRecords,
   replayDriverIdentityFromEnvelopeRecords,
   replayBaselineBytes,
 } from "../lib/agent-efficiency-replay.mjs";
+import {
+  assertGitCommitAvailable,
+  assertRepoPathNoSymlinkEscape,
+  assertReplayCaptureTargets,
+  installReplayArtifactTransaction,
+} from "../lib/agent-efficiency-replay-safety.mjs";
 import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
+import {
+  assertReplayDependencyClaim,
+  createReplayDependencyManifest,
+  replayDependencyClaimFromManifest,
+} from "./internal/agent-efficiency-dependency-manifest.mjs";
+import {
+  assertReplayCaptureInputsUnchanged,
+  initializeAnchorCheckout,
+  installFixtureRegistryOverlay,
+} from "./internal/agent-efficiency-capture-runtime.mjs";
+
+export { buildReplayGitEnvironment } from "../lib/agent-efficiency-replay-safety.mjs";
+export { replayAnchorCloneArgs } from "./internal/agent-efficiency-capture-runtime.mjs";
 
 const SCRIPT_NAME = "capture-agent-efficiency-replay.mjs";
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
-const DEFAULT_REGISTRY_PATH = path.join(
-  repoRoot,
-  "scripts",
-  "bench",
-  "agent-efficiency-fixtures.json",
-);
-const DEFAULT_SOURCE_DIRECTORY = path.join(
-  repoRoot,
-  "scripts",
-  "bench",
-  "agent-efficiency-replay-envelopes",
-);
-const DEFAULT_EVIDENCE_DIRECTORY = path.join(
-  repoRoot,
-  "scripts",
-  "bench",
-  "agent-efficiency-replay-evidence",
-);
-const DEFAULT_OUTPUT_PATH = path.join(
-  repoRoot,
-  "scripts",
-  "baselines",
-  "agent-efficiency-pre-v0.7-replay.json",
-);
+const scriptsPath = (...segments) => path.join(repoRoot, "scripts", ...segments);
+const DEFAULT_REGISTRY_PATH = scriptsPath("bench", "agent-efficiency-fixtures.json");
+const DEFAULT_SOURCE_DIRECTORY = scriptsPath("bench", "agent-efficiency-replay-envelopes");
+const DEFAULT_EVIDENCE_DIRECTORY = scriptsPath("bench", "agent-efficiency-replay-evidence");
+const DEFAULT_OUTPUT_PATH = scriptsPath("baselines", "agent-efficiency-pre-v0.7-replay.json");
 export const REPLAY_DRIVER_TURN_TIMEOUT_MS = 240_000;
 const REPLAY_DRIVER_SETUP_TIMEOUT_MS = 5 * 60 * 1000;
 const REPLAY_DRIVER_EXIT_GRACE_MS = 60_000;
@@ -86,14 +97,13 @@ function helpText() {
     "  --evidence-dir <path> Persisted canonical sanitized evidence bundles directory.",
     "  --output <path>      Replay baseline output path.",
     "  --driver <path>      Explicitly authorized local driver. It runs once per isolated scenario/run.",
-    "  --driver-env <names>  Comma-separated environment fields explicitly allowed for the driver.",
     "  --pilot              Run only direct/run-01, validate it in memory, and persist nothing.",
-    "  --replace            Replace envelopes and evidence only after a complete staged capture validates.",
+    "  --replace            Replace envelopes, evidence, and baseline as one validated transaction.",
     "  --help               Show this help text.",
     "",
     "Driver contract:",
     "  argv: --scenario <id> --run-index <n> --output <file> --evidence-output <file>",
-    "  env: only safe process fields, explicit --driver-env fields, and AGENTPLANE_RF04_REPLAY_* contract fields.",
+    "  env: only fixed safe process fields and the exact AGENTPLANE_RF04_REPLAY_* contract fields.",
     "  output: one canonical sanitized envelope plus one canonical content-addressed evidence bundle;",
     "          provider usage must include explicit reasoning_output_tokens mapped to reasoning_tokens.",
   ].join("\n");
@@ -101,16 +111,7 @@ function helpText() {
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: [
-      "anchor",
-      "runs",
-      "registry",
-      "source-dir",
-      "evidence-dir",
-      "output",
-      "driver",
-      "driver-env",
-    ],
+    valueFlags: ["anchor", "runs", "registry", "source-dir", "evidence-dir", "output", "driver"],
     booleanFlags: ["replace", "pilot", "help"],
     aliases: { h: "help" },
   });
@@ -120,16 +121,6 @@ function parseArgs(argv) {
   const runs = Number.parseInt(flags.runs ?? String(MINIMUM_REPLAY_RUNS), 10);
   return {
     anchor: flags.anchor ?? REPLAY_ANCHOR_COMMIT,
-    driverEnvNames: flags["driver-env"]
-      ? [
-          ...new Set(
-            flags["driver-env"]
-              .split(",")
-              .map((name) => name.trim())
-              .filter(Boolean),
-          ),
-        ]
-      : [],
     driverPath: flags.driver ? path.resolve(flags.driver) : null,
     evidenceDirectory: path.resolve(flags["evidence-dir"] ?? DEFAULT_EVIDENCE_DIRECTORY),
     help: flags.help === true,
@@ -142,23 +133,8 @@ function parseArgs(argv) {
   };
 }
 
-function assertCommit(anchor) {
-  let type;
-  try {
-    type = execFileSync("git", ["cat-file", "-t", anchor], {
-      cwd: repoRoot,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-    }).trim();
-  } catch {
-    throw new Error(`replay anchor is not available in Git: ${anchor}`);
-  }
-  if (type !== "commit") throw new Error(`replay anchor must be a commit, got ${type}: ${anchor}`);
-}
-
-function assertInsideRepository(filePath, label) {
-  relativeRepoPath(repoRoot, filePath, label);
-  return filePath;
+function assertInsideRepository(filePath, label, kind = null) {
+  return assertRepoPathNoSymlinkEscape(repoRoot, filePath, label, { kind });
 }
 
 function expectedRoles(scenario) {
@@ -192,168 +168,82 @@ function runChecked(command, args, options, label) {
   return result;
 }
 
-export function buildReplayGitEnvironment(source = process.env) {
-  return {
-    GIT_CONFIG_GLOBAL: "/dev/null",
-    GIT_CONFIG_NOSYSTEM: "1",
-    GIT_TERMINAL_PROMPT: "0",
-    LANG: source.LANG || "C.UTF-8",
-    LC_ALL: source.LC_ALL || "C.UTF-8",
-    PATH: "/usr/bin:/bin",
-    TZ: "UTC",
-  };
-}
-
-export function replayAnchorCloneArgs(sourceRoot) {
-  return [
-    "clone",
-    "--quiet",
-    "--shared",
-    "--no-checkout",
-    "--no-tags",
-    path.resolve(sourceRoot),
-    ".",
-  ];
-}
-
-function initializeAnchorCheckout(repositoryPath, anchor) {
-  const environment = buildReplayGitEnvironment();
-  runChecked(
-    "/usr/bin/git",
-    replayAnchorCloneArgs(repoRoot),
-    { cwd: repositoryPath, env: environment, exposeStderr: false },
-    "replay anchor local clone",
-  );
-  runChecked(
-    "/usr/bin/git",
-    ["config", "core.hooksPath", "/dev/null"],
-    { cwd: repositoryPath, env: environment },
-    "replay anchor disable hooks",
-  );
-  runChecked(
-    "/usr/bin/git",
-    ["config", "gc.auto", "0"],
-    { cwd: repositoryPath, env: environment },
-    "replay anchor disable gc",
-  );
-  runChecked(
-    "/usr/bin/git",
-    ["checkout", "--quiet", "--detach", anchor],
-    { cwd: repositoryPath, env: environment },
-    "replay anchor checkout",
-  );
-  const actualHead = runChecked(
-    "/usr/bin/git",
-    ["rev-parse", "HEAD"],
-    { cwd: repositoryPath, env: environment },
-    "replay checkout head",
-  ).stdout.trim();
-  if (actualHead !== anchor) throw new Error("replay checkout does not point at the exact anchor");
-  const actualTree = runChecked(
-    "/usr/bin/git",
-    ["rev-parse", "HEAD^{tree}"],
-    { cwd: repositoryPath, env: environment },
-    "replay fixture tree",
-  ).stdout.trim();
-  const expectedTree = runChecked(
-    "/usr/bin/git",
-    ["rev-parse", `${anchor}^{tree}`],
-    { cwd: repoRoot, env: environment },
-    "replay anchor tree",
-  ).stdout.trim();
-  if (actualTree !== expectedTree) {
-    throw new Error("replay checkout tree differs from the exact anchor tree");
-  }
-  runChecked(
-    "/usr/bin/git",
-    ["remote", "remove", "origin"],
-    { cwd: repositoryPath, env: environment },
-    "replay checkout remove remote",
-  );
-  const status = runChecked(
-    "/usr/bin/git",
-    ["status", "--porcelain", "--untracked-files=no"],
-    { cwd: repositoryPath, env: environment },
-    "replay checkout status",
-  ).stdout;
-  if (status !== "") {
-    throw new Error("replay checkout is not clean before harness setup");
-  }
-}
-
-const SENSITIVE_ENV_NAME = /(?:AUTH|CREDENTIAL|KEY|PASS|SECRET|TOKEN)/i;
-
-function assertRequestedEnvironmentNotPersisted(values, environment, names, label) {
-  const serialized = stableJson(values);
-  for (const name of names) {
-    const secret = environment[name];
-    if (
-      SENSITIVE_ENV_NAME.test(name) &&
-      typeof secret === "string" &&
-      secret.length >= 8 &&
-      serialized.includes(secret)
-    ) {
-      throw new Error(`${label} persisted the value of explicitly allowed sensitive field ${name}`);
-    }
-  }
-}
-
-function installStagedDirectories(pairs, captureRoot) {
-  const backups = [];
-  const installed = [];
-  try {
-    for (const [index, pair] of pairs.entries()) {
-      mkdirSync(path.dirname(pair.target), { recursive: true });
-      if (existsSync(pair.target)) {
-        const backup = path.join(captureRoot, `previous-${index}`);
-        renameSync(pair.target, backup);
-        backups.push({ backup, target: pair.target });
-      }
-    }
-    for (const pair of pairs) {
-      renameSync(pair.staging, pair.target);
-      installed.push(pair.target);
-    }
-  } catch (error) {
-    for (const target of installed.toReversed()) {
-      rmSync(target, { force: true, recursive: true });
-    }
-    for (const { backup, target } of backups.toReversed()) {
-      if (existsSync(backup)) renameSync(backup, target);
-    }
-    throw error;
-  }
+function targetExists(target) {
+  return lstatSync(target, { throwIfNoEntry: false }) !== undefined;
 }
 
 function captureWithDriver({
   anchor,
-  driverEnvNames,
+  dependencyManifest,
   driverIdentity,
   driverPath,
   evidenceDirectory,
   fixtureDigest,
   harnessManifest,
+  outputPath,
   pilot,
   registry,
+  registryPath,
   replace,
   runs,
   sourceDirectory,
 }) {
   assertInsideRepository(sourceDirectory, "replay source directory");
   assertInsideRepository(evidenceDirectory, "replay evidence directory");
-  if (!pilot && (existsSync(sourceDirectory) || existsSync(evidenceDirectory)) && !replace) {
+  const dependencyClaim = replayDependencyClaimFromManifest(dependencyManifest);
+  const publicationTargets = [sourceDirectory, evidenceDirectory, outputPath];
+  const existingTargetCount = publicationTargets.filter((target) => targetExists(target)).length;
+  if (!pilot && existingTargetCount > 0 && !replace) {
     throw new Error(
-      "replay envelopes or evidence already exist; " +
+      "replay envelopes, evidence, or baseline already exist; " +
         "pass --replace only when intentionally replacing an unpublished capture",
     );
+  }
+  if (!pilot && replace && existingTargetCount !== 0 && existingTargetCount !== 3) {
+    throw new Error("RF-04 replacement requires a complete existing three-artifact generation");
+  }
+  if (!pilot && replace && existingTargetCount === 3) {
+    const existingEnvelopeRecords = readReplayEnvelopeRecords(repoRoot, sourceDirectory);
+    const existingEvidenceRecords = readReplayEvidenceRecords(repoRoot, evidenceDirectory);
+    const existingDriver = replayDriverIdentityFromEnvelopeRecords(
+      repoRoot,
+      existingEnvelopeRecords,
+    );
+    const existingDependencyClaim =
+      replayDependencyClaimFromEnvelopeRecords(existingEnvelopeRecords);
+    assertReplayDependencyClaim(repoRoot, existingDependencyClaim);
+    const existingHarness = createReplayHarnessManifest(repoRoot, existingDriver, {
+      dependencyClaim: existingDependencyClaim,
+    });
+    const rebuilt = buildReplayBaseline({
+      anchor,
+      driverIdentity: existingDriver,
+      envelopeRecords: existingEnvelopeRecords,
+      evidenceRecords: existingEvidenceRecords,
+      harnessManifest: existingHarness,
+      registry,
+      runs,
+    });
+    const frozenBytes = readFileSync(outputPath, "utf8");
+    const frozen = JSON.parse(frozenBytes);
+    if (frozenBytes !== replayBaselineBytes(frozen)) {
+      throw new Error("existing RF-04 baseline is not canonical JSON");
+    }
+    assertFrozenReplayBaseline(frozen, rebuilt, "existing RF-04 replacement generation");
   }
 
   const cacheRoot = path.join(repoRoot, ".agentplane", "cache");
   mkdirSync(cacheRoot, { recursive: true });
-  const captureRoot = path.join(cacheRoot, `rf04-replay-${process.pid}-${Date.now()}`);
+  assertInsideRepository(cacheRoot, "RF-04 capture cache", "directory");
+  const markerPath = path.join(cacheRoot, "rf04-replay-transaction.json");
+  if (lstatSync(markerPath, { throwIfNoEntry: false })) {
+    throw new Error("an unfinished RF-04 capture transaction requires manual recovery");
+  }
+  const captureRoot = mkdtempSync(path.join(cacheRoot, "rf04-replay-"));
   const stagingDirectory = path.join(captureRoot, "envelopes");
   const stagingEvidenceDirectory = path.join(captureRoot, "evidence");
   const isolatedRepository = path.join(captureRoot, "subject");
+  const stagingBaselinePath = path.join(captureRoot, "baseline.json");
   mkdirSync(stagingDirectory, { recursive: true });
   mkdirSync(stagingEvidenceDirectory, { recursive: true });
   const sourceLogicalRoot = relativeRepoPath(repoRoot, sourceDirectory, "replay source directory");
@@ -362,6 +252,17 @@ function captureWithDriver({
     evidenceDirectory,
     "replay evidence directory",
   );
+  const assertInputsUnchanged = () =>
+    assertReplayCaptureInputsUnchanged({
+      dependencyManifest,
+      driverIdentity,
+      driverPath,
+      fixtureDigest,
+      harnessManifest,
+      registry,
+      registryPath,
+      repoRoot,
+    });
 
   try {
     const pilotScenario = registry.scenarios.find((scenario) => scenario.id === "direct");
@@ -372,7 +273,12 @@ function captureWithDriver({
       for (let runIndex = 1; runIndex <= selectedRuns; runIndex += 1) {
         rmSync(isolatedRepository, { force: true, recursive: true });
         mkdirSync(isolatedRepository, { recursive: true });
-        initializeAnchorCheckout(isolatedRepository, anchor);
+        initializeAnchorCheckout(repoRoot, isolatedRepository, anchor);
+        const registryOverlay = installFixtureRegistryOverlay(
+          isolatedRepository,
+          registry,
+          fixtureDigest,
+        );
         const scenarioDirectory = path.join(stagingDirectory, scenario.id);
         const evidenceScenarioDirectory = path.join(stagingEvidenceDirectory, scenario.id);
         mkdirSync(scenarioDirectory, { recursive: true });
@@ -394,6 +300,14 @@ function captureWithDriver({
         ];
         const contractEnvironment = {
           AGENTPLANE_RF04_REPLAY_ANCHOR: anchor,
+          AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_EXECUTABLE_SHA256:
+            dependencyClaim.capture_executable_sha256,
+          AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_PLATFORM: stableJson(
+            dependencyClaim.capture_platform,
+          ),
+          AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_RECEIPT_SHA256:
+            dependencyClaim.capture_receipt_sha256,
+          AGENTPLANE_RF04_REPLAY_DEPENDENCY_PORTABLE_SHA256: dependencyClaim.portable_sha256,
           AGENTPLANE_RF04_REPLAY_DRIVER_CONTRACT_VERSION: String(driverIdentity.contract_version),
           AGENTPLANE_RF04_REPLAY_DRIVER_PATH: driverIdentity.path,
           AGENTPLANE_RF04_REPLAY_DRIVER_SHA256: driverIdentity.sha256,
@@ -405,6 +319,8 @@ function captureWithDriver({
           ),
           AGENTPLANE_RF04_REPLAY_EXPECTED_ROLES: stableJson(expectedRoles(scenario)),
           AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_SHA256: fixtureDigest,
+          AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_ORIGIN: "fixture_control_overlay_v1",
+          AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_PATH: registryOverlay,
           AGENTPLANE_RF04_REPLAY_HARNESS_SHA256: harnessManifest.sha256,
           AGENTPLANE_RF04_REPLAY_OUTPUT: outputPath,
           AGENTPLANE_RF04_REPLAY_RUN_ID: runId,
@@ -414,11 +330,7 @@ function captureWithDriver({
           driverArgs,
           {
             cwd: isolatedRepository,
-            env: buildReplayDriverEnvironment(
-              process.env,
-              driverEnvNames ?? [],
-              contractEnvironment,
-            ),
+            env: buildReplayDriverEnvironment(process.env, contractEnvironment),
             exposeStderr: false,
             timeout: replayDriverTimeoutMs(scenario),
           },
@@ -438,12 +350,6 @@ function captureWithDriver({
         if (evidenceBytes !== `${stableJson(evidence, 2)}\n`) {
           throw new Error(`${runId} driver evidence must be canonical stable JSON`);
         }
-        assertRequestedEnvironmentNotPersisted(
-          [envelope, evidence],
-          process.env,
-          driverEnvNames ?? [],
-          runId,
-        );
       }
     }
 
@@ -462,6 +368,7 @@ function captureWithDriver({
       assertReplayEnvelope(envelope, {
         allowTestControls: false,
         anchor,
+        dependencyClaim,
         driverIdentity,
         evidenceByPath,
         fixtureRegistrySha256: fixtureDigest,
@@ -469,6 +376,7 @@ function captureWithDriver({
         runs,
         scenarioById: new Map(registry.scenarios.map((scenario) => [scenario.id, scenario])),
       });
+      assertInputsUnchanged();
       return {
         driver_sha256: driverIdentity.sha256,
         episode_count: envelope.metrics.llm_episodes.value,
@@ -483,7 +391,8 @@ function captureWithDriver({
         run_id: envelope.run_id,
       };
     }
-    buildReplayBaseline({
+    assertInputsUnchanged();
+    const baseline = buildReplayBaseline({
       anchor,
       driverIdentity,
       envelopeRecords,
@@ -492,25 +401,74 @@ function captureWithDriver({
       registry,
       runs,
     });
-    installStagedDirectories(
+    writeFileSync(stagingBaselinePath, replayBaselineBytes(baseline), {
+      encoding: "utf8",
+      flag: "wx",
+      mode: 0o600,
+    });
+    installReplayArtifactTransaction(
       [
         { staging: stagingDirectory, target: sourceDirectory },
         { staging: stagingEvidenceDirectory, target: evidenceDirectory },
+        { staging: stagingBaselinePath, target: outputPath },
       ],
       captureRoot,
+      {
+        markerPath,
+        validateInstalled() {
+          assertInputsUnchanged();
+          const installedEnvelopeRecords = readReplayEnvelopeRecords(repoRoot, sourceDirectory);
+          const installedEvidenceRecords = readReplayEvidenceRecords(repoRoot, evidenceDirectory);
+          const installed = buildReplayBaseline({
+            anchor,
+            driverIdentity,
+            envelopeRecords: installedEnvelopeRecords,
+            evidenceRecords: installedEvidenceRecords,
+            harnessManifest,
+            registry,
+            runs,
+          });
+          if (
+            readFileSync(outputPath, "utf8") !== replayBaselineBytes(installed) ||
+            replayBaselineBytes(installed) !== replayBaselineBytes(baseline)
+          ) {
+            throw new Error("installed RF-04 generation differs from staged canonical bytes");
+          }
+        },
+      },
     );
-    return null;
+    return baseline;
+  } catch (error) {
+    let inputFailure = null;
+    try {
+      assertInputsUnchanged();
+    } catch (inputError) {
+      inputFailure = inputError;
+    }
+    if (inputFailure) {
+      throw new AggregateError(
+        [error, inputFailure],
+        "RF-04 capture failed and reviewed capture inputs also drifted",
+      );
+    }
+    throw error;
   } finally {
-    rmSync(captureRoot, { force: true, recursive: true });
+    if (!lstatSync(markerPath, { throwIfNoEntry: false })) {
+      rmSync(captureRoot, { force: true, recursive: true });
+    }
   }
 }
 
 function writeAtomic(filePath, bytes) {
-  assertInsideRepository(filePath, "replay baseline output");
+  assertInsideRepository(filePath, "replay baseline output", "file");
   mkdirSync(path.dirname(filePath), { recursive: true });
   const temporaryPath = `${filePath}.tmp-${process.pid}`;
-  writeFileSync(temporaryPath, bytes, "utf8");
-  renameSync(temporaryPath, filePath);
+  try {
+    writeFileSync(temporaryPath, bytes, { encoding: "utf8", flag: "wx", mode: 0o600 });
+    renameSync(temporaryPath, filePath);
+  } finally {
+    rmSync(temporaryPath, { force: true });
+  }
 }
 
 export function captureAgentEfficiencyReplay(options) {
@@ -520,36 +478,58 @@ export function captureAgentEfficiencyReplay(options) {
   if (!Number.isInteger(options.runs) || options.runs < MINIMUM_REPLAY_RUNS) {
     throw new Error(`--runs must be an integer >= ${MINIMUM_REPLAY_RUNS}`);
   }
-  assertCommit(options.anchor);
-  assertInsideRepository(options.registryPath, "RF-04 fixture registry");
-  assertInsideRepository(options.sourceDirectory, "replay source directory");
-  assertInsideRepository(options.evidenceDirectory, "replay evidence directory");
-  assertInsideRepository(options.outputPath, "replay baseline output");
-  if (path.resolve(options.sourceDirectory) === path.resolve(options.evidenceDirectory)) {
-    throw new Error("replay envelope and evidence directories must be distinct");
-  }
+  assertGitCommitAvailable(repoRoot, options.anchor);
   const registry = readFixtureRegistry(options.registryPath, { historicalBaseline: true });
   const fixtureDigest = fixtureRegistrySha256(registry);
   let requestedDriverIdentity = null;
+  const testTargetRoot =
+    options.allowTestTargets === true
+      ? path.join(repoRoot, ".agentplane/cache/rf04-test-targets")
+      : null;
+  assertReplayCaptureTargets({
+    driverPath: options.driverPath,
+    evidenceDirectory: options.evidenceDirectory,
+    outputPath: options.outputPath,
+    registryPath: options.registryPath,
+    repoRoot,
+    sourceDirectory: options.sourceDirectory,
+    testTargetRoot,
+  });
 
   if (options.driverPath) {
     requestedDriverIdentity = createReplayDriverIdentity(repoRoot, options.driverPath);
-    const captureHarnessManifest = createReplayHarnessManifest(repoRoot, requestedDriverIdentity);
+    const dependencyManifest = createReplayDependencyManifest(repoRoot);
+    const dependencyClaim = replayDependencyClaimFromManifest(dependencyManifest);
+    const captureHarnessManifest = createReplayHarnessManifest(repoRoot, requestedDriverIdentity, {
+      dependencyClaim,
+    });
+    assertReplayCaptureTargets({
+      driverPath: options.driverPath,
+      evidenceDirectory: options.evidenceDirectory,
+      harnessPaths: captureHarnessManifest.files.map((entry) => path.join(repoRoot, entry.path)),
+      outputPath: options.outputPath,
+      registryPath: options.registryPath,
+      repoRoot,
+      sourceDirectory: options.sourceDirectory,
+      testTargetRoot,
+    });
     const captureResult = captureWithDriver({
       anchor: options.anchor,
-      driverEnvNames: options.driverEnvNames,
+      dependencyManifest,
       driverIdentity: requestedDriverIdentity,
       driverPath: options.driverPath,
       evidenceDirectory: options.evidenceDirectory,
       fixtureDigest,
       harnessManifest: captureHarnessManifest,
+      outputPath: options.outputPath,
       pilot: options.pilot,
       registry,
+      registryPath: options.registryPath,
       replace: options.replace,
       runs: options.runs,
       sourceDirectory: options.sourceDirectory,
     });
-    if (options.pilot) return captureResult;
+    return captureResult;
   } else if (options.pilot) {
     throw new Error("--pilot requires an explicit reviewed --driver");
   }
@@ -562,7 +542,11 @@ export function captureAgentEfficiencyReplay(options) {
   ) {
     throw new Error("captured driver identity differs from the explicitly selected driver bytes");
   }
-  const harnessManifest = createReplayHarnessManifest(repoRoot, driverIdentity);
+  const dependencyClaim = replayDependencyClaimFromEnvelopeRecords(envelopeRecords);
+  assertReplayDependencyClaim(repoRoot, dependencyClaim);
+  const harnessManifest = createReplayHarnessManifest(repoRoot, driverIdentity, {
+    dependencyClaim,
+  });
   const baseline = buildReplayBaseline({
     anchor: options.anchor,
     driverIdentity,
@@ -591,7 +575,7 @@ const main = defineCheck({
     }
     stdout.write(
       `RF-04 replay baseline captured (${baseline.coverage.replay_runs.actual} runs; ` +
-        `${baseline.coverage.observed_outcome_cells.actual}/70 outcomes; ` +
+        `${baseline.coverage.resolved_outcome_cells.actual}/70 outcomes; ` +
         `${baseline.coverage.provider_token_cells.actual}/27 provider token cells; ` +
         `${baseline.coverage.resolved_scalar_cells.actual}/170 scalar cells; ` +
         `structural_sha256=${baseline.structural_projection_sha256})\n`,

@@ -48,6 +48,12 @@ type MetricField = (typeof METRIC_FIELDS)[number];
 type OutcomeField = (typeof OUTCOME_FIELDS)[number];
 type TokenField = (typeof TOKEN_FIELDS)[number];
 type DriverIdentity = { contract_version: number; path: string; sha256: string };
+type DependencyClaim = {
+  capture_executable_sha256: string;
+  capture_platform: { arch: string; libc: string; node_abi: string; platform: string };
+  capture_receipt_sha256: string;
+  portable_sha256: string;
+};
 type Provenance = {
   artifact_id: string;
   artifact_sha256: string;
@@ -67,6 +73,7 @@ type ReplayScenario = {
 };
 type FixtureRegistry = { scenarios: ReplayScenario[] };
 type HarnessManifest = {
+  dependency_claim: DependencyClaim;
   driver_contract_version: number;
   files: { path: string; sha256: string }[];
   sha256: string;
@@ -82,7 +89,17 @@ type EvidencePayload = {
   };
   evidence: { critical_fixture_receipt: boolean };
   episode_ledger: {
+    effect_observation: {
+      allowed_paths: string[];
+      changed_paths: string[];
+      policy: "read_only" | "scoped_write";
+      same_content_rewrites: string[];
+      unsafe_allowed_paths: string[];
+      violation_paths: string[];
+    };
     episode_index: number;
+    expected_final_status: "blocked" | "done" | "reviewed";
+    final_status: "blocked" | "done" | "reviewed";
     provider_usage: {
       cached_input_tokens: number;
       input_tokens: number;
@@ -91,6 +108,8 @@ type EvidencePayload = {
       turn_completed_events: number;
     };
     role: string;
+    status_violation: boolean;
+    target_matched_after_episode: boolean | null;
   }[];
   lifecycle_control: {
     call_count: number;
@@ -98,7 +117,7 @@ type EvidencePayload = {
     trace: string[];
   };
   metrics: Record<MetricField, number>;
-  observed_outcomes: Record<OutcomeField, boolean>;
+  resolved_outcomes: Record<OutcomeField, boolean>;
   provider_usage_by_role: Record<
     string,
     {
@@ -123,9 +142,14 @@ type EvidenceBundle = {
 };
 type ReplayEnvelope = {
   anchor: {
+    capture_platform: DependencyClaim["capture_platform"];
+    dependency_capture_executable_sha256: string;
+    dependency_capture_receipt_sha256: string;
+    dependency_portable_sha256: string;
     disposable_repository: boolean;
     driver: DriverIdentity;
     external_effects: string;
+    fixture_registry_origin: string;
     fixture_registry_sha256: string;
     harness_sha256: string;
     subject_sha: string;
@@ -145,7 +169,7 @@ type ReplayEnvelope = {
   evidence_bundle: { path: string; sha256: string };
   metrics: Record<MetricField, ObservedCell<number>>;
   mode: string;
-  observed_outcomes: Record<OutcomeField, ObservedCell<boolean>>;
+  resolved_outcomes: Record<OutcomeField, ObservedCell<boolean>>;
   profile: Record<
     | "adapter_id"
     | "cache_mode"
@@ -167,7 +191,7 @@ type EnvelopeRecord = { bytes: string; path: string; value: ReplayEnvelope };
 type EvidenceRecord = { bytes: string; path: string; value: EvidenceBundle };
 type ReplayBaseline = {
   coverage: Record<
-    | "observed_outcome_cells"
+    | "resolved_outcome_cells"
     | "provider_token_cells"
     | "replay_runs"
     | "resolved_scalar_cells"
@@ -187,7 +211,7 @@ type ReplayBaseline = {
     golden_outcome_comparison: ReplayBaseline["golden_outcome_comparison"];
     scenarios: {
       id: string;
-      observed_outcomes: Record<
+      resolved_outcomes: Record<
         OutcomeField,
         { false_count: number; golden_mismatch_count: number; true_count: number }
       >;
@@ -210,11 +234,14 @@ type ReplayModule = {
   buildReplayBaseline(options: BuildOptions): ReplayBaseline;
   buildReplayDriverEnvironment(
     source: Record<string, string>,
-    requested: string[],
     contract: Record<string, string>,
   ): Record<string, string>;
   createReplayDriverIdentity(repoRoot: string, driverPath: string): DriverIdentity;
-  createReplayHarnessManifest(repoRoot: string, driverIdentity: DriverIdentity): HarnessManifest;
+  createReplayHarnessManifest(
+    repoRoot: string,
+    driverIdentity: DriverIdentity,
+    options: { dependencyClaim: DependencyClaim },
+  ): HarnessManifest;
   fixtureRegistrySha256(registry: FixtureRegistry): string;
 };
 type RecordPair = { envelope: EnvelopeRecord; evidence: EvidenceRecord };
@@ -235,6 +262,52 @@ function canonical(value: unknown): string {
 
 function digest(value: string): string {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+}
+
+const TEST_CAPTURE_PLATFORM = {
+  arch: "arm64",
+  libc: "not_applicable",
+  node_abi: "137",
+  platform: "darwin",
+};
+const TEST_CAPTURE_EXECUTABLE_SHA256 = digest("rf04-test-capture-executable-v1");
+const TEST_PORTABLE_DEPENDENCY_SHA256 = digest("rf04-test-portable-dependency-v1");
+const TEST_DEPENDENCY_CLAIM: DependencyClaim = {
+  capture_executable_sha256: TEST_CAPTURE_EXECUTABLE_SHA256,
+  capture_platform: TEST_CAPTURE_PLATFORM,
+  capture_receipt_sha256: digest(
+    canonical({
+      capture_platform: TEST_CAPTURE_PLATFORM,
+      executable_sha256: TEST_CAPTURE_EXECUTABLE_SHA256,
+      portable_sha256: TEST_PORTABLE_DEPENDENCY_SHA256,
+      schema_version: 1,
+    }),
+  ),
+  portable_sha256: TEST_PORTABLE_DEPENDENCY_SHA256,
+};
+
+function testContractEnvironment(): Record<string, string> {
+  return Object.fromEntries(
+    [
+      "ANCHOR",
+      "DEPENDENCY_CAPTURE_EXECUTABLE_SHA256",
+      "DEPENDENCY_CAPTURE_PLATFORM",
+      "DEPENDENCY_CAPTURE_RECEIPT_SHA256",
+      "DEPENDENCY_PORTABLE_SHA256",
+      "DRIVER_CONTRACT_VERSION",
+      "DRIVER_PATH",
+      "DRIVER_SHA256",
+      "EVIDENCE_OUTPUT",
+      "EVIDENCE_PATH",
+      "EXPECTED_ROLES",
+      "FIXTURE_REGISTRY_ORIGIN",
+      "FIXTURE_REGISTRY_PATH",
+      "FIXTURE_REGISTRY_SHA256",
+      "HARNESS_SHA256",
+      "OUTPUT",
+      "RUN_ID",
+    ].map((suffix) => [`AGENTPLANE_RF04_REPLAY_${suffix}`, `fixture-${suffix}`]),
+  );
 }
 
 function observed<T extends number | boolean>(
@@ -285,7 +358,33 @@ function makeRecordPair(options: {
         : base;
   }
   const episodeLedger = scenario.expected_episode_trace.map((role, episodeIndex) => ({
+    effect_observation: {
+      allowed_paths:
+        role === "EVALUATOR" || ["missing_knowledge", "adapter_failure"].includes(scenario.id)
+          ? []
+          : ["work/allowed.txt"],
+      changed_paths: [],
+      policy:
+        role === "EVALUATOR" || ["missing_knowledge", "adapter_failure"].includes(scenario.id)
+          ? ("read_only" as const)
+          : ("scoped_write" as const),
+      same_content_rewrites: [],
+      unsafe_allowed_paths: [],
+      violation_paths: [],
+    },
     episode_index: episodeIndex + 1,
+    expected_final_status:
+      role === "EVALUATOR"
+        ? ("reviewed" as const)
+        : ["missing_knowledge", "adapter_failure"].includes(scenario.id)
+          ? ("blocked" as const)
+          : ("done" as const),
+    final_status:
+      role === "EVALUATOR"
+        ? ("reviewed" as const)
+        : ["missing_knowledge", "adapter_failure"].includes(scenario.id)
+          ? ("blocked" as const)
+          : ("done" as const),
     provider_usage: {
       cached_input_tokens: 40 + runIndex + episodeIndex,
       input_tokens: 100 + runIndex + episodeIndex,
@@ -294,6 +393,8 @@ function makeRecordPair(options: {
       turn_completed_events: 1,
     },
     role,
+    status_violation: false,
+    target_matched_after_episode: null,
   }));
   metrics.llm_episodes = episodeLedger.length;
   metrics.prompt_count = episodeLedger.length;
@@ -334,8 +435,11 @@ function makeRecordPair(options: {
       trace: scenario.expected_lifecycle_trace,
     },
     metrics,
-    observed_outcomes: outcomes,
+    resolved_outcomes: outcomes,
     provider_usage_by_role: providerUsageByRole,
+    supervisor_receipt: {
+      anchor_runtime_integrity: { dependency_claim: TEST_DEPENDENCY_CLAIM },
+    },
   };
   const artifactSha256 = digest(canonical(payload));
   const runId = `${scenario.id}/run-${String(runIndex).padStart(2, "0")}`;
@@ -370,7 +474,7 @@ function makeRecordPair(options: {
   const outcomeCells = Object.fromEntries(
     OUTCOME_FIELDS.map((field) => [
       field,
-      observed(outcomes[field], artifactSha256, `observed_outcomes.${field}`),
+      observed(outcomes[field], artifactSha256, `resolved_outcomes.${field}`),
     ]),
   ) as Record<OutcomeField, ObservedCell<boolean>>;
   const tokenCells = Object.fromEntries(
@@ -392,9 +496,14 @@ function makeRecordPair(options: {
   ) as Record<string, Record<TokenField, ObservedCell<number>>>;
   const envelope: ReplayEnvelope = {
     anchor: {
+      capture_platform: TEST_DEPENDENCY_CLAIM.capture_platform,
+      dependency_capture_executable_sha256: TEST_DEPENDENCY_CLAIM.capture_executable_sha256,
+      dependency_capture_receipt_sha256: TEST_DEPENDENCY_CLAIM.capture_receipt_sha256,
+      dependency_portable_sha256: TEST_DEPENDENCY_CLAIM.portable_sha256,
       disposable_repository: true,
       driver: driverIdentity,
       external_effects: "fixture_backed",
+      fixture_registry_origin: "fixture_control_overlay_v1",
       fixture_registry_sha256: fixtureDigest,
       harness_sha256: harnessDigest,
       subject_sha: anchor,
@@ -441,7 +550,7 @@ function makeRecordPair(options: {
     evidence_bundle: { path: evidencePath, sha256: digest(evidenceBytes) },
     metrics: metricsCells,
     mode: "agent_efficiency_replay_v1",
-    observed_outcomes: outcomeCells,
+    resolved_outcomes: outcomeCells,
     profile: {
       adapter_id: "fixture-adapter",
       cache_mode: "cold",
@@ -509,7 +618,9 @@ async function testContext(
     REPO_ROOT,
     path.join(REPO_ROOT, TEST_DRIVER_PATH),
   );
-  const harness = replay.createReplayHarnessManifest(REPO_ROOT, driverIdentity);
+  const harness = replay.createReplayHarnessManifest(REPO_ROOT, driverIdentity, {
+    dependencyClaim: TEST_DEPENDENCY_CLAIM,
+  });
   const fixtureDigest = replay.fixtureRegistrySha256(registry);
   const pairs = registry.scenarios.flatMap((scenario, scenarioIndex) =>
     Array.from({ length: replay.MINIMUM_REPLAY_RUNS }, (_, index) =>
@@ -558,7 +669,7 @@ describeCritical("critical: RF-04 anchored replay telemetry", () => {
 
     expect(baseline.status).toBe("complete");
     expect(baseline.coverage).toEqual({
-      observed_outcome_cells: { actual: 70, required: 70 },
+      resolved_outcome_cells: { actual: 70, required: 70 },
       provider_token_cells: { actual: 27, required: 27 },
       replay_runs: { actual: 50, required: 50 },
       resolved_scalar_cells: { actual: 170, required: 170 },
@@ -613,12 +724,12 @@ describeCritical("critical: RF-04 anchored replay telemetry", () => {
     const direct = baseline.structural_projection.scenarios.find(
       (scenario) => scenario.id === "direct",
     );
-    expect(direct?.observed_outcomes.verified_success).toMatchObject({
+    expect(direct?.resolved_outcomes.verified_success).toMatchObject({
       false_count: 1,
       golden_mismatch_count: 1,
       true_count: 4,
     });
-    expect(direct?.observed_outcomes.scope_violation).toMatchObject({
+    expect(direct?.resolved_outcomes.scope_violation).toMatchObject({
       false_count: 4,
       golden_mismatch_count: 1,
       true_count: 1,
@@ -730,7 +841,7 @@ describeCritical("critical: RF-04 anchored replay telemetry", () => {
     ).toThrow("forbidden because it can contain a credential");
   });
 
-  it("binds exact repo-local driver bytes and exposes only an explicit environment allowlist", async () => {
+  it("binds exact repo-local driver bytes and exposes only the fixed driver contract", async () => {
     const { driverIdentity, replay } = await testContext();
     expect(driverIdentity).toMatchObject({ contract_version: 1, path: TEST_DRIVER_PATH });
     expect(() =>
@@ -745,30 +856,37 @@ describeCritical("critical: RF-04 anchored replay telemetry", () => {
 
     const environment = replay.buildReplayDriverEnvironment(
       {
+        DYLD_INSERT_LIBRARIES: "/malicious/preload.dylib",
+        GIT_CONFIG_GLOBAL: "/sensitive/gitconfig",
         HOME: "/Users/operator",
+        HTTPS_PROXY: "http://proxy.invalid",
+        NODE_OPTIONS: "--require=/malicious/preload.cjs",
         OPENAI_API_KEY: "explicit-secret-value",
-        PATH: "/usr/bin",
+        PATH: "/untrusted/bin",
         TMPDIR: "/sensitive/tmp",
         UNRELATED_SECRET: "must-not-pass",
       },
-      ["OPENAI_API_KEY"],
-      { AGENTPLANE_RF04_REPLAY_RUN_ID: "direct/run-01" },
+      testContractEnvironment(),
     );
-    expect(environment).toEqual({
-      AGENTPLANE_RF04_REPLAY_RUN_ID: "direct/run-01",
-      OPENAI_API_KEY: "explicit-secret-value",
-      PATH: "/usr/bin",
-    });
+    expect(environment).toMatchObject(testContractEnvironment());
+    expect(environment.PATH).toBe(
+      "/Applications/ChatGPT.app/Contents/Resources:/opt/homebrew/bin:/usr/bin:/bin",
+    );
+    for (const forbidden of [
+      "DYLD_INSERT_LIBRARIES",
+      "GIT_CONFIG_GLOBAL",
+      "HOME",
+      "HTTPS_PROXY",
+      "NODE_OPTIONS",
+      "OPENAI_API_KEY",
+      "TMPDIR",
+      "UNRELATED_SECRET",
+    ]) {
+      expect(environment).not.toHaveProperty(forbidden);
+    }
     expect(() =>
-      replay.buildReplayDriverEnvironment({ HOME: "/Users/operator" }, ["HOME"], {
-        AGENTPLANE_RF04_REPLAY_RUN_ID: "direct/run-01",
-      }),
-    ).toThrow("environment field is forbidden: HOME");
-    expect(() =>
-      replay.buildReplayDriverEnvironment({}, ["AGENTPLANE_RF04_REPLAY_ESCAPE"], {
-        AGENTPLANE_RF04_REPLAY_RUN_ID: "direct/run-01",
-      }),
-    ).toThrow("environment field is forbidden");
+      replay.buildReplayDriverEnvironment({}, { AGENTPLANE_RF04_REPLAY_RUN_ID: "direct/run-01" }),
+    ).toThrow("exact reviewed key set");
   });
 
   it("does not accept estimated or agent-claimed reasoning usage", async () => {

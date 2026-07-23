@@ -4,7 +4,6 @@ import {
   mkdirSync,
   readFileSync,
   readdirSync,
-  readlinkSync,
   realpathSync,
   rmSync,
   symlinkSync,
@@ -41,6 +40,8 @@ export function buildAnchorGitEnvironment(source = process.env) {
     ...buildCodexReplayEnvironment(source),
     GIT_CONFIG_GLOBAL: "/dev/null",
     GIT_CONFIG_NOSYSTEM: "1",
+    GIT_OPTIONAL_LOCKS: "0",
+    GIT_PAGER: "cat",
     GIT_TERMINAL_PROMPT: "0",
   };
 }
@@ -53,19 +54,34 @@ export function prepareAnchorProcessEnvironment(fixtureRoot) {
   return environment;
 }
 
-function mirrorRelativeSymlinkLayout(sourceRoot, targetRoot) {
+const WORKSPACE_DEPENDENCIES = new Map([
+  ["@agentplaneorg/core", "packages/core"],
+  ["@agentplaneorg/recipes", "packages/recipes"],
+  ["@agentplane/testkit", "packages/testkit"],
+]);
+
+function mirrorDependencyLayout(sourceRoot, targetRoot, subjectRoot, layoutRelative = "") {
   mkdirSync(targetRoot, { recursive: true });
   for (const entry of readdirSync(sourceRoot, { withFileTypes: true })) {
     const source = path.join(sourceRoot, entry.name);
     const target = path.join(targetRoot, entry.name);
     if (entry.isDirectory()) {
-      mirrorRelativeSymlinkLayout(source, target);
+      mirrorDependencyLayout(
+        source,
+        target,
+        subjectRoot,
+        layoutRelative ? `${layoutRelative}/${entry.name}` : entry.name,
+      );
       continue;
     }
     if (!entry.isSymbolicLink()) fail("ANCHOR_DEPENDENCY_LAYOUT");
-    const linkTarget = readlinkSync(source);
-    if (path.isAbsolute(linkTarget)) fail("ANCHOR_DEPENDENCY_LINK_ESCAPE");
-    symlinkSync(linkTarget, target);
+    const dependencyName = layoutRelative ? `${layoutRelative}/${entry.name}` : entry.name;
+    const workspaceRelative = WORKSPACE_DEPENDENCIES.get(dependencyName);
+    if (workspaceRelative) {
+      symlinkSync(path.join(subjectRoot, workspaceRelative), target);
+    } else {
+      symlinkSync(path.resolve(realpathSync(source)), target);
+    }
   }
 }
 
@@ -82,13 +98,19 @@ function linkAnchorDependencies(subjectRoot) {
 
   const rootModules = path.join(subjectRoot, "node_modules");
   rmSync(rootModules, { force: true, recursive: true });
-  symlinkSync(realpathSync(path.join(DRIVER_REPO_ROOT, "node_modules")), rootModules, "dir");
+  mkdirSync(rootModules, { recursive: true });
+  for (const dependency of ["tsup", "typescript"]) {
+    symlinkSync(
+      realpathSync(path.join(DRIVER_REPO_ROOT, "node_modules", dependency)),
+      path.join(rootModules, dependency),
+    );
+  }
 
   for (const packageRelative of ["packages/agentplane", "packages/core"]) {
     const target = path.join(subjectRoot, packageRelative, "node_modules");
     const source = realpathSync(path.join(DRIVER_REPO_ROOT, packageRelative, "node_modules"));
     rmSync(target, { force: true, recursive: true });
-    mirrorRelativeSymlinkLayout(source, target);
+    mirrorDependencyLayout(source, target, subjectRoot);
   }
 
   assertAnchorWorkspaceLink(
@@ -153,14 +175,27 @@ function assertAnchorBuildManifest(subjectRoot, packageRelative, packageName, ex
   }
 }
 
-export function buildAnchorRuntime(subjectRoot, expectedAnchor) {
+export function buildAnchorRuntime(subjectRoot, expectedAnchor, expectedDependencyClaim) {
   if (!/^[a-f0-9]{40}$/.test(expectedAnchor)) fail("ANCHOR_COMMIT");
+  if (
+    !/^sha256:[a-f0-9]{64}$/.test(expectedDependencyClaim?.capture_executable_sha256) ||
+    !/^sha256:[a-f0-9]{64}$/.test(expectedDependencyClaim?.capture_receipt_sha256) ||
+    !/^sha256:[a-f0-9]{64}$/.test(expectedDependencyClaim?.portable_sha256) ||
+    typeof expectedDependencyClaim?.capture_platform !== "object"
+  ) {
+    fail("ANCHOR_DEPENDENCY_DIGEST");
+  }
   const localHead = runSanitizedCommand("/usr/bin/git", ["rev-parse", "HEAD"], {
     code: "ANCHOR_HEAD",
     cwd: subjectRoot,
     env: buildAnchorGitEnvironment(),
   }).trim();
   if (localHead !== expectedAnchor) fail("ANCHOR_HEAD");
+  const localTree = runSanitizedCommand("/usr/bin/git", ["rev-parse", "HEAD^{tree}"], {
+    code: "ANCHOR_TREE",
+    cwd: subjectRoot,
+    env: buildAnchorGitEnvironment(),
+  }).trim();
   if (
     runSanitizedCommand("/usr/bin/git", ["status", "--porcelain", "--untracked-files=no"], {
       code: "ANCHOR_STATUS",
@@ -189,5 +224,31 @@ export function buildAnchorRuntime(subjectRoot, expectedAnchor) {
   }
   assertAnchorBuildManifest(subjectRoot, "packages/core", "@agentplaneorg/core", localHead);
   assertAnchorBuildManifest(subjectRoot, "packages/agentplane", "agentplane", localHead);
-  return cliPath;
+  const afterHead = runSanitizedCommand("/usr/bin/git", ["rev-parse", "HEAD"], {
+    code: "ANCHOR_HEAD_AFTER_BUILD",
+    cwd: subjectRoot,
+    env: buildAnchorGitEnvironment(),
+  }).trim();
+  const afterTree = runSanitizedCommand("/usr/bin/git", ["rev-parse", "HEAD^{tree}"], {
+    code: "ANCHOR_TREE_AFTER_BUILD",
+    cwd: subjectRoot,
+    env: buildAnchorGitEnvironment(),
+  }).trim();
+  const trackedStatus = runSanitizedCommand(
+    "/usr/bin/git",
+    ["status", "--porcelain", "--untracked-files=no"],
+    { code: "ANCHOR_STATUS_AFTER_BUILD", cwd: subjectRoot, env: buildAnchorGitEnvironment() },
+  );
+  if (afterHead !== localHead || afterTree !== localTree || trackedStatus !== "") {
+    fail("ANCHOR_TRACKED_DRIFT_AFTER_BUILD");
+  }
+  return {
+    cliPath,
+    receipt: {
+      dependency_claim: expectedDependencyClaim,
+      head_verified_after_build: true,
+      tracked_status_clean_after_build: true,
+      tree_verified_after_build: true,
+    },
+  };
 }

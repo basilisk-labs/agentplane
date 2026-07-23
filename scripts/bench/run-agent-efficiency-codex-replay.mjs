@@ -10,13 +10,15 @@ import {
   SCHEMA_PATH,
   WORK_DIRECTORY,
   buildReplayOutput,
-  changedPaths,
   commitAll,
+  commitScopedPaths,
   createRoleTask,
   expectedAnchorPreparationCliCalls,
+  fixtureFilePath,
   git,
   initializeFixture,
   prepareEpisodeContext,
+  restoreFixtureToHead,
   writeCanonicalAtomic,
 } from "./internal/agent-efficiency-anchor-supervisor.mjs";
 import { buildAnchorRuntime } from "./internal/agent-efficiency-anchor-runtime.mjs";
@@ -27,6 +29,13 @@ import {
   fail,
   runCodexEpisode,
 } from "./internal/agent-efficiency-codex-runtime.mjs";
+import {
+  compareFixtureEffects,
+  episodeEffectPolicy,
+  expectedEpisodeFinalStatus,
+  snapshotFixtureEffects,
+} from "./internal/agent-efficiency-fixture-effects.mjs";
+import { readReplayDriverContract } from "./internal/agent-efficiency-driver-contract.mjs";
 
 export {
   expectedAnchorPreparationCliCalls,
@@ -95,13 +104,14 @@ function parseArgs(argv) {
 }
 
 export function buildEpisodeInstruction(scenarioId, episodeIndex, role) {
+  const expectedStatus = expectedEpisodeFinalStatus(scenarioId, role);
   const common = [
     "RF-04 deterministic episode contract:",
     `- act as ${role} for scenario ${scenarioId}, episode ${episodeIndex + 1};`,
     "- network access and external effects are forbidden;",
     "- work only in this fixture repository;",
     "- never inspect environment variables, auth, user directories, or parent directories;",
-    "- return only the output-schema status object; the supervisor owns all outcomes.",
+    `- return exactly {"status":"${expectedStatus}"}; the supervisor owns all outcomes.`,
   ].join("\n");
   const action = {
     direct: "Set work/allowed.txt to exactly DIRECT_OK followed by one newline.",
@@ -217,58 +227,21 @@ function aggregateProviderUsage(episodeLedger, expectedRoles) {
   return result;
 }
 
-function validateContract(options, registry) {
-  const required = [
-    "AGENTPLANE_RF04_REPLAY_ANCHOR",
-    "AGENTPLANE_RF04_REPLAY_DRIVER_CONTRACT_VERSION",
-    "AGENTPLANE_RF04_REPLAY_DRIVER_PATH",
-    "AGENTPLANE_RF04_REPLAY_DRIVER_SHA256",
-    "AGENTPLANE_RF04_REPLAY_EVIDENCE_PATH",
-    "AGENTPLANE_RF04_REPLAY_EXPECTED_ROLES",
-    "AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_SHA256",
-    "AGENTPLANE_RF04_REPLAY_HARNESS_SHA256",
-    "AGENTPLANE_RF04_REPLAY_RUN_ID",
-  ];
-  for (const name of required) {
-    if (typeof process.env[name] !== "string" || process.env[name].length === 0) {
-      fail("CONTRACT_ENV");
-    }
-  }
-  const anchor = process.env.AGENTPLANE_RF04_REPLAY_ANCHOR;
-  if (registry.provenance?.efficiency_anchor_commit !== anchor) fail("ANCHOR_CONTRACT");
-  const scenario = registry.scenarios.find((item) => item.id === options.scenarioId);
-  if (!scenario || !Object.hasOwn(SCENARIO_BEHAVIOR, options.scenarioId)) fail("SCENARIO");
-  const runId = `${options.scenarioId}/run-${String(options.runIndex).padStart(2, "0")}`;
-  if (process.env.AGENTPLANE_RF04_REPLAY_RUN_ID !== runId) fail("RUN_ID");
-  const expectedRoles = [...new Set(scenario.expected_episode_trace)];
-  let contractRoles;
-  try {
-    contractRoles = JSON.parse(process.env.AGENTPLANE_RF04_REPLAY_EXPECTED_ROLES);
-  } catch {
-    fail("EXPECTED_ROLES_JSON");
-  }
-  if (stableJson(contractRoles) !== stableJson(expectedRoles)) fail("EXPECTED_ROLES");
-  if (
-    path.resolve(process.env.AGENTPLANE_RF04_REPLAY_OUTPUT ?? "") !== options.outputPath ||
-    path.resolve(process.env.AGENTPLANE_RF04_REPLAY_EVIDENCE_OUTPUT ?? "") !==
-      options.evidenceOutputPath
-  ) {
-    fail("OUTPUT_CONTRACT");
-  }
-  return { anchor, expectedRoles, runId, scenario };
-}
-
-export async function runReplayDriver(argv = process.argv.slice(2)) {
+export async function runReplayDriver(argv = process.argv.slice(2), dependencies = {}) {
   const options = parseArgs(argv);
   const subjectRoot = process.cwd();
-  const registry = JSON.parse(
-    readFileSync(path.join(subjectRoot, "scripts/bench/agent-efficiency-fixtures.json"), "utf8"),
+  const { anchor, dependencyClaim, expectedRoles, runId, scenario } = readReplayDriverContract(
+    subjectRoot,
+    options,
+    new Set(Object.keys(SCENARIO_BEHAVIOR)),
   );
-  const { anchor, expectedRoles, runId, scenario } = validateContract(options, registry);
-  assertCodexBinary();
+  const assertRuntime = dependencies.assertCodexBinary ?? assertCodexBinary;
+  const executeEpisode = dependencies.runCodexEpisode ?? runCodexEpisode;
+  assertRuntime();
   const harnessStartedAt = performance.now();
-  const cliPath = buildAnchorRuntime(subjectRoot, anchor);
-  const counters = { anchorPreparationCliCalls: 0, metrics: {} };
+  const anchorRuntime = buildAnchorRuntime(subjectRoot, anchor, dependencyClaim);
+  const cliPath = anchorRuntime.cliPath;
+  const counters = { anchorPreparationCliCalls: 0, metrics: {}, preparationLatencyMs: 0 };
   const fixtureRoot = initializeFixture(
     subjectRoot,
     options.scenarioId,
@@ -277,31 +250,22 @@ export async function runReplayDriver(argv = process.argv.slice(2)) {
     counters,
   );
   const harnessReadyAt = performance.now();
-  let preparationLatencyMs = 0;
-  const measurePreparation = (operation) => {
-    const startedAt = performance.now();
-    try {
-      return operation();
-    } finally {
-      preparationLatencyMs += performance.now() - startedAt;
-    }
-  };
   const roleTasks = Object.fromEntries(
     expectedRoles.map((role) => [
       role,
-      measurePreparation(() =>
-        createRoleTask(cliPath, fixtureRoot, options.scenarioId, role, counters),
-      ),
+      createRoleTask(cliPath, fixtureRoot, options.scenarioId, role, counters),
     ]),
   );
   const preparationOnlyContexts = [];
   if (expectedRoles.length === 0) {
-    const taskId = measurePreparation(() =>
-      createRoleTask(cliPath, fixtureRoot, options.scenarioId, "ORCHESTRATOR", counters),
+    const taskId = createRoleTask(
+      cliPath,
+      fixtureRoot,
+      options.scenarioId,
+      "ORCHESTRATOR",
+      counters,
     );
-    preparationOnlyContexts.push(
-      measurePreparation(() => prepareEpisodeContext(cliPath, fixtureRoot, taskId, counters)),
-    );
+    preparationOnlyContexts.push(prepareEpisodeContext(cliPath, fixtureRoot, taskId, counters));
   }
   const episodeLedger = [];
   const allChangedPaths = new Set();
@@ -329,9 +293,7 @@ export async function runReplayDriver(argv = process.argv.slice(2)) {
     promptBoilerplateSources.add(prepared.telemetry.prompt_boilerplate_source);
   }
   for (const [episodeIndex, role] of scenario.expected_episode_trace.entries()) {
-    const prepared = measurePreparation(() =>
-      prepareEpisodeContext(cliPath, fixtureRoot, roleTasks[role], counters),
-    );
+    const prepared = prepareEpisodeContext(cliPath, fixtureRoot, roleTasks[role], counters);
     bundleBytes += prepared.telemetry.bundle_bytes;
     bootstrapBytes += prepared.telemetry.bootstrap_bytes;
     duplicateInputBytes += prepared.telemetry.duplicate_input_bytes;
@@ -348,25 +310,60 @@ export async function runReplayDriver(argv = process.argv.slice(2)) {
       firstScopedMutationAt === null ? observeFirstScopedMutation(fixtureRoot) : null;
     let result;
     try {
-      result = await runCodexEpisode({
+      const beforeEffects = snapshotFixtureEffects(fixtureRoot);
+      result = await executeEpisode({
         fixtureRoot,
         prompt: composed.prompt,
         schemaPath: path.join(fixtureRoot, SCHEMA_PATH),
       });
+      const effectPolicy = episodeEffectPolicy(options.scenarioId, role, ALLOWED_PATH);
+      const effectObservation = compareFixtureEffects(
+        beforeEffects,
+        snapshotFixtureEffects(fixtureRoot),
+        effectPolicy.allowedPaths,
+        effectPolicy.policy,
+      );
+      const expectedFinalStatus = expectedEpisodeFinalStatus(options.scenarioId, role);
+      const target = SCENARIO_BEHAVIOR[options.scenarioId].target;
+      const targetMatchedAfterEpisode =
+        effectObservation.violation_paths.length === 0 &&
+        target !== null &&
+        readFileSync(
+          fixtureFilePath(fixtureRoot, ALLOWED_PATH, "EPISODE_TARGET_PATH_ESCAPE"),
+          "utf8",
+        ) === target;
+      for (const changedPath of effectObservation.changed_paths) allChangedPaths.add(changedPath);
+      episodeLedger.push({
+        effect_observation: effectObservation,
+        episode_index: episodeIndex + 1,
+        expected_final_status: expectedFinalStatus,
+        final_status: result.final_status,
+        provider_usage: result.provider_usage,
+        role,
+        status_violation: result.final_status !== expectedFinalStatus,
+        target_matched_after_episode: targetMatchedAfterEpisode,
+      });
+      if (effectObservation.violation_paths.length > 0) {
+        if (
+          effectObservation.violation_paths.some(
+            (candidate) => candidate === ".git" || candidate.startsWith(".git/"),
+          )
+        ) {
+          fail("EPISODE_GIT_CONTROL_MUTATION");
+        }
+        restoreFixtureToHead(fixtureRoot);
+      } else {
+        const scopedPaths = effectObservation.changed_paths.filter((candidate) =>
+          effectObservation.allowed_paths.includes(candidate),
+        );
+        commitScopedPaths(fixtureRoot, scopedPaths, `RF-04 episode ${episodeIndex + 1}`);
+      }
     } finally {
       const observedAt = mutationObserver?.close() ?? null;
       if (firstScopedMutationAt === null && observedAt !== null) firstScopedMutationAt = observedAt;
     }
     stdoutBytes += result.stdout_bytes;
     stderrBytes += result.stderr_bytes;
-    const episodePaths = changedPaths(fixtureRoot);
-    for (const changedPath of episodePaths) allChangedPaths.add(changedPath);
-    episodeLedger.push({
-      episode_index: episodeIndex + 1,
-      provider_usage: result.provider_usage,
-      role,
-    });
-    commitAll(fixtureRoot, `RF-04 episode ${episodeIndex + 1}`);
   }
   const expectedCliCalls = expectedAnchorPreparationCliCalls(scenario.expected_episode_trace);
   if (counters.anchorPreparationCliCalls !== expectedCliCalls) {
@@ -407,35 +404,65 @@ export async function runReplayDriver(argv = process.argv.slice(2)) {
   const fixtureLookupLatencyMs = Math.round(performance.now() - contextSearchStart);
   const target = SCENARIO_BEHAVIOR[options.scenarioId].target;
   const targetMatched =
-    target !== null && readFileSync(path.join(fixtureRoot, ALLOWED_PATH), "utf8") === target;
-  const unexpectedPaths = [...allChangedPaths].filter(
-    (changedPath) => changedPath !== ALLOWED_PATH,
+    target !== null &&
+    readFileSync(fixtureFilePath(fixtureRoot, ALLOWED_PATH, "FINAL_TARGET_PATH_ESCAPE"), "utf8") ===
+      target;
+  const actualEffectViolation = episodeLedger.some(
+    (episode) => episode.effect_observation.violation_paths.length > 0,
   );
-  const scopeViolation = unexpectedPaths.length > 0 || injectedScopeViolation;
+  const statusViolation = episodeLedger.some((episode) => episode.status_violation);
+  const scopeViolation = actualEffectViolation || injectedScopeViolation;
+  const observedRework = episodeLedger
+    .slice(0, -1)
+    .some((episode) => episode.target_matched_after_episode === false);
   const verifiedSuccess =
     targetMatched &&
     !scopeViolation &&
+    !statusViolation &&
     options.scenarioId !== "adapter_failure" &&
     options.scenarioId !== "missing_knowledge";
-  const blocked =
+  const blockedByControl =
     options.scenarioId === "stale_state" ||
     options.scenarioId === "approval_required" ||
     options.scenarioId === "missing_knowledge" ||
     options.scenarioId === "adapter_failure";
+  const observedBlocked = episodeLedger.some((episode) => episode.final_status === "blocked");
+  const blocked = blockedByControl || observedBlocked;
   const outcomes = {
     adapter_failure: injectedAdapterFailure,
     approval_respected: true,
     blocked,
     context_gap: options.scenarioId === "missing_knowledge" && retrievalGaps === 1,
     rework_required:
-      options.scenarioId === "evaluator_rework" ||
+      observedRework ||
       options.scenarioId === "stale_state" ||
       options.scenarioId === "missing_knowledge" ||
       options.scenarioId === "scope_violation" ||
       options.scenarioId === "adapter_failure" ||
+      statusViolation ||
+      actualEffectViolation ||
       (target !== null && !targetMatched),
     scope_violation: scopeViolation,
     verified_success: verifiedSuccess,
+  };
+  const controlRework =
+    ["stale_state", "missing_knowledge", "adapter_failure"].includes(options.scenarioId) ||
+    injectedScopeViolation;
+  const observedReworkSignal =
+    observedRework ||
+    statusViolation ||
+    actualEffectViolation ||
+    (target !== null && !targetMatched);
+  const outcomeProvenance = {
+    adapter_failure: "fixture_control",
+    approval_respected: "fixture_control",
+    blocked: observedBlocked || !blockedByControl ? "supervisor_observed" : "fixture_control",
+    context_gap: "supervisor_observed",
+    rework_required:
+      observedReworkSignal || !controlRework ? "supervisor_observed" : "fixture_control",
+    scope_violation:
+      actualEffectViolation || !injectedScopeViolation ? "supervisor_observed" : "fixture_control",
+    verified_success: "supervisor_observed",
   };
   const providerUsageByRole = aggregateProviderUsage(episodeLedger, expectedRoles);
   const completedAt = performance.now();
@@ -444,7 +471,7 @@ export async function runReplayDriver(argv = process.argv.slice(2)) {
     firstMutationAt: firstScopedMutationAt,
     harnessReadyAt,
     harnessStartedAt,
-    preparationLatencyMs,
+    preparationLatencyMs: counters.preparationLatencyMs,
   });
   const metrics = {
     bootstrap_bytes: bootstrapBytes,
@@ -484,8 +511,7 @@ export async function runReplayDriver(argv = process.argv.slice(2)) {
     anchor_preparation_cli_calls: counters.anchorPreparationCliCalls,
     anchor_cli_preparation: true,
     anchor_runtime_build: "typescript_plus_core_cli_bundle_manifest_v1",
-    anchor_source_tree_committed: true,
-    anchor_workspace_dependencies: "lock_matched_subject_local_links_v1",
+    anchor_runtime_integrity: anchorRuntime.receipt,
     changed_paths: [...allChangedPaths].toSorted(),
     fixture_context_lookup: {
       context_exists: existsSync(contextPath),
@@ -499,6 +525,12 @@ export async function runReplayDriver(argv = process.argv.slice(2)) {
     first_scoped_mutation_observed: firstScopedMutationAt !== null,
     injected_adapter_failure: injectedAdapterFailure,
     injected_scope_violation: injectedScopeViolation,
+    episode_effect_policy: episodeLedger.map((episode) => episode.effect_observation),
+    episode_final_statuses: episodeLedger.map((episode) => ({
+      actual: episode.final_status,
+      expected: episode.expected_final_status,
+      status_violation: episode.status_violation,
+    })),
     observed: true,
     executed_bootstrap_sha256: executedBootstrapDigests,
     prepared_context_sha256: preparedContextDigests,
@@ -525,14 +557,17 @@ export async function runReplayDriver(argv = process.argv.slice(2)) {
     anchor: process.env.AGENTPLANE_RF04_REPLAY_ANCHOR,
     counters,
     diagnostics,
+    dependencyClaim,
     driverIdentity,
     episodeLedger,
     evidencePath: process.env.AGENTPLANE_RF04_REPLAY_EVIDENCE_PATH,
     fixtureDigest: process.env.AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_SHA256,
     harnessDigest: process.env.AGENTPLANE_RF04_REPLAY_HARNESS_SHA256,
     lifecycleControl,
+    outcomeProvenance,
     outcomes,
     providerUsageByRole,
+    registryOrigin: process.env.AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_ORIGIN,
     runId,
     runIndex: options.runIndex,
     scenarioId: options.scenarioId,

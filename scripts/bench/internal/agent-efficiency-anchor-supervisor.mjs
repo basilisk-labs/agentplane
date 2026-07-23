@@ -9,6 +9,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
+import { performance } from "node:perf_hooks";
 
 import {
   OUTCOME_FIELDS,
@@ -77,6 +78,17 @@ export function commitAll(cwd, message) {
   git(cwd, ["commit", "--quiet", "--allow-empty", "-m", message], "GIT_COMMIT");
 }
 
+export function commitScopedPaths(cwd, paths, message) {
+  if (!Array.isArray(paths)) fail("GIT_SCOPED_PATHS");
+  if (paths.length > 0) git(cwd, ["add", "--", ...paths], "GIT_SCOPED_STAGE");
+  git(cwd, ["commit", "--quiet", "--allow-empty", "-m", message], "GIT_SCOPED_COMMIT");
+}
+
+export function restoreFixtureToHead(cwd) {
+  git(cwd, ["reset", "--hard", "--quiet", "HEAD"], "GIT_FIXTURE_RESTORE");
+  git(cwd, ["clean", "-ffdqx"], "GIT_FIXTURE_CLEAN");
+}
+
 export function changedPaths(cwd) {
   const tracked = git(cwd, ["diff", "--name-only", "-z", "HEAD"], "GIT_DIFF_PATHS");
   const untracked = git(
@@ -95,7 +107,7 @@ function fixtureCandidatePath(fixtureRoot, candidate, code) {
   return { resolved, root };
 }
 
-function fixtureFilePath(fixtureRoot, candidate, code) {
+export function fixtureFilePath(fixtureRoot, candidate, code) {
   const { resolved, root } = fixtureCandidatePath(fixtureRoot, candidate, code);
   const stats = lstatSync(resolved, { throwIfNoEntry: false });
   if (!stats?.isFile() || stats.isSymbolicLink()) fail(code);
@@ -104,14 +116,25 @@ function fixtureFilePath(fixtureRoot, candidate, code) {
   return real;
 }
 
-export function agentplane(cliPath, fixtureRoot, args, code, counters) {
-  const result = runSanitizedCommand(process.execPath, [cliPath, ...args], {
-    code,
-    cwd: fixtureRoot,
-    env: prepareAnchorProcessEnvironment(fixtureRoot),
-  });
-  if (counters) counters.anchorPreparationCliCalls += 1;
-  return result;
+export function agentplane(cliPath, fixtureRoot, args, code, counters, options = {}) {
+  const clock = options.clock ?? (() => performance.now());
+  const runner = options.runner ?? runSanitizedCommand;
+  const environment = prepareAnchorProcessEnvironment(fixtureRoot);
+  const startedAt = clock();
+  try {
+    return runner(process.execPath, [cliPath, ...args], {
+      code,
+      cwd: fixtureRoot,
+      env: environment,
+    });
+  } finally {
+    if (counters) {
+      counters.anchorPreparationCliCalls += 1;
+      if (options.measurePreparation === true) {
+        counters.preparationLatencyMs += clock() - startedAt;
+      }
+    }
+  }
 }
 
 export function initializeFixture(subjectRoot, scenarioId, runIndex, cliPath, counters) {
@@ -185,6 +208,7 @@ export function createRoleTask(cliPath, fixtureRoot, scenarioId, role, counters)
     ],
     "ANCHOR_TASK_NEW",
     counters,
+    { measurePreparation: true },
   ).trim();
   if (!/^\d{12}-[A-Z0-9]{6}$/.test(taskId)) fail("ANCHOR_TASK_ID");
   agentplane(
@@ -202,6 +226,7 @@ export function createRoleTask(cliPath, fixtureRoot, scenarioId, role, counters)
     ],
     "ANCHOR_TASK_PLAN",
     counters,
+    { measurePreparation: true },
   );
   agentplane(
     cliPath,
@@ -209,6 +234,7 @@ export function createRoleTask(cliPath, fixtureRoot, scenarioId, role, counters)
     ["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR"],
     "ANCHOR_TASK_APPROVE",
     counters,
+    { measurePreparation: true },
   );
   agentplane(
     cliPath,
@@ -224,6 +250,7 @@ export function createRoleTask(cliPath, fixtureRoot, scenarioId, role, counters)
     ],
     "ANCHOR_TASK_START",
     counters,
+    { measurePreparation: true },
   );
   commitAll(fixtureRoot, `RF-04 start ${role}`);
   return taskId;
@@ -278,6 +305,7 @@ export function prepareEpisodeContext(cliPath, fixtureRoot, taskId, counters) {
     ["task", "run", taskId, "--dry-run", "--json"],
     "ANCHOR_RUN_PREPARE",
     counters,
+    { measurePreparation: true },
   );
   let prepared;
   try {
@@ -352,14 +380,17 @@ export function writeCanonicalAtomic(filePath, value) {
 export function buildReplayOutput({
   counters,
   diagnostics,
+  dependencyClaim,
   driverIdentity,
   episodeLedger,
   evidencePath,
   fixtureDigest,
   harnessDigest,
   lifecycleControl,
+  outcomeProvenance,
   outcomes,
   providerUsageByRole,
+  registryOrigin,
   runId,
   runIndex,
   scenarioId,
@@ -378,7 +409,7 @@ export function buildReplayOutput({
     evidence: { supervisor_receipt: true },
     lifecycle_control: lifecycleControl,
     metrics: metricPayload,
-    observed_outcomes: outcomes,
+    resolved_outcomes: outcomes,
     provider_usage_by_role: providerUsageByRole,
     supervisor_receipt: supervisorReceipt,
   };
@@ -415,7 +446,12 @@ export function buildReplayOutput({
   const outcomeCells = Object.fromEntries(
     OUTCOME_FIELDS.map((field) => [
       field,
-      observedCell(outcomes[field], artifactSha256, `observed_outcomes.${field}`),
+      observedCell(
+        outcomes[field],
+        artifactSha256,
+        `resolved_outcomes.${field}`,
+        outcomeProvenance[field],
+      ),
     ]),
   );
   const tokenCells = Object.fromEntries(
@@ -453,9 +489,14 @@ export function buildReplayOutput({
   );
   const envelope = {
     anchor: {
+      capture_platform: dependencyClaim.capture_platform,
+      dependency_capture_executable_sha256: dependencyClaim.capture_executable_sha256,
+      dependency_capture_receipt_sha256: dependencyClaim.capture_receipt_sha256,
+      dependency_portable_sha256: dependencyClaim.portable_sha256,
       disposable_repository: true,
       driver: driverIdentity,
       external_effects: "fixture_backed",
+      fixture_registry_origin: registryOrigin,
       fixture_registry_sha256: fixtureDigest,
       harness_sha256: harnessDigest,
       subject_sha: anchor,
@@ -486,7 +527,7 @@ export function buildReplayOutput({
     evidence_bundle: { path: evidencePath, sha256: sha256(evidenceBytes) },
     metrics: metricCells,
     mode: AGENT_EFFICIENCY_REPLAY_MODE,
-    observed_outcomes: outcomeCells,
+    resolved_outcomes: outcomeCells,
     profile: {
       adapter_id: "codex-exec-jsonl-supervisor",
       cache_mode: "ephemeral-provider-default",

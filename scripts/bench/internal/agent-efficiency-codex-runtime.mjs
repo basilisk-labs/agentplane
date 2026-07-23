@@ -80,6 +80,7 @@ export function assertCodexBinary() {
 
 export function createCodexJsonlCollector() {
   return {
+    finalStatus: null,
     lineBuffer: "",
     stderrBytes: 0,
     stdoutBytes: 0,
@@ -96,6 +97,33 @@ export function acceptCodexJsonlLine(collector, line) {
     event = JSON.parse(line);
   } catch {
     fail("CODEX_JSONL_PARSE");
+  }
+  if (event?.type === "item.completed" && event.item?.type === "agent_message") {
+    const candidate =
+      typeof event.item.text === "string"
+        ? event.item.text
+        : typeof event.item.content === "string"
+          ? event.item.content
+          : null;
+    if (candidate === null) fail("CODEX_FINAL_STATUS_SHAPE");
+    let parsed;
+    try {
+      parsed = JSON.parse(candidate);
+    } catch {
+      fail("CODEX_FINAL_STATUS_JSON");
+    }
+    if (
+      parsed === null ||
+      typeof parsed !== "object" ||
+      Array.isArray(parsed) ||
+      Object.keys(parsed).length !== 1 ||
+      !["blocked", "done", "reviewed"].includes(parsed.status)
+    ) {
+      fail("CODEX_FINAL_STATUS_SHAPE");
+    }
+    if (collector.finalStatus !== null) fail("CODEX_FINAL_STATUS_COUNT");
+    collector.finalStatus = parsed.status;
+    return;
   }
   if (event?.type !== "turn.completed") return;
   collector.turnCompletedEvents += 1;
@@ -133,7 +161,9 @@ export function finalizeCodexJsonlCollector(collector) {
   if (collector.turnCompletedEvents !== 1 || collector.usage === null) {
     fail("CODEX_TURN_COMPLETED_MISSING");
   }
+  if (collector.finalStatus === null) fail("CODEX_FINAL_STATUS_MISSING");
   return {
+    final_status: collector.finalStatus,
     provider_usage: collector.usage,
     stderr_bytes: collector.stderrBytes,
     stdout_bytes: collector.stdoutBytes,
