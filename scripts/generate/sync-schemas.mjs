@@ -7,6 +7,9 @@ import {
   renderAcrSchemaJson,
   renderAgentPlaneRunnerHandoffSchemaJson,
   renderAgentplaneConfigSchemaJson,
+  renderWorkflowFrontMatterSchemaJson,
+  renderWorkflowV1FrontMatterFixtureJson,
+  renderWorkflowV2FrontMatterFixtureJson,
   renderTaskHandoffSchemaJson,
   renderTaskObservationSchemaJson,
   renderTaskPrMetaSchemaJson,
@@ -17,6 +20,7 @@ import {
 const GENERATED_RUNTIME_SCHEMAS = [
   "acr-v0.1.schema.json",
   "config.schema.json",
+  "workflow.schema.json",
   "task-readme-frontmatter.schema.json",
   "tasks-export.schema.json",
   "pr-meta.schema.json",
@@ -34,7 +38,7 @@ const STATIC_CONTEXT_SCHEMAS = [
   "context-provenance-edge.schema.json",
 ];
 
-const ROOT_ONLY_PUBLIC_SCHEMAS = ["recipe-manifest.schema.json", "workflow.schema.json"];
+const ROOT_ONLY_PUBLIC_SCHEMAS = ["recipe-manifest.schema.json"];
 
 const main = defineScript({
   name: "sync-schemas",
@@ -63,6 +67,21 @@ const main = defineScript({
         label: "config schema",
         rendered: renderAgentplaneConfigSchemaJson(),
         targets: schemaTargets("config.schema.json"),
+      },
+      {
+        label: "workflow schema",
+        rendered: renderWorkflowFrontMatterSchemaJson(),
+        targets: schemaTargets("workflow.schema.json"),
+      },
+      {
+        label: "workflow v1 fixture",
+        rendered: renderWorkflowV1FrontMatterFixtureJson(),
+        targets: [path.join(repoRoot, "packages", "spec", "examples", "workflow-v1.json")],
+      },
+      {
+        label: "workflow v2 fixture",
+        rendered: renderWorkflowV2FrontMatterFixtureJson(),
+        targets: [path.join(repoRoot, "packages", "spec", "examples", "workflow-v2.json")],
       },
       {
         label: "task README frontmatter schema",
@@ -170,7 +189,7 @@ function assertSchemaInventory(repoRoot) {
     throw new Error(
       [
         "schema source-of-truth inventory is invalid.",
-        "Contract: runtime schemas are generated into root/spec/core; context schemas are static spec->core; recipe/workflow schemas are root-only public schemas.",
+        "Contract: runtime schemas are generated into root/spec/core; context schemas are static spec->core; the recipe schema is root-only.",
         ...errors,
       ].join("\n"),
     );

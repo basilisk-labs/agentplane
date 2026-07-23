@@ -10,6 +10,8 @@ const EXAMPLE_ROUTES = [
   ["task-handoff.json", "task-handoff.schema.json"],
   ["task-readme-frontmatter.json", "task-readme-frontmatter.schema.json"],
   ["tasks.json", "tasks-export.schema.json"],
+  ["workflow-v1.json", "workflow.schema.json"],
+  ["workflow-v2.json", "workflow.schema.json"],
 ];
 
 const repoRoot = process.cwd();

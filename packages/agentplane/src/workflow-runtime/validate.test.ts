@@ -106,4 +106,46 @@ x
     });
     expect(renderWorkflowDiagnostic(typeDiagnostic!)).toContain("Stop condition:");
   });
+
+  it("rejects unsupported future versions explicitly", () => {
+    const parsed = parseWorkflowMarkdown(`---
+version: 3
+workflow:
+  mode: direct
+owners:
+  orchestrator: ORCHESTRATOR
+approvals:
+  require_plan: true
+  require_verify: true
+  require_network: true
+retry_policy:
+  normal_exit_continuation: true
+  abnormal_backoff: exponential
+  max_attempts: 5
+timeouts:
+  stall_seconds: 900
+in_scope_paths:
+  - "**"
+---
+
+## Prompt Template
+Hi
+
+## Checks
+- preflight
+
+## Fallback
+x
+`);
+
+    const result = validateWorkflowDocument(parsed.document);
+
+    expect(result.ok).toBe(false);
+    expect(result.diagnostics).toContainEqual(
+      expect.objectContaining({
+        code: "WF_UNSUPPORTED_VERSION",
+        path: "front_matter.version",
+      }),
+    );
+  });
 });

@@ -1,9 +1,8 @@
 import fs from "node:fs/promises";
-import path from "node:path";
-import { loadConfig } from "@agentplaneorg/core/config";
 
 import {
   emitWorkflowEvent,
+  publishWorkflowCandidate,
   resolveWorkflowPaths,
   safeAutofixWorkflowText,
   validateWorkflowAtPath,
@@ -31,15 +30,16 @@ export async function safeFixWorkflow(
     return { changed: false, note: "Skip: workflow contract file not found." };
   }
 
-  const loaded = await loadConfig(path.join(repoRoot, ".agentplane"));
-  const fixed = safeAutofixWorkflowText(current, {
-    mode: loaded.config.workflow_mode,
-    approvals: {
-      require_plan: loaded.config.agents?.approvals?.require_plan ?? true,
-      require_verify: loaded.config.agents?.approvals?.require_verify ?? true,
-      require_network: loaded.config.agents?.approvals?.require_network ?? true,
-    },
-  });
+  const fixed = safeAutofixWorkflowText(current);
+  const unsupportedVersion = fixed.diagnostics.find(
+    (diagnostic) => diagnostic.code === "WF_UNSUPPORTED_VERSION",
+  );
+  if (unsupportedVersion) {
+    return {
+      changed: false,
+      note: `Skip: ${unsupportedVersion.message}`,
+    };
+  }
   if (fixed.diagnostics.some((d) => d.code === "WF_FIX_SKIPPED_UNSAFE")) {
     const details = fixed.diagnostics.map((d) => `${d.path}`).join(", ");
     return {
@@ -51,10 +51,13 @@ export async function safeFixWorkflow(
     return { changed: false, note: "OK: workflow contract already normalized." };
   }
 
-  await fs.mkdir(path.dirname(paths.workflowPath), { recursive: true });
-  await fs.writeFile(paths.workflowPath, fixed.text, "utf8");
-  await fs.mkdir(paths.workflowDir, { recursive: true });
-  await fs.copyFile(paths.workflowPath, paths.lastKnownGoodPath);
+  const published = await publishWorkflowCandidate(repoRoot, fixed.text);
+  if (!published.ok) {
+    return {
+      changed: false,
+      note: "Skip: normalized workflow candidate failed contract validation.",
+    };
+  }
   return {
     changed: true,
     note: "Fixed: normalized workflow contract and refreshed last-known-good.",

@@ -17,6 +17,7 @@ import {
   workflowSyncSpec,
 } from "../../../commands/workflow-playbook.spec.js";
 import { workflowRestoreSpec } from "../../../commands/workflow-restore.command.js";
+import { workflowMigrateSpec } from "../../../commands/workflow-migrate.command.js";
 import { incidentsAdviseSpec } from "../../../commands/incidents/advise.command.js";
 import { incidentsCollectSpec } from "../../../commands/incidents/collect.command.js";
 import { incidentsSpec } from "../../../commands/incidents/incidents.command.js";
@@ -68,6 +69,7 @@ import {
   fromCommandsWorkflowCommand,
   fromCommandsWorkflowBuildCommand,
   fromCommandsWorkflowRestoreCommand,
+  fromCommandsWorkflowMigrateCommand,
   fromCommandsWorkflowPlaybookCommand,
   loadCodexPluginInstallSpec,
   loadIncidentsCollectSpec,
@@ -209,6 +211,9 @@ export const CORE_COMMANDS = [
     needs: "project",
     surface: "framework",
     helpGroup: "Framework Dev",
+  }),
+  fromCommandsWorkflowMigrateCommand(workflowMigrateSpec, "runWorkflowMigrate", {
+    needs: "project",
   }),
   fromCommandsWorkflowPlaybookCommand(workflowDebugSpec, "runWorkflowDebug", {
     needs: "project",

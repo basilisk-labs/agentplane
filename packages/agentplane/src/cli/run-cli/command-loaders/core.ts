@@ -50,6 +50,9 @@ export const fromCommandsWorkflowBuildCommand = commandModule(
 export const fromCommandsWorkflowRestoreCommand = commandModule(
   () => import("../../../commands/workflow-restore.command.js"),
 );
+export const fromCommandsWorkflowMigrateCommand = commandModule(
+  () => import("../../../commands/workflow-migrate.command.js"),
+);
 export const fromCommandsWorkflowPlaybookCommand = commandModule(
   () => import("../../../commands/workflow-playbook.command.js"),
 );

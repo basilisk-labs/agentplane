@@ -109,7 +109,10 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const efficiency = await runNode([EFFICIENCY_CHECK]);
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("243commands/165args/767options");
+      expect(compatibility.stdout).toContain("244commands/165args/769options");
+      expect(compatibility.stdout).toContain(
+        "candidate=approved:agentplane.compatibility.v0.7.workflow-contract",
+      );
       expect(compatibility.stdout).toContain("surface:agent_facing_context_contracts");
       expect(efficiency).toMatchObject({ exitCode: 0, stderr: "" });
       expect(efficiency.stdout).toContain("10 RF-04 scenarios");

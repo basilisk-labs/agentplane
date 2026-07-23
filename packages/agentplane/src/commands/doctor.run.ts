@@ -26,6 +26,53 @@ import {
 export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
   const repoRoot = resolved.gitRoot;
+
+  const reportProgress = (message: string): void => {
+    process.stderr.write(`${infoMessage(`doctor: ${message}`)}\n`);
+  };
+
+  if (isWorkflowEnforcementDisabled()) {
+    process.stdout.write(
+      `${successMessage(
+        "doctor",
+        undefined,
+        `workflow contract checks disabled via ${workflowEnforcementEnvHint()}.`,
+      )}\n`,
+    );
+  }
+
+  if (p.fix) {
+    const fix = await safeFixGitignore(repoRoot);
+    process.stdout.write(`${successMessage("doctor fix", undefined, fix.note)}\n`);
+    const idx = await safeFixTaskIndex(repoRoot);
+    process.stdout.write(`${successMessage("doctor fix", undefined, idx.note)}\n`);
+    const workflowFix = await safeFixWorkflow(repoRoot);
+    process.stdout.write(`${successMessage("doctor fix", undefined, workflowFix.note)}\n`);
+    const hooksFix = await safeFixManagedHooks(repoRoot);
+    process.stdout.write(`${successMessage("doctor fix", undefined, hooksFix.note)}\n`);
+  }
+
+  const workflowProblems: string[] = [];
+  if (!isWorkflowEnforcementDisabled()) {
+    reportProgress("checking workflow contract");
+    workflowProblems.push(...(await checkWorkflowContract(repoRoot)));
+    const workflowErrors = workflowProblems.filter(
+      (problem) => findingSeverity(problem) === "ERROR",
+    );
+    if (workflowErrors.length > 0) {
+      const warningCount = workflowProblems.filter(
+        (problem) => findingSeverity(problem) === "WARN",
+      ).length;
+      process.stderr.write(
+        `${warnMessage(
+          `doctor findings: errors=${workflowErrors.length} warnings=${warningCount} info=0`,
+        )}\n`,
+      );
+      for (const problem of workflowProblems) process.stderr.write(`- ${problem}\n`);
+      return 1;
+    }
+  }
+
   const loadedConfig = await loadConfig(resolved.agentplaneDir);
   const commandCtx = await loadCommandContext({
     cwd: ctx.cwd,
@@ -33,10 +80,6 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
     resolvedProject: resolved,
     config: loadedConfig.config,
   });
-
-  const reportProgress = (message: string): void => {
-    process.stderr.write(`${infoMessage(`doctor: ${message}`)}\n`);
-  };
 
   const runChecks = async (): Promise<string[]> => {
     const checks: string[] = [];
@@ -63,10 +106,6 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
         fullArchive: p.archiveFull,
       })),
     );
-    if (!isWorkflowEnforcementDisabled()) {
-      reportProgress("checking workflow contract");
-      checks.push(...(await checkWorkflowContract(repoRoot)));
-    }
     if (p.dev) {
       reportProgress("checking source layering");
       checks.push(...(await checkLayering(repoRoot)));
@@ -74,28 +113,7 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
     return checks;
   };
 
-  if (isWorkflowEnforcementDisabled()) {
-    process.stdout.write(
-      `${successMessage(
-        "doctor",
-        undefined,
-        `workflow contract checks disabled via ${workflowEnforcementEnvHint()}.`,
-      )}\n`,
-    );
-  }
-
-  if (p.fix) {
-    const fix = await safeFixGitignore(repoRoot);
-    process.stdout.write(`${successMessage("doctor fix", undefined, fix.note)}\n`);
-    const idx = await safeFixTaskIndex(repoRoot);
-    process.stdout.write(`${successMessage("doctor fix", undefined, idx.note)}\n`);
-    const workflowFix = await safeFixWorkflow(repoRoot);
-    process.stdout.write(`${successMessage("doctor fix", undefined, workflowFix.note)}\n`);
-    const hooksFix = await safeFixManagedHooks(repoRoot);
-    process.stdout.write(`${successMessage("doctor fix", undefined, hooksFix.note)}\n`);
-  }
-
-  const problems = await runChecks();
+  const problems = [...workflowProblems, ...(await runChecks())];
   const errors = problems.filter((problem) => findingSeverity(problem) === "ERROR");
   if (problems.length > 0) {
     const warningCount = problems.filter((problem) => findingSeverity(problem) === "WARN").length;

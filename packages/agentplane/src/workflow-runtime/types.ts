@@ -1,32 +1,10 @@
-export type WorkflowMode = "direct" | "branch_pr";
+import type { WorkflowV2FrontMatter } from "@agentplaneorg/core/config";
 
-export type WorkflowApprovals = {
-  require_plan: boolean;
-  require_verify: boolean;
-  require_network: boolean;
-};
-
-export type WorkflowRetryPolicy = {
-  normal_exit_continuation: boolean;
-  abnormal_backoff: "exponential";
-  max_attempts: number;
-};
-
-export type WorkflowTimeouts = {
-  stall_seconds: number;
-};
-
-export type WorkflowFrontMatter = {
-  version: number;
-  mode: WorkflowMode;
-  owners: {
-    orchestrator: string;
-  };
-  approvals: WorkflowApprovals;
-  retry_policy: WorkflowRetryPolicy;
-  timeouts: WorkflowTimeouts;
-  in_scope_paths: string[];
-};
+export type WorkflowMode = WorkflowV2FrontMatter["workflow"]["mode"];
+export type WorkflowApprovals = WorkflowV2FrontMatter["approvals"];
+export type WorkflowRetryPolicy = WorkflowV2FrontMatter["retry_policy"];
+export type WorkflowTimeouts = WorkflowV2FrontMatter["timeouts"];
+export type WorkflowFrontMatter = WorkflowV2FrontMatter;
 
 export type WorkflowSectionName = "Prompt Template" | "Checks" | "Fallback";
 
@@ -53,6 +31,7 @@ export type WorkflowErrorCode =
   | "WF_SCHEMA_ENUM"
   | "WF_SCHEMA_RANGE"
   | "WF_SCHEMA_UNKNOWN_KEY"
+  | "WF_UNSUPPORTED_VERSION"
   | "WF_REQUIRED_SECTION_MISSING"
   | "WF_TEMPLATE_UNKNOWN_VARIABLE"
   | "WF_TEMPLATE_UNKNOWN_FILTER"

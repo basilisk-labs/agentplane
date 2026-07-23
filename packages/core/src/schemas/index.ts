@@ -9,6 +9,13 @@ export {
 } from "../config/index.js";
 
 export {
+  WORKFLOW_FRONT_MATTER_JSON_SCHEMA,
+  renderWorkflowFrontMatterSchemaJson,
+  renderWorkflowV1FrontMatterFixtureJson,
+  renderWorkflowV2FrontMatterFixtureJson,
+} from "../config/workflow-contract.js";
+
+export {
   ACR_VERSION,
   computeAcrRecordDigest,
   listAgentPlaneRunnerHandoffJsonSchemaErrors,

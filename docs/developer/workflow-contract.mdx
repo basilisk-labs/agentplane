@@ -5,9 +5,14 @@ description: "Formal contract for .agentplane/WORKFLOW.md: schema, required sect
 
 ## Scope
 
-This contract defines the required format for `.agentplane/WORKFLOW.md` used by the workflow runtime.
+This contract defines the versioned format for `.agentplane/WORKFLOW.md` used by the workflow runtime.
 
-- Front matter schema source: `schemas/workflow.schema.json`
+- Zod source of truth: `packages/core/src/config/workflow-contract.ts`
+- Generated public schema: `schemas/workflow.schema.json`
+- Published schema copies: `packages/core/schemas/workflow.schema.json` and
+  `packages/spec/schemas/workflow.schema.json`
+- Canonical fixtures: `packages/spec/examples/workflow-v1.json` and
+  `packages/spec/examples/workflow-v2.json`
 - Prompt body is required and interpreted as a template.
 
 This is the active contract used by `agentplane init`, `agentplane workflow build`, `agentplane workflow restore`, `agentplane doctor`, and `agentplane preflight`.
@@ -33,12 +38,17 @@ This is the active contract used by `agentplane init`, `agentplane workflow buil
 
 If front matter exists but does not decode into a map/object, the file is invalid.
 
-## Required front matter keys
+## Supported versions
 
-Required keys and constraints:
+The runtime accepts exactly two input shapes and normalizes both to v2 before use:
 
-- `version`: integer, `>= 1`
-- `mode`: `direct | branch_pr`
+- v1 uses the flat `mode` field.
+- v2 uses `workflow.mode` and is the canonical persisted form.
+- Any other integer version, including a future version greater than 2, fails with
+  `WF_UNSUPPORTED_VERSION`. Writers must not silently downgrade or overwrite it.
+
+Both versions require:
+
 - `owners.orchestrator`: non-empty string
 - `approvals.require_plan`: boolean
 - `approvals.require_verify`: boolean
@@ -49,7 +59,14 @@ Required keys and constraints:
 - `timeouts.stall_seconds`: integer in `[1, 86400]`
 - `in_scope_paths`: non-empty array of non-empty strings
 
-Additional keys are disallowed by default (`additionalProperties: false`).
+The version-specific mode key is required:
+
+- v1: `mode: direct | branch_pr`
+- v2: `workflow.mode: direct | branch_pr`
+
+Unknown root keys are rejected. Selected v2 sections such as `workflow`, `workspace`, `tasks`,
+`scheduler`, `evaluator`, and `observability` allow extension fields so supported writers can retain
+them without data loss.
 
 ## Failure behavior
 
@@ -62,12 +79,19 @@ Invalid `.agentplane/WORKFLOW.md` must fail validation with explicit diagnostics
 - missing required body section
 - malformed/empty prompt template (runtime strict template checks are enforced in later tasks)
 
-Runtime behavior:
+Existing non-migration writers and the restore helper do not define the versioned migration
+contract:
 
-- candidate with any `ERROR` diagnostics is rejected,
-- active `.agentplane/WORKFLOW.md` is published atomically (`tmp + rename`),
-- `.agentplane/workflows/last-known-good.md` is refreshed only after successful publish,
-- `agentplane workflow restore` recovers from `last-known-good`.
+- `publishWorkflowCandidate` rejects candidates with any `ERROR` diagnostics, atomically replaces
+  the active workflow (`tmp + rename`), then copies it to `last-known-good`;
+- `writeWorkflowConfigRaw` atomically replaces the active workflow first and `last-known-good`
+  second;
+- neither two-file sequence is a multi-file atomic transaction or receipt-backed operation;
+- `restoreWorkflowFromLastKnownGood` validates `last-known-good`, then atomically replaces only the
+  active workflow.
+
+Migration and receipt rollback instead use the `receipt -> last-known-good -> active` commit-point
+ordering described below.
 
 ## Reason code contract
 
@@ -102,15 +126,54 @@ Versioning policy:
 
 Compatibility guarantees:
 
-- A runtime supporting `version = N` must reject unsupported future versions explicitly.
-- Migrations from older versions should be deterministic and idempotent.
+- v1 remains readable during the compatibility window and has the same normalized meaning as its
+  v2 migration result.
+- Supported writers persist canonical v2 and preserve v2-only and extension fields.
+- Unsupported versions are rejected before config, build, doctor/fix, restore, or upgrade writers
+  can overwrite them.
+- The v1-to-v2 migration is deterministic, idempotent, and has an exact-byte rollback receipt.
+
+Generate or verify schema copies and fixtures with:
+
+```bash
+bun run schemas:sync
+bun run schemas:check
+```
+
+## Migration contract
+
+Preview the canonical v2 candidate without writing files:
+
+```bash
+agentplane workflow migrate --dry-run
+```
+
+Apply the migration with receipt-backed recovery. The receipt and last-known-good target are
+persisted first; each file uses atomic replacement, and the active workflow is replaced last as the
+commit point. This is not a multi-file atomic transaction:
+
+```bash
+agentplane workflow migrate
+```
+
+Re-running the command on v2 is a no-op. Roll back only while the active workflow still matches the
+receipt target hash:
+
+```bash
+agentplane workflow migrate \
+  --rollback .agentplane/workflows/migrations/workflow-v1-to-v2-<digest>.json
+```
+
+Rollback prepares the exact source as last-known-good first, then atomically replaces the active
+workflow as its commit point.
 
 ## Canonical valid example
 
 ```md
 ---
-version: 1
-mode: direct
+version: 2
+workflow:
+  mode: direct
 owners:
   orchestrator: ORCHESTRATOR
 approvals:
@@ -146,8 +209,9 @@ last_known_good: .agentplane/workflows/last-known-good.md
 
 ```md
 ---
-version: "1"
-mode: fast
+version: 3
+workflow:
+  mode: fast
 owners:
   orchestrator: ""
 approvals:
@@ -168,8 +232,8 @@ This section name is invalid for the contract.
 
 Why invalid:
 
-- `version` must be integer
-- `mode` enum mismatch
+- `version` is unsupported; only 1 and 2 are accepted
+- `workflow.mode` enum mismatch
 - empty `owners.orchestrator`
 - `approvals.require_plan` must be boolean
 - missing `approvals.require_verify` and `approvals.require_network`

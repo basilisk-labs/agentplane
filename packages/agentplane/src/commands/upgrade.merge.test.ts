@@ -5,6 +5,8 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { createUpgradeBundle, mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
+import { defaultConfig } from "@agentplaneorg/core/config";
+import { persistUpgradeState } from "./upgrade/apply.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
 
 const execFileAsync = promisify(execFile);
@@ -17,6 +19,10 @@ describe("upgrade merge behavior", () => {
     // Existing workflow config should not be overwritten by upgrade bundle.
     const workflowPath = path.join(root, ".agentplane", "WORKFLOW.md");
     const originalWorkflow = await readFile(workflowPath, "utf8");
+    const customizedWorkflow = originalWorkflow
+      .replace("workflow:\n", "workflow:\n  upgrade_extension: keep-workflow\n")
+      .replace("## Checks", "Upgrade body marker\n\n## Checks");
+    await writeFile(workflowPath, customizedWorkflow, "utf8");
 
     // Existing AGENTS.md with local-only edits.
     const agentsPath = path.join(root, "AGENTS.md");
@@ -113,6 +119,8 @@ describe("upgrade merge behavior", () => {
     expect(finalWorkflow).not.toContain('"ignored"');
     expect(finalWorkflow).toContain("version:");
     expect(finalWorkflow).toContain("workflow:");
+    expect(finalWorkflow).toContain('upgrade_extension: "keep-workflow"');
+    expect(finalWorkflow).toContain("Upgrade body marker");
     expect(originalWorkflow).toContain("workflow:");
 
     const { stdout: commitBodyOut } = await execFileAsync("git", ["log", "-1", "--pretty=%B"], {
@@ -122,6 +130,42 @@ describe("upgrade merge behavior", () => {
     expect(commitBody).toContain("upgrade: apply framework");
     expect(commitBody).toContain("Upgrade-Version:");
   }, 60_000);
+
+  it("refuses to persist upgrade state over an unsupported future workflow", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const agentplaneDir = path.join(root, ".agentplane");
+    const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
+    const futureWorkflow = (await readFile(workflowPath, "utf8")).replace(
+      "version: 2",
+      "version: 3",
+    );
+    await writeFile(workflowPath, futureWorkflow, "utf8");
+
+    const upgradeStateDir = path.join(agentplaneDir, ".upgrade");
+    await mkdir(upgradeStateDir, { recursive: true });
+    const statePath = path.join(upgradeStateDir, "state.json");
+
+    await expect(
+      persistUpgradeState({
+        agentplaneDir,
+        rawConfig: defaultConfig() as unknown as Record<string, unknown>,
+        normalizedSourceToPersist: null,
+        expectedCliVersionToPersist: null,
+        hasManagedMutations: true,
+        statePath,
+        upgradeStateDir,
+        source: "upgrade_bundle",
+        reviewRecords: [],
+        additions: 0,
+        updates: 1,
+        skipped: 0,
+      }),
+    ).rejects.toMatchObject({ code: "WF_UNSUPPORTED_VERSION", version: 3 });
+
+    await expect(readFile(workflowPath, "utf8")).resolves.toBe(futureWorkflow);
+    await expect(readFile(statePath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+  });
 
   it("records equality when baseline differs but current equals incoming", async () => {
     const root = await mkGitRepoRoot();

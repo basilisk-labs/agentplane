@@ -1,6 +1,10 @@
+import {
+  UnsupportedWorkflowVersionError,
+  safeParseWorkflowFrontMatter,
+} from "@agentplaneorg/core/config";
+
 import { parseWorkflowMarkdown, serializeWorkflowMarkdown } from "./markdown.js";
-import type { WorkflowDiagnostic, WorkflowFrontMatter } from "./types.js";
-import { isRecord } from "../shared/guards.js";
+import type { WorkflowDiagnostic } from "./types.js";
 
 type WorkflowFixResult = {
   changed: boolean;
@@ -17,82 +21,25 @@ type ExpectedWorkflowPolicy = {
   };
 };
 
-const DEFAULT_FRONT_MATTER: WorkflowFrontMatter = {
-  version: 1,
-  mode: "direct",
-  owners: { orchestrator: "ORCHESTRATOR" },
-  approvals: {
-    require_plan: true,
-    require_verify: true,
-    require_network: true,
-  },
-  retry_policy: {
-    normal_exit_continuation: true,
-    abnormal_backoff: "exponential",
-    max_attempts: 5,
-  },
-  timeouts: {
-    stall_seconds: 900,
-  },
-  in_scope_paths: ["**"],
-};
-
-function withDefaults(raw: Record<string, unknown>): Record<string, unknown> {
-  const out: Record<string, unknown> = { ...raw };
-
-  if (typeof out.version !== "number" || !Number.isInteger(out.version) || out.version < 1) {
-    out.version = 1;
+function unsafeFixDiagnostics(error: unknown): WorkflowDiagnostic[] {
+  if (error instanceof UnsupportedWorkflowVersionError) {
+    return [
+      {
+        code: "WF_UNSUPPORTED_VERSION",
+        severity: "ERROR",
+        path: "front_matter.version",
+        message: error.message,
+      },
+    ];
   }
-
-  if (out.mode !== "direct" && out.mode !== "branch_pr") {
-    out.mode = DEFAULT_FRONT_MATTER.mode;
-  }
-
-  const owners = isRecord(out.owners) ? { ...out.owners } : {};
-  if (typeof owners.orchestrator !== "string" || owners.orchestrator.trim().length === 0) {
-    owners.orchestrator = DEFAULT_FRONT_MATTER.owners.orchestrator;
-  }
-  out.owners = owners;
-
-  const approvals = isRecord(out.approvals) ? { ...out.approvals } : {};
-  for (const key of ["require_plan", "require_verify", "require_network"] as const) {
-    if (typeof approvals[key] !== "boolean") approvals[key] = DEFAULT_FRONT_MATTER.approvals[key];
-  }
-  out.approvals = approvals;
-
-  const retryPolicy = isRecord(out.retry_policy) ? { ...out.retry_policy } : {};
-  if (typeof retryPolicy.normal_exit_continuation !== "boolean") {
-    retryPolicy.normal_exit_continuation =
-      DEFAULT_FRONT_MATTER.retry_policy.normal_exit_continuation;
-  }
-  if (retryPolicy.abnormal_backoff !== "exponential") {
-    retryPolicy.abnormal_backoff = DEFAULT_FRONT_MATTER.retry_policy.abnormal_backoff;
-  }
-  if (
-    typeof retryPolicy.max_attempts !== "number" ||
-    !Number.isInteger(retryPolicy.max_attempts) ||
-    retryPolicy.max_attempts < 1
-  ) {
-    retryPolicy.max_attempts = DEFAULT_FRONT_MATTER.retry_policy.max_attempts;
-  }
-  out.retry_policy = retryPolicy;
-
-  const timeouts = isRecord(out.timeouts) ? { ...out.timeouts } : {};
-  if (
-    typeof timeouts.stall_seconds !== "number" ||
-    !Number.isInteger(timeouts.stall_seconds) ||
-    timeouts.stall_seconds < 1
-  ) {
-    timeouts.stall_seconds = DEFAULT_FRONT_MATTER.timeouts.stall_seconds;
-  }
-  out.timeouts = timeouts;
-
-  const inScope = Array.isArray(out.in_scope_paths)
-    ? out.in_scope_paths.filter((v) => typeof v === "string" && v.trim().length > 0)
-    : [];
-  out.in_scope_paths = inScope.length > 0 ? inScope : DEFAULT_FRONT_MATTER.in_scope_paths;
-
-  return out;
+  return [
+    {
+      code: "WF_FIX_SKIPPED_UNSAFE",
+      severity: "WARN",
+      path: "front_matter",
+      message: "Unsafe workflow autofix skipped because front matter is not a valid v1/v2 input.",
+    },
+  ];
 }
 
 export function safeAutofixWorkflowText(
@@ -100,42 +47,27 @@ export function safeAutofixWorkflowText(
   expectedPolicy?: ExpectedWorkflowPolicy,
 ): WorkflowFixResult {
   const parsed = parseWorkflowMarkdown(text);
-  const diagnostics: WorkflowDiagnostic[] = [];
-  const unknownKeyDiagnostics = Object.keys(parsed.document.frontMatterRaw)
-    .filter(
-      (key) =>
-        ![
-          "version",
-          "mode",
-          "owners",
-          "approvals",
-          "retry_policy",
-          "timeouts",
-          "in_scope_paths",
-        ].includes(key),
-    )
-    .map<WorkflowDiagnostic>((key) => ({
-      code: "WF_FIX_SKIPPED_UNSAFE",
-      severity: "WARN",
-      path: `front_matter.${key}`,
-      message: `Unsafe autofix skipped for unknown key: ${key}`,
-    }));
-
-  diagnostics.push(...unknownKeyDiagnostics);
-
-  if (unknownKeyDiagnostics.length > 0) {
-    return { changed: false, text, diagnostics };
-  }
-
-  const nextFrontMatter = withDefaults(parsed.document.frontMatterRaw);
-  if (expectedPolicy) {
-    nextFrontMatter.mode = expectedPolicy.mode;
-    nextFrontMatter.approvals = {
-      require_plan: expectedPolicy.approvals.require_plan,
-      require_verify: expectedPolicy.approvals.require_verify,
-      require_network: expectedPolicy.approvals.require_network,
+  const normalized = safeParseWorkflowFrontMatter(parsed.document.frontMatterRaw);
+  if (!normalized.success) {
+    return {
+      changed: false,
+      text,
+      diagnostics: unsafeFixDiagnostics(normalized.error),
     };
   }
+
+  const nextFrontMatter = structuredClone(normalized.data);
+  if (expectedPolicy) {
+    nextFrontMatter.workflow = {
+      ...nextFrontMatter.workflow,
+      mode: expectedPolicy.mode,
+    };
+    nextFrontMatter.approvals = {
+      ...nextFrontMatter.approvals,
+      ...expectedPolicy.approvals,
+    };
+  }
+
   const sections = {
     ...parsed.document.sections,
     "Prompt Template": parsed.document.sections["Prompt Template"] ?? "",
@@ -144,11 +76,10 @@ export function safeAutofixWorkflowText(
       parsed.document.sections.Fallback ??
       "last_known_good: .agentplane/workflows/last-known-good.md",
   };
-
   const nextText = serializeWorkflowMarkdown(nextFrontMatter, sections);
   return {
     changed: nextText !== text,
     text: nextText,
-    diagnostics,
+    diagnostics: [],
   };
 }

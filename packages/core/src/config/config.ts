@@ -13,6 +13,28 @@ export {
   type WorkflowMarkdown,
 } from "./workflow-file.js";
 
+export {
+  SUPPORTED_WORKFLOW_VERSIONS,
+  WORKFLOW_CONTRACT_VERSION,
+  WORKFLOW_FRONT_MATTER_JSON_SCHEMA,
+  WORKFLOW_V1_FRONT_MATTER_FIXTURE,
+  WORKFLOW_V2_FRONT_MATTER_FIXTURE,
+  WorkflowFrontMatterInputSchema,
+  WorkflowV1FrontMatterSchema,
+  WorkflowV2FrontMatterSchema,
+  UnsupportedWorkflowVersionError,
+  migrateWorkflowFrontMatterV1ToV2,
+  parseWorkflowFrontMatter,
+  renderWorkflowFrontMatterSchemaJson,
+  renderWorkflowV1FrontMatterFixtureJson,
+  renderWorkflowV2FrontMatterFixtureJson,
+  safeParseWorkflowFrontMatter,
+  type WorkflowFrontMatterInput,
+  type WorkflowFrontMatterParseResult,
+  type WorkflowV1FrontMatter,
+  type WorkflowV2FrontMatter,
+} from "./workflow-contract.js";
+
 export type WorkflowMode = AgentplaneConfig["workflow_mode"];
 export type StatusCommitPolicy = AgentplaneConfig["status_commit_policy"];
 export type CommitAutomation = AgentplaneConfig["commit_automation"];
