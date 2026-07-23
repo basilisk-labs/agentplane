@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "kind": "agent_semantic_result",
+  "work_order_id": "work-order-example-001",
+  "status": "completed",
+  "summary": "Implemented the requested semantic change.",
+  "findings": ["The compatibility reader still needs to preserve legacy claims."],
+  "uncertainty": [],
+  "claimed_checks": [
+    {
+      "check": "bun run schemas:check",
+      "claimed_status": "passed",
+      "details": "The agent reports that the schema check passed."
+    }
+  ]
+}

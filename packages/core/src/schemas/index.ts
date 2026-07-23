@@ -16,6 +16,26 @@ export {
 } from "../config/workflow-contract.js";
 
 export {
+  AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_STATUS_VALUES,
+  AGENT_SEMANTIC_RESULT_KIND,
+  AGENT_SEMANTIC_RESULT_SCHEMA_VERSION,
+  AGENT_SEMANTIC_RESULT_STATUS_VALUES,
+  AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
+  AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
+  RUNNER_RESULT_MANIFEST_V1_LEGACY_FIXTURE,
+  listAgentSemanticResultSchemaErrors,
+  renderAgentSemanticResultSchemaJson,
+  renderAgentSemanticResultV2ValidFixtureJson,
+  renderRunnerResultManifestV1LegacyFixtureJson,
+  validateAgentSemanticResult,
+  type AgentSemanticResult,
+  type AgentSemanticResultBlocker,
+  type AgentSemanticResultClaimedCheck,
+  type AgentSemanticResultKnowledgeRequest,
+  type AgentSemanticResultStatus,
+} from "../runner/agent-semantic-result.js";
+
+export {
   ACR_VERSION,
   computeAcrRecordDigest,
   listAgentPlaneRunnerHandoffJsonSchemaErrors,

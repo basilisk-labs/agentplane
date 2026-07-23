@@ -2070,11 +2070,6 @@
           "name": "RUNNER_RESULT_MANIFEST_SCHEMA_VERSION",
           "line": 13,
           "col": 14
-        },
-        {
-          "name": "sourceRunnerResultManifestPath",
-          "line": 25,
-          "col": 17
         }
       ]
     },

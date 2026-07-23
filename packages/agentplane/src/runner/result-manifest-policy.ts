@@ -53,6 +53,32 @@ function isAllowedPath(pathValue: string, allowedPrefixes: string[]): boolean {
   );
 }
 
+function legacyClaimValue(manifest: RunnerResultManifest, field: string): unknown {
+  return manifest.legacy_claims.find((claim) => claim.field === field)?.value;
+}
+
+function legacyArtifactPaths(manifest: RunnerResultManifest): string[] {
+  const value = legacyClaimValue(manifest, "artifacts");
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((entry) => {
+    if (
+      typeof entry === "object" &&
+      entry !== null &&
+      !Array.isArray(entry) &&
+      typeof (entry as Record<string, unknown>).path === "string"
+    ) {
+      return [(entry as Record<string, string>).path];
+    }
+    return [];
+  });
+}
+
+function legacyEvidencePaths(manifest: RunnerResultManifest): string[] {
+  const value = legacyClaimValue(manifest, "evidence.evidence_paths");
+  if (!Array.isArray(value)) return [];
+  return value.filter((entry): entry is string => typeof entry === "string");
+}
+
 export function readRecipeArtifactPrefixesFromRunnerEnv(
   env: Record<string, string> | undefined,
 ): string[] | undefined {
@@ -79,10 +105,10 @@ export function assertRunnerManifestArtifactPolicy(opts: {
   const allowedPrefixes = normalizeRecipeArtifactPrefixes(opts.allowed_prefixes);
   if (allowedPrefixes.length === 0) return;
 
-  const invalidArtifactPaths = (opts.manifest.artifacts ?? [])
-    .map((artifact) => artifact.path)
-    .filter((pathValue) => !isAllowedPath(pathValue, allowedPrefixes));
-  const invalidEvidencePaths = (opts.manifest.evidence?.evidence_paths ?? []).filter(
+  const invalidArtifactPaths = legacyArtifactPaths(opts.manifest).filter(
+    (pathValue) => !isAllowedPath(pathValue, allowedPrefixes),
+  );
+  const invalidEvidencePaths = legacyEvidencePaths(opts.manifest).filter(
     (pathValue) => !isAllowedPath(pathValue, allowedPrefixes),
   );
   if (invalidArtifactPaths.length === 0 && invalidEvidencePaths.length === 0) return;
@@ -99,11 +125,12 @@ export function assertRunnerManifestArtifactPolicy(opts: {
     exitCode: exitCodeForError("E_RUNTIME"),
     code: "E_RUNTIME",
     message:
-      `Runner result manifest reported paths outside recipe writes_artifacts_to prefixes ` +
+      `Legacy agent-reported result paths are outside recipe writes_artifacts_to prefixes ` +
       `(${allowedPrefixes.join(", ")}): ${details.join("; ")}.`,
     context: {
       adapter_id: opts.adapter_id,
       policy_field: "writes_artifacts_to",
+      provenance: "agent_reported",
       declared_value: allowedPrefixes,
       invalid_artifact_paths: invalidArtifactPaths,
       invalid_evidence_paths: invalidEvidencePaths,

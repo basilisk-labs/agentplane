@@ -5,6 +5,8 @@ import { findDriftedRenderedArtifacts, syncRenderedArtifacts } from "../lib/sync
 import { defineScript, parseCheckSyncMode, runScriptMain } from "../lib/script-runtime.mjs";
 
 import {
+  renderAgentSemanticResultSchemaJson,
+  renderAgentSemanticResultV2ValidFixtureJson,
   renderAcrSchemaJson,
   renderAgentPlaneRunnerHandoffSchemaJson,
   renderAgentplaneConfigSchemaJson,
@@ -16,6 +18,7 @@ import {
   renderTaskPrMetaSchemaJson,
   renderTaskReadmeFrontmatterSchemaJson,
   renderTasksExportSchemaJson,
+  renderRunnerResultManifestV1LegacyFixtureJson,
 } from "../../packages/core/src/schemas/index.ts";
 
 const GENERATED_RUNTIME_SCHEMAS = [
@@ -39,7 +42,15 @@ const STATIC_CONTEXT_SCHEMAS = [
   "context-provenance-edge.schema.json",
 ];
 
-const ROOT_ONLY_PUBLIC_SCHEMAS = ["recipe-manifest.schema.json"];
+const ROOT_ONLY_PUBLIC_SCHEMAS = [
+  "agent-semantic-result.schema.json",
+  "recipe-manifest.schema.json",
+];
+
+const ROOT_ONLY_PUBLIC_EXAMPLES = [
+  "agent-semantic-result-v2.valid.json",
+  "runner-result-manifest-v1.legacy.json",
+];
 
 const main = defineScript({
   name: "sync-schemas",
@@ -114,6 +125,25 @@ const main = defineScript({
         rendered: renderTaskObservationSchemaJson(),
         targets: schemaTargets("task-observation.schema.json"),
       },
+      {
+        label: "agent semantic result schema",
+        rendered: renderAgentSemanticResultSchemaJson(),
+        targets: [path.join(repoRoot, "schemas", "agent-semantic-result.schema.json")],
+      },
+      {
+        label: "agent semantic result v2 valid example",
+        rendered: renderAgentSemanticResultV2ValidFixtureJson(),
+        targets: [
+          path.join(repoRoot, "schemas", "examples", "agent-semantic-result-v2.valid.json"),
+        ],
+      },
+      {
+        label: "runner result manifest v1 legacy example",
+        rendered: renderRunnerResultManifestV1LegacyFixtureJson(),
+        targets: [
+          path.join(repoRoot, "schemas", "examples", "runner-result-manifest-v1.legacy.json"),
+        ],
+      },
       ...STATIC_CONTEXT_SCHEMAS.map((fileName) => ({
         label: `context schema ${fileName}`,
         rendered: readFileSync(
@@ -161,6 +191,7 @@ runScriptMain(main);
 function assertSchemaInventory(repoRoot) {
   const expectedByDir = new Map([
     ["schemas", [...GENERATED_RUNTIME_SCHEMAS, ...ROOT_ONLY_PUBLIC_SCHEMAS]],
+    ["schemas/examples", ROOT_ONLY_PUBLIC_EXAMPLES],
     ["packages/spec/schemas", [...GENERATED_RUNTIME_SCHEMAS, ...STATIC_CONTEXT_SCHEMAS]],
     ["packages/core/schemas", [...GENERATED_RUNTIME_SCHEMAS, ...STATIC_CONTEXT_SCHEMAS]],
   ]);

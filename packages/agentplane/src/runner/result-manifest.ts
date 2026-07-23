@@ -1,30 +1,26 @@
 import { readFile } from "node:fs/promises";
+import path from "node:path";
 
-import { isRecord } from "../shared/guards.js";
+import { AGENT_SEMANTIC_RESULT_ZOD_SCHEMA } from "@agentplaneorg/core/schemas";
 import type {
-  RunnerResultEvidence,
-  RunnerExecutionMetrics,
-  RunnerResultArtifact,
+  AgentReportedLegacyClaim,
+  LegacyAgentSemanticResult,
   RunnerResultManifest,
-  RunnerResultStatus,
-  RunnerTimeoutReason,
+  RunnerResultManifestWarning,
 } from "./types.js";
 
-export const RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 1 as const;
+export const RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 2 as const;
+const LEGACY_RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 1 as const;
+
 export {
   applyRunnerResultManifest,
   invalidRunnerResultManifestPath,
-  manifestFromRunnerResult,
   preserveInvalidRunnerResultManifest,
   preserveRunnerResultManifestSource,
+  runnerResultRecordFromRunnerResult,
   salvageBlockedRunnerResultManifest,
-  writeRunnerResultManifest,
+  writeRunnerResultRecord,
 } from "./result-manifest-artifacts.js";
-import { sourceRunnerResultManifestPath as resolveSourceRunnerResultManifestPath } from "./result-manifest-artifacts.js";
-
-export function sourceRunnerResultManifestPath(resultPath: string): string {
-  return resolveSourceRunnerResultManifestPath(resultPath);
-}
 
 export class InvalidRunnerResultManifestError extends Error {
   readonly result_path: string;
@@ -48,194 +44,228 @@ function invalidManifest(resultPath: string, reason: string, rawContent: string)
   });
 }
 
-const MACHINE_IDENTIFIER_RE = /^[a-z0-9]+(?:[._:-][a-z0-9]+)*$/;
-const MACHINE_IDENTIFIER_MAX_LENGTH = 64;
-
-function normalizeStringArray(value: unknown): string[] | undefined {
-  if (!Array.isArray(value)) return undefined;
-  const entries = value.map((entry) => {
-    if (typeof entry !== "string") {
-      throw new Error("entries must be strings");
-    }
-    const normalized = entry.trim();
-    if (!normalized) {
-      throw new Error("entries must be non-empty strings");
-    }
-    return normalized;
-  });
-  return entries.length > 0 ? entries : undefined;
+function isJsonObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function normalizeMachineIdentifier(value: unknown, field: string): string {
-  if (typeof value !== "string") {
-    throw new Error(`${field} must be a non-empty string`);
+function normalizedOptionalString(
+  value: unknown,
+  field: string,
+  resultPath: string,
+  rawContent: string,
+): string | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value !== "string" || value.trim().length === 0) {
+    invalidManifest(resultPath, `${field} must be a non-empty string when present`, rawContent);
   }
-  const normalized = value.trim();
-  if (!normalized) {
-    throw new Error(`${field} must be a non-empty string`);
+  return value.trim();
+}
+
+function normalizedOptionalStringArray(
+  value: unknown,
+  field: string,
+  resultPath: string,
+  rawContent: string,
+): string[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value)) {
+    invalidManifest(resultPath, `${field} must be an array of non-empty strings`, rawContent);
   }
-  if (normalized.length > MACHINE_IDENTIFIER_MAX_LENGTH) {
-    throw new Error(`${field} must be at most ${String(MACHINE_IDENTIFIER_MAX_LENGTH)} characters`);
-  }
-  if (!MACHINE_IDENTIFIER_RE.test(normalized)) {
-    throw new Error(
-      `${field} must match ${String(MACHINE_IDENTIFIER_RE)} and contain only lower-case machine-safe identifier tokens`,
-    );
-  }
+  const normalized = value.map((entry, index) => {
+    if (typeof entry !== "string" || entry.trim().length === 0) {
+      invalidManifest(
+        resultPath,
+        `${field}[${String(index)}] must be a non-empty string`,
+        rawContent,
+      );
+    }
+    return entry.trim();
+  });
   return normalized;
 }
 
-function normalizeMachineIdentifierArray(value: unknown, field: string): string[] | undefined {
-  if (!Array.isArray(value)) return undefined;
-  const entries = value.map((entry, index) =>
-    normalizeMachineIdentifier(entry, `${field}[${String(index)}]`),
-  );
-  return entries.length > 0 ? entries : undefined;
+function deriveLegacyWorkOrderId(resultPath: string): string {
+  const runDirName = path.basename(path.dirname(resultPath)).trim();
+  return runDirName || "legacy-run";
 }
 
-function normalizeArtifacts(value: unknown): RunnerResultArtifact[] | undefined {
-  if (!Array.isArray(value)) return undefined;
-  const artifacts = value.map((entry) => {
-    if (!isRecord(entry)) {
-      throw new Error("artifacts entries must be objects");
+function legacySemanticStatus(value: unknown): LegacyAgentSemanticResult["status"] | undefined {
+  if (value === "success") return "completed";
+  if (value === "failed") return "failed";
+  if (value === "blocked") return "blocked";
+  return undefined;
+}
+
+function flattenLegacyClaim(
+  field: string,
+  value: unknown,
+  claims: AgentReportedLegacyClaim[],
+): void {
+  if (isJsonObject(value) && Object.keys(value).length > 0) {
+    for (const [key, nestedValue] of Object.entries(value)) {
+      flattenLegacyClaim(`${field}.${key}`, nestedValue, claims);
     }
-    const pathValue = typeof entry.path === "string" ? entry.path.trim() : "";
-    if (!pathValue) {
-      throw new Error("artifacts[].path must be a non-empty string");
-    }
-    if (entry.label === undefined) return { path: pathValue };
-    return {
-      path: pathValue,
-      label: normalizeMachineIdentifier(entry.label, "artifacts[].label"),
-    };
+    return;
+  }
+  claims.push({
+    field,
+    value,
+    provenance: "agent_reported",
   });
-  return artifacts.length > 0 ? artifacts : undefined;
 }
 
-function normalizeMetrics(value: unknown): RunnerExecutionMetrics | undefined {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
-  const candidate = value as Record<string, unknown>;
-  const metrics: RunnerExecutionMetrics = {};
-  if (candidate.duration_ms !== undefined) {
-    const duration = candidate.duration_ms;
-    if (typeof duration !== "number" || !Number.isInteger(duration) || duration < 0) {
-      throw new Error("metrics.duration_ms must be a non-negative integer");
-    }
-    metrics.duration_ms = duration;
+function collectLegacyClaims(raw: Record<string, unknown>): AgentReportedLegacyClaim[] {
+  const claims: AgentReportedLegacyClaim[] = [];
+  for (const [key, value] of Object.entries(raw)) {
+    if (key === "schema_version" || key === "summary" || key === "findings") continue;
+    flattenLegacyClaim(key, value, claims);
   }
-  if (candidate.stdout_bytes !== undefined) {
-    const stdoutBytes = candidate.stdout_bytes;
-    if (typeof stdoutBytes !== "number" || !Number.isInteger(stdoutBytes) || stdoutBytes < 0) {
-      throw new Error("metrics.stdout_bytes must be a non-negative integer");
-    }
-    metrics.stdout_bytes = stdoutBytes;
-  }
-  if (candidate.stderr_bytes !== undefined) {
-    const stderrBytes = candidate.stderr_bytes;
-    if (typeof stderrBytes !== "number" || !Number.isInteger(stderrBytes) || stderrBytes < 0) {
-      throw new Error("metrics.stderr_bytes must be a non-negative integer");
-    }
-    metrics.stderr_bytes = stderrBytes;
-  }
-  if (candidate.output_last_message_bytes !== undefined) {
-    const outputLastMessageBytes = candidate.output_last_message_bytes;
-    if (
-      outputLastMessageBytes !== null &&
-      (typeof outputLastMessageBytes !== "number" ||
-        !Number.isInteger(outputLastMessageBytes) ||
-        outputLastMessageBytes < 0)
-    ) {
-      throw new Error("metrics.output_last_message_bytes must be null or a non-negative integer");
-    }
-    metrics.output_last_message_bytes = outputLastMessageBytes;
-  }
-  return Object.keys(metrics).length > 0 ? metrics : undefined;
+  return claims;
 }
 
-function normalizeEvidence(value: unknown): RunnerResultEvidence | undefined {
-  if (!isRecord(value)) return undefined;
-  const evidence: RunnerResultEvidence = {};
-  const evidencePaths = normalizeStringArray(value.evidence_paths);
-  if (evidencePaths) evidence.evidence_paths = evidencePaths;
-  const changedPaths = normalizeStringArray(value.changed_paths);
-  if (changedPaths) evidence.changed_paths = changedPaths;
-  const conflictPaths = normalizeStringArray(value.conflict_paths);
-  if (conflictPaths) evidence.conflict_paths = conflictPaths;
-  const testsRun = normalizeStringArray(value.tests_run);
-  if (testsRun) evidence.tests_run = testsRun;
-  const verificationCandidates = normalizeStringArray(value.verification_candidates);
-  if (verificationCandidates) evidence.verification_candidates = verificationCandidates;
-  if (value.blocked_reason !== undefined) {
-    if (typeof value.blocked_reason !== "string" || !value.blocked_reason.trim()) {
-      throw new Error("evidence.blocked_reason must be a non-empty string when present");
-    }
-    evidence.blocked_reason = value.blocked_reason.trim();
-  }
-  if (value.recommended_parent_action !== undefined) {
-    if (
-      typeof value.recommended_parent_action !== "string" ||
-      !value.recommended_parent_action.trim()
-    ) {
-      throw new Error("evidence.recommended_parent_action must be a non-empty string when present");
-    }
-    evidence.recommended_parent_action = value.recommended_parent_action.trim();
-  }
-  if (value.files_changed_count !== undefined) {
-    if (
-      typeof value.files_changed_count !== "number" ||
-      !Number.isInteger(value.files_changed_count) ||
-      value.files_changed_count < 0
-    ) {
-      throw new Error("evidence.files_changed_count must be a non-negative integer");
-    }
-    evidence.files_changed_count = value.files_changed_count;
-  }
-  return Object.keys(evidence).length > 0 ? evidence : undefined;
+const LEGACY_OBSERVED_DIRECT_FIELDS = new Set([
+  "artifacts",
+  "capabilities_used",
+  "exit_code",
+  "status",
+  "stderr_summary",
+  "stdout_summary",
+  "timeout_reason",
+]);
+
+const LEGACY_OBSERVED_EXACT_FIELDS = new Set([
+  "evidence.changed_paths",
+  "evidence.conflict_paths",
+  "evidence.evidence_paths",
+  "evidence.files_changed_count",
+  "evidence.tests_run",
+]);
+
+function isLegacyObservedClaim(field: string): boolean {
+  return (
+    LEGACY_OBSERVED_DIRECT_FIELDS.has(field) ||
+    LEGACY_OBSERVED_EXACT_FIELDS.has(field) ||
+    field.startsWith("metrics.")
+  );
 }
 
-function assertRunnerManifestQuality(manifest: RunnerResultManifest, resultPath: string): void {
-  const rawContent = JSON.stringify(manifest, null, 2);
-  if (manifest.status === "success") {
-    const evidence = manifest.evidence;
-    const hasEvidence =
-      (evidence?.evidence_paths?.length ?? 0) > 0 ||
-      (evidence?.tests_run?.length ?? 0) > 0 ||
-      (evidence?.verification_candidates?.length ?? 0) > 0 ||
-      (manifest.artifacts?.length ?? 0) > 0;
-    if (!hasEvidence) {
-      invalidManifest(
-        resultPath,
-        "successful manifests must include evidence paths, tests, verification candidates, or artifacts",
-        rawContent,
-      );
-    }
-  }
-  if ((manifest.evidence?.conflict_paths?.length ?? 0) > 0) {
-    if (!manifest.evidence?.blocked_reason) {
-      invalidManifest(
-        resultPath,
-        "evidence.conflict_paths requires evidence.blocked_reason",
-        rawContent,
-      );
-    }
-    if (!manifest.evidence?.recommended_parent_action) {
-      invalidManifest(
-        resultPath,
-        "evidence.conflict_paths requires evidence.recommended_parent_action",
-        rawContent,
-      );
-    }
-  }
+function legacyWarnings(claims: AgentReportedLegacyClaim[]): RunnerResultManifestWarning[] {
+  return [
+    {
+      code: "legacy_manifest_v1",
+      message:
+        "Runner result schema_version=1 is deprecated; semantic fields were normalized and all other values remain untrusted agent-reported claims.",
+    },
+    ...claims
+      .filter((claim) => isLegacyObservedClaim(claim.field))
+      .map(
+        (claim): RunnerResultManifestWarning => ({
+          code: "legacy_agent_observed_claim",
+          field: claim.field,
+          message: `Legacy agent claim ${claim.field} was retained as agent_reported and cannot override supervisor observations.`,
+        }),
+      ),
+  ];
 }
 
-function normalizeStatus(value: unknown): RunnerResultStatus | undefined {
-  return value === "success" || value === "failed" || value === "blocked" || value === "cancelled"
-    ? value
-    : undefined;
+function legacyBlocker(
+  raw: Record<string, unknown>,
+  resultPath: string,
+  rawContent: string,
+): LegacyAgentSemanticResult["blocker"] | undefined {
+  if (!isJsonObject(raw.evidence)) return undefined;
+  const summary = normalizedOptionalString(
+    raw.evidence.blocked_reason,
+    "evidence.blocked_reason",
+    resultPath,
+    rawContent,
+  );
+  if (!summary) return undefined;
+  const recommendedAction = normalizedOptionalString(
+    raw.evidence.recommended_parent_action,
+    "evidence.recommended_parent_action",
+    resultPath,
+    rawContent,
+  );
+  return {
+    summary,
+    ...(recommendedAction ? { recommended_action: recommendedAction } : {}),
+  };
 }
 
-function normalizeTimeoutReason(value: unknown): RunnerTimeoutReason | undefined {
-  return value === "idle" || value === "wall_clock" ? value : undefined;
+function parseLegacyRunnerResultManifest(opts: {
+  raw: Record<string, unknown>;
+  raw_content: string;
+  result_path: string;
+}): RunnerResultManifest {
+  const summary = normalizedOptionalString(
+    opts.raw.summary,
+    "summary",
+    opts.result_path,
+    opts.raw_content,
+  );
+  const findings = normalizedOptionalStringArray(
+    opts.raw.findings,
+    "findings",
+    opts.result_path,
+    opts.raw_content,
+  );
+  const status = legacySemanticStatus(opts.raw.status);
+  const blocker = legacyBlocker(opts.raw, opts.result_path, opts.raw_content);
+  const semanticResult: LegacyAgentSemanticResult = {
+    schema_version: RUNNER_RESULT_MANIFEST_SCHEMA_VERSION,
+    kind: "legacy_agent_semantic_result",
+    work_order_id: deriveLegacyWorkOrderId(opts.result_path),
+    ...(status ? { status } : {}),
+    ...(summary ? { summary } : {}),
+    ...(findings ? { findings } : {}),
+    ...(blocker ? { blocker } : {}),
+  };
+  const legacyClaims = collectLegacyClaims(opts.raw);
+  return {
+    source_schema_version: LEGACY_RUNNER_RESULT_MANIFEST_SCHEMA_VERSION,
+    semantic_result: {
+      provenance: "agent_reported",
+      value: semanticResult,
+    },
+    legacy_claims: legacyClaims,
+    warnings: legacyWarnings(legacyClaims),
+  };
+}
+
+function formatSemanticSchemaIssues(
+  issues: readonly { path: PropertyKey[]; message: string }[],
+): string {
+  return issues
+    .map((issue) => {
+      const field = issue.path.length > 0 ? issue.path.map(String).join(".") : "result";
+      return `${field}: ${issue.message}`;
+    })
+    .join("; ");
+}
+
+function parseAgentSemanticResultManifest(opts: {
+  raw: Record<string, unknown>;
+  raw_content: string;
+  result_path: string;
+}): RunnerResultManifest {
+  const parsed = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.safeParse(opts.raw);
+  if (!parsed.success) {
+    invalidManifest(
+      opts.result_path,
+      `invalid AgentSemanticResult v2 (${formatSemanticSchemaIssues(parsed.error.issues)})`,
+      opts.raw_content,
+    );
+  }
+  return {
+    source_schema_version: RUNNER_RESULT_MANIFEST_SCHEMA_VERSION,
+    semantic_result: {
+      provenance: "agent_reported",
+      value: parsed.data,
+    },
+    legacy_claims: [],
+    warnings: [],
+  };
 }
 
 export async function readRunnerResultManifest(
@@ -250,94 +280,24 @@ export async function readRunnerResultManifest(
       const message = err instanceof Error ? err.message : String(err);
       invalidManifest(resultPath, `result.json must contain valid JSON (${message})`, rawText);
     }
-    if (!isRecord(parsed)) {
+    if (!isJsonObject(parsed)) {
       invalidManifest(resultPath, "result.json must contain a JSON object", rawText);
     }
-    const raw = parsed;
-    if (raw.schema_version !== RUNNER_RESULT_MANIFEST_SCHEMA_VERSION) {
-      invalidManifest(
-        resultPath,
-        `schema_version must be ${RUNNER_RESULT_MANIFEST_SCHEMA_VERSION}`,
-        rawText,
-      );
+    if (parsed.schema_version === LEGACY_RUNNER_RESULT_MANIFEST_SCHEMA_VERSION) {
+      return parseLegacyRunnerResultManifest({
+        raw: parsed,
+        raw_content: rawText,
+        result_path: resultPath,
+      });
     }
-    const manifest: RunnerResultManifest = {
-      schema_version: RUNNER_RESULT_MANIFEST_SCHEMA_VERSION,
-    };
-    if (raw.status !== undefined) {
-      const status = normalizeStatus(raw.status);
-      if (!status) {
-        invalidManifest(
-          resultPath,
-          "status must be success, failed, blocked, or cancelled",
-          rawText,
-        );
-      }
-      manifest.status = status;
+    if (parsed.schema_version === RUNNER_RESULT_MANIFEST_SCHEMA_VERSION) {
+      return parseAgentSemanticResultManifest({
+        raw: parsed,
+        raw_content: rawText,
+        result_path: resultPath,
+      });
     }
-    if (raw.exit_code !== undefined) {
-      const exitCode = raw.exit_code;
-      if (
-        exitCode !== null &&
-        (typeof exitCode !== "number" || !Number.isInteger(exitCode) || exitCode < 0)
-      ) {
-        invalidManifest(resultPath, "exit_code must be null or a non-negative integer", rawText);
-      }
-      manifest.exit_code = exitCode;
-    }
-    if (raw.summary !== undefined) {
-      if (typeof raw.summary !== "string" || !raw.summary.trim()) {
-        invalidManifest(resultPath, "summary must be a non-empty string when present", rawText);
-      }
-      manifest.summary = raw.summary.trim();
-    }
-    if (raw.stdout_summary !== undefined) {
-      if (typeof raw.stdout_summary !== "string" || !raw.stdout_summary.trim()) {
-        invalidManifest(
-          resultPath,
-          "stdout_summary must be a non-empty string when present",
-          rawText,
-        );
-      }
-      manifest.stdout_summary = raw.stdout_summary.trim();
-    }
-    if (raw.stderr_summary !== undefined) {
-      if (typeof raw.stderr_summary !== "string" || !raw.stderr_summary.trim()) {
-        invalidManifest(
-          resultPath,
-          "stderr_summary must be a non-empty string when present",
-          rawText,
-        );
-      }
-      manifest.stderr_summary = raw.stderr_summary.trim();
-    }
-    if (raw.timeout_reason !== undefined) {
-      const timeoutReason = normalizeTimeoutReason(raw.timeout_reason);
-      if (!timeoutReason) {
-        invalidManifest(
-          resultPath,
-          "timeout_reason must be idle or wall_clock when present",
-          rawText,
-        );
-      }
-      manifest.timeout_reason = timeoutReason;
-    }
-    try {
-      manifest.artifacts = normalizeArtifacts(raw.artifacts);
-      manifest.findings = normalizeStringArray(raw.findings);
-      manifest.verification_hints = normalizeStringArray(raw.verification_hints);
-      manifest.capabilities_used = normalizeMachineIdentifierArray(
-        raw.capabilities_used,
-        "capabilities_used",
-      );
-      manifest.metrics = normalizeMetrics(raw.metrics);
-      manifest.evidence = normalizeEvidence(raw.evidence);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      invalidManifest(resultPath, message, rawText);
-    }
-    assertRunnerManifestQuality(manifest, resultPath);
-    return manifest;
+    invalidManifest(resultPath, "schema_version must be 1 or 2", rawText);
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ENOENT") return null;

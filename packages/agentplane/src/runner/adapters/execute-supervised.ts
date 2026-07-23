@@ -2,12 +2,12 @@ import { CliError } from "../../shared/errors.js";
 import { runSupervisedProcess, type SupervisedProcessResult } from "../process-supervision/run.js";
 import {
   InvalidRunnerResultManifestError,
-  manifestFromRunnerResult,
   preserveInvalidRunnerResultManifest,
   preserveRunnerResultManifestSource,
   readRunnerResultManifest,
+  runnerResultRecordFromRunnerResult,
   salvageBlockedRunnerResultManifest,
-  writeRunnerResultManifest,
+  writeRunnerResultRecord,
 } from "../result-manifest.js";
 import {
   assertRunnerManifestArtifactPolicy,
@@ -53,7 +53,6 @@ export async function executeSupervisedRunnerAdapter(opts: {
     processResult: SupervisedProcessResult;
     manifest: RunnerResultManifest;
   }) => void;
-  preserveSourceManifestOnSuccess?: (manifest: RunnerResultManifest) => boolean;
   successEventMessage: (result: RunnerResult) => string;
   failureSummary: string;
   failureEventType: "runner_execute_error" | "runner_execute_finish";
@@ -62,6 +61,7 @@ export async function executeSupervisedRunnerAdapter(opts: {
   const { invocation } = opts;
   const started_at = new Date().toISOString();
   let processResult: SupervisedProcessResult | null = null;
+  let sourceManifestPath: string | null = null;
 
   try {
     opts.assertInvocation(invocation);
@@ -72,11 +72,8 @@ export async function executeSupervisedRunnerAdapter(opts: {
       stdin_text: stdinText,
       start_message: opts.startMessage,
     });
+    sourceManifestPath = await preserveRunnerResultManifestSource(invocation.result_path);
     const manifest = await readRunnerResultManifest(invocation.result_path);
-    const sourceManifestPath =
-      opts.preserveSourceManifestOnSuccess?.(manifest) === true
-        ? await preserveRunnerResultManifestSource(invocation.result_path)
-        : null;
     assertRunnerManifestArtifactPolicy({
       adapter_id: invocation.adapter_id,
       allowed_prefixes: readRecipeArtifactPrefixesFromRunnerEnv(invocation.env),
@@ -97,9 +94,9 @@ export async function executeSupervisedRunnerAdapter(opts: {
       output_paths,
     });
     const result = opts.applyManifest({ base: baseResult, manifest });
-    await writeRunnerResultManifest({
+    await writeRunnerResultRecord({
       result_path: invocation.result_path,
-      manifest: manifestFromRunnerResult(result),
+      record: runnerResultRecordFromRunnerResult(result),
     });
     await writeRunnerExecutionState({
       repository,
@@ -118,7 +115,6 @@ export async function executeSupervisedRunnerAdapter(opts: {
     return result;
   } catch (err) {
     const ended_at = new Date().toISOString();
-    const sourceManifestPath = await preserveRunnerResultManifestSource(invocation.result_path);
     const invalidManifestPath =
       err instanceof InvalidRunnerResultManifestError
         ? await preserveInvalidRunnerResultManifest({
@@ -128,7 +124,7 @@ export async function executeSupervisedRunnerAdapter(opts: {
         : null;
     const blockedManifestFallback =
       err instanceof InvalidRunnerResultManifestError
-        ? salvageBlockedRunnerResultManifest(err.raw_content)
+        ? salvageBlockedRunnerResultManifest(err.raw_content, invocation.result_path)
         : null;
     const artifacts = opts.buildArtifacts({
       invocation,
@@ -140,23 +136,19 @@ export async function executeSupervisedRunnerAdapter(opts: {
     const result: RunnerResult = {
       ...runnerAdapterFailureResult({
         err,
-        summary:
-          blockedManifestFallback?.summary ??
-          blockedManifestFallback?.evidence?.blocked_reason ??
-          opts.failureSummary,
+        summary: opts.failureSummary,
         started_at,
         ended_at,
         exit_code: err instanceof CliError ? err.exitCode : undefined,
         output_paths,
       }),
-      status: blockedManifestFallback ? "blocked" : "failed",
       artifacts,
       capabilities_used: opts.capabilitiesUsed(invocation),
-      evidence: blockedManifestFallback?.evidence,
+      ...(blockedManifestFallback ?? {}),
     };
-    await writeRunnerResultManifest({
+    await writeRunnerResultRecord({
       result_path: invocation.result_path,
-      manifest: manifestFromRunnerResult(result),
+      record: runnerResultRecordFromRunnerResult(result),
     });
     const repository = RunnerRunRepository.fromInvocation(invocation);
     await writeRunnerResultState({ repository, result });
